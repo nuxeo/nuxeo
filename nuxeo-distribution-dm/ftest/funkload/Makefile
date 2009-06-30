@@ -58,7 +58,7 @@ test-nuxeo: init writer reader
 bench: start test-nuxeo bench-writer bench-reader stop
 
 bench-writer:
-	-fl-run-bench --simple-fetch -c 1:2:4:6 -D 60 -m 0.2 -M 1 -s 1 test_nuxeo.py Nuxeo.testWriter $(FLOPS)
+	-fl-run-bench --simple-fetch -c 1:2:4:6:8:10 -D 60 -m 0.2 -M 1 -s 1 test_nuxeo.py Nuxeo.testWriter $(FLOPS)
 	-fl-build-report $(LOG_HOME)/nuxeo-bench.xml --html -o $(REPORT)
 
 warmup:
@@ -66,7 +66,7 @@ warmup:
 	-fl-run-bench -c 5 -D 1 -m 0 -M 0 -s 0 test_nuxeo.py Nuxeo.testReader $(FLOPS)
 
 bench-reader: warmup
-	-fl-run-bench --simple-fetch -c 1:5:10:15:20:25:30 -D 60 -m 0.1 -M 1 -s 1 test_nuxeo.py Nuxeo.testReader $(FLOPS)
+	-fl-run-bench --simple-fetch -c 1:5:10:15:20:25:30:35:40:45:50 -D 60 -m 0.1 -M 1 -s 1 test_nuxeo.py Nuxeo.testReader $(FLOPS)
 	-fl-build-report $(LOG_HOME)/nuxeo-bench.xml --html -o $(REPORT)
 
 

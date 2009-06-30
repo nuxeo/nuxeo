@@ -24,12 +24,12 @@ class Webengine(FunkLoadTestCase):
         self.server_url = self.conf_get('main', 'url')
         self.credential_host = self.conf_get('credential', 'host')
         self.credential_port = self.conf_getInt('credential', 'port')
-        #self.cred_admin = xmlrpc_get_credential(self.credential_host,
-        #                                        self.credential_port,
-        #                                        'admin')
-        #self.cred_member =  xmlrpc_get_credential(self.credential_host,
-        #                                          self.credential_port,
-        #                                          'members')
+        self.cred_admin = xmlrpc_get_credential(self.credential_host,
+                                                self.credential_port,
+                                                'admin')
+        self.cred_member =  xmlrpc_get_credential(self.credential_host,
+                                                  self.credential_port,
+                                                  'members')
         self.logd("setUp")
 
     def test_testWebengine(self):
@@ -37,7 +37,7 @@ class Webengine(FunkLoadTestCase):
         p = WebenginePage(self)
 
         (p.home()
-         .login('Administrator', 'Administrator')
+         .login(*self.cred_admin)
          .admin()
          .user_management())
 
@@ -62,7 +62,7 @@ class Webengine(FunkLoadTestCase):
          .logout())
 
         (p.home()
-         .login('Administrator', 'Administrator')
+         .login(*self.cred_admin)
          .deleteUser('john')
          .logout())
 

@@ -25,6 +25,7 @@ from cStringIO import StringIO
 from webunit.utility import Upload
 from funkload.Lipsum import Lipsum
 from funkload.FunkLoadTestCase import FunkLoadTestCase
+from funkload.utils import xmlrpc_get_credential
 from nuxeo.rest import RestAPI
 
 class Rest(FunkLoadTestCase):
@@ -37,10 +38,15 @@ class Rest(FunkLoadTestCase):
         self.server_url = self.conf_get('main', 'url')
         self.nb_doc = self.conf_getInt('testWriter', 'nb_doc')
         self.nb_read = self.conf_getInt('testReader', 'nb_read')
+        self.credential_host = self.conf_get('credential', 'host')
+        self.credential_port = self.conf_getInt('credential', 'port')
+        self.cred_admin = xmlrpc_get_credential(self.credential_host,
+                                                self.credential_port,
+                                                'admin')
 
     def FAIL_testUpload(self):
         r = RestAPI(self)
-        r.login('Administrator', 'Administrator')
+        r.login(*self.cred_admin)
         uid = '44f1af7e-5206-4f39-b935-55bb32ab3112'
         r.uploadFile(uid, 'foo.txt')
 
@@ -49,7 +55,7 @@ class Rest(FunkLoadTestCase):
     def testWriter(self):
         # Create a folder and few documents
         r = RestAPI(self)
-        r.login('Administrator', 'Administrator')
+        r.login(*self.cred_admin)
         root_uid = r.getRootWorkspaceUid()
         ws_uid = r.getChildUid(root_uid, self.ws_title, 'Workspace')
         if not ws_uid:
@@ -69,7 +75,7 @@ class Rest(FunkLoadTestCase):
     def testReader(self):
         # browse the workspace
         r = RestAPI(self)
-        r.login('Administrator', 'Administrator')
+        r.login(*self.cred_admin)
         uid = r.getRootWorkspaceUid()
         uid = r.getChildUid(uid, self.ws_title, 'Workspace')
         self.assert_(uid, 'Workspace "%s" not found.' % self.ws_title)

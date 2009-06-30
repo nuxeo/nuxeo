@@ -30,28 +30,24 @@ class Pages(NuxeoTestCase):
     tag = "FLNXTEST"
     _lipsum = Lipsum()
 
-    def setUp(self):
-        # override to remove credential setup
-        self.server_url = self.conf_get('main', 'url')
-
     def testAvailable(self):
         p = BasePage(self).available()
 
     def testLoginPage(self):
         p = (LoginPage(self).view()
-             .login('Administrator', 'Administrator')
+             .login(*self.cred_admin)
              .logout())
         p = LoginPage(self).loginInvalid('foo', 'bar')
 
     def testBasePageViewDocumentPath(self):
         # fluent test
         p = (LoginPage(self)
-             .login('Administrator', 'Administrator')
+             .login(*self.cred_admin)
              .getRootWorkspaces()
              .logout())
         # test redirection after login
         p = BasePage(self).viewDocumentPath("workspaces")
-        p = p.login('Administrator', 'Administrator')
+        p = p.login(*self.cred_admin)
         # TODO assert we are on workspaces
         ret = p.viewDocumentPath("workspaces/that/does/not/exists",
                                  raiseOn404=False)
@@ -60,7 +56,7 @@ class Pages(NuxeoTestCase):
 
     def testNavigation(self):
         p = (LoginPage(self)
-             .login('Administrator', 'Administrator')
+             .login(*self.cred_admin)
              .getRootWorkspaces())
         p = (p.rights()
              .manage())
@@ -74,7 +70,7 @@ class Pages(NuxeoTestCase):
     def testFolderPage(self):
         title = self._lipsum.getSubject(uniq=True, prefix=self.tag)
         description = self.tag + ' ' + self._lipsum.getParagraph()
-        p = (LoginPage(self).login('Administrator', 'Administrator')
+        p = (LoginPage(self).login(*self.cred_admin)
              .getRootWorkspaces()
              .createWorkspace(self.ws_title, 'A description')
              .rights().grant('ReadWrite', 'members')
@@ -94,7 +90,7 @@ class Pages(NuxeoTestCase):
     def testFileTabs(self):
         title = self._lipsum.getSubject(uniq=True, prefix=self.tag)
         description = self.tag + ' ' + self._lipsum.getParagraph()
-        p = (LoginPage(self).login('Administrator', 'Administrator')
+        p = (LoginPage(self).login(*self.cred_admin)
              .getRootWorkspaces()
              .createWorkspace(self.ws_title, 'A description')
              .view()
@@ -114,7 +110,7 @@ class Pages(NuxeoTestCase):
 
 
     def testMemberManagementPage(self):
-        p = LoginPage(self).login('Administrator', 'Administrator')
+        p = LoginPage(self).login(*self.cred_admin)
         login = self.tag.lower()
         pwd = 'secret'
         p = (p.memberManagement()
