@@ -279,7 +279,9 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         for (EventListenerDescriptor desc : listenerDescriptors.getAsyncPostCommitListenersDescriptors()) {
             if (desc.getName().equals(listenerName)) {
                 desc.setEnabled(enabled);
-                listenerDescriptors.recomputeEnabledListeners();
+                synchronized (this) {
+                    listenerDescriptors.recomputeEnabledListeners();
+                }
                 return;
             }
         }
@@ -287,7 +289,9 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         for (EventListenerDescriptor desc : listenerDescriptors.getSyncPostCommitListenersDescriptors()) {
             if (desc.getName().equals(listenerName)) {
                 desc.setEnabled(enabled);
-                listenerDescriptors.recomputeEnabledListeners();
+                synchronized (this) {
+                    listenerDescriptors.recomputeEnabledListeners();
+                }
                 return;
             }
         }
@@ -295,7 +299,9 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         for (EventListenerDescriptor desc : listenerDescriptors.getInlineListenersDescriptors()) {
             if (desc.getName().equals(listenerName)) {
                 desc.setEnabled(enabled);
-                listenerDescriptors.recomputeEnabledListeners();
+                synchronized (this) {
+                    listenerDescriptors.recomputeEnabledListeners();
+                }
                 return;
             }
         }
