@@ -95,13 +95,23 @@ public interface WebContext extends Adaptable {
     String getMessageL(String key, String locale, String... args);
 
     /**
-     * Get the context locale. The locale is computed from the Accept-Language
-     * language sent by the client. This is a shortcut for
-     * {@link HttpServletRequest#getLocale()}
+     * Get the context locale.
+     *
+     * <p>
+     * If the locale has been set using {@link #setLocale(Locale)}, returns the
+     * last locale set. Otherwise, compute it from the Accept-Language language
+     * sent by the client, using {@link HttpServletRequest#getLocale()}.
      *
      * @return the context locale
      */
     Locale getLocale();
+
+    /**
+     * Sets the current locale, that will be kept in context.
+     *
+     * @param locale
+     */
+    void setLocale(Locale locale);
 
     /**
      * Gets the web engine instance.

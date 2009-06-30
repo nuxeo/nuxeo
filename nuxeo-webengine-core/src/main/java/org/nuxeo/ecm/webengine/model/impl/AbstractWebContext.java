@@ -67,6 +67,8 @@ public abstract class AbstractWebContext implements WebContext {
     // this should be made configurable through an extension point
     public static Locale DEFAULT_LOCALE = Locale.ENGLISH;
 
+    public static final String LOCALE_SESSION_KEY = "webengine_locale";
+
     protected final WebEngine engine;
 
     protected final UserSession us;
@@ -170,8 +172,8 @@ public abstract class AbstractWebContext implements WebContext {
         Messages messages = module.getMessages();
         try {
             String msg = messages.getString(key, getLocale().getLanguage());
-            if (args != null && args.length > 0) { // format the string using
-                                                    // given args
+            if (args != null && args.length > 0) {
+                // format the string using given args
                 msg = MessageFormat.format(msg, (Object[]) args);
             }
             return msg;
@@ -194,7 +196,7 @@ public abstract class AbstractWebContext implements WebContext {
         try {
             String msg = messages.getString(key, locale);
             if (args != null && args.length > 0) { // format the string using
-                                                    // given args
+                // given args
                 msg = MessageFormat.format(msg, (Object[]) args);
             }
             return msg;
@@ -204,8 +206,23 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public Locale getLocale() {
+        UserSession us = getUserSession();
+        if (us != null) {
+            Object locale = us.get(LOCALE_SESSION_KEY);
+            if (locale instanceof Locale) {
+                return (Locale) locale;
+            }
+        }
+        // take the one on request
         Locale locale = request.getLocale();
         return locale == null ? DEFAULT_LOCALE : locale;
+    }
+
+    public void setLocale(Locale locale) {
+        UserSession us = getUserSession();
+        if (us != null) {
+            us.put(LOCALE_SESSION_KEY, locale);
+        }
     }
 
     public Resource newObject(String typeName, Object... args) {
