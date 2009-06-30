@@ -64,7 +64,7 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
 
     protected abstract Group[] getRoleSets() throws LoginException;
 
-    abstract Principal createIdentity(String username) throws Exception;
+    protected abstract Principal createIdentity(String username) throws Exception;
 
 
     public boolean abort() throws LoginException {
