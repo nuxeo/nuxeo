@@ -12,7 +12,7 @@ import com.sun.star.uno.UnoRuntime;
 /**
  * Accepts connections from admin daemon instances.
  * <br>
- * creation : 23 août 07
+ * creation : 23 aoï¿½t 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */
@@ -66,6 +66,9 @@ public class AdminAcceptorThread extends Thread
 		{
 			try
 			{
+                //have a chance to avoid flood the log
+			    Thread.sleep(10);
+                numberOfAttempts ++;
 				XConnection connexion = _acceptor.accept(_acceptString);
 				if (connexion == null)
 					break;
@@ -76,9 +79,6 @@ public class AdminAcceptorThread extends Thread
 						"urp",
 						connexion,
 						new AdminInstanceProvider(_daemon, _shutdownThread));
-
-                Thread.sleep(10);
-				numberOfAttempts ++;
 			}
 			catch (AlreadyAcceptingException ex) // TODO this must be taken into account for the admin acceptor to work the best manner
 			{
