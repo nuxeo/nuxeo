@@ -194,6 +194,8 @@ Reusing Seam components
 
 TODO:
 
+  http://jira.nuxeo.org/browse/NXP-3610
+
 
 URL navigation and browser history
 ==================================
