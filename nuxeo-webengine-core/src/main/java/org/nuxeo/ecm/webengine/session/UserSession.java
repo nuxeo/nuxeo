@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.security.auth.Subject;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -187,8 +189,21 @@ public abstract class UserSession extends HashMap<String, Object>  {
         comps = new HashMap<Class<?>, ComponentMap<?>>();
         // destroy core session
         if (coreSession != null) {
-            coreSession.destroy();
-            coreSession = null;
+            LoginContext lc = null;
+            try {
+                lc = Framework.loginAs(principal.getName());
+                coreSession.destroy();
+                coreSession = null;
+            } catch (LoginException e) {
+                log.error("Couldn't login with system user", e);
+            } finally {
+                if (lc != null) {
+                    try {
+                        lc.logout();
+                    } catch (LoginException e) {
+                    }
+                }
+            }
         }
     }
 
