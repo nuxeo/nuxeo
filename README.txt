@@ -21,6 +21,13 @@ Build with::
 TODO: add here instructions for Seam and nuxeo.war hot redeployment.
 
 
+Technical Overview
+------------------
+
+The doc/ folder holds a technical overview of the design goals and technical
+architecture of the nuxeo-dam application.
+
+
 Running the functionnal test suite
 ----------------------------------
 

@@ -1,0 +1,269 @@
+===================================================
+Nuxeo Digital Asset Management - Technical overview
+===================================================
+
+Olivier Grisel <ogrisel@nuxeo.com>
+July 2009
+
+TODO: convert this to docbook format to be able to generate HTML / PDF versions.
+
+
+High level functional goals
+===========================
+
+
+Functional overview
+-------------------
+
+DAM stands for Digital Asset Management which means collection manager
+for digital assets which can be office (MS, OOo, PDF, ...) or multimedia
+(pictures, audio and video) files.
+
+The main difference with Nuxeo DM (Document Management) is that DAM
+is not aimed at "producing" new documents with collaborative editing /
+review workflows but merely at browsing an existing collection that have
+been authored externally and imported in batch in the DAM application.
+
+User will merely edit the properties / categories or add annotations to enrich
+the asset without editing the main attached file.
+
+
+Ajaxified search centric UI
+---------------------------
+
+The navigation is not document-centric and organised in collaborative
+workspaces as in Nuxeo DM but is instead search-centric. Furthermore the
+application ergonomy should feel like a rich collection browser such as iTunes
+or iPhoto by extensively using Ajax. Speed and responsiveness to user actions
+should be considered a major feature of DAM.
+
+Ajax features are implemented using the Rich faces components and the Ajax4JSF
+extensions. The online demo is available here:
+
+  http://livedemo.exadel.com/richfaces-demo/richfaces/support.jsf?c=support&tab=usage
+
+Some a4j tips are gathered on the following wiki page:
+
+  http://doc.nuxeo.org/xwiki/bin/view/Main/Ajax4JSF+Good+practices
+
+In addition to JSFs ajax features, we plan to also reuse existing ajax
+features of Nuxeo DM such as the right click actions menu based on
+jquery plugins.
+
+
+Three columns user interface
+----------------------------
+
+TODO: add photoshop mockup reference here
+
+TODO: import form, user management screens and other global screens as modal
+popup (question: how to make them ajaxified to reduce the rendering load?)
+
+
+Developer environment and source code layout
+============================================
+
+Source code
+-----------
+
+The source code specific to the DAM project is located here:
+
+  https://hgpriv.nuxeo.org/nuxeo-dam/
+
+The project layout is as follows:
+
+- nuxeo-dam-core
+
+  core document schemas definitions and other contributions to services
+  to be deployed on the stateful machine in multi machine setup
+
+- nuxeo-dam-webapp-core
+
+  DAM specific seam components
+
+- nuxeo-dam-webapp
+
+  Webapp resources for the DAM UI
+
+- nuxeo-dam-distribution
+
+  Assembly files to package the DAM application as a nuxeo.ear or a Jetty
+  application.
+  Also contains the functional test suite.
+
+- nuxeo-dam-api
+
+  Public API (interfaces and DTO implementations) for DAM specific
+  services. Currently not used as all services are currently generic. I
+  am not sure we want to keep this package as I don't see any DAM specific
+  service yet.
+
+- nuxeo-dam-facade
+
+  EJB3 remote API facade for DAM specific services. Same remark as above.
+
+- nuxeo-dam-test
+
+  TestNG wrappers for runtime test case. Might move back to NXP if we decide to
+  switch the unittest suite to JUnit4 instead.
+
+
+Continous integration
+---------------------
+
+The automated build / selenium test reports are hosted there:
+
+  http://qapriv.nuxeo.org/hudson/job/nuxeo-dam/
+  http://qapriv.nuxeo.org/hudson/job/nuxeo-dam-ftest/
+
+Hudson also publishes nightly builds there (jboss distribution only for now):
+
+  http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots/org/nuxeo/dam/distribution/nuxeo-dam-distribution-jboss/1.0-SNAPSHOT/
+
+
+Document types and schemas
+==========================
+
+
+Search centric navigation
+=========================
+
+Stateful querymodel and provider
+--------------------------------
+
+TODO: seam component names + query model name
+
+
+Selected document
+-----------------
+
+TODO: seam component name
+
+
+Ajaxified document tabs
+-----------------------
+
+TODO
+
+
+Batch import of assets
+======================
+
+Physical document hierarchy layouting
+-------------------------------------
+
+TODO: introduce import sets
+
+
+Zip extractor
+-------------
+
+The Zip import screen is currently implemented as a plugin for the FileManager.
+In the long term we might want to switch to high volume importer written by TD
+currently avaible as a sandbox plugin and probably to be packaged as a generic
+NXP service:
+
+  https://hg.nuxeo.org/sandbox/nuxeo-platform-importer/
+
+The goal is to be able to implement long running import tasks with
+subtransactions.
+
+
+
+Factorizing code with NXP and Nuxeo DM
+======================================
+
+
+Reusing existing NXP services
+-----------------------------
+
+The DAM JSF application should delegate business logics to Nuxeo Runtime
+services. Most of them are already part of NXP. New ones will most probably
+packaged as NXP services too without any dependency on the DAM webapp.
+
+Planned new services include:
+
+- picture and video watermarking.
+- delivery service
+
+TODO: list them all here
+
+
+Reusing Seam components
+-----------------------
+
+TODO:
+
+
+URL navigation and browser history
+==================================
+
+By default ajax prevents traditional RESTful URL navigation, bookmarks
+and history (browser back button) management.
+
+However we want users to be able to bookmark and copy and paste the URL of the
+current state of the view of the application (). To achieve this while
+preserving the ajax driven UI we plan to use the following jquery plugin that
+mimicks the gmail and other mainstream ajax application URL handling:
+
+  http://www.mikage.to/jquery/jquery_history.html
+
+We will need to define a coding and decoding of all the following states
+parameters:
+
+- search filters values
+- current page position in the paginated results
+- currently selected document
+- currently selected document tab
+
+
+Video streaming
+===============
+
+Target implementation
+---------------------
+
+We want a recent flash plugin as only dependency. We also want to be able to
+handle HD quality stream (at least 720p) hence we will probably focus on MP4
+container (with h264 video codec and mp3 or AAC audio codec). The ffmpeg lib can
+be used to perform video conversion from almost anything to that target.
+
+The most only protocol to stream MP4 content to flash players is RTMP which is
+an extension of the HTTP protocol hence should simplify firewall and SSO
+integration.
+
+On the server side, the red5 LGPL java project aims to provide a streaming
+server implementation with experimental RTMP support in the trunk (target 0.9):
+
+  http://code.google.com/p/red5/
+
+Red5 is packaged as a war to be deployed on a tomcat server hence could run in
+the same JVM as nuxeo which should make it easier to plug ACL security checks
+and SSO / login module authentication using the nuxeo libs.
+
+On the client side there is good (but GPL) player with jquery scripting and RTMP
+streaming support (MP4 decoding is provided by the flash plugin v10 or later):
+
+  http://flowplayer.org/
+
+Nice forum post with state of the art RTMP / MP4 streaming options:
+
+  http://stream-recorder.com/forum/real-time-messaging-protocol-rtmp-broadcasting-flv-t3934.html
+
+
+Alternatives
+------------
+
+It is also possible to target RSTP streams of other formats using browser
+plugins such as Quicktime or VLC and darwin streaming server. However the setup
+my be more complex and so are the security / ACL checks to acces the stream of a
+blob stored in the VCS.
+
+It is also possible to stream OGG videos using the opensource icecast2 streaming
+server over HTTP and have any HTML5 enabled browser (FF 3.5+, Safari 4+, Google
+Chrome, Opera 10 but not IE) with a fallback to VLC plugin. This is probably
+more robust and opensource friendly but won't suit the average windows IE6
+corporate users + we need to deal with authorized access to the stream so
+configure icecast2 to ping nuxeo to check security on video blobs.
+
+
