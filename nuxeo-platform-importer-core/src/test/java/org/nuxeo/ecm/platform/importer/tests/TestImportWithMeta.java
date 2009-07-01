@@ -51,7 +51,7 @@ public class TestImportWithMeta extends SQLRepositoryTestCase {
 
         String targetPath = "/default-domain/workspaces/";
 
-        DefaultImporterExecutor executor = new DefaultImporterExecutor(session);
+        DefaultImporterExecutor executor = new DefaultImporterExecutor();
 
         executor.run(src, targetPath, 10, 5, true);
 

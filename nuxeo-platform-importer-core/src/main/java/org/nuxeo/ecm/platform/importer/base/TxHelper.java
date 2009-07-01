@@ -86,6 +86,10 @@ public class TxHelper {
         }
     }
 
+    public void grabCurrentTransaction(Integer transactionTimeout) {
+        tx = createUT(transactionTimeout);
+    }
+
     protected UserTransaction createUT(Integer transactionTimeout) {
         InitialContext context = null;
         try {

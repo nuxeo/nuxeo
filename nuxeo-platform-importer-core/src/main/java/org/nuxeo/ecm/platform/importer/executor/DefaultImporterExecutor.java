@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.importer.executor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
 import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
@@ -37,17 +36,10 @@ public class DefaultImporterExecutor extends AbstractImporterExecutor {
 
     private static final Log log = LogFactory.getLog(DefaultImporterExecutor.class);
 
-    protected CoreSession session = null;
-
     protected GenericMultiThreadedImporter importer = null;
 
-    public DefaultImporterExecutor(CoreSession session) {
-        this.session = session;
-    }
+    public DefaultImporterExecutor() {
 
-    @Override
-    protected CoreSession getCoreSession() {
-        return session;
     }
 
     @Override

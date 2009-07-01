@@ -60,9 +60,4 @@ public abstract class AbstractJaxRSImporterExecutor extends
         super.kill();
     }
 
-    @Override
-    protected CoreSession getCoreSession() {
-        return WebEngine.getActiveContext().getCoreSession();
-    }
-
 }
