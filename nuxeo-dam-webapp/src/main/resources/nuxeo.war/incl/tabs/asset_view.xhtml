@@ -1,4 +1,5 @@
 <div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
@@ -7,9 +8,9 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-<div>Selection view</div>
-<ui:include src="/incl/tabs/asset_view.xhtml" />
-<br/>
-<ui:include src="/incl/tabs/asset_preview.xhtml" />
-
+<a4j:region>
+  <a4j:outputPanel ajaxRendered="true" id="damView">
+    <h:outputText rendered="#{documentActions.currentSelection != null}" value="#{documentActions.currentSelection.title}" />
+  </a4j:outputPanel>
+</a4j:region>
 </div>
