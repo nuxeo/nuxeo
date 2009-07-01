@@ -28,6 +28,8 @@ import javax.resource.cci.Interaction;
 import javax.resource.cci.LocalTransaction;
 import javax.resource.cci.ResultSetInfo;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.PartialList;
@@ -48,6 +50,8 @@ import org.nuxeo.ecm.core.storage.sql.SessionImpl;
  * @author Florent Guillaume
  */
 public class ConnectionImpl implements Session {
+
+    private static final Log log = LogFactory.getLog(ConnectionImpl.class);
 
     private ManagedConnectionImpl managedConnection;
 
@@ -94,6 +98,10 @@ public class ConnectionImpl implements Session {
      */
 
     public void close() throws ResourceException {
+        if (managedConnection == null) {
+            log.error("Closing an already closed connection: " + this);
+            return;
+        }
         try {
             managedConnection.close(this);
         } finally {
