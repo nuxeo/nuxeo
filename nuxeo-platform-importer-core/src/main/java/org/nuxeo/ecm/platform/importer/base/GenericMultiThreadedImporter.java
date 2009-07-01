@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -136,6 +137,10 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
             for (ImporterFilter filter : filters) {
                 filter.handleAfterImport(finalException);
             }
+            if (session!=null) {
+                CoreInstance.getInstance().close(session);
+                session=null;
+            }
             if (lc != null) {
                 try {
                     lc.logout();
@@ -146,15 +151,14 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         }
     }
 
-    protected GenericThreadedImportTask initRootTask(CoreSession session,
-            SourceNode importSource, DocumentModel targetContainer, ImporterLogger log,
+    protected GenericThreadedImportTask initRootTask(SourceNode importSource, DocumentModel targetContainer, ImporterLogger log,
             Integer batchSize) throws Exception {
-        GenericThreadedImportTask rootImportTask = new GenericThreadedImportTask(session,
+        GenericThreadedImportTask rootImportTask = new GenericThreadedImportTask(null ,
                 importSource, targetContainer, log, batchSize, getFactory(), getThreadPolicy());
         return rootImportTask;
     }
 
-    public void doRun() throws Exception {
+    protected void doRun() throws Exception {
 
         targetContainer = getCoreSession().getDocument(
                 new PathRef(importWritePath));
@@ -164,8 +168,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         importTP = new ThreadPoolExecutor(nbThreads, nbThreads, 500L,
                 TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100));
 
-        GenericThreadedImportTask rootImportTask = initRootTask(getCoreSession(),
-                importSource, targetContainer, log, batchSize);
+        GenericThreadedImportTask rootImportTask = initRootTask(importSource, targetContainer, log, batchSize);
 
         rootImportTask.setRootTask();
         long t0 = System.currentTimeMillis();

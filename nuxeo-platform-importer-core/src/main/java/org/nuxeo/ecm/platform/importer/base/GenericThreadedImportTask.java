@@ -98,6 +98,12 @@ public class GenericThreadedImportTask implements Runnable {
         this.rootDoc = rootDoc;
         this.factory = factory;
         this.threadPolicy = threadPolicy;
+
+        if (rootDoc == null || rootSource == null) {
+            throw new IllegalArgumentException(
+                    "target folder and source node must be specified");
+        }
+
     }
 
 
@@ -199,6 +205,7 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected void recursiveCreateDocumentFromNode(DocumentModel parent, SourceNode node)
             throws Exception {
+
         if (getFactory().isTargetDocumentModelFolderish(node)) {
             DocumentModel folder;
             Boolean newThread = false;
@@ -209,6 +216,12 @@ public class GenericThreadedImportTask implements Runnable {
             } else {
                 folder = doCreateFolderishNode(parent, node);
             }
+
+            if (folder==null) {
+                log.warn("Exist because parent node is null");
+                return;
+            }
+
             List<SourceNode> nodes = node.getChildren();
             if (nodes!=null && nodes.size() > 0) {
                 // get a new TaskImporter if available to start
@@ -267,14 +280,13 @@ public class GenericThreadedImportTask implements Runnable {
             getCoreSession().save();
             GenericMultiThreadedImporter.addCreatedDoc(taskId, uploadedFiles);
             txHelper.commitOrRollbackTransaction();
+        } catch (Exception e) {
+            log.error("Error during import", e);
+        } finally {
             if (session != null) {
                 CoreInstance.getInstance().close(session);
                 session = null;
             }
-
-        } catch (Exception e) {
-            log.error("Error during import", e);
-        } finally {
             if (lc != null) {
                 try {
                     lc.logout();
