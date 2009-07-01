@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.proxy;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +76,7 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
                 String directoryName = Framework.getService(UserManager.class).getUserDirectoryName();
                 userDir = Framework.getService(DirectoryService.class).open(
                         directoryName);
-                Map<String, Object> queryFilters = new HashMap<String, Object>();
+                Map<String, Serializable> queryFilters = new HashMap<String, Serializable>();
                 queryFilters.put(credentialFieldName, userName);
                 DocumentModelList result = userDir.query(queryFilters);
                 if (result.isEmpty()) {

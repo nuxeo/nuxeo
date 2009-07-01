@@ -45,6 +45,8 @@ import edu.yale.its.tp.cas.client.ServiceTicketValidator;
  */
 public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         NuxeoAuthenticationPluginLogoutExtension {
+    
+    protected static final Log log = LogFactory.getLog(Cas2Authenticator.class);
 
     protected String ticketKey = "ticket";
 
@@ -83,8 +85,6 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
     protected final static String VALIDATE_ACTION = "Valid";
 
     protected final static String PROXY_VALIDATE_ACTION = "ProxyValid";
-
-    private static final Log log = LogFactory.getLog(Cas2Authenticator.class);
 
     public List<String> getUnAuthenticatedURLPrefix() {
         // CAS login screen is not part of Nuxeo5 Web App

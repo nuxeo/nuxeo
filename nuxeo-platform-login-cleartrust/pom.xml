@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-platform-parent</artifactId>
-    <version>5.2-SNAPSHOT</version>
+    <artifactId>nuxeo-platform-login-parent</artifactId>
+    <version>5.2.1-SNAPSHOT</version>
   </parent>
   <artifactId>nuxeo-platform-login-cleartrust</artifactId>
   <name>RSA ClearTrust authentication plugin for Nuxeo EP</name>
