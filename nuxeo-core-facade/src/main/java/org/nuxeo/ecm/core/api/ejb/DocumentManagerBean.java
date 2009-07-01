@@ -497,4 +497,14 @@ public class DocumentManagerBean extends AbstractSession implements
             throw new RollbackClientException(e);
         }
     }
+
+    @Override
+    public void importDocuments(List<DocumentModel> docModels) throws ClientException {
+        try {
+            super.importDocuments(docModels);
+        } catch (Throwable t) {
+            throw new RollbackClientException("Error during document import", t);
+        }
+    }
+
 }
