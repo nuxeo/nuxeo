@@ -70,11 +70,14 @@
         <div class="popupTarget" docRef="#{row.data.ref}">
             <!-- Title -->
             <span id="title_#{row.data.ref}">
-              <nxh:outputText value="#{nxd:titleOrId(row.data)}"
-                title="#{row.data.dc.description}"
-                rendered="#{!empty row.data.dc.description}"/>
-              <nxh:outputText value="#{nxd:titleOrId(row.data)}"
-                rendered="#{empty row.data.dc.description}"/>
+              <a4j:commandLink id="titleLink" action="#{documentActions.setCurrentSelection(row.data)}"
+                reRender="documentsList, damView" >
+                <nxh:outputText value="#{nxd:titleOrId(row.data)}"
+                  title="#{row.data.dc.description}"
+                  rendered="#{!empty row.data.dc.description}"/>
+                <nxh:outputText value="#{nxd:titleOrId(row.data)}"
+                  rendered="#{empty row.data.dc.description}"/>
+              </a4j:commandLink>
             </span>
 
         </div>
