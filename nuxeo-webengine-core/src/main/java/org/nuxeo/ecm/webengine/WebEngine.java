@@ -152,8 +152,8 @@ public class WebEngine implements ResourceLocator {
         env = new HashMap<String, Object>();
         env.put("installDir", root);
         env.put("engine", "Nuxeo Web Engine");
-        env.put("version", "1.0.0.rc"); // TODO this should be put in the
-                                        // MANIFEST
+        // TODO this should be put in the MANIFEST
+        env.put("version", "1.0.0.rc");
 
         rendering = new FreemarkerEngine();
         rendering.setResourceLocator(this);
@@ -257,19 +257,17 @@ public class WebEngine implements ResourceLocator {
     }
 
     public ModuleManager getModuleManager() {
-        if (moduleMgr == null) { // avoid synchronizing if not needed
-            synchronized (this) {
-                if (moduleMgr == null) {
-                    moduleMgr = new ModuleManager(this);
-                    File deployRoot = getDeploymentDirectory();
-                    if (deployRoot.isDirectory()) {
-                        moduleMgr.loadModules(deployRoot);
-                    }
-                    // make a copy to avoid concurrent modifications with
-                    // registerModule
-                    for (File mod : registeredModules.toArray(new File[registeredModules.size()])) {
-                        moduleMgr.loadModule(mod);
-                    }
+        synchronized (this) {
+            if (moduleMgr == null) {
+                moduleMgr = new ModuleManager(this);
+                File deployRoot = getDeploymentDirectory();
+                if (deployRoot.isDirectory()) {
+                    moduleMgr.loadModules(deployRoot);
+                }
+                // make a copy to avoid concurrent modifications with
+                // registerModule
+                for (File mod : registeredModules.toArray(new File[registeredModules.size()])) {
+                    moduleMgr.loadModule(mod);
                 }
             }
         }
