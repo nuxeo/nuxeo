@@ -382,7 +382,7 @@
                 <artifactItem>
                   <groupId>org.nuxeo</groupId>
                   <artifactId>nuxeo-jboss-interceptors</artifactId>
-                  <version>4.2.3.GA.1</version>
+                  <version>4.2.3.GA.2</version>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${jboss.deploy}</outputDirectory>
