@@ -73,7 +73,8 @@ public class WebEngine implements ResourceLocator {
     static Map<Object, Object> loadMimeTypes() {
         Map<Object, Object> mimeTypes = new HashMap<Object, Object>();
         Properties p = new Properties();
-        URL url = WebEngine.class.getClassLoader().getResource("OSGI-INF/mime.properties");
+        URL url = WebEngine.class.getClassLoader().getResource(
+                "OSGI-INF/mime.properties");
         InputStream in = null;
         try {
             in = url.openStream();
@@ -101,10 +102,15 @@ public class WebEngine implements ResourceLocator {
     }
 
     protected final File root;
+
     protected ModuleManager moduleMgr;
+
     protected final Scripting scripting;
+
     protected final RenderingEngine rendering;
+
     protected final Map<String, Object> env;
+
     protected String devMode;
 
     protected final GlobalTypes globalTypes;
@@ -118,8 +124,8 @@ public class WebEngine implements ResourceLocator {
     protected final List<File> registeredModules = new ArrayList<File>();
 
     protected final WebLoader webLoader;
-    protected ReloadManager reloadMgr;
 
+    protected ReloadManager reloadMgr;
 
     public WebEngine(ResourceRegistry registry, File root) {
         this.registry = registry;
@@ -137,22 +143,26 @@ public class WebEngine implements ResourceLocator {
 
         skinPathPrefix = Framework.getProperty(SKIN_PATH_PREFIX_KEY);
         if (skinPathPrefix == null) {
-            //TODO: should put this in web.xml and not use jboss.home.dir to test if on jboss
-            skinPathPrefix = System.getProperty("jboss.home.dir") != null ? "/nuxeo/site/skin" : "/skin";
+            // TODO: should put this in web.xml and not use jboss.home.dir to
+            // test if on jboss
+            skinPathPrefix = System.getProperty("jboss.home.dir") != null ? "/nuxeo/site/skin"
+                    : "/skin";
         }
 
         env = new HashMap<String, Object>();
         env.put("installDir", root);
         env.put("engine", "Nuxeo Web Engine");
-        env.put("version", "1.0.0.rc"); //TODO this should be put in the MANIFEST
+        env.put("version", "1.0.0.rc"); // TODO this should be put in the
+                                        // MANIFEST
 
         rendering = new FreemarkerEngine();
         rendering.setResourceLocator(this);
         rendering.setSharedVariable("env", getEnvironment());
 
         // register writers - TODO make an extension point
-        // resource writers may generate coding problems so we disable it for now
-        //registry.addMessageBodyWriter(new ResourceWriter());
+        // resource writers may generate coding problems so we disable it for
+        // now
+        // registry.addMessageBodyWriter(new ResourceWriter());
         registry.addMessageBodyWriter(new TemplateWriter());
         registry.addMessageBodyWriter(new ScriptFileWriter());
         registry.addMessageBodyWriter(new BlobWriter());
@@ -222,9 +232,9 @@ public class WebEngine implements ResourceLocator {
     }
 
     /**
-     * Registers a module reference given its configuration file.
-     * The module configuration is not yet loaded.
-     * It will be loaded the first time an HTTP request will be made.
+     * Registers a module reference given its configuration file. The module
+     * configuration is not yet loaded. It will be loaded the first time an HTTP
+     * request will be made.
      */
     public void registerModule(File config) {
         registeredModules.add(config);
@@ -239,6 +249,7 @@ public class WebEngine implements ResourceLocator {
 
     /**
      * Make a copy to avoid concurrent modification exceptions
+     *
      * @return
      */
     public File[] getRegisteredModules() {
@@ -254,7 +265,8 @@ public class WebEngine implements ResourceLocator {
                     if (deployRoot.isDirectory()) {
                         moduleMgr.loadModules(deployRoot);
                     }
-                    // make a copy to avoid concurrent modifications with registerModule
+                    // make a copy to avoid concurrent modifications with
+                    // registerModule
                     for (File mod : registeredModules.toArray(new File[registeredModules.size()])) {
                         moduleMgr.loadModule(mod);
                     }
@@ -300,7 +312,7 @@ public class WebEngine implements ResourceLocator {
             binding.resolve(this);
             registry.addBinding(binding);
         } catch (Exception e) {
-            throw WebException.wrap("Failed o register binding: "+binding, e);
+            throw WebException.wrap("Failed o register binding: " + binding, e);
         }
     }
 
