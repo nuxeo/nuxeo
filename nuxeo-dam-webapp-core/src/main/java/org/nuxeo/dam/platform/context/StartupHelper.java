@@ -75,12 +75,12 @@ public class StartupHelper implements Serializable {
      * domain with title 'domainTitle' and redirect to it on viewId.
      * <p>
      * If several servers are available, let the user choose.
-     *
+     * 
      * @return the view id of the contextually computed startup page
      * @throws ClientException
      */
     @Begin(id = "#{conversationIdGenerator.nextMainConversationId}", join = true)
-    public String initDomainAndFindStartupPage() throws ClientException {
+    public String initDomainAndFindStartupPage() {
 
         setupCurrentUser();
 
@@ -89,7 +89,18 @@ public class StartupHelper implements Serializable {
         serverLocator.setRepositoryLocation(repLoc);
 
         if (documentManager == null) {
-            documentManager = getOrCreateDocumentManager();
+            try {
+                documentManager = getOrCreateDocumentManager();
+            } catch (ClientException e) {
+                // avoid pages.xml contribution to catch exceptions silently
+                // hiding the cause of the problem to developers
+                // TODO: remove the catch clause if we find a way not to make it
+                // fail silently
+                log.error(
+                        "error while opening CoreSession to init Seam context: "
+                                + e.getMessage(), e);
+                return null;
+            }
         }
 
         // TODO : REMOVE
