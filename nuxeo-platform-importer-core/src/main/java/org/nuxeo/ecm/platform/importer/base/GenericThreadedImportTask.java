@@ -38,11 +38,11 @@ import org.nuxeo.ecm.platform.importer.threading.ImporterThreadingPolicy;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
+ * 
  * Generic importer task
- *
+ * 
  * @author Thierry Delprat
- *
+ * 
  */
 public class GenericThreadedImportTask implements Runnable {
 
@@ -85,9 +85,11 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected ImporterLogger rsLogger = null;
 
-    public GenericThreadedImportTask(CoreSession session, SourceNode rootSource,
-            DocumentModel rootDoc, ImporterLogger rsLogger, int batchSize, ImporterDocumentModelFactory factory, ImporterThreadingPolicy threadPolicy)
-            throws Exception {
+    public GenericThreadedImportTask(CoreSession session,
+            SourceNode rootSource, DocumentModel rootDoc,
+            ImporterLogger rsLogger, int batchSize,
+            ImporterDocumentModelFactory factory,
+            ImporterThreadingPolicy threadPolicy) throws Exception {
         this.rsLogger = rsLogger;
 
         this.session = session;
@@ -99,18 +101,16 @@ public class GenericThreadedImportTask implements Runnable {
         this.factory = factory;
         this.threadPolicy = threadPolicy;
 
-        if (rootDoc == null || rootSource == null) {
-            throw new IllegalArgumentException(
-                    "target folder and source node must be specified");
+        // there are docuemnts without path, like versions
+        if (rootSource == null) {
+            throw new IllegalArgumentException("source node must be specified");
         }
 
     }
 
-
     protected CoreSession getCoreSession() throws Exception {
         if (this.session == null) {
-            RepositoryManager rm = Framework
-                    .getService(RepositoryManager.class);
+            RepositoryManager rm = Framework.getService(RepositoryManager.class);
             Repository repo = rm.getDefaultRepository();
             session = repo.open();
         }
@@ -138,12 +138,14 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected DocumentModel doCreateFolderishNode(DocumentModel parent,
             SourceNode node) throws Exception {
-        DocumentModel folder = getFactory().createFolderishNode(getCoreSession(),
-                parent, node);
+        DocumentModel folder = getFactory().createFolderishNode(
+                getCoreSession(), parent, node);
 
-        if (folder!=null) {
-            fslog("Created Folder " + folder.getName() + " at "
-                    + parent.getPathAsString(), true);
+        if (folder != null) {
+            String parentPath = (parent == null) ? "null"
+                    : parent.getPathAsString();
+            fslog("Created Folder " + folder.getName() + " at " + parentPath,
+                    true);
         }
         // save session if needed
         commit();
@@ -153,16 +155,18 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected DocumentModel doCreateLeafNode(DocumentModel parent,
             SourceNode node) throws Exception {
-        DocumentModel leaf = getFactory().createLeafNode(getCoreSession(), parent,
-                node);
-        if (node.getBlobHolder() != null) {
+        DocumentModel leaf = getFactory().createLeafNode(getCoreSession(),
+                parent, node);
+        if (leaf != null && node.getBlobHolder() != null) {
             long fileSize = node.getBlobHolder().getBlob().getLength();
             String fileName = node.getBlobHolder().getBlob().getFilename();
             if (fileSize > 0) {
                 long kbSize = fileSize / 1024;
-                fslog("Created doc " + leaf.getName() + " at "
-                        + parent.getPathAsString() + " with file " + fileName
-                        + " of size " + kbSize + "KB", true);
+                String parentPath = (parent == null) ? "null"
+                        : parent.getPathAsString();
+                fslog("Created doc " + leaf.getName() + " at " + parentPath
+                        + " with file " + fileName + " of size " + kbSize
+                        + "KB", true);
             }
 
             uploadedKO += fileSize;
@@ -173,17 +177,19 @@ public class GenericThreadedImportTask implements Runnable {
     }
 
     protected GenericThreadedImportTask createNewTask(DocumentModel parent,
-            SourceNode node, ImporterLogger log, Integer batchSize) throws Exception {
-        return new GenericThreadedImportTask(null, node, parent, log, batchSize, factory, threadPolicy);
+            SourceNode node, ImporterLogger log, Integer batchSize)
+            throws Exception {
+        return new GenericThreadedImportTask(null, node, parent, log,
+                batchSize, factory, threadPolicy);
     }
 
-    protected GenericThreadedImportTask createNewTaskIfNeeded(DocumentModel parent, SourceNode node) {
+    protected GenericThreadedImportTask createNewTaskIfNeeded(
+            DocumentModel parent, SourceNode node) {
         if (isRootTask) {
             isRootTask = false; // don't fork Root thread on first folder
             return null;
         }
-        int scheduledTasks = GenericMultiThreadedImporter.getExecutor()
-                .getQueue().size();
+        int scheduledTasks = GenericMultiThreadedImporter.getExecutor().getQueue().size();
         boolean createTask = getThreadPolicy().needToCreateThreadAfterNewFolderishNode(
                 parent, node, uploadedFiles, batchSize, scheduledTasks);
 
@@ -203,8 +209,8 @@ public class GenericThreadedImportTask implements Runnable {
         }
     }
 
-    protected void recursiveCreateDocumentFromNode(DocumentModel parent, SourceNode node)
-            throws Exception {
+    protected void recursiveCreateDocumentFromNode(DocumentModel parent,
+            SourceNode node) throws Exception {
 
         if (getFactory().isTargetDocumentModelFolderish(node)) {
             DocumentModel folder;
@@ -217,13 +223,8 @@ public class GenericThreadedImportTask implements Runnable {
                 folder = doCreateFolderishNode(parent, node);
             }
 
-            if (folder==null) {
-                log.warn("Exist because parent node is null");
-                return;
-            }
-
             List<SourceNode> nodes = node.getChildren();
-            if (nodes!=null && nodes.size() > 0) {
+            if (nodes != null && nodes.size() > 0) {
                 // get a new TaskImporter if available to start
                 // processing the sub-tree
                 GenericThreadedImportTask task = null;
@@ -267,10 +268,11 @@ public class GenericThreadedImportTask implements Runnable {
                 throw new IllegalStateException("Task already running");
             }
             isRunning = true;
-            if (rootDoc == null || rootSource == null) {
+            // versions have no path, target document can be null
+            if (rootSource == null) {
                 isRunning = false;
                 throw new IllegalArgumentException(
-                        "target folder and source node must be specified");
+                        "source node must be specified");
             }
         }
         LoginContext lc = null;
