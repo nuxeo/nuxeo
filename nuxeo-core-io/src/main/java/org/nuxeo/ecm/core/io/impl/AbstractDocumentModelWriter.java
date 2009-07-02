@@ -290,6 +290,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
                 String mimeType = element.elementText(ExportConstants.BLOB_MIME_TYPE);
                 String encoding = element.elementText(ExportConstants.BLOB_ENCODING);
                 String content = element.elementTextTrim(ExportConstants.BLOB_DATA);
+                String filename = element.elementTextTrim(ExportConstants.BLOB_FILENAME);
                 if ((content == null || content.length() == 0)
                         && (mimeType == null || mimeType.length() == 0)) {
                     return null; // remove blob
@@ -305,6 +306,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
                 }
                 blob.setMimeType(mimeType);
                 blob.setEncoding(encoding);
+                blob.setFilename(filename);
                 return blob;
             } else { // a complex type
                 Map<String, Object> map = new HashMap<String, Object>();

@@ -296,6 +296,8 @@ public class ExportedDocumentImpl implements ExportedDocument {
                 blob.getEncoding() != null ? blob.getEncoding() : "");
         element.addElement(ExportConstants.BLOB_MIME_TYPE).addText(
                 blob.getMimeType() != null ? blob.getMimeType() : "");
+        element.addElement(ExportConstants.BLOB_FILENAME).addText(
+                blob.getFilename() != null ? blob.getFilename() : "");
         Element data = element.addElement(ExportConstants.BLOB_DATA);
         if (inlineBlobs) {
             String content = Base64.encodeBytes(blob.getByteArray());

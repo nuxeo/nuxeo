@@ -72,6 +72,8 @@ public final class ExportConstants {
 
     public static final String BLOB_ENCODING = "encoding";
 
+    public static final String BLOB_FILENAME = "filename";
+
     // Constant utility class.
     private ExportConstants() {
     }
