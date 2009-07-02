@@ -28,7 +28,7 @@ public class TestResultsProviderService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.webapp.core", "OSGI-INF/resultsprovider-framework.xml");
+        deployContrib("org.nuxeo.ecm.webapp.base", "OSGI-INF/resultsprovider-framework.xml");
         deployContrib("org.nuxeo.ecm.webapp.core.tests",
                 "resultsprovider-components-test-setup.xml");
 

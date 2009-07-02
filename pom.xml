@@ -14,13 +14,14 @@
   <name>Nuxeo DM Parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo DM: Parent.</description>
+  <version>5.2.1-NXP-3610-SNAPSHOT</version>
 
   <properties>
     <nuxeo.common.version>1.5.1-SNAPSHOT</nuxeo.common.version>
     <nuxeo.runtime.version>1.5.1-SNAPSHOT</nuxeo.runtime.version>
     <nuxeo.core.version>1.5.1-SNAPSHOT</nuxeo.core.version>
     <nuxeo.services.version>5.2.1-SNAPSHOT</nuxeo.services.version>
-    <nuxeo.jsf.version>5.2.1-SNAPSHOT</nuxeo.jsf.version>
+    <nuxeo.jsf.version>5.2.1-NXP-3610-SNAPSHOT</nuxeo.jsf.version>
     <nuxeo.features.version>5.2.1-SNAPSHOT</nuxeo.features.version>
   </properties>
 
