@@ -1,16 +1,32 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id: TestExportedDocument.java 29029 2008-01-14 18:38:14Z ldoguin $
+ */
+
 package org.nuxeo.ecm.core.io.impl;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.DocumentWriter;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-
-import java.util.Map;
 
 public class TestExportImportBlob extends SQLRepositoryTestCase {
 
@@ -58,12 +74,9 @@ public class TestExportImportBlob extends SQLRepositoryTestCase {
     public void testBlobFilenamePresent() throws Exception {
         createDocs();
 
-        ExportedDocument exportedDoc = new ExportedDocumentImpl(docToExport, true);
+        ExportedDocument exportedDoc = new ExportedDocumentImpl(docToExport,
+                true);
         assertEquals("File", exportedDoc.getType());
-//        assertEquals(1, exportedDoc.getBlobs().size());
-
-//        Blob blob = getFirstBlob(exportedDoc.getBlobs());
-//        assertEquals("dummyBlob.txt", blob.getFilename());
 
         session.removeDocument(docToExport.getRef());
         session.save();
@@ -78,15 +91,6 @@ public class TestExportImportBlob extends SQLRepositoryTestCase {
         DocumentModel importedDocument = children.get(0);
         Blob blob = (Blob) importedDocument.getProperty("file", "content");
         assertEquals("dummyBlob.txt", blob.getFilename());
-    }
-
-    private Blob getFirstBlob(Map<String, Blob> blobs) {
-        Blob blob = null;
-        for (Blob b : blobs.values()) {
-            blob = b;
-            break;
-        }
-        return blob;
     }
 
 }
