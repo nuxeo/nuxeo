@@ -30,10 +30,15 @@ import org.nuxeo.ecm.core.api.ClientException;
 public interface SortActions {
 
     /**
-     * Declaration for [Seam]Create method.
+     * @deprecated: useless
      */
+    @Deprecated
     void init();
 
+    /**
+     * @deprecated: useless
+     */
+    @Deprecated
     void destroy();
 
     String repeatSearch() throws ClientException;

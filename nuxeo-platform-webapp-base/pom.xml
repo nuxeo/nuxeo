@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-jsf-parent</artifactId>
-    <version>5.2.1-SNAPSHOT</version>
+    <version>5.2.1-NXP-3610-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-webapp-base</artifactId>
@@ -157,6 +157,10 @@
     <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam-ui</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>jsr250-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.faces</groupId>

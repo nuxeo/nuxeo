@@ -26,35 +26,40 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.web.RequestParameter;
+import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.webapp.base.InputController;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
 @Name("sortActions")
 @Scope(ScopeType.CONVERSATION)
-public class SortActionsBean extends InputController implements SortActions, Serializable {
+public class SortActionsBean implements SortActions, Serializable {
 
     private static final long serialVersionUID = 6824092797019313562L;
     private static final Log log = LogFactory.getLog(SortActionsBean.class);
 
     @RequestParameter("sortColumn")
-    private String newSortColumn;
+    protected String newSortColumn = "dc:title";
 
     @In(required = false, create = true)
-    private transient ResultsProvidersCache resultsProvidersCache;
+    protected transient ResultsProvidersCache resultsProvidersCache;
+    
+    @RequestParameter("invalidateSeamVariables")
+    protected String invalidateSeamVariables;
 
     @RequestParameter("providerName")
-    private String providerName;
+    protected String providerName;
 
+    @Deprecated
     public void init() {
         log.debug("Initializing...");
     }
 
+    @Deprecated
     public void destroy() {
         log.debug("Destroy...");
     }
@@ -68,22 +73,29 @@ public class SortActionsBean extends InputController implements SortActions, Ser
             throw new IllegalArgumentException("newSortColumn is not set");
         }
 
+        if (invalidateSeamVariables != null) {
+            String[] variables = invalidateSeamVariables.split(",");
+            for (String variable: variables) {
+                Contexts.removeFromAllContexts(variable);
+            }
+        }
+        
         SortInfo sortInfo = resultsProvidersCache.get(providerName).getSortInfo();
 
         if (sortInfo == null) {
-            sortInfo = new SortInfo("dc:title", true);
-        }
-
-        // toggle newOrderDirection
-        String sortColumn = sortInfo.getSortColumn();
-        boolean sortAscending = sortInfo.getSortAscending();
-        if (newSortColumn.equals(sortColumn)) {
-            sortAscending = !sortAscending;
+            sortInfo = new SortInfo(newSortColumn, true);
         } else {
-            sortColumn = newSortColumn;
-            sortAscending = true;
+            // toggle newOrderDirection
+            String sortColumn = sortInfo.getSortColumn();
+            boolean sortAscending = sortInfo.getSortAscending();
+            if (newSortColumn.equals(sortColumn)) {
+                sortAscending = !sortAscending;
+            } else {
+                sortColumn = newSortColumn;
+                sortAscending = true;
+            }
+            sortInfo = new SortInfo(sortColumn, sortAscending);
         }
-        sortInfo = new SortInfo(sortColumn, sortAscending);
         resultsProvidersCache.invalidate(providerName);
         resultsProvidersCache.get(providerName, sortInfo);
 

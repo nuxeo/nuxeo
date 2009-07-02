@@ -50,7 +50,7 @@ import org.nuxeo.runtime.api.Framework;
 
 @Scope(CONVERSATION)
 @Name("queryModelActions")
-public class QueryModelActionsBean extends InputController implements
+public class QueryModelActionsBean implements
         QueryModelActions, Serializable {
 
     private static final long serialVersionUID = 7861380986688336804L;
