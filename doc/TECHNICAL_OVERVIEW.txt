@@ -54,7 +54,19 @@ jquery plugins.
 Three columns user interface
 ----------------------------
 
-TODO: add photoshop mockup reference here
+The file photoshop-mockup-3columns.png shows the expected look and feel of the
+app. The navigation works a follow:
+
+1- the left column hosts a set of search parameters (a.k.a. the filters) such as
+   document categories, author name, creation date min / max, ... Upon changing
+   the values of any of those filters the second column content is refresh using
+   a4j reRender with target: 'TODO'
+
+2- the middle column hosts the paginated list of assets matching the search
+   parameters. This column has two rendering views: columns listing and
+   thumnails panel (with 3 adjustable sizes for the thumbnails).
+
+TODO: jquery adjustable vertical column separator
 
 TODO: import form, user management screens and other global screens as modal
 popup (question: how to make them ajaxified to reduce the rendering load?)
@@ -87,16 +99,23 @@ The project layout is as follows:
 
 - nuxeo-dam-distribution
 
-  Assembly files to package the DAM application as a nuxeo.ear or a Jetty
-  application.
-  Also contains the functional test suite.
+  Assembly files to package the DAM application as a nuxeo.ear or
+  a Jetty application.  Also contains the functional test suite.
+  (Jetty distribution is not much tested - there might still have random
+  issues to be fixed, we should use it more as a developer environment
+  since much faster to start).
 
 - nuxeo-dam-api
 
   Public API (interfaces and DTO implementations) for DAM specific
-  services. Currently not used as all services are currently generic. I
-  am not sure we want to keep this package as I don't see any DAM specific
-  service yet.
+  services. Currently not much used as all services are currently
+  generic. I am not sure we want to keep this package as I don't see
+  any DAM specific service yet.
+
+  The only real use at the moment is a Constants class for DAM specific
+  schema and type names that could be used by both CoreEvent listeners and
+  seam component, hence need be deployed on both stateless and stateful
+  machine in multi machines setup.
 
 - nuxeo-dam-facade
 
