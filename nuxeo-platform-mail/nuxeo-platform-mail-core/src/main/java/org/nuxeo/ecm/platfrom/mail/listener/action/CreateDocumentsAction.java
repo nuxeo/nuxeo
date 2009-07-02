@@ -124,13 +124,10 @@ public class CreateDocumentsAction extends AbstractMailAction {
 
         private DocumentModel document;
 
-        private final CoreSession session;
-
         protected UnrestrictedCreateDocument(DocumentModel document,
                 CoreSession session) {
             super(session);
             this.document = document;
-            this.session = session;
         }
 
         @Override
