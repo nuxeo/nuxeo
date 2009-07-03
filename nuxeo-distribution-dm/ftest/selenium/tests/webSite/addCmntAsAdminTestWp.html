@@ -1,12 +1,12 @@
 <html>
 <head>
-<link rel="selenium.base" href="http://localhost:8080" />
-<title>openContactLinkTestWebsite</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>addCmntAsAdminTestWp</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">openContactLinkTestWebsite</td></tr>
+<tr><td rowspan="1" colspan="3">addCmntAsAdminTestWp</td></tr>
 </thead><tbody>
 <tr>
 	<td>open</td>
@@ -15,7 +15,7 @@
 </tr>
 <tr>
 	<td>open</td>
-	<td>/nuxeo/</td>
+	<td>http://localhost:8080/nuxeo/</td>
 	<td></td>
 </tr>
 <tr>
@@ -69,13 +69,33 @@
 	<td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>link=Contact</td>
+	<td>clickAndWait</td>
+	<td>link=testWebPage1</td>
 	<td></td>
 </tr>
 <tr>
-	<td>assertNotHtmlSource</td>
-	<td>text=@</td>
+	<td>click</td>
+	<td>link=Add a comment</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//textarea</td>
+	<td>Test comment</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@id=&quot;post_com&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Test comment</td>
 	<td></td>
 </tr>
 </tbody></table>

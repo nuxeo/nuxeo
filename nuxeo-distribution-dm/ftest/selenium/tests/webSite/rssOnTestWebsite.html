@@ -15,7 +15,7 @@
 </tr>
 <tr>
 	<td>open</td>
-	<td>http://localhost:8080/nuxeo/</td>
+	<td>/nuxeo/</td>
 	<td></td>
 </tr>
 <tr>
@@ -50,7 +50,7 @@
 </tr>
 <tr>
 	<td>open</td>
-	<td>http://localhost:8080/nuxeo/site</td>
+	<td>/nuxeo/site</td>
 	<td></td>
 </tr>
 <tr>
@@ -64,28 +64,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@value=&quot;Comments&quot;]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>assertNotHtmlSource</td>
-	<td>text=Last published comments</td>
-	<td></td>
-</tr>
-<tr>
-	<td>open</td>
-	<td>http://localhost:8080/nuxeo/site</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=sites</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=testWebSite1</td>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
 	<td></td>
 </tr>
 <tr>
@@ -95,6 +75,11 @@
 <tr>
 	<td>assertNotHtmlSource</td>
 	<td>text=Last published pages</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertNotHtmlSource</td>
+	<td>text=testWebPage1</td>
 	<td></td>
 </tr>
 

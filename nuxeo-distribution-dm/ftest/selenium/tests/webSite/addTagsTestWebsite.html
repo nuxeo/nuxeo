@@ -15,7 +15,7 @@
 </tr>
 <tr>
 	<td>open</td>
-	<td>http://localhost:8080/nuxeo/</td>
+	<td>/nuxeo/</td>
 	<td></td>
 </tr>
 <tr>
@@ -50,7 +50,7 @@
 </tr>
 <tr>
 	<td>open</td>
-	<td>http://localhost:8080/nuxeo/site</td>
+	<td>/nuxeo/site</td>
 	<td></td>
 </tr>
 <tr>
@@ -64,8 +64,18 @@
 	<td></td>
 </tr>
 <tr>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
+	<td></td>
+</tr>
+<tr>
 	<td>clickAndWait</td>
 	<td>link=testWebPage1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
 	<td></td>
 </tr>
 <tr>
@@ -76,14 +86,23 @@
 <tr>
 	<td>type</td>
 	<td>//input[@name=&quot;tagLabel&quot;]</td>
-	<td>Tag</td>
+	<td>TagTest</td>
 </tr>
 <tr>
 	<td>click</td>
 	<td>//input[@id=&quot;post_tag&quot;]</td>
 	<td></td>
 </tr>
-
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>15000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>TagTest</td>
+	<td></td>
+</tr>
 </tbody></table>
 </body>
 </html>
