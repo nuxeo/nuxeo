@@ -60,11 +60,16 @@ app. The navigation works a follow:
 1- the left column hosts a set of search parameters (a.k.a. the filters) such as
    document categories, author name, creation date min / max, ... Upon changing
    the values of any of those filters the second column content is refresh using
-   a4j reRender with target: 'TODO'
+   a4j reRender with target: 'filterResultTable' in the
+   nuxeo.war/incl/filtered_search_results.xhtml template.
 
 2- the middle column hosts the paginated list of assets matching the search
    parameters. This column has two rendering views: columns listing and
-   thumnails panel (with 3 adjustable sizes for the thumbnails).
+   thumnails panel (with 3 adjustable sizes for the thumbnails). Clicking on the
+   title or thumbnail of a result in that listing selectes the asset and trigger
+   the rendering of the right columns using a4j reRender target '???'.
+
+3- TODO: right column displaying currently selected asset's tabs
 
 TODO: jquery adjustable vertical column separator
 
