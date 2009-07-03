@@ -5,10 +5,10 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.mimetype.core
 Bundle-Localization: plugin
 Bundle-Category: core,search,web,stateless
 Export-Package: org.nuxeo.ecm.platform.mimetype,
- org.nuxeo.ecm.platform.mimetype.interfaces,
- org.nuxeo.ecm.platform.mimetype.service,
- org.nuxeo.ecm.platform.mimetype.utils
+ org.nuxeo.ecm.platform.mimetype.service
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/nxmimetype-service.xml
-Require-Bundle: org.nuxeo.ecm.platform.api,
+Require-Bundle: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.platform.api,
  org.nuxeo.ecm.platform.mimetype.api
+Bundle-ClassPath: ., jmimemagic.jar
