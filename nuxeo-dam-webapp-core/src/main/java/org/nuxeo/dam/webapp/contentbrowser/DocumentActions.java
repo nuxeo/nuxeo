@@ -11,6 +11,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.common.utils.StringUtils;
 import org.jboss.seam.annotations.remoting.WebRemote;
@@ -125,4 +126,11 @@ public class DocumentActions implements Serializable {
     public void setCurrentSelection(DocumentModel selection) {
         currentSelection = selection;
     }
+    
+    public String getPreviewURL() {
+        if (currentSelection == null) {
+            return null;
+        }
+        return PreviewHelper.getPreviewURL(currentSelection, null);
+    }    
 }
