@@ -35,6 +35,7 @@ import org.jboss.seam.Component;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Out;
@@ -62,6 +63,7 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
  */
 @Name("webActions")
 @Scope(CONVERSATION)
+@Install(precedence = Install.FRAMEWORK)
 public class WebActionsBean implements WebActionsLocal, Serializable {
 
     private static final long serialVersionUID = 1959221536502251848L;
