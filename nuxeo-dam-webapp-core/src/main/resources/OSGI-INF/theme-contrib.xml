@@ -44,9 +44,9 @@
       <template>incl/search_filter.xhtml</template>
     </view>
 
-    <view name="dam selection preview" template-engine="jsf-facelets">
+    <view name="dam filtered search results" template-engine="jsf-facelets">
       <format-type>widget</format-type>
-      <template>incl/selection_preview.xhtml
+      <template>incl/filtered_search_results.xhtml
       </template>
     </view>
 

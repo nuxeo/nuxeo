@@ -22,7 +22,7 @@
           <fragment type="generic fragment"/>
         </cell>
         <cell>
-          <!-- dam selection preview -->
+          <!-- dam filtered search results -->
           <fragment type="generic fragment"/>
         </cell>
         <cell>
@@ -92,7 +92,7 @@
       <view>dam search filters</view>
     </widget>
     <widget element="page[1]/section[2]/cell[2]/fragment[1]">
-      <view>dam selection preview</view>
+      <view>dam filtered search results</view>
     </widget>
     <widget element="page[1]/section[2]/cell[3]/fragment[1]">
       <view>dam selection view</view>
