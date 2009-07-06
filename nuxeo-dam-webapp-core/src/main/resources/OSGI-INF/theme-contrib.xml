@@ -48,12 +48,14 @@
       <format-type>widget</format-type>
       <template>incl/filtered_search_results.xhtml
       </template>
+      <resource>dam.css</resource>
     </view>
 
     <view name="dam selection view" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/selection_view.xhtml
       </template>
+      <resource>dam.css</resource>
     </view>
 
     <view name="dam includes" template-engine="jsf-facelets">
@@ -102,6 +104,9 @@
     </resource>
     <resource name="importset-creation.css">
       <path>css/importset_creation.css</path>
+    </resource>
+    <resource name="dam.css">
+      <path>css/dam.css</path>
     </resource>
 
     <resource name="importSetForm.js">

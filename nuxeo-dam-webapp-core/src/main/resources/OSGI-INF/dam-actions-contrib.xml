@@ -1,0 +1,18 @@
+<component name="org.nuxeo.ecm.platform.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <!-- TABS -->
+    <action id="TAB_ASSET_VIEW" link="/incl/tabs/asset_view.xhtml" order="10"
+      label="action.asset.view" icon="/icons/file.gif">
+      <category>VIEW_ASSET_ACTION_LIST</category>
+    </action>
+    <action id="TAB_ASSET_PREVIEW" link="/incl/tabs/asset_preview.xhtml" order="20"
+      label="action.asset.preview" icon="/icons/file.gif">
+      <category>VIEW_ASSET_ACTION_LIST</category>
+    </action>
+
+  </extension>
+
+</component>

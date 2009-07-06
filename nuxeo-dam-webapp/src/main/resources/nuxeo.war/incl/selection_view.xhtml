@@ -1,6 +1,7 @@
 <div xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
@@ -8,8 +9,13 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
 <div>Selection view</div>
-<ui:include src="/incl/tabs/asset_view.xhtml" />
-<br/>
-<ui:include src="/incl/tabs/asset_preview.xhtml" />
-
+<a4j:region>
+  <a4j:outputPanel id="selectionView">
+    <f:subview rendered="#{documentActions.currentSelection != null}">
+      <ui:include src="/incl/asset_action_tabs.xhtml"/>
+      <br/>
+      <ui:include src="#{documentActions.currentSelectionLink}" />
+    </f:subview>
+  </a4j:outputPanel>
+</a4j:region>
 </div>

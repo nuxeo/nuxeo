@@ -11,6 +11,7 @@
   <ui:include src="/pagination/pageNavigationControls.xhtml" />
 
   <a4j:form id="#{documents.name}">
+    <a4j:region>
     <a4j:outputPanel id="documentsList">
     <h:outputText value="#{messages['label.content.empty.search']}"
                   rendered="#{documents.rowCount == 0}" />
@@ -47,7 +48,7 @@
       </nxu:column>
 
       <!--  Title -->
-      <nxu:column>
+      <nxu:column styleClass="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
         <f:facet name="header">
           <h:panelGroup>
           <a4j:commandLink id="title" action="#{sortActions.repeatSearch}"
@@ -71,7 +72,7 @@
             <!-- Title -->
             <span id="title_#{row.data.ref}">
               <a4j:commandLink id="titleLink" action="#{documentActions.setCurrentSelection(row.data)}"
-                reRender="documentsList, damView" >
+                reRender="documentsList, selectionView" >
                 <nxh:outputText value="#{nxd:titleOrId(row.data)}"
                   title="#{row.data.dc.description}"
                   rendered="#{!empty row.data.dc.description}"/>
@@ -148,6 +149,7 @@
 
     </nxu:dataTable>
     </a4j:outputPanel>
+    </a4j:region>
   </a4j:form>
 
 
