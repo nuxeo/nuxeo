@@ -1,9 +1,7 @@
 <?xml version="1.0"?>
 
 <component name="org.nuxeo.ecm.core.api.blohodlers.adapters">
-  <documentation>
-    Adapters BlobHolders
-  </documentation>
+  <documentation>Adapters BlobHolders</documentation>
 
   <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
     point="adapters">

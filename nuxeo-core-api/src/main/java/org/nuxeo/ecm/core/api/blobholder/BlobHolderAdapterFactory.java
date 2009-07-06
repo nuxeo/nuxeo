@@ -23,22 +23,22 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * {@link DocumentModel} adapter factory.
- * Delegates calls to the {@link BlobHolderAdapterService} that management the pluggability for factories.
+ * {@link DocumentModel} adapter factory. Delegates calls to the
+ * {@link BlobHolderAdapterService} that management the pluggability for
+ * factories.
  *
  * @author tiry
  */
 public class BlobHolderAdapterFactory implements DocumentAdapterFactory {
 
-   protected static BlobHolderAdapterService bhas;
+    protected static BlobHolderAdapterService bhas;
 
-
-   protected BlobHolderAdapterService getService() {
-       if (bhas==null) {
-           bhas = Framework.getLocalService(BlobHolderAdapterService.class);
-       }
-       return bhas;
-   }
+    protected BlobHolderAdapterService getService() {
+        if (bhas == null) {
+            bhas = Framework.getLocalService(BlobHolderAdapterService.class);
+        }
+        return bhas;
+    }
 
     public Object getAdapter(DocumentModel doc, Class itf) {
         return getService().getBlobHolderAdapter(doc);

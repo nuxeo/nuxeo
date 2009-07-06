@@ -53,7 +53,8 @@ public interface BlobHolder {
     String getHash() throws ClientException;
 
     /**
-     * Returns a list of blobs, if holder implementation supports multiple blobs.
+     * Returns a list of blobs, if holder implementation supports multiple
+     * blobs.
      */
     List<Blob> getBlobs() throws ClientException;
 

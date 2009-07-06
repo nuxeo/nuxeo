@@ -68,7 +68,7 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
         if (blob != null && xPathFilename != null) {
             String filename = blob.getFilename();
             if (filename == null || "".equals(filename)) {
-                //  compatibility when filename was not stored on blob
+                // compatibility when filename was not stored on blob
                 blob.setFilename((String) doc.getPropertyValue(xPathFilename));
             }
         }

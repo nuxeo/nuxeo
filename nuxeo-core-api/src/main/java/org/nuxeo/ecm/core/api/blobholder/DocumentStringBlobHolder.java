@@ -24,35 +24,36 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
- * {@link BlobHolder} implemention based on a {@link DocumentModel} and a Xpath pointing to a String fields.
- * (Typical use case is the Note DocType).
+ * {@link BlobHolder} implemention based on a {@link DocumentModel} and a Xpath
+ * pointing to a String fields. (Typical use case is the Note DocType).
  *
  * @author tiry
  */
 public class DocumentStringBlobHolder extends DocumentBlobHolder {
 
-    protected String mt=null;
+    protected String mt = null;
 
     public DocumentStringBlobHolder(DocumentModel doc, String path) {
         super(doc, path);
     }
 
-    public DocumentStringBlobHolder(DocumentModel doc, String path, String mime_type) {
+    public DocumentStringBlobHolder(DocumentModel doc, String path,
+            String mime_type) {
         super(doc, path);
-        this.mt=mime_type;
+        this.mt = mime_type;
     }
 
     @Override
     public Blob getBlob() throws ClientException {
-        Blob blob =  new StringBlob((String) doc.getProperty(xPath).getValue(), mt);
+        Blob blob = new StringBlob((String) doc.getProperty(xPath).getValue(),
+                mt);
         String ext = ".txt";
         if ("text/html".equals(mt)) {
             ext = ".html";
-        }
-        else if ("text/xml".equals(mt)) {
+        } else if ("text/xml".equals(mt)) {
             ext = ".xml";
         }
-        blob.setFilename(doc.getTitle()+ ext);
+        blob.setFilename(doc.getTitle() + ext);
         return blob;
     }
 

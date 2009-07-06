@@ -38,10 +38,8 @@ public class BlobHolderFactoryDescriptor implements Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-
     @XNode("@name")
     protected String name;
-
 
     @XNode("@docType")
     protected String docType;
@@ -57,11 +55,9 @@ public class BlobHolderFactoryDescriptor implements Serializable {
         return docType;
     }
 
-    public BlobHolderFactory getFactory() throws InstantiationException, IllegalAccessException {
+    public BlobHolderFactory getFactory() throws InstantiationException,
+            IllegalAccessException {
         return (BlobHolderFactory) adapterClass.newInstance();
     }
-
-
-
 
 }

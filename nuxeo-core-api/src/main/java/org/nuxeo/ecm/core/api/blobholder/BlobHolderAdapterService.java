@@ -21,8 +21,8 @@ package org.nuxeo.ecm.core.api.blobholder;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- *
- * Service interface for creating the right {@link BlobHolder} adapter depending on the {@link DocumentModel} type
+ * Service interface for creating the right {@link BlobHolder} adapter depending
+ * on the {@link DocumentModel} type
  *
  * @author tiry
  *

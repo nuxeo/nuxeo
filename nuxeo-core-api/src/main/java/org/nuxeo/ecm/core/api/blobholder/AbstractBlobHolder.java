@@ -39,7 +39,7 @@ public abstract class AbstractBlobHolder implements BlobHolder {
         List<Blob> blobs = null;
 
         Blob blob = getBlob();
-        if (blob!=null) {
+        if (blob != null) {
             blobs = new ArrayList<Blob>();
             blobs.add(blob);
         }
@@ -53,7 +53,7 @@ public abstract class AbstractBlobHolder implements BlobHolder {
         String path = getBasePath();
 
         Blob blob = getBlob();
-        if (blob!=null) {
+        if (blob != null) {
             path = path + "/" + blob.getFilename();
         }
 
@@ -63,9 +63,9 @@ public abstract class AbstractBlobHolder implements BlobHolder {
     public String getHash() throws ClientException {
 
         Blob blob = getBlob();
-        if (blob!=null) {
+        if (blob != null) {
             String h = blob.getDigest();
-            if (h!=null) {
+            if (h != null) {
                 return h;
             } else {
                 return Integer.toString(blob.hashCode());
@@ -74,6 +74,6 @@ public abstract class AbstractBlobHolder implements BlobHolder {
         return "NullBlob";
     }
 
-    public abstract Calendar getModificationDate() throws ClientException ;
+    public abstract Calendar getModificationDate() throws ClientException;
 
 }

@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 public class SimpleBlobHolder extends AbstractBlobHolder {
 
     protected List<Blob> blobs;
+
     protected Calendar creationDate;
 
     public SimpleBlobHolder() {
