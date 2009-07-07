@@ -8,7 +8,7 @@ fi
 
 # Default values
 HIDE_FF=${HIDE_FF:-}
-SUITES=${SUITES:-"suite1 suite2"}
+SUITES=${SUITES:-"suite1 suite2 suite-webengine"}
 URL=${URL:-http://localhost:8080/nuxeo/}
 
 # Download selenium-server.jar
