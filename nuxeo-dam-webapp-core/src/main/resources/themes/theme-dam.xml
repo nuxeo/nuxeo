@@ -53,13 +53,13 @@
       <width>100%</width>
     </layout>
     <layout element="page[1]/section[2]/cell[1]">
-      <width>33%</width>
+      <width>20%</width>
     </layout>
     <layout element="page[1]/section[2]/cell[2]">
-      <width>33%</width>
+      <width>40%</width>
     </layout>
     <layout element="page[1]/section[2]/cell[3]">
-      <width>33%</width>
+      <width>40%</width>
     </layout>
     <widget element="">
       <view>theme view</view>

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -36,6 +37,9 @@ public class DocumentActions implements Serializable {
     @In(required = false, create = true)
     protected transient DocumentsListsManager documentsListsManager;
 
+    @In(create = true, required=false)
+    protected transient CoreSession documentManager;
+
     @In(create = true)
     protected transient WebActions webActions;
 
@@ -45,9 +49,12 @@ public class DocumentActions implements Serializable {
     protected DocumentModel currentSelection;
 
     /**
-     * Current selection link
+     * Current selection link - defines the fragment to be shown under the tabs
+     * list
      */
     protected String currentSelectionLink;
+
+    protected String displayMode = "view";
 
     @WebRemote
     public String processSelectRow(String docRef, String providerName,
@@ -126,8 +133,9 @@ public class DocumentActions implements Serializable {
     }
 
     public void setCurrentSelection(DocumentModel selection) {
-        // Reset the tabs list first.
+        // Reset the tabs list and the display mode
         webActions.resetTabList();
+        displayMode = "view";
 
         currentSelection = selection;
 
@@ -152,10 +160,32 @@ public class DocumentActions implements Serializable {
         currentSelectionLink = currentTabAction.getLink();
     }
 
+    public String getDisplayMode() {
+        return displayMode;
+    }
+
+    public void toggleDisplayMode() {
+        if ("view".equals(displayMode)) {
+            displayMode = "edit";
+        } else {
+            displayMode = "view";
+        }
+    }
+
     public String getPreviewURL() {
         if (currentSelection == null) {
             return null;
         }
         return PreviewHelper.getPreviewURL(currentSelection, null);
+    }
+
+    public void updateCurrentSelection() throws ClientException {
+        if (currentSelection != null) {
+            documentManager.saveDocument(currentSelection);
+            documentManager.save();
+
+            //Switch to view mode
+            displayMode = "view";
+        }
     }
 }

@@ -2,11 +2,46 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <h:outputText value="#{documentActions.currentSelection.title}" />
+  <h:form id="assetPreview">
+    <nxu:methodResult name="currentSelection" value="#{documentActions.getCurrentSelection()}"> 
+      <nxu:methodResult name="displayMode" value="#{documentActions.getDisplayMode()}"> 
+        <nxl:layout name="heading" mode="#{displayMode}" value="#{currentSelection}" />
+        <nxl:layout name="damc" mode="#{displayMode}" value="#{currentSelection}" />
+        <nxl:layout name="dublincore" mode="#{displayMode}" value="#{currentSelection}" />
+        
+        <h:panelGrid class="dataOutput" columnClasses="labelColumn, fieldColumn" columns="2">
+          <h:outputText value="#{messages['label.content.size']}" />
+          <h:panelGroup>
+            <h:outputText value="#{currentSelection.picture.views[1].content.length}" rendered="#{currentSelection.type eq 'Picture' and !empty currentSelection.picture.views}" />
+            <h:outputText value="#{currentSelection.file.content.length}" rendered="#{currentSelection.type eq 'File'}" />
+          </h:panelGroup>
+        </h:panelGrid>
+        <h:panelGrid class="dataOutput" columnClasses="labelColumn, fieldColumn" columns="2" rendered="#{currentSelection.type eq 'Picture' and !empty currentSelection.picture.views}">
+          <h:outputText value="#{messages['label.content.height']}" />
+          <h:outputText value="#{currentSelection.picture.views[1].height}" />
+          
+          <h:outputText value="#{messages['label.content.width']}" />
+          <h:outputText value="#{currentSelection.picture.views[1].width}" />
+        </h:panelGrid>
+        
+        <f:subview rendered="#{displayMode == 'edit'}">
+          <a4j:commandButton value="#{messages['command.save']}" styleClass="button"
+            action="#{documentActions.updateCurrentSelection}" reRender="assetPreview" />
+        </f:subview>
+        <br/>
+        <a4j:commandLink action="#{documentActions.toggleDisplayMode}" reRender="assetPreview" >
+          <h:outputText value="#{messages['command.view']}" rendered="#{displayMode == 'edit'}" />
+          <h:outputText value="#{messages['command.edit']}" rendered="#{displayMode == 'view'}" />
+        </a4j:commandLink>
+        
+      </nxu:methodResult>
+    </nxu:methodResult>
+  </h:form>
 
 </div>

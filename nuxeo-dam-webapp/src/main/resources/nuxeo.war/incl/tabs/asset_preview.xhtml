@@ -7,11 +7,10 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <h:form id="document_preview">
-
-    <iframe src="#{documentActions.previewURL}" frameborder="1" height="600px" width="100%" scrolling="auto" id="preview-frame" onload="loadGwtModule();">
+  <h:form id="assetPreview">
+    <h:outputText value="#{documentActions.currentSelection.title}" /><br/>
+    <iframe src="#{documentActions.previewURL}" frameborder="1" height="450px" width="450px" scrolling="auto" id="preview-frame">
     </iframe>
-
   </h:form>
   
 </div>
