@@ -80,6 +80,15 @@
           -->
           <SearchIndex class="org.nuxeo.ecm.core.repository.jcr.jackrabbit.SearchIndex">
             <param name="path" value="${wsp.home}/index" />
+            <param name="indexingConfiguration" value="${wsp.home}/indexing_configuration.xml"/>
+            <param name="textFilterClasses" value="org.apache.jackrabbit.extractor.MsWordTextExtractor,
+                                org.apache.jackrabbit.extractor.MsExcelTextExtractor,
+                                org.apache.jackrabbit.extractor.MsPowerPointTextExtractor,
+                                org.apache.jackrabbit.extractor.PdfTextExtractor,
+                                org.apache.jackrabbit.extractor.OpenOfficeTextExtractor,
+                                org.apache.jackrabbit.extractor.RTFTextExtractor,
+                                org.apache.jackrabbit.extractor.XMLTextExtractor"/>
+            <param name="extractorPoolSize " value="2"/>
           </SearchIndex>
         </Workspace>
 
@@ -93,15 +102,6 @@
           -->
           <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
             <param name="path" value="${rep.home}/version" />
-            <param name="indexingConfiguration" value="${wsp.home}/indexing_configuration.xml"/>
-            <param name="textFilterClasses" value="org.apache.jackrabbit.extractor.MsWordTextExtractor,
-                                org.apache.jackrabbit.extractor.MsExcelTextExtractor,
-                                org.apache.jackrabbit.extractor.MsPowerPointTextExtractor,
-                                org.apache.jackrabbit.extractor.PdfTextExtractor,
-                                org.apache.jackrabbit.extractor.OpenOfficeTextExtractor,
-                                org.apache.jackrabbit.extractor.RTFTextExtractor,
-                                org.apache.jackrabbit.extractor.XMLTextExtractor"/>
-            <param name="extractorPoolSize " value="2"/>
           </FileSystem>
 
           <!--
