@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webengine.model;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
@@ -26,6 +27,8 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
@@ -34,10 +37,14 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
  *
  */
 public class Template {
+    private static Log log = LogFactory.getLog(Template.class);
 
     protected final Resource resource;
+
     protected Map<String, Object> args;
+
     protected ScriptFile script;
+
     protected WebContext ctx;
 
     protected Template(WebContext ctx, Resource resource, ScriptFile script) {
@@ -67,7 +74,6 @@ public class Template {
         this(resource.getContext(), resource, script);
     }
 
-
     public Template arg(String key, Object value) {
         if (args == null) {
             args = new HashMap<String, Object>();
@@ -76,19 +82,18 @@ public class Template {
         return this;
     }
 
-    public Template args(Map<String,Object> args) {
+    public Template args(Map<String, Object> args) {
         this.args = args;
         return this;
     }
 
-    public Map<String,Object> args() {
+    public Map<String, Object> args() {
         return args;
     }
 
     public Resource resource() {
         return resource;
     }
-
 
     protected void resolve(String fileName) {
         if (resource != null) {
@@ -102,14 +107,17 @@ public class Template {
         return script;
     }
 
-
     public void render(OutputStream out) {
         Writer w = new OutputStreamWriter(out);
         try {
             ctx.render(script(), args, w);
-            w.flush();
         } catch (Exception e) {
             throw WebException.wrap("Failed to write response", e);
+        }
+        try {
+            w.flush();
+        } catch (IOException io) {
+            log.error("Error while flushing writer.", io);
         }
     }
 
