@@ -8,7 +8,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <h:form id="assetPreview">
+  <h:form id="assetView">
     <nxu:methodResult name="currentSelection" value="#{documentActions.getCurrentSelection()}"> 
       <nxu:methodResult name="displayMode" value="#{documentActions.getDisplayMode()}"> 
         <nxl:layout name="heading" mode="#{displayMode}" value="#{currentSelection}" />
@@ -30,12 +30,12 @@
           <h:outputText value="#{currentSelection.picture.views[1].width}" />
         </h:panelGrid>
         
-        <f:subview rendered="#{displayMode == 'edit'}">
-          <a4j:commandButton value="#{messages['command.save']}" styleClass="button"
-            action="#{documentActions.updateCurrentSelection}" reRender="assetPreview" />
+        <f:subview id="editBtns" rendered="#{displayMode == 'edit'}">
+          <a4j:commandButton value="#{messages['command.save']}" styleClass="button" id="saveBtn"
+            action="#{documentActions.updateCurrentSelection}" reRender="assetView, documentsList" />
         </f:subview>
         <br/>
-        <a4j:commandLink action="#{documentActions.toggleDisplayMode}" reRender="assetPreview" >
+        <a4j:commandLink action="#{documentActions.toggleDisplayMode}" reRender="assetView" >
           <h:outputText value="#{messages['command.view']}" rendered="#{displayMode == 'edit'}" />
           <h:outputText value="#{messages['command.edit']}" rendered="#{displayMode == 'view'}" />
         </a4j:commandLink>
