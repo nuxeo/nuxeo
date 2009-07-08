@@ -29,8 +29,14 @@ cd $HERE
 # Update path in user-extensions.js
 sed "s,\(storedVars\['testfolderpath'\]\ \=\).*$,\1\ \"$HERE\";,g" < user-extensions.js.sample > user-extensions.js
 
-# Update url in profile
+# Update firefox profile setting target url permission
 sed "s,\(capability.principal.codebase.p0.id...\).*$,\1\"$URL\");,g" < ffprofile/prefs.js.sample > ffprofile/prefs.js
+
+if [ ! -z $HIDE_FF ]; then
+    # Speed up firefox when hidden
+    echo '// do not load images' >> ffprofile/prefs.js
+    echo 'user_pref("permissions.default.image", 2);' >> ffprofile/prefs.js
+fi
 
 exit_code=0
 # Launch suites
