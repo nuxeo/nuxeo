@@ -1577,11 +1577,11 @@
       <distributionManagement>
         <repository>
           <id>releases</id>
-          <url>scpexe://maven.in.nuxeo.com/home/nexus/repositories/releases</url>
+          <url>http://maven.in.nuxeo.com/releases</url>
         </repository>
         <snapshotRepository>
           <id>snapshots</id>
-          <url>scpexe://maven.in.nuxeo.com/home/nexus/repositories/snapshots</url>
+          <url>http://maven.in.nuxeo.com/snapshots</url>
         </snapshotRepository>
       </distributionManagement>
     </profile>
