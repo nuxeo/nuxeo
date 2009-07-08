@@ -70,17 +70,17 @@ public class TagPersistenceProvider {
         if (null == properties) {
             properties = new Properties();
             properties.put("hibernate.show_sql",
-                    Framework.getProperty("hibernate.show_sql"));
+                    Framework.getProperty("org.nuxeo.ecm.platform.tagservice.hibernate.show_sql"));
             properties.put("hibernate.connection.driver_class",
-                    Framework.getProperty("hibernate.connection.driver_class"));
+                    Framework.getProperty("org.nuxeo.ecm.platform.tagservice.hibernate.connection.driver_class"));
             properties.put("hibernate.connection.username",
-                    Framework.getProperty("hibernate.connection.username"));
+                    Framework.getProperty("org.nuxeo.ecm.platform.tagservice.hibernate.connection.username"));
             properties.put("hibernate.connection.password",
-                    Framework.getProperty("hibernate.connection.password"));
+                    Framework.getProperty("org.nuxeo.ecm.platform.tagservice.hibernate.connection.password"));
             properties.put("hibernate.connection.url",
-                    Framework.getProperty("hibernate.connection.url"));
+                    Framework.getProperty("org.nuxeo.ecm.platform.tagservice.hibernate.connection.url"));
             properties.put("hibernate.dialect",
-                    Framework.getProperty("hibernate.dialect"));
+                    Framework.getProperty("org.nuxeo.ecm.platform.tagservice.hibernate.dialect"));
         }
         return properties;
     }
