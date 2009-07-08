@@ -1,12 +1,11 @@
 package org.nuxeo.ecm.platform.filemanager.core.listener.tests;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -14,7 +13,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.TypeService;
-import org.nuxeo.ecm.platform.filemanager.core.listener.BlobExtractorCache;
+import org.nuxeo.ecm.platform.filemanager.core.listener.BlobExtractor;
 import org.nuxeo.runtime.api.Framework;
 
 public class TestBlobExtractor extends RepositoryOSGITestCase {
@@ -30,24 +29,34 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
 
     public void testCaching() throws Exception {
 
-        BlobExtractorCache bec = new BlobExtractorCache();
+        BlobExtractor bec = new BlobExtractor();
 
-        List<String> paths = bec.getBlobFieldPathForDocumentType("NoBlobDocument");
+        Map<String, List<String>> paths = bec.getBlobFieldPathForDocumentType("NoBlobDocument");
         assertEquals(0, paths.size());
 
         paths = bec.getBlobFieldPathForDocumentType("SimpleBlobDocument");
         assertEquals(1, paths.size());
-        assertEquals("/sb:blob", paths.get(0));
+        assertEquals("simpleblob", paths.keySet().toArray()[0]);
+        assertEquals(1, paths.get("simpleblob").size());
+        assertEquals("/blob", paths.get("simpleblob").get(0));
 
+        paths = bec.getBlobFieldPathForDocumentType("WithoutPrefixDocument");
+        assertEquals(1, paths.size());
+        assertEquals("wihtoutpref", paths.keySet().toArray()[0]);
+        assertEquals(1, paths.get("wihtoutpref").size());
+        assertEquals("/blob", paths.get("wihtoutpref").get(0));
+        
         paths = bec.getBlobFieldPathForDocumentType("BlobInListDocument");
         assertEquals(1, paths.size());
-        assertEquals("bil:files/*/file", paths.get(0));
+        assertEquals("blobinlist", paths.keySet().toArray()[0]);
+        assertEquals(1, paths.get("blobinlist").size());
+        assertEquals("/files/*/file", paths.get("blobinlist").get(0));
 
     }
 
     public void testGetBlobsFromDocumentModelNoBlob() throws Exception {
         deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener.test");
-        BlobExtractorCache bec = new BlobExtractorCache();
+        BlobExtractor bec = new BlobExtractor();
 
         DocumentModel noBlob = getCoreSession().createDocumentModel("/",
                 "testNoBlob", "NoBlobDocument");
@@ -64,7 +73,7 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
 
     public void testGetBlobsFromDocumentModelSimpleBlob() throws Exception {
         deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener.test");
-        BlobExtractorCache bec = new BlobExtractorCache();
+        BlobExtractor bec = new BlobExtractor();
 
         DocumentModel simpleBlob = getCoreSession().createDocumentModel("/",
                 "testSimpleBlob", "SimpleBlobDocument");
@@ -84,10 +93,32 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
         assertEquals("test.pdf", blob.getFilename());
     }
 
+    public void testGetBlobsFromDocumentModelSimpleBlobWithoutPrefix() throws Exception {
+        deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener.test");
+        BlobExtractor bec = new BlobExtractor();
+
+        DocumentModel simpleBlob = getCoreSession().createDocumentModel("/",
+                "testSimpleBlob", "WithoutPrefixDocument");
+        simpleBlob.setProperty("dublincore", "title", "WithoutPrefixDocument");
+        simpleBlob.setProperty("wihtoutpref", "blob", createTestBlob(false,
+                "test.pdf"));
+
+        simpleBlob = getCoreSession().createDocument(simpleBlob);
+        getCoreSession().saveDocument(simpleBlob);
+        getCoreSession().save();
+
+        // END INITIALIZATION
+
+        List<Property> blobs = bec.getBlobsProperties(simpleBlob);
+        assertEquals(1, blobs.size());
+        Blob blob = (Blob) blobs.get(0).getValue();
+        assertEquals("test.pdf", blob.getFilename());
+    }
+
     @SuppressWarnings("unchecked")
     public void testGetBlobsFromBlobInListDocument() throws Exception {
         deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener.test");
-        BlobExtractorCache bec = new BlobExtractorCache();
+        BlobExtractor bec = new BlobExtractor();
 
         DocumentModel blobInListEmpty = getCoreSession().createDocumentModel(
                 "/", "testBlobInListDocumentEmpty", "BlobInListDocument");
