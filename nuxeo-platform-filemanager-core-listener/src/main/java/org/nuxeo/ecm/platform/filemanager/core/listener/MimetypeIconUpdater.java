@@ -15,8 +15,9 @@ package org.nuxeo.ecm.platform.filemanager.core.listener;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -47,14 +48,16 @@ import org.nuxeo.runtime.api.Framework;
  * @author ogrisel
  */
 public class MimetypeIconUpdater implements EventListener {
+    
+    protected Log log = LogFactory.getLog(MimetypeIconUpdater.class);
 
-    public static final String ICON_FIELD = "/common:icon";
+    public static final String ICON_FIELD = "common:icon";
 
-    public static final String MAIN_BLOB_FIELD = "/file:content";
+    public static final String MAIN_BLOB_FIELD = "file:content";
 
     @Deprecated
     // the length of the main blob is now stored inside the blob itself
-    private static final String SIZE_FIELD = "common:/size";
+    private static final String SIZE_FIELD = "common:size";
 
     @Deprecated
     // the filename should now be stored inside the main blob
@@ -63,11 +66,23 @@ public class MimetypeIconUpdater implements EventListener {
     protected static final String OCTET_STREAM_MT = "application/octet-stream";
 
     public final BlobExtractor blobExtractor = new BlobExtractor();
+    
+    MimetypeRegistry mimetypeService = null;
+    
+    public MimetypeRegistry getMimetypeRegistry() throws Exception {
+        if (mimetypeService == null) {
+            mimetypeService = Framework.getService(MimetypeRegistry.class);
+        }
+        
+        return mimetypeService;
+    }
+
 
     public void handleEvent(Event event) throws ClientException {
 
         EventContext ctx = event.getContext();
         if (ctx instanceof DocumentEventContext) {
+            
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
             DocumentModel doc = docCtx.getSourceDocument();
 
@@ -78,12 +93,11 @@ public class MimetypeIconUpdater implements EventListener {
                 // ensure the document main icon is not null
                 setDefaultIcon(doc);
 
-                MimetypeRegistry mimetypeService = Framework.getService(MimetypeRegistry.class);
 
                 // update mimetypes of blobs in the document
                 for (Property prop : blobExtractor.getBlobsProperties(doc)) {
                     if (prop.isDirty()) {
-                      updateBlobProperty(doc, mimetypeService, prop);
+                      updateBlobProperty(doc, getMimetypeRegistry(), prop);
                     }
                 }
             }
@@ -101,7 +115,7 @@ public class MimetypeIconUpdater implements EventListener {
      * @deprecated now we use {@link BlobExtractor} that cache path fields.
      */
     @Deprecated
-    public static void recursivelyUpdateBlobs(DocumentModel doc,
+    public void recursivelyUpdateBlobs(DocumentModel doc,
             MimetypeRegistry mimetypeService, Iterator<Property> dirtyChildren)
             throws Exception {
         while (dirtyChildren.hasNext()) {
@@ -119,47 +133,49 @@ public class MimetypeIconUpdater implements EventListener {
      * Update the mimetype of a blob allong with the icon and size fields of the
      * document if the blob is the main blob of the document.
      */
-    public static void updateBlobProperty(DocumentModel doc,
+    public void updateBlobProperty(DocumentModel doc,
             MimetypeRegistry mimetypeService, Property dirtyProperty)
             throws Exception {
         String fieldPath = dirtyProperty.getPath();
         //cas shema without prefix : we need to add shema name as prefix
         if(!fieldPath.contains(":"))
-            fieldPath = "/"+dirtyProperty.getSchema().getName()+":"+fieldPath.substring(1);
+            fieldPath = dirtyProperty.getSchema().getName()+":"+fieldPath.substring(1);
 
 
         Blob blob = dirtyProperty.getValue(Blob.class);
-        if (blob != null && (blob.getEncoding() == null || blob.getEncoding().equals(OCTET_STREAM_MT))) {
+        if (blob != null && (blob.getMimeType() == null || blob.getMimeType().equals(OCTET_STREAM_MT))) {
             // update the mimetype (if not set) using the the mimetype registry
             // service
             blob = mimetypeService.updateMimetype(blob);
             doc.setPropertyValue(fieldPath, (Serializable) blob);
 
-            if (MAIN_BLOB_FIELD.equals(fieldPath)) {
-                // update the icon field of the document
-                if (blob != null) {
-                    MimetypeEntry mimetypeEntry = mimetypeService
-                            .getMimetypeEntryByMimeType(blob.getMimeType());
-                    updateIconField(mimetypeEntry, doc);
-                } else {
-                    // reset to document type icon
-                    updateIconField(null, doc);
-                }
-
-                // BBB: update the deprecated common:size field to preserver
-                // backward compatibility (we should only use
-                // file:content/length instead)
-                doc.setPropertyValue(SIZE_FIELD, blob != null ? blob.getLength()
-                        : 0);
-            }
         }
+        
+        if (MAIN_BLOB_FIELD.equals(fieldPath) && doc.getProperty(MAIN_BLOB_FIELD).isDirty()) {
+            // update the icon field of the document
+            if (blob != null) {
+                MimetypeEntry mimetypeEntry = mimetypeService
+                        .getMimetypeEntryByMimeType(blob.getMimeType());
+                updateIconField(mimetypeEntry, doc);
+            } else {
+                // reset to document type icon
+                updateIconField(null, doc);
+            }
+
+            // BBB: update the deprecated common:size field to preserver
+            // backward compatibility (we should only use
+            // file:content/length instead)
+            doc.setPropertyValue(SIZE_FIELD, blob != null ? blob.getLength()
+                    : 0);
+        }
+
     }
 
     /**
      * Backward compatibility for external filename field: if edited, it might
      * affect the main blob mimetype
      */
-    public static void updateFilename(DocumentModel doc)
+    public void updateFilename(DocumentModel doc)
             throws PropertyException {
 
         if (doc.hasSchema(MAIN_BLOB_FIELD.split(":")[0])) {
@@ -190,7 +206,7 @@ public class MimetypeIconUpdater implements EventListener {
     /**
      * If the icon field is empty, initialize it to the document type icon
      */
-    public static void setDefaultIcon(DocumentModel doc) throws Exception {
+    public void setDefaultIcon(DocumentModel doc) throws Exception {
         if (doc.getProperty(ICON_FIELD).getValue(String.class) == null) {
             updateIconField(null, doc);
         }
@@ -200,7 +216,7 @@ public class MimetypeIconUpdater implements EventListener {
      * Compute the main icon of a Nuxeo document based on the mimetype of the
      * main attached blob with of fallback on the document type generic icon.
      */
-    public static void updateIconField(MimetypeEntry mimetypeEntry,
+    public void updateIconField(MimetypeEntry mimetypeEntry,
             DocumentModel doc) throws Exception {
         String iconPath = null;
         if (mimetypeEntry != null && mimetypeEntry.getIconPath() != null) {

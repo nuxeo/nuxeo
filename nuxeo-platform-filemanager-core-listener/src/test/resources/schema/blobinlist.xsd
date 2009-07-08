@@ -20,7 +20,7 @@
         maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
-
+  
   <xs:complexType name="file">
     <xs:sequence>
       <!-- old definition -->

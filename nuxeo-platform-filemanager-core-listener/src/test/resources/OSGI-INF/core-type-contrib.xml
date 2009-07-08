@@ -5,6 +5,7 @@
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="noblob" prefix="nb" src="schema/noblob.xsd" />
     <schema name="simpleblob" prefix="sb" src="schema/simpleblob.xsd" />
+    <schema name="wihtoutpref" src="schema/simpleblob.xsd" />
     <schema name="blobinlist" prefix="bil" src="schema/blobinlist.xsd" />
   </extension>
 
@@ -15,6 +16,10 @@
 
     <doctype name="SimpleBlobDocument" extends="Document">
       <schema name="simpleblob" />
+    </doctype>
+
+    <doctype name="WithoutPrefixDocument" extends="Document">
+      <schema name="wihtoutpref" />
     </doctype>
 
     <doctype name="BlobInListDocument" extends="Document">
