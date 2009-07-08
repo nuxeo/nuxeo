@@ -1,0 +1,48 @@
+<!--
+  ~ (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+  ~
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the GNU Lesser General Public License
+  ~ (LGPL) version 2.1 which accompanies this distribution, and is available at
+  ~ http://www.gnu.org/licenses/lgpl.html
+  ~
+  ~ This library is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ Contributors:
+  ~     Thomas Roger
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-features-parent</artifactId>
+    <version>5.2.1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-publisher-parent</artifactId>
+  <name>Nuxeo Platform Publisher Parent</name>
+  <description>Nuxeo Platform Publisher Parent</description>
+  <packaging>pom</packaging>
+  
+  <modules>
+      <module>nuxeo-platform-publisher-api</module>
+      <module>nuxeo-platform-publisher-core</module>
+      <module>nuxeo-platform-publisher-jbpm</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-test</artifactId>
+      <version>${nuxeo.core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+</project>

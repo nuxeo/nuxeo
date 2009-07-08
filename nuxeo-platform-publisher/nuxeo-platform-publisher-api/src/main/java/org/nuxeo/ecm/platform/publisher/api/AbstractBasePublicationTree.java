@@ -1,0 +1,163 @@
+package org.nuxeo.ecm.platform.publisher.api;
+
+import java.util.List;
+import java.util.Map;
+
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
+import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
+
+public abstract class AbstractBasePublicationTree implements PublicationTree {
+
+    public static final String ROOT_PATH_KEY = "RootPath";
+
+    public static final String ICON_EXPANDED_KEY = "iconExpanded";
+
+    public static final String ICON_COLLAPSED_KEY = "iconCollapsed";
+
+    protected PublicationNode rootNode;
+
+    protected PublishedDocumentFactory factory;
+
+    protected ValidatorsRule validatorsRule;
+
+    protected CoreSession coreSession;
+
+    protected String configName;
+
+    protected String sid;
+
+    protected String rootPath;
+
+    protected String iconCollapsed = "/icons/folder.gif";
+
+    protected String iconExpanded = "/icons/folder_open.gif";
+
+    protected abstract String getDefaultRootPath();
+
+    protected abstract PublishedDocumentFactory getDefaultFactory();
+
+    public void initTree(String sid, CoreSession coreSession,
+            Map<String, String> parameters, PublishedDocumentFactory factory,
+            String configName) throws ClientException {
+        initTree(sid, coreSession, parameters, factory, configName, null);
+    }
+
+    public void initTree(String sid, CoreSession coreSession,
+            Map<String, String> parameters, PublishedDocumentFactory factory,
+            String configName, ValidatorsRule validatorsRule) throws ClientException {
+        this.sid = sid;
+        this.coreSession = coreSession;
+        if (factory != null)
+            this.factory = factory;
+        else {
+            this.factory = getDefaultFactory();
+            this.factory.init(coreSession, parameters);
+        }
+
+        if (parameters.containsKey(ROOT_PATH_KEY)) {
+            rootPath = parameters.get(ROOT_PATH_KEY);
+        } else {
+            rootPath = getDefaultRootPath();
+        }
+
+        if (parameters.containsKey(ICON_COLLAPSED_KEY)) {
+            iconCollapsed = parameters.get(ICON_COLLAPSED_KEY);
+        }
+        if (parameters.containsKey(ICON_EXPANDED_KEY)) {
+            iconExpanded = parameters.get(ICON_EXPANDED_KEY);
+        }
+
+        this.configName = configName;
+        this.validatorsRule = validatorsRule;
+        this.factory.setPublicationTree(this);
+    }
+
+    public String getConfigName() {
+        return configName;
+    }
+
+    public String getSessionId() {
+        return sid;
+    }
+
+    public String getNodeType() {
+        return rootNode.getNodeType();
+    }
+
+    public String getType() {
+        return this.getClass().getSimpleName();
+    }
+
+    public String getTreeType() {
+        return getType();
+    }
+
+    public List<PublishedDocument> getPublishedDocumentInNode(
+            PublicationNode node) throws ClientException {
+        return node.getChildrenDocuments();
+    }
+
+    public PublishedDocument publish(DocumentModel doc,
+            PublicationNode targetNode) throws ClientException {
+        return factory.publishDocument(doc, targetNode);
+    }
+
+    public PublishedDocument publish(DocumentModel doc,
+            PublicationNode targetNode, Map<String, String> params)
+            throws ClientException {
+        return factory.publishDocument(doc, targetNode, params);
+    }
+
+    public String getTitle() throws ClientException {
+        return rootNode.getTitle();
+    }
+
+    public String getName() throws ClientException {
+        return rootNode.getName();
+    }
+
+    public String getTreeConfigName() {
+        return getConfigName();
+    }
+
+    public PublicationNode getParent() {
+        return null;
+    }
+
+    public List<PublicationNode> getChildrenNodes() throws ClientException {
+        return rootNode.getChildrenNodes();
+    }
+
+    public List<PublishedDocument> getChildrenDocuments()
+            throws ClientException {
+        return rootNode.getChildrenDocuments();
+    }
+
+    public String getPath() {
+        return rootNode.getPath();
+    }
+
+    /**
+     * public List<PublicationNode> getTree() throws ClientException { return
+     * getChildrenNodes(); }
+     **/
+
+    public String getIconExpanded() {
+        return iconExpanded;
+    }
+
+    public String getIconCollapsed() {
+        return iconCollapsed;
+    }
+
+    public String[] getValidatorsFor(DocumentModel dm) throws PublishingValidatorException {
+        return validatorsRule.computesValidatorsFor(dm);
+    }
+
+    public ValidatorsRule getValidatorsRule() throws PublishingValidatorException {
+        return validatorsRule;
+    }
+}

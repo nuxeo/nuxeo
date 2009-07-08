@@ -1,0 +1,116 @@
+package org.nuxeo.ecm.platform.publisher.impl.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
+import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
+import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
+import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
+
+/**
+ * 
+ * Abstract class for {@link PublicationTree} that delegate method calls to a
+ * remote service
+ * 
+ * @author tiry
+ * 
+ */
+public abstract class AbstractRemotableTree implements PublicationTree {
+
+    private static final Log log = LogFactory.getLog(AbstractRemotableTree.class);
+
+    protected RemotePublicationTreeManager treeService = null;
+
+    protected String sessionId;
+
+    protected String configName;
+
+    protected abstract RemotePublicationTreeManager getTreeService()
+            throws ClientException;
+
+    protected abstract String getTargetTreeName();
+
+    protected abstract String getServerTreeSessionId();
+
+    public List<PublishedDocument> getExistingPublishedDocument(
+            DocumentLocation docLoc) throws ClientException {
+        return getTreeService().getExistingPublishedDocument(
+                getServerTreeSessionId(), docLoc);
+    }
+
+    public List<PublishedDocument> getPublishedDocumentInNode(
+            PublicationNode node) throws ClientException {
+        return getTreeService().getPublishedDocumentInNode(
+                switchToServerNode(node));
+    }
+
+    public PublishedDocument publish(DocumentModel doc,
+            PublicationNode targetNode) throws ClientException {
+        return publish(doc, targetNode, null);
+    }
+
+    public PublishedDocument publish(DocumentModel doc,
+            PublicationNode targetNode, Map<String, String> params)
+            throws ClientException {
+        return getTreeService().publish(doc, switchToServerNode(targetNode),
+                params);
+    }
+
+    public void unpublish(DocumentModel doc, PublicationNode targetNode)
+            throws ClientException {
+        getTreeService().unpublish(doc, switchToServerNode(targetNode));
+    }
+
+    public void unpublish(PublishedDocument publishedDocument)
+            throws ClientException {
+        getTreeService().unpublish(getServerTreeSessionId(), publishedDocument);
+    }
+
+    protected abstract PublicationNode switchToClientNode(PublicationNode node)
+            throws ClientException;
+
+    protected abstract PublicationNode switchToServerNode(PublicationNode node);
+
+    protected List<PublicationNode> sitchToClientNodes(
+            List<PublicationNode> nodes) throws ClientException {
+        List<PublicationNode> wrappedNodes = new ArrayList<PublicationNode>();
+
+        for (PublicationNode node : nodes) {
+            wrappedNodes.add(switchToClientNode(node));
+        }
+        return wrappedNodes;
+    }
+
+    public PublicationNode getNodeByPath(String path) throws ClientException {
+        return switchToClientNode(getTreeService().getNodeByPath(
+                getServerTreeSessionId(), path));
+    }
+
+    public String getConfigName() {
+        return configName;
+    }
+
+    public PublicationNode getParent() {
+        return null;
+    }
+
+    protected boolean released = false;
+
+    public void release() {
+        try {
+            if (!released) {
+                getTreeService().release(getServerTreeSessionId());
+            }
+            released = true;
+        } catch (ClientException e) {
+            log.error("Error during release", e);
+        }
+    }
+}
