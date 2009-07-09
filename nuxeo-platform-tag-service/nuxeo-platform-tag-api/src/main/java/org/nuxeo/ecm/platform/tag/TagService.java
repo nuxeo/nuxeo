@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  */
 public interface TagService {
 
-    String ID = "org.nuxeo.ecm.platform.tag.TagService";
+    public static final String ID = "org.nuxeo.ecm.platform.tag.TagService";
 
 
     /**

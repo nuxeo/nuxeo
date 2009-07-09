@@ -21,19 +21,18 @@ package org.nuxeo.ecm.platform.tag;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.dialect.PostgreSQLDialect;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
+import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.tag.entity.DublincoreEntity;
@@ -48,24 +47,24 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         super(TestTaggingProvider.class.getName());
     }
 
-    {
-        database = DatabasePostgreSQL.INSTANCE;
-    }
     
     protected PersistenceProvider persistenceProvider;
     
     @Override
     public void setUp() throws Exception {
-        
+        database = DatabasePostgreSQL.INSTANCE;
+
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.tag");
         deployBundle("org.nuxeo.ecm.platform.tag.tests");
         
         openSession();
+        
         createDataWarehouse(); 
         
         PersistenceProviderFactory factory = Framework.getService(PersistenceProviderFactory.class);  
@@ -79,7 +78,6 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        persistenceProvider.closePersistenceUnit();
         super.tearDown();
     }
 
@@ -230,18 +228,6 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
     }
 
     public static final Log log = LogFactory.getLog(TestTaggingProvider.class);
-    
-    public void testSchema() {
-        log.info(taggingProvider.getCreateSql(new PostgreSQLDialect()));
-    }
-    
-    public void testCreateDatawarehouse() throws Exception {
-        createDataWarehouse();
-    }
-    
-    public void testCreateTaggings() throws Exception {
-        createTaggings();
-    }
     
     public void testGetById() throws Exception {
         DublincoreEntity dcEntity = taggingProvider.getDcById(file2.getId());
@@ -399,18 +385,6 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
                 assertTrue("Unexpected label: " + label, false);
             }
         }
-    }
-
-    private Properties getProperties() {
-        String dbUrl = System.getProperty("nuxeo.test.h2.path");
-        Properties properties = new Properties();
-        properties.put("hibernate.show_sql", "true"); // true to debug
-        properties.put("hibernate.connection.driver_class", "org.h2.Driver");
-        properties.put("hibernate.connection.username", "sa");
-        properties.put("hibernate.connection.password", "");
-        properties.put("hibernate.connection.url", "jdbc:h2:" + dbUrl);
-        properties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-        return properties;
     }
 
 }

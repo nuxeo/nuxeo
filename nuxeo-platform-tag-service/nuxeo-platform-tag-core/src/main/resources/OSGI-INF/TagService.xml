@@ -15,9 +15,8 @@
   
    <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
 		point="hibernate">
-		<hibernateConfiguration name="nxtag">
-			<datasource>nxaudit-logs</datasource>
-			
+		<hibernateConfiguration name="nxtags">
+			<datasource>nxtags</datasource>
 		</hibernateConfiguration>
   </extension>
 </component>

@@ -75,6 +75,11 @@ public class TaggingProvider {
         return new TaggingProvider(em);
     }
 
+   /**
+    * @deprecated
+    * @param dialect
+    * @return
+    */
     public String getCreateSql(Dialect dialect) {
         SessionImpl delegate = (SessionImpl)em.getDelegate();
         Table table = new Table(TAGGING_TABLE_NAME);

@@ -6,7 +6,7 @@
   <parent>
     <artifactId>nuxeo-platform-tag-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>5.2.1-SNAPSHOT</version>
+    <version>5.2.1-NXP-3460-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-tag-core</artifactId>
@@ -60,11 +60,6 @@
       <artifactId>h2</artifactId>
     </dependency>
     <dependency>
-      <groupId>postgresql.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <version>8.3-604.jdbc3</version>
-    </dependency>
-    <dependency>
       <groupId>c3p0</groupId>
       <artifactId>c3p0</artifactId>
       <version>0.9.1</version>
@@ -92,6 +87,25 @@
     	<groupId>org.nuxeo.ecm.core</groupId>
     	<artifactId>nuxeo-core-persistence</artifactId>
     </dependency>
+    <dependency>
+    	<groupId>postgresql</groupId>
+    	<artifactId>postgresql</artifactId>
+    	<scope>test</scope>
+    </dependency>
   </dependencies>
+ 
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 
 </project>

@@ -16,14 +16,12 @@
 package org.nuxeo.ecm.platform.tag;
 
 import java.util.List;
-import java.util.Properties;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceUnit;
+import javax.persistence.PersistenceContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,12 +29,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.platform.tag.Tag;
-import org.nuxeo.ecm.platform.tag.TagService;
-import org.nuxeo.ecm.platform.tag.TagServiceImpl;
-import org.nuxeo.ecm.platform.tag.TagServiceLocal;
-import org.nuxeo.ecm.platform.tag.TagServiceRemote;
-import org.nuxeo.ecm.platform.tag.WeightedTag;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -55,7 +47,7 @@ public class TagServiceBean implements TagService {
 
     protected TagService tagService;
     
-    @PersistenceUnit(unitName="nxtag")
+    @PersistenceContext(unitName="nxtags")
     protected EntityManager em;
 
   
@@ -131,11 +123,6 @@ public class TagServiceBean implements TagService {
     public List<String> listDocumentsForTag(String tagId, String user)
             throws ClientException {
         return getLocalTagService().listDocumentsForTag(em,tagId, user);
-    }
-
-    public void initialize(Properties properties) throws ClientException {
-        getLocalTagService().initialize(em,properties);
-
     }
 
     public String getTaggingId(String docId, String tagLabel, String author)
