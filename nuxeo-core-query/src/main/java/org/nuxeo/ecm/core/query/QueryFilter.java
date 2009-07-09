@@ -37,7 +37,8 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 public class QueryFilter {
 
     public static final QueryFilter EMPTY = new QueryFilter(new String[0],
-            new String[0], null, Collections.<SQLQuery.Transformer> emptyList());
+            new String[0], null,
+            Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
 
     protected final String[] principals;
 
@@ -47,13 +48,29 @@ public class QueryFilter {
 
     protected final Collection<SQLQuery.Transformer> queryTransformers;
 
+    protected final long limit;
+
+    protected final long offset;
+
     public QueryFilter(String[] principals, String[] permissions,
             FacetFilter facetFilter,
-            Collection<SQLQuery.Transformer> queryTransformers) {
+            Collection<SQLQuery.Transformer> queryTransformers, long limit,
+            long offset) {
         this.principals = principals;
         this.permissions = permissions;
         this.facetFilter = facetFilter;
         this.queryTransformers = queryTransformers;
+        this.limit = limit;
+        this.offset = offset;
+    }
+
+    public static QueryFilter withoutLimitOffset(QueryFilter other) {
+        return new QueryFilter( //
+                other.principals, //
+                other.permissions, //
+                other.facetFilter, //
+                other.queryTransformers, //
+                0, 0);
     }
 
     public String[] getPrincipals() {
@@ -70,6 +87,14 @@ public class QueryFilter {
 
     public Collection<SQLQuery.Transformer> getQueryTransformers() {
         return queryTransformers;
+    }
+
+    public long getLimit() {
+        return limit;
+    }
+
+    public long getOffset() {
+        return offset;
     }
 
 }

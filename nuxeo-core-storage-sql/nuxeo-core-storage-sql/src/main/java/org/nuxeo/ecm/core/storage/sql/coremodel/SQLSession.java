@@ -50,10 +50,6 @@ import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.QueryResult;
 import org.nuxeo.ecm.core.query.UnsupportedQueryTypeException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
-import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
-import org.nuxeo.ecm.core.query.sql.model.OrderByList;
-import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeConstants;
@@ -397,58 +393,61 @@ public class SQLSession implements Session {
             throw new QueryException("Parameters not supported");
         }
         try {
-            return new SQLSessionQuery(SQLQueryParser.parse(query));
+            return new SQLSessionQuery(query);
         } catch (QueryParseException e) {
             throw new QueryException(e.getMessage() + ": " + query, e);
         }
     }
 
+    protected static final Pattern ORDER_BY_PATH_ASC = Pattern.compile(
+            "(.*)\\s+ORDER\\s+BY\\s+" + NXQL.ECM_PATH + "\\s*$",
+            Pattern.CASE_INSENSITIVE);
+
+    protected static final Pattern ORDER_BY_PATH_DESC = Pattern.compile(
+            "(.*)\\s+ORDER\\s+BY\\s+" + NXQL.ECM_PATH + "\\s+DESC\\s*$",
+            Pattern.CASE_INSENSITIVE);
+
     protected class SQLSessionQuery implements FilterableQuery {
 
-        protected final SQLQuery sqlQuery;
+        protected final String query;
 
-        public SQLSessionQuery(SQLQuery sqlQuery) {
-            this.sqlQuery = sqlQuery;
-        }
-
-        public void setLimit(long limit) {
-            sqlQuery.setLimit(limit);
-        }
-
-        public void setOffset(long offset) {
-            sqlQuery.setOffset(offset);
+        public SQLSessionQuery(String query) {
+            this.query = query;
         }
 
         public QueryResult execute() throws QueryException {
-            return execute(null, false);
+            return execute(QueryFilter.EMPTY, false);
         }
 
         public QueryResult execute(boolean countTotal) throws QueryException {
-            return execute(null, countTotal);
+            return execute(QueryFilter.EMPTY, countTotal);
         }
 
         public QueryResult execute(QueryFilter queryFilter, boolean countTotal)
                 throws QueryException {
             try {
-                SQLQuery query = sqlQuery;
-                Boolean orderByPath = null;
+                String query = this.query;
+                // do ORDER BY ecm:path by hand in SQLQueryResult as we can't do
+                // it in SQL (and has to do limit/offset as well)
+                Boolean orderByPath;
+                Matcher matcher = ORDER_BY_PATH_ASC.matcher(query);
+                if (matcher.matches()) {
+                    orderByPath = Boolean.TRUE; // ASC
+                } else {
+                    matcher = ORDER_BY_PATH_DESC.matcher(query);
+                    if (matcher.matches()) {
+                        orderByPath = Boolean.FALSE; // DESC
+                    } else {
+                        orderByPath = null;
+                    }
+                }
                 long limit = 0;
                 long offset = 0;
-                if (sqlQuery.orderBy != null) {
-                    OrderByList orderByList = sqlQuery.orderBy.elements;
-                    if (orderByList.size() == 1) {
-                        OrderByExpr orderBy = orderByList.get(0);
-                        if (NXQL.ECM_PATH.equals(orderBy.reference.name)) {
-                            // do ORDER BY ecm:path "by hand"
-                            orderByPath = Boolean.valueOf(!orderBy.isDescending);
-                            query = new SQLQuery(sqlQuery.select,
-                                    sqlQuery.from, sqlQuery.where, null);
-                            query.setLimit(0);
-                            query.setOffset(0);
-                            limit = sqlQuery.getLimit();
-                            offset = sqlQuery.getOffset();
-                        }
-                    }
+                if (orderByPath != null) {
+                    query = matcher.group(1);
+                    limit = queryFilter.getLimit();
+                    offset = queryFilter.getOffset();
+                    queryFilter = QueryFilter.withoutLimitOffset(queryFilter);
                 }
                 PartialList<Serializable> list = session.query(query,
                         queryFilter, countTotal);

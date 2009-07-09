@@ -581,7 +581,7 @@ public class SessionImpl implements Session {
         return nodes;
     }
 
-    public PartialList<Serializable> query(SQLQuery query,
+    public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
         try {

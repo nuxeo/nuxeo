@@ -73,8 +73,4 @@ public interface Query {
      */
     QueryResult execute(boolean countTotal) throws QueryException;
 
-    void setLimit(long limit);
-
-    void setOffset(long offset);
-
 }

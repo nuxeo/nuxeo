@@ -259,7 +259,7 @@ public class ConnectionImpl implements Session {
         return getSession().addProxy(targetId, versionableId, parent, name, pos);
     }
 
-    public PartialList<Serializable> query(SQLQuery query,
+    public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
         return getSession().query(query, queryFilter, countTotal);

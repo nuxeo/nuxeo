@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -129,7 +129,7 @@ public class RepositoryImpl implements Repository {
             initialize();
         }
 
-        Mapper mapper = new Mapper(model, sqlInfo, xadatasource);
+        Mapper mapper = new Mapper(this, model, sqlInfo, xadatasource);
 
         if (!initialized) {
             // first connection, initialize the database
@@ -142,7 +142,7 @@ public class RepositoryImpl implements Repository {
                 clusterMapper = mapper;
                 clusterMapper.createClusterNode();
                 processClusterInvalidationsNext();
-                mapper = new Mapper(model, sqlInfo, xadatasource);
+                mapper = new Mapper(this, model, sqlInfo, xadatasource);
             }
             initialized = true;
         }

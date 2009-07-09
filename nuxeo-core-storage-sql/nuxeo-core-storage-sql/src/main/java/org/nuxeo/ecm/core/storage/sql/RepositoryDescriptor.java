@@ -17,12 +17,15 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -51,12 +54,16 @@ public class RepositoryDescriptor {
     @XNode("indexing/fulltext@catalog")
     public String fulltextCatalog;
 
+    @XNodeList(value = "queryMaker@class", type = ArrayList.class, componentType = Class.class)
+    protected List<Class<?>> queryMakerClasses = null;
+
     /** Merges only non-JCA properties. */
     public void mergeFrom(RepositoryDescriptor other) {
         clusteringEnabled = other.clusteringEnabled;
         clusteringDelay = other.clusteringDelay;
         fulltextAnalyzer = other.fulltextAnalyzer;
         fulltextCatalog = other.fulltextCatalog;
+        queryMakerClasses = other.queryMakerClasses;
     }
 
     @XNode("xa-datasource")

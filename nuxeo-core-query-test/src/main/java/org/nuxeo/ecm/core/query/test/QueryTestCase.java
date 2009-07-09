@@ -289,6 +289,10 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
         dml = session.query("SELECT * FROM Document WHERE dc:created BETWEEN DATE '2007-03-15' AND DATE '2008-01-01'");
         assertEquals(1, dml.size());
+
+        // early detection of conflicting types for VCS
+        dml = session.query("SELECT * FROM Document WHERE ecm:primaryType = 'foo'");
+        assertEquals(0, dml.size());
     }
 
     public void testQueryMultiple() throws Exception {

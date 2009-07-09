@@ -1346,11 +1346,8 @@ public abstract class AbstractSession implements CoreSession,
                         permissions,
                         filter instanceof FacetFilter ? (FacetFilter) filter
                                 : null,
-                        securityService.getPoliciesQueryTransformers());
-                if (!postFilter && limit != 0) {
-                    compiledQuery.setLimit(limit);
-                    compiledQuery.setOffset(offset);
-                }
+                        securityService.getPoliciesQueryTransformers(),
+                        postFilter ? 0 : limit, postFilter ? 0 : offset);
                 results = ((FilterableQuery) compiledQuery).execute(
                         queryFilter, countTotal && !postFilter);
             } else {

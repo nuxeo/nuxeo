@@ -50,17 +50,6 @@ public class JCRQueryXPath implements Query {
         this.session = session;
     }
 
-
-    public void setLimit(long limit) {
-        // ignore
-    }
-
-
-    public void setOffset(long offset) {
-        // ignore
-    }
-
-
     public JCRSession getSession() {
         return session;
     }

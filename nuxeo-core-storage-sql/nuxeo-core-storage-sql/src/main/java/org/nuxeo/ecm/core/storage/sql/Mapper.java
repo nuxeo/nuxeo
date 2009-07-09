@@ -52,11 +52,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionFragmentIterator;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
+import org.nuxeo.ecm.core.storage.sql.QueryMaker.Query;
 import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
@@ -75,6 +77,9 @@ import org.nuxeo.ecm.core.storage.sql.db.dialect.ConditionalStatement;
 public class Mapper {
 
     private static final Log log = LogFactory.getLog(Mapper.class);
+
+    /** The repository from which this was built. */
+    private final RepositoryImpl repository;
 
     /** The model used to do the mapping. */
     private final Model model;
@@ -106,12 +111,14 @@ public class Mapper {
     /**
      * Creates a new Mapper.
      *
+     * @param repository the repository
      * @param model the model
      * @param sqlInfo the sql info
      * @param xadatasource the XA datasource to use to get connections
      */
-    public Mapper(Model model, SQLInfo sqlInfo, XADataSource xadatasource)
-            throws StorageException {
+    public Mapper(RepositoryImpl repository, Model model, SQLInfo sqlInfo,
+            XADataSource xadatasource) throws StorageException {
+        this.repository = repository;
         this.model = model;
         this.sqlInfo = sqlInfo;
         this.xadatasource = xadatasource;
@@ -1759,7 +1766,7 @@ public class Mapper {
     /**
      * Makes a NXQL query to the database.
      *
-     * @param query the query as a parsed tree
+     * @param query the query
      * @param queryFilter the query filter
      * @param countTotal if {@code true}, count the total size without
      *            limit/offset
@@ -1768,36 +1775,59 @@ public class Mapper {
      * @throws StorageException
      * @throws SQLException
      */
-    public PartialList<Serializable> query(SQLQuery query,
+    public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal, Session session)
             throws StorageException, SQLException {
-        QueryMaker queryMaker = new QueryMaker(sqlInfo, model, session, query,
+        // find the proper QueryMaker
+        QueryMaker queryMaker = null;
+        List<Class<?>> classes = repository.getRepositoryDescriptor().queryMakerClasses;
+        if (classes.isEmpty()) {
+            classes.add(NXQLQueryMaker.class);
+        }
+        for (Class<?> klass : classes) {
+            // build QueryMaker instance
+            try {
+                queryMaker = (QueryMaker) klass.newInstance();
+            } catch (Exception e) {
+                throw new StorageException("Cannot instantiate class: "
+                        + klass.getName(), e);
+            }
+            // check if it accepts the query
+            if (!queryMaker.accepts(query)) {
+                queryMaker = null;
+                continue;
+            }
+            break;
+        }
+        if (queryMaker == null) {
+            throw new StorageException("No QueryMaker accepts query: " + query);
+        }
+        Query q = queryMaker.buildQuery(sqlInfo, model, session, query,
                 queryFilter);
-        queryMaker.makeQuery();
 
-        if (queryMaker.selectInfo == null) {
+        if (q == null) {
             log("Query cannot return anything due to conflicting clauses");
             return new PartialList<Serializable>(
                     Collections.<Serializable> emptyList(), 0);
         }
 
+        long limit = queryFilter.getLimit();
+        long offset = queryFilter.getOffset();
         if (isLogEnabled()) {
-            String sql = queryMaker.selectInfo.sql;
-            if (query.getLimit() != 0) {
-                sql += " -- LIMIT " + query.getLimit() + " OFFSET "
-                        + query.getOffset();
+            String sql = q.selectInfo.sql;
+            if (limit != 0) {
+                sql += " -- LIMIT " + limit + " OFFSET " + offset;
             }
             if (countTotal) {
                 sql += " -- COUNT TOTAL";
             }
-            logSQL(sql, queryMaker.selectParams);
+            logSQL(sql, q.selectParams);
         }
-        PreparedStatement ps = connection.prepareStatement(
-                queryMaker.selectInfo.sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
+        PreparedStatement ps = connection.prepareStatement(q.selectInfo.sql,
+                ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         try {
             int i = 1;
-            for (Object object : queryMaker.selectParams) {
+            for (Object object : q.selectParams) {
                 if (object instanceof Calendar) {
                     Calendar cal = (Calendar) object;
                     Timestamp ts = new Timestamp(cal.getTimeInMillis());
@@ -1814,8 +1844,6 @@ public class Mapper {
 
             // limit/offset
             long totalSize = -1;
-            long limit = query.getLimit();
-            long offset = query.getOffset();
             boolean available;
             if (limit == 0 || offset == 0) {
                 available = rs.first();
@@ -1829,7 +1857,7 @@ public class Mapper {
                 available = rs.absolute((int) offset + 1);
             }
 
-            Column column = queryMaker.selectInfo.whatColumns.get(0);
+            Column column = q.selectInfo.whatColumns.get(0);
             List<Serializable> ids = new LinkedList<Serializable>();
             int rowNum = 0;
             while (available && limit != 0) {
