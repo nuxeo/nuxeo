@@ -30,7 +30,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletContext;
+import javax.servlet.GenericServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,6 +60,9 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
 import org.nuxeo.runtime.api.Framework;
 
 import freemarker.ext.jsp.TaglibFactory;
+import freemarker.ext.servlet.HttpRequestHashModel;
+import freemarker.ext.servlet.HttpRequestParametersHashModel;
+import freemarker.ext.servlet.ServletContextHashModel;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -178,10 +183,43 @@ public class WebEngine implements ResourceLocator {
     /**
      * JSP taglib support
      */
-    public void loadJspTaglib(ServletContext ctx) {
+    public void loadJspTaglib(GenericServlet servlet) {
         if (rendering instanceof FreemarkerEngine) {
             FreemarkerEngine fm = (FreemarkerEngine)rendering;
-            fm.setSharedVariable("JspTaglibs", new TaglibFactory(ctx));
+            ServletContextHashModel servletContextModel = new ServletContextHashModel(servlet, fm.getObjectWrapper());
+            fm.setSharedVariable("Application", servletContextModel);
+            fm.setSharedVariable("__FreeMarkerServlet.Application__", servletContextModel);
+            fm.setSharedVariable("Application", servletContextModel);
+            fm.setSharedVariable("__FreeMarkerServlet.Application__", servletContextModel);            
+            fm.setSharedVariable("JspTaglibs", new TaglibFactory(servlet.getServletContext()));            
+        }
+    }
+    
+    public void initJspRequestSupport(GenericServlet servlet, HttpServletRequest request, HttpServletResponse response) {
+        if (rendering instanceof FreemarkerEngine) {
+            FreemarkerEngine fm = (FreemarkerEngine)rendering;
+            HttpRequestHashModel requestModel = new HttpRequestHashModel(request, response, fm.getObjectWrapper());
+            fm.setSharedVariable("__FreeMarkerServlet.Request__", requestModel);
+            fm.setSharedVariable("Request", requestModel);            
+            fm.setSharedVariable("RequestParameters", new HttpRequestParametersHashModel(request));
+            
+//            HttpSessionHashModel sessionModel = null;
+//            HttpSession session = request.getSession(false);
+//            if(session != null) {
+//                sessionModel = (HttpSessionHashModel) session.getAttribute(ATTR_SESSION_MODEL);
+//                if (sessionModel == null || sessionModel.isZombie()) {
+//                    sessionModel = new HttpSessionHashModel(session, wrapper);
+//                    session.setAttribute(ATTR_SESSION_MODEL, sessionModel);
+//                    if(!sessionModel.isZombie()) {
+//                        initializeSession(request, response);
+//                    }
+//                }
+//            }
+//            else {
+//                sessionModel = new HttpSessionHashModel(servlet, request, response, fm.getObjectWrapper());
+//            }
+//            sessionModel = new HttpSessionHashModel(request, response, fm.getObjectWrapper());
+            //fm.setSharedVariable("Session", sessionModel);
         }
     }
     

@@ -72,6 +72,7 @@ public class WebEngineServlet extends HttpServlet {
     
     private static boolean isTaglibLoaded = false;
 
+    protected boolean enableJsp = false;;
     protected WebEngineDispatcher dispatcher;
 //    protected WebEngine engine;
 
@@ -105,13 +106,12 @@ public class WebEngineServlet extends HttpServlet {
         ResourceContainer rc = (ResourceContainer) Framework.getRuntime().getComponent(ResourceContainer.NAME);
         dispatcher = rc.getDispatcher();
         initializeBuiltinProviders(dispatcher.getProviderFactory());
+        String v = Framework.getProperty("org.nuxeo.ecm.webengine.enableJsp");
+        if ("true".equals(v)) {
+            enableJsp = true;
+        }
     }
     
-    protected void loadTaglib() {
-        WebEngine engine = Framework.getLocalService(WebEngine.class);
-        engine.loadJspTaglib(getServletContext());
-    }
-
     @Override
     protected void service(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws ServletException,
@@ -129,15 +129,19 @@ public class WebEngineServlet extends HttpServlet {
         httpServletResponse.addHeader("Expires", "0");
         httpServletResponse.setDateHeader ("Expires", 0); //prevents caching at the proxy server
 
-        if (!isTaglibLoaded) {
-            synchronized (this) {
-                if (!isTaglibLoaded) {
-                    loadTaglib();
-                    isTaglibLoaded = true;
+        if (enableJsp) {
+            WebEngine engine = Framework.getLocalService(WebEngine.class);        
+            if (!isTaglibLoaded) {
+                synchronized (this) {
+                    if (!isTaglibLoaded) {
+                        engine.loadJspTaglib(this);
+                        isTaglibLoaded = true;
+                    }
                 }
             }
+            engine.initJspRequestSupport(this, httpServletRequest, httpServletResponse);
         }
-        
+
         service(httpServletRequest.getMethod(), httpServletRequest,
                 httpServletResponse);
     }
