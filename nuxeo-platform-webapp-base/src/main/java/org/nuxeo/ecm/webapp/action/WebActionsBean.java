@@ -70,10 +70,10 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
 
     private static final Log log = LogFactory.getLog(WebActionsBean.class);
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected transient ActionManager actionManager;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected transient ActionContextProvider actionContextProvider;
 
     @In(create = true, required = false)
