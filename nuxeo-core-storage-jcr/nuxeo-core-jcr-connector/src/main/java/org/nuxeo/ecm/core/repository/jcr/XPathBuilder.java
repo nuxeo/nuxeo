@@ -45,6 +45,8 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 
+import com.sun.org.apache.xalan.internal.xsltc.runtime.Operators;
+
 /**
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
@@ -394,6 +396,18 @@ public class XPathBuilder {
             xq.initPath();
             xq.predicate.append(" not(");
             operand(expr.lvalue);
+            xq.predicate.append(") ");
+        } else if (expr.operator == Operator.STARTSWITH && NXQL.ECM_PATH.equals(name)) {
+            // We are in a negative expression
+            xq.predicate.append(" jcr:like(");
+            reference(xq.predicate, (Reference) expr.lvalue); // reference
+            xq.predicate.append(", ");
+            literal(xq.predicate, (Literal) expr.rvalue); // literal
+            if (xq.predicate.length() - 2 == xq.predicate.lastIndexOf("/")) {
+                xq.predicate.insert(xq.predicate.length() - 1, "%");
+            } else {
+                xq.predicate.insert(xq.predicate.length() - 1, "/%");
+            }
             xq.predicate.append(") ");
         } else if (expr.operator == Operator.LIKE) {
             xq.predicate.append(" jcr:like(");
