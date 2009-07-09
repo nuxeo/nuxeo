@@ -48,10 +48,12 @@ import org.nuxeo.runtime.api.Framework;
  * @author ogrisel
  */
 public class MimetypeIconUpdater implements EventListener {
-    
+
     protected Log log = LogFactory.getLog(MimetypeIconUpdater.class);
 
-    public static final String ICON_FIELD = "common:icon";
+    public static final String ICON_SCHEMA = "common";
+
+    public static final String ICON_FIELD = ICON_SCHEMA +":" +"icon";
 
     public static final String MAIN_BLOB_FIELD = "file:content";
 
@@ -66,14 +68,14 @@ public class MimetypeIconUpdater implements EventListener {
     protected static final String OCTET_STREAM_MT = "application/octet-stream";
 
     public final BlobExtractor blobExtractor = new BlobExtractor();
-    
+
     MimetypeRegistry mimetypeService = null;
-    
+
     public MimetypeRegistry getMimetypeRegistry() throws Exception {
         if (mimetypeService == null) {
             mimetypeService = Framework.getService(MimetypeRegistry.class);
         }
-        
+
         return mimetypeService;
     }
 
@@ -82,7 +84,7 @@ public class MimetypeIconUpdater implements EventListener {
 
         EventContext ctx = event.getContext();
         if (ctx instanceof DocumentEventContext) {
-            
+
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
             DocumentModel doc = docCtx.getSourceDocument();
 
@@ -150,7 +152,7 @@ public class MimetypeIconUpdater implements EventListener {
             doc.setPropertyValue(fieldPath, (Serializable) blob);
 
         }
-        
+
         if (MAIN_BLOB_FIELD.equals(fieldPath) && doc.getProperty(MAIN_BLOB_FIELD).isDirty()) {
             // update the icon field of the document
             if (blob != null) {
@@ -231,7 +233,7 @@ public class MimetypeIconUpdater implements EventListener {
                 iconPath = uiType.getIcon();
             }
         }
-        if (iconPath != null) {
+        if (iconPath != null && doc.hasSchema(ICON_SCHEMA)) {
             doc.setPropertyValue(ICON_FIELD, iconPath);
         }
     }

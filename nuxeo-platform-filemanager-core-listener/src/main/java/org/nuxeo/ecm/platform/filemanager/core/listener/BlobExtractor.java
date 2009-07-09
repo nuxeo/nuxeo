@@ -51,7 +51,8 @@ public class BlobExtractor {
 
         List<Property> result = new ArrayList<Property>();
         for (String schema : getBlobFieldPathForDocumentType(doc.getType()).keySet()) {
-            List<String> pathsList = getBlobFieldPathForDocumentType(doc.getType()).get(schema);
+            List<String> pathsList = getBlobFieldPathForDocumentType(
+                    doc.getType()).get(schema);
             for (String path : pathsList) {
                 List<String> pathSplitted = Arrays.asList(path.split("/[*]/"));
                 if (pathSplitted.size() == 0) {
@@ -79,8 +80,8 @@ public class BlobExtractor {
      * @return return the property names that contain blob
      * @throws Exception
      */
-    public Map<String, List<String>> getBlobFieldPathForDocumentType(String documentType)
-            throws Exception {
+    public Map<String, List<String>> getBlobFieldPathForDocumentType(
+            String documentType) throws Exception {
         DocumentType docType = getSchemaManager().getDocumentType(documentType);
 
         if (!docTypeCached.contains(documentType)) {
@@ -118,8 +119,8 @@ public class BlobExtractor {
     /**
      * Analyzes the document's schemas to find which fields and complex types
      * contain blobs. For each blob fields type found,
-     * {@link BlobExtractor#blobMatched(DocumentType, Schema, String, Field)}
-     * is called and for each property that contains a subProperty containing a
+     * {@link BlobExtractor#blobMatched(DocumentType, Schema, String, Field)} is
+     * called and for each property that contains a subProperty containing a
      * Blob,
      * {@link BlobExtractor#containsBlob(DocumentType, Schema, String, Field)}
      * is called
@@ -140,7 +141,9 @@ public class BlobExtractor {
             } else if (type.isListType()) {
                 Type ftype = ((ListType) type).getField().getType();
                 if (ftype.isComplexType()) {
-                    path = path + String.format("/%s/*", field.getName().getLocalName());
+                    path = path
+                            + String.format("/%s/*",
+                                    field.getName().getLocalName());
                     if ("*".equals(field.getName())) {
                         throw new Exception(
                                 "A field can't be named '*' please check this field: "
@@ -157,11 +160,15 @@ public class BlobExtractor {
             } else { // complex type
                 ComplexType ctype = (ComplexType) type;
                 if (type.getName().equals(TypeConstants.CONTENT)) {
-                    path = path + String.format("/%s", field.getName().getLocalName());
+                    path = path
+                            + String.format("/%s",
+                                    field.getName().getLocalName());
                     blobMatched(docType, schema, path, field);
                     interesting = true;
                 } else {
-                    path = path + String.format("/%s/*", field.getName().getLocalName());
+                    path = path
+                            + String.format("/%s/*",
+                                    field.getName().getLocalName());
                     interesting |= findInteresting(docType, schema, path, ctype);
                 }
             }
@@ -174,8 +181,8 @@ public class BlobExtractor {
 
     /**
      * Call during the parsing of the schema structure in
-     * {@link BlobExtractor#findInteresting(Schema, ComplexType)} if field
-     * is a Blob Type. This method stores the path to that Field.
+     * {@link BlobExtractor#findInteresting(Schema, ComplexType)} if field is a
+     * Blob Type. This method stores the path to that Field.
      *
      * @param schema The parent schema that contains the field
      * @param field Field that is a BlobType
@@ -189,7 +196,7 @@ public class BlobExtractor {
             pathsList = new ArrayList<String>();
             blobPathsForDocType.put(schema.getName(), pathsList);
             blobFieldPaths.put(docType.getName(), blobPathsForDocType);
-        } 
+        }
         pathsList.add(path);
     }
 
@@ -210,8 +217,9 @@ public class BlobExtractor {
             String completePath, List<Property> result) throws Exception {
         if (subPath.size() == 0) {
             if (!(prop.getValue() instanceof Blob)) {
-                throw new Exception("Path Field not contains a blob value: "
+                log.debug("Path Field not contains a blob value: "
                         + completePath);
+                return;
             }
             result.add(prop);
             return;
@@ -219,8 +227,7 @@ public class BlobExtractor {
 
         for (Property childProp : prop.getChildren()) {
             if ("/*".equals(subPath.get(0))) {
-                // TODO : if blob are in a list
-                throw new Exception("TODO : BLOB IN A LIST NOT IMPLEMENTED for this path "
+                log.debug("TODO : BLOB IN A LIST NOT IMPLEMENTED for this path "
                         + completePath);
             }
             Property childSubProp = childProp.get(subPath.get(0));
