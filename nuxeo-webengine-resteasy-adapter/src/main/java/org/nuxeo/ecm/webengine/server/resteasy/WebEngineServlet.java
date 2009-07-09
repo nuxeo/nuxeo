@@ -49,7 +49,6 @@ import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.util.threadpool.ThreadPoolFullException;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.session.UserSession;
@@ -70,6 +69,8 @@ import org.nuxeo.runtime.api.Framework;
 public class WebEngineServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+    
+    private static boolean isTaglibLoaded = false;
 
     protected WebEngineDispatcher dispatcher;
 //    protected WebEngine engine;
@@ -100,9 +101,15 @@ public class WebEngineServlet extends HttpServlet {
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
+        super.init(servletConfig);
         ResourceContainer rc = (ResourceContainer) Framework.getRuntime().getComponent(ResourceContainer.NAME);
         dispatcher = rc.getDispatcher();
         initializeBuiltinProviders(dispatcher.getProviderFactory());
+    }
+    
+    protected void loadTaglib() {
+        WebEngine engine = Framework.getLocalService(WebEngine.class);
+        engine.loadJspTaglib(getServletContext());
     }
 
     @Override
@@ -122,6 +129,15 @@ public class WebEngineServlet extends HttpServlet {
         httpServletResponse.addHeader("Expires", "0");
         httpServletResponse.setDateHeader ("Expires", 0); //prevents caching at the proxy server
 
+        if (!isTaglibLoaded) {
+            synchronized (this) {
+                if (!isTaglibLoaded) {
+                    loadTaglib();
+                    isTaglibLoaded = true;
+                }
+            }
+        }
+        
         service(httpServletRequest.getMethod(), httpServletRequest,
                 httpServletResponse);
     }

@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.url.URLFactory;
@@ -54,6 +56,8 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.runtime.annotations.AnnotationManager;
 import org.nuxeo.runtime.api.Framework;
+
+import freemarker.ext.jsp.TaglibFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -171,6 +175,16 @@ public class WebEngine implements ResourceLocator {
         registry.addMessageBodyWriter(new TemplateViewWriter());
     }
 
+    /**
+     * JSP taglib support
+     */
+    public void loadJspTaglib(ServletContext ctx) {
+        if (rendering instanceof FreemarkerEngine) {
+            FreemarkerEngine fm = (FreemarkerEngine)rendering;
+            fm.setSharedVariable("JspTaglibs", new TaglibFactory(ctx));
+        }
+    }
+    
     public WebLoader getWebLoader() {
         return webLoader;
     }
@@ -257,17 +271,25 @@ public class WebEngine implements ResourceLocator {
     }
 
     public ModuleManager getModuleManager() {
-        synchronized (this) {
-            if (moduleMgr == null) {
-                moduleMgr = new ModuleManager(this);
-                File deployRoot = getDeploymentDirectory();
-                if (deployRoot.isDirectory()) {
-                    moduleMgr.loadModules(deployRoot);
-                }
-                // make a copy to avoid concurrent modifications with
-                // registerModule
-                for (File mod : registeredModules.toArray(new File[registeredModules.size()])) {
-                    moduleMgr.loadModule(mod);
+        if (moduleMgr == null) { // avoid synchronizing if not needed
+            synchronized (this) {
+                /**
+                 * the duplicate if is used avoid synchronizing when no needed.
+                 * note that the this.moduleMgr member must be set at the end of the synchronized block
+                 * after the module manager is completely initialized  
+                 */
+                if (moduleMgr == null) {
+                    ModuleManager moduleMgr = new ModuleManager(this);
+                    File deployRoot = getDeploymentDirectory();
+                    if (deployRoot.isDirectory()) {
+                        moduleMgr.loadModules(deployRoot);
+                    }
+                    // make a copy to avoid concurrent modifications with registerModule
+                    for (File mod : registeredModules.toArray(new File[registeredModules.size()])) {
+                        moduleMgr.loadModule(mod);
+                    }
+                    // set member at the end to be sure moduleMgr is completely initialized
+                    this.moduleMgr = moduleMgr;
                 }
             }
         }
