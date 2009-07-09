@@ -48,7 +48,7 @@ public interface UserManagerActions extends Serializable {
 
     String SEARCH_ONLY = "search_only";
 
-    String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789";
+    String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789.@";
 
     String getUserListingMode() throws ClientException;
 
