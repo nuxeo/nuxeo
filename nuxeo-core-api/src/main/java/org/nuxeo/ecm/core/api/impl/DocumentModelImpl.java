@@ -155,7 +155,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     private String lifeCyclePolicy;
 
-    protected static Boolean strictSessionManagement=null;
+    protected static Boolean strictSessionManagement = null;
 
     protected DocumentModelImpl() {
     }
@@ -372,18 +372,22 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     protected boolean useStrictSessionManagement() {
-        if (strictSessionManagement==null) {
-            strictSessionManagement = Boolean.parseBoolean(Framework.getProperty(STRICT_LAZY_LOADING_POLICY_KEY, "false"));
+        if (strictSessionManagement == null) {
+            strictSessionManagement = Boolean.parseBoolean(Framework.getProperty(
+                    STRICT_LAZY_LOADING_POLICY_KEY, "false"));
         }
         return strictSessionManagement;
     }
 
     protected CoreSession getTempCoreSession() throws ClientException {
         CoreSession tempSession = null;
-        if (sid!=null) { // detached docs need a tmp session anyway
-             if (useStrictSessionManagement()) {
-                 throw new ClientException("Document " + id + " is bound to a closed CoreSession, can not reconnect");
-             }
+        if (sid != null) { // detached docs need a tmp session anyway
+            if (useStrictSessionManagement()) {
+                throw new ClientException(
+                        "Document "
+                                + id
+                                + " is bound to a closed CoreSession, can not reconnect");
+            }
         }
         try {
             RepositoryManager mgr = Framework.getService(RepositoryManager.class);
@@ -440,12 +444,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             }
         }
         // fetch ACP too if possible
-        if (ref!=null) {
+        if (ref != null) {
             getACP();
         }
         sid = null;
     }
-
 
     /**
      * Lazily loads the given data model.
@@ -458,7 +461,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             throws ClientException {
         if (hasSchema(schema)) { // lazy data model
             if (sid == null) {
-                DataModel dataModel = new DataModelImpl(schema); // supports non
+                DataModel dataModel = new DataModelImpl(schema); // supports
+                                                                    // non
                 // bound docs
                 dataModels.put(schema, dataModel);
                 return dataModel;
@@ -466,21 +470,20 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             CoreSession session = getCoreSession();
 
             DataModel dataModel = null;
-            if (ref!=null) {
-                if (session!=null) {
+            if (ref != null) {
+                if (session != null) {
                     dataModel = session.getDataModel(ref, schema);
-                }
-                else {
+                } else {
                     if (useStrictSessionManagement()) {
-                        log.warn("DocumentModel " + id + " is bound to a null or closed session : lazy loading is not available");
-                    }
-                    else {
+                        log.warn("DocumentModel "
+                                + id
+                                + " is bound to a null or closed session : lazy loading is not available");
+                    } else {
                         CoreSession tmpSession = getTempCoreSession();
                         try {
                             dataModel = tmpSession.getDataModel(ref, schema);
-                        }
-                        finally {
-                            if (tmpSession!=null) {
+                        } finally {
+                            if (tmpSession != null) {
                                 CoreInstance.getInstance().close(tmpSession);
                             }
                         }
@@ -583,68 +586,60 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     public void setLock(String key) throws ClientException {
         CoreSession session = getCoreSession();
 
-        if (session!=null) {
+        if (session != null) {
             session.setLock(ref, key);
-        }
-        else {
-             CoreSession tmpSession = getTempCoreSession();
-             try {
-                 tmpSession.setLock(ref, key);
-             }
-             finally {
-                 if (tmpSession!=null) {
-                     try {
-                         tmpSession.save();
-                     }
-                     finally {
-                         CoreInstance.getInstance().close(tmpSession);
-                     }
-                 }
-             }
+        } else {
+            CoreSession tmpSession = getTempCoreSession();
+            try {
+                tmpSession.setLock(ref, key);
+            } finally {
+                if (tmpSession != null) {
+                    try {
+                        tmpSession.save();
+                    } finally {
+                        CoreInstance.getInstance().close(tmpSession);
+                    }
+                }
+            }
         }
         lock = key;
     }
 
     public void unlock() throws ClientException {
         CoreSession session = getCoreSession();
-        if (session!=null) {
+        if (session != null) {
             if (session.unlock(ref) != null) {
                 lock = null;
             }
-        }
-        else {
-             CoreSession tmpSession = getTempCoreSession();
-             try {
-                 if (tmpSession.unlock(ref) != null) {
-                     lock = null;
-                 }
-             }
-             finally {
-                 if (tmpSession!=null) {
-                     try {
-                         tmpSession.save();
-                     }
-                     finally {
-                         CoreInstance.getInstance().close(tmpSession);
-                     }
-                 }
-             }
+        } else {
+            CoreSession tmpSession = getTempCoreSession();
+            try {
+                if (tmpSession.unlock(ref) != null) {
+                    lock = null;
+                }
+            } finally {
+                if (tmpSession != null) {
+                    try {
+                        tmpSession.save();
+                    } finally {
+                        CoreInstance.getInstance().close(tmpSession);
+                    }
+                }
+            }
         }
     }
 
     public ACP getACP() throws ClientException {
         if (!isACPLoaded) { // lazy load
             CoreSession session = getCoreSession();
-            if (session!=null) {
+            if (session != null) {
                 acp = session.getACP(ref);
-            }
-            else {
+            } else {
                 CoreSession tmpSession = getTempCoreSession();
                 try {
                     acp = tmpSession.getACP(ref);
-                }
-                finally {
-                    if (tmpSession!=null) {
+                } finally {
+                    if (tmpSession != null) {
                         CoreInstance.getInstance().close(tmpSession);
                     }
                 }
@@ -656,19 +651,17 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     public void setACP(ACP acp, boolean overwrite) throws ClientException {
         CoreSession session = getCoreSession();
-        if (session!=null) {
+        if (session != null) {
             session.setACP(ref, acp, overwrite);
         } else {
             CoreSession tmpSession = getTempCoreSession();
             try {
                 tmpSession.setACP(ref, acp, overwrite);
-            }
-            finally {
-                if (tmpSession!=null) {
+            } finally {
+                if (tmpSession != null) {
                     try {
                         tmpSession.save();
-                    }
-                    finally {
+                    } finally {
                         CoreInstance.getInstance().close(tmpSession);
                     }
                 }
@@ -825,13 +818,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             CoreSession tmpSession = getTempCoreSession();
             try {
                 res = tmpSession.followTransition(ref, transition);
-            }
-            finally {
-                if (tmpSession!=null) {
+            } finally {
+                if (tmpSession != null) {
                     try {
                         tmpSession.save();
-                    }
-                    finally {
+                    } finally {
                         CoreInstance.getInstance().close(tmpSession);
                     }
                 }
@@ -854,9 +845,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             CoreSession tmpSession = getTempCoreSession();
             try {
                 allowedStateTransitions = tmpSession.getAllowedStateTransitions(ref);
-            }
-            finally {
-                if (tmpSession!=null) {
+            } finally {
+                if (tmpSession != null) {
                     CoreInstance.getInstance().close(tmpSession);
                 }
             }
@@ -880,9 +870,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             CoreSession tmpSession = getTempCoreSession();
             try {
                 currentLifeCycleState = tmpSession.getCurrentLifeCycleState(ref);
-            }
-            finally {
-                if (tmpSession!=null) {
+            } finally {
+                if (tmpSession != null) {
                     CoreInstance.getInstance().close(tmpSession);
                 }
             }
@@ -902,9 +891,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             CoreSession tmpSession = getTempCoreSession();
             try {
                 lifeCyclePolicy = tmpSession.getLifeCyclePolicy(ref);
-            }
-            finally {
-                if (tmpSession!=null) {
+            } finally {
+                if (tmpSession != null) {
                     CoreInstance.getInstance().close(tmpSession);
                 }
             }
@@ -1195,15 +1183,15 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
         CoreSession session = getCoreSession();
 
-        if (session!=null) {
+        if (session != null) {
             return session.getDocumentSystemProp(ref, systemProperty, type);
         } else {
             CoreSession tmpSession = getTempCoreSession();
             try {
-                return tmpSession.getDocumentSystemProp(ref, systemProperty, type);
-            }
-            finally {
-                if (tmpSession!=null) {
+                return tmpSession.getDocumentSystemProp(ref, systemProperty,
+                        type);
+            } finally {
+                if (tmpSession != null) {
                     CoreInstance.getInstance().close(tmpSession);
                 }
             }
@@ -1294,7 +1282,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return part.resolvePath(path.toString());
     }
 
-    public Serializable getPropertyValue(String path) throws PropertyException, ClientException {
+    public Serializable getPropertyValue(String path) throws PropertyException,
+            ClientException {
         return getProperty(path).getValue();
     }
 
