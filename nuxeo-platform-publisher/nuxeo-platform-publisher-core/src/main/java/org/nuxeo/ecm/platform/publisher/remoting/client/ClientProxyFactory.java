@@ -1,13 +1,13 @@
 package org.nuxeo.ecm.platform.publisher.remoting.client;
 
-import java.util.Map;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
+
+import java.util.Map;
 
 /**
  * 

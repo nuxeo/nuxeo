@@ -1,10 +1,10 @@
 package org.nuxeo.ecm.platform.publisher.descriptors;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
+
+import java.io.Serializable;
 
 /**
  * 

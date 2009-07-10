@@ -1,7 +1,5 @@
 package org.nuxeo.ecm.platform.publisher.remoting.marshaling.io;
 
-import java.io.IOException;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -10,6 +8,8 @@ import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.AbstractDocumentReader;
 import org.nuxeo.ecm.core.io.impl.ExportedDocumentImpl;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelReader;
+
+import java.io.IOException;
 
 /**
  * 

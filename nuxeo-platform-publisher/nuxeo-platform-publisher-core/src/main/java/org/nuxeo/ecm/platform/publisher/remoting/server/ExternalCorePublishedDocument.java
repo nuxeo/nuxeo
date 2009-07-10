@@ -1,12 +1,12 @@
 package org.nuxeo.ecm.platform.publisher.remoting.server;
 
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.helper.VersioningHelper;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.ExtendedDocumentLocation;
-import org.nuxeo.common.utils.Path;
 
 /**
  * {@link PublishedDocument} implementation that uses a {@link DocumentModel} to

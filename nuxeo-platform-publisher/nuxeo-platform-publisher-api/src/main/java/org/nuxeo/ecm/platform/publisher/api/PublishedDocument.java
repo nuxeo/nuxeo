@@ -1,8 +1,8 @@
 package org.nuxeo.ecm.platform.publisher.api;
 
-import java.io.Serializable;
-
 import org.nuxeo.ecm.core.api.DocumentRef;
+
+import java.io.Serializable;
 
 /**
  * 
@@ -26,7 +26,8 @@ public interface PublishedDocument extends Serializable {
     String getParentPath();
 
     /**
-     * Returns {@code true} if this document is waiting approval, {@code false} otherwise.
+     * Returns {@code true} if this document is waiting approval, {@code false}
+     * otherwise.
      */
     boolean isPending();
 

@@ -1,7 +1,5 @@
 package org.nuxeo.ecm.platform.publisher.test;
 
-import java.util.List;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -15,6 +13,8 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.impl.service.ProxyTree;
 import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
 import org.nuxeo.runtime.api.Framework;
+
+import java.util.List;
 
 /**
  * 
@@ -131,9 +131,8 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         // check publishing
         PublishedDocument pubDoc = tree.publish(doc2Publish, targetNode);
         assertNotNull(pubDoc);
-        assertEquals(1,
-                tree.getExistingPublishedDocument(new DocumentLocationImpl(
-                        doc2Publish)).size());
+        assertEquals(1, tree.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish)).size());
         session.save();
 
         assertEquals("test", pubDoc.getSourceRepositoryName());
@@ -160,9 +159,8 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         PublicationNode targetNode2 = nodes.get(0);
         PublishedDocument pubDoc2 = tree.publish(doc2Publish, targetNode2);
         assertNotNull(pubDoc2);
-        assertEquals(2,
-                tree.getExistingPublishedDocument(new DocumentLocationImpl(
-                        doc2Publish)).size());
+        assertEquals(2, tree.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish)).size());
         session.save();
 
         assertEquals("test", pubDoc2.getSourceRepositoryName());

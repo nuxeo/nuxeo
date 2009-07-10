@@ -1,9 +1,5 @@
 package org.nuxeo.ecm.platform.publisher.remoting.marshaling;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -18,6 +14,10 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.Publishin
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.io.SingleDocumentReaderWithInLineBlobs;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.io.SingleShadowDocumentWriter;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.io.SingleXMlDocumentReader;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 
 /**
  * 

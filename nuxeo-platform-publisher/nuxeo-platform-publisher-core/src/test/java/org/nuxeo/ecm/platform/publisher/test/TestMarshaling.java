@@ -43,5 +43,5 @@ public class TestMarshaling extends TestCase {
         assertEquals(pubDoc.getParentPath(), pubDoc2.getParentPath());
         assertEquals(pubDoc.isPending(), pubDoc2.isPending());
     }
-    
+
 }

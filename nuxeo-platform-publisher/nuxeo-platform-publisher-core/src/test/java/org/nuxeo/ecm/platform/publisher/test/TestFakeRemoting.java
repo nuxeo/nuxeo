@@ -1,7 +1,5 @@
 package org.nuxeo.ecm.platform.publisher.test;
 
-import java.util.List;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -16,6 +14,8 @@ import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
 import org.nuxeo.ecm.platform.publisher.remoting.client.ClientRemotePublicationNode;
 import org.nuxeo.ecm.platform.publisher.remoting.client.ClientRemotePublicationTree;
 import org.nuxeo.runtime.api.Framework;
+
+import java.util.List;
 
 public class TestFakeRemoting extends SQLRepositoryTestCase {
 
@@ -48,8 +48,8 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         DocumentModel wsRoot = session.getDocument(new PathRef(
                 "default-domain/workspaces"));
 
-        workspace = session.createDocumentModel(
-                wsRoot.getPathAsString(), "ws1", "Workspace");
+        workspace = session.createDocumentModel(wsRoot.getPathAsString(),
+                "ws1", "Workspace");
         workspace.setProperty("dublincore", "title", "test WS");
         workspace = session.createDocument(workspace);
 
@@ -71,8 +71,8 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         section11.setProperty("dublincore", "title", "section11");
         section11 = session.createDocument(section11);
 
-        doc2Publish = session.createDocumentModel(workspace.getPathAsString(), "file",
-                "File");
+        doc2Publish = session.createDocumentModel(workspace.getPathAsString(),
+                "file", "File");
         doc2Publish.setProperty("dublincore", "title", "MyDoc");
 
         Blob blob = new StringBlob("SomeDummyContent");
@@ -174,7 +174,8 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
 
         // check unpublish
         tree.unpublish(publishedDocVersion, targetNode);
-        detectedProxies = tree.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish));
+        detectedProxies = tree.getExistingPublishedDocument(new DocumentLocationImpl(
+                doc2Publish));
         assertEquals(1, detectedProxies.size());
 
         tree.unpublish(pubDoc2);
@@ -258,8 +259,8 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.publisher.test",
                 "OSGI-INF/publisher-remote-contrib-test.xml");
 
-        DocumentModel doc  = session.createDocumentModel(workspace.getPathAsString(), "file2",
-                "File");
+        DocumentModel doc = session.createDocumentModel(
+                workspace.getPathAsString(), "file2", "File");
         doc.setProperty("dublincore", "title", "A title with spaces");
 
         Blob blob = new StringBlob("SomeDummyContent");

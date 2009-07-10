@@ -1,9 +1,5 @@
 package org.nuxeo.ecm.platform.publisher.remoting.restHandler;
 
-import java.util.Map;
-
-import javax.ws.rs.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -13,6 +9,9 @@ import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
+
+import javax.ws.rs.*;
+import java.util.Map;
 
 //@Consumes("nuxeo/remotepub")
 @Produces("nuxeo/remotepub; charset=UTF-8")

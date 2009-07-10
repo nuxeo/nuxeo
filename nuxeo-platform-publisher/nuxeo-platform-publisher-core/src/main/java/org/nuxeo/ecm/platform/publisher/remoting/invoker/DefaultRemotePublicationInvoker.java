@@ -1,10 +1,5 @@
 package org.nuxeo.ecm.platform.publisher.remoting.invoker;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -17,6 +12,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePublisherMarshaler;
 import org.nuxeo.ecm.platform.publisher.remoting.server.PublicationInvokationHandler;
 import org.nuxeo.ecm.platform.publisher.remoting.server.TestInvokationHandler;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
 
 /**
  * 

@@ -1,17 +1,16 @@
 package org.nuxeo.ecm.platform.publisher.impl.localfs;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.dom4j.DocumentException;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.publisher.api.AbstractPublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class FSPublicationNode extends AbstractPublicationNode implements
         PublicationNode {

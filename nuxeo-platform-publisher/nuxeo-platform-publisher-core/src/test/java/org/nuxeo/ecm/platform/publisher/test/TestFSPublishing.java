@@ -1,5 +1,20 @@
 package org.nuxeo.ecm.platform.publisher.test;
 
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.platform.publisher.api.*;
+import org.nuxeo.ecm.platform.publisher.descriptors.PublicationTreeConfigDescriptor;
+import org.nuxeo.ecm.platform.publisher.impl.localfs.LocalFSPublicationTree;
+import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
+import org.nuxeo.runtime.api.Framework;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -7,24 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.common.utils.Path;
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.DocumentLocation;
-import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.platform.publisher.api.*;
-import org.nuxeo.ecm.platform.publisher.descriptors.PublicationTreeConfigDescriptor;
-import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
-import org.nuxeo.ecm.platform.publisher.impl.localfs.LocalFSPublicationTree;
-import org.nuxeo.runtime.api.Framework;
-
 public class TestFSPublishing extends SQLRepositoryTestCase {
 
     protected DocumentModel doc2Publish;
+
     protected DocumentLocation doc2publishLocation;
 
     protected File rootFolder;
@@ -231,12 +232,10 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         writeFile(dummyFile, "Dummy File");
 
         // add xml file
-        File xmlFile = new File(
-                new Path(rootFolder.getAbsolutePath()).append("section2").toString(),
-                "xmlFile");
+        File xmlFile = new File(new Path(rootFolder.getAbsolutePath()).append(
+                "section2").toString(), "xmlFile");
         String xmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                + "<html>"
-                + "</html>";
+                + "<html>" + "</html>";
         writeFile(xmlFile, xmlContent);
 
         registerFSTree("TestingFSTree");
@@ -244,7 +243,8 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         PublicationTree tree = service.getPublicationTree("TestingFSTree",
                 session, null);
 
-        assertEquals(0, tree.getExistingPublishedDocument(doc2publishLocation).size());
+        assertEquals(0,
+                tree.getExistingPublishedDocument(doc2publishLocation).size());
 
     }
 
@@ -279,9 +279,11 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         PublicationNode section1 = sectionsNodes.get(0);
         PublishedDocument pubDoc = tree.publish(doc2Publish, section1);
         assertNotNull(pubDoc);
-        assertEquals(1, tree.getExistingPublishedDocument(doc2publishLocation).size());
+        assertEquals(1,
+                tree.getExistingPublishedDocument(doc2publishLocation).size());
 
-        File indexFile = new File(rootFolder, LocalFSPublicationTree.INDEX_FILENAME);
+        File indexFile = new File(rootFolder,
+                LocalFSPublicationTree.INDEX_FILENAME);
         assertTrue(indexFile.exists());
 
         List<String> indexFileLines = FileUtils.readLines(indexFile);
@@ -290,7 +292,8 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         PublicationNode section2 = sectionsNodes.get(1);
         PublishedDocument pubDoc2 = tree.publish(doc2Publish, section2);
         assertNotNull(pubDoc);
-        assertEquals(2, tree.getExistingPublishedDocument(doc2publishLocation).size());
+        assertEquals(2,
+                tree.getExistingPublishedDocument(doc2publishLocation).size());
 
         assertTrue(indexFile.exists());
 
@@ -299,14 +302,17 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
 
         // unpublish
         tree.unpublish(pubDoc);
-        assertEquals(1, tree.getExistingPublishedDocument(doc2publishLocation).size());
+        assertEquals(1,
+                tree.getExistingPublishedDocument(doc2publishLocation).size());
         indexFileLines = FileUtils.readLines(indexFile);
         assertEquals(1, indexFileLines.size());
-        File indexFileTmp = new File(rootFolder, LocalFSPublicationTree.INDEX_FILENAME_TMP);
+        File indexFileTmp = new File(rootFolder,
+                LocalFSPublicationTree.INDEX_FILENAME_TMP);
         assertFalse(indexFileTmp.exists());
 
         tree.unpublish(pubDoc2);
-        assertEquals(0, tree.getExistingPublishedDocument(doc2publishLocation).size());
+        assertEquals(0,
+                tree.getExistingPublishedDocument(doc2publishLocation).size());
         indexFileLines = FileUtils.readLines(indexFile);
         assertEquals(0, indexFileLines.size());
     }

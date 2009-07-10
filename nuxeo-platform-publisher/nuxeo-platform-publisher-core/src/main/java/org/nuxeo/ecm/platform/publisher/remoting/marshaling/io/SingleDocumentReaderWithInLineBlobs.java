@@ -1,12 +1,12 @@
 package org.nuxeo.ecm.platform.publisher.remoting.marshaling.io;
 
-import java.io.IOException;
-
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.ExportedDocumentImpl;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelReader;
+
+import java.io.IOException;
 
 /**
  * 

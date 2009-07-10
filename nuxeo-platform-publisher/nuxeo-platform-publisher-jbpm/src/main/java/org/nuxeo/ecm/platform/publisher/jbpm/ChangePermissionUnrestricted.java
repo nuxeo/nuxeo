@@ -16,22 +16,18 @@
  */
 package org.nuxeo.ecm.platform.publisher.jbpm;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author arussel
- *
+ * 
  */
 public class ChangePermissionUnrestricted extends UnrestrictedSessionRunner {
     private final DocumentModel document;

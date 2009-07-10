@@ -102,8 +102,8 @@ public class DefaultPublishedDocumentMarshaler extends
             String version = rootElem.element(versionLabelTag).getTextTrim();
             String path = rootElem.element(pathTag).getTextTrim();
             String parentPath = rootElem.element(parentPathTag).getTextTrim();
-            boolean isPending = Boolean.parseBoolean(rootElem.element(isPendingTag).getTextTrim());
-
+            boolean isPending = Boolean.parseBoolean(rootElem.element(
+                    isPendingTag).getTextTrim());
 
             pubDoc = new BasicPublishedDocument(docRef, repo, server, version,
                     path, parentPath, isPending);

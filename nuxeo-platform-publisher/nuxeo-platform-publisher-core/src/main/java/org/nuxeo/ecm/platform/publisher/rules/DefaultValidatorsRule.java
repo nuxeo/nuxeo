@@ -19,21 +19,21 @@
 
 package org.nuxeo.ecm.platform.publisher.rules;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Default NXP validator.
  * <p>
  * Validators here will be principals having manage everything rights in the
  * sections where the document has been published.
- *
+ * 
  * @author Julien Anguenot
  */
 public class DefaultValidatorsRule extends AbstractNuxeoCoreValidatorsRule {
@@ -57,8 +57,7 @@ public class DefaultValidatorsRule extends AbstractNuxeoCoreValidatorsRule {
         }
 
         Set<String> requiredPermissions = new HashSet<String>();
-        requiredPermissions.addAll(Arrays.asList(
-                session.getPermissionsToCheck(SecurityConstants.WRITE)));
+        requiredPermissions.addAll(Arrays.asList(session.getPermissionsToCheck(SecurityConstants.WRITE)));
         String[] reviewers = acp.listUsernamesForAnyPermission(requiredPermissions);
 
         try {

@@ -1,7 +1,5 @@
 package org.nuxeo.ecm.platform.publisher.remoting.marshaling;
 
-import java.util.*;
-
 import org.dom4j.*;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -9,6 +7,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.*;
+
+import java.util.*;
 
 /**
  * 

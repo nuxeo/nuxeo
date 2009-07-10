@@ -1,19 +1,19 @@
 package org.nuxeo.ecm.platform.publisher.remoting.server;
 
-import java.util.List;
-import java.util.Map;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
-import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
+import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.DefaultMarshaler;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePublisherMarshaler;
 import org.nuxeo.runtime.api.Framework;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * {@link PublicationInvokationHandler} implementation. Could be called by a
@@ -97,9 +97,11 @@ public class TestInvokationHandler implements PublicationInvokationHandler {
                 }
             } else if ("unpublish".equals(methodName)) {
                 if (params.get(0) instanceof DocumentModel) {
-                    tm.unpublish((DocumentModel) params.get(0), (PublicationNode) params.get(1));
+                    tm.unpublish((DocumentModel) params.get(0),
+                            (PublicationNode) params.get(1));
                 } else if (params.get(1) instanceof PublishedDocument) {
-                    tm.unpublish((String) params.get(0), (PublishedDocument) params.get(1));
+                    tm.unpublish((String) params.get(0),
+                            (PublishedDocument) params.get(1));
                 }
                 return null;
             } else {

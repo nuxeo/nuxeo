@@ -1,10 +1,10 @@
 package org.nuxeo.ecm.platform.publisher.synchonize.server;
 
-import java.util.List;
-
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
+
+import java.util.List;
 
 public interface ServerSynchronizablePublicationTree extends PublicationTree {
 

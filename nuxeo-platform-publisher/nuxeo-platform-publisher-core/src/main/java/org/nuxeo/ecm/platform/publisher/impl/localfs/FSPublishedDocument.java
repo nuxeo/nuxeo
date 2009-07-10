@@ -89,12 +89,13 @@ public class FSPublishedDocument implements PublishedDocument {
         persistPath = filePath;
     }
 
-    public FSPublishedDocument(String server, DocumentModel doc) throws Exception {
+    public FSPublishedDocument(String server, DocumentModel doc)
+            throws Exception {
         this(server, doc, false);
     }
 
-    public FSPublishedDocument(String server, DocumentModel doc, boolean isPending)
-            throws Exception {
+    public FSPublishedDocument(String server, DocumentModel doc,
+            boolean isPending) throws Exception {
 
         sourceRepositoryName = doc.getRepositoryName();
         sourceDocumentRef = doc.getRef();

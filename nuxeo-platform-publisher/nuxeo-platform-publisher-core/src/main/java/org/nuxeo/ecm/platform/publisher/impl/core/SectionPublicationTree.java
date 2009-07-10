@@ -1,11 +1,11 @@
 package org.nuxeo.ecm.platform.publisher.impl.core;
 
+import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.platform.publisher.api.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.nuxeo.ecm.core.api.*;
-import org.nuxeo.ecm.platform.publisher.api.*;
 
 /**
  * Simple implementation of a {@link PublicationTree} using the Core Sections.

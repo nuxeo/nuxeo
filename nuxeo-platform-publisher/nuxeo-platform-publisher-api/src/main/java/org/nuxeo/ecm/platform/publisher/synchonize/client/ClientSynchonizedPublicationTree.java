@@ -1,8 +1,8 @@
 package org.nuxeo.ecm.platform.publisher.synchonize.client;
 
-import java.util.Calendar;
-
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
+
+import java.util.Calendar;
 
 public interface ClientSynchonizedPublicationTree extends PublicationTree {
 

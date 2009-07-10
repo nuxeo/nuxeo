@@ -1,5 +1,13 @@
 package org.nuxeo.ecm.platform.publisher.remoting.restHandler;
 
+import org.nuxeo.ecm.platform.publisher.remoting.marshaling.DefaultMarshaler;
+import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
+import org.nuxeo.ecm.webengine.WebEngine;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,15 +15,6 @@ import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
-
-import org.nuxeo.ecm.platform.publisher.remoting.marshaling.DefaultMarshaler;
-import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
-import org.nuxeo.ecm.webengine.WebEngine;
 
 public class RemotePubMessageReader implements
         MessageBodyReader<RemotePubParam> {

@@ -1,10 +1,5 @@
 package org.nuxeo.ecm.platform.publisher.impl.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -16,12 +11,17 @@ import org.nuxeo.ecm.platform.publisher.api.*;
 import org.nuxeo.ecm.platform.publisher.descriptors.PublicationTreeConfigDescriptor;
 import org.nuxeo.ecm.platform.publisher.descriptors.PublicationTreeDescriptor;
 import org.nuxeo.ecm.platform.publisher.descriptors.PublishedDocumentFactoryDescriptor;
-import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRuleDescriptor;
 import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
+import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRuleDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -166,86 +166,105 @@ public class PublisherServiceImpl extends DefaultComponent implements
 
     protected PublicationTree buildTree(String sid, String treeConfigName,
             CoreSession coreSession, Map<String, String> params) {
-        if (!treeConfigDescriptors.containsKey(treeConfigName)) {
-            log.error("Unknow treeConfig :" + treeConfigName);
-            return null;
-        }
-
-        PublicationTreeConfigDescriptor config = treeConfigDescriptors.get(treeConfigName);
-
-        String treeImplName = config.getTree();
-
-        if (!treeDescriptors.containsKey(treeImplName)) {
-            log.error("Unknow treeImplementation :" + treeImplName);
-            return null;
-        }
-
-        PublicationTreeDescriptor treeDesc = treeDescriptors.get(treeImplName);
-
-        PublicationTree treeImpl;
-
         try {
-            treeImpl = treeDesc.getKlass().newInstance();
-        } catch (Exception e) {
-            log.error("Error while creating tree implementation", e);
+            PublicationTreeConfigDescriptor config = getPublicationTreeConfigDescriptor(treeConfigName);
+            Map<String, String> allParameters = computeAllParameters(config, params);
+            PublicationTreeDescriptor treeDescriptor = getPublicationTreeDescriptor(config);
+            PublishedDocumentFactory publishedDocumentFactory = getPublishedDocumentFactory(config, treeDescriptor, coreSession, allParameters);
+            return getPublicationTree(treeDescriptor,  sid, coreSession, allParameters, publishedDocumentFactory, config.getName());
+        } catch (PublisherException e) {
+            log.error("Unable to build PublicationTree", e);
             return null;
         }
+    }
 
-        String factoryName = config.getFactory();
-        if (factoryName == null) {
-            factoryName = treeDesc.getFactory();
+    protected Map<String, String> computeAllParameters(PublicationTreeConfigDescriptor config, Map<String, String> params) {
+        final Map<String, String> allParameters = config.getParameters();
+        if (params != null) {
+            allParameters.putAll(params);
         }
+        return allParameters;
+    }
 
-        PublishedDocumentFactoryDescriptor factoryDesc = factoryDescriptors.get(factoryName);
-        if (factoryDesc == null) {
-            log.error("Unable to find factory" + factoryName);
-            return null;
-        }
+    protected PublishedDocumentFactory getPublishedDocumentFactory(PublicationTreeConfigDescriptor config, PublicationTreeDescriptor treeDescriptor, CoreSession coreSession, Map<String, String> params) throws PublisherException {
+        PublishedDocumentFactoryDescriptor factoryDesc = getPublishedDocumentFactoryDescriptor(config, treeDescriptor);
+        ValidatorsRule validatorsRule = getValidatorsRule(factoryDesc);
 
         PublishedDocumentFactory factory;
-
         try {
             factory = factoryDesc.getKlass().newInstance();
         } catch (Exception e) {
-            log.error("Error while creating factory " + factoryName, e);
-            return null;
-        }
-
-        Map<String, String> p = config.getParameters();
-        if (params != null) {
-            p.putAll(params);
+            throw new PublisherException("Error while creating factory " + factoryDesc.getName(), e);
         }
 
         try {
-            factory.init(coreSession, p);
+            factory.init(coreSession, validatorsRule, params);
         } catch (Exception e) {
-            log.error("Error during Factory init", e);
-            return null;
+            throw new PublisherException("Error during Factory init", e);
         }
+        return factory;
+    }
 
-        String validatorsRuleName = config.getValidatorsRule();
+    protected ValidatorsRule getValidatorsRule(PublishedDocumentFactoryDescriptor factoryDesc) throws PublisherException {
+        String validatorsRuleName = factoryDesc.getValidatorsRuleName();
         ValidatorsRule validatorsRule = null;
         if (validatorsRuleName != null) {
             ValidatorsRuleDescriptor validatorsRuleDesc = validatorsRuleDescriptors.get(validatorsRuleName);
             if (validatorsRuleDesc == null) {
-                log.error("Unable to find validatorsRule" + validatorsRuleName);
-                return null;
+                throw new PublisherException("Unable to find validatorsRule" + validatorsRuleName);
             }
             try {
                 validatorsRule = validatorsRuleDesc.getKlass().newInstance();
-            } catch(Exception e) {
-                log.error("Error while creating validatorsRule " + validatorsRuleName, e);
-                return null;
+            } catch (Exception e) {
+                throw new PublisherException("Error while creating validatorsRule "
+                        + validatorsRuleName, e);
             }
+        }
+        return validatorsRule;
+    }
+
+    protected PublishedDocumentFactoryDescriptor getPublishedDocumentFactoryDescriptor(PublicationTreeConfigDescriptor config, PublicationTreeDescriptor treeDescriptor) throws PublisherException {
+       String factoryName = config.getFactory();
+        if (factoryName == null) {
+            factoryName = treeDescriptor.getFactory();
+        }
+
+        PublishedDocumentFactoryDescriptor factoryDesc = factoryDescriptors.get(factoryName);
+        if (factoryDesc == null) {
+            throw new PublisherException("Unable to find factory" + factoryName);
+        }
+        return factoryDesc;
+    }
+
+    protected PublicationTreeConfigDescriptor getPublicationTreeConfigDescriptor(String treeConfigName) throws PublisherException {
+        if (!treeConfigDescriptors.containsKey(treeConfigName)) {
+            throw new PublisherException("Unknow treeConfig :" + treeConfigName);
+        }
+        return treeConfigDescriptors.get(treeConfigName);
+    }
+
+    protected PublicationTreeDescriptor getPublicationTreeDescriptor(PublicationTreeConfigDescriptor config) throws PublisherException {
+        String treeImplName = config.getTree();
+        if (!treeDescriptors.containsKey(treeImplName)) {
+            throw new PublisherException("Unknow treeImplementation :" + treeImplName);
+        }
+        return treeDescriptors.get(treeImplName);
+    }
+
+    protected PublicationTree getPublicationTree(PublicationTreeDescriptor treeDescriptor, String sid, CoreSession coreSession, Map<String, String> parameters, PublishedDocumentFactory factory,
+            String configName) throws PublisherException {
+        PublicationTree treeImpl;
+        try {
+            treeImpl = treeDescriptor.getKlass().newInstance();
+        } catch (Exception e) {
+            throw new PublisherException("Error while creating tree implementation", e);
         }
 
         try {
-            treeImpl.initTree(sid, coreSession, p, factory, config.getName(), validatorsRule);
+            treeImpl.initTree(sid, coreSession, parameters, factory, configName);
         } catch (Exception e) {
-            log.error("Error ducing tree init", e);
-            return null;
+            throw new PublisherException("Error ducing tree init", e);
         }
-
         return treeImpl;
     }
 
@@ -375,4 +394,23 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    public void validatorPublishDocument(String sid, PublishedDocument publishedDocument) throws ClientException {
+        PublicationTree tree = liveTrees.get(sid);
+        if (tree != null) {
+            tree.validatorPublishDocument(publishedDocument);
+        } else {
+            throw new ClientException(
+                    "Calling validatorPublishDocument on a closed tree");
+        }
+    }
+
+    public void validatorRejectPublication(String sid, PublishedDocument publishedDocument, String comment) throws ClientException {
+        PublicationTree tree = liveTrees.get(sid);
+        if (tree != null) {
+            tree.validatorRejectPublication(publishedDocument, comment);
+        } else {
+            throw new ClientException(
+                    "Calling validatorPublishDocument on a closed tree");
+        }
+    }
 }

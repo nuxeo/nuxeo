@@ -1,10 +1,5 @@
 package org.nuxeo.ecm.platform.publisher.remoting.client;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -17,6 +12,11 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.DefaultMarshaler;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.basic.BasicPublicationNode;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePublisherMarshaler;
 import org.nuxeo.ecm.platform.publisher.remoting.restProxies.RemotePublicationTreeManagerRestProxy;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 

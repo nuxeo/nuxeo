@@ -19,19 +19,19 @@
 
 package org.nuxeo.ecm.platform.publisher.rules;
 
-import javax.security.auth.login.LoginContext;
-
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
+
+import javax.security.auth.login.LoginContext;
 
 /**
  * Abstract Nuxeo Core Validators Rules.
  * <p>
  * Offers Nuxeo Core base API for validators that need to connect on Nuxeo Core
  * to compute validators.
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public abstract class AbstractNuxeoCoreValidatorsRule implements ValidatorsRule {

@@ -1,12 +1,12 @@
 package org.nuxeo.ecm.platform.publisher.impl.core;
 
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.helper.VersioningHelper;
-import org.nuxeo.common.utils.Path;
 
 /**
  * Implementations of the {@link PublishedDocument} on top of the Core, using

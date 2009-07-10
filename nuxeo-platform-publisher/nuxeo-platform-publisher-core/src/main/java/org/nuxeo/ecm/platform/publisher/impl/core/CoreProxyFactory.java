@@ -1,7 +1,5 @@
 package org.nuxeo.ecm.platform.publisher.impl.core;
 
-import java.util.Map;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -9,6 +7,8 @@ import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublishedDocumentFactory
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
+
+import java.util.Map;
 
 /**
  * 
@@ -41,7 +41,7 @@ public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory
         } else {
             proxy = coreSession.publishDocument(doc, targetDocModel);
         }
-
+        coreSession.save();
         return new SimpleCorePublishedDocument(proxy);
     }
 

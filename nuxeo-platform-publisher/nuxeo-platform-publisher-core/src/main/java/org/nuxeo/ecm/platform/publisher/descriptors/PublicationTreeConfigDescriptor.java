@@ -1,12 +1,12 @@
 package org.nuxeo.ecm.platform.publisher.descriptors;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Descriptor for a PublicationTree configuration

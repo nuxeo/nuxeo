@@ -1,21 +1,6 @@
-<!--
-  ~ (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
-  ~
-  ~ All rights reserved. This program and the accompanying materials
-  ~ are made available under the terms of the GNU Lesser General Public License
-  ~ (LGPL) version 2.1 which accompanies this distribution, and is available at
-  ~ http://www.gnu.org/licenses/lgpl.html
-  ~
-  ~ This library is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  ~ Lesser General Public License for more details.
-  ~
-  ~ Contributors:
-  ~     Thomas Roger
-  -->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-publisher-parent</artifactId>
@@ -45,6 +30,66 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-jbpm-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.jbpm.jbpm3</groupId>
+      <artifactId>jbpm-jpdl</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-content-template-manager</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-types-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-types-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-sql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-types-contrib</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-jbpm-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-jbpm-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.opencsv</groupId>
+      <artifactId>opencsv</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
-  
+
 </project>

@@ -1,13 +1,13 @@
 package org.nuxeo.ecm.platform.publisher.api;
 
-import java.util.List;
-import java.util.Map;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
 import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
+import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
+
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractBasePublicationTree implements PublicationTree {
 
@@ -20,8 +20,6 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
     protected PublicationNode rootNode;
 
     protected PublishedDocumentFactory factory;
-
-    protected ValidatorsRule validatorsRule;
 
     protected CoreSession coreSession;
 
@@ -41,13 +39,8 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
 
     public void initTree(String sid, CoreSession coreSession,
             Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName) throws ClientException {
-        initTree(sid, coreSession, parameters, factory, configName, null);
-    }
-
-    public void initTree(String sid, CoreSession coreSession,
-            Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName, ValidatorsRule validatorsRule) throws ClientException {
+            String configName)
+            throws ClientException {
         this.sid = sid;
         this.coreSession = coreSession;
         if (factory != null)
@@ -71,8 +64,6 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         }
 
         this.configName = configName;
-        this.validatorsRule = validatorsRule;
-        this.factory.setPublicationTree(this);
     }
 
     public String getConfigName() {
@@ -153,11 +144,13 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return iconCollapsed;
     }
 
-    public String[] getValidatorsFor(DocumentModel dm) throws PublishingValidatorException {
-        return validatorsRule.computesValidatorsFor(dm);
+    public void validatorPublishDocument(PublishedDocument publishedDocument)
+            throws PublishingException {
+        factory.validatorPublishDocument(publishedDocument);
     }
 
-    public ValidatorsRule getValidatorsRule() throws PublishingValidatorException {
-        return validatorsRule;
+    public void validatorRejectPublication(PublishedDocument publishedDocument,
+            String comment) throws PublishingException {
+        factory.validatorRejectPublication(publishedDocument, comment);
     }
 }

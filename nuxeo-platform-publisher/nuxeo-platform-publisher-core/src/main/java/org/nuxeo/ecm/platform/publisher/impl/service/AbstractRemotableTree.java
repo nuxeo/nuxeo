@@ -1,18 +1,15 @@
 package org.nuxeo.ecm.platform.publisher.impl.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
-import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
-import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
-import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
+import org.nuxeo.ecm.platform.publisher.api.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -113,4 +110,13 @@ public abstract class AbstractRemotableTree implements PublicationTree {
             log.error("Error during release", e);
         }
     }
+
+    public void validatorPublishDocument(PublishedDocument publishedDocument) throws ClientException {
+        getTreeService().validatorPublishDocument(getServerTreeSessionId(), publishedDocument);
+    }
+
+    public void validatorRejectPublication(PublishedDocument publishedDocument, String comment) throws ClientException {
+        getTreeService().validatorRejectPublication(getServerTreeSessionId(), publishedDocument, comment);
+    }
+    
 }

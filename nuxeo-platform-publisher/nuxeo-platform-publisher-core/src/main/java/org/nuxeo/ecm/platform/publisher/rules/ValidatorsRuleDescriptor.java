@@ -19,10 +19,10 @@
 
 package org.nuxeo.ecm.platform.publisher.rules;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+
+import java.io.Serializable;
 
 /**
  * Validators rule descriptor.
@@ -31,7 +31,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * It might be useful in the future to extend the members of this object to hold
  * other informations about the way we should apply this validator.
  * (placefulness for instance).
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @XObject("validatorsRule")
@@ -52,5 +52,5 @@ public class ValidatorsRuleDescriptor implements Serializable {
     public String getName() {
         return name;
     }
-    
+
 }

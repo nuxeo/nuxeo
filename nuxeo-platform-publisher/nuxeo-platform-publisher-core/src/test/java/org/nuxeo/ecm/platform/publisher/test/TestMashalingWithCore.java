@@ -1,10 +1,5 @@
 package org.nuxeo.ecm.platform.publisher.test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -16,6 +11,11 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.basic.BasicPublicati
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.basic.BasicPublishedDocument;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.DocumentModelMarshaler;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePublisherMarshaler;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Test marshaling with real {@link DocumentModel}
@@ -105,7 +105,8 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
             nodeList.add(new BasicPublicationNode("myType", "/some/path/" + i,
                     "nodeTitle" + i, "treeName"));
             pubDocList.add(new BasicPublishedDocument(new IdRef("id0" + i),
-                    "demorepo", "remoteServer", "version1", "path0" + i, "parentPath0" + i, false));
+                    "demorepo", "remoteServer", "version1", "path0" + i,
+                    "parentPath0" + i, false));
         }
 
         params.add(nodeList);
@@ -134,8 +135,7 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
         assertEquals(
                 ((BasicPublishedDocument) params.get(2)).getSourceDocumentRef(),
                 ((BasicPublishedDocument) params2.get(2)).getSourceDocumentRef());
-        assertEquals(
-                ((BasicPublishedDocument) params.get(2)).isPending(),
+        assertEquals(((BasicPublishedDocument) params.get(2)).isPending(),
                 ((BasicPublishedDocument) params2.get(2)).isPending());
         for (int i = 0; i < 5; i++) {
             assertEquals(

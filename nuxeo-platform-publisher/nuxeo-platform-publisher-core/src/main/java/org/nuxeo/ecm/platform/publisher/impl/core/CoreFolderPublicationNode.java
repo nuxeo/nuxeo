@@ -1,10 +1,10 @@
 package org.nuxeo.ecm.platform.publisher.impl.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.platform.publisher.api.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 

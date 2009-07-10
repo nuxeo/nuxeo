@@ -1,18 +1,18 @@
 package org.nuxeo.ecm.platform.publisher.remoting.server;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
-import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.impl.core.SectionPublicationTree;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.ExtendedDocumentLocation;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.basic.BasicPublishedDocument;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 

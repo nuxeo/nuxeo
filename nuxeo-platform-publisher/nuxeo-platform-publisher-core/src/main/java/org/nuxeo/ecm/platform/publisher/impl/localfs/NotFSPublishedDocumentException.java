@@ -13,7 +13,7 @@ public class NotFSPublishedDocumentException extends RuntimeException {
     public NotFSPublishedDocumentException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
     public NotFSPublishedDocumentException(Throwable cause) {
         super(cause);
     }

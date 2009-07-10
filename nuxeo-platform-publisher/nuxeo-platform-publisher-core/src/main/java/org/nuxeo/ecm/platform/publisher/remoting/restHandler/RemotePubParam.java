@@ -1,10 +1,9 @@
 package org.nuxeo.ecm.platform.publisher.remoting.restHandler;
 
-import java.util.List;
+import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 
 import javax.ws.rs.core.MediaType;
-
-import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
+import java.util.List;
 
 public class RemotePubParam {
 

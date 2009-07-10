@@ -1,8 +1,5 @@
 package org.nuxeo.ecm.platform.publisher.synchonize.server;
 
-import java.util.List;
-import java.util.Map;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -10,6 +7,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
+
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractSynchonizablePublicationTree implements
         ServerSynchronizablePublicationTree {

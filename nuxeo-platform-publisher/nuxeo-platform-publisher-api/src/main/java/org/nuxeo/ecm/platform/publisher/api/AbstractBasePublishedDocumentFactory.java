@@ -1,15 +1,17 @@
 package org.nuxeo.ecm.platform.publisher.api;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
+import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
+import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractBasePublishedDocumentFactory implements
         PublishedDocumentFactory {
@@ -20,17 +22,25 @@ public abstract class AbstractBasePublishedDocumentFactory implements
 
     protected PublicationTree publicationTree;
 
+    protected ValidatorsRule validatorsRule;
+
     public static final String ENABLE_SNAPSHOT = "enableSnapshot";
 
     public static final String TARGET_PUBLISHED_DOCUMENT_STATE = "targetPublishedDocumentState";
 
-    public void init(CoreSession coreSession, Map<String, String> parameters)
+    public void init(CoreSession coreSession, ValidatorsRule validatorsRule, Map<String, String> parameters)
             throws ClientException {
         this.coreSession = coreSession;
         this.parameters = parameters;
+        this.validatorsRule = validatorsRule;
         if (this.parameters == null) {
             this.parameters = new HashMap<String, String>();
         }
+    }
+
+    public void init(CoreSession coreSession, Map<String, String> parameters)
+            throws ClientException {
+        init(coreSession, null, parameters);
     }
 
     public String getName() {
@@ -86,8 +96,22 @@ public abstract class AbstractBasePublishedDocumentFactory implements
         }
     }
 
-    public void setPublicationTree(PublicationTree publicationTree) {
-        this.publicationTree = publicationTree;
+    public String[] getValidatorsFor(DocumentModel dm)
+            throws PublishingValidatorException {
+        return validatorsRule.computesValidatorsFor(dm);
+    }
+
+    public ValidatorsRule getValidatorsRule()
+            throws PublishingValidatorException {
+        return validatorsRule;
+    }
+
+    public void validatorPublishDocument(PublishedDocument publishedDocument)
+            throws PublishingException {
+    }
+
+    public void validatorRejectPublication(PublishedDocument publishedDocument,
+            String comment) throws PublishingException {
     }
     
 }

@@ -1,10 +1,10 @@
 package org.nuxeo.ecm.platform.publisher.descriptors;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
+
+import java.io.Serializable;
 
 /**
  * 
@@ -27,6 +27,9 @@ public class PublishedDocumentFactoryDescriptor implements Serializable {
     @XNode("@class")
     private Class<? extends PublishedDocumentFactory> klass;
 
+    @XNode("@validatorsRule")
+    private String validatorsRuleName;
+
     public String getName() {
         return name;
     }
@@ -43,4 +46,8 @@ public class PublishedDocumentFactoryDescriptor implements Serializable {
         this.klass = klass;
     }
 
+    public String getValidatorsRuleName() {
+        return validatorsRuleName;
+    }
+    
 }

@@ -1,11 +1,11 @@
 package org.nuxeo.ecm.platform.publisher.test;
 
-import java.util.List;
-
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
+import java.util.List;
 
 public class TestServiceRegistration extends NXRuntimeTestCase {
 

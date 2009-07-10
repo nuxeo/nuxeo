@@ -1,19 +1,18 @@
 package org.nuxeo.ecm.platform.publisher.remoting.server;
 
-import java.util.Map;
-
+import org.nuxeo.common.collections.ScopeType;
+import org.nuxeo.common.collections.ScopedMap;
+import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
-import org.nuxeo.common.collections.ScopedMap;
-import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.common.utils.IdUtils;
+
+import java.util.Map;
 
 /**
  * 

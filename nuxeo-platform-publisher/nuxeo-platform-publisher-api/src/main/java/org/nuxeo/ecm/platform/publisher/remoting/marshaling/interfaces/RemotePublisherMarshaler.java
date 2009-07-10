@@ -1,9 +1,9 @@
 package org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+
 import java.util.List;
 import java.util.Map;
-
-import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  * 

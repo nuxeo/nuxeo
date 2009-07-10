@@ -1,12 +1,12 @@
 package org.nuxeo.ecm.platform.publisher.impl.service;
 
-import java.util.List;
-import java.util.Map;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.publisher.api.*;
 import org.nuxeo.runtime.api.Framework;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Remotable implementation of the {@link PublicationTree} interface. Because

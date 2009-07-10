@@ -16,7 +16,6 @@
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-imaging-facade</artifactId>
   <name>Nuxeo Platform Imaging Facade</name>
-  <packaging>ejb</packaging>
 
   <dependencies>
     <dependency>
