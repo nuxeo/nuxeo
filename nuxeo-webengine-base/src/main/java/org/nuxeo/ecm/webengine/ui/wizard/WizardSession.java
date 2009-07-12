@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 
 /**
@@ -32,7 +33,7 @@ public class WizardSession extends HashMap<String, Object> {
 
     protected String id;
     protected Object data;
-    protected WizardException error;
+    protected ValidationException error;
     
     protected WizardPage<?> lastPage;
     protected Map<String, WizardPage<?>> pages;
@@ -95,12 +96,12 @@ public class WizardSession extends HashMap<String, Object> {
         return data;
     }
     
-    public void setError(WizardException e) {
+    public void setError(ValidationException e) {
         this.error = e;
     }
     
-    public WizardException removeError() {
-        WizardException e = error;
+    public ValidationException removeError() {
+        ValidationException e = error;
         error = null;
         return e;
     }

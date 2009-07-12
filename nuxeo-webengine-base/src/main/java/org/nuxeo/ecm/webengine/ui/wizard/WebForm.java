@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.webengine.ui.wizard;
 
 import org.nuxeo.ecm.webengine.forms.FormData;
+import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
@@ -34,7 +35,7 @@ public abstract class WebForm<T> extends Wizard<T> {
         return WizardPage.OK | WizardPage.CANCEL;
     }
     
-    protected abstract String process(WebContext ctx, FormData form, T data) throws WizardException;    
+    protected abstract String process(WebContext ctx, FormData form, T data) throws ValidationException;    
     
     public WizardPage<T> createPage() {
         return new Page(getId(), getStyle());
@@ -51,7 +52,7 @@ public abstract class WebForm<T> extends Wizard<T> {
         public Page(String id, int style) {
             super (id, style);
         }
-        public String process(WebContext ctx, FormData form, T data) throws WizardException {
+        public String process(WebContext ctx, FormData form, T data) throws ValidationException {
             return WebForm.this.process(ctx, form, data);
         };
     }

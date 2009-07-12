@@ -19,6 +19,7 @@ package org.nuxeo.ecm.webengine.ui.wizard;
 import java.io.Serializable;
 
 import org.nuxeo.ecm.webengine.forms.FormData;
+import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
@@ -87,6 +88,6 @@ public abstract class WizardPage<T> implements Serializable {
      * @return the next page name or null if this is the last page
      * @throws WizardException if a validation error (or other wizard related error occurred)
      */
-    public abstract String process(WebContext ctx, FormData form, T data) throws WizardException;
+    public abstract String process(WebContext ctx, FormData form, T data) throws ValidationException;
     
 }

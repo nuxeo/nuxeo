@@ -23,6 +23,7 @@ import javax.ws.rs.Path;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 /**
@@ -43,7 +44,7 @@ public abstract class Wizard<T> extends DefaultObject {
     
     protected WizardSession session;
     protected WizardPage<T> page; // current wizard page
-    protected WizardException error;
+    protected ValidationException error;
     
     protected abstract WizardPage<T>[] createPages();
     
@@ -98,11 +99,11 @@ public abstract class Wizard<T> extends DefaultObject {
         return page.isCancelEnabled();
     }
 
-    public WizardException getError() {
+    public ValidationException getError() {
         return error;
     }
     
-    protected Object performOk() throws WizardException {
+    protected Object performOk() throws ValidationException {
         return redirect(getPrevious().getPath());
     }
 
@@ -110,7 +111,7 @@ public abstract class Wizard<T> extends DefaultObject {
         return redirect(getPrevious().getPath());
     }
 
-    protected Object handleValidationError(WizardException e) {
+    protected Object handleValidationError(ValidationException e) {
         // set the error and redisplay the current page
         session.setError(e);
         return redirect(getPath());
@@ -119,7 +120,7 @@ public abstract class Wizard<T> extends DefaultObject {
     protected Object handleError(Throwable e) {
         // set the error and redisplay the current page
         log.error("Processing failed in wizard page: "+session.getPage().getId(), e);
-        session.setError(new WizardException("Processing failed: "+e.getMessage(), e));
+        session.setError(new ValidationException("Processing failed: "+e.getMessage(), e));
         return redirect(getPath());
     }
 
@@ -138,7 +139,7 @@ public abstract class Wizard<T> extends DefaultObject {
                 session.pushPage(pageId);
                 return redirect(getPath());                
             }
-        } catch (WizardException e) {
+        } catch (ValidationException e) {
             return handleValidationError(e);
         } catch (Throwable t) {
             return handleError(t);
@@ -167,7 +168,7 @@ public abstract class Wizard<T> extends DefaultObject {
             Object result = performOk();
             destroySession();
             return result;                
-        } catch (WizardException e) {
+        } catch (ValidationException e) {
             return handleValidationError(e);
         } catch (Throwable t) {
             return handleError(t);
