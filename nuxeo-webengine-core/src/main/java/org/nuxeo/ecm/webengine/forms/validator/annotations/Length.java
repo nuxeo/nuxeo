@@ -13,33 +13,24 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.ecm.webengine.forms.validator.annotations;
 
-package org.nuxeo.ecm.webengine.forms;
-
-import java.util.Map;
-
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentModel;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface FormInstance extends FormDataProvider {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Length {
 
-    Object[] get(String key);
-
-    Blob getBlob(String key);
-
-    Blob[] getBlobs(String key);
-
-    Map<String, String[]> getFormFields();
-
-    Map<String, Blob[]> getBlobFields();
-
-    void fillDocument(DocumentModel doc);
-
+    public int value() default -1;
+    public int min() default Integer.MIN_VALUE;
+    public int max() default Integer.MAX_VALUE;
+    
 }

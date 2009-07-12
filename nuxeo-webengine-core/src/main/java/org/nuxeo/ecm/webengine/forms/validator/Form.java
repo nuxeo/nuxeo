@@ -13,33 +13,28 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.ecm.webengine.forms.validator;
 
-package org.nuxeo.ecm.webengine.forms;
+import java.util.Collection;
 
-import java.util.Map;
-
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.webengine.forms.FormDataProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface FormInstance extends FormDataProvider {
-
-    Object[] get(String key);
-
-    Blob getBlob(String key);
-
-    Blob[] getBlobs(String key);
-
-    Map<String, String[]> getFormFields();
-
-    Map<String, Blob[]> getBlobFields();
-
-    void fillDocument(DocumentModel doc);
-
+public interface Form {
+        
+    Collection<String> unknownKeys();    
+ 
+    /**
+     * This method must never be called by clients. It is internal to 
+     * validation implementation and should be called only by implementors.
+     * @param data the form data source
+     * @param proxy the proxy to the user form
+     * @throws ValidationException
+     */
+    void loadData(FormDataProvider data, Form proxy) throws ValidationException;
+    
 }

@@ -13,32 +13,19 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.ecm.webengine.forms.validator;
 
-package org.nuxeo.ecm.webengine.forms.validation;
 
-import org.nuxeo.ecm.webengine.forms.FormInstance;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Constraint {
+public abstract class AbstractFieldValidator implements FieldValidator {
 
-    Constraint newInstance();
-
-    void init(Field field, String value);
-
-    void add(Constraint constraint);
-
-    boolean isContainer();
-
-    Status validate(FormInstance form,  Field field, String rawValue, Object value);
-
-    String getErrorMessage();
-
-    void setErrorMessage(String errorMessage);
-
+    public Class<?> getType() {
+        return null;
+    }
+    
 }

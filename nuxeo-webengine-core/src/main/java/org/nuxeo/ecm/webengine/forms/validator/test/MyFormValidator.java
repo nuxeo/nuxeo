@@ -13,33 +13,29 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.ecm.webengine.forms.validator.test;
 
-package org.nuxeo.ecm.webengine.forms;
+import org.nuxeo.ecm.webengine.forms.FormDataProvider;
+import org.nuxeo.ecm.webengine.forms.validator.Form;
+import org.nuxeo.ecm.webengine.forms.validator.FormValidator;
+import org.nuxeo.ecm.webengine.forms.validator.ValidationException;
 
-import java.util.Map;
-
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface FormInstance extends FormDataProvider {
+public class MyFormValidator implements FormValidator {
 
-    Object[] get(String key);
-
-    Blob getBlob(String key);
-
-    Blob[] getBlobs(String key);
-
-    Map<String, String[]> getFormFields();
-
-    Map<String, Blob[]> getBlobFields();
-
-    void fillDocument(DocumentModel doc);
-
+    public void validate(FormDataProvider data, Form form)
+            throws ValidationException {
+        MyForm myForm = (MyForm)form;
+        String pwd = myForm.getPassword();
+        String vpwd = myForm.getVerifyPassword();
+        if (!pwd.equals(vpwd)) {
+            throw new ValidationException().addField("verifyPassword");
+        }
+    }
+    
 }

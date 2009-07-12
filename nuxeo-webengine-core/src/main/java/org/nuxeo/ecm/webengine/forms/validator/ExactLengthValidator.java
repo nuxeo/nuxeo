@@ -13,25 +13,28 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.ecm.webengine.forms.validator;
 
-package org.nuxeo.ecm.webengine.forms.validation;
 
 /**
+ * 
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TypeException extends Exception {
+public class ExactLengthValidator implements FieldValidator {
 
-    private static final long serialVersionUID = -7278027648077598245L;
-
-    public TypeException() {
+    protected int length;
+    
+    public ExactLengthValidator(int length) {
+        this.length = length;
     }
 
-    public TypeException(String message) {
-        super(message);
+    public void validate(String value, Object decoded) throws ValidationException {
+        if (value.length()!= length) {
+            throw new ValidationException();
+        }
     }
 
 }

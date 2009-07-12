@@ -13,44 +13,30 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.ecm.webengine.forms.validator;
 
-package org.nuxeo.ecm.webengine.forms.validation.constraints;
-
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.nuxeo.ecm.webengine.forms.FormInstance;
-import org.nuxeo.ecm.webengine.forms.validation.Field;
-import org.nuxeo.ecm.webengine.forms.validation.Status;
 
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Like extends SimpleConstraint {
+public class RegexValidator implements FieldValidator {
 
+    protected String regex;
     protected Pattern pattern;
-
-    @Override
-    public void doInit(Field field, String value, Object decodedValue) {
-        pattern = Pattern.compile(value);
+    
+    public RegexValidator(String regex) {
+        this.regex = regex;
+        this.pattern = Pattern.compile(regex);
     }
-
-    @Override
-    public Status doValidate(FormInstance form, Field field, String rawValue, Object value) {
-        assert pattern != null;
-        Matcher m = pattern.matcher(rawValue);
-        return m.matches() ? Status.OK
-                : error(field);
-    }
-
-    @Override
-    public String toString() {
-        return "~"+pattern;
+    
+    public void validate(String value, Object decoded) throws ValidationException {
+        if (!pattern.matcher(value).matches()) {
+            throw new ValidationException();
+        }
     }
 
 }

@@ -13,41 +13,16 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
-package org.nuxeo.ecm.webengine.forms.validation;
-
-
+package org.nuxeo.ecm.webengine.forms.validator;
 
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ErrorStatus extends AbstractStatus {
+public interface FieldValidator {
 
-    public ErrorStatus(String field) {
-        this (field, "");
-    }
-
-    public ErrorStatus(String field, String message) {
-        this.field = field;
-        this.message = message;
-    }
-
-    public Status[] getChildren() {
-        return null;
-    }
-
-    public boolean isMultiStatus() {
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return isOk ? "OK" : "KO: "+getMessage();
-    }
-
+    void validate(String value, Object decoded) throws ValidationException;
+    
 }

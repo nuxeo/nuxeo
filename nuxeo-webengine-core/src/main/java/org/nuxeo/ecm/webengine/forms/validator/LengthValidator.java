@@ -13,35 +13,34 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.ecm.webengine.forms.validator;
 
-package org.nuxeo.ecm.webengine.forms.validation;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
+ * 
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ValidationException extends Exception {
+public class LengthValidator implements FieldValidator {
 
-    private static final long serialVersionUID = 531665422854150881L;
-
-    protected final Collection<ErrorStatus> errors;
-
-    public ValidationException(Collection<ErrorStatus> errors) {
-        this.errors = errors;
+    protected int min;
+    protected int max;
+    
+    public LengthValidator(int min, int max) {
+        this.min = min;
+        this.max = max;
     }
 
-    public ValidationException(ErrorStatus error) {
-        errors = Collections.singleton(error);
+    public void validate(String value, Object decoded) throws ValidationException {
+        if (!validateLength(value.length())) {
+            throw new ValidationException();
+        }
     }
 
-    public Collection<ErrorStatus> getErrors() {
-        return errors;
+    protected boolean validateLength(int len) {
+        return len > min && len < max;
     }
 
 }

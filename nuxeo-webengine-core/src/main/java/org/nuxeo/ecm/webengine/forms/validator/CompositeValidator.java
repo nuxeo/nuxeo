@@ -13,37 +13,24 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
-package org.nuxeo.ecm.webengine.forms.validation.constraints;
+package org.nuxeo.ecm.webengine.forms.validator;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.nuxeo.ecm.webengine.forms.validation.Constraint;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class ContainerConstraint extends AbstractConstraint {
+public class CompositeValidator extends ArrayList<FieldValidator> implements FieldValidator {
 
-    protected final List<Constraint> children = new ArrayList<Constraint>();
-
-    @Override
-    public void add(Constraint constraint) {
-        children.add(constraint);
+    private static final long serialVersionUID = -1851648770815748104L;    
+    
+    public void validate(String value, Object decoded) throws ValidationException {
+        for (int i=0,len=size(); i<len; i++) {
+            get(i).validate(value, decoded);
+        }
     }
-
-    @Override
-    public boolean isContainer() {
-        return true;
-    }
-
-    public List<Constraint> getChildren() {
-        return children;
-    }
-
+    
 }

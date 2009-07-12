@@ -46,6 +46,9 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.forms.validator.Form;
+import org.nuxeo.ecm.webengine.forms.validator.FormManager;
+import org.nuxeo.ecm.webengine.forms.validator.ValidationException;
 import org.nuxeo.ecm.webengine.servlet.WebConst;
 import org.nuxeo.runtime.services.streaming.ByteArraySource;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
@@ -439,4 +442,10 @@ public class FormData implements FormInstance {
         return getString(TITLE);
     }
 
+    public <T extends Form> T validate(Class<T> type) throws ValidationException {
+        T proxy = FormManager.newProxy(type);
+        proxy.loadData(this, proxy);
+        return proxy;
+    }
+    
 }

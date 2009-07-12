@@ -13,36 +13,22 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.ecm.webengine.forms.validator.annotations;
 
-package org.nuxeo.ecm.webengine.forms.validation.constraints;
-
-import org.nuxeo.ecm.webengine.forms.FormInstance;
-import org.nuxeo.ecm.webengine.forms.validation.Constraint;
-import org.nuxeo.ecm.webengine.forms.validation.Field;
-import org.nuxeo.ecm.webengine.forms.validation.Status;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class True extends AbstractConstraint {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Enumeration {
 
-    public static final Constraint INSTANCE = new True();
-
-    private True() {}
-
-
-    @Override
-    public Status validate(FormInstance form, Field field, String rawValue, Object value) {
-        return Status.OK;
-    }
-
-    @Override
-    public String toString() {
-        return "TRUE";
-    }
-
+    public String[] value();
+    
 }
