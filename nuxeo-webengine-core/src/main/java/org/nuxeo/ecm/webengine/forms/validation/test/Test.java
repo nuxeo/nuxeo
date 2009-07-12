@@ -14,12 +14,12 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator.test;
+package org.nuxeo.ecm.webengine.forms.validation.test;
 
 import java.util.Arrays;
 
 import org.nuxeo.ecm.webengine.forms.SimpleFormDataProvider;
-import org.nuxeo.ecm.webengine.forms.validator.ValidationException;
+import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

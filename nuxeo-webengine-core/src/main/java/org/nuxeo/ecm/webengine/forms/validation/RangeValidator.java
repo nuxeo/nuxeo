@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator;
+package org.nuxeo.ecm.webengine.forms.validation;
 
 
 /**
@@ -23,24 +23,30 @@ package org.nuxeo.ecm.webengine.forms.validator;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class LengthValidator implements FieldValidator {
+public class RangeValidator implements FieldValidator {
 
-    protected int min;
-    protected int max;
-    
-    public LengthValidator(int min, int max) {
+    protected boolean negate;
+    protected double min = Double.MIN_VALUE;
+    protected double max = Double.MAX_VALUE;
+
+    public RangeValidator(double min, double max, boolean negate) {
         this.min = min;
         this.max = max;
+        this.negate = negate;
+    }
+    
+    public boolean validateNumber(Number value) {
+        double d = value.doubleValue();
+        boolean result = false;
+        result = d > min && d < max;
+        return negate ? !result : result;
     }
 
+        
     public void validate(String value, Object decoded) throws ValidationException {
-        if (!validateLength(value.length())) {
+        if (!validateNumber((Number)decoded)) {
             throw new ValidationException();
         }
-    }
-
-    protected boolean validateLength(int len) {
-        return len > min && len < max;
     }
 
 }

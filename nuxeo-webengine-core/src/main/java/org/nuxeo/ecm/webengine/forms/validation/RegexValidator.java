@@ -14,23 +14,29 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator.annotations;
+package org.nuxeo.ecm.webengine.forms.validation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.regex.Pattern;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Range {
+public class RegexValidator implements FieldValidator {
 
-    public double min() default Double.MIN_VALUE;
-    public double max() default Double.MAX_VALUE;
-    public boolean negate() default false;
+    protected String regex;
+    protected Pattern pattern;
     
+    public RegexValidator(String regex) {
+        this.regex = regex;
+        this.pattern = Pattern.compile(regex);
+    }
+    
+    public void validate(String value, Object decoded) throws ValidationException {
+        if (!pattern.matcher(value).matches()) {
+            throw new ValidationException();
+        }
+    }
+
 }

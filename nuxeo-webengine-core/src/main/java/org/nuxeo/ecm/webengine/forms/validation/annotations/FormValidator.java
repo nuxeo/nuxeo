@@ -14,28 +14,21 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator.test;
+package org.nuxeo.ecm.webengine.forms.validation.annotations;
 
-import org.nuxeo.ecm.webengine.forms.FormDataProvider;
-import org.nuxeo.ecm.webengine.forms.validator.Form;
-import org.nuxeo.ecm.webengine.forms.validator.FormValidator;
-import org.nuxeo.ecm.webengine.forms.validator.ValidationException;
-
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class MyFormValidator implements FormValidator {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface FormValidator {
 
-    public void validate(FormDataProvider data, Form form)
-            throws ValidationException {
-        MyForm myForm = (MyForm)form;
-        String pwd = myForm.getPassword();
-        String vpwd = myForm.getVerifyPassword();
-        if (!pwd.equals(vpwd)) {
-            throw new ValidationException().addField("verifyPassword");
-        }
-    }
-    
+    Class<? extends org.nuxeo.ecm.webengine.forms.validation.FormValidator> value();
+
 }

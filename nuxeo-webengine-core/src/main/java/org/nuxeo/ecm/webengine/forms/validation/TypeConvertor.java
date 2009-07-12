@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator;
+package org.nuxeo.ecm.webengine.forms.validation;
 
 import java.lang.reflect.Array;
 import java.util.Calendar;

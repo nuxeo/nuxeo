@@ -14,27 +14,21 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator;
+package org.nuxeo.ecm.webengine.forms.validation.annotations;
 
-import java.util.Collection;
-
-import org.nuxeo.ecm.webengine.forms.FormDataProvider;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Form {
-        
-    Collection<String> unknownKeys();    
- 
-    /**
-     * This method must never be called by clients. It is internal to 
-     * validation implementation and should be called only by implementors.
-     * @param data the form data source
-     * @param proxy the proxy to the user form
-     * @throws ValidationException
-     */
-    void loadData(FormDataProvider data, Form proxy) throws ValidationException;
-    
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface FieldValidator {
+
+    Class<? extends FieldValidator> value();
+
 }

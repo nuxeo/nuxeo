@@ -14,15 +14,15 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator.test;
+package org.nuxeo.ecm.webengine.forms.validation.test;
 
-import org.nuxeo.ecm.webengine.forms.validator.Form;
-import org.nuxeo.ecm.webengine.forms.validator.annotations.FormValidator;
-import org.nuxeo.ecm.webengine.forms.validator.annotations.Length;
-import org.nuxeo.ecm.webengine.forms.validator.annotations.NotNull;
-import org.nuxeo.ecm.webengine.forms.validator.annotations.Range;
-import org.nuxeo.ecm.webengine.forms.validator.annotations.Regex;
-import org.nuxeo.ecm.webengine.forms.validator.annotations.Required;
+import org.nuxeo.ecm.webengine.forms.validation.Form;
+import org.nuxeo.ecm.webengine.forms.validation.annotations.FormValidator;
+import org.nuxeo.ecm.webengine.forms.validation.annotations.Length;
+import org.nuxeo.ecm.webengine.forms.validation.annotations.NotNull;
+import org.nuxeo.ecm.webengine.forms.validation.annotations.Range;
+import org.nuxeo.ecm.webengine.forms.validation.annotations.Regex;
+import org.nuxeo.ecm.webengine.forms.validation.annotations.Required;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

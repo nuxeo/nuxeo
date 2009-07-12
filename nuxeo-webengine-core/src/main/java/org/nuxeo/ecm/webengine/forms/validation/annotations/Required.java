@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator.annotations;
+package org.nuxeo.ecm.webengine.forms.validation.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -27,10 +27,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Length {
-
-    public int value() default -1;
-    public int min() default Integer.MIN_VALUE;
-    public int max() default Integer.MAX_VALUE;
-    
+public @interface Required {
+        
 }

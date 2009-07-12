@@ -14,7 +14,9 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator;
+package org.nuxeo.ecm.webengine.forms.validation;
+
+import java.util.Collection;
 
 import org.nuxeo.ecm.webengine.forms.FormDataProvider;
 
@@ -22,8 +24,17 @@ import org.nuxeo.ecm.webengine.forms.FormDataProvider;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface FormValidator {
-
-    void validate(FormDataProvider data, Form form) throws ValidationException;
+public interface Form {
+        
+    Collection<String> unknownKeys();    
+ 
+    /**
+     * This method must never be called by clients. It is internal to 
+     * validation implementation and should be called only by implementors.
+     * @param data the form data source
+     * @param proxy the proxy to the user form
+     * @throws ValidationException
+     */
+    void loadData(FormDataProvider data, Form proxy) throws ValidationException;
     
 }

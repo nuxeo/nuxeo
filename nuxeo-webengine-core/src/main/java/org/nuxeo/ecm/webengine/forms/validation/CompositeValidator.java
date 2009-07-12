@@ -14,39 +14,23 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator;
+package org.nuxeo.ecm.webengine.forms.validation;
+
+import java.util.ArrayList;
 
 
 /**
- * 
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class RangeValidator implements FieldValidator {
+public class CompositeValidator extends ArrayList<FieldValidator> implements FieldValidator {
 
-    protected boolean negate;
-    protected double min = Double.MIN_VALUE;
-    protected double max = Double.MAX_VALUE;
-
-    public RangeValidator(double min, double max, boolean negate) {
-        this.min = min;
-        this.max = max;
-        this.negate = negate;
-    }
+    private static final long serialVersionUID = -1851648770815748104L;    
     
-    public boolean validateNumber(Number value) {
-        double d = value.doubleValue();
-        boolean result = false;
-        result = d > min && d < max;
-        return negate ? !result : result;
-    }
-
-        
     public void validate(String value, Object decoded) throws ValidationException {
-        if (!validateNumber((Number)decoded)) {
-            throw new ValidationException();
+        for (int i=0,len=size(); i<len; i++) {
+            get(i).validate(value, decoded);
         }
     }
-
+    
 }

@@ -14,26 +14,16 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator.annotations;
+package org.nuxeo.ecm.webengine.forms.validation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.nuxeo.ecm.webengine.forms.FormDataProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface NotNull {
+public interface FormValidator {
 
-    /**
-     * A default value if null (empty)
-     * @return
-     */
-    String value() default "";
-
-
+    void validate(FormDataProvider data, Form form) throws ValidationException;
+    
 }

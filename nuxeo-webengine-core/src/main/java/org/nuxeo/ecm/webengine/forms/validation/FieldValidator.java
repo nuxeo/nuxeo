@@ -14,21 +14,15 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator.annotations;
+package org.nuxeo.ecm.webengine.forms.validation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface FieldValidator {
+public interface FieldValidator {
 
-    Class<? extends FieldValidator> value();
-
+    void validate(String value, Object decoded) throws ValidationException;
+    
 }

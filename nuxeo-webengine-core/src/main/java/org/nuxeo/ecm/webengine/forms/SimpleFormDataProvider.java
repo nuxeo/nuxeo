@@ -19,9 +19,9 @@ package org.nuxeo.ecm.webengine.forms;
 import java.util.Collection;
 import java.util.HashMap;
 
-import org.nuxeo.ecm.webengine.forms.validator.Form;
-import org.nuxeo.ecm.webengine.forms.validator.FormManager;
-import org.nuxeo.ecm.webengine.forms.validator.ValidationException;
+import org.nuxeo.ecm.webengine.forms.validation.Form;
+import org.nuxeo.ecm.webengine.forms.validation.FormManager;
+import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

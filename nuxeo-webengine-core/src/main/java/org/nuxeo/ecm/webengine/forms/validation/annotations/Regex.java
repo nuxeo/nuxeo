@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator.annotations;
+package org.nuxeo.ecm.webengine.forms.validation.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

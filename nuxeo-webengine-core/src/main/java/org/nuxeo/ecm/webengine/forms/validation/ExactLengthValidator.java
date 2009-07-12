@@ -14,18 +14,27 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator;
-
+package org.nuxeo.ecm.webengine.forms.validation;
 
 
 /**
+ * 
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class AbstractFieldValidator implements FieldValidator {
+public class ExactLengthValidator implements FieldValidator {
 
-    public Class<?> getType() {
-        return null;
-    }
+    protected int length;
     
+    public ExactLengthValidator(int length) {
+        this.length = length;
+    }
+
+    public void validate(String value, Object decoded) throws ValidationException {
+        if (value.length()!= length) {
+            throw new ValidationException();
+        }
+    }
+
 }

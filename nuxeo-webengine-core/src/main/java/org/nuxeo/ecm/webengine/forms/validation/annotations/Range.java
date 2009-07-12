@@ -14,23 +14,23 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator;
+package org.nuxeo.ecm.webengine.forms.validation.annotations;
 
-import java.util.ArrayList;
-
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class CompositeValidator extends ArrayList<FieldValidator> implements FieldValidator {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Range {
 
-    private static final long serialVersionUID = -1851648770815748104L;    
-    
-    public void validate(String value, Object decoded) throws ValidationException {
-        for (int i=0,len=size(); i<len; i++) {
-            get(i).validate(value, decoded);
-        }
-    }
+    public double min() default Double.MIN_VALUE;
+    public double max() default Double.MAX_VALUE;
+    public boolean negate() default false;
     
 }

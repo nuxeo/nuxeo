@@ -14,27 +14,28 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator;
+package org.nuxeo.ecm.webengine.forms.validation.test;
+
+import org.nuxeo.ecm.webengine.forms.FormDataProvider;
+import org.nuxeo.ecm.webengine.forms.validation.Form;
+import org.nuxeo.ecm.webengine.forms.validation.FormValidator;
+import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
 
 
 /**
- * 
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ExactLengthValidator implements FieldValidator {
+public class MyFormValidator implements FormValidator {
 
-    protected int length;
-    
-    public ExactLengthValidator(int length) {
-        this.length = length;
-    }
-
-    public void validate(String value, Object decoded) throws ValidationException {
-        if (value.length()!= length) {
-            throw new ValidationException();
+    public void validate(FormDataProvider data, Form form)
+            throws ValidationException {
+        MyForm myForm = (MyForm)form;
+        String pwd = myForm.getPassword();
+        String vpwd = myForm.getVerifyPassword();
+        if (!pwd.equals(vpwd)) {
+            throw new ValidationException().addField("verifyPassword");
         }
     }
-
+    
 }

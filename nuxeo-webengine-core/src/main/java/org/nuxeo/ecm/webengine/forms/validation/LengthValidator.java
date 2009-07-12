@@ -14,29 +14,33 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator;
-
-import java.util.regex.Pattern;
+package org.nuxeo.ecm.webengine.forms.validation;
 
 
 /**
+ * 
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class RegexValidator implements FieldValidator {
+public class LengthValidator implements FieldValidator {
 
-    protected String regex;
-    protected Pattern pattern;
+    protected int min;
+    protected int max;
     
-    public RegexValidator(String regex) {
-        this.regex = regex;
-        this.pattern = Pattern.compile(regex);
+    public LengthValidator(int min, int max) {
+        this.min = min;
+        this.max = max;
     }
-    
+
     public void validate(String value, Object decoded) throws ValidationException {
-        if (!pattern.matcher(value).matches()) {
+        if (!validateLength(value.length())) {
             throw new ValidationException();
         }
+    }
+
+    protected boolean validateLength(int len) {
+        return len > min && len < max;
     }
 
 }

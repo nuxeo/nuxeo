@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.forms.validator;
+package org.nuxeo.ecm.webengine.forms.validation;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -23,12 +23,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.nuxeo.ecm.webengine.forms.validator.annotations.Enumeration;
-import org.nuxeo.ecm.webengine.forms.validator.annotations.Length;
-import org.nuxeo.ecm.webengine.forms.validator.annotations.NotNull;
-import org.nuxeo.ecm.webengine.forms.validator.annotations.Range;
-import org.nuxeo.ecm.webengine.forms.validator.annotations.Regex;
-import org.nuxeo.ecm.webengine.forms.validator.annotations.Required;
+import org.nuxeo.ecm.webengine.forms.validation.annotations.Enumeration;
+import org.nuxeo.ecm.webengine.forms.validation.annotations.Length;
+import org.nuxeo.ecm.webengine.forms.validation.annotations.NotNull;
+import org.nuxeo.ecm.webengine.forms.validation.annotations.Range;
+import org.nuxeo.ecm.webengine.forms.validation.annotations.Regex;
+import org.nuxeo.ecm.webengine.forms.validation.annotations.Required;
 
 
 /**
@@ -60,7 +60,7 @@ public class FormDescriptor {
             }
             fields.put(name, field);
         }
-        org.nuxeo.ecm.webengine.forms.validator.annotations.FormValidator fv = type.getAnnotation(org.nuxeo.ecm.webengine.forms.validator.annotations.FormValidator.class);
+        org.nuxeo.ecm.webengine.forms.validation.annotations.FormValidator fv = type.getAnnotation(org.nuxeo.ecm.webengine.forms.validation.annotations.FormValidator.class);
         if (fv != null) {
             validator = fv.value().newInstance();
         }
@@ -114,7 +114,7 @@ public class FormDescriptor {
                 validator.add(new RangeValidator(range.min(), range.max(), range.negate()));
             }
             // custom validator
-            org.nuxeo.ecm.webengine.forms.validator.annotations.FieldValidator custom = m.getAnnotation(org.nuxeo.ecm.webengine.forms.validator.annotations.FieldValidator.class);
+            org.nuxeo.ecm.webengine.forms.validation.annotations.FieldValidator custom = m.getAnnotation(org.nuxeo.ecm.webengine.forms.validation.annotations.FieldValidator.class);
             if (custom != null) {
                 validator.add((FieldValidator)custom.value().newInstance());
             }            
