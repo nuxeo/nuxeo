@@ -71,6 +71,10 @@ public abstract class Wizard<T> extends DefaultObject {
         }
     }
     
+    public T getData() {
+        return (T)session.getData();
+    }
+    
     protected String createSessionId() {
         return "wizard:"+getClass();
     }
