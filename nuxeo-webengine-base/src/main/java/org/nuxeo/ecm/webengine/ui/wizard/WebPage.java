@@ -18,19 +18,23 @@ package org.nuxeo.ecm.webengine.ui.wizard;
 
 
 /**
- * A web form is a single page wizard.
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class WebForm<T> extends Wizard<T> {
+public abstract class WebPage<T> extends WizardPage<T> {
 
-    public abstract WizardPage<T> createPage();
+    private static final long serialVersionUID = 1L;
 
-    @Override
-    @SuppressWarnings("unchecked")
-    protected WizardPage<T>[] createPages() {
-        return new WizardPage[] {createPage()};
+    public WebPage() {
+        super ("index", OK | CANCEL);
+    }
+
+    public WebPage(String id, int style) {
+        super(id, style);
+    }
+
+    public WebPage(int style) {
+        super("index", style);
     }
 
 }
