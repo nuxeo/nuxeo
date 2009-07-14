@@ -16,25 +16,28 @@
  */
 package org.nuxeo.ecm.webengine.ui.wizard;
 
+import org.nuxeo.ecm.webengine.forms.validation.Form;
+
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class WebPage<T> extends WizardPage<T> {
+public class WebPage extends WizardPage {
 
     private static final long serialVersionUID = 1L;
 
-    public WebPage() {
-        super ("index", OK | CANCEL);
+    public WebPage(Class<? extends Form> formType) {
+        super ("index", formType, OK | CANCEL);
     }
 
-    public WebPage(String id, int style) {
-        super(id, style);
+    public WebPage(String id, Class<? extends Form> formType, int style) {
+        super(id, formType, style);
     }
 
-    public WebPage(int style) {
-        super("index", style);
+    public WebPage(Class<? extends Form> formType, int style) {
+        super("index", formType, style);
     }
-
+    
 }

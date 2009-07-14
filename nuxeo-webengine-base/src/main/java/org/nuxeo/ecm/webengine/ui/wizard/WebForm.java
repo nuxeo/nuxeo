@@ -23,13 +23,12 @@ package org.nuxeo.ecm.webengine.ui.wizard;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class WebForm<T> extends Wizard<T> {
+public abstract class WebForm extends Wizard {
 
-    public abstract WizardPage<T> createPage();
+    public abstract WizardPage createPage();
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected WizardPage<T>[] createPages() {
+    protected WizardPage[] createPages() {
         return new WizardPage[] {createPage()};
     }
 

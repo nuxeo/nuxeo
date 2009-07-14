@@ -18,18 +18,18 @@ package org.nuxeo.ecm.webengine.ui.wizard;
 
 import java.io.Serializable;
 
-import org.nuxeo.ecm.webengine.forms.FormData;
-import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
-import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.forms.validation.Form;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class WizardPage<T> implements Serializable {
+public class WizardPage implements Serializable {
 
     private static final long serialVersionUID = -1156377274574342525L;
 
+    public final static String NEXT_PAGE = "";
+    
     public final static int NEXT = 1;
     public final static int BACK = 2;
     public final static int CANCEL = 4;
@@ -40,26 +40,43 @@ public abstract class WizardPage<T> implements Serializable {
     public final static int LAST = OK | BACK | CANCEL;
     
     
+    protected int index;
+    protected String nextPageId;
+    protected Class<? extends Form> formType;
     protected String id;
     protected int style;
+    protected Form form; // the submitted form if any 
 
-    protected WizardPage<T> prev; // to implement a stack of pages
+    protected WizardPage prev; // to implement a stack of pages
     
-    public WizardPage(String id) {
-        this (id, MIDDLE);
+    public WizardPage(String id, Class<? extends Form> formType) {
+        this (id, formType, MIDDLE);
     }
 
-    public WizardPage(String id, int style) {
+    public WizardPage(String id, Class<? extends Form> formType, int style) {
+        this (id, formType, NEXT_PAGE, style);
+    }
+
+    public WizardPage(String id, Class<? extends Form> formType, String nextPageId) {
+        this (id, formType, nextPageId, MIDDLE);
+    }
+    
+    public WizardPage(String id, Class<? extends Form> formType, String nextPageId, int style) {
         this.id = id;
+        this.formType = formType;
+        this.nextPageId = nextPageId;
         this.style = style;
         this.prev = null;
     }
     
+    public Class<? extends Form> getFormType() {
+        return formType;
+    }
     
     public String getId() {
         return id;
     }
-    
+
     public boolean isNextEnabled() {
         return (style & NEXT) != 0;
     }
@@ -76,18 +93,24 @@ public abstract class WizardPage<T> implements Serializable {
         return (style & CANCEL) != 0;
     }
     
-    /**
-     * Process the submitted data from this page and update the session data accordingly.
-     * If data validation fails a {@link WizardException} must be thrown so that the wizard can handle
-     * this by redirecting back to the page with the error [pushed into the page context 
-     * (available in templates as ${This.error})
-     *   
-     * @param ctx the web context
-     * @param for the submitted form
-     * @param data the session data
-     * @return the next page name or null if this is the last page
-     * @throws WizardException if a validation error (or other wizard related error occurred)
-     */
-    public abstract String process(WebContext ctx, FormData form, T data) throws ValidationException;
+    public void setForm(Form form) {
+        this.form = form;
+    }
+    
+    public Form getForm() {
+        return form;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+    
+    public int getIndex() {
+        return index;
+    }
+    
+    public <T extends Form> String getNextPage(Wizard wizard, T form) {
+        return nextPageId;
+    }
     
 }

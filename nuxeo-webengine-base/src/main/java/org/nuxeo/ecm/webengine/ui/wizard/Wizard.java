@@ -16,6 +16,11 @@
  */
 package org.nuxeo.ecm.webengine.ui.wizard;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -23,6 +28,7 @@ import javax.ws.rs.Path;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.webengine.forms.validation.Form;
 import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
@@ -37,18 +43,22 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@SuppressWarnings("unchecked")
-public abstract class Wizard<T> extends DefaultObject {
+public abstract class Wizard extends DefaultObject {
 
     private final static Log log = LogFactory.getLog(Wizard.class);
+
+    public final static String[] EMPTY = new String[0];
     
     protected WizardSession session;
-    protected WizardPage<T> page; // current wizard page
+    protected WizardPage page; // current wizard page
     protected ValidationException error;
+    protected Map<String,String[]> initialFields;
     
-    protected abstract WizardPage<T>[] createPages();
+    protected abstract WizardPage[] createPages();
     
-    protected abstract T createData();
+    protected Map<String,String[]> createInitialFields() {
+        return null;
+    }
 
     @Override
     protected void initialize(Object... args) {
@@ -59,9 +69,12 @@ public abstract class Wizard<T> extends DefaultObject {
         if (session == null) {
             session = new WizardSession(key, createPages());
             httpSession.setAttribute(key, session);
-            session.setData(createData());
+            initialFields = createInitialFields();
+            if (initialFields == null) {
+                initialFields = new HashMap<String, String[]>();
+            }
         }        
-        page = (WizardPage<T>)session.getPage(); // the current page
+        page = (WizardPage)session.getPage(); // the current page
     }
 
     protected void destroySession() {
@@ -70,11 +83,7 @@ public abstract class Wizard<T> extends DefaultObject {
             httpSession.removeAttribute(session.getId());
         }
     }
-    
-    public T getData() {
-        return (T)session.getData();
-    }
-    
+        
     protected String createSessionId() {
         return "wizard:"+getClass();
     }
@@ -83,7 +92,7 @@ public abstract class Wizard<T> extends DefaultObject {
         return session;
     }
     
-    public WizardPage<T> getPage() {
+    public WizardPage getPage() {
         return page;
     }
     
@@ -107,12 +116,66 @@ public abstract class Wizard<T> extends DefaultObject {
         return error;
     }
     
-    protected Object performOk() throws ValidationException {
-        return redirect(getPrevious().getPath());
+    @SuppressWarnings("unchecked")
+    public Map<String,String[]> getFormFields() {
+        Form form = session.getPage().getForm();
+        if (form != null) {
+            return form.fields();
+        }        
+        return initialFields == null ? Collections.EMPTY_MAP : initialFields;
+    }
+    
+    public String getField(String key) {        
+        String[] v = getFormFields().get(key);
+        return v != null && v.length > 0 ? v[0] : null;
     }
 
-    protected Object performCancel() {
-        return redirect(getPrevious().getPath());
+    public String[] getFields(String key) {
+        String[] fields = getFormFields().get(key);
+        return fields == null ? EMPTY : fields;
+    }
+
+    public Collection<String> getInvalidFields() {
+        if (error != null) {
+            return error.getInvalidFields();
+        }
+        return null;
+    }
+
+    public Collection<String> getRequireddFields() {
+        if (error != null) {
+            return error.getRequiredFields();
+        }
+        return null;
+    }
+    
+    public boolean hasErrors() {
+        return error != null;
+    }
+
+    public boolean hasErrors(String key) {
+        if (error != null) {
+            return error.hasErrors(key);
+        }
+        return false;
+    }
+
+    protected Object redirectOnOk() {
+        return redirect(getPrevious().getPath());   
+    }
+
+    protected Object redirectOnCancel() {
+        return redirect(getPrevious().getPath());    
+    }
+    
+    public <T extends Form> T getForm(Class<T> formType) {
+        return session.getForm(formType);
+    }
+    
+    protected abstract void performOk() throws ValidationException;
+
+    protected void performCancel() {
+        destroySession();
     }
 
     protected Object handleValidationError(ValidationException e) {
@@ -128,17 +191,32 @@ public abstract class Wizard<T> extends DefaultObject {
         return redirect(getPath());
     }
 
+    @SuppressWarnings("unchecked")
+    public <T extends Form> T validate(WizardPage page) throws ValidationException {
+        try {
+            Form form = ctx.getForm().validate(page.getFormType());
+            page.setForm(form);
+            return (T)form;
+        } catch (ValidationException e) {
+            page.setForm(e.getForm());
+            throw e;
+        }
+    }
     
     @POST
     @Path("next")
     public Object handleNext() {
         String pageId = null;
         try {
-            pageId = page.process(ctx, ctx.getForm(), (T)session.getData());
+            //process page
+            pageId = page.getNextPage(this, validate(page));
+            if (pageId == WizardPage.NEXT_PAGE) {
+                pageId = session.getPageAt(page.getIndex()+1);
+            }
             if (pageId == null) { // finish the wizard
-                Object result = performOk();
+                performOk();
                 destroySession();
-                return result;                
+                return redirectOnOk();                
             } else { // go to the next page
                 session.pushPage(pageId);
                 return redirect(getPath());                
@@ -160,18 +238,18 @@ public abstract class Wizard<T> extends DefaultObject {
     @POST
     @Path("cancel")
     public Object handleCancel() {
-        destroySession();
-        return performCancel();
+        performCancel();
+        return redirectOnCancel();
     }
 
     @POST
     @Path("ok")
     public Object handleOk() {
         try {
-            page.process(ctx, ctx.getForm(), (T)session.getData()); // don't matter if there is a next page
-            Object result = performOk();
+            validate(page);// don't matter if there is a next page
+            performOk();
             destroySession();
-            return result;                
+            return redirectOnOk();
         } catch (ValidationException e) {
             return handleValidationError(e);
         } catch (Throwable t) {

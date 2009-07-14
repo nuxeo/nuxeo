@@ -1,3 +1,14 @@
+
+<#macro errorIcon field message>
+  <#if This.hasErrors(field)><img src="${skinPath}/image/error.gif" title="${message}"></#if>
+</#macro>
+
+<#macro errors>
+  <#if This.error??>
+  	<p><font color="red"><b>Errors: </b><ul>${This.error.xmlMessage}</ul></font></p>
+  </#if>
+</#macro>
+
 <#macro ok>
 <#if This.isOkEnabled()>  
   <input type="button" class="wizardButton" value="Ok" onClick="this.form.action='${This.path}/ok'; this.form.submit();">
