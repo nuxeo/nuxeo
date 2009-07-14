@@ -18,6 +18,7 @@ package org.nuxeo.ecm.webengine.forms;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.ecm.webengine.forms.validation.Form;
 import org.nuxeo.ecm.webengine.forms.validation.FormManager;
@@ -47,6 +48,10 @@ public class SimpleFormDataProvider extends HashMap<String,String[]>  implements
         return null;
     }
 
+    public Map<String, String[]> getFormFields() {
+        return this;
+    }
+    
     public void putString(String key, String value) {
         put(key, new String[] {value});
     }
@@ -55,10 +60,23 @@ public class SimpleFormDataProvider extends HashMap<String,String[]>  implements
         put(key, values);
     }
 
+    public void putList(String key, Collection<String> values) {
+        if (values == null) {
+            return;
+        }
+        String[] ar = values.toArray(new String[values.size()]);
+        put(key, ar);
+    }
+
     public <T extends Form> T validate(Class<T> type) throws ValidationException {
         T proxy = FormManager.newProxy(type);
-        proxy.loadData(this, proxy);
-        return proxy;
+        try {
+            proxy.load(this, proxy);        
+            return proxy;
+        } catch (ValidationException e) {
+            e.setForm(proxy);
+            throw e;
+        }
     }
 
 }

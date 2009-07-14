@@ -28,7 +28,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.forms.FormDataProvider;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -37,40 +39,68 @@ import org.nuxeo.ecm.webengine.forms.FormDataProvider;
 public class FormManager implements InvocationHandler, Form {
 
     protected Map<String, Object> map;
+    protected Map<String, String[]> fields;
     protected List<String> unknownKeys;
     protected FormDescriptor fd;
 
     
     public FormManager(FormDescriptor fd) {
         this.fd = fd;
-        map = new HashMap<String, Object>();
         unknownKeys = new ArrayList<String>();
+        map = new HashMap<String, Object>(); // remove any previous data
+        fields = new HashMap<String, String[]>(); // remove any previous data
+        //TODO when implementing file upload - remove here any previously created file 
     }
     
     public Collection<String> unknownKeys() {
         return unknownKeys;
     }
     
+    public Map<String,String[]> fields() {
+        return fields;
+    }
+    
     @SuppressWarnings("unchecked")
-    public void loadData(FormDataProvider data, Form proxy) throws ValidationException {
+    public void load(FormDataProvider data, Form proxy) throws ValidationException {
         ValidationException ve = null;
         HashSet<String> reqs = (HashSet<String>)fd.requiredFields.clone();
         for (String key : data.getKeys()) {
-            reqs.remove(key);
+            String[] values = data.getList(key);
+            if (values != null) {
+                int k=0;
+                for (String v : values) {
+                    if (v.length() == 0) {
+                        k++;
+                    }
+                }
+                if (k == values.length) { 
+                    values = null;
+                }
+            }
+            if (values != null) {                
+                fields.put(key, values);
+                reqs.remove(key);
+            }            
             FormDescriptor.Field f = fd.fields.get(key);
             if (f != null) {
-                Object o = null;
+                Object o = null;                
                 try {
                     if (f.isArray) {
-                        o = f.validateArray(data.getList(key));
+                        if (values != null) {
+                            o = f.validateArray(values);
+                        }
                     } else {
-                        o = f.validate(data.getString(key));
+                        String v = values != null && values.length > 0 ? values[0] : null;                        
+                        if (v != null && v.length() > 0) {
+                            
+                            o = f.validate(v);
+                        }
                     }
                 } catch (ValidationException e) {
                     if (ve == null) {
                         ve = e;
                     }
-                    ve.addField(key);
+                    ve.addInvalidField(key);
                 }
                 map.put(key, o);
             } else {
@@ -122,7 +152,14 @@ public class FormManager implements InvocationHandler, Form {
     
     @SuppressWarnings("unchecked")
     public static <T> T newProxy(Class<T> type) {
-        return (T)Proxy.newProxyInstance(FormManager.class.getClassLoader(), 
+        ClassLoader cl = null;
+        try {
+            WebEngine we = Framework.getLocalService(WebEngine.class);
+            cl = we != null ? we.getWebLoader().getClassLoader() : FormManager.class.getClassLoader();  
+        } catch (Exception e) { // this is needed to be able to run tests (no framework or webengine installed)
+            cl = FormManager.class.getClassLoader();
+        }        
+        return (T)Proxy.newProxyInstance(cl, 
                 new Class<?>[] {type}, 
                 new FormManager(getDescriptor(type)));
     }

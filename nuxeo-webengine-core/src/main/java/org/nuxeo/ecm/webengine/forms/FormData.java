@@ -444,8 +444,13 @@ public class FormData implements FormInstance {
 
     public <T extends Form> T validate(Class<T> type) throws ValidationException {
         T proxy = FormManager.newProxy(type);
-        proxy.loadData(this, proxy);
-        return proxy;
+        try {
+            proxy.load(this, proxy);
+            return proxy;
+        } catch (ValidationException e) {
+            e.setForm(proxy);
+            throw e;
+        }
     }
     
 }

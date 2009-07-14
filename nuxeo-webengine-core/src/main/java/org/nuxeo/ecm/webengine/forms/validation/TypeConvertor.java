@@ -23,6 +23,9 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.runtime.api.Framework;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -164,13 +167,17 @@ public abstract class TypeConvertor<T> {
         @Override
         public Class<?> convert(String value) throws ValidationException {
             try {
-                return Class.forName(value);
+                return loadClass(value);
             } catch (Exception e) {
                 throw new ValidationException();
             }
         }
     };
 
+
+    public static Class<?> loadClass(String name) throws Exception {
+        return Framework.getLocalService(WebEngine.class).loadClass(name);
+    }
     
     private static final Pattern PATTERN = Pattern.compile(
     "(\\d{4})(?:-(\\d{2}))?(?:-(\\d{2}))?(?:[Tt](?:(\\d{2}))?(?::(\\d{2}))?(?::(\\d{2}))?(?:\\.(\\d{3}))?)?([Zz])?(?:([+-])(\\d{2}):(\\d{2}))?");

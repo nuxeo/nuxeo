@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.webengine.forms;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -29,5 +30,7 @@ public interface FormDataProvider {
     String getString(String key);
     
     String[] getList(String key);
+    
+    Map<String, String[]> getFormFields();
     
 }

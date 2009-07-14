@@ -131,7 +131,8 @@ public class FormDescriptor {
         }
         
         Object validate(String value) throws ValidationException {
-            if (value == null || value.length() == 0) {                
+            if (value == null || value.length() == 0) {
+                value = null; // "" empty strings are treated as null values
                 if (notnull)  {
                     throw new ValidationException();
                 } else if (defaultValue != null) {

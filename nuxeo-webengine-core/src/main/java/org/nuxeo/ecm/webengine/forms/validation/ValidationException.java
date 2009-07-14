@@ -19,8 +19,10 @@
 
 package org.nuxeo.ecm.webengine.forms.validation;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -30,54 +32,129 @@ public class ValidationException extends Exception {
 
     private static final long serialVersionUID = 531665422854150881L;
 
-    protected Collection<String> fields;
-    protected Collection<String> requiredFields;
+    public static final String IS_REQUIRED_MSG = "is required";
+    public static final String IS_INVALID_MSG = "is invalid";
+    
+    protected Map<String, String> invalidFields;
+    protected Map<String, String> requiredFields;
+    
+    protected transient Form form; // the form that has errors - should be set by the caller 
 
     public ValidationException(String message) {
         super(message);
-        fields = new ArrayList<String>();
-        requiredFields = new ArrayList<String>();
+        invalidFields = new HashMap<String, String>();
+        requiredFields = new HashMap<String, String>();
     }
 
     public ValidationException(String message, Throwable cause) {
         super(message, cause);
-        fields = new ArrayList<String>();
-        requiredFields = new ArrayList<String>();
+        invalidFields = new HashMap<String, String>();
+        requiredFields = new HashMap<String, String>();
     }
 
     public ValidationException() {
-        fields = new ArrayList<String>();
-        requiredFields = new ArrayList<String>();
+        invalidFields = new HashMap<String, String>();
+        requiredFields = new HashMap<String, String>();
     }
     
-    public ValidationException addRequiredField(String field) {
-        requiredFields.add(field);
+    @Override
+    public String getMessage() {
+        String message = super.getMessage();
+        if (message == null) {
+            StringBuilder buf = new StringBuilder();
+            if (hasRequiredFields()) {
+                for (Map.Entry<String,String> entry : requiredFields.entrySet()) {
+                    String msg = entry.getValue();
+                    buf.append(entry.getKey()).append(": ").append(msg == null ? IS_REQUIRED_MSG : msg).append("\n");
+                }
+            }
+            if (hasInvalidFields()) {
+                for (Map.Entry<String,String> entry : invalidFields.entrySet()) {
+                    String msg = entry.getValue();
+                    buf.append(entry.getKey()).append(": ").append(msg == null ? IS_INVALID_MSG : msg).append("\n");
+                }
+            }
+            return buf.toString();
+        }
+        return message;
+    }
+
+    public String getXmlMessage() {
+        String message = super.getMessage();
+        if (message == null) {
+            StringBuilder buf = new StringBuilder();
+            if (hasRequiredFields()) {
+                for (Map.Entry<String,String> entry : requiredFields.entrySet()) {
+                    String msg = entry.getValue();
+                    buf.append("<li>").append(entry.getKey()).append(": ").append(msg == null ? IS_REQUIRED_MSG : msg);
+                }
+            }
+            if (hasInvalidFields()) {
+                for (Map.Entry<String,String> entry : invalidFields.entrySet()) {
+                    String msg = entry.getValue();
+                    buf.append("<li>").append(entry.getKey()).append(": ").append(msg == null ? IS_INVALID_MSG : msg);
+                }
+            }
+            return buf.toString();
+        }
+        return message;
+    }
+
+
+    public ValidationException addRequiredField(String key) {
+        requiredFields.put(key, null);
         return this;
     }
 
-    public ValidationException addField(String field) {
-        fields.add(field);
+    public ValidationException addRequiredField(String key, String message) {
+        requiredFields.put(key, message);
         return this;
+    }
+
+    public ValidationException addInvalidField(String key) {
+        invalidFields.put(key, null);
+        return this;
+    }
+
+    public ValidationException addInvalidField(String key, String message) {
+        invalidFields.put(key, message);
+        return this;
+    }
+
+    public boolean hasFieldErrors() {
+        return !requiredFields.isEmpty() || !invalidFields.isEmpty();
+    }
+
+    public boolean hasInvalidFields() {
+        return !invalidFields.isEmpty();
     }
 
     public boolean hasRequiredFields() {
         return !requiredFields.isEmpty();
     }
 
-    public boolean hasFields() {
-        return !fields.isEmpty();
-    }
-    
-    public boolean isFieldException() {
-        return hasFields() || hasRequiredFields();
-    }
-
-    public Collection<String> getFields() {
-        return fields;
-    }
-
     public Collection<String> getRequiredFields() {
-        return requiredFields;
+        return requiredFields.keySet();
+    }
+
+    public Collection<String> getInvalidFields() {
+        return invalidFields.keySet();
+    }
+
+    public boolean hasErrors(String key) {
+        return requiredFields.containsKey(key) || invalidFields.containsKey(key);
+    }
+
+    public String getError(String key) {
+        String message = requiredFields.get(key);
+        return message == null ? invalidFields.get(key) : message;
+    }
+
+    public void setForm(Form form) {
+        this.form = form;
     }
     
+    public Form getForm() {
+        return form;
+    }
 }

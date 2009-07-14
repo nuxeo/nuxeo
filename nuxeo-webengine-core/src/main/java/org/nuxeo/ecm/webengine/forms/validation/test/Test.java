@@ -33,11 +33,11 @@ public class Test {
             data.putString("title", "my title");
             data.putString("name", "");
             data.putString("age", "40");
-            data.putString("number", "4");
+            data.putString("number", "10");
             data.putList("emails", "a@b.com", "a@abc.com");
-            data.putString("id", "theid");
+            //data.putString("id", "theid");
             data.putString("password", "xxx");
-            data.putString("verifyPassword", "xxx");
+            data.putString("verifyPassword", "xx");
             data.putString("other", "some value");
             MyForm form = data.validate(MyForm.class);
             System.out.println(form.getTitle());
@@ -47,11 +47,8 @@ public class Test {
             System.out.println(Arrays.asList(form.getEmails()));
             System.out.println(form.unknownKeys());
         } catch (ValidationException e) {
-            if (e.hasFields()) {
-                System.err.println("Invalid fields: "+e.getFields());
-            }
-            if (e.hasRequiredFields()) {
-                System.err.println("Missing Required fields: "+e.getRequiredFields());
+            if (e.hasFieldErrors()) {
+                System.err.println("Errors:\n"+e.getMessage());
             }
         }
     }

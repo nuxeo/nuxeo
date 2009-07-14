@@ -34,7 +34,7 @@ public class MyFormValidator implements FormValidator {
         String pwd = myForm.getPassword();
         String vpwd = myForm.getVerifyPassword();
         if (!pwd.equals(vpwd)) {
-            throw new ValidationException().addField("verifyPassword");
+            throw new ValidationException().addInvalidField("verifyPassword");
         }
     }
     
