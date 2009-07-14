@@ -5,7 +5,7 @@
     point="listener">
     <listener name="mailReceivedListener" async="true"
       postCommit="true" priority="140"
-      class="org.nuxeo.ecm.platfrom.mail.listener.MailEventListener">
+      class="org.nuxeo.ecm.platform.mail.listener.MailEventListener">
     </listener>
   </extension>
 
