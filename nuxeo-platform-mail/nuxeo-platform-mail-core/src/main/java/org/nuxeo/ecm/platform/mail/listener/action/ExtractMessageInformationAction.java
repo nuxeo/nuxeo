@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CC_RECIPIENTS_
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MIMETYPE_SERVICE_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.RECIPIENTS_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SENDER_KEY;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SENDER_EMAIL_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SENDING_DATE_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SUBJECT_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.TEXT_KEY;
@@ -92,16 +93,20 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             // Sender
             Address[] from = message.getFrom();
             String sender = null;
+            String senderEmail = null;
             if (from != null) {
                 Address addr = from[0];
                 if (addr instanceof InternetAddress) {
                     InternetAddress iAddr = (InternetAddress) addr;
-                    sender = iAddr.getPersonal() + " " + iAddr.getAddress();
+                    senderEmail = iAddr.getAddress();
+                    sender = iAddr.getPersonal() + " " + senderEmail;
                 } else {
-                    sender += addr.toString();
+                    sender = addr.toString();
+                    senderEmail = sender;
                 }
             }
             context.put(SENDER_KEY, sender);
+            context.put(SENDER_EMAIL_KEY, senderEmail);
 
             // Sending date
             context.put(SENDING_DATE_KEY, message.getSentDate());
