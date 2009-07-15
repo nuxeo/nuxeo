@@ -55,13 +55,11 @@ public abstract class AbstractProperty implements Property {
      */
     public static final int KEYED_DATA = 128;
 
-
     protected final Property parent;
 
     protected int flags;
 
     protected Object data;
-
 
     protected AbstractProperty(Property parent) {
         this.parent = parent;
@@ -75,31 +73,33 @@ public abstract class AbstractProperty implements Property {
     /**
      * Sets the given normalized value.
      * <p>
-     * This applies only for nodes that physically store a value
-     * (that means non container nodes). Container nodes does nothing.
+     * This applies only for nodes that physically store a value (that means non
+     * container nodes). Container nodes does nothing.
      *
      * @param value
      */
-    public abstract void internalSetValue(Serializable value) throws PropertyException;
+    public abstract void internalSetValue(Serializable value)
+            throws PropertyException;
+
     public abstract Serializable internalGetValue() throws PropertyException;
 
-
     public void init(Serializable value) throws PropertyException {
-        if (value == null) { // IGNORE null values - properties will be considered PHANTOMS
+        if (value == null) { // IGNORE null values - properties will be
+                                // considered PHANTOMS
             return;
         }
         internalSetValue(value);
         removePhantomFlag();
     }
 
-    public  void removePhantomFlag() {
+    public void removePhantomFlag() {
         flags &= ~IS_PHANTOM;
         if (parent != null) {
             ((AbstractProperty) parent).removePhantomFlag();
         }
     }
 
-    public Property set(int index, Object value) throws PropertyException{
+    public Property set(int index, Object value) throws PropertyException {
         Property property = get(index);
         property.setValue(value);
         return property;
@@ -115,10 +115,12 @@ public abstract class AbstractProperty implements Property {
 
     public Serializable remove() throws PropertyException {
         Serializable value = getValue();
-        if (parent != null && parent.isList()) { // remove from list is handled separately
+        if (parent != null && parent.isList()) { // remove from list is
+                                                    // handled separately
             ListProperty list = (ListProperty) parent;
             list.remove(this);
-        } else if (!isPhantom()) { // remove from map is easier -> mark the field as removed and remove the value
+        } else if (!isPhantom()) { // remove from map is easier -> mark the
+                                    // field as removed and remove the value
             init(null);
             setIsRemoved();
         }
@@ -230,7 +232,6 @@ public abstract class AbstractProperty implements Property {
         this.flags &= ~flags;
     }
 
-
     public int getDirtyFlags() {
         return flags & DIRTY_MASK;
     }
@@ -245,8 +246,8 @@ public abstract class AbstractProperty implements Property {
     }
 
     /**
-     * This method is public because of DataModelImpl which use it
-     * TODO after removing DataModelImpl make it protected
+     * This method is public because of DataModelImpl which use it TODO after
+     * removing DataModelImpl make it protected
      */
     public void setIsModified() {
         if ((flags & IS_MODIFIED) == 0) { // if not already modified
@@ -261,10 +262,12 @@ public abstract class AbstractProperty implements Property {
 
     protected void setIsNew() {
         if (isDirty()) {
-            throw new IllegalStateException("Cannot set IS_NEW flag on a dirty property");
+            throw new IllegalStateException(
+                    "Cannot set IS_NEW flag on a dirty property");
         }
         // clear dirty + phatom flag if any
-        setDirtyFlags(IS_NEW); // this clear any dirty flag and set the new flag
+        setDirtyFlags(IS_NEW); // this clear any dirty flag and set the new
+                                // flag
         if (parent != null) {
             ((AbstractProperty) parent).setIsModified();
         }
@@ -307,23 +310,22 @@ public abstract class AbstractProperty implements Property {
         // 2. validate if needed
         if (areFlagsSet(IS_VALIDATING)) {
             if (!validate(normalizedValue)) {
-                throw new InvalidPropertyValueException("validating failed for "+normalizedValue);
+                throw new InvalidPropertyValueException(
+                        "validating failed for " + normalizedValue);
             }
         }
         // 3. set the normalized value
         internalSetValue(normalizedValue);
-        //internalSetValue((Serializable)value);
+        // internalSetValue((Serializable)value);
         // 4. update flags
         setIsModified();
     }
 
-    public void setValue(String path, Object value)
-            throws PropertyException {
+    public void setValue(String path, Object value) throws PropertyException {
         resolvePath(path).setValue(value);
     }
 
-    public <T> T getValue(Class<T> type, String path)
-            throws PropertyException {
+    public <T> T getValue(Class<T> type, String path) throws PropertyException {
         return resolvePath(path).getValue(type);
     }
 
@@ -390,16 +392,17 @@ public abstract class AbstractProperty implements Property {
             if (segment.endsWith("]")) {
                 int p = segment.lastIndexOf('[');
                 if (p == -1) {
-                    throw new PropertyNotFoundException(path.toString(), "Parse error: no matching '[' was found");
+                    throw new PropertyNotFoundException(path.toString(),
+                            "Parse error: no matching '[' was found");
                 }
-                index = segment.substring(p+1, segment.length()-1);
+                index = segment.substring(p + 1, segment.length() - 1);
                 segment = segment.substring(0, p);
             }
             if (index == null) {
                 property = property.get(segment);
                 if (property == null) {
-                    throw new PropertyNotFoundException(path.toString(), "segment "
-                            + segments[i] + " cannot be resolved");
+                    throw new PropertyNotFoundException(path.toString(),
+                            "segment " + segments[i] + " cannot be resolved");
                 }
             } else {
                 property = property.get(index);
@@ -408,12 +411,13 @@ public abstract class AbstractProperty implements Property {
         return property;
     }
 
-    public Serializable normalize(Object value) throws PropertyConversionException {
+    public Serializable normalize(Object value)
+            throws PropertyConversionException {
         if (isNormalized(value)) {
             return (Serializable) value;
         }
-        throw new PropertyConversionException(
-                value.getClass(), Serializable.class, getPath());
+        throw new PropertyConversionException(value.getClass(),
+                Serializable.class, getPath());
     }
 
     public boolean isNormalized(Object value) {
@@ -451,23 +455,22 @@ public abstract class AbstractProperty implements Property {
     // return field.equals(p.getField()) && value.equals(p.value);
     // }
     // return false;
-    //    }
-
+    // }
 
     /**
-     *  application data impl. was copied from eclipse Widget class
+     * application data impl. was copied from eclipse Widget class
      */
-    public Object getData () {
-        return (flags & KEYED_DATA) != 0 ? ((Object []) data) [0] : data;
+    public Object getData() {
+        return (flags & KEYED_DATA) != 0 ? ((Object[]) data)[0] : data;
     }
 
-    public Object getData (String key) {
+    public Object getData(String key) {
         if (key == null) {
             throw new IllegalArgumentException("Data Key must not be null");
         }
         if ((flags & KEYED_DATA) != 0) {
-            Object [] table = (Object []) data;
-            for (int i=1; i<table.length; i+=2) {
+            Object[] table = (Object[]) data;
+            for (int i = 1; i < table.length; i += 2) {
                 if (key.equals(table[i])) {
                     return table[i + 1];
                 }
@@ -478,7 +481,7 @@ public abstract class AbstractProperty implements Property {
 
     public void setData(Object value) {
         if ((flags & KEYED_DATA) != 0) {
-            ((Object []) data) [0] = value;
+            ((Object[]) data)[0] = value;
         } else {
             data = value;
         }
@@ -489,9 +492,9 @@ public abstract class AbstractProperty implements Property {
             throw new IllegalArgumentException("Data Key must not be null");
         }
         int index = 1;
-        Object [] table = null;
+        Object[] table = null;
         if ((flags & KEYED_DATA) != 0) {
-            table = (Object []) data;
+            table = (Object[]) data;
             while (index < table.length) {
                 if (key.equals(table[index])) {
                     break;
@@ -502,29 +505,30 @@ public abstract class AbstractProperty implements Property {
         if (value != null) {
             if ((flags & KEYED_DATA) != 0) {
                 if (index == table.length) {
-                    Object [] newTable = new Object [table.length + 2];
-                    System.arraycopy (table, 0, newTable, 0, table.length);
+                    Object[] newTable = new Object[table.length + 2];
+                    System.arraycopy(table, 0, newTable, 0, table.length);
                     data = table = newTable;
                 }
             } else {
-                table = new Object [3];
-                table [0] = data;
+                table = new Object[3];
+                table[0] = data;
                 data = table;
                 flags |= KEYED_DATA;
             }
-            table [index] = key;
-            table [index + 1] = value;
+            table[index] = key;
+            table[index + 1] = value;
         } else {
             if ((flags & KEYED_DATA) != 0) {
                 if (index != table.length) {
                     int length = table.length - 2;
                     if (length == 1) {
-                        data = table [0];
+                        data = table[0];
                         flags &= ~KEYED_DATA;
                     } else {
-                        Object [] newTable = new Object [length];
-                        System.arraycopy (table, 0, newTable, 0, index);
-                        System.arraycopy (table, index + 2, newTable, index, length - index);
+                        Object[] newTable = new Object[length];
+                        System.arraycopy(table, 0, newTable, 0, index);
+                        System.arraycopy(table, index + 2, newTable, index,
+                                length - index);
                         data = newTable;
                     }
                 }
