@@ -466,48 +466,12 @@ public class PublishActionsBean implements PublishActions, Serializable {
         }
     }
 
-    public boolean isPublished() {
-        try {
-            return publishingService.isPublished(navigationContext
-                    .getCurrentDocument());
-        } catch (PublishingException e) {
-            throw new IllegalStateException(
-                    "Publishing service not deployed properly.", e);
-        }
-    }
-
-    protected TreeManager getTreeManager() {
-        if (treeManager == null) {
-            try {
-                treeManager = Framework.getService(TreeManager.class);
-            } catch (Exception e) {
-                log.error("Could not fetch Tree Manager ", e);
-            }
-        }
-
-        return treeManager;
-    }
-
-    @Factory(value = "defaultPublishingRoots", scope = ScopeType.EVENT)
-    public DocumentModelList getSectionRoots() throws ClientException {
-        return getRootFinder().getDefaultSectionRoots(true);
-    }
-
-    protected RootSectionsFinder getRootFinder() {
-        if (rootFinder == null) {
-            rootFinder = new RootSectionsFinder(documentManager,
-                    getSectionRootTypes(), getSectionTypes());
-        }
-        return rootFinder;
-    }
-
     @Factory(value = "availablePublicationTrees", scope = ScopeType.EVENT)
     public List<String> getAvailablePublicationTrees()
             throws ClientException {
         List<String> publicationsTrees = publisherService.getAvailablePublicationTree();
         return publicationsTrees;
     }
-
 
     public String getFormattedPath(DocumentModel documentModel)
             throws ClientException {
@@ -546,67 +510,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
             return;
         }
         getPathFragments(parentDocument, pathFragments);
-    }
-
-    public String addSection(String sectionId) throws ClientException {
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
-
-        if (sectionId != null && currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
-            String[] sectionIdsArray = (String[]) currentDocument
-                    .getPropertyValue(SECTIONS_PROPERTY_NAME);
-
-            List<String> sectionIdsList = new ArrayList<String>();
-
-            if (sectionIdsArray != null && sectionIdsArray.length > 0) {
-                sectionIdsList = Arrays.asList(sectionIdsArray);
-                // make it resizable
-                sectionIdsList = new ArrayList<String>(sectionIdsList);
-            }
-
-            sectionIdsList.add(sectionId);
-            String[] sectionIdsListIn = new String[sectionIdsList.size()];
-            sectionIdsList.toArray(sectionIdsListIn);
-
-            currentDocument.setPropertyValue(SECTIONS_PROPERTY_NAME,
-                    sectionIdsListIn);
-            documentManager.saveDocument(currentDocument);
-            documentManager.save();
-
-            getRootFinder().reset();
-        }
-
-        return null;
-    }
-
-    public String removeSection(String sectionId) throws ClientException {
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
-
-        if (sectionId != null && currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
-            String[] sectionIdsArray = (String[]) currentDocument
-                    .getPropertyValue(SECTIONS_PROPERTY_NAME);
-
-            List<String> sectionIdsList = new ArrayList<String>();
-
-            if (sectionIdsArray != null && sectionIdsArray.length > 0) {
-                sectionIdsList = Arrays.asList(sectionIdsArray);
-                // make it resizable
-                sectionIdsList = new ArrayList<String>(sectionIdsList);
-            }
-
-            if (!sectionIdsList.isEmpty()) {
-                sectionIdsList.remove(sectionId);
-
-                String[] sectionIdsListIn = new String[sectionIdsList.size()];
-                sectionIdsList.toArray(sectionIdsListIn);
-
-                currentDocument.setPropertyValue(SECTIONS_PROPERTY_NAME,
-                        sectionIdsListIn);
-                documentManager.saveDocument(currentDocument);
-                documentManager.save();
-            }
-        }
-
-        return null;
     }
 
     public String doPublish(PublicationNode publicationNode) throws Exception {

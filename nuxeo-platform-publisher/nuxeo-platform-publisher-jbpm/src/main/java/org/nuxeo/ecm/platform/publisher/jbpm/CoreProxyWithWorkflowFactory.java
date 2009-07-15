@@ -52,9 +52,9 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
 
     public static final String ACL_NAME = "org.nuxeo.ecm.platform.publisher.jbpm.CoreProxyWithWorkflowFactory";
 
-    private JbpmService jbpmService;
+    protected JbpmService jbpmService;
 
-    private EventProducer eventProducer;
+    protected EventProducer eventProducer;
 
     @Override
     public PublishedDocument publishDocument(DocumentModel doc,
@@ -83,7 +83,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         return publishedDocument;
     }
 
-    private DocumentModel publish(DocumentModel doc,
+    protected DocumentModel publish(DocumentModel doc,
             PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
         DocumentModel targetDocModel;
@@ -103,7 +103,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         return publisher.getModel();
     }
 
-    public boolean isValidator(DocumentModel document, NuxeoPrincipal principal)
+    protected boolean isValidator(DocumentModel document, NuxeoPrincipal principal)
             throws PublishingException {
         try {
             String[] validators = getValidatorsFor(document);
@@ -168,7 +168,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
 
     }
 
-    private JbpmService getJbpmService() {
+    protected JbpmService getJbpmService() {
         if (jbpmService == null) {
             try {
                 jbpmService = Framework.getService(JbpmService.class);
@@ -200,7 +200,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         }
     }
 
-    public void notifyEvent(String eventId,
+    protected void notifyEvent(String eventId,
             Map<String, Serializable> properties, String comment,
             String category, DocumentModel dm, CoreSession coreSession)
             throws ClientException {
@@ -257,7 +257,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         ((SimpleCorePublishedDocument) publishedDocument).setPending(false);   
     }
 
-    private static void removeACL(DocumentModel document,
+    protected void removeACL(DocumentModel document,
             CoreSession coreSession) throws PublishingException {
         try {
             RemoveACLUnrestricted remover = new RemoveACLUnrestricted(
@@ -268,7 +268,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         }
     }
 
-    private void endTask(DocumentModel document, NuxeoPrincipal currentUser)
+    protected void endTask(DocumentModel document, NuxeoPrincipal currentUser)
             throws PublishingException {
         try {
             List<TaskInstance> tis = getJbpmService().getTaskInstances(
@@ -300,7 +300,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         }
     }
 
-    private static void removeProxy(DocumentModel doc, CoreSession coreSession)
+    protected void removeProxy(DocumentModel doc, CoreSession coreSession)
             throws PublishingException {
         try {
             DeleteDocumentUnrestricted deleter = new DeleteDocumentUnrestricted(

@@ -118,5 +118,13 @@ public abstract class AbstractRemotableTree implements PublicationTree {
     public void validatorRejectPublication(PublishedDocument publishedDocument, String comment) throws ClientException {
         getTreeService().validatorRejectPublication(getServerTreeSessionId(), publishedDocument, comment);
     }
+
+    public boolean canPublishTo(PublicationNode publicationNode) throws ClientException {
+        return getTreeService().canPublishTo(getServerTreeSessionId(), publicationNode);
+    }
+
+    public boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException {
+        return getTreeService().canUnpublish(getServerTreeSessionId(), publishedDocument);
+    }
     
 }

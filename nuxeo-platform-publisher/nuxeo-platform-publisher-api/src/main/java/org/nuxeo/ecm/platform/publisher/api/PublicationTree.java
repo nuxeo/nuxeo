@@ -72,4 +72,20 @@ public interface PublicationTree extends PublicationNode {
     void validatorRejectPublication(PublishedDocument publishedDocument,
             String comment) throws ClientException;
 
+    /**
+     * Returns {@code true} if the current user can publish to the specified publicationNode, {@code false} otherwise.
+     * @param publicationNode 
+     * @return {@code true} if the current user can publish to the specified publicationNode, {@code false} otherwise.
+     * @throws ClientException
+     */
+    boolean canPublishTo(PublicationNode publicationNode) throws ClientException;
+
+    /**
+     * Returns {@code true} if the current user can unpublish the given publishedDocument, {@code false} otherwise.
+     * @param publishedDocument
+     * @return {@code true} if the current user can unpublish the given publishedDocument, {@code false} otherwise.
+     * @throws ClientException
+     */
+    boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException;
+
 }

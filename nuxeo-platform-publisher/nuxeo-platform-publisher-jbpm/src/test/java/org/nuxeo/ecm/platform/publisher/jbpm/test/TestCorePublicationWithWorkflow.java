@@ -138,6 +138,32 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         session.save();
     }
 
+    public void testRights() throws Exception {
+        changeUser("myuser1");
+        PublicationTree treeUser1 = publisherService.getPublicationTree(
+                "DefaultSectionsTree", session, null);
+        List<PublicationNode> nodes = treeUser1.getChildrenNodes();
+        PublicationNode targetNode = nodes.get(0);
+        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish,
+                targetNode);
+        assertFalse(treeUser1.canUnpublish(publishedDocument));
+
+        changeUser("myuser4");
+        PublicationTree treeUser4 = publisherService.getPublicationTree(
+                "DefaultSectionsTree", session, null);
+        assertFalse(treeUser4.canUnpublish(publishedDocument));
+
+        changeUser("myuser3");
+        PublicationTree treeUser3 = publisherService.getPublicationTree(
+                "DefaultSectionsTree", session, null);
+        assertFalse(treeUser3.canUnpublish(publishedDocument));
+
+        changeUser("myuser2");
+        PublicationTree treeUser2 = publisherService.getPublicationTree(
+                "DefaultSectionsTree", session, null);
+        assertTrue(treeUser2.canUnpublish(publishedDocument));
+    }
+
     public void testApprovePublication() throws Exception {
         changeUser("myuser1");
         PublicationTree treeUser1 = publisherService.getPublicationTree(
@@ -148,6 +174,7 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         assertEquals("section1", nodes.get(0).getTitle());
 
         PublicationNode targetNode = nodes.get(0);
+        assertTrue(treeUser1.canPublishTo(targetNode));
 
         PublishedDocument publishedDocument = treeUser1.publish(doc2Publish,
                 targetNode);

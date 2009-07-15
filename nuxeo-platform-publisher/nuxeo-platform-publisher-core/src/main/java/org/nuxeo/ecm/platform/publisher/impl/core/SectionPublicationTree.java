@@ -1,24 +1,37 @@
 package org.nuxeo.ecm.platform.publisher.impl.core;
 
 import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.publisher.api.*;
+import org.nuxeo.ecm.platform.publisher.helper.PublicationRelationHelper;
+import org.nuxeo.ecm.platform.relations.api.util.RelationHelper;
+import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
+import org.nuxeo.ecm.platform.relations.api.Resource;
+import org.nuxeo.ecm.platform.relations.api.QNameResource;
+import org.nuxeo.ecm.platform.relations.api.Statement;
+import org.nuxeo.ecm.platform.relations.api.RelationManager;
+import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
+import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
+import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
 
 /**
  * Simple implementation of a {@link PublicationTree} using the Core Sections.
- * 
+ *
  * @author tiry
  */
 public class SectionPublicationTree extends AbstractBasePublicationTree
         implements PublicationTree {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
+
+    protected static final String CAN_ASK_FOR_PUBLISHING = "CanAskForPublishing";
+
+
 
     protected static final String DEFAULT_ROOT_PATH = "/default-domain/sections";
 
@@ -67,6 +80,20 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
         return publishedDocs;
     }
 
+    @Override
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
+        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.publish(doc, targetNode);
+        PublicationRelationHelper.addPublicationRelation(publishedDocument.getProxy(), getConfigName());
+        return publishedDocument;
+    }
+
+    @Override
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params) throws ClientException {
+        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.publish(doc, targetNode, params);
+        PublicationRelationHelper.addPublicationRelation(publishedDocument.getProxy(), getConfigName());
+        return publishedDocument;
+    }
+
     public void unpublish(DocumentModel doc, PublicationNode targetNode)
             throws ClientException {
         List<PublishedDocument> publishedDocs = getPublishedDocumentInNode(targetNode);
@@ -79,8 +106,9 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
 
     public void unpublish(PublishedDocument publishedDocument)
             throws ClientException {
-        getCoreSession().removeDocument(
-                ((SimpleCorePublishedDocument) publishedDocument).getProxy().getRef());
+        DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
+        PublicationRelationHelper.removePublicationRelation(proxy);
+        getCoreSession().removeDocument(proxy.getRef());
     }
 
     public PublicationNode getNodeByPath(String path) throws ClientException {
@@ -101,6 +129,18 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
     @Override
     protected PublishedDocumentFactory getDefaultFactory() {
         return new CoreProxyFactory();
+    }
+
+    @Override
+    public boolean canPublishTo(PublicationNode publicationNode) throws ClientException {
+        DocumentRef docRef = new PathRef(publicationNode.getPath());
+        return coreSession.hasPermission(docRef, CAN_ASK_FOR_PUBLISHING);
+    }
+
+    @Override
+    public boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException {
+        DocumentRef docRef = new PathRef(publishedDocument.getParentPath());
+        return coreSession.hasPermission(docRef, SecurityConstants.WRITE);
     }
 
 }

@@ -162,11 +162,19 @@ public class RemotePublicationTreeManagerRestProxy implements
     }
 
     public void validatorPublishDocument(String sid, PublishedDocument publishedDocument) throws PublishingException {
-        
+        throw new UnsupportedOperationException();
     }
 
     public void validatorRejectPublication(String sid, PublishedDocument publishedDocument, String comment) throws PublishingException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean canPublishTo(String sid, PublicationNode publicationNode) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean canUnpublish(String sid, PublishedDocument publishedDocument) throws ClientException {
+        throw new UnsupportedOperationException();
     }
 
     public void release(String sid) {

@@ -17,76 +17,16 @@ import org.nuxeo.runtime.api.Framework;
 import java.util.List;
 
 /**
- * 
+ *
  * Test the {@link PublicationTree} implementations
- * 
+ *
  * @author tiry
- * 
+ *
  */
-public class TestServiceWithCore extends SQLRepositoryTestCase {
-
-    DocumentModel doc2Publish;
+public class TestServiceWithCore extends AbstractCorePublisherTest {
 
     public TestServiceWithCore(String name) {
         super(name);
-    }
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployBundle("org.nuxeo.ecm.platform.types.api");
-        deployBundle("org.nuxeo.ecm.platform.types.core");
-
-        deployContrib("org.nuxeo.ecm.platform.publisher.core",
-                "OSGI-INF/publisher-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.publisher.core",
-                "OSGI-INF/publisher-contrib.xml");
-
-        openSession();
-    }
-
-    protected void createInitialDocs() throws Exception {
-
-        DocumentModel wsRoot = session.getDocument(new PathRef(
-                "default-domain/workspaces"));
-
-        DocumentModel ws = session.createDocumentModel(
-                wsRoot.getPathAsString(), "ws1", "Workspace");
-        ws.setProperty("dublincore", "title", "test WS");
-        ws = session.createDocument(ws);
-
-        DocumentModel sectionsRoot = session.getDocument(new PathRef(
-                "default-domain/sections"));
-
-        DocumentModel section1 = session.createDocumentModel(
-                sectionsRoot.getPathAsString(), "section1", "Section");
-        section1.setProperty("dublincore", "title", "section1");
-        section1 = session.createDocument(section1);
-
-        DocumentModel section2 = session.createDocumentModel(
-                sectionsRoot.getPathAsString(), "section2", "Section");
-        section2.setProperty("dublincore", "title", "section2");
-        section2 = session.createDocument(section2);
-
-        DocumentModel section11 = session.createDocumentModel(
-                section1.getPathAsString(), "section11", "Section");
-        section11.setProperty("dublincore", "title", "section11");
-        section11 = session.createDocument(section11);
-
-        doc2Publish = session.createDocumentModel(ws.getPathAsString(), "file",
-                "File");
-        doc2Publish.setProperty("dublincore", "title", "MyDoc");
-
-        Blob blob = new StringBlob("SomeDummyContent");
-        blob.setFilename("dummyBlob.txt");
-        blob.setMimeType("text/plain");
-        doc2Publish.setProperty("file", "content", blob);
-
-        doc2Publish = session.createDocument(doc2Publish);
-
-        session.save();
     }
 
     public void testCorePublishing() throws Exception {

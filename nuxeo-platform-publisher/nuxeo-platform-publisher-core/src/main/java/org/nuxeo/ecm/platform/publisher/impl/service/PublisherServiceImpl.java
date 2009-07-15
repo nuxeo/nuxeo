@@ -413,4 +413,25 @@ public class PublisherServiceImpl extends DefaultComponent implements
                     "Calling validatorPublishDocument on a closed tree");
         }
     }
+
+    public boolean canPublishTo(String sid, PublicationNode publicationNode) throws ClientException {
+        PublicationTree tree = liveTrees.get(sid);
+        if (tree != null) {
+            return tree.canPublishTo(publicationNode);
+        } else {
+            throw new ClientException(
+                    "Calling validatorPublishDocument on a closed tree");
+        }
+    }
+
+    public boolean canUnpublish(String sid, PublishedDocument publishedDocument) throws ClientException {
+        PublicationTree tree = liveTrees.get(sid);
+        if (tree != null) {
+            return tree.canUnpublish(publishedDocument);
+        } else {
+            throw new ClientException(
+                    "Calling validatorPublishDocument on a closed tree");
+        }
+    }
+    
 }

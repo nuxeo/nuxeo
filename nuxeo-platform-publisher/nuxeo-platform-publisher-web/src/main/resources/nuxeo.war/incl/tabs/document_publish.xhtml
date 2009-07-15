@@ -1,0 +1,116 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich"
+  class="menu">
+
+  <a4j:region renderRegionOnly="true">
+  <a4j:outputPanel ajaxRendered="true">
+  <a4j:form ajaxSubmit="true" id="publishTreeForm">
+
+  <h:panelGroup rendered="#{!empty availablePublicationTrees}">
+    <h:panelGrid styleClass="dataInput" columnClasses="labelColumn, fieldColumn" columns="2">
+      <h:panelGroup>
+        <h:outputText value="#{messages['label.publish.sections']}" />
+      </h:panelGroup>
+      <h:panelGroup>
+        <h:selectOneListbox styleClass="dataInputText" size="1"
+          value="#{publishActions.currentPublicationTreeNameForPublishing}">
+          <nxu:selectItems value="#{availablePublicationTrees}"
+            var="root"
+            itemValue="#{root}"
+            itemLabel="#{root}" />
+            <a4j:support event="onchange" reRender="sectionTree" ignoreDupResponses="true" />
+        </h:selectOneListbox>
+      </h:panelGroup>
+    </h:panelGrid>
+
+    <dl>
+    <dd class="menuForm">
+      <h:panelGroup id="sectionTree">
+        <rich:tree
+          icon="#{nodeState.isExpanded(rowKey)?publishActions.getCurrentPublicationTreeIconExpanded():publishActions.getCurrentPublicationTreeIconCollapsed()}"
+          iconLeaf="#{publishActions.currentPublicationTreeIconCollapsed}"
+          iconExpanded="/img/toggle_minus.png"
+          iconCollapsed="/img/toggle_plus.png"
+          rowKeyVar="rowKey"
+          stateVar="nodeState"
+          id="publishTree">
+          <rich:recursiveTreeNodesAdaptor
+            roots="#{publishActions.currentPublicationTreeForPublishing}"
+            nodes="#{node.childrenNodes}"
+            var="node"
+            id="publishRecursiveAdaptor">
+            <rich:treeNode
+              highlightedClass="treeNodeHighlightedClass"
+              selectedClass="treeNodeSelectedClass"
+              id="publishTreeNode">
+              <h:outputText value="#{node.title}" />
+                <a4j:commandLink immediate="true"
+                  action="#{publishActions.doPublish(node)}"
+                  rendered="#{publishActions.canPublishTo(node)}"
+                  reRender="publishingInfoList"
+                  id="publishCommandLink">
+                  <h:graphicImage value="/icons/back.png" />
+                  <h:outputText value="#{messages['label.publish.publish']}" />
+                </a4j:commandLink>
+            </rich:treeNode>
+          </rich:recursiveTreeNodesAdaptor>
+        </rich:tree>
+      </h:panelGroup>
+    </dd>
+    </dl>
+  </h:panelGroup>
+
+  <h:panelGroup id="publishingInfoList">
+    <h:panelGroup rendered="#{!empty publishActions.publishedDocuments}">
+
+      <nxu:dataTable value="#{publishActions.publishedDocuments}" var="publishedDocument"
+        preserveSort="true" preserveDataModel="false"
+        rowClasses="dataRowEven,dataRowOdd" sortable="false"
+        styleClass="dataList">
+
+        <!-- Name -->
+        <nxu:column>
+          <f:facet name="header">
+            <h:outputText value="#{messages['label.content.header.title']}" />
+          </f:facet>
+          <h:outputText value="#{publishedDocument.parentPath}" />
+        </nxu:column>
+
+        <!--  Version of the published document -->
+        <h:column>
+          <f:facet name="header">
+            <h:outputText
+              value="#{messages['label.publish.header.version']}" />
+          </f:facet>
+          <h:outputText value="#{publishedDocument.sourceVersionLabel}" />
+        </h:column>
+
+        <!--  Actions for the published document  -->
+        <h:column >
+          <f:facet name="header">
+            <h:outputText value="Action" />
+          </f:facet>
+          <a4j:commandLink immediate="true"
+            value="#{messages['command.document.unpublish']}"
+            action="#{publishActions.unPublish(publishedDocument)}"
+            rendered="#{publishActions.canUnpublish(publishedDocument)}"
+            reRender="publishingInfoList"
+            ignoreDupResponses="true">
+          </a4j:commandLink>
+        </h:column>
+      </nxu:dataTable>
+
+    </h:panelGroup>
+
+  </h:panelGroup>
+
+  </a4j:form>
+  </a4j:outputPanel>
+  </a4j:region>
+</div>

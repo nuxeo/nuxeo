@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Publisher Service Web
+Bundle-SymbolicName: org.nuxeo.ecm.platform.publisher.jbpm;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-RequiredBy: org.nuxeo.ecm.war

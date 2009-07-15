@@ -153,4 +153,13 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
             String comment) throws PublishingException {
         factory.validatorRejectPublication(publishedDocument, comment);
     }
+
+    public boolean canPublishTo(PublicationNode publicationNode) throws ClientException {
+        return true;
+    }
+
+    public boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException {
+        return true;
+    }
+
 }
