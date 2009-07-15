@@ -38,8 +38,8 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.storage.sql.Node;
 
 /**
- * A {@link SQLComplexProperty} gives access to a wrapped SQL-level {@link Node}
- * . This is used for documents and for complex properties.
+ * A {@link SQLComplexProperty} gives access to a wrapped SQL-level {@link Node} .
+ * This is used for documents and for complex properties.
  *
  * @author Florent Guillaume
  */
@@ -98,13 +98,18 @@ public class SQLComplexProperty extends SQLBaseProperty implements
     @SuppressWarnings("unchecked")
     public void setValue(Object value) throws DocumentException {
         checkWritable();
-        Map<String, Object> map = (Map<String, Object>) value;
-        if (map == null) {
+        if (value == null) {
             // XXX should delete the node?
             for (Property property : getProperties()) {
                 property.setValue(null);
             }
         } else {
+            if (!(value instanceof Map)) {
+                throw new DocumentException(
+                        "Invalid value for complex property (map needed): "
+                                + value);
+            }
+            Map<String, Object> map = (Map<String, Object>) value;
             for (Entry<String, Object> entry : map.entrySet()) {
                 Property property = getProperty(entry.getKey());
                 property.setValue(entry.getValue());

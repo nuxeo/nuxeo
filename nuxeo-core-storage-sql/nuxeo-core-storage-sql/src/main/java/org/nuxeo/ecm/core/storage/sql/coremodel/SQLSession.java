@@ -836,9 +836,6 @@ public class SQLSession implements Session {
                 if (TypeConstants.isContentType(type)) {
                     property = new SQLContentProperty(childNode, complexType,
                             this, readonly);
-                } else if (TypeConstants.isExternalContentType(type)) {
-                    property = new SQLExternalContentProperty(childNode, complexType,
-                            this, readonly);
                 } else {
                     property = new SQLComplexProperty(childNode, complexType,
                             this, readonly);

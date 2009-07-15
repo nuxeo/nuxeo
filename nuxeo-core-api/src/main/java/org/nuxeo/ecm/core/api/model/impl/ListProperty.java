@@ -174,6 +174,22 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     @Override
+    public Serializable getValueForWrite() throws PropertyException {
+        if (isPhantom() || isRemoved()) {
+            return getDefaultValue();
+        }
+        if (children.isEmpty()) {
+            return new ArrayList<String>();
+        }
+        // noinspection CollectionDeclaredAsConcreteClass
+        ArrayList<Object> list = new ArrayList<Object>(children.size());
+        for (Property property : children) {
+            list.add(property.getValueForWrite());
+        }
+        return list;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public void init(Serializable value) throws PropertyException {
         if (value == null) { // IGNORE null values - properties will be

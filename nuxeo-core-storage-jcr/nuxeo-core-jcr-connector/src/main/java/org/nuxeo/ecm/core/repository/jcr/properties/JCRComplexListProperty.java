@@ -285,8 +285,6 @@ public class JCRComplexListProperty implements Property, JCRNodeProxy {
         Type elType = type.getFieldType();
         if (TypeConstants.isContentType(elType)) {
             return new BlobProperty(this, element, createField(name));
-        } else if (TypeConstants.isExternalContentType(elType)) {
-            return new ExternalBlobProperty(this, element, createField(name));
         } else if (elType.isComplexType()) {
             return new JCRComplexProperty(this, element, createField(name));
         } else if (elType.isListType()) {

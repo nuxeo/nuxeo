@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.impl.primitives.ExternalBlobProperty;
 import org.nuxeo.ecm.core.repository.jcr.testing.CoreJCRConnectorTestConstants;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -44,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Anahide Tchertchian
- * 
+ *
  */
 @SuppressWarnings("unchecked")
 public class TestPropertyModel extends RepositoryOSGITestCase {
@@ -262,10 +263,28 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
         File file = createTempFile();
         HashMap<String, String> map = new HashMap<String, String>();
         String uri = String.format("fs:%s", file.getName());
-        map.put("uri", uri);
+        map.put(ExternalBlobProperty.URI, uri);
+        map.put(ExternalBlobProperty.FILE_NAME, "hello.txt");
         doc.setPropertyValue("tp:externalcontent", map);
-        // not implemented....
-        // doc.setPropertyValue("tp:externalcontent/uri", uri);
+
+        doc = coreSession.saveDocument(doc);
+        Object blob = doc.getPropertyValue("tp:externalcontent");
+
+        assertNotNull(blob);
+        assertTrue(blob instanceof Blob);
+        assertEquals("Hello External Blob", ((Blob) blob).getString());
+        assertEquals("hello.txt", ((Blob) blob).getFilename());
+        assertEquals("hello.txt",
+                doc.getPropertyValue("tp:externalcontent/name"));
+        assertEquals(uri, doc.getPropertyValue("tp:externalcontent/uri"));
+    }
+
+    // this time only set the uri
+    public void testExternalBlobDocumentProperty2() throws Exception {
+        File file = createTempFile();
+        String uri = String.format("fs:%s", file.getName());
+        doc.setPropertyValue("tp:externalcontent/uri", uri);
+        doc = coreSession.saveDocument(doc);
 
         Object blob = doc.getPropertyValue("tp:externalcontent");
 
@@ -273,10 +292,8 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
         assertTrue(blob instanceof Blob);
         assertEquals("Hello External Blob", ((Blob) blob).getString());
         assertEquals(file.getName(), ((Blob) blob).getFilename());
-        assertEquals(file.getName(),
-                doc.getPropertyValue("tp:externalcontent/name"));
-        // not implemented...
-        // assertEquals(uri, doc.getPropertyValue("tp:externalcontent/uri"));
+        assertEquals(null, doc.getPropertyValue("tp:externalcontent/name"));
+        assertEquals(uri, doc.getPropertyValue("tp:externalcontent/uri"));
     }
 
     public void testExternalBlobListValue() throws Exception {
@@ -289,7 +306,8 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
         ArrayList<Map> values = new ArrayList<Map>();
         HashMap<String, String> map = new HashMap<String, String>();
         String uri = String.format("fs:%s", file.getName());
-        map.put("uri", uri);
+        map.put(ExternalBlobProperty.URI, uri);
+        map.put(ExternalBlobProperty.FILE_NAME, "hello.txt");
         values.add(map);
 
         doc.setPropertyValue(propName, values);
@@ -303,8 +321,9 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
         assertTrue(blobs.get(0) instanceof Blob);
         Blob actualBlob = blobs.get(0);
         assertEquals("Hello External Blob", actualBlob.getString());
-        assertEquals(file.getName(), actualBlob.getFilename());
-        assertEquals(file.getName(), doc.getPropertyValue(propName + "0/name"));
+        assertEquals("hello.txt", actualBlob.getFilename());
+        assertEquals("hello.txt", doc.getPropertyValue(propName + "/0/name"));
+        assertEquals(uri, doc.getPropertyValue(propName + "/0/uri"));
     }
 
     public void testSubExternalBlobValue() throws Exception {
@@ -318,7 +337,8 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
         File file = createTempFile();
         HashMap<String, String> blobMap = new HashMap<String, String>();
         String uri = String.format("fs:%s", file.getName());
-        blobMap.put("uri", uri);
+        blobMap.put(ExternalBlobProperty.URI, uri);
+        blobMap.put(ExternalBlobProperty.FILE_NAME, "hello.txt");
 
         item.put("blob", blobMap);
         item.put("filename", "My filename");
@@ -335,13 +355,13 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
         assertEquals("My filename", actualItem.get("filename"));
         assertTrue(actualItem.get("blob") instanceof Blob);
 
-        Object actualBlob = doc.getProperty(propName + "/0/blob").getValue(
-                Blob.class);
+        Object actualBlob = doc.getProperty(propName + "/0/blob").getValue();
         assertTrue(actualBlob instanceof Blob);
         assertEquals("Hello External Blob", ((Blob) actualBlob).getString());
-        assertEquals(file.getName(), ((Blob) actualBlob).getFilename());
-        assertEquals(file.getName(), doc.getPropertyValue(propName
-                + "0/blob/name"));
+        assertEquals("hello.txt", ((Blob) actualBlob).getFilename());
+        assertEquals("hello.txt", doc.getPropertyValue(propName
+                + "/0/blob/name"));
+        assertEquals(uri, doc.getPropertyValue(propName + "/0/blob/uri"));
     }
 
 }

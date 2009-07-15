@@ -82,16 +82,8 @@ public abstract class CompositePropertyFactory {
         }
     };
 
-    public static final CompositePropertyFactory EXTERNAL_CONTENT = new CompositePropertyFactory() {
-        @Override
-        public Property create(JCRNodeProxy parent, Node property, Field field) {
-            return new ExternalBlobProperty(parent, property, field);
-        }
-    };
-
     static {
         FACTORIES.put(TypeConstants.CONTENT, CONTENT);
-        FACTORIES.put(TypeConstants.EXTERNAL_CONTENT, EXTERNAL_CONTENT);
     }
 
 }

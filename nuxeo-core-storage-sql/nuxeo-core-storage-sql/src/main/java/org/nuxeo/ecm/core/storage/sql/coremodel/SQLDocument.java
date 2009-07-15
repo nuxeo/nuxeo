@@ -151,7 +151,8 @@ public class SQLDocument extends SQLComplexProperty implements Document {
      */
     public void writeDocumentPart(DocumentPart dp) throws Exception {
         for (Property property : dp) {
-            setPropertyValue(property.getName(), property.getValue());
+            setPropertyValue(property.getName(), property.getValueForWrite());
+            //setPropertyValue(property.getName(), property.getValue());
         }
         clearDirtyFlags(dp);
     }

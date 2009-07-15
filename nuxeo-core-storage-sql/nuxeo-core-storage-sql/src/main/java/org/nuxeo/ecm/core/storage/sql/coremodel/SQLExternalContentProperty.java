@@ -17,19 +17,21 @@
 
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
+import java.io.Serializable;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
+import org.nuxeo.ecm.core.api.model.impl.primitives.ExternalBlobProperty;
+import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.storage.sql.Node;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * A {@link SQLExternalContentProperty} gives access to a blob, which consists
  * of a {@link Node} of a specialized type: {@code externalcontent}. One of the
- * columns of the row stores the uri that will beused to resoleve the actual
+ * columns of the row stores the uri that will be used to resolve the actual
  * binary.
  *
  * @author Florent Guillaume
@@ -47,63 +49,64 @@ public class SQLExternalContentProperty extends SQLComplexProperty {
     @Override
     @SuppressWarnings("unchecked")
     public Object getValue() throws DocumentException {
-        Map<String, Object> map = (Map<String, Object>) super.getValue();
-        if (map == null) {
-            return null;
+        Map<String, Object> mapValue = getMapValue();
+        if (mapValue != null) {
+            return ExternalBlobProperty.getBlobFromMap(mapValue);
         }
-        String uri = (String) map.get(URI);
-        if (uri == null || "".equals(uri)) {
-            return null;
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> getMapValue() throws DocumentException {
+        Object mapValue = super.getValue();
+        if (mapValue instanceof Map) {
+            return (Map<String, Object>) mapValue;
+        } else if (mapValue != null) {
+            throw new DocumentException(
+                    "Invalid value for external blob (map needed): " + mapValue);
         }
-        String filename = (String) map.get(SQLContentProperty.FILE_NAME);
-        String mimeType = (String) map.get(SQLContentProperty.MIME_TYPE);
-        String encoding = (String) map.get(SQLContentProperty.ENCODING);
-        String digest = (String) map.get(SQLContentProperty.DIGEST);
-        try {
-            BlobHolderAdapterService service = Framework.getService(BlobHolderAdapterService.class);
-            if (service == null) {
-                throw new DocumentException(
-                        "BlobHolderAdapterService not found");
-            }
-            Blob blob = service.getExternalBlobForUri(uri);
-            if (filename != null) {
-                blob.setFilename(filename);
-            }
-            blob.setMimeType(mimeType);
-            blob.setEncoding(encoding);
-            // TODO maybe check if digest is still a match to the retrieved blob
-            blob.setDigest(digest);
-            return blob;
-        } catch (DocumentException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new DocumentException(e);
-        }
+        return null;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setValue(Object value) throws DocumentException {
         checkWritable();
-        Map<String, Object> map;
         if (value == null) {
-            // nothing, use null
-            map = null;
-        } else if (value instanceof Map) {
-            map = (Map) value;
-            // XXX: maybe check that all needed info is given (?)
-            // map.put(MIME_TYPE, mimeType);
-            // map.put(URI, binary);
-            // map.put(FILE_NAME, filename);
-            // map.put(ENCODING, encoding);
-            // map.put(DIGEST, digest);
-            // map.put(LENGTH, length);
+            // XXX should delete the node?
+            for (Property property : getProperties()) {
+                property.setValue(null);
+            }
         } else {
-            // do not handle blob for now
-            throw new DocumentException(
-                    "Setting an invalid value for external blob (map needed): "
-                            + value);
+            if (value instanceof Blob) {
+                Property property = getProperty(URI);
+                Object uri = property.getValue();
+                if (uri == null) {
+                    throw new DocumentException(
+                            "Cannot set blob properties without "
+                                    + "an existing uri set");
+                }
+                // only update additional properties
+                Map<String, Serializable> map = ExternalBlobProperty.getMapFromBlob((Blob) value);
+                for (Entry<String, Serializable> entry : map.entrySet()) {
+                    String entryKey = entry.getKey();
+                    if (entryKey != URI) {
+                        property = getProperty(entryKey);
+                        property.setValue(entry.getValue());
+                    }
+                }
+            } else if (value instanceof Map) {
+                Map<String, Object> map = (Map<String, Object>) value;
+                for (Entry<String, Object> entry : map.entrySet()) {
+                    Property property = getProperty(entry.getKey());
+                    property.setValue(entry.getValue());
+                }
+            } else {
+                throw new DocumentException(
+                        "Invalid value for external blob (blob or map needed): "
+                                + value);
+            }
         }
-        super.setValue(map);
     }
 
 }

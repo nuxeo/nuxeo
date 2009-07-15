@@ -445,6 +445,15 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     Serializable getValue() throws PropertyException;
 
     /**
+     * Gets the property normalized value for write.
+     * <p>
+     * Normalized values are of the java type that correspond to the field type.
+     *
+     * @return the property value, which may be null
+     */
+    Serializable getValueForWrite() throws PropertyException;
+
+    /**
      * Gets the property value as the given type.
      * <p>
      * The value is converted using the registered converter to the given type.

@@ -85,7 +85,7 @@ public abstract class AbstractProperty implements Property {
 
     public void init(Serializable value) throws PropertyException {
         if (value == null) { // IGNORE null values - properties will be
-                                // considered PHANTOMS
+            // considered PHANTOMS
             return;
         }
         internalSetValue(value);
@@ -116,11 +116,11 @@ public abstract class AbstractProperty implements Property {
     public Serializable remove() throws PropertyException {
         Serializable value = getValue();
         if (parent != null && parent.isList()) { // remove from list is
-                                                    // handled separately
+            // handled separately
             ListProperty list = (ListProperty) parent;
             list.remove(this);
         } else if (!isPhantom()) { // remove from map is easier -> mark the
-                                    // field as removed and remove the value
+            // field as removed and remove the value
             init(null);
             setIsRemoved();
         }
@@ -267,7 +267,7 @@ public abstract class AbstractProperty implements Property {
         }
         // clear dirty + phatom flag if any
         setDirtyFlags(IS_NEW); // this clear any dirty flag and set the new
-                                // flag
+        // flag
         if (parent != null) {
             ((AbstractProperty) parent).setIsModified();
         }
@@ -338,6 +338,10 @@ public abstract class AbstractProperty implements Property {
             return getDefaultValue();
         }
         return internalGetValue();
+    }
+
+    public Serializable getValueForWrite() throws PropertyException {
+        return getValue();
     }
 
     protected Serializable getDefaultValue() {
