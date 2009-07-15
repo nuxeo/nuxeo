@@ -128,8 +128,9 @@ public class WebConfiguration implements IsSerializable {
     }
 
     private String getValue(String v) {
-        if (v != null && v.startsWith("${") && v.endsWith("}"))
+        if (v != null && v.startsWith("${") && v.endsWith("}")) {
             v = userInfo.get(v.substring(2, v.length() - 1));
+        }
         return v;
     }
 
@@ -138,8 +139,9 @@ public class WebConfiguration implements IsSerializable {
         Map<String, String> newFields = new HashMap<String, String>();
         for (String fieldName : fields.keySet()) {
             String value = getValue(fields.get(fieldName));
-            if (value != null)
+            if (value != null) {
                 newFields.put(fieldName, value);
+            }
         }
         if (order < filters.size()) {
             filters.add(order, new AnnotationFilter(name, icon, getValue(type),

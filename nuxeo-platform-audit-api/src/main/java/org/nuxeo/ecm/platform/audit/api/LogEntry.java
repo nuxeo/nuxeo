@@ -257,7 +257,8 @@ public class LogEntry implements Serializable {
     }
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "NXP_LOGS_MAPEXTINFOS", joinColumns = { @JoinColumn(name = "LOG_FK") }, inverseJoinColumns = { @JoinColumn(name = "INFO_FK") })
+    @JoinTable(name = "NXP_LOGS_MAPEXTINFOS", joinColumns = { @JoinColumn(name = "LOG_FK") },
+            inverseJoinColumns = { @JoinColumn(name = "INFO_FK") })
     public Map<String, ExtendedInfo> getExtendedInfos() {
         return extendedInfos;
     }

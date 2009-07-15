@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.persistence.PersistenceError;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
@@ -73,7 +72,7 @@ import com.sun.el.ExpressionFactoryImpl;
 
 /**
  * Event service configuration.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class NXAuditEventsService extends DefaultComponent implements NXAuditEvents {
@@ -93,7 +92,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     protected final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(new ExpressionFactoryImpl());
 
     protected PersistenceProvider persistenceProvider;
-    
+
     public PersistenceProvider getOrCreatePersistenceProvider() {
         if (persistenceProvider != null) {
             return persistenceProvider;
@@ -102,7 +101,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         return persistenceProvider = persistenceProviderFactory.newProvider("nxaudit-logs");
     }
 
-    protected void deactivatePersistenceProvider() { 
+    protected void deactivatePersistenceProvider() {
         if (persistenceProvider == null) {
             return;
         }
@@ -115,7 +114,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         deactivatePersistenceProvider();
         super.deactivate(context);
     }
-    
+
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) throws Exception {
         if (extensionPoint.equals(EVENT_EXT_POINT)) {
@@ -317,7 +316,9 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         return LogEntryProvider.createProvider(em).getLogEntriesFor(uuid);
     }
 
-    public List<LogEntry> getLogEntriesFor(final String uuid, final Map<String, FilterMapEntry> filterMap, final boolean doDefaultSort) {
+    public List<LogEntry> getLogEntriesFor(final String uuid,
+            final Map<String, FilterMapEntry> filterMap,
+            final boolean doDefaultSort) {
         try {
             return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
                 public List<LogEntry> runWith(EntityManager em) {
@@ -329,8 +330,10 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         }
     }
 
-    public List<LogEntry> getLogEntriesFor(EntityManager em, String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
-        return LogEntryProvider.createProvider(em).getLogEntriesFor(uuid, filterMap, doDefaultSort);
+    public List<LogEntry> getLogEntriesFor(EntityManager em, String uuid,
+            Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
+        return LogEntryProvider.createProvider(em).getLogEntriesFor(uuid,
+                filterMap, doDefaultSort);
     }
 
     public LogEntry getLogEntryByID(final long id) {
@@ -397,7 +400,9 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         return LogEntryProvider.createProvider(em).queryLogs(eventIds, dateRange);
     }
 
-    public List<LogEntry> queryLogsByPage(final String[] eventIds, final String dateRange, final String category, final String path, final int pageNb, final int pageSize) {
+    public List<LogEntry> queryLogsByPage(final String[] eventIds,
+            final String dateRange, final String category, final String path,
+            final int pageNb, final int pageSize) {
         try {
             return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
                 public List<LogEntry> runWith(EntityManager em) {
@@ -409,11 +414,15 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         }
     }
 
-    public List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds, String dateRange, String category, String path, int pageNb, int pageSize) {
+    public List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds,
+            String dateRange, String category, String path, int pageNb,
+            int pageSize) {
         return LogEntryProvider.createProvider(em).queryLogs(eventIds, dateRange);
     }
 
-    public List<LogEntry> queryLogsByPage(final String[] eventIds, final Date limit, final String category, final String path, final int pageNb, final int pageSize) {
+    public List<LogEntry> queryLogsByPage(final String[] eventIds,
+            final Date limit, final String category, final String path,
+            final int pageNb, final int pageSize) {
         try {
             return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
                 public List<LogEntry> runWith(EntityManager em) {
@@ -425,7 +434,8 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         }
     }
 
-    public List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds, Date limit, String category, String path, int pageNb, int pageSize) {
+    public List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds,
+            Date limit, String category, String path, int pageNb, int pageSize) {
         return LogEntryProvider.createProvider(em).queryLogsByPage(eventIds, limit, category, path, pageNb, pageSize);
     }
 
@@ -442,7 +452,6 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public long syncLogCreationEntries(EntityManager em, String repoId, String path, Boolean recurs) {
-
         LogEntryProvider provider = LogEntryProvider.createProvider(em);
         provider.removeEntries(DocumentEventTypes.DOCUMENT_CREATED, path);
         CoreSession session = guardedCoreSession(repoId);
@@ -561,7 +570,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
          }
-        
+
     }
 
     public void logEvents(EntityManager em, EventBundle eventBundle) {

@@ -76,11 +76,13 @@ public class AnnotationFilter implements IsSerializable {
     public boolean accept(Annotation annotation) {
         boolean accept = true;
 
-        if (type != null)
+        if (type != null) {
             accept &= type.equals(annotation.getShortType());
+        }
 
-        if (author != null)
+        if (author != null) {
             accept &= author.equals(annotation.getAuthor());
+        }
 
         if (fields != null) {
             for (String name : fields.keySet()) {

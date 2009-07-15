@@ -113,7 +113,7 @@ public class AnnotationsServlet extends HttpServlet {
         }
     }
 
-    private String getBaseUrl(HttpServletRequest req) {
+    private static String getBaseUrl(HttpServletRequest req) {
         StringBuffer url = req.getRequestURL();
         int index = url.indexOf(req.getServletPath());
         return url.substring(0, index);
@@ -147,4 +147,5 @@ public class AnnotationsServlet extends HttpServlet {
             throw new ServletException(e);
         }
     }
+
 }

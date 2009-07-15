@@ -105,7 +105,7 @@ public class TextAnnotater extends AbstractAnnotater {
         return new Container(xpathUtil.getXPath(node), currentOffset);
     }
 
-    private int computeNewOffset(Node node, int currentOffset) {
+    private static int computeNewOffset(Node node, int currentOffset) {
         if (currentOffset <= 0) {
             return currentOffset;
         }

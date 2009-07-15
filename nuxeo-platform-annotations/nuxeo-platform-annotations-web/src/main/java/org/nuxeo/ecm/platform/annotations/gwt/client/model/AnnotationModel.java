@@ -72,10 +72,11 @@ public class AnnotationModel implements AnnotationChangeNotifier {
     }
 
     public List<Annotation> getAnnotations() {
-        if (filteredAnnotations != null)
+        if (filteredAnnotations != null) {
             return filteredAnnotations;
-        else
+        } else {
             return annotations;
+        }
     }
 
     public List<Annotation> getUnfilteredAnnotations() {
@@ -91,8 +92,9 @@ public class AnnotationModel implements AnnotationChangeNotifier {
             annotation.setId(id++);
         }
 
-        if (filter != null)
+        if (filter != null) {
             filteredAnnotations = filterAnnotations(filter);
+        }
         notifyListener(ChangeEvent.annotationList);
     }
 

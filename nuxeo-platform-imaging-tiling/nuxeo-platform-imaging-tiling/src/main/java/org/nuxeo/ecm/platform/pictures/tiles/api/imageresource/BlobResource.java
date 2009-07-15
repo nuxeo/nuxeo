@@ -26,15 +26,16 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Blob based implementation of the ImageResource Because ImageResource will be
- * cached this Implementation is not optimal (Blob digest is not compulsary and
- * the modification date is not set)
- *
+ * cached this Implementation is not optimal (Blob digest is not compulsory and
+ * the modification date is not set).
+ * <p>
  * This implementation is mainly used for unit testing.
  *
  * @author tiry
- *
  */
 public class BlobResource implements ImageResource {
+
+    private static final long serialVersionUID = 1L;
 
     protected Blob blob;
 
@@ -46,16 +47,12 @@ public class BlobResource implements ImageResource {
         this.blob = blob;
         if (blob.getDigest() != null) {
             hash = blob.getDigest();
-        } else
+        } else {
             hash = blob.hashCode() + "fakeHash";
+        }
 
         modified = Calendar.getInstance();
     }
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
 
     public Blob getBlob() throws ClientException {
         return blob;

@@ -40,14 +40,14 @@ public class SerializableNotificationRegistry implements Serializable,
     private List<Notification> notificationList = new ArrayList<Notification>();
 
 
-    public SerializableNotificationRegistry(List<Notification> notificationList, Map<String, List<Notification>> notificationRegistry)
-    {
-        this.notificationList=notificationList;
-        this.notificationRegistry=notificationRegistry;
+    public SerializableNotificationRegistry(
+            List<Notification> notificationList,
+            Map<String, List<Notification>> notificationRegistry) {
+        this.notificationList = notificationList;
+        this.notificationRegistry = notificationRegistry;
     }
 
-    public SerializableNotificationRegistry(NotificationRegistryImpl registry)
-    {
+    public SerializableNotificationRegistry(NotificationRegistryImpl registry) {
         this.notificationList=registry.getNotifications();
         this.notificationRegistry=registry.getNotificationRegistry();
     }

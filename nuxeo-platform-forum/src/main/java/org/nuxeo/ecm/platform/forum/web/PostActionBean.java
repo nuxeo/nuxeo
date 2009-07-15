@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.forum.web;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;

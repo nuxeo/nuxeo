@@ -86,7 +86,7 @@ public class DocumentVersionnedGraphManager implements
         }
     }
 
-    private void copyGraphFor(URI current, URI copied, NuxeoPrincipal user)
+    private static void copyGraphFor(URI current, URI copied, NuxeoPrincipal user)
             throws Exception {
         List<Statement> newStatements = new ArrayList<Statement>();
         AnnotationsService service = Framework.getService(AnnotationsService.class);
@@ -123,7 +123,7 @@ public class DocumentVersionnedGraphManager implements
         }
     }
 
-    private void removeGraphFor(URI uri, NuxeoPrincipal user) throws Exception {
+    private static void removeGraphFor(URI uri, NuxeoPrincipal user) throws Exception {
         AnnotationsService service = Framework.getService(AnnotationsService.class);
         List<Annotation> annotations = service.queryAnnotations(uri, null, user);
         for (Annotation annotation : annotations) {

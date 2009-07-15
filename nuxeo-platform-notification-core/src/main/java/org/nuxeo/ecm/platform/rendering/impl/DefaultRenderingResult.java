@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.rendering.impl;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.nuxeo.ecm.platform.rendering.RenderingResult;

@@ -172,8 +172,9 @@ public class AnnotationManagerPanel extends VerticalPanel implements
                         values.add(annotation.getAuthor());
                     } else {
                         String value = annotation.getFields().get(parameter);
-                        if (value != null)
+                        if (value != null) {
                             values.add(value);
+                        }
                     }
                 }
                 for (String value : values) {

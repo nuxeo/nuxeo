@@ -19,11 +19,7 @@
 
 package org.nuxeo.ecm.platform.annotations.service;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -34,23 +30,18 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.repository.AbstractRepositoryTestCase;
 import org.nuxeo.ecm.platform.annotations.repository.FakeNuxeoPrincipal;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
 
     private static final String SERVER1 = "http://server1.com/nuxeo/";
-
     private static final String SERVER2 = "http://server2.com/nuxeo/";
 
     private DocumentModel version1;

@@ -27,11 +27,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
-import org.nuxeo.ecm.platform.ec.placeful.PlacefulServiceImpl;
-import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -63,7 +60,6 @@ public class NotificationEventListenerTest extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.url.core");
 
         deployBundle("org.nuxeo.ecm.platform.notification.core.tests");
-
 
         // Injection of the EmailHelper Mock to track mails sending
         EventService eventService = Framework.getService(EventService.class);

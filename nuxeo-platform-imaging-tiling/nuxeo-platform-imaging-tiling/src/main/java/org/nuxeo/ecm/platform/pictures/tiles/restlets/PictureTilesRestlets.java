@@ -23,9 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,19 +41,15 @@ import org.nuxeo.ecm.platform.pictures.tiles.serializer.XMLPictureTilesSerialize
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseStatelessNuxeoRestlet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.OutputRepresentation;
 
-import com.noelios.restlet.http.HttpConstants;
 
 /**
- *
- * Restlet to provide a REST API on top of the PictureTilingService
+ * Restlet to provide a REST API on top of the PictureTilingService.
  *
  * @author tiry
- *
  */
 public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
 
@@ -163,8 +157,9 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
 
     protected void handleSendInfo(Response res, PictureTiles tiles,
             String format) {
-        if (format == null)
+        if (format == null) {
             format = "XML";
+        }
         MediaType mt = null;
         PictureTilesSerializer serializer = null;
 
@@ -216,7 +211,6 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
             handleError(res, e);
             return;
         }
-
     }
 
     protected void handleNoTiles(Response res, Exception e) {
@@ -262,10 +256,10 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
     }
 
     protected PictureTilesAdapter getFromCache(DocumentModel doc, String xpath) throws ClientException {
-
         if (cachedAdapters.containsKey(doc.getId())) {
-            if (xpath == null)
+            if (xpath == null) {
                 xpath = "";
+            }
             Calendar modified = (Calendar) doc.getProperty("dublincore",
                     "modified");
             PictureTilesCachedEntry entry = cachedAdapters.get(doc.getId());
@@ -274,10 +268,12 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
                     || (!xpath.equals(entry.getXpath()))) {
                 removeFromCache(doc.getId());
                 return null;
-            } else
+            } else {
                 return entry.getAdapter();
-        } else
+            }
+        } else {
             return null;
+        }
     }
 
     protected void cacheGC() {
