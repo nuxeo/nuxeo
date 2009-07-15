@@ -74,7 +74,6 @@ public class FileContainerResource {
                 .arg("root", root.getName()).arg("resources", files);
     }
 
-
     @POST
     public Response postFile(@QueryParam("file") String file, @QueryParam("dir") String dir) {
         if (isReadOnly) {
@@ -111,7 +110,6 @@ public class FileContainerResource {
         }
     }
 
-
     @Path("{name}")
     public Object getFile(@PathParam("name") String name) {
         File file = new File(root, name);
@@ -146,7 +144,6 @@ public class FileContainerResource {
         return Response.ok().build();
     }
 
-
     public String getLastModified(File file) {
         return formatDate(new Date(file.lastModified()));
     }
@@ -158,31 +155,45 @@ public class FileContainerResource {
         sb.append(c.get(Calendar.YEAR));
         sb.append('-');
         int f = c.get(Calendar.MONTH);
-        if (f < 9) sb.append('0');
-        sb.append(f+1);
+        if (f < 9) {
+            sb.append('0');
+        }
+        sb.append(f + 1);
         sb.append('-');
         f = c.get(Calendar.DATE);
-        if (f < 10) sb.append('0');
+        if (f < 10) {
+            sb.append('0');
+        }
         sb.append(f);
         sb.append('T');
         f = c.get(Calendar.HOUR_OF_DAY);
-        if (f < 10) sb.append('0');
+        if (f < 10) {
+            sb.append('0');
+        }
         sb.append(f);
         sb.append(':');
         f = c.get(Calendar.MINUTE);
-        if (f < 10) sb.append('0');
+        if (f < 10) {
+            sb.append('0');
+        }
         sb.append(f);
         sb.append(':');
         f = c.get(Calendar.SECOND);
-        if (f < 10) sb.append('0');
+        if (f < 10) {
+            sb.append('0');
+        }
         sb.append(f);
         sb.append('.');
         f = c.get(Calendar.MILLISECOND);
-        if (f < 100) sb.append('0');
-        if (f < 10) sb.append('0');
+        if (f < 100) {
+            sb.append('0');
+        }
+        if (f < 10) {
+            sb.append('0');
+        }
         sb.append(f);
         sb.append('Z');
         return sb.toString();
-      }
+    }
 
 }

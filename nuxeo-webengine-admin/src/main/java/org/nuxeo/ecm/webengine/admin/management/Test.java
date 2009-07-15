@@ -43,6 +43,7 @@ public class Test {
 
 
         Authenticator.setDefault(new Authenticator() {
+            @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication ("Administrator", "Administrator".toCharArray());
             }
@@ -54,10 +55,11 @@ public class Test {
         //postXml("http://localhost:8080/server/components", FileUtils.readFile(file));
 
         deleteData("http://localhost:8080/server/components/test-listener");
-        postBinary("http://localhost:8080/server/resources?file=script/listener.groovy", new FileInputStream(new File("/Users/bstefanescu/listener.groovy")));
-        postXml("http://localhost:8080/server/components", FileUtils.readFile(new File("/Users/bstefanescu/test-listeners.xml")));
+        postBinary("http://localhost:8080/server/resources?file=script/listener.groovy",
+                new FileInputStream(new File("/Users/bstefanescu/listener.groovy")));
+        postXml("http://localhost:8080/server/components",
+                FileUtils.readFile(new File("/Users/bstefanescu/test-listeners.xml")));
     }
-
 
     public static void deleteData(String url) throws Exception {
         URL u = new URL(url);
