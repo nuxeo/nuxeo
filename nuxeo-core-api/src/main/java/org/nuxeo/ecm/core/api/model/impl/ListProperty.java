@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -54,7 +53,6 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     protected final Field field;
 
     protected final List<Property> children;
-
 
     public ListProperty(Property parent, Field field) {
         super(parent);
@@ -73,14 +71,15 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     /**
-     * TODO FIXME XXX uncommented <code>return true;</code>
-     * see NXP-1653.
+     * TODO FIXME XXX uncommented <code>return true;</code> see NXP-1653.
+     *
      * @see DefaultPropertyFactory line 216
      * @see {@link ListProperty#getValue}
      * @see {@link ListProperty#accept}
      */
     public boolean isContainer() {
-        //return true; // - this can be uncommented when scalar list will be fixed
+        // return true; // - this can be uncommented when scalar list will be
+        // fixed
         return !getType().isScalarList();
     }
 
@@ -116,7 +115,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     public ListType getType() {
-        return (ListType)field.getType();
+        return (ListType) field.getType();
     }
 
     public Property get(String name) {
@@ -127,8 +126,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         return children.get(index);
     }
 
-    public Property set(String name, Object value)
-            throws PropertyException {
+    public Property set(String name, Object value) throws PropertyException {
         return set(Integer.parseInt(name), value);
     }
 
@@ -146,38 +144,40 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         if (children.isEmpty()) {
             return new ArrayList<String>();
         }
-        //noinspection CollectionDeclaredAsConcreteClass
+        // noinspection CollectionDeclaredAsConcreteClass
         ArrayList<Object> list = new ArrayList<Object>(children.size());
         for (Property property : children) {
             list.add(property.getValue());
         }
-// TODO XXX FIXME for compatibility - this treats sclar lists as array
-// see NXP-1653. remove this when will be fixed
-// see also isContainer(), setValue() and accept()
-//        if (getType().isScalarList()) {
-//            if (list.isEmpty()) return null;
-//            Object o = list.get(0);
-//            Class<?> type = o.getClass();
-//            if (o == null) {
-//                // don't know the class of the element
-//                // try to use schema information
-//                type = JavaTypes.getPrimitiveClass(getType().getFieldType());
-//                if (type == null) { // this should be a bug
-//                    throw new IllegalStateException("Scalar list type is not known - this should be a bug");
-//                }
-//            } else {
-//                type = o.getClass();
-//            }
-//            return list.toArray((Object[])Array.newInstance(type, list.size()));
-//        }
+        // TODO XXX FIXME for compatibility - this treats sclar lists as array
+        // see NXP-1653. remove this when will be fixed
+        // see also isContainer(), setValue() and accept()
+        // if (getType().isScalarList()) {
+        // if (list.isEmpty()) return null;
+        // Object o = list.get(0);
+        // Class<?> type = o.getClass();
+        // if (o == null) {
+        // // don't know the class of the element
+        // // try to use schema information
+        // type = JavaTypes.getPrimitiveClass(getType().getFieldType());
+        // if (type == null) { // this should be a bug
+        // throw new IllegalStateException("Scalar list type is not known - this
+        // should be a bug");
+        // }
+        // } else {
+        // type = o.getClass();
+        // }
+        // return list.toArray((Object[])Array.newInstance(type, list.size()));
+        // }
         // end of compatibility code <--------
         return list;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void init(Serializable value)  throws PropertyException {
-        if (value == null) { // IGNORE null values - properties will be considered PHANTOMS
+    public void init(Serializable value) throws PropertyException {
+        if (value == null) { // IGNORE null values - properties will be
+                                // considered PHANTOMS
             return;
         }
         List<Serializable> list;
@@ -186,7 +186,8 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         } else {
             list = (List<Serializable>) value;
         }
-        children.clear(); // do not use clear() method since it is marking the list as dirty
+        children.clear(); // do not use clear() method since it is marking the
+                            // list as dirty
         Field lfield = getType().getField();
         for (Serializable obj : list) {
             Property property = getRoot().createProperty(this, lfield,
@@ -198,7 +199,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     @Override
-    public void setValue(Object value)  throws PropertyException {
+    public void setValue(Object value) throws PropertyException {
         if (isReadOnly()) {
             throw new ReadOnlyPropertyException(getPath());
         }
@@ -232,7 +233,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
 
     public void clear() {
         while (!children.isEmpty()) {
-            Property property  = children.remove(0);
+            Property property = children.remove(0);
             markChildAsRemoved(property);
         }
         setIsModified();
@@ -244,7 +245,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
 
     public boolean remove(Property property) {
         if (!children.remove(property)) { // physically remove the property
-            return false; //no such item
+            return false; // no such item
         }
         // mark the property as removed using the "@removed" application data
         markChildAsRemoved(property);
@@ -278,7 +279,8 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         return clone;
     }
 
-    public void accept(PropertyVisitor visitor, Object arg)  throws PropertyException {
+    public void accept(PropertyVisitor visitor, Object arg)
+            throws PropertyException {
         arg = visitor.visit(this, arg);
         if (arg != null && isContainer()) {
             for (Property property : children) {
@@ -345,7 +347,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
      * @param ld
      */
     public void applyListDiff(ListDiff ld) throws PropertyException {
-        for (ListDiff.Entry entry :  ld.diff()) {
+        for (ListDiff.Entry entry : ld.diff()) {
             switch (entry.type) {
             case ListDiff.ADD:
                 add(entry.value);
@@ -382,7 +384,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         if (c1.size() != c2.size()) {
             return false;
         }
-        for (int i=0, size=c1.size(); i<size; i++) {
+        for (int i = 0, size = c1.size(); i < size; i++) {
             Property p1 = c1.get(i);
             Property p2 = c2.get(i);
             if (!p1.isSameAs(p2)) {
@@ -401,7 +403,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     public int indexOf(Property property) {
-        for (int i=0, size=children.size(); i<size; i++) {
+        for (int i = 0, size = children.size(); i < size; i++) {
             Property p = children.get(i);
             if (p == property) {
                 return i;
@@ -412,8 +414,8 @@ public class ListProperty extends AbstractProperty implements List<Property> {
 
     boolean moveTo(Property property, int index) {
         if (index < 0 || index > children.size()) {
-            throw new IndexOutOfBoundsException(
-                    "Index out of bounds: " + index + ". Bounds are: 0 - " + children.size());
+            throw new IndexOutOfBoundsException("Index out of bounds: " + index
+                    + ". Bounds are: 0 - " + children.size());
         }
         int i = indexOf(property);
         if (i == -1) {
@@ -424,11 +426,11 @@ public class ListProperty extends AbstractProperty implements List<Property> {
             return false;
         }
         if (i < index) {
-            children.add(index+1, property);
+            children.add(index + 1, property);
             children.remove(i);
         } else {
             children.add(index, property);
-            children.remove(i+1);
+            children.remove(i + 1);
         }
         return true;
     }

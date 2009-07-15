@@ -105,6 +105,11 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
     }
 
     @Override
+    public Serializable getValueForWrite() throws PropertyException {
+        return getValue();
+    }
+
+    @Override
     protected Property internalGetChild(Field field) {
         try {
             ObjectAdapter subAdapter = getAdapter().getAdapter(
