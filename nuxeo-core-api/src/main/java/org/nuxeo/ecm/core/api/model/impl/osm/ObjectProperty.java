@@ -43,12 +43,13 @@ public class ObjectProperty extends ComplexMemberProperty {
         super(adapter, parent, field);
     }
 
-    public ObjectProperty(ObjectAdapter adapter,  Property parent, Field field, int flags) {
+    public ObjectProperty(ObjectAdapter adapter, Property parent, Field field,
+            int flags) {
         super(adapter, parent, field, flags);
     }
 
     @Override
-    public Serializable internalGetValue() {
+    public Serializable internalGetValue() throws PropertyException {
         return value;
     }
 
@@ -65,7 +66,7 @@ public class ObjectProperty extends ComplexMemberProperty {
 
     private void readObject(ObjectInputStream in)
             throws ClassNotFoundException, IOException {
-//      always perform the default de-serialization first
+        // always perform the default de-serialization first
         in.defaultReadObject();
         children = new HashMap<String, Property>(); // initialize children
     }

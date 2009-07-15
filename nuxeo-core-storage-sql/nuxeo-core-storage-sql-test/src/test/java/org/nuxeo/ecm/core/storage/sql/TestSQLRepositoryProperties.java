@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Anahide Tchertchian
- *
+ * 
  */
 // copied and adapted from TestPropertyModel in nuxeo-core-jcr-connector-test
 @SuppressWarnings("unchecked")
@@ -58,10 +61,25 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
 
+        // deploy specific adapter for testing external blobs: files are stored
+        // in directory "/tmp/"
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-externalblob-adapters-contrib.xml");
+
         openSession();
         doc = session.createDocumentModel("TestDocument");
         doc.setPathInfo("/", "doc");
         doc = session.createDocument(doc);
+    }
+
+    protected File createTempFile() throws Exception {
+        File file = File.createTempFile("testExternalBlob", ".txt");
+        FileWriter fstream = new FileWriter(file);
+        BufferedWriter out = new BufferedWriter(fstream);
+        out.write("Hello External Blob");
+        out.close();
+        file.deleteOnExit();
+        return file;
     }
 
     // NXP-2467
@@ -224,6 +242,12 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertEquals("test2", p.getValue("string"));
     }
 
+    public void testComplexPropertySubValue() throws Exception {
+        doc.setPropertyValue("tp:complex/string", "test");
+        doc = session.saveDocument(doc);
+        assertEquals("test", doc.getPropertyValue("tp:complex/string"));
+    }
+
     // NXP-2318: i don't get what's supposed to be answered to these questions
     public void XXXtestArrayOrListProperties() throws Exception {
         Property prop = doc.getProperty("tp:stringArray");
@@ -250,6 +274,94 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertTrue(prop.isContainer());
         assertTrue(prop.isList());
         assertFalse(prop.isScalar());
+    }
+
+    public void testExternalBlobDocumentProperty() throws Exception {
+        File file = createTempFile();
+        HashMap<String, String> map = new HashMap<String, String>();
+        String uri = String.format("fs:%s", file.getName());
+        map.put("uri", uri);
+        doc.setPropertyValue("tp:externalcontent", map);
+        // not implemented....
+        // doc.setPropertyValue("tp:externalcontent/uri", uri);
+
+        Object blob = doc.getPropertyValue("tp:externalcontent");
+
+        assertNotNull(blob);
+        assertTrue(blob instanceof Blob);
+        assertEquals("Hello External Blob", ((Blob) blob).getString());
+        assertEquals(file.getName(), ((Blob) blob).getFilename());
+        assertEquals(file.getName(),
+                doc.getPropertyValue("tp:externalcontent/name"));
+        // not implemented...
+        // assertEquals(uri, doc.getPropertyValue("tp:externalcontent/uri"));
+    }
+
+    // NXP-2468
+    public void testExternalBlobListValue() throws Exception {
+        // not null on list
+        String propName = "tp:externalFileList";
+        assertTrue(doc.getPropertyValue(propName) instanceof List);
+        assertEquals(0, ((List) doc.getPropertyValue(propName)).size());
+
+        File file = createTempFile();
+        ArrayList<Map> values = new ArrayList<Map>();
+        HashMap<String, String> map = new HashMap<String, String>();
+        String uri = String.format("fs:%s", file.getName());
+        map.put("uri", uri);
+        values.add(map);
+
+        doc.setPropertyValue(propName, values);
+        doc = session.saveDocument(doc);
+
+        Serializable actual = doc.getPropertyValue(propName);
+        assertTrue(actual instanceof List);
+        List<Blob> blobs = (List) actual;
+        assertEquals(1, blobs.size());
+        assertNotNull(blobs.get(0));
+        assertTrue(blobs.get(0) instanceof Blob);
+        Blob actualBlob = blobs.get(0);
+        assertEquals("Hello External Blob", actualBlob.getString());
+        assertEquals(file.getName(), actualBlob.getFilename());
+        assertEquals(file.getName(), doc.getPropertyValue(propName + "0/name"));
+    }
+
+    // NXP-2301
+    public void testSubExternalBlobValue() throws Exception {
+        String propName = "tp:externalFileComplexList";
+        // not null on list
+        assertTrue(doc.getPropertyValue(propName) instanceof List);
+        assertEquals(0, ((List) doc.getPropertyValue(propName)).size());
+        ArrayList<Map<String, Serializable>> values = new ArrayList<Map<String, Serializable>>();
+        Map<String, Serializable> item = new HashMap<String, Serializable>();
+
+        File file = createTempFile();
+        HashMap<String, String> blobMap = new HashMap<String, String>();
+        String uri = String.format("fs:%s", file.getName());
+        blobMap.put("uri", uri);
+
+        item.put("blob", blobMap);
+        item.put("filename", "My filename");
+        values.add(item);
+        doc.setPropertyValue(propName, values);
+        doc = session.saveDocument(doc);
+
+        Object actual = doc.getPropertyValue(propName);
+        assertTrue(actual instanceof List);
+        List<Map<String, Serializable>> items = (List) actual;
+        assertEquals(1, items.size());
+        assertNotNull(items.get(0));
+        Map<String, Serializable> actualItem = items.get(0);
+        assertEquals("My filename", actualItem.get("filename"));
+        assertTrue(actualItem.get("blob") instanceof Blob);
+
+        Object actualBlob = doc.getProperty(propName + "/0/blob").getValue(
+                Blob.class);
+        assertTrue(actualBlob instanceof Blob);
+        assertEquals("Hello External Blob", ((Blob) actualBlob).getString());
+        assertEquals(file.getName(), ((Blob) actualBlob).getFilename());
+        assertEquals(file.getName(), doc.getPropertyValue(propName
+                + "0/blob/name"));
     }
 
 }

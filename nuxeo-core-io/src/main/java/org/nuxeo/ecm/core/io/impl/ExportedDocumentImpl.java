@@ -83,8 +83,8 @@ public class ExportedDocumentImpl implements ExportedDocument {
     private final Map<String, Blob> blobs = new HashMap<String, Blob>(4);
 
     // the optional attached documents
-    private final Map<String, Document> documents = new HashMap<String, Document>(4);
-
+    private final Map<String, Document> documents = new HashMap<String, Document>(
+            4);
 
     public ExportedDocumentImpl() {
     }
@@ -95,8 +95,8 @@ public class ExportedDocumentImpl implements ExportedDocument {
      * @param path the path to use for this document this is used to remove full
      *            paths
      */
-    public ExportedDocumentImpl(DocumentModel doc, Path path, boolean inlineBlobs)
-            throws IOException {
+    public ExportedDocumentImpl(DocumentModel doc, Path path,
+            boolean inlineBlobs) throws IOException {
         id = doc.getId();
         this.path = path.makeRelative();
         try {
@@ -141,8 +141,8 @@ public class ExportedDocumentImpl implements ExportedDocument {
     }
 
     public String getType() {
-        return document.getRootElement().element(ExportConstants.SYSTEM_TAG)
-                .elementText("type");
+        return document.getRootElement().element(ExportConstants.SYSTEM_TAG).elementText(
+                "type");
     }
 
     public Document getDocument() {
@@ -238,8 +238,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
         }
 
         // write schemas
-        SchemaManager schemaManager = Framework.getLocalService(
-                SchemaManager.class);
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         String[] schemaNames = doc.getDeclaredSchemas();
         for (String schemaName : schemaNames) {
             Element schemaElement = rootElement.addElement(
@@ -270,7 +269,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
             element.addText(type.encode(value));
         } else if (type.isComplexType()) {
             ComplexType ctype = (ComplexType) type;
-            if (ctype.getName().equals(TypeConstants.CONTENT)) {
+            if (TypeConstants.isContentType(ctype)) {
                 readBlob(element, ctype, (Blob) value, inlineBlobs);
             } else {
                 readComplex(element, ctype, (Map) value, inlineBlobs);

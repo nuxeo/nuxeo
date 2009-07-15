@@ -35,14 +35,12 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+// FIXME: seems unused (?)
 public abstract class ValueConverter {
 
-    private static final SchemaManager typeManager = Framework.getLocalService(
-            SchemaManager.class);
+    private static final SchemaManager typeManager = Framework.getLocalService(SchemaManager.class);
 
-    private static final Map<String, ValueConverter> converters
-            = new Hashtable<String, ValueConverter>();
-
+    private static final Map<String, ValueConverter> converters = new Hashtable<String, ValueConverter>();
 
     public abstract Object convert(Object value) throws TypeException;
 
@@ -54,7 +52,8 @@ public abstract class ValueConverter {
         converters.remove(type);
     }
 
-    public static Object getValue(String type, Object value) throws TypeException {
+    public static Object getValue(String type, Object value)
+            throws TypeException {
         ValueConverter conv = converters.get(type);
         if (conv != null) {
             return conv.convert(value);

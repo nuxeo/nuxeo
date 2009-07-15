@@ -75,4 +75,32 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:element name="externalcontent" type="nxs:externalcontent" />
+
+  <xs:element name="externalFileList" type="nxs:externalFileListType" />
+  <xs:complexType name="externalFileListType">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:externalcontent" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="externalFileComplexList"
+    type="nxs:externalFileComplexListType" />
+  <xs:complexType name="externalFileComplexListType">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:externalFileComplexType" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="externalFileComplexType">
+    <xs:sequence>
+      <xs:element name="blob" type="nxs:externalcontent" minOccurs="0"
+        maxOccurs="unbounded" />
+      <xs:element name="filename" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
 </xs:schema>

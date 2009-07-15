@@ -459,11 +459,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      */
     protected final DataModel loadDataModel(String schema)
             throws ClientException {
-        if (hasSchema(schema)) { // lazy data model
+        if (hasSchema(schema)) {
+            // lazy data model
             if (sid == null) {
-                DataModel dataModel = new DataModelImpl(schema); // supports
-                                                                    // non
-                // bound docs
+                // supports non bound docs
+                DataModel dataModel = new DataModelImpl(schema);
                 dataModels.put(schema, dataModel);
                 return dataModel;
             }
@@ -1003,12 +1003,14 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                             list.size()));
                 }
             }
-        } else { // complex type
+        } else {
+            // complex type
             ComplexType ctype = (ComplexType) type;
-            if (ctype.getName().equals(TypeConstants.CONTENT)) { // if a blob
+            if (TypeConstants.isContentType(ctype)) { // if a blob
                 Blob blob = (Blob) value; // TODO
                 clone = blob;
-            } else { // a map
+            } else {
+                // a map, regular complex type
                 Map<String, Object> map = (Map<String, Object>) value;
                 Map<String, Object> clonedMap = new HashMap<String, Object>();
                 for (Map.Entry<String, Object> entry : map.entrySet()) {

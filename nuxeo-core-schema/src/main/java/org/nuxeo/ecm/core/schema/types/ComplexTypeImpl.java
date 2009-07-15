@@ -190,7 +190,7 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
 
     @Override
     public Map<String, Object> newInstance() {
-        if (TypeConstants.CONTENT.equals(getName())) {
+        if (TypeConstants.isContentType(this)) {
             // NXP-912: should return null for a blob. Since there is no
             // pluggable adapter mechanism on types, and since document model
             // properties consider that every complex property named "content"

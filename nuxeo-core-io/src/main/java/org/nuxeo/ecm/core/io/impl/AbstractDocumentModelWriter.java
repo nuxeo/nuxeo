@@ -61,7 +61,8 @@ import org.nuxeo.runtime.services.streaming.ByteArraySource;
  */
 // TODO: improve it ->
 // modify core session to add a batch create method and use it
-public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter {
+public abstract class AbstractDocumentModelWriter extends
+        AbstractDocumentWriter {
 
     protected CoreSession session;
 
@@ -71,8 +72,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
 
     protected int unsavedDocuments = 0;
 
-    private final Map<DocumentLocation, DocumentLocation> translationMap
-            = new HashMap<DocumentLocation, DocumentLocation>();
+    private final Map<DocumentLocation, DocumentLocation> translationMap = new HashMap<DocumentLocation, DocumentLocation>();
 
     /**
      *
@@ -85,8 +85,8 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
         this(session, parentPath, 10);
     }
 
-    protected AbstractDocumentModelWriter(CoreSession session, String parentPath,
-            int saveInterval) {
+    protected AbstractDocumentModelWriter(CoreSession session,
+            String parentPath, int saveInterval) {
         if (session == null) {
             throw new IllegalArgumentException("null session");
         }
@@ -225,8 +225,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
     @SuppressWarnings("unchecked")
     protected void loadSchemas(ExportedDocument xdoc, DocumentModel docModel,
             Document doc) throws ClientException {
-        SchemaManager schemaMgr = Framework.getLocalService(
-                SchemaManager.class);
+        SchemaManager schemaMgr = Framework.getLocalService(SchemaManager.class);
         Iterator<Element> it = doc.getRootElement().elementIterator(
                 ExportConstants.SCHEMA_TAG);
         while (it.hasNext()) {
@@ -262,8 +261,8 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
     }
 
     @SuppressWarnings("unchecked")
-    private static Object getElementData(ExportedDocument xdoc, Element element,
-            Type type) {
+    private static Object getElementData(ExportedDocument xdoc,
+            Element element, Type type) {
         if (type.isSimpleType()) {
             return type.decode(element.getText());
         } else if (type.isListType()) {
@@ -280,13 +279,14 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
                 if (klass.isPrimitive()) {
                     return PrimitiveArrays.toPrimitiveArray(list, klass);
                 } else {
-                    return list.toArray((Object[]) Array.newInstance(klass, list.size()));
+                    return list.toArray((Object[]) Array.newInstance(klass,
+                            list.size()));
                 }
             }
             return list;
         } else {
             ComplexType ctype = (ComplexType) type;
-            if (ctype.getName().equals(TypeConstants.CONTENT)) {
+            if (TypeConstants.isContentType(ctype)) {
                 String mimeType = element.elementText(ExportConstants.BLOB_MIME_TYPE);
                 String encoding = element.elementText(ExportConstants.BLOB_ENCODING);
                 String content = element.elementTextTrim(ExportConstants.BLOB_DATA);

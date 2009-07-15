@@ -350,12 +350,15 @@ public class DocumentModelFactory {
             Type type, Property prop) throws DocumentException {
         if (type.isSimpleType() || type.isListType()) {
             return prop.getValue();
-        } else if (type.getName().equals(TypeConstants.CONTENT)) {
+        } else if (TypeConstants.isContentType(type)) {
             // TODO Do not use at core level the ContentSourceObject ->
             // use only complex types!
             // TODO by default all content types are lazy see later how
             // to define them at type manager level
             return prop.getValue();
+        } else if (TypeConstants.isExternalContentType(type)) {
+            // don't know what to do => export complex prop as is (?)
+            return exportComplexProperty(sid, docRef, prop);
         } else {
             return exportComplexProperty(sid, docRef, prop);
         }

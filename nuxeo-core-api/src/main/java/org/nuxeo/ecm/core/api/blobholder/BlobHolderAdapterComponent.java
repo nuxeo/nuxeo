@@ -23,8 +23,11 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
+import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
+import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapterDescriptor;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -42,9 +45,13 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(BlobHolderAdapterComponent.class);
 
+    public static final String BLOBHOLDERFACTORY_EP = "BlobHolderFactory";
+
+    public static final String EXTERNALBLOB_ADAPTER_EP = "ExternalBlobAdapter";
+
     protected static final Map<String, BlobHolderFactory> factories = new HashMap<String, BlobHolderFactory>();
 
-    public static final String BLOBHOLDERFACTORY_EP = "BlobHolderFactory";
+    protected static final Map<String, ExternalBlobAdapter> externalBlobAdapters = new HashMap<String, ExternalBlobAdapter>();
 
     @Override
     public void registerContribution(Object contribution,
@@ -54,6 +61,23 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements
         if (BLOBHOLDERFACTORY_EP.equals(extensionPoint)) {
             BlobHolderFactoryDescriptor desc = (BlobHolderFactoryDescriptor) contribution;
             factories.put(desc.getDocType(), desc.getFactory());
+        } else if (EXTERNALBLOB_ADAPTER_EP.equals(extensionPoint)) {
+            ExternalBlobAdapterDescriptor desc = (ExternalBlobAdapterDescriptor) contribution;
+            ExternalBlobAdapter adapter = desc.getAdapter();
+            String prefix = desc.getPrefix();
+            if (externalBlobAdapters.containsKey(prefix)) {
+                log.info(String.format(
+                        "Overriding external blob adapter with prefix '%s'",
+                        prefix));
+                externalBlobAdapters.remove(prefix);
+            }
+            adapter.setPrefix(desc.getPrefix());
+            adapter.setProperties(desc.getProperties());
+            externalBlobAdapters.put(desc.getPrefix(), adapter);
+            log.info(String.format(
+                    "Registered external blob adapter with prefix '%s'", prefix));
+        } else {
+            log.error("Unknown extension point " + extensionPoint);
         }
     }
 
@@ -70,6 +94,28 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements
     }
 
     /* Service Interface */
+
+    public ExternalBlobAdapter getExternalBlobAdapterForPrefix(String prefix) {
+        return externalBlobAdapters.get(prefix);
+    }
+
+    public ExternalBlobAdapter getExternalBlobAdapterForUri(String uri) {
+        if (uri != null && uri.contains(ExternalBlobAdapter.PREFIX_SEPARATOR)) {
+            String prefix = uri.substring(0,
+                    uri.indexOf(ExternalBlobAdapter.PREFIX_SEPARATOR));
+            return getExternalBlobAdapterForPrefix(prefix);
+        }
+        return null;
+    }
+
+    public Blob getExternalBlobForUri(String uri) throws PropertyException {
+        ExternalBlobAdapter adapter = getExternalBlobAdapterForUri(uri);
+        if (adapter == null) {
+            throw new PropertyException(String.format(
+                    "No external blob adapter found for uri '%s'", uri));
+        }
+        return adapter.getBlob(uri);
+    }
 
     public BlobHolder getBlobHolderAdapter(DocumentModel doc) {
         if (factories.containsKey(doc.getType())) {

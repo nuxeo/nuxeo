@@ -206,7 +206,8 @@ public class JCRComplexListProperty implements Property, JCRNodeProxy {
     }
 
     protected final Field createField(String fieldName) {
-        return new FieldImpl(QName.valueOf(fieldName), TypeRef.NULL, type.getFieldType().getRef());
+        return new FieldImpl(QName.valueOf(fieldName), TypeRef.NULL,
+                type.getFieldType().getRef());
     }
 
     public void setList(List list) throws DocumentException {
@@ -282,8 +283,10 @@ public class JCRComplexListProperty implements Property, JCRNodeProxy {
 
     protected final Property getProperty(String name, Node element) {
         Type elType = type.getFieldType();
-        if (elType.getName().equals(TypeConstants.CONTENT)) {
+        if (TypeConstants.isContentType(elType)) {
             return new BlobProperty(this, element, createField(name));
+        } else if (TypeConstants.isExternalContentType(elType)) {
+            return new ExternalBlobProperty(this, element, createField(name));
         } else if (elType.isComplexType()) {
             return new JCRComplexProperty(this, element, createField(name));
         } else if (elType.isListType()) {

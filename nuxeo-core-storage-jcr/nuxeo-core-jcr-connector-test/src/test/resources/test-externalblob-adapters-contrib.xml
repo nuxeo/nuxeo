@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.api.externalblob.test.adapters">
+  <documentation>
+    External blob default contribution, a file system adaptor that takes the
+    "container" property to set the absolute path of the container folder on the
+    file system.
+  </documentation>
+
+  <extension
+    target="org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent"
+    point="ExternalBlobAdapter">
+    <adapter prefix="fs"
+      class="org.nuxeo.ecm.core.api.externalblob.FileSystemExternalBlobAdapter">
+      <property name="container">/tmp/</property>
+    </adapter>
+  </extension>
+
+</component>

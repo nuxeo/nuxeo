@@ -29,6 +29,9 @@ import java.util.Queue;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// XXX AT: this is either too generic, or not generic enough because it makes it
+// impossible to map classes to the same type (see ExternalBlob and Blob
+// properties/adapters for instance)
 public class TypeAnnotationRegistry<T> {
 
     protected final Map<Class<?>, Annotation> registry = new HashMap<Class<?>, Annotation>();

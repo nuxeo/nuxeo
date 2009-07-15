@@ -39,7 +39,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
     protected CoreSession session;
 
     protected DatabaseHelper database = DatabaseHelper.DATABASE;
-    
+
     public SQLRepositoryTestCase() {
         super();
     }
@@ -52,6 +52,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.event");
         database.setUp();
@@ -84,5 +85,5 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
     public void closeSession(CoreSession session) {
         CoreInstance.getInstance().close(session);
     }
-    
+
 }

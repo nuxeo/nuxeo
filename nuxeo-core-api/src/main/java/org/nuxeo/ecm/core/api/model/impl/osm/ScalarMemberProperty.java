@@ -44,14 +44,14 @@ public class ScalarMemberProperty extends ScalarProperty {
 
     @Override
     public void internalSetValue(Serializable value) throws PropertyException {
-        ObjectAdapter adapter = ((Adaptable)parent).getAdapter();
+        ObjectAdapter adapter = ((Adaptable) parent).getAdapter();
         adapter.setValue(parent.getValue(), getName(), value);
     }
 
     @Override
     public Serializable internalGetValue() throws PropertyException {
-        ObjectAdapter adapter = ((Adaptable)parent).getAdapter();
-        return (Serializable)adapter.getValue(parent.getValue(), getName());
+        ObjectAdapter adapter = ((Adaptable) parent).getAdapter();
+        return (Serializable) adapter.getValue(parent.getValue(), getName());
     }
 
 }

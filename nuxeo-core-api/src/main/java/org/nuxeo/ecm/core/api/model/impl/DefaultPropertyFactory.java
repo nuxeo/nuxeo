@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BooleanProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.DateProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.DoubleProperty;
+import org.nuxeo.ecm.core.api.model.impl.primitives.ExternalBlobProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.LongProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.StringProperty;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -52,8 +53,8 @@ import org.nuxeo.runtime.api.Framework;
  * name corresponding to the property that is to be created. The type name can
  * be specified as an absolute or as a local type name. For example if the
  * global type <code>string</code> is redefined by a schema
- * <code>myschema</code> then you need to use the absolute type name to refer to
- * that type: <code>myschema:string</code>.
+ * <code>myschema</code> then you need to use the absolute type name to refer
+ * to that type: <code>myschema:string</code>.
  * <p>
  * If one looks up a factory using an absolute type name - the absolute name
  * will be used and if no factory is found then the local type name is used.
@@ -112,6 +113,11 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
         }
     };
 
+    public static final PropertyFactory EXTERNAL_BLOB = new PropertyFactory() {
+        public Property createProperty(Property parent, Field field, int flags) {
+            return new ExternalBlobProperty(parent, field, flags);
+        }
+    };
 
     public static DefaultPropertyFactory getInstance() {
         if (instance == null) {
@@ -124,11 +130,13 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
             instance.registerFactory(DateType.ID, DATE);
             instance.registerFactory(BinaryType.ID, BINARY);
             instance.registerFactory(TypeConstants.CONTENT, BLOB);
+            instance.registerFactory(TypeConstants.EXTERNAL_CONTENT,
+                    EXTERNAL_BLOB);
         }
         return instance;
     }
 
-    private DefaultPropertyFactory(){
+    private DefaultPropertyFactory() {
         super(DEFAULT);
     }
 
@@ -142,7 +150,7 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
 
     @Override
     public PropertyFactory getFactory(String schema, String type) {
-        //TODO: types must use QName for the type name
+        // TODO: types must use QName for the type name
         String key = schema + ':' + type;
         PropertyFactory factory = factories.get(key);
         if (factory == null) {
@@ -168,7 +176,8 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
         return new MapProperty(parent, field);
     }
 
-    public static Property newMapProperty(Property parent, Field field, int flags) {
+    public static Property newMapProperty(Property parent, Field field,
+            int flags) {
         return new MapProperty(parent, field, flags);
     }
 
@@ -176,7 +185,8 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
         return new ListProperty(parent, field);
     }
 
-    public static Property newListProperty(Property parent, Field field, int flags) {
+    public static Property newListProperty(Property parent, Field field,
+            int flags) {
         return new ListProperty(parent, field, flags);
     }
 
@@ -184,11 +194,13 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
         return new ScalarProperty(parent, field);
     }
 
-    public static Property newScalarProperty(Property parent, Field field, int flags) {
+    public static Property newScalarProperty(Property parent, Field field,
+            int flags) {
         return new ScalarProperty(parent, field, flags);
     }
 
-    public static Property newArrayProperty(Property parent, Field field, int flags) {
+    public static Property newArrayProperty(Property parent, Field field,
+            int flags) {
         return new ArrayProperty(parent, field, flags);
     }
 
@@ -208,7 +220,8 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
             }
         } else {
             throw new IllegalArgumentException(
-                    "Given field type is unsupported: " + field.getType().getName());
+                    "Given field type is unsupported: "
+                            + field.getType().getName());
         }
         return property;
     }
