@@ -159,9 +159,8 @@ public class BlobExtractor {
                 }
             } else { // complex type
                 ComplexType ctype = (ComplexType) type;
-                if (type.getName().equals(TypeConstants.CONTENT)) {
-                    // CB: Fix for NXP-3847 - do not accumulate field name in
-                    // the path
+                if (TypeConstants.isContentType(type)
+                        || TypeConstants.isExternalContentType(type)) {
                     String blobMatchedPath = path
                             + String.format("/%s",
                                     field.getName().getLocalName());
