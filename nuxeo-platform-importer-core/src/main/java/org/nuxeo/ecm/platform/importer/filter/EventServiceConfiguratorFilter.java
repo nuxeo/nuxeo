@@ -5,21 +5,29 @@ import org.nuxeo.runtime.api.Framework;
 
 public class EventServiceConfiguratorFilter implements ImporterFilter {
 
-    protected Boolean blockSyncPostCommitProcessing;
-    protected Boolean blockAsyncProcessing;
-    protected Boolean blockMimeTypeDetection;
+    protected boolean blockSyncPostCommitProcessing=false;
+    protected boolean blockAsyncProcessing=false;
+    protected boolean blockMimeTypeDetection=false;
     protected boolean blockNotifications = true;
-    protected Boolean bulkMode;
+    protected boolean bulkMode=false;
     protected EventServiceAdmin eventAdmin=null;
 
     protected static final String NOTIF_LISTENER = "notificationListener";
     protected static final String MIME_LISTENER = "mimetypeIconUpdater";
 
     public EventServiceConfiguratorFilter(Boolean blockSyncPostCommitProcessing,Boolean blockAsyncProcessing,Boolean blockMimeTypeDetection, Boolean bulkMode) {
-        this.blockAsyncProcessing=blockAsyncProcessing;
-        this.blockSyncPostCommitProcessing = blockSyncPostCommitProcessing;
-        this.blockMimeTypeDetection = blockMimeTypeDetection;
-        this.bulkMode = bulkMode;
+        if (blockAsyncProcessing!=null) {
+            this.blockAsyncProcessing=blockAsyncProcessing;
+        }
+        if (blockSyncPostCommitProcessing!=null) {
+            this.blockSyncPostCommitProcessing = blockSyncPostCommitProcessing;
+        }
+        if (blockMimeTypeDetection!=null) {
+            this.blockMimeTypeDetection = blockMimeTypeDetection;
+        }
+        if (bulkMode!=null) {
+            this.bulkMode = bulkMode;
+        }
     }
 
     public void handleBeforeImport() {
