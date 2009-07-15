@@ -68,6 +68,8 @@ public abstract class AbstractWebContext implements WebContext {
     public static Locale DEFAULT_LOCALE = Locale.ENGLISH;
 
     public static final String LOCALE_SESSION_KEY = "webengine_locale";
+    
+    private static boolean isRepositoryDisabled = false; 
 
     protected final WebEngine engine;
 
@@ -634,11 +636,27 @@ public abstract class AbstractWebContext implements WebContext {
                 bindings.put("Adapter", adapter);
             }
         }
-        try {
-            bindings.put("Session", getCoreSession());
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to get a core session", e);
+        if (!isRepositoryDisabled) {
+            try {
+                bindings.put("Session", getCoreSession());
+            } catch (Exception e) {
+                throw WebException.wrap("Failed to get a core session", e);
+            }
         }
     }
 
+    public static boolean isRepositorySupportDisabled() {
+        return isRepositoryDisabled;
+    }
+    
+    /**
+     * Can be used by the application to disable injecting repository sessions in scripting context.
+     * If the application is not deploying a repository injecting a repository session will throw
+     * exceptions each time rendering is used.
+     * @param isRepositoryDisabled true to disable repository session injection, false otherwise
+     */
+    public static void setIsRepositorySupportDisabled(boolean isRepositoryDisabled) {
+        AbstractWebContext.isRepositoryDisabled = isRepositoryDisabled;
+    }
+    
 }
