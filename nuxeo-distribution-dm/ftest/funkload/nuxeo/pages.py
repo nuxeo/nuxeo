@@ -276,13 +276,15 @@ class BasePage:
     def relations(self):
         ret = self.viewDocumentUid(self.getDocUid(), tab='TAB_RELATIONS',
                                    description="View relations tab")
-        self.fl.assert_('Add a new relation' in self.fl.getBody())
+        self.fl.assert_('Add a new relation' in self.fl.getBody()
+                        or 'No incoming nor outgoing relation' in self.fl.getBody())
         return ret
 
     def workflow(self):
         ret = self.viewDocumentUid(self.getDocUid(), tab='TAB_CONTENT_JBPM',
                                    description="View workflow tab")
-        self.fl.assert_('startWorkflow' in self.fl.getBody())
+        self.fl.assert_('startWorkflow' in self.fl.getBody() or
+                        'No workflows are currently active' in self.fl.getBody())
         return ret
 
     def mySubscriptions(self):

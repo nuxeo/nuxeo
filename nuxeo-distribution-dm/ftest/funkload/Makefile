@@ -54,6 +54,13 @@ reader:
 test-nuxeo: init writer reader
 
 
+navigation-init:
+	fl-run-test -v --simple-fetch test_navigation.py -e testBrowse $(FLOPS)
+
+# require init for users access
+navigation:
+	fl-run-test -v --simple-fetch test_navigation.py -e testNavigation $(FLOPS)
+
 # bench nuxeo ep
 bench: start test-nuxeo bench-writer bench-reader stop
 
@@ -70,7 +77,6 @@ bench-reader: warmup
 	-fl-build-report $(LOG_HOME)/nuxeo-bench.xml --html -o $(REPORT)
 
 
-
 # bench nuxeo ep
 bench-longevity: start test-nuxeo bench-writer-long bench-reader-long stop
 
@@ -82,6 +88,11 @@ bench-writer-long:
 bench-reader-long: warmup
 	-fl-run-bench --simple-fetch -c 1:20:20:20:20:1 -D 600 -m 0.1 -M 1 -s 1 test_nuxeo.py Nuxeo.testReader $(FLOPS)
 	-fl-build-report $(LOG_HOME)/nuxeo-bench.xml --html -o $(REPORT)
+
+
+bench-navigation: navigation-init
+	-fl-run-bench --simple-fetch -c 1:5:10:15:20:25:30:35:40:45:50 -D 60 -m 0.1 -M 1 -s 1 test_navigation.py Navigation.testNavigation $(FLOPS)
+	-fl-build-report $(LOG_HOME)/navigation-bench.xml --html -o $(REPORT)
 
 
 clean:
