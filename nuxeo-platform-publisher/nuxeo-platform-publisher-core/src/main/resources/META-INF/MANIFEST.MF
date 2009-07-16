@@ -9,4 +9,5 @@ Require-Bundle: org.nuxeo.ecm.platform.ui,
 Nuxeo-Component: OSGI-INF/publisher-framework.xml,
  OSGI-INF/publisher-contrib.xml,
  OSGI-INF/jaxrs-contrib.xml,
- OSGI-INF/publisher-permissions-contrib.xml
+ OSGI-INF/publisher-permissions-contrib.xml,
+ OSGI-INF/publisher-relations-contrib.xml

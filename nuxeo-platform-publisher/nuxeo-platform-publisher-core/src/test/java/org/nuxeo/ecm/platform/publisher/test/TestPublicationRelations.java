@@ -18,25 +18,37 @@
 package org.nuxeo.ecm.platform.publisher.test;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.publisher.helper.PublicationRelationHelper;
+import org.nuxeo.ecm.platform.relations.api.RelationManager;
+import org.nuxeo.ecm.platform.relations.api.util.RelationHelper;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
 import org.hsqldb.jdbc.jdbcDataSource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public class TestPublicationRelations extends AbstractCorePublisherTest {
+public class TestPublicationRelations extends SQLRepositoryTestCase {
+
+    private static final Log log = LogFactory.getLog(TestPublicationRelations.class);
+
+    protected DocumentModel doc2Publish;
 
     public TestPublicationRelations(String name) {
         super(name);
@@ -56,18 +68,67 @@ public class TestPublicationRelations extends AbstractCorePublisherTest {
                 "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
         Framework.getProperties().setProperty(
                 "org.nuxeo.ecm.sql.jena.databaseTransactionEnabled", "false");
+
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployBundle("org.nuxeo.ecm.platform.types.api");
         deployBundle("org.nuxeo.ecm.platform.types.core");
+        deployBundle("org.nuxeo.ecm.platform.versioning.api");
+        deployBundle("org.nuxeo.ecm.platform.versioning");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployContrib("org.nuxeo.ecm.platform.publisher.core",
                 "OSGI-INF/publisher-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.publisher.core",
                 "OSGI-INF/publisher-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.publisher.core",
+                "OSGI-INF/publisher-relations-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.publisher.test",
+                "OSGI-INF/relations-default-jena-contrib.xml");
 
         openSession();
+    }
+
+    protected void createInitialDocs() throws Exception {
+
+        DocumentModel wsRoot = session.getDocument(new PathRef(
+                "default-domain/workspaces"));
+
+        DocumentModel ws = session.createDocumentModel(
+                wsRoot.getPathAsString(), "ws1", "Workspace");
+        ws.setProperty("dublincore", "title", "test WS");
+        ws = session.createDocument(ws);
+
+        DocumentModel sectionsRoot = session.getDocument(new PathRef(
+                "default-domain/sections"));
+
+        DocumentModel section1 = session.createDocumentModel(
+                sectionsRoot.getPathAsString(), "section1", "Section");
+        section1.setProperty("dublincore", "title", "section1");
+        section1 = session.createDocument(section1);
+
+        DocumentModel section2 = session.createDocumentModel(
+                sectionsRoot.getPathAsString(), "section2", "Section");
+        section2.setProperty("dublincore", "title", "section2");
+        section2 = session.createDocument(section2);
+
+        DocumentModel section11 = session.createDocumentModel(
+                section1.getPathAsString(), "section11", "Section");
+        section11.setProperty("dublincore", "title", "section11");
+        section11 = session.createDocument(section11);
+
+        doc2Publish = session.createDocumentModel(ws.getPathAsString(), "file",
+                "File");
+        doc2Publish.setProperty("dublincore", "title", "MyDoc");
+
+        Blob blob = new StringBlob("SomeDummyContent");
+        blob.setFilename("dummyBlob.txt");
+        blob.setMimeType("text/plain");
+        doc2Publish.setProperty("file", "content", blob);
+
+        doc2Publish = session.createDocument(doc2Publish);
+
+        session.save();
     }
 
     public void testPublicationRelation() throws Exception {
@@ -81,13 +142,12 @@ public class TestPublicationRelations extends AbstractCorePublisherTest {
         List<PublicationNode> nodes = tree.getChildrenNodes();
         PublicationNode targetNode = nodes.get(0);
         PublishedDocument pubDoc = tree.publish(doc2Publish, targetNode);
-        assertTrue(pubDoc  instanceof SimpleCorePublishedDocument);
+        assertTrue(pubDoc instanceof SimpleCorePublishedDocument);
 
         DocumentModel proxy = ((SimpleCorePublishedDocument) pubDoc).getProxy();
         assertTrue(PublicationRelationHelper.isPublished(proxy));
 
-        assertEquals(tree.getConfigName(), PublicationRelationHelper.getTreeNameUsedForPublishing(proxy));
-        System.out.println(tree.getConfigName());
+        assertEquals(tree.getConfigName(), service.getPublicationTreeFor(proxy, session).getConfigName());
     }
 
 }

@@ -18,12 +18,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 
+ *
  * Http facade for the {@link RemotePublicationTreeManager} service. This facade
  * uses a invoker to do the actual calls to the remote backend.
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class RemotePublicationTreeManagerRestProxy implements
         RemotePublicationTreeManager {
@@ -174,6 +174,10 @@ public class RemotePublicationTreeManagerRestProxy implements
     }
 
     public boolean canUnpublish(String sid, PublishedDocument publishedDocument) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean canManagePublishing(String sid, PublishedDocument publishedDocument) throws ClientException {
         throw new UnsupportedOperationException();
     }
 

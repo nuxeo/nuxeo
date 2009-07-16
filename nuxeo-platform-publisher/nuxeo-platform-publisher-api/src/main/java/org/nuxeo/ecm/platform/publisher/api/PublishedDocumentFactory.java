@@ -9,12 +9,12 @@ import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
 import java.util.Map;
 
 /**
- * 
+ *
  * Interface of the pluggable factory used to create a PublishedDocument in a
  * give PublicationTree
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public interface PublishedDocumentFactory {
 
@@ -29,7 +29,7 @@ public interface PublishedDocumentFactory {
 
     void init(CoreSession coreSession, ValidatorsRule validatorsRule, Map<String, String> parameters)
             throws ClientException;
-    
+
     void init(CoreSession coreSession, Map<String, String> parameters)
             throws ClientException;
 
@@ -63,7 +63,7 @@ public interface PublishedDocumentFactory {
 
     /**
      * A validator (the current user) approves the publication.
-     * 
+     *
      * @param publishedDocument the current published document that will be
      *            approved
      * @throws PublishingException
@@ -73,7 +73,7 @@ public interface PublishedDocumentFactory {
 
     /**
      * A validator (the current user) rejects the publication.
-     * 
+     *
      * @param publishedDocument the currently published document that will be
      *            rejected
      * @param comment
@@ -81,5 +81,8 @@ public interface PublishedDocumentFactory {
      */
     void validatorRejectPublication(PublishedDocument publishedDocument,
             String comment) throws PublishingException;
+
     
+    boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException;
+
 }

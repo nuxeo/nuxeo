@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Interface for the publication tree. A Publication Tree is a generic view on a
  * set of PublicationNode.
- * 
+ *
  * @author tiry
  */
 public interface PublicationTree extends PublicationNode {
@@ -53,7 +53,7 @@ public interface PublicationTree extends PublicationNode {
 
     /**
      * A validator (the current user) approves the publication.
-     * 
+     *
      * @param publishedDocument the current published document that will be
      *            approved
      * @throws PublishingException
@@ -63,7 +63,7 @@ public interface PublicationTree extends PublicationNode {
 
     /**
      * A validator (the current user) rejects the publication.
-     * 
+     *
      * @param publishedDocument the currently published document that will be
      *            rejected
      * @param comment
@@ -74,7 +74,7 @@ public interface PublicationTree extends PublicationNode {
 
     /**
      * Returns {@code true} if the current user can publish to the specified publicationNode, {@code false} otherwise.
-     * @param publicationNode 
+     * @param publicationNode
      * @return {@code true} if the current user can publish to the specified publicationNode, {@code false} otherwise.
      * @throws ClientException
      */
@@ -88,4 +88,12 @@ public interface PublicationTree extends PublicationNode {
      */
     boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException;
 
+    /**
+     * Returns {@code true} if the current user can mnage the publishing of the given publisheddocument, ie. approve or reject the document.
+     * @param publishedDocument
+     * @return
+     * @throws ClientException
+     */
+    boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException;
+    
 }

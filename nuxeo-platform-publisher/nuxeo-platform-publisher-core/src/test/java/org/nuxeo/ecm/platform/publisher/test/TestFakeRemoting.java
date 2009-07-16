@@ -29,11 +29,14 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
 
     @Override
     public void setUp() throws Exception {
+        System.out.println("In setUp method");
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployBundle("org.nuxeo.ecm.platform.types.api");
         deployBundle("org.nuxeo.ecm.platform.types.core");
+        deployBundle("org.nuxeo.ecm.platform.versioning.api");
+        deployBundle("org.nuxeo.ecm.platform.versioning");
 
         deployContrib("org.nuxeo.ecm.platform.publisher.core",
                 "OSGI-INF/publisher-framework.xml");

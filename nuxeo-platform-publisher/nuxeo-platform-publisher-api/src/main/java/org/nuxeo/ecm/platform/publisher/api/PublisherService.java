@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * Main publication Service *
- * 
+ *
  * @author tiry
  */
 public interface PublisherService {
@@ -28,4 +28,9 @@ public interface PublisherService {
 
     void unpublish(DocumentModel doc, PublicationNode targetNode)
             throws ClientException;
+
+    boolean isPublishedDocument(DocumentModel documentModel);
+
+    PublicationTree getPublicationTreeFor(DocumentModel doc, CoreSession coreSession) throws ClientException;
+
 }

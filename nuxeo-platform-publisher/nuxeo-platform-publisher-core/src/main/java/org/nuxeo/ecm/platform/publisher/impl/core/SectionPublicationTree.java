@@ -83,14 +83,14 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
     @Override
     public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
         SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.publish(doc, targetNode);
-        PublicationRelationHelper.addPublicationRelation(publishedDocument.getProxy(), getConfigName());
+        PublicationRelationHelper.addPublicationRelation(publishedDocument.getProxy(), this);
         return publishedDocument;
     }
 
     @Override
     public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params) throws ClientException {
         SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.publish(doc, targetNode, params);
-        PublicationRelationHelper.addPublicationRelation(publishedDocument.getProxy(), getConfigName());
+        PublicationRelationHelper.addPublicationRelation(publishedDocument.getProxy(), this);
         return publishedDocument;
     }
 

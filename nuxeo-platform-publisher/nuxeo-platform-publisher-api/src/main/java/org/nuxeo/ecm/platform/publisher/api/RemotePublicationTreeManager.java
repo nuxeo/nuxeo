@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 
+ *
  * Remote interface used by PublicationService to communicate with each others
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public interface RemotePublicationTreeManager {
 
@@ -86,5 +86,13 @@ public interface RemotePublicationTreeManager {
      * @throws ClientException
      */
     boolean canUnpublish(String sid, PublishedDocument publishedDocument) throws ClientException;
-    
+
+    /**
+     * Returns {@code true} if the current user can mnage the publishing of the given publisheddocument, ie. approve or reject the document.
+     * @param publishedDocument
+     * @return
+     * @throws ClientException
+     */
+    boolean canManagePublishing(String sid, PublishedDocument publishedDocument) throws ClientException;
+
 }

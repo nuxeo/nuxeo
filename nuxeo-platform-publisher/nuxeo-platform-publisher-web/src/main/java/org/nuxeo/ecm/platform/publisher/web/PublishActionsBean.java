@@ -172,6 +172,15 @@ public class PublishActionsBean implements Serializable {
                 publishedDocument);
     }
 
+    public boolean isPublishedDocument() {
+        return publisherService.isPublishedDocument(navigationContext.getCurrentDocument());
+    }
+
+    public boolean canManagePublishing() throws ClientException {
+        PublicationTree tree = publisherService.getPublicationTreeFor(navigationContext.getCurrentDocument(), documentManager);
+        return tree.ca
+    }
+
     @Destroy
     public void destroy() {
         currentPublicationTree.release();

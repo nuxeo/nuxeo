@@ -113,5 +113,9 @@ public abstract class AbstractBasePublishedDocumentFactory implements
     public void validatorRejectPublication(PublishedDocument publishedDocument,
             String comment) throws PublishingException {
     }
+
+    public boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException {
+        return true;
+    }
     
 }

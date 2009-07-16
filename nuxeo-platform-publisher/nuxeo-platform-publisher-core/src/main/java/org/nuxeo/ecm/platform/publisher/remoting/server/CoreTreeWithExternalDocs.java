@@ -13,17 +13,18 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.basic.BasicPublished
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
- * 
+ *
  * {@link PublicationTree} implementation that supports having plain Documents
  * directly inside the sections. This is typically used for Remote
  * {@link PublicationTree} implementation that will store proxies for locally
  * published documents and complete {@link DocumentModel} for remote plublished
  * Documents.
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class CoreTreeWithExternalDocs extends SectionPublicationTree implements
         PublicationTree {
@@ -87,6 +88,23 @@ public class CoreTreeWithExternalDocs extends SectionPublicationTree implements
         }
         return docs;
 
+    }
+
+    @Override
+    public PublishedDocument publish(DocumentModel doc,
+            PublicationNode targetNode) throws ClientException {
+        ExternalCorePublishedDocument publishedDocument = (ExternalCorePublishedDocument) factory.publishDocument(
+                doc, targetNode);
+        return publishedDocument;
+    }
+
+    @Override
+    public PublishedDocument publish(DocumentModel doc,
+            PublicationNode targetNode, Map<String, String> params)
+            throws ClientException {
+        ExternalCorePublishedDocument publishedDocument = (ExternalCorePublishedDocument) factory.publishDocument(
+                doc, targetNode, params);
+        return publishedDocument;
     }
 
     @Override

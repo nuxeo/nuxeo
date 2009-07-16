@@ -38,12 +38,12 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * 
+ *
  * Implementation of the {@link PublishedDocumentFactory} for core
  * implementation using native proxy system with validation workflow.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * 
+ *
  */
 public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         PublishedDocumentFactory {
@@ -63,7 +63,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         DocumentModel proxy = publish(doc, targetNode, params);
         SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(proxy);
         NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
-        
+
         if (!isValidator(proxy, principal)) {
             try {
                 notifyEvent(PublishingEvent.documentWaitingPublication, proxy,
@@ -254,7 +254,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         } catch (ClientException e) {
             throw new PublishingException(e);
         }
-        ((SimpleCorePublishedDocument) publishedDocument).setPending(false);   
+        ((SimpleCorePublishedDocument) publishedDocument).setPending(false);
     }
 
     protected void removeACL(DocumentModel document,
@@ -336,6 +336,30 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             throw new PublishingException(e);
         }
         return true;
+    }
+
+    @Override
+    public boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException {
+        DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
+        NuxeoPrincipal currentUser = (NuxeoPrincipal) coreSession.getPrincipal();
+        return proxy.isProxy() && hasValidationTask(proxy, currentUser);
+    }
+
+    protected boolean hasValidationTask(DocumentModel proxy,
+            NuxeoPrincipal currentUser) throws PublishingException {
+        assert currentUser != null;
+        try {
+            List<TaskInstance> tis = getJbpmService().getTaskInstances(proxy,
+                    currentUser, null);
+            for (TaskInstance ti : tis) {
+                if (ti.getName().equals(TASK_NAME)) {
+                    return true;
+                }
+            }
+        } catch (NuxeoJbpmException e) {
+            throw new PublishingException(e);
+        }
+        return false;
     }
 
 }

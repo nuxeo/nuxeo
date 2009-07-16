@@ -13,6 +13,7 @@ import org.nuxeo.ecm.platform.publisher.descriptors.PublicationTreeDescriptor;
 import org.nuxeo.ecm.platform.publisher.descriptors.PublishedDocumentFactoryDescriptor;
 import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
 import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRuleDescriptor;
+import org.nuxeo.ecm.platform.publisher.helper.PublicationRelationHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -24,12 +25,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 
+ *
  * Pojo implementation of the publisher service Implements both
  * {@link PublisherService} and {@link RemotePublicationTreeManager}
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class PublisherServiceImpl extends DefaultComponent implements
         PublisherService, RemotePublicationTreeManager {
@@ -433,5 +434,22 @@ public class PublisherServiceImpl extends DefaultComponent implements
                     "Calling validatorPublishDocument on a closed tree");
         }
     }
-    
+
+    public boolean canManagePublishing(String sid, PublishedDocument publishedDocument) throws ClientException {
+        PublicationTree tree = liveTrees.get(sid);
+        if (tree != null) {
+            return tree.canManagePublishing(publishedDocument);
+        } else {
+            throw new ClientException(
+                    "Calling validatorPublishDocument on a closed tree");
+        }
+    }
+
+    public boolean isPublishedDocument(DocumentModel documentModel) {
+        return PublicationRelationHelper.isPublished(documentModel);
+    }
+
+    public PublicationTree getPublicationTreeFor(DocumentModel doc, CoreSession coreSession) throws ClientException {
+        return PublicationRelationHelper.getPublicationTreeUsedForPublishing(doc, coreSession);
+    }
 }

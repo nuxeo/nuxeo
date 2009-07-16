@@ -9,14 +9,14 @@
 
   <div>
 
-    <h:panelGroup rendered="#{publishingActions.proxy}">
+    <h:panelGroup rendered="#{publishActions.isPublishedDocument}">
 
       <h3><h:outputText value="#{messages['label.publishing.title']}" /></h3>
 
       <br />
 
       <nxu:methodResult name="canManagePublishing"
-        value="#{publishingActions.canManagePublishing()}">
+        value="#{publishActions.canManagePublishing}">
 
         <h:outputText rendered="#{!publishActions.published}"
           value="#{messages['label.document.pending']}" />

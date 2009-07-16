@@ -162,4 +162,8 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return true;
     }
 
+    public boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException {
+        return factory.canManagePublishing(publishedDocument);
+    }
+    
 }

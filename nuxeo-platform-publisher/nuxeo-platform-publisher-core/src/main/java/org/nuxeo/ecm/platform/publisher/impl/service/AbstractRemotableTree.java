@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 
+ *
  * Abstract class for {@link PublicationTree} that delegate method calls to a
  * remote service
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public abstract class AbstractRemotableTree implements PublicationTree {
 
@@ -126,5 +126,8 @@ public abstract class AbstractRemotableTree implements PublicationTree {
     public boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException {
         return getTreeService().canUnpublish(getServerTreeSessionId(), publishedDocument);
     }
-    
+
+    public boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException {
+        return getTreeService().canManagePublishing(getServerTreeSessionId(), publishedDocument);
+    }
 }
