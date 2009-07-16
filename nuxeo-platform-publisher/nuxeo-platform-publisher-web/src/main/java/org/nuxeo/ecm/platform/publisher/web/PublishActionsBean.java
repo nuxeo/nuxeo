@@ -23,17 +23,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.*;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
-import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
-import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
-import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
-import org.nuxeo.ecm.platform.publisher.api.PublisherService;
+import org.nuxeo.ecm.platform.publisher.api.*;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
@@ -76,6 +73,8 @@ public class PublishActionsBean implements Serializable {
 
     protected PublicationTree currentPublicationTree;
 
+    protected String rejectPublishingComment;
+
     @Create
     public void create() {
         try {
@@ -86,12 +85,18 @@ public class PublishActionsBean implements Serializable {
         }
     }
 
+    @Destroy
+    public void destroy() {
+        currentPublicationTree.release();
+        currentPublicationTree = null;
+    }
+
     @Factory(value = "availablePublicationTrees", scope = ScopeType.EVENT)
     public List<String> getAvailablePublicationTrees() throws ClientException {
         return publisherService.getAvailablePublicationTree();
     }
 
-    public String doPublish(PublicationNode publicationNode) throws Exception {
+    public String doPublish(PublicationNode publicationNode) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         PublishedDocument publishedDocument = getCurrentPublicationTreeForPublishing().publish(
                 currentDocument, publicationNode);
@@ -110,7 +115,7 @@ public class PublishActionsBean implements Serializable {
     }
 
     public void setCurrentPublicationTreeNameForPublishing(
-            String currentPublicationTreeNameForPublishing) throws Exception {
+            String currentPublicationTreeNameForPublishing) throws ClientException {
         this.currentPublicationTreeNameForPublishing = currentPublicationTreeNameForPublishing;
         if (currentPublicationTree != null) {
             currentPublicationTree.release();
@@ -140,22 +145,29 @@ public class PublishActionsBean implements Serializable {
         return currentPublicationTree;
     }
 
-    public String getCurrentPublicationTreeIconExpanded() throws Exception {
+    public String getCurrentPublicationTreeIconExpanded() throws ClientException {
         return getCurrentPublicationTreeForPublishing().getIconExpanded();
     }
 
-    public String getCurrentPublicationTreeIconCollapsed() throws Exception {
+    public String getCurrentPublicationTreeIconCollapsed() throws ClientException {
         return getCurrentPublicationTreeForPublishing().getIconCollapsed();
     }
 
-    public List<PublishedDocument> getPublishedDocuments() throws Exception {
+    public List<PublishedDocument> getPublishedDocuments() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return getCurrentPublicationTreeForPublishing().getExistingPublishedDocument(
                 new DocumentLocationImpl(currentDocument));
     }
 
+    public List<PublishedDocument> getPublishedDocumentsFor(String treeName) throws ClientException {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        PublicationTree tree = publisherService.getPublicationTree(treeName, documentManager, null);
+        return tree.getExistingPublishedDocument(
+                new DocumentLocationImpl(currentDocument));
+    }
+
     public String unPublish(PublishedDocument publishedDocument)
-            throws Exception {
+            throws ClientException {
         getCurrentPublicationTreeForPublishing().unpublish(publishedDocument);
         return null;
     }
@@ -177,14 +189,55 @@ public class PublishActionsBean implements Serializable {
     }
 
     public boolean canManagePublishing() throws ClientException {
-        PublicationTree tree = publisherService.getPublicationTreeFor(navigationContext.getCurrentDocument(), documentManager);
-        return tree.ca
+        PublicationTree tree = publisherService.getPublicationTreeFor(
+                navigationContext.getCurrentDocument(), documentManager);
+        PublishedDocument publishedDocument = tree.wrapToPublishedDocument(navigationContext.getCurrentDocument());
+        return tree.canManagePublishing(publishedDocument);
     }
 
-    @Destroy
-    public void destroy() {
-        currentPublicationTree.release();
-        currentPublicationTree = null;
+    public boolean hasValidationTask() throws ClientException {
+        PublicationTree tree = publisherService.getPublicationTreeFor(
+                navigationContext.getCurrentDocument(), documentManager);
+        PublishedDocument publishedDocument = tree.wrapToPublishedDocument(navigationContext.getCurrentDocument());
+        return tree.hasValidationTask(publishedDocument);
+    }
+
+    public String getRejectPublishingComment() {
+        return rejectPublishingComment;
+    }
+
+    public void setRejectPublishingComment(String rejectPublishingComment) {
+        this.rejectPublishingComment = rejectPublishingComment;
+    }
+
+    public String approveDocument() throws ClientException {
+        PublicationTree tree = publisherService.getPublicationTreeFor(
+                navigationContext.getCurrentDocument(), documentManager);
+        PublishedDocument publishedDocument = tree.wrapToPublishedDocument(navigationContext.getCurrentDocument());
+        tree.validatorPublishDocument(publishedDocument);
+        Events.instance().raiseEvent(PublishingEvent.documentPublished.name());
+        return null;
+    }
+
+    public String rejectDocument() throws ClientException {
+        if (rejectPublishingComment == null
+                || "".equals(rejectPublishingComment)) {
+            facesMessages.addToControl("rejectPublishingComment",
+                    FacesMessage.SEVERITY_ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.publishing.reject.user.comment.mandatory"));
+            return null;
+        }
+
+        PublicationTree tree = publisherService.getPublicationTreeFor(
+                navigationContext.getCurrentDocument(), documentManager);
+        PublishedDocument publishedDocument = tree.wrapToPublishedDocument(navigationContext.getCurrentDocument());
+        tree.validatorRejectPublication(publishedDocument,
+                rejectPublishingComment);
+        Events.instance().raiseEvent(
+                PublishingEvent.documentPublicationRejected.name());
+
+        return navigationContext.navigateToRef(navigationContext.getCurrentDocument().getParentRef());
     }
 
 }

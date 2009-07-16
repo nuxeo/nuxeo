@@ -69,7 +69,7 @@ public interface PublishedDocumentFactory {
      * @throws PublishingException
      */
     void validatorPublishDocument(PublishedDocument publishedDocument)
-            throws PublishingException;
+            throws ClientException;
 
     /**
      * A validator (the current user) rejects the publication.
@@ -80,9 +80,10 @@ public interface PublishedDocumentFactory {
      * @throws PublishingException
      */
     void validatorRejectPublication(PublishedDocument publishedDocument,
-            String comment) throws PublishingException;
+            String comment) throws ClientException;
 
-    
+    boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException;
+
     boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException;
 
 }

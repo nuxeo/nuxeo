@@ -88,6 +88,8 @@ public interface PublicationTree extends PublicationNode {
      */
     boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException;
 
+    boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException;
+
     /**
      * Returns {@code true} if the current user can mnage the publishing of the given publisheddocument, ie. approve or reject the document.
      * @param publishedDocument
@@ -95,5 +97,7 @@ public interface PublicationTree extends PublicationNode {
      * @throws ClientException
      */
     boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException;
-    
+
+    PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException;
+
 }

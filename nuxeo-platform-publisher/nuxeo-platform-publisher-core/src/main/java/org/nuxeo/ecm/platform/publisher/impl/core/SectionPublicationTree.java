@@ -31,8 +31,6 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
 
     protected static final String CAN_ASK_FOR_PUBLISHING = "CanAskForPublishing";
 
-
-
     protected static final String DEFAULT_ROOT_PATH = "/default-domain/sections";
 
     protected DocumentModel treeRoot;
@@ -141,6 +139,14 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
     public boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException {
         DocumentRef docRef = new PathRef(publishedDocument.getParentPath());
         return coreSession.hasPermission(docRef, SecurityConstants.WRITE);
+    }
+
+    public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException {
+        if (PublicationRelationHelper.isPublished(documentModel)) {
+            return factory.wrapDocumentModel(documentModel);
+        } else {
+            throw new ClientException("Document " + documentModel.getPathAsString() + " is not a published document.");
+        }
     }
 
 }

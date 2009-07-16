@@ -11,12 +11,12 @@ import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 import java.util.Map;
 
 /**
- * 
+ *
  * Implementation of the {@link PublishedDocumentFactory} for simple core
  * implementation using native proxy system
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory
         implements PublishedDocumentFactory {
@@ -64,5 +64,7 @@ public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory
             throws ClientException {
         return new SimpleCorePublishedDocument(doc);
     }
+
+
 
 }

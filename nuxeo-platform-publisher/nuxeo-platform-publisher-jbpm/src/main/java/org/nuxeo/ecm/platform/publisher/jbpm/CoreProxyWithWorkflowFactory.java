@@ -61,7 +61,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
         DocumentModel proxy = publish(doc, targetNode, params);
-        SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(proxy);
+        SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(
+                proxy);
         NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
 
         if (!isValidator(proxy, principal)) {
@@ -103,8 +104,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         return publisher.getModel();
     }
 
-    protected boolean isValidator(DocumentModel document, NuxeoPrincipal principal)
-            throws PublishingException {
+    protected boolean isValidator(DocumentModel document,
+            NuxeoPrincipal principal) throws PublishingException {
         try {
             String[] validators = getValidatorsFor(document);
             for (String s : validators) {
@@ -257,8 +258,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         ((SimpleCorePublishedDocument) publishedDocument).setPending(false);
     }
 
-    protected void removeACL(DocumentModel document,
-            CoreSession coreSession) throws PublishingException {
+    protected void removeACL(DocumentModel document, CoreSession coreSession)
+            throws PublishingException {
         try {
             RemoveACLUnrestricted remover = new RemoveACLUnrestricted(
                     coreSession, document, ACL_NAME);
@@ -312,7 +313,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
     }
 
     @Override
-    public PublishedDocument wrapDocumentModel(DocumentModel doc) throws ClientException {
+    public PublishedDocument wrapDocumentModel(DocumentModel doc)
+            throws ClientException {
         SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.wrapDocumentModel(doc);
         if (!isPublished(publishedDocument)) {
             publishedDocument.setPending(true);
@@ -320,7 +322,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         return publishedDocument;
     }
 
-    protected boolean isPublished(PublishedDocument publishedDocument) throws PublishingException {
+    protected boolean isPublished(PublishedDocument publishedDocument)
+            throws PublishingException {
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         try {
             List<TaskInstance> tis = getJbpmService().getTaskInstances(proxy,
@@ -339,7 +342,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
     }
 
     @Override
-    public boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException {
+    public boolean canManagePublishing(PublishedDocument publishedDocument)
+            throws ClientException {
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         NuxeoPrincipal currentUser = (NuxeoPrincipal) coreSession.getPrincipal();
         return proxy.isProxy() && hasValidationTask(proxy, currentUser);
@@ -360,6 +364,12 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             throw new PublishingException(e);
         }
         return false;
+    }
+
+    public boolean hasValidationTask(PublishedDocument publishedDocument) throws PublishingException {
+        DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
+        NuxeoPrincipal currentUser = (NuxeoPrincipal) coreSession.getPrincipal();
+        return hasValidationTask(proxy, currentUser);
     }
 
 }

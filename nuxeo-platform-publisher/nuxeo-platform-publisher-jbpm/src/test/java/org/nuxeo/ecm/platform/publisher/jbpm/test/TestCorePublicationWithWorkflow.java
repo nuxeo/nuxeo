@@ -37,7 +37,10 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.jbpm.test.JbpmTestConstants;
 import org.nuxeo.runtime.api.Framework;
+import org.hsqldb.jdbc.jdbcDataSource;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import java.util.List;
 
 /**
@@ -54,6 +57,18 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+
+        jdbcDataSource ds = new jdbcDataSource();
+        ds.setDatabase("jdbc:hsqldb:mem:jena");
+        ds.setUser("sa");
+        ds.setPassword("");
+        Context context = new InitialContext();
+        context.bind("java:/nxrelations-default-jena", ds);
+        Framework.getProperties().setProperty(
+                "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
+        Framework.getProperties().setProperty(
+                "org.nuxeo.ecm.sql.jena.databaseTransactionEnabled", "false");
+
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
@@ -61,11 +76,17 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployBundle("org.nuxeo.ecm.platform.types.api");
         deployBundle("org.nuxeo.ecm.platform.types.core");
+        deployBundle("org.nuxeo.ecm.platform.versioning.api");
+        deployBundle("org.nuxeo.ecm.platform.versioning");
+        deployBundle("org.nuxeo.ecm.relations");
+        deployBundle("org.nuxeo.ecm.relations.jena");
         deployBundle("org.nuxeo.ecm.platform.publisher.core");
         deployBundle("org.nuxeo.ecm.platform.publisher.jbpm");
         deployBundle("org.nuxeo.ecm.platform.publisher.jbpm.test");
         deployBundle(JbpmTestConstants.CORE_BUNDLE_NAME);
         deployBundle(JbpmTestConstants.TESTING_BUNDLE_NAME);
+        deployContrib("org.nuxeo.ecm.platform.publisher.jbpm.test",
+                "OSGI-INF/relations-default-jena-contrib.xml");
         openSession();
 
         directoryService = Framework.getService(DirectoryService.class);
@@ -152,16 +173,19 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         PublicationTree treeUser4 = publisherService.getPublicationTree(
                 "DefaultSectionsTree", session, null);
         assertFalse(treeUser4.canUnpublish(publishedDocument));
+        assertFalse(treeUser4.canManagePublishing(publishedDocument));
 
         changeUser("myuser3");
         PublicationTree treeUser3 = publisherService.getPublicationTree(
                 "DefaultSectionsTree", session, null);
         assertFalse(treeUser3.canUnpublish(publishedDocument));
+        assertFalse(treeUser4.canManagePublishing(publishedDocument));
 
         changeUser("myuser2");
         PublicationTree treeUser2 = publisherService.getPublicationTree(
                 "DefaultSectionsTree", session, null);
         assertTrue(treeUser2.canUnpublish(publishedDocument));
+        assertTrue(treeUser2.hasValidationTask(publishedDocument));
     }
 
     public void testApprovePublication() throws Exception {
@@ -240,6 +264,8 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         publishedDocument = publishedDocuments.get(0);
         assertTrue(publishedDocument.isPending());
 
+        assertTrue(treeUser2.canManagePublishing(publishedDocument));
+        assertTrue(treeUser2.hasValidationTask(publishedDocument));
         treeUser2.validatorRejectPublication(publishedDocument, "Rejected!");
         assertTrue(publishedDocument.isPending());
         // No more document to approve

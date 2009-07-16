@@ -452,4 +452,25 @@ public class PublisherServiceImpl extends DefaultComponent implements
     public PublicationTree getPublicationTreeFor(DocumentModel doc, CoreSession coreSession) throws ClientException {
         return PublicationRelationHelper.getPublicationTreeUsedForPublishing(doc, coreSession);
     }
+
+    public boolean hasValidationTask(String sid, PublishedDocument publishedDocument) throws ClientException {
+        PublicationTree tree = liveTrees.get(sid);
+        if (tree != null) {
+            return tree.hasValidationTask(publishedDocument);
+        } else {
+            throw new ClientException(
+                    "Calling validatorPublishDocument on a closed tree");
+        }
+    }
+
+    public PublishedDocument wrapToPublishedDocument(String sid, DocumentModel documentModel) throws ClientException {
+        PublicationTree tree = liveTrees.get(sid);
+        if (tree != null) {
+            return tree.wrapToPublishedDocument(documentModel);
+        } else {
+            throw new ClientException(
+                    "Calling validatorPublishDocument on a closed tree");
+        }
+    }
+    
 }

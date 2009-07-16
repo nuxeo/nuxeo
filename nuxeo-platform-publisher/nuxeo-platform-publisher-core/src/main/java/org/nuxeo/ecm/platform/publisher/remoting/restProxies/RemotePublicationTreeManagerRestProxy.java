@@ -181,6 +181,14 @@ public class RemotePublicationTreeManagerRestProxy implements
         throw new UnsupportedOperationException();
     }
 
+    public boolean hasValidationTask(String sid, PublishedDocument publishedDocument) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    public PublishedDocument wrapToPublishedDocument(String sid, DocumentModel documentModel) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
     public void release(String sid) {
         List<Object> params = new ArrayList<Object>();
         params.add(sid);

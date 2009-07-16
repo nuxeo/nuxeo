@@ -107,15 +107,19 @@ public abstract class AbstractBasePublishedDocumentFactory implements
     }
 
     public void validatorPublishDocument(PublishedDocument publishedDocument)
-            throws PublishingException {
+            throws ClientException {
     }
 
     public void validatorRejectPublication(PublishedDocument publishedDocument,
-            String comment) throws PublishingException {
+            String comment) throws ClientException {
     }
 
     public boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException {
-        return true;
+        return false;
     }
-    
+
+    public boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException {
+        return false;
+    }
+
 }

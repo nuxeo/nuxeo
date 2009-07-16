@@ -149,4 +149,9 @@ public class CoreTreeWithExternalDocs extends SectionPublicationTree implements
         }
     }
 
+    @Override
+    public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException {
+        return new ExternalCorePublishedDocument(documentModel);
+    }
+    
 }

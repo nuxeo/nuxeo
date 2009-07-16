@@ -1,5 +1,6 @@
 package org.nuxeo.ecm.platform.publisher.test;
 
+import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -13,7 +14,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.impl.service.ProxyTree;
 import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.hsqldb.jdbc.jdbcDataSource;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -34,7 +34,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         super(name);
     }
 
-     @Override
+    @Override
     public void setUp() throws Exception {
         super.setUp();
 
@@ -53,12 +53,16 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployBundle("org.nuxeo.ecm.platform.types.api");
         deployBundle("org.nuxeo.ecm.platform.types.core");
+        deployBundle("org.nuxeo.ecm.platform.versioning.api");
+        deployBundle("org.nuxeo.ecm.platform.versioning");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployContrib("org.nuxeo.ecm.platform.publisher.core",
                 "OSGI-INF/publisher-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.publisher.core",
                 "OSGI-INF/publisher-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.publisher.core",
+                "OSGI-INF/publisher-relations-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.publisher.test",
                 "OSGI-INF/relations-default-jena-contrib.xml");
 

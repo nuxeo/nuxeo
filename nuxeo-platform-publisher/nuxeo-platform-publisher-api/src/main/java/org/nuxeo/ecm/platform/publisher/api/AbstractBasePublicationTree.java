@@ -3,8 +3,6 @@ package org.nuxeo.ecm.platform.publisher.api;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
-import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
 
 import java.util.List;
 import java.util.Map;
@@ -145,12 +143,12 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
     }
 
     public void validatorPublishDocument(PublishedDocument publishedDocument)
-            throws PublishingException {
+            throws ClientException {
         factory.validatorPublishDocument(publishedDocument);
     }
 
     public void validatorRejectPublication(PublishedDocument publishedDocument,
-            String comment) throws PublishingException {
+            String comment) throws ClientException {
         factory.validatorRejectPublication(publishedDocument, comment);
     }
 
@@ -162,8 +160,16 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return true;
     }
 
+    public boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException {
+        return true;
+    }
+
     public boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException {
         return factory.canManagePublishing(publishedDocument);
+    }
+
+    public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException {
+        return factory.wrapDocumentModel(documentModel);
     }
     
 }

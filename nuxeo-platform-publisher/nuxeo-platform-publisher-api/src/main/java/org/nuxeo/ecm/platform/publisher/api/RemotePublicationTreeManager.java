@@ -87,6 +87,8 @@ public interface RemotePublicationTreeManager {
      */
     boolean canUnpublish(String sid, PublishedDocument publishedDocument) throws ClientException;
 
+    boolean hasValidationTask(String sid, PublishedDocument publishedDocument) throws ClientException;
+
     /**
      * Returns {@code true} if the current user can mnage the publishing of the given publisheddocument, ie. approve or reject the document.
      * @param publishedDocument
@@ -94,5 +96,7 @@ public interface RemotePublicationTreeManager {
      * @throws ClientException
      */
     boolean canManagePublishing(String sid, PublishedDocument publishedDocument) throws ClientException;
+
+    PublishedDocument wrapToPublishedDocument(String sid, DocumentModel documentModel) throws ClientException;
 
 }
