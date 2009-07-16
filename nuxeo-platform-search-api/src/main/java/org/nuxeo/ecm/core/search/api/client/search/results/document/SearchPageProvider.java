@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
@@ -57,6 +58,7 @@ import org.nuxeo.ecm.core.search.api.client.search.results.document.impl.ResultD
 import org.nuxeo.ecm.core.search.api.client.search.results.impl.DocumentModelResultItem;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
@@ -67,6 +69,8 @@ public class SearchPageProvider implements PagedDocumentsProvider {
     // to be used by the blob filter to transform maps into blob instances
 
     public static final String BLOB_DATA_KEY = "data";
+
+    public static final String BLOB_URI_KEY = "uri";
 
     public static final String BLOB_ENCODING_KEY = "encoding";
 
@@ -478,7 +482,8 @@ public class SearchPageProvider implements PagedDocumentsProvider {
      *         when required
      */
     @SuppressWarnings("unchecked")
-    private static Object blobFilter(Object value, Field field) {
+    private static Object blobFilter(Object value, Field field)
+            throws SearchException {
 
         // optim: no need to introspect field structure for empty fields
         if (value == null || field == null) {
@@ -488,22 +493,46 @@ public class SearchPageProvider implements PagedDocumentsProvider {
         Type fieldType = field.getType();
         if (fieldType instanceof ComplexType && value instanceof Map) {
             Map<String, Object> map = (Map<String, Object>) value;
-            if (TypeConstants.getContentType().equals(fieldType)) {
+            if (TypeConstants.isContentType(fieldType)) {
                 String data = (String) map.get(BLOB_DATA_KEY);
                 String mimetype = (String) map.get(BLOB_MIMETYPE_KEY);
                 String digest = (String) map.get(BLOB_DIGEST_KEY);
                 String name = (String) map.get(BLOB_NAME_KEY);
                 String lengthS = (String) map.get(BLOB_LENGTH_KEY);
-                final int length = lengthS == null ? 0 : Integer.parseInt(lengthS);
+                final int length = lengthS == null ? 0
+                        : Integer.parseInt(lengthS);
                 if (mimetype == null) {
                     mimetype = "application/octet-stream";
                 }
-                ExtendedStringSource src = new ExtendedStringSource(data == null ? "" : data, length);
+                ExtendedStringSource src = new ExtendedStringSource(
+                        data == null ? "" : data, length);
                 Blob blob = new StreamingBlob(src, mimetype);
                 blob.setEncoding((String) map.get(BLOB_ENCODING_KEY));
                 blob.setDigest(digest == null ? "" : digest);
                 blob.setFilename(name == null ? "" : name);
                 return blob;
+            } else if (TypeConstants.isExternalContentType(fieldType)) {
+                String uri = (String) map.get(BLOB_URI_KEY);
+                String mimetype = (String) map.get(BLOB_MIMETYPE_KEY);
+                String digest = (String) map.get(BLOB_DIGEST_KEY);
+                String name = (String) map.get(BLOB_NAME_KEY);
+                if (mimetype == null) {
+                    mimetype = "application/octet-stream";
+                }
+                try {
+                    BlobHolderAdapterService service = Framework.getService(BlobHolderAdapterService.class);
+                    if (service == null) {
+                        throw new SearchException(
+                                "BlobHolderAdapterService not found");
+                    }
+                    Blob blob = service.getExternalBlobForUri(uri);
+                    blob.setEncoding((String) map.get(BLOB_ENCODING_KEY));
+                    blob.setDigest(digest == null ? "" : digest);
+                    blob.setFilename(name == null ? "" : name);
+                    return blob;
+                } catch (Exception e) {
+                    throw new SearchException(e);
+                }
             } else {
                 // not a blob, just a regular complex type, check the content
                 // recursively
