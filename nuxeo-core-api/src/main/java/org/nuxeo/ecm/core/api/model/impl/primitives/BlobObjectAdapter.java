@@ -45,11 +45,11 @@ public class BlobObjectAdapter extends DynamicObjectAdapter {
     public Object create(Map<String, Object> value) {
         String mimeType = (String) value.get("mime-type");
         String encoding = (String) value.get("encoding");
-        // long length = -1;
-        // Long lengthVal = (Long)value.get("length");
-        // if (lengthVal != null) {
-        // length = lengthVal.longValue();
-        // }
+//        long length = -1;
+//        Long lengthVal = (Long)value.get("length");
+//        if (lengthVal != null) {
+//            length = lengthVal.longValue();
+//        }
         String filename = (String) value.get("name");
         String digest = (String) value.get("digest");
         Object data = value.get("data");
@@ -67,8 +67,8 @@ public class BlobObjectAdapter extends DynamicObjectAdapter {
         Blob blob = new StreamingBlob(ss);
         blob.setMimeType(mimeType);
         blob.setEncoding(encoding);
-        // blob.setFilename(filename);
-        // blob.setDigest(digest);
+//        blob.setFilename(filename);
+//        blob.setDigest(digest);
         return blob;
     }
 

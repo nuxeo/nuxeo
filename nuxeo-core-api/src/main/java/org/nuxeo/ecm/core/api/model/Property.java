@@ -447,9 +447,10 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     /**
      * Gets the property normalized value for write.
      * <p>
-     * Normalized values are of the java type that correspond to the field type.
+     * Can be different fropm {@link #getValue()} in cases where the property
+     * adapts the value it is given to store.
      *
-     * @return the property value, which may be null
+     * @return the property value to use for write, which may be null
      */
     Serializable getValueForWrite() throws PropertyException;
 

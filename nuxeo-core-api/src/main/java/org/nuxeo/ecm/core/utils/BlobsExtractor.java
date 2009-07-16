@@ -122,11 +122,8 @@ public class BlobsExtractor {
                 }
             } else { // complex type
                 ComplexType ctype = (ComplexType) type;
-                if (TypeConstants.isContentType(type)) {
-                    blobFields.add(field);
-                    interestingTypes.add(type);
-                    interesting = true;
-                } else if (TypeConstants.isExternalContentType(type)) {
+                if (TypeConstants.isContentType(type)
+                        || TypeConstants.isExternalContentType(type)) {
                     blobFields.add(field);
                     interestingTypes.add(type);
                     interesting = true;
