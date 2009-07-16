@@ -1,0 +1,81 @@
+package org.nuxeo.ecm.platform.audit.job;
+
+import java.util.Date;
+import java.util.List;
+
+import org.nuxeo.ecm.platform.audit.api.AuditReader;
+import org.nuxeo.ecm.platform.audit.api.job.JobHistoryHelper;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
+public class TestJobHistoryHelper extends NXRuntimeTestCase {
+
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+
+        deployBundle("org.nuxeo.ecm.core.persistence");
+        deployBundle("org.nuxeo.ecm.platform.audit");
+        deployTestContrib("org.nuxeo.ecm.platform.audit", "nxaudit-tests.xml");
+    }
+
+    public void testLogger() throws Exception {
+
+        StringBuffer query = new StringBuffer("from LogEntry log where ");
+        query.append(" log.category='");
+        query.append("MyExport");
+        query.append("'  ORDER BY log.eventDate DESC");
+
+        AuditReader reader = Framework.getService(AuditReader.class);
+
+        List result = reader.nativeQuery(query.toString(), 1, 1);
+        assertEquals(0, result.size());
+
+        JobHistoryHelper helper = new JobHistoryHelper("MyExport");
+
+        helper.logJobStarted();
+        helper.logJobFailed("some error");
+        helper.logJobEnded();
+
+        result = reader.nativeQuery(query.toString(), 1, 10);
+        assertEquals(3, result.size());
+
+    }
+
+    public void testLoggerHelper() throws Exception {
+
+        JobHistoryHelper helper = new JobHistoryHelper("MyExport2");
+
+
+        helper.logJobStarted();
+
+        Date exportDate = helper.getLastSucessfulRun();
+        assertNull(exportDate);
+
+        helper.logJobFailed("some other error");
+
+        exportDate = helper.getLastSucessfulRun();
+        assertNull(exportDate);
+
+        helper.logJobEnded();
+        long t0 = System.currentTimeMillis();
+
+        exportDate = helper.getLastSucessfulRun();
+        assertNotNull(exportDate);
+
+        Thread.sleep(3000);
+
+        exportDate = helper.getLastSucessfulRun();
+        long loggedT0 = exportDate.getTime();
+        assertTrue(loggedT0 < t0);
+
+
+        helper.logJobEnded();
+        exportDate = helper.getLastSucessfulRun();
+        long loggedT1 = exportDate.getTime();
+
+        assertTrue(loggedT1-loggedT0>= 3000);
+    }
+
+}
