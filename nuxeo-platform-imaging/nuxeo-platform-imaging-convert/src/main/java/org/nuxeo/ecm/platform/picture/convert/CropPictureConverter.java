@@ -20,8 +20,8 @@ package org.nuxeo.ecm.platform.picture.convert;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
 public class CropPictureConverter implements Converter {
 
     private static final Log log = LogFactory.getLog(CropPictureConverter.class);;
-    
+
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
         try{
@@ -58,9 +58,11 @@ public class CropPictureConverter implements Converter {
                 InputStream in = source.getStream();
                 if (in != null) {
                     InputStream result = service.crop(in, x, y, width, height);
-                    // FIXME : local only
-                    Blob blob = new FileBlob(result);
-                    results.add(blob);
+                    if (result != null) {
+                        // FIXME : local only
+                        Blob blob = new FileBlob(result);
+                        results.add(blob);
+                    }
                 }
             }
         }

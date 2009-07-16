@@ -141,7 +141,7 @@ public class Annotation {
     }
 
     @SuppressWarnings("deprecation")
-    private Date computeDate(String stringDate) {
+    private static Date computeDate(String stringDate) {
         String d = stringDate.substring(0, stringDate.indexOf("T"));
         String t = stringDate.substring(stringDate.indexOf("T") + 1,
                 stringDate.indexOf("Z"));

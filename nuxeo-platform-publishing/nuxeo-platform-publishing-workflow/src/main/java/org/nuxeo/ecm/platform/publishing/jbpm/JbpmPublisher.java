@@ -26,9 +26,11 @@ import java.util.Map;
 
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -44,6 +46,7 @@ import org.nuxeo.ecm.platform.publishing.api.Publisher;
 import org.nuxeo.ecm.platform.publishing.api.PublishingException;
 import org.nuxeo.ecm.platform.publishing.api.PublishingService;
 import org.nuxeo.ecm.platform.publishing.api.PublishingValidatorException;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -53,6 +56,7 @@ import org.nuxeo.runtime.api.Framework;
 public class JbpmPublisher extends AbstractPublisher implements Publisher {
 
     public static final String TASK_NAME = "org.nuxeo.ecm.platform.publishing.jbpm.JbpmPublisher";
+
     public static final String ACL_NAME = "org.nuxeo.ecm.platform.publishing.jbpm.JbpmPublisher";
 
     private JbpmService jbpmService;
@@ -60,6 +64,8 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
     private EventProducer eventProducer;
 
     private PublishingService publishingService;
+
+    private UserManager userManager;
 
     public PublishingService getPublishingService() {
         if (publishingService == null) {
@@ -175,7 +181,15 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
             if (s.contains(":")) {
                 prefixedActorIds.add(s);
             } else {
-                prefixedActorIds.add(NuxeoPrincipal.PREFIX + s);
+                UserManager userManager = getUserManager();
+                String prefix = null;
+                try {
+                    prefix = userManager.getPrincipal(s) == null ? NuxeoGroup.PREFIX
+                            : NuxeoPrincipal.PREFIX;
+                } catch (ClientException e) {
+                    throw new ClientRuntimeException(e);
+                }
+                prefixedActorIds.add(prefix + s);
             }
         }
         ti.setPooledActors(prefixedActorIds.toArray(new String[] {}));
@@ -194,11 +208,23 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
         try {
             getEventProducer().fireEvent(
                     ctx.newEvent(JbpmEventNames.WORKFLOW_TASK_ASSIGNED));
-            getEventProducer().fireEvent(ctx.newEvent(JbpmEventNames.WORKFLOW_TASK_START));
+            getEventProducer().fireEvent(
+                    ctx.newEvent(JbpmEventNames.WORKFLOW_TASK_START));
         } catch (ClientException e) {
             throw new PublishingException(e);
         }
-        
+
+    }
+
+    private UserManager getUserManager() {
+        if (userManager == null) {
+            try {
+                userManager = Framework.getService(UserManager.class);
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return userManager;
     }
 
     public EventProducer getEventProducer() throws ClientException {
@@ -231,7 +257,8 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
             String[] validators = getPublishingService().getValidatorsFor(
                     document);
             for (String s : validators) {
-                if (principal.getName().equals(s)) {
+                if (principal.getName().equals(s)
+                        || principal.isMemberOf(s)) {
                     return true;
                 }
             }
@@ -286,8 +313,8 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
         }
     }
 
-    private static void removeACL(DocumentModel document, CoreSession coreSession)
-            throws PublishingException {
+    private static void removeACL(DocumentModel document,
+            CoreSession coreSession) throws PublishingException {
         try {
             RemoveACLUnrestricted remover = new RemoveACLUnrestricted(
                     coreSession, document, ACL_NAME);
@@ -333,7 +360,8 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
             notifyEvent(PublishingEvent.documentUnpublished, doc, coreSession);
             removeProxy(doc, coreSession);
             endTask(doc, principal);// does nothing if none
-            notifyEvent(JbpmEventNames.WORKFLOW_TASK_COMPLETED, null, null, null, doc, coreSession);
+            notifyEvent(JbpmEventNames.WORKFLOW_TASK_COMPLETED, null, null,
+                    null, doc, coreSession);
         } catch (ClientException e) {
             throw new PublishingException(e);
         } finally {

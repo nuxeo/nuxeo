@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.rendering;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 
@@ -33,7 +32,6 @@ import org.nuxeo.runtime.model.Adaptable;
  * The default one is to expose the rendering outcome as a stream.
  * <p>
  * Specialized results may be retrieved using {@link Adaptable#getAdapter(Class)} method
- *
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>

@@ -42,7 +42,7 @@ public class AnnotationsComponentTest extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.annotations");
         deployBundle("org.nuxeo.ecm.relations.jena");
-        deployBundle("org.nuxeo.ecm.annotations.test");
+        deployTestContrib("org.nuxeo.ecm.annotations","test-ann-contrib.xml");
     }
 
     public void testServices() throws Exception {

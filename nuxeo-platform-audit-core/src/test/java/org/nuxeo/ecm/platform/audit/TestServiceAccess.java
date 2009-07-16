@@ -32,8 +32,7 @@ public class TestServiceAccess extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.audit.api");
-        deployContrib("org.nuxeo.ecm.platform.audit",
-                "OSGI-INF/nxaudit-service-definitions.xml");
+        deployBundle("org.nuxeo.ecm.platform.audit");
     }
 
     public void testFullAccess() {

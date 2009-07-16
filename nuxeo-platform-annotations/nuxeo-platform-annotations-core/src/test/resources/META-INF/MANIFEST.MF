@@ -6,3 +6,4 @@ Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateful
 Require-Bundle: org.nuxeo.ecm.platform.annotations.api
 Nuxeo-Component: OSGI-INF/test-ann-contrib.xml
+

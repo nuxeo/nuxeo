@@ -34,6 +34,11 @@
       <path>nxthemes/webwidgets/samples/feedreader.html</path>
       <icon>nxthemes/webwidgets/samples/feed-reader.png</icon>
     </widget>
+    
+    <widget name="Last created documents">
+      <category>content</category>
+      <path>nxthemes/webwidgets/samples/lastdocuments.html</path>
+    </widget>
 
   </extension>
 

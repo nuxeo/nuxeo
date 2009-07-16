@@ -5,12 +5,11 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.audit
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateful
-Nuxeo-Component: OSGI-INF/nxaudit-service-definitions.xml,
- OSGI-INF/nxaudit-default-extensions.xml,
- OSGI-INF/audit-listener-contrib.xml
+Nuxeo-Component: OSGI-INF/nxaudit-service.xml
 Export-Package: org.nuxeo.ecm.platform.audit,
  org.nuxeo.ecm.platform.audit.service,
  org.nuxeo.ecm.platform.audit.service.extension
 Require-Bundle: org.nuxeo.ecm.platform.audit.api,
  org.nuxeo.ecm.platform.el,
- org.nuxeo.ecm.core.event
+ org.nuxeo.ecm.core.event,
+ org.nuxeo.ecm.core.persistence

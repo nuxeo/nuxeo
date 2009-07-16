@@ -24,9 +24,22 @@
     <dependencies>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-ui-web</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-theme-webwidgets</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-url-api</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+
 
       <dependency>
         <groupId>net.sf.json-lib</groupId>

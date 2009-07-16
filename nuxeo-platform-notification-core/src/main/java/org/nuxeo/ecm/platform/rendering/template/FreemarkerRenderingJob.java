@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.rendering.template;
 
-import java.io.IOException;
 import java.io.Writer;
 
 import org.nuxeo.ecm.platform.rendering.RenderingResult;

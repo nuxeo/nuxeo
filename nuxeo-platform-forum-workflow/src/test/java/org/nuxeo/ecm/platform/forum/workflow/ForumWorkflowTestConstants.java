@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.forum.workflow;
  * Forum workflow test constants
  *
  * @author Anahide Tchertchian
- *
  */
 public class ForumWorkflowTestConstants {
 

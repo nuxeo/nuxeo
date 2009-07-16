@@ -36,20 +36,20 @@ public class FileResource {
 
     protected File file;
     protected boolean isReadOnly;
-    
+
     public FileResource(File file) {
         this (file, false);
     }
-    
+
     public FileResource(File file, boolean isReadOnly) {
         this.file = file;
         this.isReadOnly = isReadOnly;
     }
-    
+
     @GET
     public Response get() {
         if (file.isDirectory()) {
-            return Response.ok(404).build(); 
+            return Response.ok(404).build();
         }
         if (!file.isFile()) {
             return Response.ok(404).build();
@@ -67,7 +67,7 @@ public class FileResource {
         }
         return Response.ok(file).type("application/octet-stream").build();
     }
-    
+
     @DELETE
     public Response deleteFile() {
         if (isReadOnly) {

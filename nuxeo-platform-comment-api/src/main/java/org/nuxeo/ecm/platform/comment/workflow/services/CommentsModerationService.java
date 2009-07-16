@@ -27,25 +27,25 @@ public interface CommentsModerationService {
     /**
      * Starts the moderation process on given Comment posted on a documentModel.
      *
-     * @param session - the coreSession
-     * @param document - the document were the comment is posted
-     * @param commentId -the commentId
+     * @param session the coreSession
+     * @param document the document were the comment is posted
+     * @param commentId the commentId
      * @throws ClientException
      */
     void startModeration(CoreSession session, DocumentModel document,
-            String commentID, ArrayList<String> moderators)
+            String commentId, ArrayList<String> moderators)
             throws ClientException;
 
     /**
      * Gets the moderation process for the given Comment posted on a documentModel.
      *
-     * @param session - the coreSession
-     * @param document - the document were the comment is posted
-     * @param commentId -the commentId
+     * @param session the coreSession
+     * @param document the document were the comment is posted
+     * @param commentId the commentId
      * @throws ClientException
      */
     /**
-    public ProcessInstance getModerationProcess(JbpmService jbpmService,
+    ProcessInstance getModerationProcess(JbpmService jbpmService,
             CoreSession session, DocumentModel doc, String commentId)
             throws ClientException;
             **/
@@ -53,35 +53,33 @@ public interface CommentsModerationService {
     /**
      * Approve the comment with the given commentId.
      *
-     * @param session - the coreSession
-     * @param document - the document were the comment is posted
-     * @param commentId -the commentId
+     * @param session the coreSession
+     * @param document the document were the comment is posted
+     * @param commentId the commentId
      * @throws ClientException
      */
     void approveComent(CoreSession session, DocumentModel document,
-            String commentID) throws ClientException;
+            String commentId) throws ClientException;
 
     /**
      * Reject the comment with the given commentId.
      *
-     * @param session - the coreSession
-     * @param document - the document were the comment is posted
-     * @param commentId -the commentId
+     * @param session the coreSession
+     * @param document the document were the comment is posted
+     * @param commentId the commentId
      * @throws ClientException
      */
     void rejectComment(CoreSession session, DocumentModel document,
-            String commentID) throws ClientException;
-
+            String commentId) throws ClientException;
 
     /**
-     * Publish the comment with the given commentId.
+     * Publish the given comment.
      *
-     * @param session - the coreSession
-     * @param document - the document were the comment is posted
-     * @param commentId -the commentId
+     * @param session the coreSession
+     * @param comment the comment to publish
      * @throws ClientException
      */
-    public void publishComment(CoreSession session, DocumentModel comment)
+    void publishComment(CoreSession session, DocumentModel comment)
             throws ClientException;
 
 }

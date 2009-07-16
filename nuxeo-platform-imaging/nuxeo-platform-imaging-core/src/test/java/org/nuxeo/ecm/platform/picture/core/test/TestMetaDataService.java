@@ -18,16 +18,18 @@
  */
 package org.nuxeo.ecm.platform.picture.core.test;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
+
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.MetadataConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
 
 /**
  * @author Laurent Doguin
@@ -59,8 +61,9 @@ public class TestMetaDataService extends NXRuntimeTestCase {
     }
 
     public void testMetaData() throws ClientException, IOException {
-        File file = getFileFromPath("iptc_sample.jpg");
-        Map<String, Object> map = service.getImageMetadata(file);
+        Blob blob = new FileBlob(getFileFromPath("iptc_sample.jpg"));
+        blob.setMimeType("image/jpeg");
+        Map<String, Object> map = service.getImageMetadata(blob);
         assertNotNull(map);
         assertFalse(map.isEmpty());
         assertNotNull(map.get(MetadataConstants.META_BYLINE));

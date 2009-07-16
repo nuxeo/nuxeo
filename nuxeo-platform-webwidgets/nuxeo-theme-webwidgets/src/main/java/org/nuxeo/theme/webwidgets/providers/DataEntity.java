@@ -30,7 +30,7 @@ import javax.persistence.Transient;
 import org.nuxeo.theme.webwidgets.WidgetData;
 
 @Entity
-@Table(name = "NXP_WEBWIDGETS_DATA")
+@Table(name = "NXP_WEBW_DATA")
 @NamedQueries( {
         @NamedQuery(name = "Data.findByWidget",
                 query = "FROM DataEntity data WHERE data.widgetUid=:widgetUid"),
@@ -60,27 +60,27 @@ public class DataEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "DATA_ID", nullable = false, columnDefinition = "integer")
+    @Column(name = "ID", nullable = false, columnDefinition = "integer")
     public int getId() {
         return id;
     }
 
-    @Column(name = "DATA_WIDGET_UID")
+    @Column(name = "WIDGET_UID")
     public String getWidgetUid() {
         return widgetUid;
     }
 
-    @Column(name = "DATA_NAME")
+    @Column(name = "NAME")
     public String getDataName() {
         return dataName;
     }
 
-    @Column(name = "DATA_FILENAME")
+    @Column(name = "FILENAME")
     public String getFilename() {
         return filename;
     }
 
-    @Column(name = "DATA_CONTENT_TYPE")
+    @Column(name = "CONTENT_TYPE")
     public String getContentType() {
         return contentType;
     }
@@ -89,7 +89,7 @@ public class DataEntity {
      * See http://opensource.atlassian.com/projects/hibernate/browse/HHH-2614
      */
     @Lob
-    @Column(name = "DATA_CONTENT", length = Integer.MAX_VALUE - 1)
+    @Column(name = "CONTENT", length = Integer.MAX_VALUE - 1)
     @Basic(fetch = FetchType.LAZY)
     public byte[] getContent() {
         return content;

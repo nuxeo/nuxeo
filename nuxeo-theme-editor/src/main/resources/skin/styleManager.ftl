@@ -17,7 +17,7 @@
   </#if>
 </div>
 
-<h1 class="nxthemesEditor">Styles</h1>
+<h1 class="nxthemesEditor">Manage styles</h1>
 
 <a onclick="NXThemesEditor.editCanvas()" class="nxthemesBack">Back to canvas</a>
 
@@ -25,6 +25,7 @@
 
 <td style="vertical-align: top; width: 200px; padding-right: 5px;">
 
+<h3 class="nxthemesEditor">THEMES</h3>
 <ul class="nxthemesSelector">
 <#list themes as theme>
 <li <#if theme.name = current_theme_name>class="selected"</#if>><a href="javascript:void(0)" 
@@ -39,7 +40,7 @@
       <img src="${skinPath}/img/custom-theme-16.png" width="16" height="16" />
     </#if>
   </#if>
-  ${theme.name}</a></li>
+  ${theme.name} <span style="font-size: 11px; font-style: italic; overflow: hidden">(${theme.src})</span></a></li>
 </#list>
 </ul>
 

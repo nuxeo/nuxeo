@@ -119,11 +119,11 @@ public interface AuditReader {
      * @return
      */
     List<LogEntry> nativeQueryLogs(String whereClause, int pageNb, int pageSize);
-    
+
     /**
      * Returns a batched list of entries. query string is a native query
      * clause for the backend : here EJBQL 3.0 can be used
-     * 
+     *
      * @param query
      * @param pageNb
      * @param pageSize

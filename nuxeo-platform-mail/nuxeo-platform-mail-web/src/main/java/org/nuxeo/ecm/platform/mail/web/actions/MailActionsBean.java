@@ -73,6 +73,7 @@ public class MailActionsBean implements Serializable {
         try {
             MailCoreHelper.checkMail(mailFolder, documentManager);
         } catch (Exception e) {
+            log.debug("Mail connection error", e);
             facesMessages.add(FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "feedback.check.mail.error")

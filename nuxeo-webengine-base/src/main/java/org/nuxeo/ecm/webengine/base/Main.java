@@ -68,9 +68,9 @@ public class Main extends ModuleRoot {
         ((AbstractWebContext) ctx).setModule(module);
         type = (ResourceTypeImpl) ((ModuleImpl) module).getRootType();
         setRoot(true);
-        ctx.push(this);        
+        ctx.push(this);
     }
-    
+
 
     @GET
     public Object doGet() {

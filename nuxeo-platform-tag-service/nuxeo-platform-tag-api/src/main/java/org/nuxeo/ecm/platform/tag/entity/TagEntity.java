@@ -125,5 +125,5 @@ public class TagEntity implements Serializable {
         }
         return taggings;
     }
-    
+
 }

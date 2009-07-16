@@ -17,7 +17,7 @@
  * $Id: EndAction.java 55400 2008-05-26 09:46:02Z atchertchian $
  */
 
-package org.nuxeo.ecm.platfrom.mail.listener.action;
+package org.nuxeo.ecm.platform.mail.listener.action;
 
 import javax.mail.Message;
 import javax.mail.Flags.Flag;

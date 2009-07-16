@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platfrom.mail.listener.action;
+package org.nuxeo.ecm.platform.mail.listener.action;
 
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.ATTACHMENTS_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CC_RECIPIENTS_KEY;
@@ -124,13 +124,10 @@ public class CreateDocumentsAction extends AbstractMailAction {
 
         private DocumentModel document;
 
-        private final CoreSession session;
-
         protected UnrestrictedCreateDocument(DocumentModel document,
                 CoreSession session) {
             super(session);
             this.document = document;
-            this.session = session;
         }
 
         @Override

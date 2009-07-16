@@ -49,7 +49,7 @@ public class AnnotationQueryTest extends RepositoryOSGITestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.annotations");
-        deployBundle("org.nuxeo.ecm.annotations.test");
+        deployTestContrib("org.nuxeo.ecm.annotations","/test-ann-contrib.xml");
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.platform.types.core");

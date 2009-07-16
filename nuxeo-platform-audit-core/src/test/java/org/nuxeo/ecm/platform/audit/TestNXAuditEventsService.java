@@ -45,24 +45,24 @@ import org.nuxeo.runtime.management.ObjectNameFactory;
  */
 public class TestNXAuditEventsService extends RepositoryOSGITestCase {
 
-    private NXAuditEvents serviceUnderTest;
+    private NXAuditEventsService serviceUnderTest;
 
-     protected final MBeanServer mbeanServer =
-     ManagementFactory.getPlatformMBeanServer();
+     protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.platform.usermanager");
+        deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.audit");
-         deployBundle("org.nuxeo.runtime.management");
-         deployBundle("org.nuxeo.ecm.platform.management");
+        deployBundle("org.nuxeo.runtime.management");
+        deployBundle("org.nuxeo.ecm.platform.management");
+        
+        deployTestContrib("org.nuxeo.ecm.platform.audit", "nxaudit-tests.xml");
 
-        NXAuditEventsService.persistenceProvider.setHibernateConfiguration(new TestHibernateConfiguration());
-        serviceUnderTest = Framework.getService(NXAuditEvents.class);
+        serviceUnderTest = (NXAuditEventsService)Framework.getLocalService(NXAuditEvents.class);
         assertNotNull(serviceUnderTest);
-
         openRepository();
     }
 

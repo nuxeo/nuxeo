@@ -19,9 +19,9 @@ import org.nuxeo.theme.models.AbstractModel;
 
 /**
  * Model related to the details about the tag cloud.
- * 
+ *
  * @author rux
- * 
+ *
  */
 public class TagCloudListModel extends AbstractModel {
 

@@ -37,12 +37,12 @@ import org.nuxeo.runtime.api.Framework;
 public class MagickExecutor {
 
     private static final Log log = LogFactory.getLog(MagickExecutor.class);
-    
+
     protected static ExecResult execCommand( String commandName, CmdParameters params) throws CommandNotAvailable{
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         return cles.execCommand(commandName, params);
     }
-    
+
     protected static String formatFilePath(String filePath) {
         return String.format("\"%s\"", filePath);
     }

@@ -70,17 +70,17 @@ public class TagPersistenceProvider {
         if (null == properties) {
             properties = new Properties();
             properties.put("hibernate.show_sql",
-                    Framework.getProperty("hibernate.show_sql"));
+                    Framework.getProperty("org.nuxeo.ecm.platform.tagservice.hibernate.show_sql"));
             properties.put("hibernate.connection.driver_class",
-                    Framework.getProperty("hibernate.connection.driver_class"));
+                    Framework.getProperty("org.nuxeo.ecm.platform.tagservice.hibernate.connection.driver_class"));
             properties.put("hibernate.connection.username",
-                    Framework.getProperty("hibernate.connection.username"));
+                    Framework.getProperty("org.nuxeo.ecm.platform.tagservice.hibernate.connection.username"));
             properties.put("hibernate.connection.password",
-                    Framework.getProperty("hibernate.connection.password"));
+                    Framework.getProperty("org.nuxeo.ecm.platform.tagservice.hibernate.connection.password"));
             properties.put("hibernate.connection.url",
-                    Framework.getProperty("hibernate.connection.url"));
+                    Framework.getProperty("org.nuxeo.ecm.platform.tagservice.hibernate.connection.url"));
             properties.put("hibernate.dialect",
-                    Framework.getProperty("hibernate.dialect"));
+                    Framework.getProperty("org.nuxeo.ecm.platform.tagservice.hibernate.dialect"));
         }
         return properties;
     }
@@ -174,7 +174,9 @@ public class TagPersistenceProvider {
         try {
             Dialect dialect = (Dialect) Class.forName(
                     getProperties().get("hibernate.dialect").toString()).newInstance();
-
+            if(dialect instanceof org.hibernate.dialect.PostgreSQLDialect){
+                dialect = new CustomPostgreSQLDialect();
+            }
             if (!em.getTransaction().isActive()) {
                 em.getTransaction().begin();
                 em.createNativeQuery(getCreateSql(dialect)).executeUpdate();
@@ -206,5 +208,13 @@ public class TagPersistenceProvider {
         table.addColumn(column);
         return table.getCreateSql(dialect);
     }
-
 }
+
+// MC : PostgreSQLDialect doesn't include the boolean type
+ class CustomPostgreSQLDialect extends org.hibernate.dialect.PostgreSQLDialect {
+    public CustomPostgreSQLDialect() {
+        registerColumnType(Types.BOOLEAN, "boolean");
+        registerHibernateType(Types.BOOLEAN, "boolean");
+    }
+}
+

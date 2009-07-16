@@ -1,8 +1,25 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.pictures.tiles.service.test;
 
 import java.io.File;
-
-import junit.framework.TestCase;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
@@ -21,13 +38,12 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
         deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
-        "OSGI-INF/test-commandline-imagemagick-contrib.xml");
+                "OSGI-INF/test-commandline-imagemagick-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
-        "OSGI-INF/commandline-imagemagick-contrib.xml");
+                "OSGI-INF/commandline-imagemagick-contrib.xml");
     }
-    
-    public void testIdentify() throws Exception {
 
+    public void testIdentify() throws Exception {
         File file = FileUtils.getResourceFileFromContext("test.jpg");
 
         ImageInfo info = ImageIdentifier.getInfo(file.getAbsolutePath());
@@ -41,7 +57,6 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
     }
 
     public void testJpegSimplier() throws Exception {
-
         String outputFile = System.getProperty("java.io.tmpdir")
                 + "/test_small.jpg";
 
@@ -54,11 +69,9 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         File out = new File(outputFile);
         assertTrue(out.exists());
         assertTrue(out.length() < file.length());
-
     }
 
     public void testCropper() throws Exception {
-
         String outputFilePath = System.getProperty("java.io.tmpdir")
                 + "/test_crop.jpg";
 
@@ -75,11 +88,9 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         assertNotNull(info);
         assertEquals(255, info.getWidth());
         assertEquals(255, info.getHeight());
-
     }
 
     public void testCropperAndResize() throws Exception {
-
         String outputFilePath = System.getProperty("java.io.tmpdir")
                 + "/test_crop_resized.jpg";
 
@@ -96,7 +107,6 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         assertNotNull(info);
         assertEquals(200, info.getWidth());
         assertEquals(200, info.getHeight());
-
     }
 
     public void testTiler() throws Exception {

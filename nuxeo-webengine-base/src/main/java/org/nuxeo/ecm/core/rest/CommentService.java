@@ -51,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
  * <ul>
  * <li>POST - create a new comment
  * </ul>
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
  * @author rux allow extending the service for the possible customizations. Some
@@ -158,10 +158,10 @@ public class CommentService extends DefaultAdapter {
         }
         return commentManager;
     }
-    
+
     public static CommentsModerationService getCommentsModerationService()
             throws Exception {
-        CommentsModerationService commentsModerationService = 
+        CommentsModerationService commentsModerationService =
                 Framework.getService(CommentsModerationService.class);
         if (commentsModerationService == null) {
             throw new WebException("Unable to get CommentsModerationService ");
@@ -177,11 +177,11 @@ public class CommentService extends DefaultAdapter {
      * @param comment comment itself
      * @return the comment created
      */
-    protected DocumentModel createCommentDocument(CoreSession session, 
+    protected DocumentModel createCommentDocument(CoreSession session,
             DocumentModel target, DocumentModel comment) throws Exception {
         return getCommentManager().createComment(target, comment);
     }
-    
+
     /**
      * Can be overwritten to allow workflow. Defaults to publish right away.
      * @param session the core session
@@ -192,7 +192,7 @@ public class CommentService extends DefaultAdapter {
             DocumentModel comment) throws Exception {
         getCommentsModerationService().publishComment(session, comment);
     }
-    
+
     /**
      * Can be overwritten to allow workflow. Defaults to delete right away.
      * @param target commented document
@@ -200,27 +200,27 @@ public class CommentService extends DefaultAdapter {
      */
     protected void deleteComment(DocumentModel target, DocumentModel comment)
             throws Exception {
-        getCommentManager().deleteComment(target, comment);        
+        getCommentManager().deleteComment(target, comment);
     }
-    
+
     /**
      * Can be overwritten to allow workflow. Defaults to reject and delete right away.
      * @param target commented document
      * @param comment comment itself
      */
-    protected void rejectComment(CoreSession session, DocumentModel target, 
+    protected void rejectComment(CoreSession session, DocumentModel target,
             DocumentModel comment) throws Exception {
         getCommentsModerationService().rejectComment(session, target, comment.getId());
         getCommentManager().deleteComment(target, comment);
     }
 
-    
+
     /**
      * Can be overwritten to allow workflow. Defaults to approve right away.
      * @param target commented document
      * @param comment comment itself
      */
-    protected void approveComent(CoreSession session, DocumentModel target, 
+    protected void approveComent(CoreSession session, DocumentModel target,
             DocumentModel comment) throws Exception {
         getCommentsModerationService().approveComent(session, target, comment.getId());
     }

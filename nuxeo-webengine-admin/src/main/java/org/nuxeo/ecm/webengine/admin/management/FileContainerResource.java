@@ -57,7 +57,7 @@ public class FileContainerResource {
     public File getRoot() {
         return root;
     }
-    
+
     public boolean isReadOnly() {
         return isReadOnly;
     }
@@ -73,7 +73,6 @@ public class FileContainerResource {
         return new TemplateView(this, "resources.ftl")
                 .arg("root", root.getName()).arg("resources", files);
     }
-
 
     @POST
     public Response postFile(@QueryParam("file") String file, @QueryParam("dir") String dir) {
@@ -92,7 +91,7 @@ public class FileContainerResource {
             name = file;
         }
         if (name.contains("..")) {
-            return Response.ok(403).build(); 
+            return Response.ok(403).build();
         }
         File f = new File(root, name);
         if (isDir) {
@@ -111,7 +110,6 @@ public class FileContainerResource {
         }
     }
 
-
     @Path("{name}")
     public Object getFile(@PathParam("name") String name) {
         File file = new File(root, name);
@@ -129,7 +127,7 @@ public class FileContainerResource {
         if (!root.exists()) {
             root.mkdirs();
         } else{
-            root.setLastModified(new Date().getTime());    
+            root.setLastModified(new Date().getTime());
         }
         return Response.ok().build();
     }
@@ -140,17 +138,16 @@ public class FileContainerResource {
             return Response.ok(403).build();
         }
         if (!root.isDirectory()) {
-            return Response.ok(404).build();    
+            return Response.ok(404).build();
         }
         FileUtils.deleteTree(root);
         return Response.ok().build();
     }
 
-
     public String getLastModified(File file) {
         return formatDate(new Date(file.lastModified()));
     }
-    
+
     public static String formatDate(Date date) {
         StringBuilder sb = new StringBuilder();
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
@@ -158,31 +155,45 @@ public class FileContainerResource {
         sb.append(c.get(Calendar.YEAR));
         sb.append('-');
         int f = c.get(Calendar.MONTH);
-        if (f < 9) sb.append('0');
-        sb.append(f+1);
+        if (f < 9) {
+            sb.append('0');
+        }
+        sb.append(f + 1);
         sb.append('-');
         f = c.get(Calendar.DATE);
-        if (f < 10) sb.append('0');
+        if (f < 10) {
+            sb.append('0');
+        }
         sb.append(f);
         sb.append('T');
         f = c.get(Calendar.HOUR_OF_DAY);
-        if (f < 10) sb.append('0');
+        if (f < 10) {
+            sb.append('0');
+        }
         sb.append(f);
         sb.append(':');
         f = c.get(Calendar.MINUTE);
-        if (f < 10) sb.append('0');
+        if (f < 10) {
+            sb.append('0');
+        }
         sb.append(f);
         sb.append(':');
         f = c.get(Calendar.SECOND);
-        if (f < 10) sb.append('0');
+        if (f < 10) {
+            sb.append('0');
+        }
         sb.append(f);
         sb.append('.');
         f = c.get(Calendar.MILLISECOND);
-        if (f < 100) sb.append('0');
-        if (f < 10) sb.append('0');
+        if (f < 100) {
+            sb.append('0');
+        }
+        if (f < 10) {
+            sb.append('0');
+        }
         sb.append(f);
         sb.append('Z');
         return sb.toString();
-      }
+    }
 
 }

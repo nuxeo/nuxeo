@@ -113,7 +113,7 @@ public class ImageAnnotater extends AbstractAnnotater implements
         return imageElement;
     }
 
-    private ImageElement getImageElementFromAnchor(
+    private static ImageElement getImageElementFromAnchor(
             com.google.gwt.dom.client.Element anchorElement) {
         Node element;
         while ((element = anchorElement.getPreviousSibling()) != null) {
@@ -226,7 +226,7 @@ public class ImageAnnotater extends AbstractAnnotater implements
         controller.setNewAnnotationPopup(popup);
     }
 
-    private void checkInt(int[] points) {
+    private static void checkInt(int[] points) {
         // following code is because, on some IE machine we got float instead of
         // integer:
         for (int x = 0; x < points.length; x++) {

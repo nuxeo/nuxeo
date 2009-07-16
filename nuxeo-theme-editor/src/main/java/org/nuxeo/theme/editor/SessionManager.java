@@ -112,7 +112,7 @@ public class SessionManager extends AbstractComponent {
     public static synchronized void setPresetManagerMode(String mode) {
         getUserSession().put(PRESET_MANAGER_MODE, mode);
     }
-    
+
     public static synchronized String getPresetGroup() {
         return (String) getUserSession().get(PRESET_GROUP);
     }
@@ -136,7 +136,7 @@ public class SessionManager extends AbstractComponent {
     public static synchronized String getClipboardPresetId() {
         return (String) getUserSession().get(CLIPBOARD_PRESET_ID);
     }
-    
+
     public static synchronized void setFragmentType(String type) {
         getUserSession().put(SELECTED_FRAGMENT_TYPE, type);
     }
@@ -144,7 +144,7 @@ public class SessionManager extends AbstractComponent {
     public static synchronized String getFragmentType() {
         return (String) getUserSession().get(SELECTED_FRAGMENT_TYPE);
     }
-    
+
     public static synchronized void setFragmentView(String view) {
         getUserSession().put(SELECTED_FRAGMENT_VIEW, view);
     }

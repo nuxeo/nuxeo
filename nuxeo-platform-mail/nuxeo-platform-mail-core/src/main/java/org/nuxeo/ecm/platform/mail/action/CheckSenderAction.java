@@ -66,7 +66,7 @@ public class CheckSenderAction implements MessageAction {
         return true;
     }
 
-    private String getPrincipal(String address) throws Exception {
+    private static String getPrincipal(String address) throws Exception {
         Session session = null;
         String principal = null;
         try {

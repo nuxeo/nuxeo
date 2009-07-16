@@ -43,17 +43,17 @@ public class MistralMimeUtils implements MimeUtils {
 
     private static final int BUFFER_LIMIT = 32000000;
 
-    private static final String MIME_IMAGE_JPEG = "image/jpeg";
+    public static final String MIME_IMAGE_JPEG = "image/jpeg";
 
-    private static final String MIME_IMAGE_GIF = "image/gif";
+    public static final String MIME_IMAGE_GIF = "image/gif";
 
-    private static final String MIME_IMAGE_PNG = "image/png";
+    public static final String MIME_IMAGE_PNG = "image/png";
 
-    private static final String MIME_IMAGE_TIFF = "image/tiff";
+    public static final String MIME_IMAGE_TIFF = "image/tiff";
 
-    private static final String MIME_IMAGE_BMP = "image/x-ms-bmp";
+    public static final String MIME_IMAGE_BMP = "image/x-ms-bmp";
 
-    private static final String MIME_UNKNOWN = "application/octet-stream";
+    public static final String MIME_UNKNOWN = "application/octet-stream";
 
     private static final Map<String, String> mimeTypes = new HashMap<String, String>();
 

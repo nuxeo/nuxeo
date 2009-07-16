@@ -28,7 +28,7 @@ public final class ProviderType {
 
     @XNode("class")
     private String className;
-    
+
     @XNode("factory")
     private String factoryClassName;
 

@@ -55,8 +55,8 @@ public class UserWorkspaceManagerBean implements UserWorkspaceService {
                 currentDocument);
     }
 
-	public DocumentModel getCurrentUserPersonalWorkspace(CoreSession userCoreSession, DocumentModel context)
-			throws ClientException {
-		 return userWorkspaceService.getCurrentUserPersonalWorkspace(userCoreSession, context);
-	}
+    public DocumentModel getCurrentUserPersonalWorkspace(CoreSession userCoreSession, DocumentModel context)
+            throws ClientException {
+         return userWorkspaceService.getCurrentUserPersonalWorkspace(userCoreSession, context);
+    }
 }

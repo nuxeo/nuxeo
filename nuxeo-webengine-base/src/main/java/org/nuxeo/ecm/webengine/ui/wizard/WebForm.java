@@ -12,16 +12,24 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Stephane Lacoin (Nuxeo EP Software Engineer)
+ *     bstefanescu
  */
-package org.nuxeo.ecm.platform.audit.service;
+package org.nuxeo.ecm.webengine.ui.wizard;
 
-import java.util.Properties;
 
-public interface HibernateConfiguration {
+/**
+ * A web form is a single page wizard.
+ * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ */
+public abstract class WebForm extends Wizard {
 
-    static final String AUDIT_DATASOURCE_NAME = "nxaudit-logs";
+    public abstract WizardPage createPage();
 
-    Properties getProperties();
+    @Override
+    protected WizardPage[] createPages() {
+        return new WizardPage[] {createPage()};
+    }
 
 }

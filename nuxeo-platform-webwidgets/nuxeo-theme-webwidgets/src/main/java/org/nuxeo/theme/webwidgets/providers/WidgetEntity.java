@@ -33,7 +33,7 @@ import org.nuxeo.theme.webwidgets.Widget;
 import org.nuxeo.theme.webwidgets.WidgetState;
 
 @Entity
-@Table(name = "NXP_WEBWIDGETS_WIDGET")
+@Table(name = "NXP_WEBW_WIDG")
 @NamedQueries( {
         @NamedQuery(name = "Widget.findAll", query = "FROM WidgetEntity widget WHERE widget.region=:region ORDER BY widget.order"),
         @NamedQuery(name = "Widget.findByScope", query = "FROM WidgetEntity widget WHERE widget.region=:region AND widget.scope=:scope ORDER BY widget.order") })
@@ -74,33 +74,33 @@ public class WidgetEntity implements Widget {
         return String.valueOf(id);
     }
 
-    @Column(name = "WIDGET_NAME")
+    @Column(name = "NAME")
     public String getName() {
         return name;
     }
 
-    @Column(name = "WIDGET_REGION")
+    @Column(name = "REGION")
     public String getRegion() {
         return region;
     }
 
-    @Column(name = "WIDGET_ORDER", columnDefinition = "integer")
+    @Column(name = "ORD", columnDefinition = "integer")
     public int getOrder() {
         return order;
     }
 
-    @Column(name = "WIDGET_STATE")
+    @Column(name = "STATE")
     public WidgetState getState() {
         return state;
     }
 
     @CollectionOfElements(fetch = FetchType.EAGER)
-    @Column(name = "WIDGET_PREFERENCES")
+    @Column(name = "PREFERENCES")
     public Map<String, String> getPreferences() {
         return new HashMap<String, String>(preferences);
     }
 
-    @Column(name = "WIDGET_SCOPE")
+    @Column(name = "SCOPE")
     public String getScope() {
         return scope;
     }

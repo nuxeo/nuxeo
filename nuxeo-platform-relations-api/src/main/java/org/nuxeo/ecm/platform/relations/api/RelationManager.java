@@ -101,7 +101,7 @@ public interface RelationManager extends Serializable {
      *
      * @since 5.2-GA
      */
-    public List<String> getGraphNames() throws ClientException;
+    List<String> getGraphNames() throws ClientException;
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#add

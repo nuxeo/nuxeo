@@ -50,6 +50,6 @@ public interface UserWorkspaceService extends Serializable {
 
 
     DocumentModel getCurrentUserPersonalWorkspace(CoreSession userCoreSession, DocumentModel context)
-			throws ClientException;
+            throws ClientException;
 
 }

@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.pictures.tiles.service;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +74,7 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
     }
 
     protected boolean useTiling(Blob blob, DocumentModel dm) {
-    	Long width = Long.valueOf(0);
+        Long width = Long.valueOf(0);
         Long height = Long.valueOf(0);
 
         if ("Picture".equals(dm.getType())) {
@@ -92,16 +91,12 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
                 log.error("Failed to get picture dimensions", e);
             }
         } else {
-	        ImagingService imagingService = Framework.getLocalService(ImagingService.class);
-	        if (imagingService != null) {
-	            try {
-	                Map<String, Object> imageMetadata = imagingService.getImageMetadata(blob.getStream());
-	                width = ((Integer) imageMetadata.get(MetadataConstants.META_WIDTH)).longValue();
-	                height = ((Integer) imageMetadata.get(MetadataConstants.META_HEIGHT)).longValue();
-	            } catch (IOException e) {
-	                log.error("Failed to get picture dimensions", e);
-	            }
-	        }
+            ImagingService imagingService = Framework.getLocalService(ImagingService.class);
+            if (imagingService != null) {
+                Map<String, Object> imageMetadata = imagingService.getImageMetadata(blob);
+                width = ((Integer) imageMetadata.get(MetadataConstants.META_WIDTH)).longValue();
+                height = ((Integer) imageMetadata.get(MetadataConstants.META_HEIGHT)).longValue();
+            }
         }
 
         Integer widthThreshold = Integer.valueOf(PictureTilingComponent.getEnvValue("WidthThreshold", "1200"));

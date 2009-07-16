@@ -49,11 +49,11 @@ import org.osgi.framework.Bundle;
 public class ServerManagement {
 
     public final static String ACTIVATION_PROPERTY = "org.nuxeo.runtime.rest.management";
-    
+
     public ServerManagement() {
         checkActivation();
     }
-    
+
     @GET
     @Produces("application/atomsvc+xml")
     public Object getServiceDocument() {
@@ -134,10 +134,12 @@ public class ServerManagement {
     public Response postComponent() {
         try {
             //TODO use only JAX-RS primitives - avoid using WebEngine to get the HttpRequest
-            InputStream in = WebEngine.getActiveContext().getRequest().getInputStream(); 
+            InputStream in = WebEngine.getActiveContext().getRequest().getInputStream();
             byte[] bytes = FileUtils.readBytes(in);
-            System.out.println("Deploying component:\n-----------------------------\n"+new String(bytes)+"\n------------------------------");
-            ((OSGiRuntimeService)Framework.getRuntime()).getComponentPersistence().createComponent(bytes);
+            System.out.println("Deploying component:\n-----------------------------\n"
+                    + new String(bytes)
+                    + "\n------------------------------");
+            ((OSGiRuntimeService) Framework.getRuntime()).getComponentPersistence().createComponent(bytes);
         } catch (Exception e) {
             throw WebException.wrap("Failed to create component", e);
         }
@@ -169,11 +171,11 @@ public class ServerManagement {
 
     @Path("resources")
     public Object getResources() {
-        Environment env = Environment.getDefault(); 
+        Environment env = Environment.getDefault();
         return new RootContainerResource(new File(env.getData(), "resources"));
     }
 
-    
+
     public RuntimeService getRuntime() {
         return Framework.getRuntime();
     }
@@ -229,7 +231,7 @@ public class ServerManagement {
         return buf.toString();
     }
 
-    
+
     protected void checkActivation() {
         if (!"true".equals(Framework.getProperty(ACTIVATION_PROPERTY, "false"))) {
             throw new WebException(403);

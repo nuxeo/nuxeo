@@ -26,16 +26,14 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.pictures.tiles.api.imageresource.ImageResource;
 
 /**
- * Interface for the Service that generate the PictureTiles
+ * Interface for the Service that generate the PictureTiles.
  *
  * @author tiry
- *
  */
 public interface PictureTilingService {
 
     /**
-     *
-     * Get the picture tiles from a blob
+     * Gets the picture tiles from a blob.
      *
      * @param blob
      * @param tileWidth
@@ -49,7 +47,7 @@ public interface PictureTilingService {
             int maxTiles) throws ClientException;
 
     /**
-     * Get the picture tiles from a blob Tiles are lazyly generated
+     * Gets the picture tiles from a blob Tiles are lazily generated.
      *
      * @param blob
      * @param tileWidth
@@ -76,12 +74,12 @@ public interface PictureTilingService {
 
     void setWorkingDirPath(String path);
 
-    public Map<String, String> getBlobProperties();
+    Map<String, String> getBlobProperties();
 
-    public String getBlobProperty(String docType);
+    String getBlobProperty(String docType);
 
-    public String getBlobProperty(String docType, String defaultValue);
+    String getBlobProperty(String docType, String defaultValue);
 
-    public void removeCacheEntry(ImageResource resource) throws ClientException;
+    void removeCacheEntry(ImageResource resource) throws ClientException;
 
 }

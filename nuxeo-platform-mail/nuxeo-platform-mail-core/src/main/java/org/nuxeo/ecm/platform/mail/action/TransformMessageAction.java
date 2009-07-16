@@ -171,18 +171,18 @@ public class TransformMessageAction implements MessageAction {
         }
     }
 
-    private boolean contentTypeIsReadableText(String contentType) {
+    private static boolean contentTypeIsReadableText(String contentType) {
         boolean isText = contentTypeIsPlainText(contentType);
         boolean isHTML = contentTypeIsHtml(contentType);
         return isText || isHTML;
     }
 
-    private boolean contentTypeIsHtml(String contentType) {
+    private static boolean contentTypeIsHtml(String contentType) {
         contentType = contentType.trim().toLowerCase();
         return contentType.startsWith("text/html");
     }
 
-    private boolean contentTypeIsPlainText(String contentType) {
+    private static boolean contentTypeIsPlainText(String contentType) {
         contentType = contentType.trim().toLowerCase();
         return contentType.startsWith("text/plain");
     }
@@ -199,7 +199,7 @@ public class TransformMessageAction implements MessageAction {
      * so we force here a filename decode.
      * MimeUtility.decodeText is doing nothing if the text is not encoded
      */
-    private String getFileName(Part mailPart) throws MessagingException {
+    private static String getFileName(Part mailPart) throws MessagingException {
         String sysPropertyVal = System.getProperty("mail.mime.decodefilename");
         boolean decodeFileName = sysPropertyVal != null && !sysPropertyVal.equalsIgnoreCase("false");
 
@@ -216,7 +216,7 @@ public class TransformMessageAction implements MessageAction {
         }
     }
 
-    private String safelyDecodeText(String textToDecode) {
+    private static String safelyDecodeText(String textToDecode) {
         try {
             return MimeUtility.decodeText(textToDecode);
         } catch (UnsupportedEncodingException ex) {

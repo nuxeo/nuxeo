@@ -20,7 +20,7 @@ import org.hibernate.dialect.Dialect;
 
 /**
  * An SQL column.
- * 
+ *
  * @author mcedica
  */
 public class Column implements Serializable {
@@ -32,11 +32,11 @@ public class Column implements Serializable {
     private final int sqlType;
 
     private boolean primary;
-    
+
     private boolean nullable = true;
 
     private String defaultValue;
-    
+
     private int length = 255; // Hibernate default
 
     private int precision = 19; // Hibernate default
@@ -96,7 +96,7 @@ public class Column implements Serializable {
     public String getSqlTypeString(Dialect dialect) {
         return dialect.getTypeName(sqlType, length, precision, scale);
     }
-    
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + '(' + name + ')';

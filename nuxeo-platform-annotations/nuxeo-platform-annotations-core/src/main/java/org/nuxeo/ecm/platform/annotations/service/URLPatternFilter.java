@@ -50,7 +50,7 @@ public class URLPatternFilter {
         return checkMatch(allowDeny ? denies : allows, url);
     }
 
-    private boolean checkMatch(List<String> list, String url) {
+    private static boolean checkMatch(List<String> list, String url) {
         for (String regex : list) {
             if (url.matches(regex)) {
                 return true;

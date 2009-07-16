@@ -131,6 +131,11 @@
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-persistence</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

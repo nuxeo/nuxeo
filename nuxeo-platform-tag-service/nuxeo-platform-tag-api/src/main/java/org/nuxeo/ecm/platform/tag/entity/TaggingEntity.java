@@ -45,7 +45,7 @@ import javax.persistence.TemporalType;
  * @author cpriceputu
  */
 @Entity(name = "Tagging")
-@Table(name = "NXP_TAGGING")
+@Table(name = "nxp_tagging")
 @NamedQueries( {
         @NamedQuery(name = LIST_TAGS_FOR_DOCUMENT, query = LIST_TAGS_FOR_DOCUMENT_QUERY),
         @NamedQuery(name = LIST_TAGS_FOR_DOCUMENT_AND_USER, query = LIST_TAGS_FOR_DOCUMENT_AND_USER_QUERY),

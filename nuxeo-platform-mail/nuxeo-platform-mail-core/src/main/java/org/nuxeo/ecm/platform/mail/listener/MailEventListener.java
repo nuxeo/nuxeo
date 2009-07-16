@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platfrom.mail.listener;
+package org.nuxeo.ecm.platform.mail.listener;
 
 import javax.mail.AuthenticationFailedException;
 import javax.security.auth.login.LoginContext;

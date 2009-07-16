@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.platform.picture.convert.test;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -29,10 +28,10 @@ import javax.imageio.ImageIO;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -53,22 +52,9 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.picture.convert");
     }
 
-    private static File getFileFromPath(String path) {
-        File file = FileUtils.getResourceFileFromContext(path);
-        assertTrue(file.length() > 0);
-        return file;
-    }
-
-    protected static BlobHolder getBlobFromPath(String path) {
-        File file = FileUtils.getResourceFileFromContext(path);
-        assertTrue(file.length() > 0);
-        return new SimpleBlobHolder(new FileBlob(file));
-    }
-
     public void testResizeConverter() throws Exception {
 
-        String converter ="pictureResize";
-        String filePath = "test-data/sample.jpeg";
+        String converter = "pictureResize";
 
         int resizeWidth = 120;
         int resizeHeight = 90;
@@ -79,75 +65,88 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-        BlobHolder hg = getBlobFromPath(filePath);
+        for (String filename : ImagingTestRessources.TEST_IMAGE_FILENAMES) {
+            String path = ImagingTestRessources.TEST_DATA_FOLDER + filename;
+            BlobHolder bh = new SimpleBlobHolder(new FileBlob(
+                    ImagingTestRessources.getFileFromPath(path)));
 
-        BlobHolder result = cs.convert(converter, hg, options);
-        assertNotNull(result);
+            BlobHolder result = cs.convert(converter, bh, options);
+            assertNotNull(result);
 
-        BufferedImage resizedImage = ImageIO.read(result.getBlob().getStream());
-        assertNotNull("Resized image is null", resizedImage);
-        assertEquals("Resized image width", resizeWidth, resizedImage.getWidth());
-        assertEquals("Resized image height", resizeHeight, resizedImage.getHeight());
+            BufferedImage image = ImageIO.read(result.getBlob().getStream());
+            assertNotNull("Resized image is null", image);
+            assertEquals("Resized image width", resizeWidth, image.getWidth());
+            assertEquals("Resized image height", resizeHeight, image.getHeight());
+        }
     }
 
     public void testRotate() throws Exception {
 
-        String converter ="pictureRotation";
-        String filePath = "test-data/sample.jpeg";
+        String converter = "pictureRotation";
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
         options.put(ImagingConvertConstants.OPTION_ROTATE_ANGLE,90);
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-        BlobHolder hg = getBlobFromPath(filePath);
+        for (String filename : ImagingTestRessources.TEST_IMAGE_FILENAMES) {
+            String path = ImagingTestRessources.TEST_DATA_FOLDER + filename;
+            BlobHolder bh = new SimpleBlobHolder(new FileBlob(
+                    ImagingTestRessources.getFileFromPath(path)));
 
-        BlobHolder result = cs.convert(converter, hg, options);
-        assertNotNull(result);
+            BlobHolder result = cs.convert(converter, bh, options);
+            assertNotNull(result);
 
-        BufferedImage image = ImageIO.read(new FileInputStream(
-                FileUtils.getResourceFileFromContext(filePath)));
-        assertNotNull("Original image is null", image);
-        int width = image.getWidth();
-        int height = image.getHeight();
-        assertTrue("Original image size != (0,0)", width > 0 && height > 0);
+            BufferedImage image = ImageIO.read(new FileInputStream(
+                    FileUtils.getResourceFileFromContext(path)));
+            assertNotNull("Original image is null", image);
+            int width = image.getWidth();
+            int height = image.getHeight();
+            assertTrue("Original image size != (0,0)", width > 0 && height > 0);
 
-        BufferedImage convertedImage = ImageIO.read(result.getBlob().getStream());
-        assertNotNull("Rotated image is null", image);
-        assertEquals("Ratated image width", height, convertedImage.getWidth());
-        assertEquals("Rotated image height", width, convertedImage.getHeight());
+            image = ImageIO.read(result.getBlob().getStream());
+            assertNotNull("Rotated image is null", image);
+            assertEquals("Ratated image width", height, image.getWidth());
+            assertEquals("Rotated image height", width, image.getHeight());
+        }
     }
 
     public void testCrop() throws Exception {
 
-        String converter ="pictureCrop";
-        String filePath = "test-data/sample.jpeg";
+        String converter = "pictureCrop";
+
+        int cropWidth = 400;
+        int cropHeight = 200;
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
         options.put(ImagingConvertConstants.OPTION_CROP_X, 100);
         options.put(ImagingConvertConstants.OPTION_CROP_Y, 100);
-        options.put(ImagingConvertConstants.OPTION_RESIZE_HEIGHT, 200);
-        options.put(ImagingConvertConstants.OPTION_RESIZE_WIDTH, 400);
+        options.put(ImagingConvertConstants.OPTION_RESIZE_WIDTH, cropWidth);
+        options.put(ImagingConvertConstants.OPTION_RESIZE_HEIGHT, cropHeight);
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-        BlobHolder hg = getBlobFromPath(filePath);
+        for (String filename : ImagingTestRessources.TEST_IMAGE_FILENAMES) {
+            String path = ImagingTestRessources.TEST_DATA_FOLDER + filename;
+            BlobHolder bh = new SimpleBlobHolder(new FileBlob(
+                    ImagingTestRessources.getFileFromPath(path)));
 
-        BlobHolder result = cs.convert(converter, hg, options);
-        assertNotNull(result);
+            BlobHolder result = cs.convert(converter, bh, options);
+            assertNotNull(result);
 
-        BufferedImage image = ImageIO.read(new FileInputStream(
-                FileUtils.getResourceFileFromContext(filePath)));
-        assertNotNull("Original image is null", image);
-        int width = image.getWidth();
-        int height = image.getHeight();
-        assertTrue("Original image size != (0,0)", width > 0 && height > 0);
+            BufferedImage image = ImageIO.read(new FileInputStream(
+                    FileUtils.getResourceFileFromContext(path)));
+            assertNotNull("Original image is null", image);
+            int width = image.getWidth();
+            int height = image.getHeight();
+            assertTrue("Original image size != (0,0)", width > 0 && height > 0);
 
 
-        BufferedImage convertedImage = ImageIO.read(result.getBlob().getStream());
-
-        assertNotSame("Ratated image width", height, convertedImage.getWidth());
-        assertNotSame("Rotated image height", width, convertedImage.getHeight());
+            image = ImageIO.read(result.getBlob().getStream());
+            assertNotNull("Croped image is null", image);
+            assertEquals("Croped image width", cropWidth, image.getWidth());
+            assertEquals("Croped image height", cropHeight, image.getHeight());
+        }
     }
 
 }

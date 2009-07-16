@@ -326,9 +326,7 @@ public class Editor {
 
         final String themeName = ThemeManager.getThemeOf(element).getName();
         Manager.getThemeManager().themeModified(themeName);
-
         Manager.getThemeManager().stylesModified(themeName);
-
     }
 
     public static void moveElement(Element srcElement, Element destElement,
@@ -361,9 +359,7 @@ public class Editor {
         }
 
         Manager.getThemeManager().themeModified(themeName);
-
         Manager.getThemeManager().stylesModified(themeName);
-
     }
 
     public static String addPage(String path) throws ThemeException,
@@ -555,7 +551,6 @@ public class Editor {
 
         final String themeName = ThemeManager.getThemeOf(element).getName();
         Manager.getThemeManager().themeModified(themeName);
-
         Manager.getThemeManager().stylesModified(themeName);
 
         return duplicate.getUid();

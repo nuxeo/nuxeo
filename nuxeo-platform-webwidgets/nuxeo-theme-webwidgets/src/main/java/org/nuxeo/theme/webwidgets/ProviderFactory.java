@@ -18,9 +18,9 @@ package org.nuxeo.theme.webwidgets;
 
 /**
  * A factory for provider.
- * 
+ *
  * @author arussel
- * 
+ *
  */
 public interface ProviderFactory {
     Provider getProvider();

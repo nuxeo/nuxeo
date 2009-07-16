@@ -40,7 +40,7 @@ public class TestWebengineSiteActionListener extends SQLRepositoryTestCase {
         String bundleFile = "org.nuxeo.ecm.platform.webengine.sites.tests";
 
         super.setUp();
-        
+
         deployBundle("org.nuxeo.ecm.platform.webengine.sites.core.contrib");
         deployContrib(bundleFile, "OSGI-INF/listener-contrib.xml");
         deployContrib(bundleFile, "OSGI-INF/ecm-types-contrib.xml");

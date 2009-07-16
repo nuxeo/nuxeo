@@ -27,46 +27,30 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.persistence.PersistenceTestCase;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
 import org.nuxeo.ecm.platform.audit.api.query.DateRangeParser;
 import org.nuxeo.ecm.platform.audit.service.LogEntryProvider;
-import org.nuxeo.ecm.platform.audit.service.PersistenceProvider;
 
 /**
  * Test the log entries persistence
  *
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public class TestLogEntryProvider extends TestCase {
+public class TestLogEntryProvider extends PersistenceTestCase {
 
     protected static final Log log = LogFactory.getLog(TestLogEntryProvider.class);
-
-    protected PersistenceProvider persistenceProvider;
-
-    protected EntityManager entityManager;
 
     private LogEntryProvider providerUnderTest;
 
     @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
-        persistenceProvider = new PersistenceProvider(new TestHibernateConfiguration());
-        persistenceProvider.openPersistenceUnit();
-        entityManager = persistenceProvider.acquireEntityManagerWithActiveTransaction();
+    protected void handleAfterSetup(EntityManager entityManager) {
         providerUnderTest = LogEntryProvider.createProvider(entityManager);
-    }
-
-    @Override
-    public void tearDown() {
-        persistenceProvider.releaseEntityManagerWithRollback(entityManager);
     }
 
     protected Map<String, ExtendedInfo> createExtendedInfos() {
@@ -116,13 +100,10 @@ public class TestLogEntryProvider extends TestCase {
     public void testHavingKey() {
         LogEntry entry = doCreateEntryAndPersist("id");
         providerUnderTest.addLogEntry(entry);
-        List<LogEntry> entries = providerUnderTest.nativeQueryLogs("log.id = "
-                + entry.getId() + " and log.extendedInfos['id'] is not null",
-                1, 10);
+        List<LogEntry> entries = providerUnderTest.nativeQueryLogs(
+                "log.id = " + entry.getId() + " and log.extendedInfos['id'] is not null", 1, 10);
         assertEquals(1, entries.size());
-        assertEquals(
-                new Long(1L),
-                entries.get(0).getExtendedInfos().get("id").getValue(Long.class));
+        assertEquals(new Long(1L), entries.get(0).getExtendedInfos().get("id").getValue(Long.class));
     }
 
     public void testByUUID() {
@@ -149,8 +130,7 @@ public class TestLogEntryProvider extends TestCase {
         filterOne.setOperator("=");
         filterOne.setObject(one.getEventDate());
         filters.put("oups", filterOne);
-        List<LogEntry> entries = providerUnderTest.getLogEntriesFor("id",
-                filters, true);
+        List<LogEntry> entries = providerUnderTest.getLogEntriesFor("id", filters, true);
         assertNotNull(entries);
         assertEquals(1, entries.size());
         assertEquals(one.getId(), entries.get(0).getId());
@@ -167,8 +147,7 @@ public class TestLogEntryProvider extends TestCase {
         doCreateEntryAndPersist("one");
         doCreateEntryAndPersist("two");
         List<LogEntry> entries = providerUnderTest.nativeQueryLogs(
-                "log.extendedInfos['id'] is not null order by log.eventDate desc",
-                2, 1);
+                "log.extendedInfos['id'] is not null order by log.eventDate desc", 2, 1);
         assertNotNull(entries);
         int entryCount = entries.size();
         assertEquals(1, entryCount);
@@ -195,8 +174,7 @@ public class TestLogEntryProvider extends TestCase {
         LogEntry three = doCreateEntryAndPersist("three");
         one.setCategory("nuch");
         three.setCategory("nuch");
-        List<LogEntry> entries = providerUnderTest.queryLogsByPage(eventIds(),
-                limit, "nuch", "/", 1, 1);
+        List<LogEntry> entries = providerUnderTest.queryLogsByPage(eventIds(), limit, "nuch", "/", 1, 1);
         assertNotNull(entries);
         int entryCount = entries.size();
         assertEquals(1, entryCount);
@@ -214,8 +192,7 @@ public class TestLogEntryProvider extends TestCase {
     public void testCountEventsById() {
         LogEntry one = doCreateEntryAndPersist("one");
         String eventId = one.getEventId();
-        Long count =
-            providerUnderTest.countEventsById(eventId);
+        Long count = providerUnderTest.countEventsById(eventId);
         assertEquals(new Long(1), count);
     }
 
@@ -228,15 +205,15 @@ public class TestLogEntryProvider extends TestCase {
         three.setCategory("nuch");
         List<?> entries = providerUnderTest.nativeQuery(
                 "select log.eventId, count(*) from LogEntry log where log.eventId = 'TestLogEntryProvider' group by log.eventId",
-                 1, 1);
+                1, 1);
         assertNotNull(entries);
         int entryCount = entries.size();
         assertEquals(1, entryCount);
-        Object[] entry = (Object[])entries.get(0);
-        String name = (String)entry[0];
-        Long count = (Long)entry[1];
+        Object[] entry = (Object[]) entries.get(0);
+        String name = (String) entry[0];
+        Long count = (Long) entry[1];
         assertEquals("TestLogEntryProvider", name);
-        assertEquals(new Long(3L),count);
+        assertEquals(new Long(3L), count);
     }
 
     public void XXXtestEventIds() {

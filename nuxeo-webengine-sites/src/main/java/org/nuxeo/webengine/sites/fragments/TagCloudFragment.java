@@ -34,16 +34,16 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 /**
  * Action fragment for initializing the fragment related to the details about
  * the tag cloud.
- * 
+ *
  * @author rux
- * 
+ *
  */
 public class TagCloudFragment extends AbstractFragment {
 
     /**
      * Returns the details about the tag cloud that have been created under a
      * webpage.
-     * 
+     *
      */
     @Override
     public Model getModel() throws ModelException {
