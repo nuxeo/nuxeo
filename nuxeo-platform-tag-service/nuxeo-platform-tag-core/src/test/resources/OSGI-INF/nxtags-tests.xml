@@ -1,6 +1,6 @@
 <component name="org.nuxeo.ecm.platform.tag.tests.config">
 
-  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
+  <!--extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
 		point="hibernate">
 		<hibernateConfiguration name="nxtags">
 		  <properties>
@@ -14,6 +14,23 @@
         	<property name="hibernate.format_sql">true</property>
 		   </properties>
 		</hibernateConfiguration>
+  </extension-->
+  
+  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
+		point="hibernate">
+		<hibernateConfiguration name="nxtags">
+		  <properties>
+            <property name="hibernate.connection.url">jdbc:h2:${nuxeo.test.h2.path};AUTO_SERVER=true;TRACE_LEVEL_FILE=3;TRACE_LEVEL_SYSTEM_OUT=3</property>
+            <property name="hibernate.connection.user">sa</property>
+            <property name="hibernate.connection.password"></property>
+            <property name="hibernate.connection.driver_class">org.h2.Driver</property>
+        	<property name="hibernate.dialect"> org.nuxeo.ecm.platform.tag.H2WithNoSequencesSupportDialect</property>
+        	<property name="hibernate.hbm2ddl.auto">update</property>
+        	<property name="hibernate.show_sql">true</property>
+        	<property name="hibernate.format_sql">true</property>
+		   </properties>
+		</hibernateConfiguration>
   </extension>
+  
   
 </component>

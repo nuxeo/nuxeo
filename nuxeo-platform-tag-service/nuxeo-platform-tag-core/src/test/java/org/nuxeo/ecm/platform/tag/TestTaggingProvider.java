@@ -32,8 +32,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
-import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
-import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.tag.entity.DublincoreEntity;
 import org.nuxeo.ecm.platform.tag.entity.TagEntity;
@@ -52,8 +50,6 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
     
     @Override
     public void setUp() throws Exception {
-        database = DatabasePostgreSQL.INSTANCE;
-
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.core");
