@@ -94,18 +94,26 @@
     </dependency>
   </dependencies>
  
-  <build>
-    <plugins>
-      <plugin>
+  <profiles>
+   <profile>
+     <id>skiptests</id>
+     <activation>
+      <activeByDefault>true</activeByDefault>
+     </activation>
+     <build>
+      <plugins>
+       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>
             <exclude>**</exclude>
           </excludes>
         </configuration>
-      </plugin>
-    </plugins>
-  </build>
+       </plugin>
+      </plugins>
+    </build>
+   </profile>
+  </profiles>
 
 
 </project>

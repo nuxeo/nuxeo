@@ -40,7 +40,6 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class BundleResource {
 
@@ -62,7 +61,6 @@ public class BundleResource {
         }
         return new TemplateView(this, "bundle-components.ftl").arg("components", comps).arg("bundle", bundle);
     }
-
 
     @GET
     @Path("file")
@@ -90,10 +88,14 @@ public class BundleResource {
         } catch (Exception e) {
             throw WebException.wrap(e);
         } finally {
-            try { if (in != null) in.close();} catch (Exception e) {}
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (Exception e) {
+            }
         }
     }
-
 
     @PUT
     public Response switchBundleState() {

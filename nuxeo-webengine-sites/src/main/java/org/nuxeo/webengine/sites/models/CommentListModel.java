@@ -20,10 +20,9 @@ import org.nuxeo.theme.models.AbstractModel;
 
 /**
  * Model related to comments that are bounded to a <b>WebPage</b> in the
- * fragment initialization mechanism
+ * fragment initialization mechanism.
  *
  * @author rux
- *
  */
 public class CommentListModel extends AbstractModel {
 

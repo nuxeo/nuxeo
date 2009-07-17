@@ -34,6 +34,7 @@ public class GwtTestCSSClassManager extends GWTTestCase {
     public String getModuleName() {
         return "org.nuxeo.ecm.platform.annotations.gwt.AnnotationPanel";
     }
+
     public void testCSSClassManager() {
         createDocument();
         Element element = RootPanel.get("myspan").getElement();
@@ -46,11 +47,13 @@ public class GwtTestCSSClassManager extends GWTTestCase {
         assertTrue(manager.addClass("foo"));
         assertTrue(manager.isClassPresent("foo"));
     }
-    private void createDocument() {
+
+    private static void createDocument() {
         Element e = DOM.createElement("p").cast();
         SpanElement span = DOM.createSpan().cast();
         e.appendChild(span);
         e.setInnerHTML("<span id=\"myspan\" class=\"foo bar\">bob</span>");
         RootPanel.getBodyElement().appendChild(e);
     }
+
 }

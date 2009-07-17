@@ -26,10 +26,8 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.runtime.api.Framework;
 
-
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class VersionEventListener implements PostCommitEventListener {
 
@@ -41,7 +39,8 @@ public class VersionEventListener implements PostCommitEventListener {
 
     public VersionEventListener() {
         try {
-            AnnotationsRepositoryConfigurationService service = Framework.getService(AnnotationsRepositoryConfigurationService.class);
+            AnnotationsRepositoryConfigurationService service = Framework.getService(
+                    AnnotationsRepositoryConfigurationService.class);
             eventNames = service.getEventIds();
             manager = service.getGraphManagerEventListener();
         } catch (Exception e) {

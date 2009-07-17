@@ -35,25 +35,18 @@ import com.google.gwt.user.client.ui.Widget;
 public class SelectedArea {
 
     private static final String FULL_MOVING_AREA_CSS_CLASS = "thumbnailMovingSelectedArea";
-
     private static final String INNER_MOVING_AREA_CSS_CLASS = "thumbnailInnerMovingSelectedArea";
-
     private static final String FULL_AREA_CSS_CLASS = "thumbnailSelectedArea";
-
     private static final String INNER_AREA_CSS_CLASS = "thumbnailInnerSelectedArea";
 
     private int maxWidth;
-
     private int maxHeight;
 
     private Rectangle area;
 
     private final SimplePanel fullMovingArea = new SimplePanel();
-
     private final SimplePanel innerMovingArea = new SimplePanel();
-
     private final SimplePanel fullArea = new SimplePanel();
-
     private final SimplePanel innerArea = new SimplePanel();
 
     public SelectedArea(int maxWidth, int maxHeight, Panel parent) {

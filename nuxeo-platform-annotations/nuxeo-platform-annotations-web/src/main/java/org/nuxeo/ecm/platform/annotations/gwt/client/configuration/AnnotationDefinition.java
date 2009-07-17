@@ -70,58 +70,34 @@ public class AnnotationDefinition implements IsSerializable {
         this.fields = fields;
     }
 
-    /**
-     * @return the uri.
-     */
     public String getUri() {
         return uri;
     }
 
-    /**
-     * @param uri the uri to set.
-     */
     public void setUri(String uri) {
         this.uri = uri;
     }
 
-    /**
-     * @return the label.
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @param label the label to set.
-     */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return the icon.
-     */
     public String getIcon() {
         return icon;
     }
 
-    /**
-     * @param icon the icon to set.
-     */
     public void setIcon(String icon) {
         this.icon = icon;
     }
 
-    /**
-     * @param type the type to set.
-     */
     public void setType(String type) {
         this.type = type;
     }
 
-    /**
-     * @return the type.
-     */
     public String getType() {
         return type;
     }

@@ -32,9 +32,9 @@ import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnotatedEventTestListener extends AbstractRepositoryTestCase {
+
     private static final String HTTP_LOCALHOST_8080_NUXEO = "http://localhost:8080/nuxeo";
 
     public void testTest() throws AnnotationException {
@@ -61,4 +61,5 @@ public class AnnotatedEventTestListener extends AbstractRepositoryTestCase {
         result = DocumentTestEventListener.getTest();
         assertEquals(Integer.parseInt("11111111", 2), result);
     }
+
 }

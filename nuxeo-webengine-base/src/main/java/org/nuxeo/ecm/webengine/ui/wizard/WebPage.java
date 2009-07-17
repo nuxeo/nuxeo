@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,26 +13,31 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.ecm.webengine.ui.wizard;
 
-package org.nuxeo.ecm.platform.rendering.template;
+import org.nuxeo.ecm.webengine.forms.validation.Form;
 
-import java.io.Writer;
 
-import org.nuxeo.ecm.platform.rendering.RenderingResult;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface FreemarkerRenderingJob {
+public class WebPage extends WizardPage {
 
-    Writer getWriter();
+    private static final long serialVersionUID = 1L;
 
-    String getTemplate();
+    public WebPage(Class<? extends Form> formType) {
+        super ("index", formType, OK | CANCEL);
+    }
 
-    RenderingResult getResult();
+    public WebPage(String id, Class<? extends Form> formType, int style) {
+        super(id, formType, style);
+    }
 
+    public WebPage(Class<? extends Form> formType, int style) {
+        super("index", formType, style);
+    }
+    
 }

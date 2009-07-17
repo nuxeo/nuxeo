@@ -96,8 +96,9 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
         }
 
         UserInfoMapper userInfoMapper = webAnnotationConfigurationService.getUserInfoMapper();
-        if (userInfoMapper != null)
+        if (userInfoMapper != null) {
             conf.setUserInfo(userInfoMapper.getUserInfo(curentUser));
+        }
 
         WebPermission webPermission = webAnnotationConfigurationService.getWebPermission();
         if (webPermission != null) {

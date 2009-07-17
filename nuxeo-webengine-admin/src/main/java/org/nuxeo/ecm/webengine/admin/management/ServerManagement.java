@@ -136,8 +136,10 @@ public class ServerManagement {
             //TODO use only JAX-RS primitives - avoid using WebEngine to get the HttpRequest
             InputStream in = WebEngine.getActiveContext().getRequest().getInputStream();
             byte[] bytes = FileUtils.readBytes(in);
-            System.out.println("Deploying component:\n-----------------------------\n"+new String(bytes)+"\n------------------------------");
-            ((OSGiRuntimeService)Framework.getRuntime()).getComponentPersistence().createComponent(bytes);
+            System.out.println("Deploying component:\n-----------------------------\n"
+                    + new String(bytes)
+                    + "\n------------------------------");
+            ((OSGiRuntimeService) Framework.getRuntime()).getComponentPersistence().createComponent(bytes);
         } catch (Exception e) {
             throw WebException.wrap("Failed to create component", e);
         }

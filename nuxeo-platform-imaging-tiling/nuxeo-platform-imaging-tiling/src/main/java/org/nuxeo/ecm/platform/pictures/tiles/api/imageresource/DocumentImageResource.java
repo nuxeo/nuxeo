@@ -27,19 +27,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
- *
- * DocumentModel based implementation of ImageResource
- * Support clean digest and modification date to have a clean invalidation system.
- *
+ * DocumentModel-based implementation of ImageResource.
+ * Supports clean digest and modification date to have a clean invalidation system.
  *
  * @author tiry
- *
  */
 public class DocumentImageResource implements ImageResource {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     protected Blob blob = null;
@@ -77,26 +71,31 @@ public class DocumentImageResource implements ImageResource {
     }
 
     public Blob getBlob() throws ClientException {
-        if (blob == null)
+        if (blob == null) {
             compute();
-        if (fileName!=null)
+        }
+        if (fileName!=null) {
             blob.setFilename(fileName);
+        }
         return blob;
     }
 
     public String getHash() throws ClientException {
-        if (hash == null)
+        if (hash == null) {
             compute();
+        }
         return hash;
     }
 
     public Calendar getModificationDate() throws ClientException {
-        if (modified == null)
+        if (modified == null) {
             compute();
+        }
         return modified;
     }
 
     public void setFileName(String name) {
         this.fileName=name;
     }
+
 }

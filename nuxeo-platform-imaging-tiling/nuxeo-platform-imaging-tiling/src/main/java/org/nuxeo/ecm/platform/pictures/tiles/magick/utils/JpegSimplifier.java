@@ -22,17 +22,13 @@ package org.nuxeo.ecm.platform.pictures.tiles.magick.utils;
 import java.io.File;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.MagickExecutor;
-import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- * Unit command to extract a simplied view of a JPEG file using ImageMagick =
+ * Unit command to extract a simplified view of a JPEG file using ImageMagick =
  * extract the needed picture information to reach the target definition level
  *
  * @author tiry
- *
  */
 public class JpegSimplifier extends MagickExecutor {
 
@@ -47,8 +43,9 @@ public class JpegSimplifier extends MagickExecutor {
 
         if (new File(outputFile).exists()) {
             return ImageIdentifier.getInfo(outputFile);
-        } else
+        } else {
             return null;
+        }
     }
 
 }

@@ -39,7 +39,7 @@ import org.nuxeo.ecm.platform.audit.service.LogEntryProvider;
 
 /**
  * Test the log entries persistence
- * 
+ *
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
 public class TestLogEntryProvider extends PersistenceTestCase {
@@ -100,7 +100,8 @@ public class TestLogEntryProvider extends PersistenceTestCase {
     public void testHavingKey() {
         LogEntry entry = doCreateEntryAndPersist("id");
         providerUnderTest.addLogEntry(entry);
-        List<LogEntry> entries = providerUnderTest.nativeQueryLogs("log.id = " + entry.getId() + " and log.extendedInfos['id'] is not null", 1, 10);
+        List<LogEntry> entries = providerUnderTest.nativeQueryLogs(
+                "log.id = " + entry.getId() + " and log.extendedInfos['id'] is not null", 1, 10);
         assertEquals(1, entries.size());
         assertEquals(new Long(1L), entries.get(0).getExtendedInfos().get("id").getValue(Long.class));
     }
@@ -145,7 +146,8 @@ public class TestLogEntryProvider extends PersistenceTestCase {
     public void testByNativeQuery() {
         doCreateEntryAndPersist("one");
         doCreateEntryAndPersist("two");
-        List<LogEntry> entries = providerUnderTest.nativeQueryLogs("log.extendedInfos['id'] is not null order by log.eventDate desc", 2, 1);
+        List<LogEntry> entries = providerUnderTest.nativeQueryLogs(
+                "log.extendedInfos['id'] is not null order by log.eventDate desc", 2, 1);
         assertNotNull(entries);
         int entryCount = entries.size();
         assertEquals(1, entryCount);
@@ -201,7 +203,9 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         LogEntry three = doCreateEntryAndPersist("three");
         one.setCategory("nuch");
         three.setCategory("nuch");
-        List<?> entries = providerUnderTest.nativeQuery("select log.eventId, count(*) from LogEntry log where log.eventId = 'TestLogEntryProvider' group by log.eventId", 1, 1);
+        List<?> entries = providerUnderTest.nativeQuery(
+                "select log.eventId, count(*) from LogEntry log where log.eventId = 'TestLogEntryProvider' group by log.eventId",
+                1, 1);
         assertNotNull(entries);
         int entryCount = entries.size();
         assertEquals(1, entryCount);

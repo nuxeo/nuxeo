@@ -45,9 +45,7 @@ public class AnnotatedDocumentEventListenerImpl implements AnnotatedDocumentEven
     private static final Log log = LogFactory.getLog(AnnotatedDocumentEventListenerImpl.class);
 
     private static final String ANNOTATION_CREATED = "annotationCreated";
-
     private static final String ANNOTATION_UPDATED = "annotationUpdated";
-
     private static final String ANNOTATION_DELETED = "annotationDeleted";
 
     private transient EventService eventService;
@@ -147,7 +145,7 @@ public class AnnotatedDocumentEventListenerImpl implements AnnotatedDocumentEven
                 eventService = Framework.getLocalService(EventService.class);
             } catch (Exception e) {
                 throw new Error(
-                        "Nuxeo is missconfigured - Core Event Service was not found");
+                        "Nuxeo is misconfigured - Core Event Service was not found");
             }
         }
         return eventService;

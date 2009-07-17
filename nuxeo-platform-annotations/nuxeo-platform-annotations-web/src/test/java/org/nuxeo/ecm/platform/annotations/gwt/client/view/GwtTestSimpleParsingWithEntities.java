@@ -30,9 +30,9 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class GwtTestSimpleParsingWithEntities extends AbstractDocumentGWTTest {
+
     private final AnnotatedDocument annotatedDocument = new AnnotatedDocument(
             null);
 
@@ -50,7 +50,7 @@ public class GwtTestSimpleParsingWithEntities extends AbstractDocumentGWTTest {
                 resultInnerHtml);
     }
 
-    private void setAnnotations(List<Annotation> annotations) {
+    private static void setAnnotations(List<Annotation> annotations) {
         Annotation annotation = new Annotation();
         annotation.setXpointer(XPointerFactory.getXPointer(
                 "http://localhost:8080/nuxeo/nxdoc/default/f6c3a8c3-427f-40fc-a0a0-e7630c41fdce/#xpointer(string-range(/HTML[0]/BODY[0]/DIV[0]/DIV[0],\"\",7,30))"));

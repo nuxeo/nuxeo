@@ -77,8 +77,9 @@ public class AnnotationListPopup extends PopupPanel {
             String fields = annotation.getFormattedDate();
             for (String displayedField : displayedFields) {
                 String value = annotation.getFields().get(displayedField);
-                if (value != null)
+                if (value != null) {
                     fields += "<br/>" + value;
+                }
             }
             grid.setWidget(i, 1, new HTML(fields));
             grid.getColumnFormatter().addStyleName(1, "annotationListPopupFields");

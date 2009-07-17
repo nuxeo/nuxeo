@@ -179,7 +179,7 @@ public final class MailCoreHelper {
                     properties.put("mail.pop3.socketFactory.port",
                             socketFactoryPort);
                 }
-                Session session = Session.getDefaultInstance(properties);
+                Session session = Session.getInstance(properties);
                 Store store = session.getStore();
                 store.connect(email, password);
 

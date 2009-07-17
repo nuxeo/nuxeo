@@ -17,7 +17,6 @@ package org.nuxeo.webengine.sites;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.MIME_TYPE_RSS_FEED;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE_DESCRIPTION;
 
-import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
@@ -33,7 +32,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.webengine.WebEngine;
@@ -47,8 +45,7 @@ import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
- *
- * Adapter used as a rss feed. The version of the RSS format is 2.0
+ * Adapter used as a RSS feed. The version of the RSS format is 2.0
  *
  * @author mcedica
  */
@@ -61,14 +58,12 @@ public class RssAdapter extends DefaultAdapter {
     public static final int NO_COMMENTS = 15;
 
     /**
-     * Returns a feed with the last modified webpages
-     *
-     * @throws ClientException
-     * */
+     * Returns a feed with the last modified web pages.
+     */
     @GET
     @Path("rssOnPage")
     @Produces(MIME_TYPE_RSS_FEED)
-    public Template getFeed() throws ClientException {
+    public Template getFeed() {
         try {
             List<String> entries = new LinkedList<String>();
             Template rssEntryTpl = getTemplate("includes/rss_item.ftl");
@@ -108,13 +103,11 @@ public class RssAdapter extends DefaultAdapter {
 
     /**
      * Returns a feed with the last published comments
-     *
-     * @throws ClientException
-     * */
+     */
     @GET
     @Path("rssOnComments")
     @Produces(MIME_TYPE_RSS_FEED)
-    public Template getCommentsFeed() throws ClientException {
+    public Template getCommentsFeed() {
         try {
             List<String> entries = new LinkedList<String>();
             Template rssEntryTpl = getTemplate("includes/rss_comment_item.ftl");

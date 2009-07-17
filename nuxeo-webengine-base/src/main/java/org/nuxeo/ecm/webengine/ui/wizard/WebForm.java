@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,26 +13,23 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.ecm.webengine.ui.wizard;
 
-package org.nuxeo.ecm.platform.rendering.template;
-
-import java.io.Writer;
-
-import org.nuxeo.ecm.platform.rendering.RenderingResult;
 
 /**
+ * A web form is a single page wizard.
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface FreemarkerRenderingJob {
+public abstract class WebForm extends Wizard {
 
-    Writer getWriter();
+    public abstract WizardPage createPage();
 
-    String getTemplate();
-
-    RenderingResult getResult();
+    @Override
+    protected WizardPage[] createPages() {
+        return new WizardPage[] {createPage()};
+    }
 
 }

@@ -76,7 +76,7 @@ public class AnnotationManager {
         return getAnnotation(results);
     }
 
-    private Resource getTranslatedResource(UriResolver resolver,
+    private static Resource getTranslatedResource(UriResolver resolver,
             String baseUrl, Node node) throws AnnotationException {
         String uri = ((Resource) node).getUri();
         Resource resource = null;
@@ -147,7 +147,7 @@ public class AnnotationManager {
         return annotation;
     }
 
-    private Graph getTransientGraph() throws AnnotationException {
+    private static Graph getTransientGraph() throws AnnotationException {
         Graph graph;
         try {
             RelationManager service = Framework.getService(RelationManager.class);
@@ -157,4 +157,5 @@ public class AnnotationManager {
         }
         return graph;
     }
+
 }

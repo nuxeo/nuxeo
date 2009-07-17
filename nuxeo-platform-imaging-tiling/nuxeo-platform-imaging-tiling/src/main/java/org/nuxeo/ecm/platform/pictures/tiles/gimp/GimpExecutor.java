@@ -105,8 +105,9 @@ public class GimpExecutor {
             }
 
             // check if we can exit
-            if (result.containsKey("ReturnCode"))
+            if (result.containsKey("ReturnCode")) {
                 execTerminated = true;
+            }
 
             try {
                 int exitCode = p1.exitValue();
@@ -157,10 +158,11 @@ public class GimpExecutor {
             cmd[1] = "/C";
         }
 
-        if (useQuickExec)
+        if (useQuickExec) {
             return quickExecCmd(cmd);
-        else
+        } else {
             return execCmd(cmd);
+        }
     }
 
     protected static String getGimpPath() {

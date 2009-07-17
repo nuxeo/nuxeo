@@ -8,4 +8,8 @@
     </module>
   </extension>
 
+  <extension target="persistence#CLASS">
+    <class>org.nuxeo.ecm.platform.ec.notification.UserSubscription</class>
+  </extension>
+
 </fragment>

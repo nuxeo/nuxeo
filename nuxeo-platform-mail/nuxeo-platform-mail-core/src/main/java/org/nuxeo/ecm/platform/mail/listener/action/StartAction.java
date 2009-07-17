@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platfrom.mail.listener.action;
+package org.nuxeo.ecm.platform.mail.listener.action;
 
 import javax.mail.Flags;
 import javax.mail.Message;

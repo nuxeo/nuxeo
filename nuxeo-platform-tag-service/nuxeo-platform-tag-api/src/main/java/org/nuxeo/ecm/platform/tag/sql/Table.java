@@ -72,9 +72,7 @@ public class Table implements Serializable {
 
         buf.append("create table");
         buf.append(' ');
-        buf.append(openQuote);
         buf.append(name);
-        buf.append(closeQuote);
         buf.append(" (");
 
         boolean first = true;
@@ -84,9 +82,7 @@ public class Table implements Serializable {
             } else {
                 buf.append(", ");
             }
-            buf.append(openQuote);
             buf.append(column.getName());
-            buf.append(closeQuote);
             buf.append(' ');
             buf.append(column.getSqlTypeString(dialect));
             String defaultValue = column.getDefaultValue();

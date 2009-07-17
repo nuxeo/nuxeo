@@ -70,7 +70,6 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  *
  * @author rux
  */
-
 @WebObject(type = "AbstractSiteDocumentObject", superType = "Document", facets = { "AbstractSiteDocumentObject" })
 @Produces("text/html; charset=UTF-8")
 public abstract class AbstractSiteDocumentObject extends DocumentObject {
@@ -95,9 +94,7 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
     }
 
     /**
-     * Method used to retrieve the logo of the current web object.
-     *
-     * @return
+     * Retrieves the logo of the current web object.
      */
     @GET
     @Path("logo")
@@ -118,9 +115,7 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
     }
 
     /**
-     * Method used to return the welcome media of the current web object.
-     *
-     * @return
+     * Returns the welcome media of the current web object.
      */
     @GET
     @Path("welcomeMedia")
@@ -147,9 +142,6 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
     /**
      * Method called before a search operation is made for the context of the
      * current web object.
-     *
-     * @param searchParam
-     * @return
      */
     @POST
     @GET
@@ -193,9 +185,7 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
     }
 
     /**
-     * Method used to create a new web page object.
-     *
-     * @return
+     * Creates a new web page object.
      */
     @POST
     @Path("createWebPage")
@@ -234,8 +224,6 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
 
     /**
      * Returns the document type of the container.
-     *
-     * @return
      */
     protected String getWebSiteDocumentType() {
         return WEBSITE;
@@ -243,8 +231,6 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
 
     /**
      * Returns the document type of the entry.
-     *
-     * @return
      */
     protected String getWebPageDocumentType() {
         return WEBPAGE;
@@ -252,8 +238,6 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
 
     /**
      * Sets the parameters needed to perform a search.
-     *
-     * @param searchParam
      */
     protected void setSearchParameters(String searchParam) {
         ctx.getRequest().setAttribute(THEME_BUNDLE, getSearchThemePage());
@@ -264,8 +248,6 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
     /**
      * Returns the map with the arguments that will be used to generate the
      * default template page for the current web object.
-     *
-     * @return
      */
     protected Map<String, Object> getArguments() throws Exception {
 
@@ -286,7 +268,7 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
 
     /**
      * Sets the parameters that will be needed in order to execute the GET
-     * requests on the current web object
+     * requests on the current web object.
      */
     protected void setDoGetParameters() {
         // getting theme config from document.
@@ -309,7 +291,7 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
     /**
      * Returns the parent web site of the current web object.
      *
-     * @param session - the nuxeo core session
+     * @param session the nuxeo core session
      * @return the parent web site of the current web object
      * @throws Exception
      */
@@ -326,55 +308,41 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
 
     /**
      * Returns the search theme page.
-     *
-     * @return
      */
-    abstract protected String getSearchThemePage();
+    protected abstract String getSearchThemePage();
 
     /**
      * Returns the schema name plus field name which together keep the theme for
      * the current web object.
-     *
-     * @return
      */
-    abstract protected String getSchemaFieldThemeName();
+    protected abstract String getSchemaFieldThemeName();
 
     /**
      * Returns the schema name plus field name which together keep the theme
      * page for the current web object.
-     *
-     * @return
      */
-    abstract protected String getSchemaFieldThemePageName();
+    protected abstract String getSchemaFieldThemePageName();
 
     /**
      * Returns the default value of the theme for the current web object.
-     *
-     * @return
      */
-    abstract protected String getDefaultSchemaFieldThemeValue();
+    protected abstract String getDefaultSchemaFieldThemeValue();
 
     /**
      * Returns the default value of the theme page for the current web object.
-     *
-     * @return
      */
-    abstract protected String getDefaultSchemaFieldThemePageValue();
+    protected abstract String getDefaultSchemaFieldThemePageValue();
 
     /**
      * Returns the name of the template that will be used in case the
      * DocumentModel for the current web object is null.
-     *
-     * @return
      */
-    abstract protected String getErrorTemplateName();
+    protected abstract String getErrorTemplateName();
 
     /**
      * Returns the map with the arguments that will be used to generate the
      * error template page
-     *
-     * @return
      */
-    abstract protected Map<String, Object> getErrorArguments();
+    protected abstract Map<String, Object> getErrorArguments();
 
 }
