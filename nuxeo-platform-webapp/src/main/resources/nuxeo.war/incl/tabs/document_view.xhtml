@@ -39,10 +39,7 @@
         styleClass="button" action="#{deleteActions.restoreCurrentDocument}" />
     </c:if>
 
-    <c:set var="selectedSections" value="#{publishActions.getPublishingInfo().toArray()}" scope="page" />
-    <c:if test="#{!empty selectedSections}">
-      <ui:include src="/incl/summary/publication.xhtml"/>
-    </c:if>
+    <ui:include src="/incl/summary/publication.xhtml"/>
 
     <c:if test="#{currentDocument.hasFacet('Commentable') and (documentThreadedComments.size > 0)}">
       <ui:include src="/incl/summary/comments.xhtml" />

@@ -21,7 +21,7 @@ function confirmDeleteDocumentsForever() {
 </script>
 
   <div id="selection_buttons">
-    <nxu:dataList var="sel_action" value="#{publishActions.actionsForSectionSelection}">
+    <nxu:dataList var="sel_action" value="#{webActions.getUnfiltredActionsList('CURRENT_SELECTION_SECTIONS_LIST')}">
     <span id="#{sel_action.id}">
       <nxh:commandButton
         styleClass="button" type="submit"
