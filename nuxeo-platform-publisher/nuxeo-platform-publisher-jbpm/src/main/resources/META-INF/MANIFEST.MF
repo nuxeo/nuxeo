@@ -3,4 +3,5 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo ECM Publisher Service JBPM
 Bundle-SymbolicName: org.nuxeo.ecm.platform.publisher.jbpm;singleton:=true
 Bundle-Version: 1.0.0
+Require-Bundle: org.nuxeo.ecm.platform.publisher.core
 Nuxeo-Component: OSGI-INF/publisher-jbpm-contrib.xml

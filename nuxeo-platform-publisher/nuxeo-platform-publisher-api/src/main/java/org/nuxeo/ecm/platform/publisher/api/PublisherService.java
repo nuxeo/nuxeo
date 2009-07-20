@@ -33,4 +33,6 @@ public interface PublisherService {
 
     PublicationTree getPublicationTreeFor(DocumentModel doc, CoreSession coreSession) throws ClientException;
 
+    PublicationNode wrapToPublicationNode(DocumentModel documentModel, CoreSession coreSession) throws ClientException;
+
 }

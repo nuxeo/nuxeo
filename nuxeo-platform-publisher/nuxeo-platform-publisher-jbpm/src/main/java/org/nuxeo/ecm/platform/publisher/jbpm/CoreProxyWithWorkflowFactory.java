@@ -350,7 +350,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
     }
 
     protected boolean hasValidationTask(DocumentModel proxy,
-            NuxeoPrincipal currentUser) throws PublishingException {
+            NuxeoPrincipal currentUser) throws ClientException {
         assert currentUser != null;
         try {
             List<TaskInstance> tis = getJbpmService().getTaskInstances(proxy,
@@ -366,7 +366,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         return false;
     }
 
-    public boolean hasValidationTask(PublishedDocument publishedDocument) throws PublishingException {
+    public boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException {
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         NuxeoPrincipal currentUser = (NuxeoPrincipal) coreSession.getPrincipal();
         return hasValidationTask(proxy, currentUser);

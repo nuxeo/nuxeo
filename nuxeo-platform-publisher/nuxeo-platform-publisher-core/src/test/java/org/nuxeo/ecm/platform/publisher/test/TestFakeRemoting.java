@@ -29,7 +29,6 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
 
     @Override
     public void setUp() throws Exception {
-        System.out.println("In setUp method");
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.platform.content.template");
@@ -125,6 +124,7 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         // check publishing
         PublishedDocument pubDoc = tree.publish(doc2Publish, targetNode);
         assertNotNull(pubDoc);
+        assertFalse(pubDoc.isPending());
         session.save();
 
         // check that versioning was done locally

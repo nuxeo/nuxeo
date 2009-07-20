@@ -9,6 +9,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.CoreIODocumentModelMarshaler;
+import org.nuxeo.ecm.platform.publisher.helper.VersioningHelper;
 
 import java.io.File;
 import java.io.StringReader;
@@ -99,7 +100,7 @@ public class FSPublishedDocument implements PublishedDocument {
 
         sourceRepositoryName = doc.getRepositoryName();
         sourceDocumentRef = doc.getRef();
-        sourceVersion = doc.getVersionLabel();
+        sourceVersion = VersioningHelper.getVersionLabelFor(doc);
         sourceServer = server;
         this.isPending = isPending;
 

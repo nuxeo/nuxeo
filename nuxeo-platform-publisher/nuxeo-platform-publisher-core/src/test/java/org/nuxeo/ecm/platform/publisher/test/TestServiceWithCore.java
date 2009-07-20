@@ -236,4 +236,28 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         assertEquals(0, PublisherServiceImpl.getLiveTreeCount());
 
     }
+
+    public void testWrapToPublicationNode() throws Exception {
+        createInitialDocs();
+
+        PublisherService service = Framework.getLocalService(PublisherService.class);
+
+        PublicationTree tree = service.getPublicationTree(
+                "DefaultSectionsTree", session, null);
+
+        DocumentModel ws1 = session.getDocument(new PathRef("default-domain/workspaces/ws1"));
+        assertFalse(tree.isPublicationNode(ws1));
+
+        DocumentModel section1 = session.getDocument(new PathRef("default-domain/sections/section1"));
+        assertTrue(tree.isPublicationNode(section1));
+
+        PublicationNode targetNode = service.wrapToPublicationNode(section1, session);
+        assertNotNull(targetNode);
+
+        PublishedDocument pubDoc = tree.publish(doc2Publish, targetNode);
+        assertNotNull(pubDoc);
+        assertEquals(1, tree.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish)).size());
+    }
+
 }

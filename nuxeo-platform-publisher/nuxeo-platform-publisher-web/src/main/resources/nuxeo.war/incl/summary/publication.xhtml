@@ -9,7 +9,7 @@
 
   <div>
 
-    <h:panelGroup rendered="#{publishActions.isPublishedDocument}">
+    <h:panelGroup rendered="#{publishActions.publishedDocument}">
 
       <h3><h:outputText value="#{messages['label.publishing.title']}"/>
       </h3>
@@ -19,10 +19,10 @@
       <nxu:methodResult name="canManagePublishing"
                         value="#{publishActions.canManagePublishing}">
 
-        <h:outputText rendered="#{!publishActions.isPublishedDocument}"
+        <h:outputText rendered="#{publishActions.pending}"
                       value="#{messages['label.document.pending']}"/>
 
-        <h:outputText rendered="#{publishActions.hasValidationTask}">
+        <h:panelGroup rendered="#{publishActions.hasValidationTask()}">
           <table class="dataInput">
             <tr>
               <td>
@@ -57,11 +57,11 @@
               </td>
             </tr>
           </table>
-        </h:outputText>
+        </h:panelGroup>
 
         <div>
           <h:outputText
-                  rendered="#{publishActions.isPublishedDocument}"
+                  rendered="#{!publishActions.pending}"
                   value="#{messages['label.document.published']}"/>
           <br/>
         </div>

@@ -51,13 +51,12 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
 
     public List<PublishedDocument> getExistingPublishedDocument(
             DocumentLocation docLoc) throws ClientException {
-
-        List<PublishedDocument> publishedDocs = new ArrayList<PublishedDocument>();
+        DocumentModel livedoc = getCoreSession().getDocument(docLoc.getDocRef());
+        if (livedoc.isProxy()) {
+            livedoc = getCoreSession().getDocument(new IdRef(livedoc.getSourceId()));
+        }
 
         List<DocumentModel> possibleDocsToCheck = new ArrayList<DocumentModel>();
-
-        DocumentModel livedoc = getCoreSession().getDocument(docLoc.getDocRef());
-
         if (!livedoc.isVersion()) {
             possibleDocsToCheck = getCoreSession().getVersions(
                     docLoc.getDocRef());
@@ -65,6 +64,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
             possibleDocsToCheck.add(livedoc);
         }
 
+        List<PublishedDocument> publishedDocs = new ArrayList<PublishedDocument>();
         for (DocumentModel doc : possibleDocsToCheck) {
             DocumentModelList proxies = getCoreSession().getProxies(
                     doc.getRef(), null);
@@ -147,6 +147,20 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
         } else {
             throw new ClientException("Document " + documentModel.getPathAsString() + " is not a published document.");
         }
+    }
+
+    @Override
+    public boolean isPublicationNode(DocumentModel documentModel) throws ClientException {
+        return documentModel.getPathAsString().startsWith(rootPath);
+    }
+
+    @Override
+    public PublicationNode wrapToPublicationNode(DocumentModel documentModel) throws ClientException {
+        if (!isPublicationNode(documentModel)) {
+            throw new ClientException("Document " + documentModel.getPathAsString() + " is not a valid publication node.");
+        }
+        return new CoreFolderPublicationNode(documentModel, getConfigName(),
+                sid, factory);
     }
 
 }

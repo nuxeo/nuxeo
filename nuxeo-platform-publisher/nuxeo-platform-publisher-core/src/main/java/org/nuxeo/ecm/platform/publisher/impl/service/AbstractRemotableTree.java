@@ -139,4 +139,12 @@ public abstract class AbstractRemotableTree implements PublicationTree {
         return getTreeService().wrapToPublishedDocument(getServerTreeSessionId(), documentModel);
     }
 
+    public boolean isPublicationNode(DocumentModel documentModel) throws ClientException {
+        return getTreeService().isPublicationNode(getServerTreeSessionId(), documentModel);
+    }
+
+    public PublicationNode wrapToPublicationNode(DocumentModel documentModel) throws ClientException {
+        return getTreeService().wrapToPublicationNode(getServerTreeSessionId(), documentModel);
+    }
+
 }

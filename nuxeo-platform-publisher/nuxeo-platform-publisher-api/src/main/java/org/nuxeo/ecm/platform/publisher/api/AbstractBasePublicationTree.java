@@ -161,7 +161,7 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
     }
 
     public boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException {
-        return true;
+        return factory.hasValidationTask(publishedDocument);
     }
 
     public boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException {
@@ -171,5 +171,13 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
     public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException {
         return factory.wrapDocumentModel(documentModel);
     }
-    
+
+    public boolean isPublicationNode(DocumentModel documentModel) throws ClientException {
+        return false;
+    }
+
+    public PublicationNode wrapToPublicationNode(DocumentModel documentModel) throws ClientException {
+        throw new UnsupportedOperationException("");
+    }
+
 }

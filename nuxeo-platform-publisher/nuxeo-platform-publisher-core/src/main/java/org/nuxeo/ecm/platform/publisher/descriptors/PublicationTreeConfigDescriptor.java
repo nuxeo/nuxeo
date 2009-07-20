@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * Descriptor for a PublicationTree configuration
- * 
+ *
  * @author tiry
  */
 @XObject("publicationTreeConfig")
@@ -29,6 +29,9 @@ public class PublicationTreeConfigDescriptor implements Serializable {
 
     @XNode("@factory")
     private String factory = null;
+
+    @XNode("@localSectionTree")
+    private boolean localSectionTree = false;
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> parameters = new HashMap<String, String>();
@@ -59,6 +62,10 @@ public class PublicationTreeConfigDescriptor implements Serializable {
 
     public void setFactory(String factory) {
         this.factory = factory;
+    }
+
+    public boolean islocalSectionTree() {
+        return localSectionTree;
     }
 
     public Map<String, String> getParameters() {

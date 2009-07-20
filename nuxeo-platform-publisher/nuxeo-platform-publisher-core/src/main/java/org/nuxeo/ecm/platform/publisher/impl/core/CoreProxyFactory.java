@@ -25,7 +25,7 @@ public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory
             PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
 
-        DocumentModel targetDocModel = null;
+        DocumentModel targetDocModel;
         if (targetNode instanceof CoreFolderPublicationNode) {
             CoreFolderPublicationNode coreNode = (CoreFolderPublicationNode) targetNode;
             targetDocModel = coreNode.getTargetDocumentModel();
@@ -34,7 +34,7 @@ public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory
                     targetNode.getPath()));
         }
 
-        DocumentModel proxy = null;
+        DocumentModel proxy ;
         if ((params != null) && (params.containsKey("overwriteExistingProxy"))) {
             proxy = coreSession.publishDocument(doc, targetDocModel,
                     Boolean.parseBoolean(params.get("overwriteExistingProxy")));

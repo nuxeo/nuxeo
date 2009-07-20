@@ -60,7 +60,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
     public List<PublishedDocument> getExistingPublishedDocument(
             DocumentLocation docLoc) throws ClientException {
         List<PublishedDocument> pubDocs = null;
-        pubDocs = loadExistingPublishedDocumentFromIndex();
+        pubDocs = loadExistingPublishedDocumentFromIndex(docLoc);
         if (pubDocs == null) {
             pubDocs = new ArrayList<PublishedDocument>();
             File root = new File(getPath());
@@ -72,7 +72,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
         return pubDocs;
     }
 
-    private List<PublishedDocument> loadExistingPublishedDocumentFromIndex()
+    private List<PublishedDocument> loadExistingPublishedDocumentFromIndex(DocumentLocation docLoc)
             throws ClientException {
         File indexFile = new File(rootPath, INDEX_FILENAME);
         if (!indexFile.exists() || !indexFile.isFile()) {
@@ -87,7 +87,13 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
             while ((filePath = reader.readLine()) != null) {
                 File file = new File(filePath);
                 if (file.exists()) {
-                    pubDocs.add(new FSPublishedDocument(file));
+                    PublishedDocument pubDoc = new FSPublishedDocument(file);
+                    if (pubDoc.getSourceRepositoryName().equals(
+                            docLoc.getServerName())
+                            && pubDoc.getSourceDocumentRef().equals(
+                                    docLoc.getDocRef())) {
+                        pubDocs.add(pubDoc);
+                    }
                 }
             }
         } catch (IOException e) {

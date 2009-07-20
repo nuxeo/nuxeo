@@ -100,4 +100,21 @@ public interface PublicationTree extends PublicationNode {
 
     PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException;
 
+    /**
+     * Returns {@code true} if the given {@code documentModel} is a PublicationNode of the current tree, {@code false} otherwise.
+     * @param documentModel
+     * @return
+     * @throws ClientException
+     */
+    boolean isPublicationNode(DocumentModel documentModel) throws ClientException;
+
+    /**
+     * Returns a PublicationNode for the current tree built on the given {@code documentModel}. Throws an exception if
+     * the given documentModel cannot be a PublicationNode.
+     * @param documentModel
+     * @return
+     * @throws ClientException
+     */
+    PublicationNode wrapToPublicationNode(DocumentModel documentModel) throws ClientException;
+
 }

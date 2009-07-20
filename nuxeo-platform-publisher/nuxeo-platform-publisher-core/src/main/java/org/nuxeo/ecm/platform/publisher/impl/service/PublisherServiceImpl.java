@@ -472,5 +472,40 @@ public class PublisherServiceImpl extends DefaultComponent implements
                     "Calling validatorPublishDocument on a closed tree");
         }
     }
-    
+
+    public boolean isPublicationNode(String sid, DocumentModel documentModel) throws ClientException {
+        PublicationTree tree = liveTrees.get(sid);
+        if (tree != null) {
+            return tree.isPublicationNode(documentModel);
+        } else {
+            throw new ClientException(
+                    "Calling validatorPublishDocument on a closed tree");
+        }
+    }
+
+    public PublicationNode wrapToPublicationNode(String sid, DocumentModel documentModel) throws ClientException {
+        PublicationTree tree = liveTrees.get(sid);
+        if (tree != null) {
+            return tree.wrapToPublicationNode(documentModel);
+        } else {
+            throw new ClientException(
+                    "Calling validatorPublishDocument on a closed tree");
+        }
+    }
+
+    public PublicationNode wrapToPublicationNode(DocumentModel documentModel, CoreSession coreSession) throws ClientException {
+        for (String name : getAvailablePublicationTree()) {
+            PublicationTree tree = getPublicationTree(name, coreSession, null);
+            PublicationTreeConfigDescriptor config = treeConfigDescriptors.get(tree.getConfigName());
+            if (!config.islocalSectionTree()) {
+                // ignore all non local section tree
+                continue;
+            }
+            if (tree.isPublicationNode(documentModel)) {
+                return tree.wrapToPublicationNode(documentModel);
+            }
+        }
+        return null;
+    }
+
 }

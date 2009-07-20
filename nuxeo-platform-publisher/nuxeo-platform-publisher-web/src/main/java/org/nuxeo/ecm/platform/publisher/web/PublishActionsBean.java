@@ -29,23 +29,26 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.publisher.api.*;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
+import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.faces.application.FacesMessage;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This Seam bean manages the publishing tab.
  *
- * @author Narcis Paslaru
- * @author Florent Guillaume
- * @author Thierry Martins
- * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- * @author Thierry Delprat
+ * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 @Name("publishActions")
 @Scope(ScopeType.CONVERSATION)
@@ -63,6 +66,9 @@ public class PublishActionsBean implements Serializable {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
+    @In(create = true)
+    protected transient DocumentsListsManager documentsListsManager;
+
     @In(create = true, required = false)
     protected transient FacesMessages facesMessages;
 
@@ -74,6 +80,8 @@ public class PublishActionsBean implements Serializable {
     protected PublicationTree currentPublicationTree;
 
     protected String rejectPublishingComment;
+
+    protected static Set<String> sectionTypes;
 
     @Create
     public void create() {
@@ -96,7 +104,8 @@ public class PublishActionsBean implements Serializable {
         return publisherService.getAvailablePublicationTree();
     }
 
-    public String doPublish(PublicationNode publicationNode) throws ClientException {
+    public String doPublish(PublicationNode publicationNode)
+            throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         PublishedDocument publishedDocument = getCurrentPublicationTreeForPublishing().publish(
                 currentDocument, publicationNode);
@@ -115,7 +124,8 @@ public class PublishActionsBean implements Serializable {
     }
 
     public void setCurrentPublicationTreeNameForPublishing(
-            String currentPublicationTreeNameForPublishing) throws ClientException {
+            String currentPublicationTreeNameForPublishing)
+            throws ClientException {
         this.currentPublicationTreeNameForPublishing = currentPublicationTreeNameForPublishing;
         if (currentPublicationTree != null) {
             currentPublicationTree.release();
@@ -145,25 +155,30 @@ public class PublishActionsBean implements Serializable {
         return currentPublicationTree;
     }
 
-    public String getCurrentPublicationTreeIconExpanded() throws ClientException {
+    public String getCurrentPublicationTreeIconExpanded()
+            throws ClientException {
         return getCurrentPublicationTreeForPublishing().getIconExpanded();
     }
 
-    public String getCurrentPublicationTreeIconCollapsed() throws ClientException {
+    public String getCurrentPublicationTreeIconCollapsed()
+            throws ClientException {
         return getCurrentPublicationTreeForPublishing().getIconCollapsed();
     }
 
-    public List<PublishedDocument> getPublishedDocuments() throws ClientException {
+    public List<PublishedDocument> getPublishedDocuments()
+            throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return getCurrentPublicationTreeForPublishing().getExistingPublishedDocument(
                 new DocumentLocationImpl(currentDocument));
     }
 
-    public List<PublishedDocument> getPublishedDocumentsFor(String treeName) throws ClientException {
+    public List<PublishedDocument> getPublishedDocumentsFor(String treeName)
+            throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        PublicationTree tree = publisherService.getPublicationTree(treeName, documentManager, null);
-        return tree.getExistingPublishedDocument(
-                new DocumentLocationImpl(currentDocument));
+        PublicationTree tree = publisherService.getPublicationTree(treeName,
+                documentManager, null);
+        return tree.getExistingPublishedDocument(new DocumentLocationImpl(
+                currentDocument));
     }
 
     public String unPublish(PublishedDocument publishedDocument)
@@ -202,6 +217,13 @@ public class PublishActionsBean implements Serializable {
         return tree.hasValidationTask(publishedDocument);
     }
 
+    public boolean isPending() throws ClientException {
+        PublicationTree tree = publisherService.getPublicationTreeFor(
+                navigationContext.getCurrentDocument(), documentManager);
+        PublishedDocument publishedDocument = tree.wrapToPublishedDocument(navigationContext.getCurrentDocument());
+        return publishedDocument.isPending();
+    }
+
     public String getRejectPublishingComment() {
         return rejectPublishingComment;
     }
@@ -238,6 +260,114 @@ public class PublishActionsBean implements Serializable {
                 PublishingEvent.documentPublicationRejected.name());
 
         return navigationContext.navigateToRef(navigationContext.getCurrentDocument().getParentRef());
+    }
+
+    public void unPublishDocumentsFromCurrentSelection() throws ClientException {
+        if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION)) {
+            unpublish(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION));
+        } else {
+            log.debug("No selectable Documents in context to process unpublish on...");
+        }
+        log.debug("Unpublish the selected document(s) ...");
+    }
+
+    protected void unpublish(List<DocumentModel> documentModels)
+            throws ClientException {
+        for (DocumentModel documentModel : documentModels) {
+            PublicationTree tree = publisherService.getPublicationTreeFor(
+                    documentModel, documentManager);
+            PublishedDocument publishedDocument = tree.wrapToPublishedDocument(documentModel);
+            tree.unpublish(publishedDocument);
+        }
+
+        Object[] params = { documentModels.size() };
+        // remove from the current selection list
+        documentsListsManager.resetWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        facesMessages.add(FacesMessage.SEVERITY_INFO,
+                resourcesAccessor.getMessages().get("n_unpublished_docs"),
+                params);
+    }
+
+    public String publishWorkList() throws ClientException {
+        return publishDocumentList(DocumentsListsManager.DEFAULT_WORKING_LIST);
+    }
+
+    public String publishDocumentList(String listName) throws ClientException {
+        List<DocumentModel> docs2Publish = documentsListsManager.getWorkingList(listName);
+        DocumentModel target = navigationContext.getCurrentDocument();
+
+        if (!getSectionTypes().contains(target.getType())) {
+            return null;
+        }
+
+        PublicationNode targetNode = publisherService.wrapToPublicationNode(target, documentManager);
+        if (targetNode == null) {
+            return null;
+        }
+
+        int nbPublishedDocs = 0;
+        for (DocumentModel doc : docs2Publish) {
+            if (!documentManager.hasPermission(doc.getRef(),
+                    SecurityConstants.READ_PROPERTIES)) {
+                continue;
+            }
+
+            if (doc.isProxy()) {
+                // TODO copy also copies security. just recreate a proxy.
+                documentManager.copy(doc.getRef(), target.getRef(),
+                        doc.getName());
+                nbPublishedDocs++;
+            } else {
+                if (doc.hasFacet(FacetNames.PUBLISHABLE)) {
+                    publisherService.publish(doc, targetNode);
+                    nbPublishedDocs++;
+                } else {
+                    log.info("Attempted to publish non-publishable document "
+                            + doc.getTitle());
+                }
+            }
+        }
+
+        Object[] params = { nbPublishedDocs };
+        facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+                + resourcesAccessor.getMessages().get("n_published_docs"),
+                params);
+
+        if (nbPublishedDocs < docs2Publish.size()) {
+            facesMessages.add(FacesMessage.SEVERITY_WARN,
+                    resourcesAccessor.getMessages().get(
+                            "selection_contains_non_publishable_docs"));
+        }
+
+        EventManager.raiseEventsOnDocumentChildrenChange(navigationContext.getCurrentDocument());
+        return null;
+    }
+
+    public Set<String> getSectionTypes() {
+        if (sectionTypes == null) {
+            sectionTypes = getTypeNamesForFacet("PublishSpace");
+            if (sectionTypes == null) {
+                sectionTypes = new HashSet<String>();
+                sectionTypes.add("Section");
+            }
+        }
+        return sectionTypes;
+    }
+
+    protected static Set<String> getTypeNamesForFacet(String facetName) {
+        SchemaManager schemaManager;
+        try {
+            schemaManager = Framework.getService(SchemaManager.class);
+        } catch (Exception e) {
+            log.error("Exception in retrieving publish spaces : ", e);
+            return null;
+        }
+
+        Set<String> publishRoots = schemaManager.getDocumentTypeNamesForFacet(facetName);
+        if (publishRoots == null || publishRoots.isEmpty()) {
+            return null;
+        }
+        return publishRoots;
     }
 
 }

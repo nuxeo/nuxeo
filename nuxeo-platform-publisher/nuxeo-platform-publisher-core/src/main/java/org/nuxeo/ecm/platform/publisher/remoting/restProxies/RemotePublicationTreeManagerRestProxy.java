@@ -170,22 +170,30 @@ public class RemotePublicationTreeManagerRestProxy implements
     }
 
     public boolean canPublishTo(String sid, PublicationNode publicationNode) throws ClientException {
-        throw new UnsupportedOperationException();
+        return true;
     }
 
     public boolean canUnpublish(String sid, PublishedDocument publishedDocument) throws ClientException {
-        throw new UnsupportedOperationException();
+        return true;
     }
 
     public boolean canManagePublishing(String sid, PublishedDocument publishedDocument) throws ClientException {
-        throw new UnsupportedOperationException();
+        return true;
     }
 
     public boolean hasValidationTask(String sid, PublishedDocument publishedDocument) throws ClientException {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     public PublishedDocument wrapToPublishedDocument(String sid, DocumentModel documentModel) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isPublicationNode(String sid, DocumentModel documentModel) {
+        throw new UnsupportedOperationException();
+    }
+
+    public PublicationNode wrapToPublicationNode(String sid, DocumentModel documentModel) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
