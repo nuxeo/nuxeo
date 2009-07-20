@@ -1,0 +1,88 @@
+<div class="publication_block"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <div>
+
+    <h:panelGroup rendered="#{publishingActions.proxy}">
+
+      <h3><h:outputText value="#{messages['label.publishing.title']}" /></h3>
+
+      <br />
+
+      <nxu:methodResult name="canManagePublishing"
+        value="#{publishingActions.canManagePublishing()}">
+
+        <h:outputText rendered="#{!publishActions.published}"
+          value="#{messages['label.document.pending']}" />
+
+        <h:outputText rendered="#{publishActions.hasValidationTask()}">
+          <table class="dataInput">
+            <tr>
+              <td>
+                <h:outputText class="required"
+                  value="#{messages['label.publishing.user.comment']}" />
+              </td>
+              <td>
+                <h:inputTextarea id="rejectPublishingComment"
+                  rows="5" cols="50"
+                  value="#{publishingActions.rejectPublishingComment}" />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <h:message styleClass="errorMessage"
+                  for="rejectPublishingComment" />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <h:commandButton type="submit"
+                  value="#{messages['label.publishing.accept']}"
+                  styleClass="button" rendered="#{canManagePublishing}"
+                  action="#{publishingActions.publishDocument}" />
+                <h:commandButton
+                  type="submit"
+                  value="#{messages['label.publishing.reject']}"
+                  styleClass="button" rendered="#{canManagePublishing}"
+                  action="#{publishingActions.rejectDocument}" />
+              </td>
+            </tr>
+          </table>
+        </h:outputText>
+
+        <div>
+          <h:outputText rendered="#{publishActions.published}"
+            value="#{messages['label.document.published']}" />
+          <br />
+        </div>
+
+      </nxu:methodResult>
+
+    </h:panelGroup>
+  </div>
+
+  <c:set var="selectedSections"
+    value="#{publishActions.getPublishingInfo().toArray()}" scope="page" />
+  <h:outputText class="boldLabel"
+    value="#{messages['label.summary.publication']}" />
+  <nxu:dataTable id="dataTable" value="#{selectedSections}" var="proxy"
+    styleClass="dataOutput">
+    <!-- id and selection -->
+    <nxu:column>
+      <nxd:restDocumentLink document="#{proxy.section}"
+        tab="TAB_CONTENT">
+        <h:outputText value="#{proxy.section.path}" />
+      </nxd:restDocumentLink>
+    </nxu:column>
+    <nxu:column>
+      <h:outputText value="#{proxy.proxyVersion}" />
+    </nxu:column>
+  </nxu:dataTable>
+
+</div>
