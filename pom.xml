@@ -47,6 +47,7 @@
     <module>nuxeo-platform-xmlrpc-connector</module>
     <module>nuxeo-portlets</module>
     <module>nuxeo-samples</module>
+    <module>nuxeo-platform-lang-ext</module>
   </modules>
 
 </project>
