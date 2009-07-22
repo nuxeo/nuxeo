@@ -34,7 +34,7 @@ public class SubType implements Serializable {
 
     @XNode("@hidden")
     public void setHidden(String value) {
-        String[] hiddenCases = StringUtils.split(value, ',', true);
+        String[] hiddenCases = value.split("(\\s+)(?=[^,])|(\\s*,\\s*)");
         hidden = new ArrayList<String>(Arrays.asList(hiddenCases));
     }
 

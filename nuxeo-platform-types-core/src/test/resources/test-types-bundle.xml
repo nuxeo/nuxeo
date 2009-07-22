@@ -13,7 +13,9 @@
       <subtypes>
         <type>MyOtherDocType</type>
         <type>MyHiddenDocType</type>
-        <type hidden="create, edit">MyHiddenDocType</type>
+        <type hidden="create edit">MyHiddenDocType</type>
+        <type hidden="create,edit">MyHiddenDocType</type>
+        <type hidden=" create ,  edit ">MyHiddenDocType</type>
         <type hidden="create">MyHiddenDocType</type>
       </subtypes>
       <views>
