@@ -11,9 +11,6 @@
     <theme>
       <src>themes/theme-dam.xml</src>
     </theme>
-    <theme>
-      <src>file:///opt/workspace/StarShip/nuxeo-ep/Application/nuxeo-dam/nuxeo-dam-webapp-core/src/main/resources/themes/theme-dam.xml</src>
-    </theme>
 
   </extension>
 
@@ -67,6 +64,11 @@
       <resource>calendar-setup.js</resource>
       <resource>calendar-en.js</resource>
       <resource>calendar.css</resource>
+    </view>
+    
+    <view name="dam footer" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/footer.xhtml</template>
     </view>
 
   </extension>
@@ -179,6 +181,21 @@
         org.nuxeo.theme.jsf.negotiation.perspective.DefaultPerspective
       </scheme>
     </negotiation>
+  </extension>
+  
+    <!-- Styles presets -->
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
+
+    <palette name="DAM borders"
+      src="themes/palettes/dam-borders.properties" category="border" />
+    <palette name="DAM backgrounds"
+      src="themes/palettes/dam-backgrounds.properties" category="background" />
+    <palette name="DAM fonts" src="themes/palettes/dam-fonts.properties"
+      category="font" />
+    <palette name="DAM colors" src="themes/palettes/dam-colors.properties"
+      category="color" />
+
   </extension>
 
 

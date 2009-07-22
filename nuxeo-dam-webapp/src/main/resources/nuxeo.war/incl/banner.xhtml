@@ -5,7 +5,7 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:rich="http://richfaces.org/rich">
 
-<div id="dam_banner">
+<div class="banner_actions">
    <rich:modalPanel id="importSetFormPanel" width="550" height="450"
      onshow="javascript:initImportSetForm();">
       <f:facet name="header">
@@ -25,7 +25,7 @@
     </rich:modalPanel>
 
     <h:outputLink value="javascript:Richfaces.showModalPanel('importSetFormPanel');" id="importset_creation_button">
-        <h:outputText value="${messages['label.action.createImportSet']}"/>
+        <h:outputText class="importButton" value="${messages['label.action.createImportSet']}"/>
     </h:outputLink>
 
     <ui:include src="/incl/waiter.xhtml"/>

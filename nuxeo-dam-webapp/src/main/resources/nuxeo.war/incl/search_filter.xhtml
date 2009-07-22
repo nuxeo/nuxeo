@@ -1,4 +1,4 @@
-<div xmlns="http://www.w3.org/1999/xhtml"
+<div class="searchFilter" xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
@@ -6,9 +6,13 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
+  
+  <h3><h:outputText value="#{messages['label.filterset.title.search']}"/></h3>
 
+  <div class="filterContent">
   <h:form>
-    <h:inputText value="#{filterActions.filterDocument.filter_query.ecm_primaryType}" />
+    <h:inputText class="searchInput" value="#{filterActions.filterDocument.filter_query.ecm_primaryType}" />
   </h:form>
-
+  </div>
+  
 </div>
