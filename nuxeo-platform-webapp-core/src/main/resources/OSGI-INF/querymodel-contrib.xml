@@ -84,7 +84,7 @@
       <pattern>
         SELECT * FROM Workspace WHERE ecm:mixinType !=
         'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
-        AND NOT ecm:path STARTSWITH ?
+        AND ecm:isProxy = 0 AND NOT ecm:path STARTSWITH ?
       </pattern>
       <sortable value="true" defaultSortColumn="dc:title"
         defaultSortAscending="true" />
