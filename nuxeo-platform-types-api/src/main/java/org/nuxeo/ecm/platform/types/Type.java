@@ -20,8 +20,10 @@
 package org.nuxeo.ecm.platform.types;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -59,8 +61,29 @@ public class Type implements Serializable {
     @XNode("label")
     protected String label;
 
-    @XNodeList(value = "subtypes/type", type = String[].class, componentType = String.class)
-    protected String[] allowedSubTypes;
+    protected Map<String, SubType> allowedSubTypes;
+
+    @XNodeList(value = "subtypes/type", type = ArrayList.class, componentType = SubType.class)
+    public void addSubType(List<SubType> subTypes) {
+        if (allowedSubTypes == null) {
+            allowedSubTypes = new HashMap<String, SubType>();
+        }
+
+        for (SubType currentSubType : subTypes) {
+            SubType subTypeToMerge = allowedSubTypes.get(currentSubType.name);
+            if (subTypeToMerge == null) {
+                allowedSubTypes.put(currentSubType.name, currentSubType);
+            } else {
+                List<String> currentSubTypeHidden = currentSubType.getHidden();
+                List<String> subTypeToMergeHidden = subTypeToMerge.getHidden();
+                for (String hidden : currentSubTypeHidden) {
+                    if (!subTypeToMergeHidden.contains(hidden)) {
+                        subTypeToMergeHidden.add(hidden);
+                    }
+                }
+            }
+        }
+    }
 
     @XNodeList(value = "deniedSubtypes/type", type = String[].class, componentType = String.class)
     protected String[] deniedSubTypes;
@@ -252,11 +275,11 @@ public class Type implements Serializable {
         this.deniedSubTypes = deniedSubTypes;
     }
 
-    public String[] getAllowedSubTypes() {
+    public Map<String, SubType> getAllowedSubTypes() {
         return allowedSubTypes;
     }
 
-    public void setAllowedSubTypes(String[] allowedSubTypes) {
+    public void setAllowedSubTypes(Map<String, SubType> allowedSubTypes) {
         this.allowedSubTypes = allowedSubTypes;
     }
 

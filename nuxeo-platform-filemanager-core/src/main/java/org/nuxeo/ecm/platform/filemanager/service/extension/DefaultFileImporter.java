@@ -20,7 +20,7 @@
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -74,7 +74,8 @@ public class DefaultFileImporter extends AbstractFileImporter {
 
         String typeName = getTypeName();
         Type containerType = typeService.getType(container.getType());
-        List<String> subTypes = Arrays.asList(containerType.getAllowedSubTypes());
+        List<String> subTypes = new ArrayList<String>(
+                containerType.getAllowedSubTypes().keySet());
         if (!subTypes.contains(typeName)) {
             throw new ClientException(
                     String.format(

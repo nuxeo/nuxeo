@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.types;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
@@ -40,7 +41,7 @@ public class TypeTest extends NXRuntimeTestCase {
 
     public void testTypesExtensionPoint() {
         Collection<Type> types = typeService.getTypeRegistry().getTypes();
-        assertEquals(4, types.size());
+        assertEquals(5, types.size());
 
         Type type = typeService.getTypeRegistry().getType("MyDocType");
         assertEquals("MyDocType", type.getId());
@@ -91,9 +92,15 @@ public class TypeTest extends NXRuntimeTestCase {
 
     public void testAllowedSubTypes() {
         Type type = typeService.getTypeRegistry().getType("MyDocType");
-        String[] allowed = type.getAllowedSubTypes();
-        assertEquals(1, allowed.length);
-        assertEquals("MyOtherDocType", allowed[0]);
+        Map<String, SubType> allowed = type.getAllowedSubTypes();
+        assertEquals(2, allowed.size());
+        assertTrue(allowed.containsKey("MyOtherDocType"));
+        assertTrue(allowed.containsKey("MyHiddenDocType"));
+        SubType myHiddenDocType = allowed.get("MyHiddenDocType");
+        List<String> hidden = myHiddenDocType.getHidden();
+        assertEquals(2, hidden.size());
+        assertTrue(hidden.contains("create"));
+        assertTrue(hidden.contains("edit"));
     }
 
     public void testDefaultLayoutExtensionPoint() {
@@ -106,14 +113,14 @@ public class TypeTest extends NXRuntimeTestCase {
 
     public void testDeploymentOverride() throws Exception {
         Collection<Type> types = typeService.getTypeRegistry().getTypes();
-        assertEquals(4, types.size());
+        assertEquals(5, types.size());
 
         deployContrib("org.nuxeo.ecm.platform.types.core.tests",
                 "test-types-override-bundle.xml");
 
         // One removed
         types = typeService.getTypeRegistry().getTypes();
-        assertEquals(3, types.size());
+        assertEquals(4, types.size());
 
         // The Other changed
         Type type = typeService.getTypeRegistry().getType("MyDocType");
@@ -127,9 +134,14 @@ public class TypeTest extends NXRuntimeTestCase {
         assertEquals("create_view2", type.getCreateView());
         assertEquals("edit_view2", type.getEditView());
 
-        String[] allowed = type.getAllowedSubTypes();
-        assertEquals(1, allowed.length);
-        assertEquals("MyOtherDocType2", allowed[0]);
+        Map<String, SubType> allowed = type.getAllowedSubTypes();
+        assertEquals(2, allowed.size());
+        assertTrue(allowed.containsKey("MyOtherDocType2"));
+        assertTrue(allowed.containsKey("MyHiddenDocType"));
+
+        SubType subType = allowed.get("MyHiddenDocType");
+        List<String> hidden = subType.getHidden();
+        assertEquals(0, hidden.size());
 
         // old layout override done
         FieldWidget[] layout = type.getLayout();

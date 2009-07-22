@@ -19,8 +19,11 @@
 
 package org.nuxeo.ecm.platform.types.adapter;
 
+import java.util.Map;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.types.FieldWidget;
+import org.nuxeo.ecm.platform.types.SubType;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.types.TypeView;
@@ -50,7 +53,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
-    public String[] getAllowedSubTypes() {
+    public Map<String, SubType> getAllowedSubTypes() {
         if (type != null) {
             return type.getAllowedSubTypes();
         }

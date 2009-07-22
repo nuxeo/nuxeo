@@ -24,10 +24,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.ArrayUtils;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
@@ -137,38 +137,45 @@ public class TypeService extends DefaultComponent implements TypeManager {
         if (category != null) {
             oldType.setCategory(category);
         }
-        String[] allowedsubTypes = newType.getAllowedSubTypes();
-        if (allowedsubTypes != null) {
-            oldType.setAllowedSubTypes(ArrayUtils.arrayMerge(
-                    oldType.getAllowedSubTypes(), allowedsubTypes));
+        Map<String, SubType> newTypeAllowedSubTypes = newType.getAllowedSubTypes();
+        if (newTypeAllowedSubTypes != null) {
+            Set<String> newTypeKeySet = newTypeAllowedSubTypes.keySet();
+            Map<String, SubType> oldTypeAllowedSubTypes = oldType.getAllowedSubTypes();
+            for (String newTypeKey : newTypeKeySet) {
+                oldTypeAllowedSubTypes.put(newTypeKey, newTypeAllowedSubTypes.get(newTypeKey));
+            }
         }
 
         // Code added to delete the denied SubType from allowed subtype
 
         List<String> result = new ArrayList<String>();
         String[] deniedSubTypes = newType.getDeniedSubTypes();
-        String[] allowedSubTypes = oldType.getAllowedSubTypes();
+        Map<String, SubType> oldTypeAllowedSubTypes = oldType.getAllowedSubTypes();
         boolean toAdd = true;
 
-        for (String allowedSubType : allowedSubTypes) {
-            for (String deniedSubType : deniedSubTypes) {
-                if (deniedSubType.equals(allowedSubType)) {
-                    toAdd = false;
-                    break;
+        if (oldTypeAllowedSubTypes != null) {
+            Set<String> oldTypeKeySet = oldTypeAllowedSubTypes.keySet();
+            for (String allowedSubType : oldTypeKeySet) {
+                for (String deniedSubType : deniedSubTypes) {
+                    if (deniedSubType.equals(allowedSubType)) {
+                        toAdd = false;
+                        break;
+                    }
                 }
+                if (toAdd) {
+                    result.add(allowedSubType);
+                }
+                toAdd = true;
             }
-            if (toAdd) {
-                result.add(allowedSubType);
-            }
-            toAdd = true;
         }
 
-        String[] arrayResult = new String[result.size()];
-        for (int i = 0; i < result.size(); i++) {
-            arrayResult[i] = result.get(i);
+        Map<String, SubType> mapResult = new HashMap<String, SubType>();
+        for (String resultTypeName : result) {
+            mapResult.put(resultTypeName,
+                    oldTypeAllowedSubTypes.get(resultTypeName));
         }
 
-        oldType.setAllowedSubTypes(arrayResult);
+        oldType.setAllowedSubTypes(mapResult);
 
         // end of added code
 
@@ -291,7 +298,7 @@ public class TypeService extends DefaultComponent implements TypeManager {
         Collection<Type> allowed = new ArrayList<Type>();
         Type type = getType(typeName);
         if (type != null) {
-            for (String subTypeName : type.getAllowedSubTypes()) {
+            for (String subTypeName : type.getAllowedSubTypes().keySet()) {
                 Type subType = getType(subTypeName);
                 if (subType != null) {
                     allowed.add(subType);

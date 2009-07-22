@@ -22,7 +22,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -206,7 +205,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             // check allowed sub types
             DocumentModel container = documentManager.getDocument(containerRef);
             Type containerType = getTypeService().getType(container.getType());
-            List<String> sybTypes = Arrays.asList(containerType.getAllowedSubTypes());
+            List<String> sybTypes = new ArrayList<String>(
+                    containerType.getAllowedSubTypes().keySet());
             if (checkAllowedSubTypes && !sybTypes.contains(containerTypeName)) {
                 // cannot create document file here
                 // TODO: we should better raise a dedicated exception to be

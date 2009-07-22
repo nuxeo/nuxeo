@@ -12,6 +12,9 @@
       <edit-view>edit_view</edit-view>
       <subtypes>
         <type>MyOtherDocType</type>
+        <type>MyHiddenDocType</type>
+        <type hidden="create, edit">MyHiddenDocType</type>
+        <type hidden="create">MyHiddenDocType</type>
       </subtypes>
       <views>
         <view id="edit_detail" value="edit_detail_view" />
@@ -39,6 +42,8 @@
     </type>
 
     <type id="MyOtherDocType" />
+
+    <type id="MyHiddenDocType" />
 
     <type id="DocTypeWithLayout">
       <label>doc type with layout</label>

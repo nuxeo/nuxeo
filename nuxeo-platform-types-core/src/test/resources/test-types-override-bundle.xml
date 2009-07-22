@@ -12,6 +12,7 @@
       <edit-view>edit_view2</edit-view>
       <subtypes>
         <type>MyOtherDocType2</type>
+        <type>MyHiddenDocType</type>
       </subtypes>
       <deniedSubtypes>
         <type>MyOtherDocType</type>

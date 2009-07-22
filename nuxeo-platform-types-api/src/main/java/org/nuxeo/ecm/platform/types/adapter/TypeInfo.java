@@ -19,8 +19,11 @@
 
 package org.nuxeo.ecm.platform.types.adapter;
 
+import java.util.Map;
+
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.types.FieldWidget;
+import org.nuxeo.ecm.platform.types.SubType;
 import org.nuxeo.ecm.platform.types.TypeView;
 
 /**
@@ -64,6 +67,6 @@ public interface TypeInfo {
 
     String getView(String viewId);
 
-    String[] getAllowedSubTypes();
+    Map<String, SubType> getAllowedSubTypes();
 
 }
