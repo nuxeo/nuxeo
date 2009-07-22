@@ -20,7 +20,7 @@
 <!--
  body {
   font: normal 11px "Lucida Grande", sans-serif;
-  background: url(/nuxeo/img/login_bg.jpg) 0 0 no-repeat #fff;
+  background: url(/nuxeo/img/login2_bg.jpg) 0 0 no-repeat #fff;
   color: #343434;
   }
 
