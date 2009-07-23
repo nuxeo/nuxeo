@@ -201,7 +201,7 @@
       </selector>
       <selector path=".searchInput">
         <background preset="searchInput (DAM backgrounds)"/>
-        <border>1px normal #666</border>
+        <border-width>1px</border-width>
         <margin>0 5px 10px 0</margin>
         <padding>3px 3px 3px 20px</padding>
       </selector>
@@ -213,7 +213,6 @@
         <border-bottom preset="tabsbar (DAM borders)"/>
         <width>100%</width>
         <line-height>normal</line-height>
-        <float>left</float>
         <border-bottom preset="grayneutral (DAM borders)"/>
       </selector>
       <selector path=".tabsBar ul">
@@ -294,6 +293,24 @@
       <selector path=".importButton">
         <padding>6px 0px 0px 20px</padding>
         <background>transparent url(/nuxeo/img/import_button.png) no-repeat top left</background>
+      </selector>
+      <selector path=".pageNavigationControls">
+        <padding>2px 5px</padding>
+        <background preset="actionbar (DAM backgrounds)"/>
+        <text-align>center</text-align>
+        <border-bottom preset="grayneutral (DAM borders)"/>
+      </selector>
+      <selector path=".previousBlock">
+        <float>left</float>
+        <width>15%</width>
+      </selector>
+      <selector path=".statusBlock">
+        <float>left</float>
+        <width>70%</width>
+      </selector>
+      <selector path=".nextBlock">
+        <float>left</float>
+        <width>15%</width>
       </selector>
     </style>
     <style element="page[1]/section[1]" inherit="common style">

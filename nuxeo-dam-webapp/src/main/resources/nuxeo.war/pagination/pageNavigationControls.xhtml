@@ -12,7 +12,8 @@
     <h:panelGroup id="paginationControls"
       layout="block" styleClass="pageNavigationControls"
       rendered="#{provider.nextPageAvailable or provider.previousPageAvailable}">
-
+      
+      <div class="previousBlock">
       <a4j:commandButton id="goToFirstPage" action="#{provider.rewind}"
                        alt="#{messages['command.navigation.rewind']}"
                        image="/icons/action_page_rewind.gif"
@@ -25,11 +26,15 @@
                        reRender="documentsList, paginationControls">
         <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
       </a4j:commandButton>
-
+      </div>
+      
+      <div class="statusBlock">
       <h:panelGroup styleClass="currentPageStatus">
         <h:outputText value="#{provider.currentPageStatus}"/>
       </h:panelGroup>
-
+      </div>
+      
+      <div class="nextBlock">
       <a4j:commandButton id="goToNextPage" action="#{provider.next}"
                        alt="#{messages['command.navigation.next']}"
                        image="/icons/action_page_next.gif"
@@ -43,6 +48,8 @@
                        reRender="documentsList, paginationControls">
         <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
       </a4j:commandButton>
+      </div>
+      <div style="clear:both;"/>
     </h:panelGroup>
   </a4j:form>
 
