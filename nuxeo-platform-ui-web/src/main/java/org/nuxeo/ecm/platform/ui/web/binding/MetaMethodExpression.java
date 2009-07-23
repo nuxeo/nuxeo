@@ -23,8 +23,10 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.el.ELContext;
+import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.el.MethodExpression;
 import javax.el.MethodInfo;
@@ -38,23 +40,23 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 /**
  * Meta method expression used to invoke the EL expression that is already the
  * result of a method expression.
- *
+ * 
  * For instance it is useful to use this expression to provide action links
  * defined in NXActions extensions with links like
  * #{documentAction.createDocument('Domain')}.
- *
+ * 
  * There is no more than one level of abstraction:
  * <ul>
- * <li> the expression method value can be a standard method expression (with
+ * <li>the expression method value can be a standard method expression (with
  * parameters or not) ;
- * <li> the expression method value can result in another expression method
- * value after being invoke, in which case it is reinvoked again using the same
+ * <li>the expression method value can result in another expression method value
+ * after being invoke, in which case it is reinvoked again using the same
  * context ;
- * <li> no further method invoking will be performed.
+ * <li>no further method invoking will be performed.
  * </ul>
- *
+ * 
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
+ * 
  */
 public class MetaMethodExpression extends MethodExpression implements
         Serializable {
@@ -121,11 +123,14 @@ public class MetaMethodExpression extends MethodExpression implements
                             context, expression, Object.class, new Class[0]);
                     try {
                         res = newMeth.invoke(context, null);
-                    } catch (Exception err) {
-                        log.error(String.format(
-                                "Error processing action expression %s: %s",
-                                expression, err));
-                        res = null;
+                    } catch (Throwable t) {
+                        if (t instanceof InvocationTargetException) {
+                            // respect the javadoc contract of the overridden
+                            // method
+                            throw new ELException(t.getCause());
+                        } else {
+                            throw new ELException(t);
+                        }
                     }
                 } else {
                     res = expression;

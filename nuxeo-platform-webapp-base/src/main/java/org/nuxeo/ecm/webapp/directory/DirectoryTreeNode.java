@@ -208,7 +208,8 @@ public class DirectoryTreeNode {
                 childrenEntries = session.getEntries();
             } else {
                 Map<String, Serializable> filter = new HashMap<String, Serializable>();
-                filter.put(PARENT_FIELD_ID, path);
+                String[] bitsOfPath = path.split("/");
+                filter.put(PARENT_FIELD_ID, bitsOfPath[level-1]);
                 childrenEntries = session.query(filter);
             }
             return childrenEntries;
