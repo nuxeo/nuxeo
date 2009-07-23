@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,6 +57,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.api.FileManagerPermissionException;
 import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.ecm.platform.types.SubType;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -381,8 +383,8 @@ public class FileManageActionsBean extends InputController implements
             }
         } else {
             // check allowed content types constraints for non-proxy documents
-            List<String> allowedTypes = Arrays.asList(typeManager.getType(
-                    container.getType()).getAllowedSubTypes());
+            Map<String, SubType> allowedTypesMap = typeManager.getType(container.getType()).getAllowedSubTypes();
+            List<String> allowedTypes = new ArrayList<String>(allowedTypesMap.keySet());
             if (!allowedTypes.contains(doc.getType())) {
                 facesMessages.add(FacesMessage.SEVERITY_WARN, resourcesAccessor
                         .getMessages().get("move_impossible"));
