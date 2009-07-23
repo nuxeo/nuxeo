@@ -194,7 +194,7 @@ class FileManager {
 
     public static final String DIGEST_ALGORITHM = "MD5";
 
-    public static final int DEPTH = 3;
+    public static final int DEPTH = 2;
 
     protected final File tmpDir;
 
