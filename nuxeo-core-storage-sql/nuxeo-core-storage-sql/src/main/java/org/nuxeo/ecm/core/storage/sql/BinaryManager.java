@@ -49,7 +49,7 @@ public class BinaryManager {
 
     public static final String DEFAULT_DIGEST = "MD5"; // "SHA-256"
 
-    public static final int DEFAULT_DEPTH = 3;
+    public static final int DEFAULT_DEPTH = 2;
 
     public static final String BINARIES = "binaries";
 
