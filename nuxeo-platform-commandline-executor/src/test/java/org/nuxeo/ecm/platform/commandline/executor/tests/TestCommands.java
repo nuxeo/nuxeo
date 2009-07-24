@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.commandline.executor.tests;
 
 import java.io.File;
 import java.util.List;
-
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
@@ -31,11 +30,11 @@ import org.nuxeo.ecm.platform.commandline.executor.service.executors.AbstractExe
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-
 /**
  * Tests commands parsing
  *
  * @author tiry
+ * @author Vincent Dutat
  */
 public class TestCommands extends NXRuntimeTestCase {
 
@@ -50,7 +49,8 @@ public class TestCommands extends NXRuntimeTestCase {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
-        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-aspell-test-contribs.xml");
+        deployContrib("org.nuxeo.ecm.platform.commandline.executor",
+                "OSGI-INF/commandline-aspell-test-contribs.xml");
         List<String> cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
         assertEquals(1, cmds.size());
@@ -69,13 +69,20 @@ public class TestCommands extends NXRuntimeTestCase {
 
         // test String params
         params.addNamedParameter("textFile", textFilePath);
-        String parsedParamString = AbstractExecutor.getParametersString(cmdDesc, params);
-        assertEquals("-a --lang=fr_FR --encoding=utf-8 -H --rem-sgml-check=alt < /tmp/textMe.txt", parsedParamString);
+        String parsedParamString = AbstractExecutor.getParametersString(
+                cmdDesc, params);
+        assertEquals(
+                "-a --lang=fr_FR --encoding=utf-8 -H --rem-sgml-check=alt < /tmp/textMe.txt",
+                parsedParamString);
 
         // test with File param
         params.addNamedParameter("textFile", textFile);
-        parsedParamString = AbstractExecutor.getParametersString(cmdDesc, params);
+        parsedParamString = AbstractExecutor.getParametersString(cmdDesc,
+                params);
+        // System.out.println("command:" + parsedParamString);
         assertTrue(parsedParamString.startsWith("-a --lang=fr_FR --encoding=utf-8 -H --rem-sgml-check=alt < "));
+        assertTrue(parsedParamString.contains(System.getProperties().getProperty(
+                "java.io.tmpdir")));
     }
 
 }
