@@ -28,6 +28,8 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import org.apache.commons.io.FileCleaningTracker;
+import org.apache.commons.io.FileDeleteStrategy;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.RuntimeService;
@@ -64,6 +66,8 @@ public final class Framework {
     private static ServiceManager serviceMgr;
 
     private static final ListenerList listeners = new ListenerList();
+
+    private static final FileCleaningTracker fileCleaningTracker = new FileCleaningTracker();
 
     /**
      * A class loader used to share resources between all bundles.
@@ -432,6 +436,31 @@ public final class Framework {
         }
     }
 
+    /**
+     * This method delete the given file when the marker object is collected by
+     * GC.
+     * 
+     * @param file The file to delete
+     * @param marker the marker Object
+     */
+    public static void trackFile(File file, Object marker) {
+        fileCleaningTracker.track(file, marker);
+    }
+
+    /**
+     * This method delete the given file when the marker object is collected by
+     * GC. The fileDeleteStrategy can be used for instance do delete only empty
+     * directory or force deletion.
+     * 
+     * @param file The file to delete
+     * @param marker the marker Object
+     * @param fileDeleteStrategy add a custom delete strategy
+     */
+    public static void trackFile(File file, Object marker,
+            FileDeleteStrategy fileDeleteStrategy) {
+        fileCleaningTracker.track(file, marker, fileDeleteStrategy);
+    }
+    
     public static void main(String[] args) {
     }
 
