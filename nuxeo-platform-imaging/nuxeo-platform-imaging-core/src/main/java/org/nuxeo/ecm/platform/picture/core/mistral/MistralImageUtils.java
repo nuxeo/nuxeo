@@ -44,30 +44,33 @@ import javax.imageio.ImageWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Max Stepanov
  */
-public class MistralImageUtils implements ImageUtils{
+public class MistralImageUtils implements ImageUtils {
 
     private static final Log log = LogFactory.getLog(MistralImageUtils.class);
 
     private static final double QUALITY_SCALE = 0.25;
 
-
-
     public InputStream crop(InputStream in, int x, int y, int width, int height) {
         try {
             ImplementationFactoryJAI.getInstance();
-            ImplementationFactoryJ2D.getInstance().unregisterImplementation(ScaleOp.class);
+            ImplementationFactoryJ2D.getInstance().unregisterImplementation(
+                    ScaleOp.class);
         } catch (Exception e) {
         }
         try {
-            EditableImage image = EditableImage.create(new ReadOp(in, ReadOp.Type.IMAGE));
+            EditableImage image = EditableImage.create(new ReadOp(in,
+                    ReadOp.Type.IMAGE));
             image = image.execute2(new CropOp(x, y, width, height));
             File resultFile = writeJpegFile(image);
             if (resultFile != null) {
-                return new FileInputStream(resultFile);
+                FileInputStream fis = new FileInputStream(resultFile);
+                Framework.trackFile(resultFile, fis);
+                return fis;
             }
         } catch (IOException e) {
             log.error("Fail to crop image", e);
@@ -78,11 +81,13 @@ public class MistralImageUtils implements ImageUtils{
     public InputStream resize(InputStream in, int width, int height) {
         try {
             ImplementationFactoryJAI.getInstance();
-            ImplementationFactoryJ2D.getInstance().unregisterImplementation(ScaleOp.class);
+            ImplementationFactoryJ2D.getInstance().unregisterImplementation(
+                    ScaleOp.class);
         } catch (Exception e) {
         }
         try {
-            EditableImage image = EditableImage.create(new ReadOp(in, ReadOp.Type.IMAGE));
+            EditableImage image = EditableImage.create(new ReadOp(in,
+                    ReadOp.Type.IMAGE));
             int imageWidth = image.getWidth();
             int imageHeight = image.getHeight();
             if (imageWidth <= width && imageHeight <= height) {
@@ -111,7 +116,9 @@ public class MistralImageUtils implements ImageUtils{
             image = image.execute2(new ScaleOp(scale, Quality.BEST));
             File resultFile = writeJpegFile(image);
             if (resultFile != null) {
-                return new FileInputStream(resultFile);
+                FileInputStream fis = new FileInputStream(resultFile);
+                Framework.trackFile(resultFile, fis);
+                return fis;
             }
         } catch (IOException e) {
             log.error("Fail to resize image", e);
@@ -121,11 +128,14 @@ public class MistralImageUtils implements ImageUtils{
 
     public InputStream rotate(InputStream in, int angle) {
         try {
-            EditableImage image = EditableImage.create(new ReadOp(in, ReadOp.Type.IMAGE));
+            EditableImage image = EditableImage.create(new ReadOp(in,
+                    ReadOp.Type.IMAGE));
             image = image.execute2(new RotateQuadrantOp(angle));
             File resultFile = writeJpegFile(image);
             if (resultFile != null) {
-                return new FileInputStream(resultFile);
+                FileInputStream fis = new FileInputStream(resultFile);
+                Framework.trackFile(resultFile, fis);
+                return fis;
             }
         } catch (IOException e) {
             log.error("Fail to rotate image", e);
@@ -146,9 +156,9 @@ public class MistralImageUtils implements ImageUtils{
                         writerParams.setCompressionQuality(1.0f);
                     }
                     File resultFile = File.createTempFile("tmp", ".jpeg");
-                    resultFile.deleteOnExit();
                     writer.setOutput(ImageIO.createImageOutputStream(resultFile));
-                    writer.write(null, new IIOImage(bimage, null, null), writerParams);
+                    writer.write(null, new IIOImage(bimage, null, null),
+                            writerParams);
                     return resultFile;
                 } catch (IOException e) {
                 }

@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
+import org.nuxeo.runtime.api.Framework;
 
 public class DefaultPictureAdapter extends AbstractPictureAdapter {
     private static final Log log = LogFactory.getLog(DefaultPictureAdapter.class);
@@ -55,11 +56,9 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
         file = File.createTempFile(
                 "nuxeo-platform-imaging-DefaultPictureAdapter", ".jpg");
-        fileContent.transferTo(file);
-        // TODO: NXP-3779 refactor me to delete the temporary file as soon as no
-        // longer used instead of waiting for the JVM to stop properly
-        file.deleteOnExit();
+        Framework.trackFile(file, this);
 
+        fileContent.transferTo(file);
         type = fileContent.getMimeType();
 
         if (type == null) {
