@@ -365,8 +365,8 @@ class FolderPage(BasePage):
             ['j_id212', 'j_id212'],
             ['j_id212:selectDocTypePanelOpenedState', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id212:j_id218:0:j_id222:0:j_id224:1:j_id228',
-             'j_id212:j_id218:0:j_id222:0:j_id224:1:j_id228']],
+            ['j_id212:j_id218:0:j_id222:0:j_id224:2:j_id228',
+             'j_id212:j_id218:0:j_id222:0:j_id224:2:j_id228']],
             description="Create folder: New Folder")
         fl.assert_('document_create' in fl.getBody(),
                    "Folder form not found")
@@ -388,8 +388,8 @@ class FolderPage(BasePage):
             ['j_id212', 'j_id212'],
             ['j_id212:selectDocTypePanelOpenedState', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id212:j_id218:1:j_id222:0:j_id224:0:j_id228',
-             'j_id212:j_id218:1:j_id222:0:j_id224:0:j_id228']],
+            ['j_id212:j_id218:1:j_id222:0:j_id224:2:j_id228',
+             'j_id212:j_id218:1:j_id222:0:j_id224:2:j_id228']],
             description="Create file: New document")
         fl.assert_('document_create' in fl.getBody(),
                    "File form not found")
