@@ -26,17 +26,21 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
 
 /**
- * Default implementation of the {@link Executor} interface.
- * Use simple shell exec.
+ * Default implementation of the {@link Executor} interface. Use simple shell
+ * exec.
  *
  * @author tiry
  */
 public class ShellExecutor extends AbstractExecutor implements Executor {
+    private static Log log = LogFactory.getLog(ShellExecutor.class);
 
     public ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params) {
 
@@ -45,10 +49,8 @@ public class ShellExecutor extends AbstractExecutor implements Executor {
 
         String paramString = getParametersString(cmdDesc, params);
 
-        String[] cmd = {
-                "/bin/sh",
-                "-c",
-                cmdDesc.getCommand() + " " + paramString + " 2>&1"};
+        String[] cmd = { "/bin/sh", "-c",
+                cmdDesc.getCommand() + " " + paramString + " 2>&1" };
 
         if (isWindows()) {
             cmd[0] = "cmd";
@@ -57,6 +59,9 @@ public class ShellExecutor extends AbstractExecutor implements Executor {
 
         Process p1;
         try {
+            if(log.isDebugEnabled()) {
+                log.debug("Running system command: " + StringUtils.join(cmd, " "));
+            }
             p1 = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
             return new ExecResult(e);

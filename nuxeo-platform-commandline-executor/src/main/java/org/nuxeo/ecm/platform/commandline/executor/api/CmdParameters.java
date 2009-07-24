@@ -31,6 +31,7 @@ import org.nuxeo.ecm.platform.commandline.executor.service.executors.AbstractExe
  * Wraps command parameters (String or File).
  *
  * @author tiry
+ * @author Vincent Dutat
  */
 public class CmdParameters implements Serializable {
 
@@ -48,7 +49,7 @@ public class CmdParameters implements Serializable {
 
     public void addNamedParameter(String name, File file) {
         if (AbstractExecutor.isWindows()){
-            addNamedParameter(name, "\"" + file.getAbsolutePath() + "\"");
+            addNamedParameter(name, file.getAbsolutePath().replace("\\", "\\\\"));
         } else {
             addNamedParameter(name, "'" + file.getAbsolutePath() + "'");
         }
