@@ -40,7 +40,7 @@ import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
 /**
  * Codec handling a document repository, path, view and additional request
  * parameters.
- * 
+ *
  * @author Anahide Tchertchian
  */
 public class DocumentPathCodec extends AbstractDocumentViewCodec {

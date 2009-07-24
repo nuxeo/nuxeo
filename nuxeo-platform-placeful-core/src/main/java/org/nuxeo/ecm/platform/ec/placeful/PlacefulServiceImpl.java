@@ -44,7 +44,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * 
+ *
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  */
 public class PlacefulServiceImpl extends DefaultComponent implements PlacefulService {

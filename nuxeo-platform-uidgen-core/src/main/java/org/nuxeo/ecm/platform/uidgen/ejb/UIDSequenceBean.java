@@ -44,11 +44,11 @@ import org.apache.commons.logging.LogFactory;
             })
 
 @Table(name = "NXP_UIDSEQ")
-    
+
 public class UIDSequenceBean {
 
     public static final Log log = LogFactory.getLog(UIDSequenceBean.class);
-    
+
     @Id
     @Column(name = "SEQ_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -97,7 +97,7 @@ public class UIDSequenceBean {
     public int getIndex() {
         return index;
     }
-    
+
     public static String stringify(UIDSequenceBean bean) {
         return "UIDSeq(" + bean.key + "," + bean.index +")";
     }
