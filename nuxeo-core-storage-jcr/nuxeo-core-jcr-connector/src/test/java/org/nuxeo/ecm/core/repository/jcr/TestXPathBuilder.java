@@ -32,7 +32,7 @@ public class TestXPathBuilder extends TestCase {
         q = "SELECT * FROM Document WHERE test/dc:title='test'";
         x = "//element(*,ecmdt:Document)[test/@dc:title = 'test']";
         assertEquals(x, XPathBuilder.fromNXQL(q));
-        
+
         q = "select * from File where ecm:path LIKE '%/wiki/FrontPage'";
         x = "//%/ecm:children/wiki/ecm:children/element(FrontPage,ecmdt:File)";
         assertEquals(x, XPathBuilder.fromNXQL(q));
@@ -95,11 +95,11 @@ public class TestXPathBuilder extends TestCase {
         //assertEquals(x, XPathBuilder.fromNXQL(q));
 
         // System.out.println(">>>> " + ((System.currentTimeMillis() - s) / 1000) + " sec.");
-        
+
         q = "SELECT * FROM Workspace WHERE NOT ecm:path STARTSWITH '/default-domain/templates'";
         x = "//element(*,ecmdt:Workspace)[ not(( jcr:like(@ecm:path, '/default-domain/templates/%') )) ]";
         assertEquals(x, XPathBuilder.fromNXQL(q));
-        
+
         q = "SELECT * FROM Workspace WHERE ecm:path STARTSWITH '/default-domain/templates' ORDER BY dc:title";
         x = "/jcr:root/ecm:root/ecm:children/default-domain/ecm:children/templates/ecm:children//element(*,ecmdt:Workspace) order by @dc:title";
         assertEquals(x, XPathBuilder.fromNXQL(q));

@@ -31,8 +31,8 @@ public class PersistenceComponent extends DefaultComponent  implements Hibernate
 
     protected final Map<String,HibernateConfiguration> registry =
         new HashMap<String,HibernateConfiguration>();
-    
-    
+
+
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) throws Exception {
         if ("hibernate".equals(extensionPoint)) {
@@ -47,10 +47,10 @@ public class PersistenceComponent extends DefaultComponent  implements Hibernate
         if (!registry.containsKey(contribution.name)) {
             registry.put(contribution.name, contribution);
         } else {
-            registry.get(contribution.name).merge(contribution);            
+            registry.get(contribution.name).merge(contribution);
         }
     }
-    
+
     public PersistenceProvider newProvider(String name) {
         EntityManagerFactoryProvider emfProvider = registry.get(name);
         if (emfProvider == null) {
@@ -58,7 +58,7 @@ public class PersistenceComponent extends DefaultComponent  implements Hibernate
         }
         return new PersistenceProvider(emfProvider);
     }
-    
+
     public HibernateConfiguration getHibernateConfiguration(String name) {
         HibernateConfiguration config = registry.get(name);
         if (config == null) {
@@ -66,5 +66,5 @@ public class PersistenceComponent extends DefaultComponent  implements Hibernate
         }
         return config;
     }
- 
+
 }

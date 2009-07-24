@@ -32,9 +32,9 @@ public class PersistenceProvider {
 
     protected static final Log log = LogFactory.getLog(PersistenceProvider.class);
     protected EntityManagerFactory emf;
-   
+
     protected EntityManagerFactoryProvider emfProvider;
-    
+
     public PersistenceProvider(EntityManagerFactoryProvider emfProvider) {
         this.emfProvider = emfProvider;
     }
@@ -46,7 +46,7 @@ public class PersistenceProvider {
         if (emf == null) {
             synchronized(PersistenceProvider.class) {
                 if (emf == null) {
-                    emf = emfProvider.getFactory();             
+                    emf = emfProvider.getFactory();
                 }
             }
         }
@@ -154,11 +154,11 @@ public class PersistenceProvider {
             myThread.setContextClassLoader(lastLoader);
         }
     }
-    
+
     public interface RunVoid {
         void runWith(EntityManager em) throws ClientException;
     }
-    
+
     public void run(Boolean needActiveSession, RunVoid callback) throws ClientException {
         Thread myThread = Thread.currentThread();
         ClassLoader lastLoader = myThread.getContextClassLoader();

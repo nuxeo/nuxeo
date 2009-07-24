@@ -18,7 +18,7 @@ package org.nuxeo.ecm.core.persistence;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
- * 
+ *
  */
 public class PersistenceError extends Error {
 

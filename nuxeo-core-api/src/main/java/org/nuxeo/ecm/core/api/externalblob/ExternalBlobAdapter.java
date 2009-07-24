@@ -41,7 +41,7 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
  */
 public interface ExternalBlobAdapter extends Serializable {
 
-    public static String PREFIX_SEPARATOR = ":";
+    static String PREFIX_SEPARATOR = ":";
 
     /**
      * Returns the prefix to use as marker for this adapter

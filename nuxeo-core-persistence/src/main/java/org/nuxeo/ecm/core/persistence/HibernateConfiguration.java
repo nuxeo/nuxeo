@@ -37,21 +37,21 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
- * 
- * 
+ *
+ *
  */
 @XObject("hibernateConfiguration")
 public class HibernateConfiguration implements EntityManagerFactoryProvider {
-    
+
     public static final Log log = LogFactory.getLog(HibernateConfiguration.class);
-    
+
     public HibernateConfiguration() {
         super();
     }
-    
+
     @XNode("@name")
     public String name;
-    
+
     @XNode("datasource")
     public void setDatasource(String name) {
        String expandedValue = Framework.expandVars(name);
@@ -61,30 +61,30 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
        hibernateProperties.put("hibernate.connection.datasource", DataSourceHelper.getDataSourceJNDIName(name));;
     }
 
-    
+
     @XNodeMap(value = "properties/property", key = "@name", type = Properties.class, componentType = String.class)
     protected Properties hibernateProperties = new Properties();
-    
+
     @XNodeList(value = "classes/class", type = ArrayList.class, componentType = Class.class)
     protected List<Class<?>> annotedClasses = new ArrayList<Class<?>>();
-   
+
     public void addAnnotedClass(Class<?> annotedClass) {
        annotedClasses.add(annotedClass);
     }
-    
+
     public void removeAnnotedClass(Class<?> annotedClass) {
         annotedClasses.remove(annotedClass);
      }
-    
+
     protected Ejb3Configuration cfg;
 
     public Ejb3Configuration setupConfiguration() {
         cfg = new Ejb3Configuration();
-        cfg.configure(name, Collections.emptyMap()); 
+        cfg.configure(name, Collections.emptyMap());
 
         // Load hibernate properties
         cfg.setProperties(hibernateProperties);
-        
+
         // Add annnoted classes if any
         for (Class<?> annotedClass : annotedClasses) {
             cfg.addAnnotatedClass(annotedClass);
@@ -112,7 +112,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
             throw new PersistenceError("Cannot load hibernate configuration from " + location, e);
         }
     }
-    
+
     public void merge(HibernateConfiguration other) {
         assert name.equals(other.name) : " cannot merge configuraton that do not have the same persistence unit";
         this.annotedClasses.addAll(other.annotedClasses);

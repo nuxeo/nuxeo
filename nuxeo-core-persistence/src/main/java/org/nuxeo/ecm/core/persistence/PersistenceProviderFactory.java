@@ -21,7 +21,7 @@ package org.nuxeo.ecm.core.persistence;
  *
  */
 public interface PersistenceProviderFactory {
-   
+
     PersistenceProvider newProvider(String name);
 
 }
