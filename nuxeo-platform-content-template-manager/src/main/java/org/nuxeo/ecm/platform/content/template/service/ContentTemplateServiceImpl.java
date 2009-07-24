@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.content.template.service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,6 +50,8 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
 
     private Map<String, ContentFactory> factoryInstancesByType;
 
+    private Map<String, ContentFactory> factoryInstancesByFacet;
+
     private RepositoryInitializationHandler initializationHandler;
 
     @Override
@@ -56,6 +59,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
         factories = new HashMap<String, ContentFactoryDescriptor>();
         factoryBindings = new HashMap<String, FactoryBindingDescriptor>();
         factoryInstancesByType = new HashMap<String, ContentFactory>();
+        factoryInstancesByFacet = new HashMap<String, ContentFactory>();
 
         // register our Repo init listener
         initializationHandler = new RepositoryInitializationListener();
@@ -81,8 +85,15 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
             // store factories binding to types
             FactoryBindingDescriptor descriptor = (FactoryBindingDescriptor) contribution;
             if (factories.containsKey(descriptor.getFactoryName())) {
+                String targetType = descriptor.getTargetType();
+                String targetFacet = descriptor.getTargetFacet();
+
                 // store binding
-                factoryBindings.put(descriptor.getTargetType(), descriptor);
+                if (null != targetType) {
+                    factoryBindings.put(targetType, descriptor);
+                } else {
+                    factoryBindings.put(targetFacet, descriptor);
+                }
 
                 // create factory instance : one instance per binding
                 ContentFactoryDescriptor factoryDescriptor = factories.get(descriptor.getFactoryName());
@@ -98,8 +109,12 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
                     }
 
                     // store initialized instance
-                    factoryInstancesByType.put(descriptor.getTargetType(),
-                            factory);
+                    if (null != targetType) {
+                        factoryInstancesByType.put(targetType, factory);
+                    } else {
+                        factoryInstancesByFacet.put(targetFacet, factory);
+                    }
+
                 } catch (InstantiationException e) {
                     log.error("Error while creating instance of factory "
                             + factoryDescriptor.getName() + " :"
@@ -121,11 +136,22 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
         return factoryInstancesByType.get(documentType);
     }
 
+    public ContentFactory getFactoryForFacet(String facet) {
+        return factoryInstancesByFacet.get(facet);
+    }
+
     public void executeFactoryForType(DocumentModel createdDocument)
             throws ClientException {
         ContentFactory factory = getFactoryForType(createdDocument.getType());
         if (factory != null) {
             factory.createContentStructure(createdDocument);
+        }
+        Set<String> facets = createdDocument.getDeclaredFacets();
+        for (String facet : facets) {
+            factory = getFactoryForFacet(facet);
+            if (factory != null) {
+                factory.createContentStructure(createdDocument);
+            }
         }
     }
 
@@ -140,6 +166,10 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
 
     public Map<String, ContentFactory> getFactoryInstancesByType() {
         return factoryInstancesByType;
+    }
+
+    public Map<String, ContentFactory> getFactoryInstancesByFacet() {
+        return factoryInstancesByFacet;
     }
 
 }

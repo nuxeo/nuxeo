@@ -92,7 +92,7 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
         ContentTemplateServiceImpl serviceImpl = (ContentTemplateServiceImpl) service;
         assertNotNull(serviceImpl);
         Map<String, FactoryBindingDescriptor> factoryBindings = serviceImpl.getFactoryBindings();
-        assertEquals(3, factoryBindings.size());
+        assertEquals(4, factoryBindings.size());
         assertTrue(factoryBindings.containsKey("Root"));
         assertTrue(factoryBindings.containsKey("Domain"));
 
@@ -229,6 +229,31 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
                 fail();
             }
         }
+    }
+
+    public void testFacetFactories() throws ClientException {
+        // reach first available WSRoot
+        DocumentModel root = session.getRootDocument();
+        service.executeFactoryForType(root);
+        DocumentModel firstDomain = session.getChildren(root.getRef()).get(0);
+
+
+        //Check if every superspaces have FacetFolder Document
+        DocumentModel wsRoot = session.getChildren(firstDomain.getRef(),
+                "WorkspaceRoot").get(0);
+        DocumentModel facetFolder = session.getChild(wsRoot.getRef(),
+                "FacetFolder");
+        assertNotNull(facetFolder);
+
+        DocumentModel templateRoot = session.getChildren(firstDomain.getRef(),
+                "TemplateRoot").get(0);
+        facetFolder = session.getChild(templateRoot.getRef(), "FacetFolder");
+        assertNotNull(facetFolder);
+
+        DocumentModel sectionRoot = session.getChildren(firstDomain.getRef(),
+                "SectionRoot").get(0);
+        facetFolder = session.getChild(sectionRoot.getRef(), "FacetFolder");
+        assertNotNull(facetFolder);
     }
 
 }

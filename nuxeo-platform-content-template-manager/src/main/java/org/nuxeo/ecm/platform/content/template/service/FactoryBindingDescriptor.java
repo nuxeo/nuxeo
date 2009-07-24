@@ -44,6 +44,9 @@ public class FactoryBindingDescriptor {
     @XNode("@targetType")
     private String targetType;
 
+    @XNode("@targetFacet")
+    private String targetFacet;
+
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
     private Map<String, String> options;
 
@@ -68,6 +71,10 @@ public class FactoryBindingDescriptor {
 
     public String getTargetType() {
         return targetType;
+    }
+
+    public String getTargetFacet() {
+        return targetFacet;
     }
 
     public List<TemplateItemDescriptor> getTemplate() {

@@ -64,6 +64,21 @@
       </template>
     </factoryBinding>
 
+   <factoryBinding name="SuperSpaceFactory" factoryName="SimpleTemplateFactory" targetFacet="SuperSpace">
+      <acl>
+        <ace granted="true" permission="Everything" principal="Administrator"/>
+        <ace granted="true" permission="Dream" principal="Danny"/>
+        <ace granted="false" permission="RedRum" principal="DannysImaginaryFriend"/>
+      </acl>
+      <template>
+        <templateItem typeName="Folder" id="FacetFolder" title="FacetFolder"
+                      description="folder created by facetFactories"/>
+      </template>
+    </factoryBinding>
+
+
+
+
   </extension>
 
 </component>

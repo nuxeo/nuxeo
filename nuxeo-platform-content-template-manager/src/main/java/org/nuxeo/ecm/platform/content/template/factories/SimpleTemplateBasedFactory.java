@@ -54,8 +54,8 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
             if (item.getPath() != null) {
                 itemPath = itemPath + "/" + item.getPath();
             }
-            DocumentModel newChild = session.createDocumentModel(itemPath, item.getId(),
-                    item.getTypeName());
+            DocumentModel newChild = session.createDocumentModel(itemPath,
+                    item.getId(), item.getTypeName());
             newChild.setProperty("dublincore", "title", item.getTitle());
             newChild.setProperty("dublincore", "description",
                     item.getDescription());
