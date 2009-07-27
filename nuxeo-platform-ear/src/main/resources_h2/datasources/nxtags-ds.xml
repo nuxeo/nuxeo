@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<datasources>
+  <mbean code="org.jboss.naming.NamingAlias"
+    name="jboss.jca:name=nxtags,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">java:/nxtags</attribute>
+  </mbean>
+</datasources>
