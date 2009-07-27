@@ -201,6 +201,23 @@ public final class ThemeManager implements Registrable {
         }
         return names;
     }
+    
+    public static ThemeDescriptor getThemeDescriptorByThemeName(final String templateEngine, final String themeName) {
+        for (ThemeDescriptor themeDef : getThemeDescriptors()) {
+            // Skip customized themes
+            if (themeDef.isCustomized()) {
+                continue;
+            }
+            if (templateEngine != null
+                    && !themeDef.isCompatibleWith(templateEngine)) {
+                continue;
+            }
+            if (themeDef.getName().equals(themeName)) {
+                return themeDef;
+            }
+        }
+        return null;
+    }
 
     public static Set<String> getThemeNames() {
         return getThemeNames(null);
