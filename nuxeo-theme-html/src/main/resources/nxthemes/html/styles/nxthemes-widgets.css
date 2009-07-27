@@ -154,6 +154,14 @@
   background-position: 100% -50px;
 }
 
+.nxthemesButton.dropList b {
+  background-position: 0 -75px;
+}
+
+.nxthemesButton.dropList a {
+  background-position: 100% -75px;
+}
+
 
 /* Tabs */
 .nxthemesTabs ul {
