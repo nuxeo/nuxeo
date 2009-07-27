@@ -31,6 +31,7 @@ Export-Package: org.nuxeo.runtime,
  org.nuxeo.runtime.util
 Bundle-ClassPath: .
 Require-Bundle: commons-jexl.commons-jexl,
+ commons-io.commons-io,
  system.bundle,
  org.nuxeo.common;visibility:=reexport,
  org.nuxeo.logging;visibility:=reexport
