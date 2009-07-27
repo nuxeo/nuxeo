@@ -662,7 +662,12 @@ NXThemes.Button.prototype = Object.extend(new NXThemes.View(), {
     if (link == null) {
       link = 'javascript:void(0)';
     }
-    widget.innerHTML = '<b>&nbsp;</b><a href="' + link+ '">' + label + '</a>';
+    var mouseover = '';
+    var hover = this.def.hover;
+    if (hover != null) {
+    	mouseover = ' onmouseover="' + hover + '"';
+    }
+    widget.innerHTML = '<b>&nbsp;</b><a href="' + link + '"' + mouseover + '>' + label + '</a>';
     this.ready();
   },
 
