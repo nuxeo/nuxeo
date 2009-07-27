@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.tag;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
@@ -31,14 +30,14 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider;
+import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.platform.tag.Tag;
-import org.nuxeo.ecm.platform.tag.WeightedTag;
 import org.nuxeo.ecm.platform.tag.entity.DublincoreEntity;
 import org.nuxeo.ecm.platform.tag.entity.TagEntity;
 import org.nuxeo.ecm.platform.tag.entity.TaggingEntity;
-import org.nuxeo.ecm.platform.tag.persistence.TagPersistenceProvider;
 import org.nuxeo.ecm.platform.tag.persistence.TaggingProvider;
+import org.nuxeo.runtime.api.Framework;
 
 public class TestTaggingProvider extends SQLRepositoryTestCase {
 
@@ -46,34 +45,35 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         super(TestTaggingProvider.class.getName());
     }
 
-    protected static final Log log = LogFactory.getLog(TestTaggingProvider.class);
-
-    public static final String SCHEMA_BUNDLE = "org.nuxeo.ecm.core.schema";
-
-    public static final String CORE_BUNDLE = "org.nuxeo.ecm.core";
-
-    private static final String BUNDLE_NAME = "org.nuxeo.ecm.platform.tag.service.tests";
-
+    
+    protected PersistenceProvider persistenceProvider;
+    
     @Override
     public void setUp() throws Exception {
         super.setUp();
 
-        deployBundle(CORE_BUNDLE);
-        deployBundle(SCHEMA_BUNDLE);
-        deployBundle(BUNDLE_NAME);
-        deployContrib(BUNDLE_NAME, "OSGI-INF/tag-service-core-types.xml");
-        deployContrib(BUNDLE_NAME, "OSGI-INF/TagService.xml");
-
+        deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core.persistence");
+        deployBundle("org.nuxeo.ecm.platform.tag");
+        deployBundle("org.nuxeo.ecm.platform.tag.tests");
+        
         openSession();
-        createDataWarehouse();
-        entityManager = TagPersistenceProvider.getInstance().getEntityManager(
-                getProperties());
+        
+        createDataWarehouse(); 
+        
+        PersistenceProviderFactory factory = Framework.getService(PersistenceProviderFactory.class);  
+        persistenceProvider = factory.newProvider("nxtags"); 
+        persistenceProvider.openPersistenceUnit();
+        entityManager = persistenceProvider.acquireEntityManagerWithActiveTransaction();
+        
+       
         taggingProvider = TaggingProvider.createProvider(entityManager);
     }
 
     @Override
     public void tearDown() throws Exception {
-        TagPersistenceProvider.getInstance().closePersistenceUnit();
         super.tearDown();
     }
 
@@ -169,7 +169,6 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         file3 = session.createDocument(file3);
         file3 = session.saveDocument(file3);
         session.save();
-
     }
 
     /**
@@ -224,6 +223,8 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         taggingProvider.addTagging(tg);
     }
 
+    public static final Log log = LogFactory.getLog(TestTaggingProvider.class);
+    
     public void testGetById() throws Exception {
         DublincoreEntity dcEntity = taggingProvider.getDcById(file2.getId());
         TagEntity tagEntity = taggingProvider.getTagById(tag2.getId());
@@ -380,18 +381,6 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
                 assertTrue("Unexpected label: " + label, false);
             }
         }
-    }
-
-    private Properties getProperties() {
-        String dbUrl = System.getProperty("nuxeo.test.h2.path");
-        Properties properties = new Properties();
-        properties.put("hibernate.show_sql", "true"); // true to debug
-        properties.put("hibernate.connection.driver_class", "org.h2.Driver");
-        properties.put("hibernate.connection.username", "sa");
-        properties.put("hibernate.connection.password", "");
-        properties.put("hibernate.connection.url", "jdbc:h2:" + dbUrl);
-        properties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-        return properties;
     }
 
 }

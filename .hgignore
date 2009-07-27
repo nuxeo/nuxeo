@@ -4,6 +4,8 @@ syntax:glob
 .settings
 bin
 target
+gwt-dev-1.5.3-mac-libs.zip
+*.rej
 *~
 *.orig
 *.ipr

@@ -15,8 +15,21 @@
 
 package org.nuxeo.ecm.platform.tag.persistence;
 
-import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.*;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.GET_TAGGING;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.GET_VOTE_TAG;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.LIST_DOCUMENTS_FOR_TAG;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.LIST_TAGS_FOR_DOCUMENT;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.LIST_TAGS_FOR_DOCUMENT_AND_USER;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.REMOVE_TAGGING;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_AUTHOR;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_CREATION_DATE;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_DOCUMENT_ID;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_ID;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_IS_PRIVATE;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_TAG_ID;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_NAME;
 
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -28,6 +41,9 @@ import javax.persistence.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.impl.SessionImpl;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.tag.Tag;
@@ -35,10 +51,11 @@ import org.nuxeo.ecm.platform.tag.WeightedTag;
 import org.nuxeo.ecm.platform.tag.entity.DublincoreEntity;
 import org.nuxeo.ecm.platform.tag.entity.TagEntity;
 import org.nuxeo.ecm.platform.tag.entity.TaggingEntity;
+import org.nuxeo.ecm.platform.tag.sql.Column;
+import org.nuxeo.ecm.platform.tag.sql.Table;
 
 /**
- * Provider of almost all queries required for Tag service. Implemented as
- * singleton. Stores the EntityManager during service life.
+ * Provider of almost all queries required for Tag service. 
  *
  * @author rux
  *
@@ -47,26 +64,40 @@ public class TaggingProvider {
 
     private static final Log log = LogFactory.getLog(TaggingProvider.class);
 
-    private final EntityManager em;
+    protected final EntityManager em;
 
-    private final TagPersistenceProvider tagPersistenceProvider = TagPersistenceProvider.getInstance();
 
-    private TaggingProvider() {
-        this.em = tagPersistenceProvider.getEntityManager(null);
-        tagPersistenceProvider.createTableTagging(em);
-    }
-
-    private TaggingProvider(EntityManager em) {
+    protected TaggingProvider(EntityManager em) {
         this.em = em;
-        tagPersistenceProvider.createTableTagging(em);
     }
 
     public static TaggingProvider createProvider(EntityManager em) {
         return new TaggingProvider(em);
     }
 
-    public static TaggingProvider createProvider() {
-        return new TaggingProvider();
+   /**
+    * @deprecated
+    * @param dialect
+    * @return
+    */
+    public String getCreateSql(Dialect dialect) {
+        SessionImpl delegate = (SessionImpl)em.getDelegate();
+        Table table = new Table(TAGGING_TABLE_NAME);
+        Column column = new Column(TAGGING_TABLE_COLUMN_ID, Types.VARCHAR);
+        column.setPrimary(true);
+        column.setNullable(false);
+        table.addColumn(column);
+        column = new Column(TAGGING_TABLE_COLUMN_TAG_ID, Types.CLOB);
+        table.addColumn(column);
+        column = new Column(TAGGING_TABLE_COLUMN_AUTHOR, Types.VARCHAR);
+        table.addColumn(column);
+        column = new Column(TAGGING_TABLE_COLUMN_DOCUMENT_ID, Types.CLOB);
+        table.addColumn(column);
+        column = new Column(TAGGING_TABLE_COLUMN_CREATION_DATE, Types.DATE);
+        table.addColumn(column);
+        column = new Column(TAGGING_TABLE_COLUMN_IS_PRIVATE, Types.BOOLEAN);
+        table.addColumn(column);
+        return table.getCreateSql(dialect);
     }
 
     /**
@@ -80,17 +111,7 @@ public class TaggingProvider {
         if (log.isDebugEnabled()) {
             log.debug("addTagging() with tagging " + tagging.toString());
         }
-        try {
-            if (!em.getTransaction().isActive()) {
-                em.getTransaction().begin();
-                em.persist(tagging);
-                tagPersistenceProvider.doCommit(em);
-            } else {
-                em.persist(tagging);
-            }
-        } catch (Exception e) {
-            tagPersistenceProvider.doRollback(em);
-        }
+        em.persist(tagging);  
     }
 
     @SuppressWarnings("unchecked")
@@ -102,7 +123,7 @@ public class TaggingProvider {
         return q.getResultList();
     }
 
-    protected List doQuery(String query, Object... params) {
+    protected List<?> doQuery(String query, Object... params) {
         Query q = em.createQuery(query);
         for (int i = 0; i < params.length; i++) {
             q.setParameter(i + 1, params[i]);
@@ -110,8 +131,7 @@ public class TaggingProvider {
         return q.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
-    protected List doNamedQuery(String namedQuery, Map<String, Object> params) {
+    protected List<?> doNamedQuery(String namedQuery, Map<String, Object> params) {
         Query query = em.createNamedQuery(namedQuery);
         for (String key : params.keySet()) {
             query.setParameter(key, params.get(key));
@@ -160,7 +180,7 @@ public class TaggingProvider {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("targetId", docId);
         params.put("userName", userName);
-        List<Object[]> queryResults = doNamedQuery(LIST_TAGS_FOR_DOCUMENT,
+        List<Object[]> queryResults = (List<Object[]>) doNamedQuery(LIST_TAGS_FOR_DOCUMENT,
                 params);
         List<Tag> listTagsForDocument = new ArrayList<Tag>();
         for (Object[] queryResult : queryResults) {
@@ -177,11 +197,12 @@ public class TaggingProvider {
      * @param tagLabel
      * @return
      */
+    @SuppressWarnings("unchecked")
     public String getTaggingId(String docId, String tagLabel, String author) {
         final String query = "SELECT tg.id FROM Tagging tg JOIN tg.targetDocument doc JOIN tg.tag tag"
                 + " WHERE doc.id = ?1 AND tag.label = ?2 AND tg.author = ?3";
 
-        List<String> authors = doQuery(query, docId, tagLabel, author);
+        List<String> authors = (List<String>) doQuery(query, docId, tagLabel, author);
 
         return authors.size() > 0 ? authors.get(0) : null;
     }
@@ -202,7 +223,7 @@ public class TaggingProvider {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("targetId", docId);
         params.put("userName", userName);
-        List<Object[]> queryResults = doNamedQuery(
+        List<Object[]> queryResults = (List<Object[]>) doNamedQuery(
                 LIST_TAGS_FOR_DOCUMENT_AND_USER, params);
         List<Tag> listTagsForDocument = new ArrayList<Tag>();
         for (Object[] queryResult : queryResults) {
@@ -249,17 +270,12 @@ public class TaggingProvider {
             log.debug("removeTagging() with targetId " + docId + " and tagId "
                     + tagId);
         }
-        if (!em.getTransaction().isActive()) {
-            em.getTransaction().begin();
-            Query query = em.createNamedQuery(REMOVE_TAGGING);
-            query.setParameter("targetId", docId);
-            query.setParameter("tagId", tagId);
-            query.setParameter("userName", userName);
-            int result = query.executeUpdate();
-            tagPersistenceProvider.doCommit(em);
-            return result == 1;
-        }
-        return false;
+        Query query = em.createNamedQuery(REMOVE_TAGGING);
+        query.setParameter("targetId", docId);
+        query.setParameter("tagId", tagId);
+        query.setParameter("userName", userName);
+        int result = query.executeUpdate();
+        return result == 1;
     }
 
     /**
@@ -279,19 +295,10 @@ public class TaggingProvider {
             log.debug("removeTagging() with targetId " + docId + " and tagId "
                     + tagId);
         }
-        if (!em.getTransaction().isActive()) {
-            em.getTransaction().begin();
-            try {
-                Query query = em.createQuery("DELETE FROM Tagging tagging "
-                        + "WHERE tagging.targetDocument.id=:targetId AND  tagging.tag.id=:tagId");
-                query.setParameter("targetId", docId);
-                query.setParameter("tagId", tagId);
-                query.executeUpdate();
-                tagPersistenceProvider.doCommit(em);
-            } catch (Exception e) {
-                tagPersistenceProvider.doRollback(em);
-            }
-        }
+        Query query = em.createQuery("DELETE FROM Tagging tagging " + "WHERE tagging.targetDocument.id=:targetId AND  tagging.tag.id=:tagId");
+        query.setParameter("targetId", docId);
+        query.setParameter("tagId", tagId);
+        query.executeUpdate();           
     }
 
     public TagEntity getTagById(String tagId) {
@@ -375,7 +382,7 @@ public class TaggingProvider {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("userName", userName);
         params.put("tagId", tagId);
-        List<Object> queryResults = doNamedQuery(LIST_DOCUMENTS_FOR_TAG, params);
+        List<Object> queryResults = (List<Object>) doNamedQuery(LIST_DOCUMENTS_FOR_TAG, params);
         List<String> ret = new ArrayList<String>();
         for (Object queryResult : queryResults) {
             ret.add(queryResult.toString());
