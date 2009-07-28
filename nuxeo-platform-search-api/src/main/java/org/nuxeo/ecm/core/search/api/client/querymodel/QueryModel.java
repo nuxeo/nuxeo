@@ -73,6 +73,8 @@ public class QueryModel implements Serializable {
 
     protected transient QueryModelService queryModelService;
 
+    protected Boolean detachResultsFlag;
+
     public QueryModel(QueryModelDescriptor descriptor,
             DocumentModel documentModel) {
         this.descriptor = descriptor;
@@ -103,6 +105,14 @@ public class QueryModel implements Serializable {
 
     public QueryModel(QueryModelDescriptor descriptor) {
         this(descriptor, null);
+    }
+
+    public boolean detachResults() {
+        if (detachResultsFlag == null) {
+            detachResultsFlag = Boolean.valueOf(Framework.getProperty(
+                    ResultSet.ALWAYS_DETACH_SEARCH_RESULTS_KEY, "false"));
+        }
+        return detachResultsFlag.booleanValue();
     }
 
     public boolean isPersisted() {
@@ -173,12 +183,14 @@ public class QueryModel implements Serializable {
                 log.error("Got null document from query: " + query);
                 continue;
             }
-            // detach the document so that we can use it beyond the session
-            try {
-                ((DocumentModelImpl) doc).detach(true);
-            } catch (DocumentSecurityException e) {
-                // no access to the document (why?)
-                continue;
+            if (detachResults()) {
+                // detach the document so that we can use it beyond the session
+                try {
+                    ((DocumentModelImpl) doc).detach(true);
+                } catch (DocumentSecurityException e) {
+                    // no access to the document (why?)
+                    continue;
+                }
             }
             resultItems.add(new DocumentModelResultItem(doc));
         }

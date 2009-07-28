@@ -30,6 +30,8 @@ import org.nuxeo.ecm.core.search.api.client.SearchException;
  */
 public interface ResultSet extends List<ResultItem> {
 
+    String ALWAYS_DETACH_SEARCH_RESULTS_KEY = "org.nuxeo.ecm.core.search.alwaysDetachResults";
+
     /**
      * Returns the current offset for this result set.
      *

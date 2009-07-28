@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.search.api.client.query.SearchPrincipal;
 import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Result set implementation.
@@ -64,6 +65,8 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
     protected final SearchPrincipal principal;
 
     protected final CoreSession session;
+
+    protected Boolean detachResultsFlag;
 
     /**
      * Constructor used when a CoreSession is available.
@@ -103,6 +106,14 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
         if (resultItems != null) {
             addAll(resultItems);
         }
+    }
+
+    public boolean detachResults() {
+        if (detachResultsFlag == null) {
+            detachResultsFlag = Boolean.valueOf(Framework.getProperty(
+                    ALWAYS_DETACH_SEARCH_RESULTS_KEY, "false"));
+        }
+        return detachResultsFlag.booleanValue();
     }
 
     public int getOffset() {
@@ -165,13 +176,15 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
                     if (doc == null) {
                         continue;
                     }
-                    // detach the document so that we can use it beyond the
-                    // session
-                    try {
-                        ((DocumentModelImpl) doc).detach(true);
-                    } catch (DocumentSecurityException e) {
-                        // no access to the document (why?)
-                        continue;
+                    if (detachResults()) {
+                        // detach the document so that we can use it beyond the
+                        // session
+                        try {
+                            ((DocumentModelImpl) doc).detach(true);
+                        } catch (DocumentSecurityException e) {
+                            // no access to the document (why?)
+                            continue;
+                        }
                     }
                     resultItems.add(new DocumentModelResultItem(doc));
                 }

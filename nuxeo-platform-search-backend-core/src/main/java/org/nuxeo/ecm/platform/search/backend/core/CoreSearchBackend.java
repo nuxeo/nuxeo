@@ -136,8 +136,8 @@ public class CoreSearchBackend extends AbstractSearchEngineBackend {
         }
     }
 
-    protected static ResultSet searchQuery(SQLQuery sqlQuery, int offset,
-            int limit, CoreSession session, SearchPrincipal searchPrincipal)
+    protected ResultSet searchQuery(SQLQuery sqlQuery, int offset, int limit,
+            CoreSession session, SearchPrincipal searchPrincipal)
             throws ClientException {
         String query = sqlQuery.toString();
         DocumentModelList documentModelList = session.query(query, null, limit,
