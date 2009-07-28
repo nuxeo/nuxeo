@@ -1,8 +1,14 @@
 package org.nuxeo.dam.webapp.contentbrowser;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
+
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
@@ -14,6 +20,9 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
+import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.common.utils.StringUtils;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.In;
@@ -37,7 +46,7 @@ public class DocumentActions implements Serializable {
     @In(required = false, create = true)
     protected transient DocumentsListsManager documentsListsManager;
 
-    @In(create = true, required=false)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     @In(create = true)
@@ -184,8 +193,40 @@ public class DocumentActions implements Serializable {
             documentManager.saveDocument(currentSelection);
             documentManager.save();
 
-            //Switch to view mode
+            // Switch to view mode
             displayMode = "view";
         }
+    }
+
+    /**
+     * Logs the user out. Invalidates the HTTP session so that it cannot be used
+     * anymore.
+     *
+     * @return the next page that is going to be displayed
+     * @throws IOException
+     */
+    public static String logout() throws IOException {
+        FacesContext context = FacesContext.getCurrentInstance();
+        ExternalContext eContext = context.getExternalContext();
+        Object req = eContext.getRequest();
+        Object resp = eContext.getResponse();
+        HttpServletRequest request = null;
+        if (req instanceof HttpServletRequest) {
+            request = (HttpServletRequest) req;
+        }
+        HttpServletResponse response = null;
+        if (resp instanceof HttpServletResponse) {
+            response = (HttpServletResponse) resp;
+        }
+
+        if (response != null && request != null
+                && !context.getResponseComplete()) {
+            String baseURL = BaseURL.getBaseURL(request);
+            request.setAttribute(URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY,
+                    true);
+            response.sendRedirect(baseURL + NXAuthConstants.LOGOUT_PAGE);
+            context.responseComplete();
+        }
+        return null;
     }
 }

@@ -24,10 +24,18 @@
       <ui:include src="/incl/new_import_set.xhtml" />
     </rich:modalPanel>
 
-    <h:outputLink value="javascript:Richfaces.showModalPanel('importSetFormPanel');" id="importset_creation_button">
-        <h:outputText class="importButton" value="${messages['label.action.createImportSet']}"/>
-    </h:outputLink>
-
+    <h:form>
+      <h:outputLink value="javascript:Richfaces.showModalPanel('importSetFormPanel');" id="importset_creation_button">
+          <h:outputText class="importButton" value="${messages['label.action.createImportSet']}"/>
+      </h:outputLink>
+      
+      <h:outputText value=" | " />
+    
+      <h:commandLink action="#{documentActions.logout}">
+        <h:outputText value="#{messages['command.logout']}" />
+      </h:commandLink>
+    </h:form>
+    
     <ui:include src="/incl/waiter.xhtml"/>
 </div>
 
