@@ -673,6 +673,9 @@ public class MultiDirectorySession extends BaseSession {
         final DocumentModelList results = new DocumentModelListImpl();
         // entry ids already seen (mapped to the source name)
         final Map<String, String> seen = new HashMap<String, String>();
+        if (fulltext == null) {
+            fulltext = Collections.emptySet();
+        }
 
         for (SourceInfo sourceInfo : sourceInfos) {
             // accumulated map for each entry

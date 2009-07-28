@@ -375,6 +375,17 @@ public class TestMultiDirectory extends NXRuntimeTestCase {
         assertEquals("bar3", e.getProperty("schema3", "thebar"));
     }
 
+    public void testQueryFulltext() throws Exception {
+        Map<String, Serializable> filter = new HashMap<String, Serializable>();
+        Set<String> fulltext = new HashSet<String>();
+        DocumentModelList entries;
+        entries = dir.query(filter, fulltext);
+        assertEquals(4, entries.size());
+        // null fulltext set should be equivalent to empty one
+        entries = dir.query(filter, null);
+        assertEquals(4, entries.size());
+    }
+
     public void testGetProjection() throws Exception {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         List<String> list;
