@@ -34,6 +34,12 @@
       <shrinkable>false</shrinkable>
     </resource>
 
+
+    <!-- Keyboard shortcuts http://www.openjs.com/scripts/events/keyboard_shortcuts/shortcut.js -->
+    <resource name="shortcut.js">
+      <path>nxthemes/html/scripts/shortcut.js</path>
+    </resource>
+
     <!-- ObjTree 0.24 (http://www.kawa.net/works/js/xml/objtree-e.html)  -->
     <resource name="objtree.js">
       <path>nxthemes/html/scripts/objtree.js</path>
