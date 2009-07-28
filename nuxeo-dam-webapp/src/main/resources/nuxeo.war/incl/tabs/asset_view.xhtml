@@ -39,16 +39,19 @@
           <h:outputText value="#{currentSelection.picture.views[1].width}" />
         </h:panelGrid>
         
-        <f:subview id="editBtns" rendered="#{displayMode == 'edit'}">
-          <a4j:commandButton value="#{messages['command.save']}" styleClass="button" id="saveBtn"
-            action="#{documentActions.updateCurrentSelection}" reRender="assetView, documentsList" />
-        </f:subview>
-        <br/>
-        <a4j:commandLink action="#{documentActions.toggleDisplayMode}" reRender="assetView" >
-          <h:outputText value="#{messages['command.view']}" rendered="#{displayMode == 'edit'}" />
-          <h:outputText value="#{messages['command.edit']}" rendered="#{displayMode == 'view'}" />
-        </a4j:commandLink>
-        
+        <p>
+          <span>
+            <a4j:commandLink id="saveBtn" action="#{documentActions.updateCurrentSelection}" rendered="#{displayMode == 'edit'}" reRender="assetView, documentsList" >
+              <h:outputText value="#{messages['command.save']}" />
+            </a4j:commandLink>
+          </span>
+          <span>
+            <a4j:commandLink action="#{documentActions.toggleDisplayMode}" immediate="true" reRender="assetView" >
+              <h:outputText value="#{messages['command.cancel']}" rendered="#{displayMode == 'edit'}" />
+              <h:outputText value="#{messages['command.edit']}" rendered="#{displayMode == 'view'}" />
+            </a4j:commandLink>
+          </span>
+        </p>
       </nxu:methodResult>
     </nxu:methodResult>
   </h:form>
