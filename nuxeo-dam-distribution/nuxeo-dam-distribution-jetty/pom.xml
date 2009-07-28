@@ -9,9 +9,9 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>nuxeo-dam-jetty</artifactId>
+  <artifactId>nuxeo-dam-distribution-jetty</artifactId>
   <packaging>pom</packaging>
-  <name>Nuxeo DAM Jetty</name>
+  <name>Nuxeo DAM Jetty Distribution</name>
   <description>Defines the skeleton of a jetty Nuxeo DAM application</description>
 
   <properties>
