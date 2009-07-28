@@ -17,6 +17,9 @@
 		point="hibernate">
 		<hibernateConfiguration name="nxtags">
 			<datasource>nxtags</datasource>
+			<properties>
+			   <property name="hibernate.hbm2ddl.auto">never</property>
+			</properties>
 		</hibernateConfiguration>
   </extension>
 </component>

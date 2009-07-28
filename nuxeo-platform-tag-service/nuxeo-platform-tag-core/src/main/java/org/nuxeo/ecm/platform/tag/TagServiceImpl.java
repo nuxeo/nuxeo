@@ -52,8 +52,16 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
     private static final Log log = LogFactory.getLog(TagServiceImpl.class);
 
+    protected final TagServiceInitializer initializer = new TagServiceInitializer();
+    
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        initializer.install();
+    }
+    
     @Override
     public void deactivate(ComponentContext context) throws Exception {
+        initializer.uninstall();
         deactivatePersistenceProvider();
         super.deactivate(context);
     }

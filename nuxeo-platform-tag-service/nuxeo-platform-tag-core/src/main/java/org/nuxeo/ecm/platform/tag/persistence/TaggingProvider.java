@@ -21,15 +21,7 @@ import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.LIST_DOCUMENTS_
 import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.LIST_TAGS_FOR_DOCUMENT;
 import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.LIST_TAGS_FOR_DOCUMENT_AND_USER;
 import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.REMOVE_TAGGING;
-import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_AUTHOR;
-import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_CREATION_DATE;
-import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_DOCUMENT_ID;
-import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_ID;
-import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_IS_PRIVATE;
-import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_TAG_ID;
-import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_NAME;
 
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -41,8 +33,6 @@ import javax.persistence.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.dialect.Dialect;
-import org.hibernate.impl.SessionImpl;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -51,8 +41,6 @@ import org.nuxeo.ecm.platform.tag.WeightedTag;
 import org.nuxeo.ecm.platform.tag.entity.DublincoreEntity;
 import org.nuxeo.ecm.platform.tag.entity.TagEntity;
 import org.nuxeo.ecm.platform.tag.entity.TaggingEntity;
-import org.nuxeo.ecm.platform.tag.sql.Column;
-import org.nuxeo.ecm.platform.tag.sql.Table;
 
 /**
  * Provider of almost all queries required for Tag service. 
@@ -73,31 +61,6 @@ public class TaggingProvider {
 
     public static TaggingProvider createProvider(EntityManager em) {
         return new TaggingProvider(em);
-    }
-
-   /**
-    * @deprecated
-    * @param dialect
-    * @return
-    */
-    public String getCreateSql(Dialect dialect) {
-        SessionImpl delegate = (SessionImpl)em.getDelegate();
-        Table table = new Table(TAGGING_TABLE_NAME);
-        Column column = new Column(TAGGING_TABLE_COLUMN_ID, Types.VARCHAR);
-        column.setPrimary(true);
-        column.setNullable(false);
-        table.addColumn(column);
-        column = new Column(TAGGING_TABLE_COLUMN_TAG_ID, Types.CLOB);
-        table.addColumn(column);
-        column = new Column(TAGGING_TABLE_COLUMN_AUTHOR, Types.VARCHAR);
-        table.addColumn(column);
-        column = new Column(TAGGING_TABLE_COLUMN_DOCUMENT_ID, Types.CLOB);
-        table.addColumn(column);
-        column = new Column(TAGGING_TABLE_COLUMN_CREATION_DATE, Types.DATE);
-        table.addColumn(column);
-        column = new Column(TAGGING_TABLE_COLUMN_IS_PRIVATE, Types.BOOLEAN);
-        table.addColumn(column);
-        return table.getCreateSql(dialect);
     }
 
     /**
