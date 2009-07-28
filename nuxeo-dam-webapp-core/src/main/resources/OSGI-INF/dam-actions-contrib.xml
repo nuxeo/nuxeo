@@ -8,10 +8,6 @@
       label="action.asset.view" icon="/icons/file.gif">
       <category>VIEW_ASSET_ACTION_LIST</category>
     </action>
-    <action id="TAB_ASSET_PREVIEW" link="/incl/tabs/asset_preview.xhtml" order="20"
-      label="action.asset.preview" icon="/icons/file.gif">
-      <category>VIEW_ASSET_ACTION_LIST</category>
-    </action>
 
   </extension>
 
