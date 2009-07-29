@@ -18,42 +18,82 @@
           <h:outputText value="#{currentSelection.file.filename}" rendered="#{currentSelection.type eq 'File'}" />
         </h4>
       </div>
-      <h4><h:outputText value="#{messages['label.header.info.main.data']}" /></h4>
-      <nxu:methodResult name="displayMode" value="#{documentActions.getDisplayMode()}"> 
-        <nxl:layout name="heading" mode="#{displayMode}" value="#{currentSelection}" />
-        <nxl:layout name="damc" mode="#{displayMode}" value="#{currentSelection}" />
-        <nxl:layout name="dublincore" mode="#{displayMode}" value="#{currentSelection}" />
-        
-        <h:panelGrid class="dataOutput" columnClasses="labelColumn, fieldColumn" columns="2">
-          <h:outputText value="#{messages['label.content.size']}" />
-          <h:panelGroup>
-            <h:outputText value="#{currentSelection.picture.views[1].content.length}" rendered="#{currentSelection.type eq 'Picture' and !empty currentSelection.picture.views}" />
-            <h:outputText value="#{currentSelection.file.content.length}" rendered="#{currentSelection.type eq 'File'}" />
-          </h:panelGroup>
-        </h:panelGrid>
-        <h:panelGrid class="dataOutput" columnClasses="labelColumn, fieldColumn" columns="2" rendered="#{currentSelection.type eq 'Picture' and !empty currentSelection.picture.views}">
-          <h:outputText value="#{messages['label.content.height']}" />
-          <h:outputText value="#{currentSelection.picture.views[1].height}" />
-          
-          <h:outputText value="#{messages['label.content.width']}" />
-          <h:outputText value="#{currentSelection.picture.views[1].width}" />
-        </h:panelGrid>
-        
-        <p>
-          <span>
-            <a4j:commandLink id="saveBtn" action="#{documentActions.updateCurrentSelection}" rendered="#{displayMode == 'edit'}" reRender="assetView, documentsList" >
-              <h:outputText value="#{messages['command.save']}" />
-            </a4j:commandLink>
-          </span>
-          <span>
-            <a4j:commandLink action="#{documentActions.toggleDisplayMode}" immediate="true" reRender="assetView" >
-              <h:outputText value="#{messages['command.cancel']}" rendered="#{displayMode == 'edit'}" />
-              <h:outputText value="#{messages['command.edit']}" rendered="#{displayMode == 'view'}" />
-            </a4j:commandLink>
-          </span>
-        </p>
-      </nxu:methodResult>
+      
+      
+      <div class="foldableBox">
+        <h3 class="unfolded">
+          <a href="#nogo" onclick="return toggleBox(this)">
+            <h:outputText value="#{messages['label.header.info.main.data']}" />
+          </a>
+        </h3>
+        <div class="boxBody">
+          <nxu:methodResult name="displayMode" value="#{documentActions.getDisplayMode()}"> 
+            <nxl:layout name="heading" mode="#{displayMode}" value="#{currentSelection}" />
+            <nxl:layout name="damc" mode="#{displayMode}" value="#{currentSelection}" />
+            <nxl:layout name="dublincore" mode="#{displayMode}" value="#{currentSelection}" />
+            
+            <h:panelGrid class="dataOutput" columnClasses="labelColumn, fieldColumn" columns="2">
+              <h:outputText value="#{messages['label.content.size']}" />
+              <h:panelGroup>
+                <h:outputText value="#{currentSelection.picture.views[1].content.length}" rendered="#{currentSelection.type eq 'Picture' and !empty currentSelection.picture.views}" />
+                <h:outputText value="#{currentSelection.file.content.length}" rendered="#{currentSelection.type eq 'File'}" />
+              </h:panelGroup>
+            </h:panelGrid>
+            <h:panelGrid class="dataOutput" columnClasses="labelColumn, fieldColumn" columns="2" rendered="#{currentSelection.type eq 'Picture' and !empty currentSelection.picture.views}">
+              <h:outputText value="#{messages['label.content.height']}" />
+              <h:outputText value="#{currentSelection.picture.views[1].height}" />
+              
+              <h:outputText value="#{messages['label.content.width']}" />
+              <h:outputText value="#{currentSelection.picture.views[1].width}" />
+            </h:panelGrid>
+            
+            <p>
+              <span>
+                <a4j:commandLink id="saveBtn" action="#{documentActions.updateCurrentSelection}" rendered="#{displayMode == 'edit'}" reRender="assetView, documentsList" >
+                  <h:outputText value="#{messages['command.save']}" />
+                </a4j:commandLink>
+              </span>
+              <span>
+                <a4j:commandLink action="#{documentActions.toggleDisplayMode}" immediate="true" reRender="assetView" >
+                  <h:outputText value="#{messages['command.cancel']}" rendered="#{displayMode == 'edit'}" />
+                  <h:outputText value="#{messages['command.edit']}" rendered="#{displayMode == 'view'}" />
+                </a4j:commandLink>
+              </span>
+            </p>
+          </nxu:methodResult>
+        </div>
+      </div>
     </nxu:methodResult>
+    <div class="foldableBox">
+      <h3 class="folded">
+        <a href="#nogo" onclick="return toggleBox(this)">
+          <h:outputText value="#{messages['label.header.info.iptc']}"/>
+        </a>
+      </h3>
+      <div class="boxBody" style="display:none">
+        <h:outputText value="#{messages['label.header.info.iptc']}"/>
+      </div>
+    </div>
+    <div class="foldableBox">
+      <h3 class="folded">
+        <a href="#nogo" onclick="return toggleBox(this)">
+          <h:outputText value="#{messages['label.header.info.xmp']}"/>
+        </a>
+      </h3>
+      <div class="boxBody" style="display:none">
+        <h:outputText value="#{messages['label.header.info.xmp']}"/>
+      </div>
+    </div>
+    <div class="foldableBox">
+      <h3 class="folded">
+        <a href="#nogo" onclick="return toggleBox(this)">
+          <h:outputText value="#{messages['label.header.info.exif']}"/>
+        </a>
+      </h3>
+      <div class="boxBody" style="display: none">
+        <h:outputText value="#{messages['label.header.info.exif']}"/>
+      </div>
+    </div>
   </h:form>
 
 </div>

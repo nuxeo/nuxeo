@@ -256,21 +256,21 @@
       </selector>
       <selector path=".foldableBox h3">
         <border-bottom preset="selectedtab (DAM borders)"/>
-        <color>#fff</color>
+        <color>#000</color>
         <padding>3px 3px 3px 18px</padding>
         <font-size>11px</font-size>
       </selector>
       <selector path=".foldableBox h3.folded">
-        <background>url(/nuxeo/img/arrow_folded.gif) top left no-repeat</background>
+        <background>url(/nuxeo/icons/arrow_folded.gif) top left no-repeat</background>
       </selector>
       <selector path=".foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover">
-        <color>#fff</color>
+        <color>#000</color>
       </selector>
       <selector path=".foldableBox h3.unfolded">
-        <background>url(/nuxeo/img/arrow_unfolded.gif) top left no-repeat</background>
+        <background>url(/nuxeo/icons/arrow_unfolded.gif) top left no-repeat</background>
       </selector>
       <selector path=".foldableBox h3 a">
-        <color>#fff</color>
+        <color>#000</color>
         <display>block</display>
       </selector>
       <selector path=".foldableBox .boxBody">
