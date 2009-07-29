@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.chemistry.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 
 import org.apache.chemistry.ContentStream;
 import org.nuxeo.ecm.core.api.Blob;
@@ -43,10 +42,6 @@ public class NuxeoContentStream implements ContentStream {
 
     public String getFilename() {
         return blob.getFilename();
-    }
-
-    public URI getURI() {
-        return null; // XXX TODO
     }
 
     public InputStream getStream() throws IOException {

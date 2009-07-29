@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
@@ -74,8 +73,7 @@ public class NuxeoFolder extends NuxeoObject implements Folder {
         throw new UnsupportedOperationException();
     }
 
-    public List<CMISObject> getChildren(BaseType type) {
-        // TODO type
+    public List<CMISObject> getChildren() {
         DocumentModelList docs;
         try {
             docs = connection.session.getChildren(doc.getRef());

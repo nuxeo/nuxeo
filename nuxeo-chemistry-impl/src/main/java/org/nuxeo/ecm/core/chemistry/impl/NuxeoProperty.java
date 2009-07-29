@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Type;
@@ -78,10 +79,14 @@ public class NuxeoProperty implements Property {
         org.nuxeo.ecm.core.api.model.Property prop = null;
         if (Property.ID.equals(name)) {
             value = doc.getId();
-        } else if (Property.URI.equals(name)) {
-            value = null;
         } else if (Property.TYPE_ID.equals(name)) {
             value = doc.getType();
+        } else if (Property.BASE_TYPE_ID.equals(name)) {
+            if (doc.isFolder()) {
+                value = BaseType.FOLDER.getId();
+            } else {
+                value = BaseType.DOCUMENT.getId();
+            }
         } else if (Property.CREATED_BY.equals(name)) {
             value = doc.getPropertyValue(NuxeoType.NX_DC_CREATOR);
         } else if (Property.CREATION_DATE.equals(name)) {
@@ -133,8 +138,6 @@ public class NuxeoProperty implements Property {
             value = null;
             prop = doc.hasSchema("file") ? doc.getProperty("file:filename")
                     : null;
-        } else if (Property.CONTENT_STREAM_URI.equals(name)) {
-            value = "http://TODO/XXX"; // XXX
         } else if (Property.PARENT_ID.equals(name)) {
             // TODO cache this
             DocumentRef parentRef = doc.getParentRef();

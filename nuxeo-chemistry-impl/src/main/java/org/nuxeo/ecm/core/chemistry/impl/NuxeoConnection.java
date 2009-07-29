@@ -45,7 +45,6 @@ import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.ReturnVersion;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
@@ -98,7 +97,15 @@ public class NuxeoConnection implements Connection, SPI {
         queryPropNames = new HashMap<String, String>();
         for (Type type : repository.getTypes(null)) {
             String tname = type.getQueryName();
-            queryTypeNames.put(tname.toLowerCase(), tname);
+            String nxname;
+            if (tname.equals(BaseType.FOLDER.getId().toLowerCase())) {
+                nxname = "Folder";
+            } else if (tname.equals(BaseType.DOCUMENT.getId().toLowerCase())) {
+                nxname = "Document";
+            } else {
+                nxname = tname;
+            }
+            queryTypeNames.put(tname.toLowerCase(), nxname);
             for (PropertyDefinition pd : type.getPropertyDefinitions()) {
                 String id = pd.getId();
                 queryPropNames.put(id, id);
@@ -189,18 +196,17 @@ public class NuxeoConnection implements Connection, SPI {
      * ----- Navigation Services -----
      */
 
-    public List<ObjectEntry> getDescendants(ObjectId folder, BaseType type,
-            int depth, String filter, boolean includeAllowableActions,
+    public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
+            String filter, boolean includeAllowableActions,
             boolean includeRelationships, String orderBy) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public List<ObjectEntry> getChildren(ObjectId folder, BaseType type,
-            String filter, boolean includeAllowableActions,
-            boolean includeRelationships, int maxItems, int skipCount,
-            String orderBy, boolean[] hasMoreItems) {
-        // TODO type and orderBy
+    public List<ObjectEntry> getChildren(ObjectId folder, String filter,
+            boolean includeAllowableActions, boolean includeRelationships,
+            int maxItems, int skipCount, String orderBy, boolean[] hasMoreItems) {
+        // TODO orderBy
         DocumentModelList docs;
         try {
             docs = session.getChildren(new IdRef(folder.getId()));
@@ -288,8 +294,7 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectEntry getProperties(ObjectId object,
-            ReturnVersion returnVersion, String filter,
+    public ObjectEntry getProperties(ObjectId object, String filter,
             boolean includeAllowableActions, boolean includeRelationships) {
         // TODO filter, includeAllowableActions, includeRelationships
         DocumentModel doc;
@@ -305,8 +310,7 @@ public class NuxeoConnection implements Connection, SPI {
         return new NuxeoObjectEntry(doc, this);
     }
 
-    public CMISObject getObject(ObjectId object, ReturnVersion returnVersion) {
-        // TODO returnVersion
+    public CMISObject getObject(ObjectId object) {
         DocumentModel doc;
         try {
             DocumentRef docRef = new IdRef(object.getId());
@@ -395,7 +399,7 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteContentStream(ObjectId document) {
+    public ObjectId deleteContentStream(ObjectId document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -412,7 +416,7 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteObject(ObjectId object) {
+    public void deleteObject(ObjectId object, boolean allVersions) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -460,8 +464,9 @@ public class NuxeoConnection implements Connection, SPI {
     public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
         DocumentModelList docs;
+        String nxql = cmisSqlToNXQL(statement);
         try {
-            docs = session.query(cmisSqlToNXQL(statement), null, 0, 0, true);
+            docs = session.query(nxql, null, 0, 0, true);
         } catch (ClientException e) {
             throw new RuntimeException(e.toString(), e);
         }
@@ -474,7 +479,7 @@ public class NuxeoConnection implements Connection, SPI {
 
     protected String cmisSqlToNXQL(String q) {
         Matcher matcher = Pattern.compile(
-                "SELECT\\s+([*\\w, ]+)\\s+FROM\\s+(\\w+)\\s+WHERE\\s+(.*)",
+                "SELECT\\s+([*\\w, ]+)\\s+FROM\\s+([\\w:]+)\\s+WHERE\\s+(.*)",
                 Pattern.CASE_INSENSITIVE).matcher(q);
         String type;
         String where;
@@ -483,7 +488,7 @@ public class NuxeoConnection implements Connection, SPI {
             where = matcher.group(3);
         } else {
             matcher = Pattern.compile(
-                    "SELECT\\s+([*\\w, ]+)\\s+FROM\\s+(\\w+)",
+                    "SELECT\\s+([*\\w, ]+)\\s+FROM\\s+([\\w:]+)",
                     Pattern.CASE_INSENSITIVE).matcher(q);
             if (!matcher.matches())
                 throw new RuntimeException("Invalid query: " + q);
@@ -591,18 +596,13 @@ public class NuxeoConnection implements Connection, SPI {
     }
 
     public Map<String, Serializable> getPropertiesOfLatestVersion(
-            String versionSeriesId, boolean majorVersion, String filter) {
+            String versionSeriesId, boolean major, String filter) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public Collection<ObjectEntry> getAllVersions(String versionSeriesId,
             String filter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void deleteAllVersions(String versionSeriesId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

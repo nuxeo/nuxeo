@@ -60,12 +60,15 @@ public class NuxeoType implements Type {
 
     private final DocumentType documentType;
 
+    private final String id;
+
     private final Map<String, PropertyDefinition> propertyDefinitions;
 
     private final ContentStreamPresence contentStreamAllowed;
 
     public NuxeoType(DocumentType documentType) {
         this.documentType = documentType;
+        id = mappedId(documentType.getName());
 
         Map<String, PropertyDefinition> map = new HashMap<String, PropertyDefinition>();
         for (PropertyDefinition def : SimpleType.getBasePropertyDefinitions(getBaseType())) {
@@ -145,6 +148,16 @@ public class NuxeoType implements Type {
 
     }
 
+    protected static String mappedId(String id) {
+        if (id.equals("Document")) {
+            return BaseType.DOCUMENT.getId();
+        }
+        if (id.equals("Folder")) {
+            return BaseType.FOLDER.getId();
+        }
+        return id;
+    }
+
     protected PropertyType getPropertType(
             org.nuxeo.ecm.core.schema.types.SimpleType type) {
         org.nuxeo.ecm.core.schema.types.SimpleType primitive = type.getPrimitiveType();
@@ -161,11 +174,11 @@ public class NuxeoType implements Type {
     }
 
     public String getId() {
-        return documentType.getName();
+        return id;
     }
 
     public String getLocalName() {
-        return documentType.getName();
+        return id;
     }
 
     public URI getLocalNamespace() {
@@ -187,12 +200,12 @@ public class NuxeoType implements Type {
     }
 
     public String getParentId() {
-        String name = documentType.getName();
-        if ("Document".equals(name) || "Folder".equals(name)) {
+        if (id.equals(BaseType.DOCUMENT.getId())
+                || id.equals(BaseType.FOLDER.getId())) {
             return null;
         }
         org.nuxeo.ecm.core.schema.types.Type superType = documentType.getSuperType();
-        return superType == null ? null : superType.getName();
+        return superType == null ? null : mappedId(superType.getName());
     }
 
     public BaseType getBaseType() {
@@ -203,7 +216,7 @@ public class NuxeoType implements Type {
     }
 
     public String getDescription() {
-        return documentType.getName();
+        return id;
     }
 
     public boolean isCreatable() {

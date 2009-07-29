@@ -168,66 +168,74 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         assertNotNull(props);
         assertTrue(props.size() > 0);
 
-        List<CMISObject> entries = root.getChildren(null);
+        List<CMISObject> entries = root.getChildren();
         assertEquals(2, entries.size());
     }
 
     public void testQuery() {
         Connection conn = repository.getConnection(null);
-        Collection<CMISObject> res = conn.query("SELECT * FROM Document", false);
+        Collection<CMISObject> res = conn.query("SELECT * FROM cmis:document",
+                false);
         assertNotNull(res);
         assertEquals(4, res.size());
-        res = conn.query("SELECT * FROM Folder", false);
+        res = conn.query("SELECT * FROM cmis:folder", false);
         assertEquals(3, res.size());
         res = conn.query(
-                "SELECT * FROM Document WHERE dc:title = 'testfile1_Title'",
+                "SELECT * FROM cmis:document WHERE dc:title = 'testfile1_Title'",
                 false);
         assertEquals(1, res.size());
         // spec says names are case-insensitive
         res = conn.query(
-                "SELECT * FROM DOCUMENT WHERE DC:TITLE = 'testfile1_Title'",
+                "SELECT * FROM CMIS:DOCUMENT WHERE DC:TITLE = 'testfile1_Title'",
                 false);
         assertEquals(1, res.size());
 
         // CMIS ANY syntax for multi-valued properties
         res = conn.query(
-                "SELECT * FROM Document WHERE 'pete' = ANY dc:contributors",
+                "SELECT * FROM cmis:document WHERE 'pete' = ANY dc:contributors",
                 false);
         assertEquals(1, res.size());
         res = conn.query(
-                "SELECT * FROM Document WHERE 'bob' = ANY dc:contributors",
+                "SELECT * FROM cmis:document WHERE 'bob' = ANY dc:contributors",
                 false);
         assertEquals(2, res.size());
 
         // CMIS fulltext
         res = conn.query(
-                "SELECT * FROM Document WHERE CONTAINS(,'restaurant')", false);
+                "SELECT * FROM cmis:document WHERE CONTAINS(,'restaurant')",
+                false);
         assertEquals(1, res.size());
-        res = conn.query("SELECT * FROM Document WHERE CONTAINS('restaurant')",
+        res = conn.query(
+                "SELECT * FROM cmis:document WHERE CONTAINS('restaurant')",
                 false);
         assertEquals(1, res.size());
 
         // CMIS IN_TREE / IN_FOLDER
-        res = conn.query(String.format(
-                "SELECT * FROM Document WHERE IN_FOLDER('%s')", folder1id),
-                false);
+        res = conn.query(
+                String.format(
+                        "SELECT * FROM cmis:document WHERE IN_FOLDER('%s')",
+                        folder1id), false);
         assertEquals(3, res.size());
         res = conn.query(String.format(
-                "SELECT * FROM Document WHERE IN_TREE('%s')", folder2id), false);
+                "SELECT * FROM cmis:document WHERE IN_TREE('%s')", folder2id),
+                false);
         assertEquals(1, res.size());
 
         // special CMIS properties
         res = conn.query(String.format(
-                "SELECT * FROM Document WHERE ObjectId = '%s'", file4id), false);
+                "SELECT * FROM cmis:document WHERE cmis:ObjectId = '%s'",
+                file4id), false);
         assertEquals(1, res.size());
         res = conn.query(String.format(
-                "SELECT * FROM Document WHERE ParentId = '%s'", folder1id),
+                "SELECT * FROM cmis:document WHERE cmis:ParentId = '%s'",
+                folder1id), false);
+        assertEquals(3, res.size());
+        res = conn.query(
+                "SELECT * FROM cmis:document WHERE cmis:ObjectTypeId = 'File'",
                 false);
         assertEquals(3, res.size());
-        res = conn.query("SELECT * FROM Document WHERE ObjectTypeId = 'File'",
-                false);
-        assertEquals(3, res.size());
-        res = conn.query("SELECT * FROM Document WHERE Name = 'testfile4'",
+        res = conn.query(
+                "SELECT * FROM cmis:document WHERE cmis:Name = 'testfile4'",
                 false);
         assertEquals(1, res.size());
     }

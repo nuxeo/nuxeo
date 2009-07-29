@@ -22,7 +22,12 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.JoinCapability;
@@ -67,9 +72,44 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
             }
             throw new RuntimeException(e.toString(), e); // TODO
         }
-        typeManager = new SimpleTypeManager();
+        // scan the types to find super/inherited relationships
+        Map<String, List<String>> typesChildren = new HashMap<String, List<String>>();
         for (DocumentType dt : schemaManager.getDocumentTypes()) {
-            typeManager.addType(new NuxeoType(dt));
+            org.nuxeo.ecm.core.schema.types.Type st = dt.getSuperType();
+            if (st == null) {
+                continue;
+            }
+            String name = st.getName();
+            List<String> siblings = typesChildren.get(name);
+            if (siblings == null) {
+                siblings = new LinkedList<String>();
+                typesChildren.put(name, siblings);
+            }
+            siblings.add(dt.getName());
+        }
+        // convert the transitive closure for Folder and Document subtypes
+        Set<String> done = new HashSet<String>();
+        typeManager = new SimpleTypeManager();
+        addTypeRecursively("Folder", typesChildren, done, schemaManager);
+        addTypeRecursively("Document", typesChildren, done, schemaManager);
+    }
+
+    protected void addTypeRecursively(String name,
+            Map<String, List<String>> typesChildren, Set<String> done,
+            SchemaManager schemaManager) {
+        if (done.contains(name)) {
+            return;
+        }
+        done.add(name);
+        DocumentType dt = schemaManager.getDocumentType(name);
+        typeManager.addType(new NuxeoType(dt));
+        // recurse in children
+        List<String> children = typesChildren.get(name);
+        if (children == null) {
+            return;
+        }
+        for (String sub : children) {
+            addTypeRecursively(sub, typesChildren, done, schemaManager);
         }
     }
 
