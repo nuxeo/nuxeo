@@ -451,6 +451,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * adapts the value it is given to store.
      *
      * @return the property value to use for write, which may be null
+     * @since 5.2.1
      */
     Serializable getValueForWrite() throws PropertyException;
 
