@@ -140,9 +140,13 @@ The automated build / selenium test reports are hosted there:
   http://qapriv.nuxeo.org/hudson/job/nuxeo-dam/
   http://qapriv.nuxeo.org/hudson/job/nuxeo-dam-ftest/
 
-Hudson also publishes nightly builds there (jboss distribution only for now):
+Hudson also publishes nightly builds there:
 
+Jboss distribution: 
   http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots/org/nuxeo/dam/distribution/nuxeo-dam-distribution-jboss/1.0-SNAPSHOT/
+  
+Jetty distribution:
+  http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots/org/nuxeo/dam/distribution/nuxeo-dam-distribution-jetty/1.0-SNAPSHOT/
 
 
 Document types and schemas

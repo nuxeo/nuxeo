@@ -29,7 +29,6 @@
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-forms-layout-api"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-forms-layout-client"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-jbpm-api"/>
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-lang"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-mimetype-api"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-mimetype-core"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-placeful-api"/>
