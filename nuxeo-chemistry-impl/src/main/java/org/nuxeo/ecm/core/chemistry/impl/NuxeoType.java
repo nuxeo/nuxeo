@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.core.chemistry.impl;
 
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,6 +39,7 @@ import org.apache.chemistry.impl.simple.SimpleType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.Namespace;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -66,7 +69,7 @@ public class NuxeoType implements Type {
 
         Map<String, PropertyDefinition> map = new HashMap<String, PropertyDefinition>();
         for (PropertyDefinition def : SimpleType.getBasePropertyDefinitions(getBaseType())) {
-            map.put(def.getName(), def);
+            map.put(def.getId(), def);
         }
 
         boolean hasFileSchema = false;
@@ -124,10 +127,10 @@ public class NuxeoType implements Type {
                 name = prefixedName;
 
                 PropertyDefinition def = new SimplePropertyDefinition(name,
-                        "def:nx:" + name, name, "", inherited, cmisType,
-                        multiValued, choices, openChoice, required,
+                        "def:nx:" + name, null, name, name, "", inherited,
+                        cmisType, multiValued, choices, openChoice, required,
                         defaultValue, Updatability.READ_WRITE, queryable,
-                        orderable, 0, null, null, -1, null, null);
+                        orderable, 0, null, null, -1, null);
                 if (map.containsKey(name)) {
                     throw new RuntimeException(
                             "Property already defined for name: " + name);
@@ -161,6 +164,20 @@ public class NuxeoType implements Type {
         return documentType.getName();
     }
 
+    public String getLocalName() {
+        return documentType.getName();
+    }
+
+    public URI getLocalNamespace() {
+        Namespace ns = documentType.getNamespace();
+        try {
+            return ns == null ? null : new URI(ns.uri);
+        } catch (URISyntaxException e) {
+            log.error("Invalid URI: " + ns.uri + " for type: " + getId(), e);
+            return null;
+        }
+    }
+
     public String getQueryName() {
         return getId();
     }
@@ -183,20 +200,6 @@ public class NuxeoType implements Type {
             return BaseType.FOLDER;
         }
         return BaseType.DOCUMENT;
-    }
-
-    public String getBaseTypeQueryName() {
-        switch (getBaseType()) {
-        case DOCUMENT:
-            return "Document";
-        case FOLDER:
-            return "Folder";
-        case POLICY:
-            return "Policy";
-        case RELATIONSHIP:
-            return "Relationship";
-        }
-        throw new UnsupportedOperationException(getBaseType().toString());
     }
 
     public String getDescription() {

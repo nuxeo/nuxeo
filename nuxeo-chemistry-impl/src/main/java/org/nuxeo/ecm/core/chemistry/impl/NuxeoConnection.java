@@ -96,12 +96,12 @@ public class NuxeoConnection implements Connection, SPI {
         // preprocess type names for queries
         queryTypeNames = new HashMap<String, String>();
         queryPropNames = new HashMap<String, String>();
-        for (Type type : repository.getTypes(null, true)) {
+        for (Type type : repository.getTypes(null)) {
             String tname = type.getQueryName();
             queryTypeNames.put(tname.toLowerCase(), tname);
             for (PropertyDefinition pd : type.getPropertyDefinitions()) {
-                String name = pd.getName();
-                queryPropNames.put(name, name);
+                String id = pd.getId();
+                queryPropNames.put(id, id);
             }
         }
         // actual NXQL mapping for some CMIS system props
@@ -501,7 +501,7 @@ public class NuxeoConnection implements Connection, SPI {
                 String cmisName = entry.getKey();
                 String nxqlName = entry.getValue();
                 where = Pattern.compile("\\b" + cmisName + "\\b", // word
-                                                                  // boundary
+                        // boundary
                         Pattern.CASE_INSENSITIVE).matcher(where).replaceAll(
                         Matcher.quoteReplacement(nxqlName));
             }

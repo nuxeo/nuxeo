@@ -215,7 +215,7 @@ public class NuxeoProperty implements Property {
 
         public void setValue(Serializable value) {
             throw new UnsupportedOperationException("Read-only property: "
-                    + propertyDefinition.getName());
+                    + propertyDefinition.getId());
         }
 
     }

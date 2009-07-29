@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Type;
@@ -51,20 +52,23 @@ public class NuxeoObjectEntry implements ObjectEntry {
         return doc.getType();
     }
 
-    public Serializable getValue(String name) {
+    public BaseType getBaseType() {
+        return type.getBaseType();
+    }
+
+    public Serializable getValue(String id) {
         try {
             // TODO avoid constructing property object
-            return NuxeoProperty.getProperty(doc, type, name,
-                    connection.session).getValue();
+            return NuxeoProperty.getProperty(doc, type, id, connection.session).getValue();
         } catch (ClientException e) {
             throw new RuntimeException(e.toString(), e); // TODO
         }
     }
 
-    public void setValue(String name, Serializable value) {
+    public void setValue(String id, Serializable value) {
         try {
             // TODO avoid constructing property object
-            NuxeoProperty.getProperty(doc, type, name, connection.session).setValue(
+            NuxeoProperty.getProperty(doc, type, id, connection.session).setValue(
                     value);
         } catch (ClientException e) {
             throw new RuntimeException(e.toString(), e); // TODO
@@ -74,15 +78,15 @@ public class NuxeoObjectEntry implements ObjectEntry {
     public Map<String, Serializable> getValues() {
         Map<String, Serializable> values = new HashMap<String, Serializable>();
         for (PropertyDefinition propertyDefinition : type.getPropertyDefinitions()) {
-            String name = propertyDefinition.getName();
-            values.put(name, getValue(name));
+            String id = propertyDefinition.getId();
+            values.put(id, getValue(id));
         }
         return values;
     }
 
     public void setValues(Map<String, Serializable> values) {
-        for (String name : values.keySet()) {
-            setValue(name, values.get(name));
+        for (String id : values.keySet()) {
+            setValue(id, values.get(id));
         }
     }
 

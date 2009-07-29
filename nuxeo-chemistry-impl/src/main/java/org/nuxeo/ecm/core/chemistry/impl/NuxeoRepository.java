@@ -20,11 +20,8 @@ package org.nuxeo.ecm.core.chemistry.impl;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.chemistry.Connection;
@@ -37,7 +34,9 @@ import org.apache.chemistry.RepositoryEntry;
 import org.apache.chemistry.RepositoryInfo;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.TypeManager;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
+import org.apache.chemistry.impl.simple.SimpleTypeManager;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
@@ -47,7 +46,7 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
 
     protected final String repositoryName;
 
-    protected Map<String, Type> types;
+    protected TypeManager typeManager;
 
     protected ObjectId rootFolderId;
 
@@ -56,6 +55,9 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
     }
 
     protected void initializeTypes() {
+        if (typeManager != null) {
+            return;
+        }
         SchemaManager schemaManager;
         try {
             schemaManager = Framework.getService(SchemaManager.class);
@@ -65,10 +67,9 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
             }
             throw new RuntimeException(e.toString(), e); // TODO
         }
-        types = new HashMap<String, Type>();
+        typeManager = new SimpleTypeManager();
         for (DocumentType dt : schemaManager.getDocumentTypes()) {
-            NuxeoType type = new NuxeoType(dt);
-            types.put(type.getId(), type);
+            typeManager.addType(new NuxeoType(dt));
         }
     }
 
@@ -113,63 +114,24 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
         return this;
     }
 
+    public void addType(Type type) {
+        throw new UnsupportedOperationException("Cannot add types");
+    }
+
     public Type getType(String typeId) {
-        if (types == null) {
-            initializeTypes();
-        }
-        return types.get(typeId);
+        initializeTypes();
+        return typeManager.getType(typeId);
     }
 
-    public Collection<Type> getTypes(String typeId,
+    public Collection<Type> getTypes(String typeId) {
+        initializeTypes();
+        return typeManager.getTypes(typeId);
+    }
+
+    public Collection<Type> getTypes(String typeId, int depth,
             boolean returnPropertyDefinitions) {
-        if (types == null) {
-            initializeTypes();
-        }
-        // TODO always returns property definitions for now
-        if (typeId == null) {
-            return Collections.unmodifiableCollection(types.values());
-        }
-        if (!types.containsKey(typeId)) {
-            return null; // TODO
-        }
-        // TODO return all descendants as well
-        return Collections.singleton(types.get(typeId));
-    }
-
-    public List<Type> getTypes(String typeId,
-            boolean returnPropertyDefinitions, int maxItems, int skipCount,
-            boolean[] hasMoreItems) {
-        if (maxItems < 0) {
-            throw new IllegalArgumentException(String.valueOf(maxItems));
-        }
-        if (skipCount < 0) {
-            throw new IllegalArgumentException(String.valueOf(skipCount));
-        }
-        if (hasMoreItems.length < 1) {
-            throw new IllegalArgumentException(
-                    "hasMoreItems parameter too small");
-        }
-
-        Collection<Type> t = getTypes(typeId, returnPropertyDefinitions);
-        if (t == null) {
-            hasMoreItems[0] = false;
-            return Collections.emptyList();
-        }
-        List<Type> all = new ArrayList<Type>(t);
-        int fromIndex = skipCount;
-        if (fromIndex < 0 || fromIndex > all.size()) {
-            hasMoreItems[0] = false;
-            return Collections.emptyList();
-        }
-        if (maxItems == 0) {
-            maxItems = all.size();
-        }
-        int toIndex = skipCount + maxItems;
-        if (toIndex > all.size()) {
-            toIndex = all.size();
-        }
-        hasMoreItems[0] = toIndex < all.size();
-        return all.subList(fromIndex, toIndex);
+        initializeTypes();
+        return typeManager.getTypes(typeId, depth, returnPropertyDefinitions);
     }
 
     /*

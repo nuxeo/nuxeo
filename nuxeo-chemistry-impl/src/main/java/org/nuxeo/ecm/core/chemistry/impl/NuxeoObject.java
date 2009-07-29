@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.Policy;
@@ -113,6 +114,10 @@ public class NuxeoObject extends BaseObject implements CMISObject {
 
     public Type getType() {
         return connection.repository.getType(doc.getType());
+    }
+
+    public BaseType getBaseType() {
+        return getType().getBaseType();
     }
 
     public Serializable getValue(String name) {
