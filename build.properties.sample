@@ -1,7 +1,9 @@
 # Example for Windows
 jboss.dir=C:/Program Files/JBoss
+jetty.dir=C:/Program Files/Jetty
 # Example for Unix
 #jboss.dir=/opt/jboss
+#jetty.dir=/opt/jetty
 
 # Which JBoss server config to use
 jboss.config=default

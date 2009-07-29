@@ -7,6 +7,9 @@
   <property name="jboss.dir" value="/opt/jboss" />
   <property name="jboss.config" value="default" />
   <property name="mvn.opts" value="" />
+  
+  <property name="jetty.dir" value="/opt/jetty" />
+  <property name="jetty.deploy.dir" value="${jetty.dir}/bundles" />
 
   <property name="javac.debug" value="true" />
   <property name="javac.deprecation" value="false" />
@@ -59,6 +62,10 @@
 
   <target name="deploy" depends="install-ear,package,copy,copy-lib" description="Build and copy to JBoss">
     <echo message="Deployed ${ant.project.name} to ${deploy.dir}" />
+  </target>
+
+  <target name="deploy-jetty" depends="install-ear,copy-jars-jetty" description="Build and copy to JBoss">
+    <echo message="Deployed ${ant.project.name} to ${jetty.deploy.dir}" />
   </target>
 
   <target name="package" depends="setproperties,package-unix,package-windows" description="Package Nuxeo DAM" />
@@ -177,6 +184,16 @@
       <fileset dir="${basedir}">
         <include name="*/target/*.jar" />
         <exclude name="*/target/*-sources.jar" />
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="copy-jars-jetty">
+    <copy todir="${jetty.deploy.dir}" overwrite="true" flatten="true">
+      <fileset dir="${basedir}">
+        <include name="*/target/*.jar" />
+        <exclude name="*/target/*-sources.jar" />
+        <exclude name="*/target/*test*.jar" />
       </fileset>
     </copy>
   </target>
