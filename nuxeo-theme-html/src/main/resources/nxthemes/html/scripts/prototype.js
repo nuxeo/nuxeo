@@ -3333,7 +3333,8 @@ var Selector = Class.create({
       case 'selectorsAPI':
         if (root !== document) {
           var oldId = root.id, id = $(root).identify();
-          id = id.replace(/[\.:]/g, "\\$0");
+          //NXP-3782 regexp bug, fixed in 1.6.1
+          id = id.replace(/([\.:])/g, "\\$1");
           e = "#" + id + " " + e;
         }
 
