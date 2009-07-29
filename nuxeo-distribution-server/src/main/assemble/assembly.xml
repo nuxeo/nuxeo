@@ -35,6 +35,7 @@
         <!-- only if profile jca enabled -->
         <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-jca" profile="jca"/>
         <artifact group="org.nuxeo.ecm.core" name="nuxeo-core"/>
+	<artifact group="org.nuxeo.ecm.core" name="nuxeo-core-persistence"/> 
         <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-convert"/>
         <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-convert-api"/>
         <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-convert-plugins"/>
