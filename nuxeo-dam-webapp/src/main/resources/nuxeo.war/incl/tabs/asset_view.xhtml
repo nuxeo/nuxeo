@@ -8,65 +8,69 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
   
-  <iframe class="previewIframe" src="#{documentActions.previewURL}" frameborder="0" height="350px" width="512px" scrolling="auto" id="preview-frame">
-  </iframe>
+  <f:subview rendered="false">
+    TODO (CB): This can't work since the picture download is done in 
+    PictureManagerBean which has injected NavigationContext (that is null on DAM)
+    Possible solution: re-implement the method in DAM without using the NavigationContext.
+    (iframe-preview restlet will be used until a solution is found)
+    For more details see: http://jira.nuxeo.org/browse/DAM-171 
+    <nxh:graphicImage id="theImage" url="#{nxd:complexFileUrl('downloadPicture', documentActions.currentSelection, 'picture:views', 0, 'content', documentActions.currentSelection.picture.views[0].filename)}" />
+  </f:subview> 
+  
+  <iframe class="previewIframe" src="#{documentActions.previewURL}" frameborder="0" height="350px" width="512px" scrolling="auto" id="preview-frame"> </iframe>
 
-  <h:form id="assetView">
-    <nxu:methodResult name="currentSelection" value="#{documentActions.getCurrentSelection()}"> 
-      <div class="documentPreviewTitle">
-        <h4>
-          <h:outputText value="#{currentSelection.picture.views[1].filename}" rendered="#{currentSelection.type eq 'Picture' and !empty currentSelection.picture.views}" />
-          <h:outputText value="#{currentSelection.file.filename}" rendered="#{currentSelection.type eq 'File'}" />
-        </h4>
-      </div>
-      
-      
-      <div class="foldableBox">
-      	<nxu:methodResult name="displayMode" value="#{documentActions.getDisplayMode()}">
-        <div class="foldableBoxTitleBox">
+  <a4j:form id="assetView">
+    <div class="documentPreviewTitle">
+      <h4>
+        <h:outputText value="#{documentActions.currentSelection.picture.views[1].filename}" rendered="#{documentActions.currentSelection.hasSchema('picture') and !empty documentActions.currentSelection.picture.views}" />
+        <h:outputText value="#{documentActions.currentSelection.file.filename}" rendered="#{documentActions.currentSelection.hasSchema('file')}" />
+      </h4>
+    </div>
+
+    <div class="foldableBox">
+      <div class="foldableBoxTitleBox">
         <h3 class="unfolded">
           <a href="#nogo" onclick="return toggleBox(this)">
             <h:outputText value="#{messages['label.header.info.main.data']}" />
           </a>
         </h3>
         <div class="dataBlockActions">
-              <span>
-                <a4j:commandLink styleClass="button" action="#{documentActions.updateCurrentSelection}" rendered="#{displayMode == 'edit'}" reRender="assetView, documentsList" >
-                  <h:outputText value="#{messages['command.save']}" />
-                </a4j:commandLink>
-              </span>
-              <span>
-                <a4j:commandLink styleClass="button" action="#{documentActions.toggleDisplayMode}" immediate="true" reRender="assetView" >
-                  <h:outputText value="#{messages['command.cancel']}" rendered="#{displayMode == 'edit'}" />
-                  <h:outputText value="#{messages['command.edit']}" rendered="#{displayMode == 'view'}" />
-                </a4j:commandLink>
-              </span>
-          </div>
-          <div style="clear:both;"></div>
+          <span>
+            <a4j:commandLink styleClass="button" action="#{documentActions.updateCurrentSelection}" rendered="#{documentActions.displayMode == 'edit'}" reRender="assetView, documentsList" >
+              <h:outputText value="#{messages['command.save']}" />
+            </a4j:commandLink>
+          </span>
+          <span>
+            <a4j:commandLink styleClass="button" action="#{documentActions.toggleDisplayMode}" immediate="true" reRender="assetView" >
+              <h:outputText value="#{messages['command.cancel']}" rendered="#{documentActions.displayMode == 'edit'}" />
+              <h:outputText value="#{messages['command.edit']}" rendered="#{documentActions.displayMode == 'view'}" />
+            </a4j:commandLink>
+          </span>
         </div>
-        <div class="boxBody"> 
-            <nxl:layout name="heading" mode="#{displayMode}" value="#{currentSelection}" />
-            <nxl:layout name="damc" mode="#{displayMode}" value="#{currentSelection}" />
-            <nxl:layout name="dublincore" mode="#{displayMode}" value="#{currentSelection}" />
-            
-            <h:panelGrid class="dataOutput" columnClasses="labelColumn, fieldColumn" columns="2">
-              <h:outputText value="#{messages['label.content.size']}" />
-              <h:panelGroup>
-                <h:outputText value="#{currentSelection.picture.views[1].content.length}" rendered="#{currentSelection.type eq 'Picture' and !empty currentSelection.picture.views}" />
-                <h:outputText value="#{currentSelection.file.content.length}" rendered="#{currentSelection.type eq 'File'}" />
-              </h:panelGroup>
-            </h:panelGrid>
-            <h:panelGrid class="dataOutput" columnClasses="labelColumn, fieldColumn" columns="2" rendered="#{currentSelection.type eq 'Picture' and !empty currentSelection.picture.views}">
-              <h:outputText value="#{messages['label.content.height']}" />
-              <h:outputText value="#{currentSelection.picture.views[1].height}" />
-              
-              <h:outputText value="#{messages['label.content.width']}" />
-              <h:outputText value="#{currentSelection.picture.views[1].width}" />
-            </h:panelGrid>
-        </div>
-        </nxu:methodResult>
+        <div style="clear:both;"></div>
       </div>
-    </nxu:methodResult>
+      <div class="boxBody"> 
+          <nxl:layout name="heading" mode="#{documentActions.displayMode}" value="#{documentActions.currentSelection}" />
+          <nxl:layout name="damc" mode="#{documentActions.displayMode}" value="#{documentActions.currentSelection}" />
+          <nxl:layout name="dublincore" mode="#{documentActions.displayMode}" value="#{documentActions.currentSelection}" />
+          
+          <h:panelGrid class="dataOutput" columnClasses="labelColumn, fieldColumn" columns="2">
+            <h:outputText value="#{messages['label.content.size']}" />
+            <h:panelGroup>
+              <h:outputText value="#{documentActions.currentSelection.picture.views[1].content.length}" rendered="#{documentActions.currentSelection.hasSchema('picture') and !empty documentActions.currentSelection.picture.views}" />
+              <h:outputText value="#{documentActions.currentSelection.file.content.length}" rendered="#{documentActions.currentSelection.hasSchema('file')}" />
+            </h:panelGroup>
+          </h:panelGrid>
+          <h:panelGrid class="dataOutput" columnClasses="labelColumn, fieldColumn" columns="2" rendered="#{documentActions.currentSelection.hasSchema('picture') and !empty documentActions.currentSelection.picture.views}">
+            <h:outputText value="#{messages['label.content.height']}" />
+            <h:outputText value="#{currentSelection.picture.views[1].height}" />
+            
+            <h:outputText value="#{messages['label.content.width']}" />
+            <h:outputText value="#{currentSelection.picture.views[1].width}" />
+          </h:panelGrid>
+      </div>
+    </div>
+
     <div class="foldableBox">
       <div class="foldableBoxTitleBox">
 	    <h3 class="folded">
@@ -80,6 +84,7 @@
         <h:outputText value="#{messages['label.header.info.iptc']}"/>
       </div>
     </div>
+    
     <div class="foldableBox">
       <div class="foldableBoxTitleBox">
 	    <h3 class="folded">
@@ -93,6 +98,7 @@
         <h:outputText value="#{messages['label.header.info.xmp']}"/>
       </div>
     </div>
+    
     <div class="foldableBox">
       <div class="foldableBoxTitleBox">
         <h3 class="folded">
@@ -106,6 +112,6 @@
         <h:outputText value="#{messages['label.header.info.exif']}"/>
       </div>
     </div>
-  </h:form>
+  </a4j:form>
 
 </div>
