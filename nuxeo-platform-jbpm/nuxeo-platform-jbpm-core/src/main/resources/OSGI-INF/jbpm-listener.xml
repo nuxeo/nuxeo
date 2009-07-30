@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.jbpm.core.listeners">
+
+	<extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+		point="listener">
+		<listener async="false" postCommit="false"
+			class="org.nuxeo.ecm.platform.jbpm.core.listener.DeleteProcessForDeletedDocumentListener"
+			name="removeProcessForDeletedDocument">
+			<event>aboutToRemove</event>
+		</listener>
+	</extension>
+
+</component>
