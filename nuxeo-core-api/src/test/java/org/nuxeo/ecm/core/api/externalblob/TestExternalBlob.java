@@ -52,7 +52,8 @@ public class TestExternalBlob extends NXRuntimeTestCase {
     }
 
     protected File createTempFile() throws Exception {
-        File file = File.createTempFile("testExternalBlob", ".txt");
+        File tmpdir = new File("/tmp");
+        File file = File.createTempFile("testExternalBlob", ".txt", tmpdir);
         FileWriter fstream = new FileWriter(file);
         BufferedWriter out = new BufferedWriter(fstream);
         out.write("Hello External Blob");
