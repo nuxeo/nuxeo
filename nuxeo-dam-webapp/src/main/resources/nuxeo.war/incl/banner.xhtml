@@ -25,14 +25,23 @@
     </rich:modalPanel>
 
     <h:form>
+    
       <h:outputLink value="javascript:Richfaces.showModalPanel('importSetFormPanel');" id="importset_creation_button">
           <h:outputText class="importButton" value="${messages['label.action.createImportSet']}"/>
+      </h:outputLink>
+      
+      <h:outputLink id="settings_button" action="#{documentActions.logout}">
+          <h:outputText class="settingsButton" value="${messages['label.action.settings']}"/>
+      </h:outputLink>
+      
+      <h:outputLink id="configuration_button" action="#{documentActions.logout}">
+          <h:outputText class="configButton" value="${messages['label.action.config']}"/>
       </h:outputLink>
       
       <h:outputText value=" | " />
     
       <h:commandLink action="#{documentActions.logout}">
-        <h:outputText value="#{messages['command.logout']}" />
+        <h:outputText class="logOutButton" value="#{messages['command.logout']}" />
       </h:commandLink>
     </h:form>
     

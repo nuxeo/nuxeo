@@ -94,6 +94,9 @@
     <widget element="page[1]/section[1]/cell[2]/fragment[1]">
       <view>dam banner</view>
     </widget>
+    <widget element="page[1]/section[3]/cell[1]/fragment[2]">
+      <view>dam language</view>
+    </widget>
     <widget element="page[1]/section[1]/cell[2]/fragment[2]">
       <view>dam includes</view>
     </widget>
@@ -117,7 +120,7 @@
     </widget>
     <!-- buttons -->
     <style name="default buttons">
-      <selector path="input.button">
+      <selector path=".button">
         <font preset="default (DAM fonts)"/>
         <color>#333333</color>
         <border preset="buttons (DAM borders)"/>
@@ -126,16 +129,21 @@
         <padding>2px 5px 2px 5px</padding>
         <cursor>pointer</cursor>
       </selector>
-      <selector path="input.button:hover">
+      <selector path=".button:hover">
         <color>#000000</color>
         <border-color>#92999e</border-color>
       </selector>
-      <selector path="input.button[disabled=disabled], input.button[disabled=disabled]:hover">
+      <selector path=".button[disabled=disabled], .button[disabled=disabled]:hover">
         <color>#ccc</color>
+      </selector>
+      <selector path=".foldableBoxTitleBox .button">
+        <font preset="small (DAM fonts)"/>
+        <margin>1px 5px 1px 0px</margin>
+        <padding>1px 5px</padding>
       </selector>
     </style>
     <style name="common style" inherit="default buttons">
-      <selector path="h1, h2, h3, h4, h5, h6, div, form, p">
+      <selector path="h1, h2, h3, h4, h5, h6, div, form, p, span">
         <margin>0</margin>
         <padding>0</padding>
       </selector>
@@ -242,37 +250,39 @@
         <color preset="blue.gray (DAM colors)"/>
         <background preset="white (DAM backgrounds)"/>
       </selector>
+      <selector path="#selectionView iframe">
+        <width>100%</width>
+      </selector>
       <selector path=".tabsContent">
         <margin>0px</margin>
         <padding>5px 10px 10px 10px</padding>
       </selector>
+      <selector path=".foldableBoxTitleBox"/>
       <selector path=".foldableBox">
-        <border preset="notselectedtab (DAM borders)"/>
-        <background preset="selectedtab (DAM backgrounds)"/>
-        <margin-bottom>20px</margin-bottom>
+        <margin>0</margin>
+        <background>transparent url(/nuxeo/img/data_title_bg.png) repeat-x top left</background>
       </selector>
       <selector path=".foldableBox h3">
-        <border-bottom preset="selectedtab (DAM borders)"/>
-        <color>#000</color>
         <padding>3px 3px 3px 18px</padding>
         <font-size>11px</font-size>
+        <float>left</float>
       </selector>
       <selector path=".foldableBox h3.folded">
-        <background>url(/nuxeo/icons/arrow_folded.gif) top left no-repeat</background>
-      </selector>
-      <selector path=".foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover">
-        <color>#000</color>
+        <background>transparent url(/nuxeo/icons/arrow_folded.gif) top left no-repeat</background>
       </selector>
       <selector path=".foldableBox h3.unfolded">
-        <background>url(/nuxeo/icons/arrow_unfolded.gif) top left no-repeat</background>
+        <background>transparent url(/nuxeo/icons/arrow_unfolded.gif) top left no-repeat</background>
       </selector>
-      <selector path=".foldableBox h3 a">
-        <color>#000</color>
-        <display>block</display>
+      <selector path=".foldableBox h3 a,.foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover">
+        <color>#4B4D68</color>
+      </selector>
+      <selector path=".dataBlockActions">
+        <float>right</float>
+        <padding>3px 0px</padding>
       </selector>
       <selector path=".foldableBox .boxBody">
         <background>#ffffff</background>
-        <padding>10px</padding>
+        <padding>8px 10px</padding>
       </selector>
       <selector path=".dataRowEven">
         <background preset="white (DAM backgrounds)"/>
@@ -290,6 +300,20 @@
       <selector path=".importButton">
         <padding>6px 0px 0px 20px</padding>
         <background>transparent url(/nuxeo/img/import_button.png) no-repeat top left</background>
+        <margin>0 10px 0px 15px</margin>
+      </selector>
+      <selector path=".settingsButton">
+        <padding>6px 0px 0px 20px</padding>
+        <background>transparent url(/nuxeo/img/settings_button.png) no-repeat top left</background>
+        <margin>0 10px 0px 15px</margin>
+      </selector>
+      <selector path=".configButton">
+        <padding>6px 0px 0px 20px</padding>
+        <background>transparent url(/nuxeo/img/config_button.png) no-repeat top left</background>
+        <margin>0 10px 0px 15px</margin>
+      </selector>
+      <selector path=".logOutButton">
+        <color>#afafaf</color>
       </selector>
       <selector path=".pageNavigationControls">
         <padding>2px 5px</padding>
@@ -300,6 +324,7 @@
       <selector path=".previousBlock">
         <float>left</float>
         <width>15%</width>
+        <text-align>left</text-align>
       </selector>
       <selector path=".statusBlock">
         <float>left</float>
@@ -308,6 +333,18 @@
       <selector path=".nextBlock">
         <float>left</float>
         <width>15%</width>
+        <text-align>right</text-align>
+      </selector>
+      <selector path=".documentPreviewTitle">
+        <padding>4px 5px</padding>
+        <font-size>12px</font-size>
+        <background preset="actionbar (DAM backgrounds)"/>
+        <text-align>center</text-align>
+        <border-bottom preset="grayneutral (DAM borders)"/>
+      </selector>
+      <selector path=".previewIframe html body">
+        <margin>0</margin>
+        <padding>0</padding>
       </selector>
     </style>
     <style element="page[1]/section[1]" inherit="common style">
@@ -324,7 +361,7 @@
         <font preset="small (DAM fonts)"/>
         <color preset="gray.light (DAM colors)"/>
       </selector>
-      <selector path="a, a:link, a:hover, a:active">
+      <selector path=".banner_actions a, .banner_actions a:link, .banner_actions a:hover, .banner_actions a:active, .banner_actions a:visited," view="dam banner">
         <color preset="white (DAM colors)"/>
       </selector>
     </style>
@@ -333,7 +370,7 @@
         <background preset="leftcolumn (DAM backgrounds)"/>
         <border-right preset="graymedium (DAM borders)"/>
       </selector>
-      <selector path="h3">
+      <selector path="h3" view="cell frame">
         <padding>2px 10px</padding>
         <font preset="small (DAM fonts)"/>
         <background preset="filterstitle (DAM backgrounds)"/>
@@ -345,8 +382,13 @@
       </selector>
     </style>
     <style element="page[1]/section[2]/cell[3]" inherit="common style">
-       <selector path="td.labelColumn">
+       <selector path="td.labelColumn" view="cell frame">
         <text-align>right</text-align>
+        <vertical-align>top</vertical-align>
+        <padding>2px 5px 1px 10px</padding>
+      </selector>
+      <selector path="td.fieldColumn" view="cell frame">
+        <vertical-align>top</vertical-align>
         <padding>2px 5px 1px 10px</padding>
       </selector>
     </style>
@@ -361,19 +403,21 @@
         <color preset="gray.light (DAM colors)"/>
       </selector>
     </style>
-    <style element="page[1]/section[3]/cell[1]" inherit="common style">
-      <selector path="a">
+    <style element="page[1]/section[3]/cell[1]" inherit="common style"/>
+    <style element="page[1]/section[3]/cell[1]/fragment[1]" inherit="common style">
+      <selector path="a, a:link, a:active, a:visited" view="dam footer">
         <color preset="white (DAM colors)"/>
         <text-decoration>none</text-decoration>
       </selector>
-      <selector path="a:visited, a:active">
-        <color preset="white (DAM colors)"/>
-      </selector>
       <selector path="a:hover">
-        <color preset="white (DAM colors)"/>
+        <color preset="white (DAM colors)" view="dam footer"/>
         <text-decoration>underline</text-decoration>
       </selector>
     </style>
-    <style element="page[1]/section[3]/cell[1]/fragment[1]" inherit="common style"/>
+    <style element="page[1]/section[3]/cell[1]/fragment[2]" inherit="common style">
+      <selector path="#dam_language" view="dam language">
+        <margin>8px 10px 0px 0px</margin>
+      </selector>
+    </style>
   </formats>
 </theme>

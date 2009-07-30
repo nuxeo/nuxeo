@@ -80,10 +80,11 @@ H2 {
 
 .login_label {
   font:bold 10px "Lucida Grande", sans-serif;
-  text-align: right;
   color: #454545;
   margin:0 4px 0 0;
   width:70px;
+  padding:5px 3px 0px 0px;
+  vertical-align:top;
   }
 
 .login_input {
