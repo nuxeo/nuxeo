@@ -145,9 +145,14 @@
     </exec>
   </target>
 
-
   <target name="web" description="Copy web files to a live JBoss">
     <copy todir="${nuxeo.war.dir}">
+      <fileset dir="${basedir}/nuxeo-dam-webapp/src/main/resources/nuxeo.war/" />
+    </copy>
+  </target>
+  
+  <target name="web-jetty" description="Copy web files to a live Jetty">
+    <copy todir="${jetty.dir}/nuxeo.war">
       <fileset dir="${basedir}/nuxeo-dam-webapp/src/main/resources/nuxeo.war/" />
     </copy>
   </target>
