@@ -69,8 +69,6 @@ public class DocumentResolver implements Serializable {
                 return session.getDocumentByUUID((String) ref);
             case DocumentRef.PATH:
                 return session.resolvePath((String) ref);
-            case DocumentRef.INSTANCE:
-                return (Document) ref;
             default:
                 log.error("Invalid document reference type: " + type);
                 return null;
