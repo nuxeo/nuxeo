@@ -7,16 +7,16 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
-  
+
   <f:subview rendered="false">
-    TODO (CB): This can't work since the picture download is done in 
+    TODO (CB): This can't work since the picture download is done in
     PictureManagerBean which has injected NavigationContext (that is null on DAM)
     Possible solution: re-implement the method in DAM without using the NavigationContext.
     (iframe-preview restlet will be used until a solution is found)
-    For more details see: http://jira.nuxeo.org/browse/DAM-171 
+    For more details see: http://jira.nuxeo.org/browse/DAM-171
     <nxh:graphicImage id="theImage" url="#{nxd:complexFileUrl('downloadPicture', documentActions.currentSelection, 'picture:views', 0, 'content', documentActions.currentSelection.picture.views[0].filename)}" />
-  </f:subview> 
-  
+  </f:subview>
+
   <iframe class="previewIframe" src="#{documentActions.previewURL}" frameborder="0" height="350px" width="512px" scrolling="auto" id="preview-frame"> </iframe>
 
   <a4j:form id="assetView">
@@ -27,10 +27,10 @@
       </h4>
     </div>
 
-    <div class="foldableBox">
-      <div class="foldableBoxTitleBox">
-        <h3 class="unfolded">
-          <a href="#nogo" onclick="return toggleBox(this)">
+    <div class="togglePanel">
+      <div class="togglePanelTitleBox">
+        <h3>
+          <a href="#nogo" class="folded" onclick="return togglePanel(this)">
             <h:outputText value="#{messages['label.header.info.main.data']}" />
           </a>
         </h3>
@@ -49,11 +49,11 @@
         </div>
         <div style="clear:both;"></div>
       </div>
-      <div class="boxBody"> 
+      <div class="togglePanelBody">
           <nxl:layout name="heading" mode="#{documentActions.displayMode}" value="#{documentActions.currentSelection}" />
           <nxl:layout name="damc" mode="#{documentActions.displayMode}" value="#{documentActions.currentSelection}" />
           <nxl:layout name="dublincore" mode="#{documentActions.displayMode}" value="#{documentActions.currentSelection}" />
-          
+
           <h:panelGrid class="dataOutput" columnClasses="labelColumn, fieldColumn" columns="2">
             <h:outputText value="#{messages['label.content.size']}" />
             <h:panelGroup>
@@ -64,51 +64,51 @@
           <h:panelGrid class="dataOutput" columnClasses="labelColumn, fieldColumn" columns="2" rendered="#{documentActions.currentSelection.hasSchema('picture') and !empty documentActions.currentSelection.picture.views}">
             <h:outputText value="#{messages['label.content.height']}" />
             <h:outputText value="#{currentSelection.picture.views[1].height}" />
-            
+
             <h:outputText value="#{messages['label.content.width']}" />
             <h:outputText value="#{currentSelection.picture.views[1].width}" />
           </h:panelGrid>
       </div>
     </div>
 
-    <div class="foldableBox">
-      <div class="foldableBoxTitleBox">
-	    <h3 class="folded">
-	      <a href="#nogo" onclick="return toggleBox(this)">
+    <div class="togglePanel">
+      <div class="togglePanelTitleBox">
+	    <h3>
+	      <a href="#nogo" class="folded" onclick="return togglePanel(this)">
 	        <h:outputText value="#{messages['label.header.info.iptc']}"/>
 	      </a>
 	    </h3>
 	    <div style="clear:both;"></div>
 	  </div>
-      <div class="boxBody" style="display:none">
+      <div class="togglePanelBody" style="display:none">
         <h:outputText value="#{messages['label.header.info.iptc']}"/>
       </div>
     </div>
-    
-    <div class="foldableBox">
-      <div class="foldableBoxTitleBox">
-	    <h3 class="folded">
-	      <a href="#nogo" onclick="return toggleBox(this)">
+
+    <div class="togglePanel">
+      <div class="togglePanelTitleBox">
+	    <h3>
+	      <a href="#nogo" class="folded" onclick="return togglePanel(this)">
 	        <h:outputText value="#{messages['label.header.info.xmp']}"/>
 	      </a>
 	    </h3>
 	    <div style="clear:both;"></div>
       </div>
-      <div class="boxBody" style="display:none">
+      <div class="togglePanelBody" style="display:none">
         <h:outputText value="#{messages['label.header.info.xmp']}"/>
       </div>
     </div>
-    
-    <div class="foldableBox">
-      <div class="foldableBoxTitleBox">
-        <h3 class="folded">
-          <a href="#nogo" onclick="return toggleBox(this)">
+
+    <div class="togglePanel">
+      <div class="togglePanelTitleBox">
+        <h3>
+          <a href="#nogo" class="folded" onclick="return togglePanel(this)">
             <h:outputText value="#{messages['label.header.info.exif']}"/>
           </a>
         </h3>
         <div style="clear:both;"></div>
       </div>
-      <div class="boxBody" style="display: none">
+      <div class="togglePanelBody" style="display: none">
         <h:outputText value="#{messages['label.header.info.exif']}"/>
       </div>
     </div>

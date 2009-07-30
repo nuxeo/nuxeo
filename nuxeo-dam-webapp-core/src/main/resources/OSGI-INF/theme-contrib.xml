@@ -54,14 +54,17 @@
       <format-type>widget</format-type>
       <template>incl/includes.xhtml</template>
       <resource>seam-remote.js</resource>
-      <resource>foldable-box.js</resource>
+
       <resource>calendar-win2k-1.css</resource>
       <resource>calendar.js</resource>
       <resource>calendar-setup.js</resource>
       <resource>calendar-en.js</resource>
       <resource>calendar.css</resource>
+
+      <resource>jquery.js</resource>
+      <resource>toggle-panel.js</resource>
     </view>
-    
+
     <view name="dam footer" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/footer.xhtml</template>
@@ -74,10 +77,10 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="resources">
 
-    <resource name="foldable-box.js">
-      <path>scripts/foldable-box.js</path>
+    <resource name="toggle-panel.js">
+      <path>scripts/toggle-panel.js</path>
     </resource>
-    
+
     <resource name="seam-remote.js">
       <path>nxthemes/html/scripts/seam-remote.js</path>
     </resource>
@@ -182,7 +185,7 @@
       </scheme>
     </negotiation>
   </extension>
-  
+
     <!-- Styles presets -->
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
