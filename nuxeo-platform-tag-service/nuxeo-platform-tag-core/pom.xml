@@ -44,6 +44,11 @@
       <artifactId>nuxeo-core-storage-sql-test</artifactId>
       <version>${nuxeo.core.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
+    </dependency>
+
 
     <!-- Persistence -->
     <dependency>

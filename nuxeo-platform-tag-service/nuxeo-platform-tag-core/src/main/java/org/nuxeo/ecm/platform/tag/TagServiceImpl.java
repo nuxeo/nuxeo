@@ -42,8 +42,6 @@ import org.nuxeo.ecm.platform.tag.entity.TaggingEntity;
 import org.nuxeo.ecm.platform.tag.persistence.TagSchemaUpdater;
 import org.nuxeo.ecm.platform.tag.persistence.TaggingProvider;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.management.ServerLocator;
-import org.nuxeo.runtime.management.ServerLocatorService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.osgi.framework.FrameworkEvent;
