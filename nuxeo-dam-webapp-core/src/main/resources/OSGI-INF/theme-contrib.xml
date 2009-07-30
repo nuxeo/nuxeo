@@ -55,6 +55,7 @@
       <template>incl/includes.xhtml</template>
       <resource>seam-remote.js</resource>
 
+      <resource>tableSelections.js</resource>
       <resource>calendar-win2k-1.css</resource>
       <resource>calendar.js</resource>
       <resource>calendar-setup.js</resource>
