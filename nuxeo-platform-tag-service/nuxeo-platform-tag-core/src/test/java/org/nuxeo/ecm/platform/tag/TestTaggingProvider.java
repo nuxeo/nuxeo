@@ -61,6 +61,9 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         
         openSession();
         
+        TagServiceImpl service = (TagServiceImpl) Framework.getLocalService(TagService.class);
+        service.updateSchema();
+        
         createDataWarehouse(); 
         
         PersistenceProviderFactory factory = Framework.getService(PersistenceProviderFactory.class);  

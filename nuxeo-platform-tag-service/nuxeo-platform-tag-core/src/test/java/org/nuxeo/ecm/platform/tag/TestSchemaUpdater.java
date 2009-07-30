@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.tag.persistence.TagSchemaUpdater;
 
+
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.com>"
  *

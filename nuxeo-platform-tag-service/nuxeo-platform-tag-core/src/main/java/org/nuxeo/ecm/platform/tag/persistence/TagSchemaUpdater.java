@@ -16,7 +16,20 @@
  */
 package org.nuxeo.ecm.platform.tag.persistence;
 
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_AUTHOR;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_CREATION_DATE;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_DOCUMENT_ID;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_ID;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_IS_PRIVATE;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_TAG_ID;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_NAME;
+
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -24,15 +37,19 @@ import java.util.Properties;
 
 import javax.persistence.PersistenceException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Environment;
-import org.hibernate.ejb.connection.InjectedDataSourceConnectionProvider;
+import org.hibernate.cfg.Settings;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.DialectFactory;
+import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.ejb.packaging.PersistenceMetadata;
 import org.hibernate.ejb.packaging.PersistenceXmlLoader;
-import org.hibernate.tool.hbm2ddl.SchemaUpdate;
-import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
-import org.nuxeo.ecm.core.persistence.HibernateConfigurator;
-import org.nuxeo.runtime.api.Framework;
+import org.hibernate.impl.SessionImpl;
+import org.nuxeo.ecm.platform.tag.sql.Column;
+import org.nuxeo.ecm.platform.tag.sql.Table;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.com>"
@@ -46,7 +63,16 @@ public class TagSchemaUpdater {
 
     public final Properties connectionProperties = new Properties();
 
-    {
+    public TagSchemaUpdater() {
+        doSetup();
+    }
+
+    public TagSchemaUpdater(Properties properties) {
+        connectionProperties.putAll(properties);
+        doSetup();
+    }
+
+    protected void doSetup() {
         doSetupAnnotedClasses();
         doSetupConnectionProperties();
     }
@@ -62,23 +88,27 @@ public class TagSchemaUpdater {
     }
 
     protected void doSetupConnectionProperties() {
-        HibernateConfigurator configurator = Framework.getLocalService(HibernateConfigurator.class);
-        HibernateConfiguration configuration = configurator.getHibernateConfiguration("nxtags");
-        connectionProperties.putAll(configuration.hibernateProperties);
         if (connectionProperties.get(Environment.URL) != null) {
             return;
         }
         String jtaDatasource = metadata.getJtaDatasource();
         connectionProperties.setProperty(Environment.DATASOURCE, jtaDatasource);
-        connectionProperties.setProperty(Environment.CONNECTION_PROVIDER, InjectedDataSourceConnectionProvider.class.getName());
     }
+
+    public static final Log log = LogFactory.getLog(TagSchemaUpdater.class);
 
     protected PersistenceMetadata doLoadMetadata() {
         try {
             Enumeration<URL> xmls = Thread.currentThread().getContextClassLoader().getResources("META-INF/persistence.xml");
             while (xmls.hasMoreElements()) {
                 URL url = xmls.nextElement();
-                List<PersistenceMetadata> metadataFiles = PersistenceXmlLoader.deploy(url, Collections.EMPTY_MAP, configuration.getEntityResolver());
+                List<PersistenceMetadata> metadataFiles = null;
+                try {
+                    metadataFiles = PersistenceXmlLoader.deploy(url, Collections.EMPTY_MAP, configuration.getEntityResolver());
+                } catch (Exception e) {
+                    log.warn("Cannot load " + url);
+                    continue;
+                }
                 for (PersistenceMetadata metadata : metadataFiles) {
                     if (metadata.getName().equals("nxtags")) {
                         return metadata;
@@ -95,8 +125,52 @@ public class TagSchemaUpdater {
         }
     }
 
+    public static Dialect determineDialect(SessionImpl session) {
+        try {
+            DatabaseMetaData meta = session.getFactory().getConnectionProvider().getConnection().getMetaData();
+            return DialectFactory.determineDialect(meta.getDatabaseProductName(), meta.getDatabaseMajorVersion());
+        } catch (SQLException e) {
+            throw new Error("Cannot determine dialect", e);
+        }
+    }
+
+    public static class CustomPostgreSQLDialect extends org.hibernate.dialect.PostgreSQLDialect {
+        public CustomPostgreSQLDialect() {
+            super();
+            registerColumnType(Types.BOOLEAN, "boolean");
+            registerHibernateType(Types.BOOLEAN, "boolean");
+        }
+    }
+
     public void update() {
-        SchemaUpdate update = new SchemaUpdate(configuration, connectionProperties);
-        update.execute(false, true);
+        configuration.setProperties(connectionProperties);
+        Settings settings = configuration.buildSettings();
+        Table table = new Table(TAGGING_TABLE_NAME);
+        Column column = new Column(TAGGING_TABLE_COLUMN_ID, Types.VARCHAR);
+        column.setPrimary(true);
+        column.setNullable(false);
+        table.addColumn(column);
+        column = new Column(TAGGING_TABLE_COLUMN_TAG_ID, Types.CLOB);
+        table.addColumn(column);
+        column = new Column(TAGGING_TABLE_COLUMN_AUTHOR, Types.VARCHAR);
+        table.addColumn(column);
+        column = new Column(TAGGING_TABLE_COLUMN_DOCUMENT_ID, Types.CLOB);
+        table.addColumn(column);
+        column = new Column(TAGGING_TABLE_COLUMN_CREATION_DATE, Types.DATE);
+        table.addColumn(column);
+        column = new Column(TAGGING_TABLE_COLUMN_IS_PRIVATE, Types.BOOLEAN);
+        table.addColumn(column);
+        Dialect dialect = settings.getDialect();
+        if (dialect.equals(PostgreSQLDialect.class)) {
+            dialect = new CustomPostgreSQLDialect();
+        }
+        String script = table.getCreateSql(dialect);
+        try {
+            Connection connection = settings.getConnectionProvider().getConnection();
+            Statement statement = connection.createStatement();
+            statement.execute(script);
+        } catch (Exception e) {
+            log.warn(e);
+        }
     }
 }

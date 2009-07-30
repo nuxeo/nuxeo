@@ -12,7 +12,7 @@
   <documentation>
   To do
   </documentation>
-  
+
    <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
 		point="hibernate">
 		<hibernateConfiguration name="nxtags">

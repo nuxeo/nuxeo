@@ -44,16 +44,15 @@ import org.nuxeo.ecm.platform.tag.entity.TaggingEntity;
 
 /**
  * Provider of almost all queries required for Tag service. 
- *
+ * 
  * @author rux
- *
+ * 
  */
 public class TaggingProvider {
 
     private static final Log log = LogFactory.getLog(TaggingProvider.class);
 
     protected final EntityManager em;
-
 
     protected TaggingProvider(EntityManager em) {
         this.em = em;
@@ -66,7 +65,7 @@ public class TaggingProvider {
     /**
      * Persists to the 'NXP_TAGGING' table the information contained in the
      * received parameter.
-     *
+     * 
      * @param tagging - the information about the 'tagging' that will be
      *            persisted
      */
@@ -74,7 +73,7 @@ public class TaggingProvider {
         if (log.isDebugEnabled()) {
             log.debug("addTagging() with tagging " + tagging.toString());
         }
-        em.persist(tagging);  
+        em.persist(tagging);
     }
 
     @SuppressWarnings("unchecked")
@@ -102,8 +101,7 @@ public class TaggingProvider {
         return query.getResultList();
     }
 
-    protected Object doNamedQuerySingle(String namedQuery,
-            Map<String, Object> params) {
+    protected Object doNamedQuerySingle(String namedQuery, Map<String, Object> params) {
         Query query = em.createNamedQuery(namedQuery);
         for (String key : params.keySet()) {
             query.setParameter(key, params.get(key));
@@ -114,7 +112,7 @@ public class TaggingProvider {
     /**
      * Persists to the 'NXP_TAGGING' table the information contained in the list
      * that is received as parameter.
-     *
+     * 
      * @param taggings - the list with the information about the 'tagging'
      *            entries that will be persisted
      */
@@ -130,7 +128,7 @@ public class TaggingProvider {
     /**
      * Lists distinct the public tags (or owned by user) that are applied on
      * document.
-     *
+     * 
      * @param docId - the UUID of the tagged document
      * @param userName - the user name of the current logged user
      * @return tags applied as list of simple tags
@@ -143,27 +141,24 @@ public class TaggingProvider {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("targetId", docId);
         params.put("userName", userName);
-        List<Object[]> queryResults = (List<Object[]>) doNamedQuery(LIST_TAGS_FOR_DOCUMENT,
-                params);
+        List<Object[]> queryResults = (List<Object[]>) doNamedQuery(LIST_TAGS_FOR_DOCUMENT, params);
         List<Tag> listTagsForDocument = new ArrayList<Tag>();
         for (Object[] queryResult : queryResults) {
-            listTagsForDocument.add(new Tag(queryResult[0].toString(),
-                    queryResult[1].toString()));
+            listTagsForDocument.add(new Tag(queryResult[0].toString(), queryResult[1].toString()));
         }
         return listTagsForDocument;
     }
 
     /**
      * Returns author of a tagging based on docId and the tagLabel.
-     *
+     * 
      * @param docId
      * @param tagLabel
      * @return
      */
     @SuppressWarnings("unchecked")
     public String getTaggingId(String docId, String tagLabel, String author) {
-        final String query = "SELECT tg.id FROM Tagging tg JOIN tg.targetDocument doc JOIN tg.tag tag"
-                + " WHERE doc.id = ?1 AND tag.label = ?2 AND tg.author = ?3";
+        final String query = "SELECT tg.id FROM Tagging tg JOIN tg.targetDocument doc JOIN tg.tag tag" + " WHERE doc.id = ?1 AND tag.label = ?2 AND tg.author = ?3";
 
         List<String> authors = (List<String>) doQuery(query, docId, tagLabel, author);
 
@@ -173,7 +168,7 @@ public class TaggingProvider {
     /**
      * Lists distinct the public tags (or owned by user) that are applied on
      * document by the user only.
-     *
+     * 
      * @param docId - the UUID of the tagged document
      * @param userName - the user name of the current logged user
      * @return tags applied as list of simple tags
@@ -186,12 +181,10 @@ public class TaggingProvider {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("targetId", docId);
         params.put("userName", userName);
-        List<Object[]> queryResults = (List<Object[]>) doNamedQuery(
-                LIST_TAGS_FOR_DOCUMENT_AND_USER, params);
+        List<Object[]> queryResults = (List<Object[]>) doNamedQuery(LIST_TAGS_FOR_DOCUMENT_AND_USER, params);
         List<Tag> listTagsForDocument = new ArrayList<Tag>();
         for (Object[] queryResult : queryResults) {
-            listTagsForDocument.add(new Tag(queryResult[0].toString(),
-                    queryResult[1].toString()));
+            listTagsForDocument.add(new Tag(queryResult[0].toString(), queryResult[1].toString()));
         }
         return listTagsForDocument;
     }
@@ -199,7 +192,7 @@ public class TaggingProvider {
     /**
      * Gets vote tag (basically count of how many times the tag was applied on a
      * document).
-     *
+     * 
      * @param docId - the UUID of the tagged document
      * @param tagId - the UUID of the tag document
      * @param userName - the user name of the current logged user
@@ -222,7 +215,7 @@ public class TaggingProvider {
      * <b>tagId</b> parameter.The author of the entry must be the
      * <b>userName</b> received parameter. The method returns true in case the
      * deleting was successful or false otherwise.
-     *
+     * 
      * @param docId - the UUID of the tagged document
      * @param tagId - the UUID of the tag document
      * @param userName - the user name of the current logged user
@@ -230,8 +223,7 @@ public class TaggingProvider {
      */
     public boolean removeTagging(String docId, String tagId, String userName) {
         if (log.isDebugEnabled()) {
-            log.debug("removeTagging() with targetId " + docId + " and tagId "
-                    + tagId);
+            log.debug("removeTagging() with targetId " + docId + " and tagId " + tagId);
         }
         Query query = em.createNamedQuery(REMOVE_TAGGING);
         query.setParameter("targetId", docId);
@@ -247,7 +239,7 @@ public class TaggingProvider {
      * <b>tagId</b> parameter.The author of the entry must be the
      * <b>userName</b> received parameter. The method returns true in case the
      * deleting was successful or false otherwise.
-     *
+     * 
      * @param docId - the UUID of the tagged document
      * @param tagId - the UUID of the tag document
      * @param userName - the user name of the current logged user
@@ -255,13 +247,12 @@ public class TaggingProvider {
      */
     public void removeAllTagging(String docId, String tagId) {
         if (log.isDebugEnabled()) {
-            log.debug("removeTagging() with targetId " + docId + " and tagId "
-                    + tagId);
+            log.debug("removeTagging() with targetId " + docId + " and tagId " + tagId);
         }
         Query query = em.createQuery("DELETE FROM Tagging tagging " + "WHERE tagging.targetDocument.id=:targetId AND  tagging.tag.id=:tagId");
         query.setParameter("targetId", docId);
         query.setParameter("tagId", tagId);
-        query.executeUpdate();           
+        query.executeUpdate();
     }
 
     public TagEntity getTagById(String tagId) {
@@ -283,28 +274,24 @@ public class TaggingProvider {
      * {@link WeightedTag}. The private tags or tagging are not selected, but
      * the ones owned by the user. It gets the tags and the number of documents
      * they are applied on the list of documents received as argument.
-     *
+     * 
      * @param documents
      * @param userName
      * @return
      * @throws ClientException
      */
     @SuppressWarnings("unchecked")
-    public List<WeightedTag> getPopularCloud(DocumentModelList documents,
-            String userName) {
+    public List<WeightedTag> getPopularCloud(DocumentModelList documents, String userName) {
         if (log.isDebugEnabled()) {
             log.debug("getPopularTag() for " + documents.size() + " documents");
         }
         int count = 1;
-        StringBuilder sb = new StringBuilder(
-                "SELECT tag.id, tag.label, COUNT(DISTINCT tg.targetDocument.id) FROM Tagging tg "
-                        + "JOIN tg.tag tag JOIN tag.hierarchy h JOIN h.dublincore dc "
-                        + "WHERE tg.targetDocument.id IN ( ");
+        StringBuilder sb = new StringBuilder("SELECT tag.id, tag.label, COUNT(DISTINCT tg.targetDocument.id) FROM Tagging tg " + "JOIN tg.tag tag JOIN tag.hierarchy h JOIN h.dublincore dc "
+                + "WHERE tg.targetDocument.id IN ( ");
         List<String> params = new LinkedList<String>();
         for (DocumentModel document : documents) {
             params.add(document.getId());
-            sb.append('?').append(count).append(
-                    count < documents.size() ? ',' : "");
+            sb.append('?').append(count).append(count < documents.size() ? ',' : "");
             count++;
         }
         sb.append(") AND (tg.isPrivate=false OR tg.author=");
@@ -319,12 +306,10 @@ public class TaggingProvider {
         sb.append(") GROUP BY tag.id , tag.label");
         params.add(userName);
         params.add(userName);
-        List<Object[]> queryResults = (List<Object[]>) doQuery(sb.toString(),
-                params);
+        List<Object[]> queryResults = (List<Object[]>) doQuery(sb.toString(), params);
         List<WeightedTag> ret = new ArrayList<WeightedTag>();
         for (Object[] queryResult : queryResults) {
-            WeightedTag weightedTag = new WeightedTag((String) queryResult[0],
-                    (String) queryResult[1], ((Long) queryResult[2]).intValue());
+            WeightedTag weightedTag = new WeightedTag((String) queryResult[0], (String) queryResult[1], ((Long) queryResult[2]).intValue());
             ret.add(weightedTag);
         }
         return ret;
@@ -332,7 +317,7 @@ public class TaggingProvider {
 
     /**
      * Lists distinct the documents tagged with specified tag.
-     *
+     * 
      * @param tagId the tag applied
      * @param userName user
      * @return a map document ID - document title
@@ -355,7 +340,7 @@ public class TaggingProvider {
 
     /**
      * Checks if a particular tag was applied on specified daocument by user.
-     *
+     * 
      * @param tagId
      * @param docId
      * @param userName
@@ -363,8 +348,7 @@ public class TaggingProvider {
      */
     public boolean existTagging(String tagId, String docId, String userName) {
         if (log.isDebugEnabled()) {
-            log.debug("existTagging() with " + tagId + ", " + docId + ", "
-                    + userName);
+            log.debug("existTagging() with " + tagId + ", " + docId + ", " + userName);
         }
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("docId", docId);
@@ -373,4 +357,6 @@ public class TaggingProvider {
         Long result = (Long) doNamedQuerySingle(GET_TAGGING, params);
         return result > 0;
     }
+
+
 }

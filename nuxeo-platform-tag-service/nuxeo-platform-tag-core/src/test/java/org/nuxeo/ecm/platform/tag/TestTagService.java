@@ -43,6 +43,9 @@ public class TestTagService extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.tag.tests");
         
         openSession();
+        
+        TagServiceImpl service = (TagServiceImpl) Framework.getLocalService(TagService.class);
+        service.updateSchema();
     }
 
     @Override

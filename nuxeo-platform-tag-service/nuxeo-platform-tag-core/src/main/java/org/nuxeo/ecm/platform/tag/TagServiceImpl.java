@@ -30,6 +30,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
+import org.nuxeo.ecm.core.persistence.HibernateConfigurator;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
@@ -37,10 +39,15 @@ import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.platform.tag.entity.DublincoreEntity;
 import org.nuxeo.ecm.platform.tag.entity.TagEntity;
 import org.nuxeo.ecm.platform.tag.entity.TaggingEntity;
+import org.nuxeo.ecm.platform.tag.persistence.TagSchemaUpdater;
 import org.nuxeo.ecm.platform.tag.persistence.TaggingProvider;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.ServerLocator;
+import org.nuxeo.runtime.management.ServerLocatorService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 /**
  * The implementation of tag service. For the API see {@link #TagService()}
@@ -51,17 +58,21 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
 
     private static final Log log = LogFactory.getLog(TagServiceImpl.class);
-
-    protected final TagServiceInitializer initializer = new TagServiceInitializer();
-    
+   
     @Override
     public void activate(ComponentContext context) throws Exception {
-        initializer.install();
+        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(new FrameworkListener() {
+            public void frameworkEvent(FrameworkEvent event) {
+                if(event.getType() != FrameworkEvent.STARTED) {
+                    return;
+                }
+                updateSchema();
+            }
+        });
     }
     
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        initializer.uninstall();
         deactivatePersistenceProvider();
         super.deactivate(context);
     }
@@ -611,5 +622,11 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         return TaggingProvider.createProvider(em).getTaggingId(docId, tagLabel, author);
     }
 
+    public void updateSchema() {
+        HibernateConfigurator configurator = Framework.getLocalService(HibernateConfigurator.class);
+        HibernateConfiguration configuration = configurator.getHibernateConfiguration("nxtags");
+        TagSchemaUpdater updater = new TagSchemaUpdater(configuration.hibernateProperties);
+        updater.update();
+    }
   
 }

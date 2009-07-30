@@ -18,8 +18,11 @@ package org.nuxeo.ecm.platform.tag;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
+import org.nuxeo.ecm.core.persistence.HibernateConfigurator;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.platform.tag.persistence.TagSchemaUpdater;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.com>"
@@ -29,7 +32,9 @@ public class TagServiceInitializer extends RepositoryInitializationHandler {
 
     @Override
     public void doInitializeRepository(CoreSession session) throws ClientException {
-        TagSchemaUpdater updater = new TagSchemaUpdater();
+        HibernateConfigurator configurator = Framework.getLocalService(HibernateConfigurator.class);
+        HibernateConfiguration configuration = configurator.getHibernateConfiguration("nxtags");
+        TagSchemaUpdater updater = new TagSchemaUpdater(configuration.hibernateProperties);
         updater.update();
     }
 
