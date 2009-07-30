@@ -18,7 +18,9 @@ package org.nuxeo.ecm.core.persistence;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -44,10 +46,21 @@ public class PersistenceComponent extends DefaultComponent  implements Hibernate
         if (contribution.name == null) {
             throw new PersistenceError(contributorName + " should set the 'name' attribute of hibernate configurations");
         }
+        if (contribution.hibernateProperties != null) {
+            doPatchForTests(contribution.hibernateProperties);
+        } 
         if (!registry.containsKey(contribution.name)) {
             registry.put(contribution.name, contribution);
         } else {
             registry.get(contribution.name).merge(contribution);
+        }
+    }
+    
+    protected void doPatchForTests(Properties hibernateProperties) { 
+        String url = hibernateProperties.getProperty("hibernate.connection.url");
+        if (url != null) {
+            url = Framework.expandVars(url);
+            hibernateProperties.put("hibernate.connection.url", url);
         }
     }
 
