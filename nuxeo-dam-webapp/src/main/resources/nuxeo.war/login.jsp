@@ -240,6 +240,19 @@ nxthemes css is not used in login.jsp */
             name="user_password" id="password" size="22"></td>
         </tr>
         <tr>
+          <td class="login_label">
+            <label for="language">
+              <fmt:message bundle="${messages}" key="label.login.language" /> 
+            </label>
+          </td>
+          <td>
+            <select class="login_input" name="language" id="language">
+              <option value="en" selected>English</option>
+              <option value="fr">français</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
           <td></td>
           <td><input type="hidden" name="form_submitted_marker"
             id="form_submitted_marker"> <input

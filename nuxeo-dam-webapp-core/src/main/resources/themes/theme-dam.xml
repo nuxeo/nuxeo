@@ -94,9 +94,6 @@
     <widget element="page[1]/section[1]/cell[2]/fragment[1]">
       <view>dam banner</view>
     </widget>
-    <widget element="page[1]/section[3]/cell[1]/fragment[2]">
-      <view>dam language</view>
-    </widget>
     <widget element="page[1]/section[1]/cell[2]/fragment[2]">
       <view>dam includes</view>
     </widget>
@@ -378,10 +375,5 @@
       </selector>
     </style>
     <style element="page[1]/section[3]/cell[1]/fragment[1]" inherit="common style"/>
-    <style element="page[1]/section[3]/cell[1]/fragment[2]" inherit="common style">
-      <selector path="#dam_language" view="dam language">
-        <margin>8px 10px 0px 0px</margin>
-      </selector>
-    </style>
   </formats>
 </theme>

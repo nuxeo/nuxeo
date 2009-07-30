@@ -24,11 +24,6 @@
       <template>incl/logo.xhtml</template>
     </view>
 
-    <view name="dam language" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/language.xhtml</template>
-    </view>
-
     <view name="dam banner" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/banner.xhtml</template>

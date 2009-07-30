@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.security.Principal;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +37,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
+import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -67,6 +69,9 @@ public class StartupHelper implements Serializable {
     @In
     protected ServerContextBean serverLocator;
 
+    @In(create = true)
+    protected transient LocaleSelector localeSelector;
+
     /**
      * Initializes the context with the principal id, and tries to connect to
      * the default server if any then: - if the server has several domains,
@@ -75,7 +80,7 @@ public class StartupHelper implements Serializable {
      * domain with title 'domainTitle' and redirect to it on viewId.
      * <p>
      * If several servers are available, let the user choose.
-     * 
+     *
      * @return the view id of the contextually computed startup page
      * @throws ClientException
      */
@@ -102,6 +107,11 @@ public class StartupHelper implements Serializable {
                 return null;
             }
         }
+
+        // DAM-173 - Set locale from login page.
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String localeStr = request.getParameter("language");
+        localeSelector.selectLanguage(localeStr);
 
         // TODO : REMOVE
         return "view_documents";
