@@ -63,10 +63,10 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
 
 
     @XNodeMap(value = "properties/property", key = "@name", type = Properties.class, componentType = String.class)
-    protected Properties hibernateProperties = new Properties();
+    public final Properties hibernateProperties = new Properties();
 
     @XNodeList(value = "classes/class", type = ArrayList.class, componentType = Class.class)
-    protected List<Class<?>> annotedClasses = new ArrayList<Class<?>>();
+    public final List<Class<?>> annotedClasses = new ArrayList<Class<?>>();
 
     public void addAnnotedClass(Class<?> annotedClass) {
        annotedClasses.add(annotedClass);

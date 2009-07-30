@@ -46,14 +46,14 @@ public class PersistenceComponent extends DefaultComponent  implements Hibernate
         if (contribution.name == null) {
             throw new PersistenceError(contributorName + " should set the 'name' attribute of hibernate configurations");
         }
+        if (contribution.hibernateProperties != null) {
+            doPatchForTests(contribution.hibernateProperties);
+        } 
         if (!registry.containsKey(contribution.name)) {
             registry.put(contribution.name, contribution);
         } else {
             registry.get(contribution.name).merge(contribution);
         }
-        if (contribution.hibernateProperties != null) {
-            doPatchForTests(contribution.hibernateProperties);
-        } 
     }
     
     protected void doPatchForTests(Properties hibernateProperties) { 
