@@ -274,6 +274,19 @@
             </configuration>
           </execution>
           <execution>
+            <id>patch-hibernate3</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <echo message="Removing hibernate3 ..."/>
+                <delete file="${jboss.lib}/hibernate3.jar" />
+              </tasks>
+            </configuration>
+          </execution>
+          <execution>
             <id>patch-ear-deployer</id>
             <phase>process-resources</phase>
             <configuration>
@@ -366,6 +379,11 @@
                 <artifactItem>
                   <groupId>metro.webservices</groupId>
                   <artifactId>webservices-tools</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>hibernate</groupId>
+                  <artifactId>hibernate3</artifactId>
+                  <version>3.2.1.ga-NXP-3881</version>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${jboss.lib}</outputDirectory>
