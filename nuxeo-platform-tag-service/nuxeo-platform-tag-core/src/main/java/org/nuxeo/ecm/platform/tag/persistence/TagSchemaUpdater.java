@@ -101,7 +101,7 @@ public class TagSchemaUpdater {
     protected PersistenceMetadata doLoadMetadata() {
             Enumeration<URL> xmls = null;
             try {
-                xmls = Thread.currentThread().getContextClassLoader().getResources("META-INF/persistence.xml");
+                xmls = TagSchemaUpdater.class.getClassLoader().getResources("META-INF/persistence.xml");
             } catch (IOException e1) {
                throw new Error("No persistence.xml files in class path", e1);
             }
