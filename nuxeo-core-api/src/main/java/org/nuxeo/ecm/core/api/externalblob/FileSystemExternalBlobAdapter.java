@@ -43,8 +43,9 @@ public class FileSystemExternalBlobAdapter extends AbstractExternalBlobAdapter {
                             + "and class '%s' is missing the '%s' property",
                     getPrefix(), getClass().getName(), CONTAINER_PROPERTY_NAME));
         }
-        if (!container.endsWith("/")) {
-            return String.format("%s/%s", container, localPath);
+        container = container.trim();
+        if (!container.endsWith(File.separator)) {
+            return String.format("%s%s%s", container, File.separator, localPath);
         } else {
             return String.format("%s%s", container, localPath);
         }

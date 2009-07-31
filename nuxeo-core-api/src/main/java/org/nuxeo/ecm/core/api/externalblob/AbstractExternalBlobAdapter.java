@@ -58,7 +58,9 @@ public abstract class AbstractExternalBlobAdapter implements
 
     public String getProperty(String name) {
         Map<String, String> props = getProperties();
-        return props.get(name);
+        String prop = props.get(name);
+        prop = prop.trim();
+        return prop;
     }
 
     public void setProperties(Map<String, String> properties) {

@@ -37,6 +37,8 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestExternalBlob extends NXRuntimeTestCase {
 
+    public static String TEMP_DIRECTORY_NAME = "testExternalBlobDir";
+
     public TestExternalBlob(String name) {
         super(name);
     }
@@ -51,23 +53,38 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.core.api.tests",
                 "OSGI-INF/test-externalblob-adapters-contrib.xml");
 
+        // set container to temp directory here in case that depends on the OS
+        // or machine configuration and add funny characters to avoid problems
+        // due to xml parsing
         BlobHolderAdapterService service = Framework.getService(BlobHolderAdapterService.class);
         assertNotNull(service);
         ExternalBlobAdapter adapter = service.getExternalBlobAdapterForPrefix("fs");
         Map<String, String> props = new HashMap<String, String>();
-        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME,
-                System.getProperty("java.io.tmpdir"));
+        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n"
+                + System.getProperty("java.io.tmpdir") + " ");
         adapter.setProperties(props);
     }
 
     protected File createTempFile() throws Exception {
-        File file = File.createTempFile("testExternalBlob", ".txt");
+        File tempDir = new File(System.getProperty("java.io.tmpdir"),
+                TEMP_DIRECTORY_NAME);
+        if (!tempDir.exists()) {
+            tempDir.mkdir();
+            tempDir.deleteOnExit();
+        }
+        File file = File.createTempFile("testExternalBlob", ".txt", tempDir);
+        file.deleteOnExit();
         FileWriter fstream = new FileWriter(file);
         BufferedWriter out = new BufferedWriter(fstream);
         out.write("Hello External Blob");
         out.close();
         file.deleteOnExit();
         return file;
+    }
+
+    protected String getTempFileUri(File tempFile) {
+        return String.format("fs:%s%s%s", TEMP_DIRECTORY_NAME, File.separator,
+                tempFile.getName());
     }
 
     public void testExternalBlobAdapter() throws Exception {
@@ -82,7 +99,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
                 adapter.getProperty(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME));
 
         File file = createTempFile();
-        String uri = String.format("fs:%s", file.getName());
+        String uri = getTempFileUri(file);
         ExternalBlobAdapter otherAdapter = service.getExternalBlobAdapterForUri(uri);
         assertEquals(otherAdapter, adapter);
 
@@ -96,7 +113,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ExternalBlobDoc");
         File file = createTempFile();
         HashMap<String, String> map = new HashMap<String, String>();
-        String uri = String.format("fs:%s", file.getName());
+        String uri = getTempFileUri(file);
         map.put(ExternalBlobProperty.URI, uri);
         map.put(ExternalBlobProperty.FILE_NAME, "hello.txt");
         doc.setPropertyValue("extfile:content", map);
@@ -114,7 +131,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
     public void testExternalBlobDocumentProperty2() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ExternalBlobDoc");
         File file = createTempFile();
-        String uri = String.format("fs:%s", file.getName());
+        String uri = getTempFileUri(file);
         doc.setPropertyValue("extfile:content/uri", uri);
 
         Object blob = doc.getPropertyValue("extfile:content");
@@ -132,7 +149,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ExternalBlobDoc");
         File file = createTempFile();
         HashMap<String, String> map = new HashMap<String, String>();
-        String uri = String.format("fs:%s", file.getName());
+        String uri = getTempFileUri(file);
         map.put("uri", uri);
         doc.setPropertyValue("extfile:content/uri", uri);
 
