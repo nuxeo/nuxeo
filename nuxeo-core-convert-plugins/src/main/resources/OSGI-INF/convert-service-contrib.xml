@@ -9,7 +9,6 @@
       <destinationMimeType>text/plain</destinationMimeType>
     </converter>
 
-
     <converter name="xml2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.XML2TextConverter">
       <sourceMimeType>text/xml</sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
@@ -44,7 +43,6 @@
       </sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
     </converter>
-
 
     <converter name="oo2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.OOo2TextConverter">
       <sourceMimeType>application/vnd.sun.xml.impress</sourceMimeType>

@@ -34,6 +34,11 @@ import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 
+
+/**
+ * @deprecated subsumed by MSOffice2TextConverter
+ */
+@Deprecated
 public class Word2TextConverter implements Converter {
 
     public BlobHolder convert(BlobHolder blobHolder,
