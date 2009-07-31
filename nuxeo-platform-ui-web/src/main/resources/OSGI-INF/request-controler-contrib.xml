@@ -8,6 +8,12 @@
       <pattern>/nuxeo/seam/resource/remoting/execute.*</pattern>
     </filterConfig>
 
+    <filterConfig name="SeamRemotingResources" transactional="true" synchonize="false"
+      cached="true" cachetime="3600">
+      <pattern>/nuxeo/seam/resource.*</pattern>
+    </filterConfig>
+    
+
   </extension>
 
 </component>
