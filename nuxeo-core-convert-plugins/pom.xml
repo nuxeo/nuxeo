@@ -79,13 +79,6 @@
     <plugins>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>**/TestPPTConverter*.class</exclude>
-            <exclude>**/TestWordConverter*.class</exclude>
-            <exclude>**/TestMailConverter*.class</exclude>
-          </excludes>
-        </configuration>
       </plugin>
     </plugins>
   </build>

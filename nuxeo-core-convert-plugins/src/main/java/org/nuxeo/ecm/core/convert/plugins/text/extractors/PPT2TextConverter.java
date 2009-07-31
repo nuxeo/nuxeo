@@ -36,6 +36,10 @@ import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 
+/**
+ * @deprecated subsumed by MSOffice2TextConverter
+ */
+@Deprecated
 public class PPT2TextConverter implements Converter {
 
     private static final Log log = LogFactory.getLog(PPT2TextConverter.class);
