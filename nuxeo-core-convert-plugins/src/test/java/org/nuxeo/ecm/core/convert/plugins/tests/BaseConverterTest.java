@@ -84,7 +84,37 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         assertNotNull(result);
         assertTrue(result.getBlob().getString().trim().startsWith("Hello"));
 
-        // System.out.println(result.getBlob().getString());
+        //System.out.println(result.getBlob().getString());
+    }
+
+    protected void doTestArabicTextConverter(String srcMT, String converter,
+            String fileName) throws Exception {
+
+        ConversionService cs = Framework.getLocalService(ConversionService.class);
+
+        String converterName = cs.getConverterName(srcMT, "text/plain");
+        assertEquals(converter, converterName);
+
+        BlobHolder hg = getBlobFromPath("test-docs/right-to-left/" + fileName);
+
+        BlobHolder result = cs.convert(converterName, hg, null);
+        assertNotNull(result);
+        String textContent = result.getBlob().getString().trim();
+
+        // test that the first word is 'Internet' in arabic
+        assertTrue(textContent.startsWith("إنترنت"));
+
+        // other words that occur in the document
+        assertTrue(textContent.contains("تمثيل"));
+        assertTrue(textContent.contains("لشبكة"));
+        assertTrue(textContent.contains("من"));
+        assertTrue(textContent.contains("الطرق"));
+        assertTrue(textContent.contains("في"));
+        assertTrue(textContent.contains("جزء"));
+        assertTrue(textContent.contains("بسيط"));
+        assertTrue(textContent.contains("من"));
+        assertTrue(textContent.contains("الإنترنت"));
+        assertTrue(textContent.contains("FTP"));
     }
 
 }

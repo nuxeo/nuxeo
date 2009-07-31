@@ -68,6 +68,10 @@ public class TestConverters extends BaseConverterTest {
         assertTrue(textContent.contains("third"));
     }
 
+    public void testOOWriterArabicConverter() throws Exception {
+        doTestArabicTextConverter("application/vnd.oasis.opendocument.text", "oo2text", "wikipedia-internet-ar.odt");
+    }
+
     public void testOOCalcConverter() throws Exception {
         doTestTextConverter("application/vnd.sun.xml.calc", "oo2text", "hello.sxc");
         doTestTextConverter("application/vnd.oasis.opendocument.spreadsheet", "oo2text", "hello.ods");
@@ -80,6 +84,12 @@ public class TestConverters extends BaseConverterTest {
 
     public void testPDFConverter() throws Exception {
         doTestTextConverter("application/pdf", "pdf2text", "hello.pdf");
+    }
+
+    // disabled: need to upgrade to version > 0.7.3 version of PDFBox with fix for:
+    // https://issues.apache.org/jira/browse/PDFBOX-377
+    public void disabledTestPDFArabicConverter() throws Exception {
+        doTestArabicTextConverter("application/pdf", "pdf2text", "wikipedia-internet-ar.pdf");
     }
 
     public void testAnyToTextConverter() throws Exception {

@@ -27,6 +27,10 @@ public class TestMSOfficeConverter extends BaseConverterTest {
         doTestTextConverter("application/msword", "msoffice2text", "hello.doc");
     }
 
+    public void testWordArabicConverter() throws Exception {
+        doTestArabicTextConverter("application/msword", "msoffice2text", "wikipedia-internet-ar.doc");
+    }
+
     public void testPptConverter() throws Exception {
         doTestTextConverter("application/vnd.ms-powerpoint", "msoffice2text",
                 "hello.ppt");
