@@ -19,19 +19,19 @@
 
 package org.nuxeo.ecm.core.convert.plugins.text.extractors;
 
+import java.util.Stack;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class OOoXmlContentHandler extends DefaultHandler {
 
-    private StringBuffer sb;
-    private boolean dumpText;
-
-    public OOoXmlContentHandler() {
-        sb = new StringBuffer();
-        dumpText = false;
-    }
+    protected StringBuffer sb = new StringBuffer();
+    
+    protected Stack<String> path = new Stack<String>();
+    
+    protected boolean dumpText = false;
 
     public String getContent() {
         return sb.toString();
@@ -39,9 +39,10 @@ public class OOoXmlContentHandler extends DefaultHandler {
 
     @Override
     public void startElement(String namespaceURI, String localName,
-            String rawName, Attributes atts)
+            String qName, Attributes atts)
             throws SAXException {
-        if (rawName.startsWith("text:")) {
+        path.push(qName);
+        if (qName.startsWith("text:")) {
             dumpText = true;
         }
     }
@@ -50,14 +51,18 @@ public class OOoXmlContentHandler extends DefaultHandler {
     public void characters(char[] ch, int start, int length)
             throws SAXException {
         if (dumpText) {
-            sb.append(ch, start, length);
+            String content = String.valueOf(ch, start, length);
+            sb.append(content);
             sb.append(" ");
         }
     }
     @Override
     public void endElement(String namespaceURI, String localName, String qName)
             throws SAXException {
-        dumpText = false;
+        path.pop();
+        if (path.isEmpty() || !path.lastElement().startsWith("text:")) {
+            dumpText = false;
+        }
     }
 
 }

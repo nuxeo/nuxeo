@@ -53,7 +53,7 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         return new SimpleBlobHolder(new FileBlob(file));
     }
 
-    protected void doTestTextConverter(String srcMT, String converter, String fileName)
+    protected String doTestTextConverter(String srcMT, String converter, String fileName)
             throws Exception {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
@@ -65,9 +65,11 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
         BlobHolder result = cs.convert(converterName, hg, null);
         assertNotNull(result);
-        assertTrue(result.getBlob().getString().trim().startsWith("Hello"));
-
-        // System.out.println(result.getBlob().getString());
+        
+        String textContent = result.getBlob().getString();
+        assertTrue(textContent.trim().startsWith("Hello"));
+        // System.out.println(textContent);
+        return textContent;
     }
 
     protected void doTestAny2TextConverter(String srcMT, String converterName,

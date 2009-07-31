@@ -62,7 +62,10 @@ public class TestConverters extends BaseConverterTest {
 
     public void testOOWriterConverter() throws Exception {
         doTestTextConverter("application/vnd.sun.xml.writer", "oo2text", "hello.sxw");
-        doTestTextConverter("application/vnd.oasis.opendocument.text", "oo2text", "hello.odt");
+        String textContent = doTestTextConverter("application/vnd.oasis.opendocument.text", "oo2text", "hello.odt");
+        assertTrue(textContent.contains("first"));
+        assertTrue(textContent.contains("second"));
+        assertTrue(textContent.contains("third"));
     }
 
     public void testOOCalcConverter() throws Exception {
