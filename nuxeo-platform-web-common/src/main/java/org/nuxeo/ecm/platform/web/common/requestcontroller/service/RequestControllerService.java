@@ -65,8 +65,8 @@ public class RequestControllerService extends DefaultComponent implements
         }
     }
 
-    public void registerFilterConfig(String name, String pattern, boolean grant, boolean tx, boolean sync) {
-        FilterConfigDescriptor desc = new FilterConfigDescriptor(name,pattern,grant,tx,sync);
+    public void registerFilterConfig(String name, String pattern, boolean grant, boolean tx, boolean sync, boolean cached, boolean isPrivate, String cacheTime) {
+        FilterConfigDescriptor desc = new FilterConfigDescriptor(name,pattern,grant,tx,sync, cached, isPrivate, cacheTime);
         registerFilterConfig(desc);
     }
 
@@ -119,7 +119,8 @@ public class RequestControllerService extends DefaultComponent implements
             Pattern pat = desc.getCompiledPattern();
             Matcher m = pat.matcher(uri);
             if(m.matches()){
-                return new RequestFilterConfigImpl(false,false);
+                return new RequestFilterConfigImpl(false, false, false, false,
+                        "");
             }
         }
 
@@ -128,12 +129,14 @@ public class RequestControllerService extends DefaultComponent implements
             Pattern pat = desc.getCompiledPattern();
             Matcher m = pat.matcher(uri);
             if(m.matches()) {
-                return new RequestFilterConfigImpl(desc.useSync(),desc.useTx());
+                return new RequestFilterConfigImpl(desc.useSync(),
+                        desc.useTx(), desc.isCached(), desc.isPrivate(),
+                        desc.getCacheTime());
             }
         }
 
         // return deny by default
-        return new RequestFilterConfigImpl(false,false);
+        return new RequestFilterConfigImpl(false, false, false, false, "");
     }
 
 }

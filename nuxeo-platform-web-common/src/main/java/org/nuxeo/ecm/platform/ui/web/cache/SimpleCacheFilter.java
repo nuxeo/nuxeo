@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
  */
+@Deprecated
 public class SimpleCacheFilter implements Filter {
 
     private String cacheTime = "3599";

@@ -27,11 +27,14 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * Descriptor for {@link RequestFilterConfig}
- *
+ * 
  * @author tiry
+ * @author ldoguin
  */
 @XObject(value = "filterConfig")
 public class FilterConfigDescriptor implements Serializable {
+
+    public static final String DEFAULT_CACHE_DURATION = "3599";
 
     private static final long serialVersionUID = 1L;
 
@@ -44,6 +47,15 @@ public class FilterConfigDescriptor implements Serializable {
     @XNode("@transactional")
     protected boolean useTx;
 
+    @XNode("@cached")
+    protected boolean cached;
+
+    @XNode("@cacheTime")
+    protected String cacheTime;
+
+    @XNode("@private")
+    protected boolean isPrivate;
+
     @XNode("@grant")
     protected boolean grant = true;
 
@@ -55,12 +67,16 @@ public class FilterConfigDescriptor implements Serializable {
     public FilterConfigDescriptor() {
     }
 
-    public FilterConfigDescriptor(String name, String pattern, boolean grant, boolean tx, boolean sync) {
-        this.name=name;
-        this.pattern=pattern;
-        this.grant=grant;
-        this.useSync=sync;
-        this.useTx=tx;
+    public FilterConfigDescriptor(String name, String pattern, boolean grant,
+            boolean tx, boolean sync, boolean cached, boolean isPrivate, String cacheTime) {
+        this.name = name;
+        this.pattern = pattern;
+        this.grant = grant;
+        this.useSync = sync;
+        this.useTx = tx;
+        this.cached = cached;
+        this.isPrivate = isPrivate;
+        this.cacheTime = cacheTime;
     }
 
     public String getName() {
@@ -80,6 +96,21 @@ public class FilterConfigDescriptor implements Serializable {
 
     public boolean isGrantRule() {
         return grant;
+    }
+
+    public boolean isCached() {
+        return cached;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public String getCacheTime() {
+        if (cacheTime == null || cacheTime.equals("")) {
+            cacheTime = DEFAULT_CACHE_DURATION;
+        }
+        return cacheTime;
     }
 
     public String getPatternStr() {

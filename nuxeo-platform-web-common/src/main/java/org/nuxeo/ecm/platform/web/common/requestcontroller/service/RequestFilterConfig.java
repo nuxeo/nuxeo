@@ -37,4 +37,9 @@ public interface RequestFilterConfig  extends Serializable{
 
     boolean needTransaction();
 
+    boolean isCached();
+
+    boolean isPrivate();
+
+    String getCacheTime();
 }

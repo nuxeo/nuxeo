@@ -24,6 +24,15 @@
       <pattern>/nuxeo/TestServlet.*</pattern>
     </filterConfig>
 
+    <filterConfig name="TestDefaultCacheValues" transactional="true" synchonize="true">
+      <pattern>/nuxeo/CacheDefault.*</pattern>
+    </filterConfig>
+
+    <filterConfig name="TestCache" transactional="true" synchonize="true"
+      cached="true" cacheTime="3000" private="true">
+      <pattern>/nuxeo/Cache.*</pattern>
+    </filterConfig>
+
 <!-- WebEngine config
     <filterConfig name="WebEngine" transactional="true" synchonize="true">
       <pattern>/nuxeo/site/.*</pattern>

@@ -32,9 +32,18 @@ public class RequestFilterConfigImpl implements RequestFilterConfig {
 
     protected final boolean useSync;
 
-    public RequestFilterConfigImpl(boolean useSync, boolean useTx) {
+    protected final boolean isPrivate;
+
+    protected final boolean cached;
+
+    protected final String cacheTime;
+
+    public RequestFilterConfigImpl(boolean useSync, boolean useTx, boolean cached, boolean isPrivate, String cacheTime) {
         this.useSync = useSync;
         this.useTx = useTx;
+        this.cached = cached;
+        this.isPrivate = isPrivate;
+        this.cacheTime = cacheTime;
     }
 
     public boolean needSynchronization() {
@@ -43,6 +52,18 @@ public class RequestFilterConfigImpl implements RequestFilterConfig {
 
     public boolean needTransaction() {
         return useTx;
+    }
+
+    public boolean isCached() {
+        return cached;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public String getCacheTime() {
+        return cacheTime;
     }
 
 }

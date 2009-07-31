@@ -21,6 +21,11 @@ package org.nuxeo.ecm.platform.web.common.requestcontroller.filter;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -32,6 +37,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.transaction.UserTransaction;
 
@@ -56,6 +62,8 @@ public class NuxeoRequestControllerFilter implements Filter {
     protected static final String SYNCED_REQUEST_FLAG = "NuxeoSessionAlreadySync";
 
     protected static final int LOCK_TIMOUT_S = 120;
+
+    public static final DateFormat HTTP_EXPIRES_DATE_FORMAT = httpExpiresDateFormat();
 
     protected static RequestControllerManager rcm;
 
@@ -95,6 +103,7 @@ public class NuxeoRequestControllerFilter implements Filter {
             FilterChain chain) throws IOException, ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         if (log.isDebugEnabled()) {
             log.debug(doFormatLogMessage(httpRequest, "Entering NuxeoRequestControler filter"));
@@ -106,6 +115,15 @@ public class NuxeoRequestControllerFilter implements Filter {
 
         boolean useSync = config.needSynchronization();
         boolean useTx = config.needTransaction();
+        
+        // Add cache header if needed
+        if (httpRequest.getMethod().equals("GET")) {
+            boolean iscached = config.isCached();
+            if (iscached) {
+                addCacheHeader(httpResponse, config.isPrivate(),
+                        config.getCacheTime());
+            }
+        }
 
         if (!useSync && !useTx) {
             if (log.isDebugEnabled()) {
@@ -302,6 +320,38 @@ public class NuxeoRequestControllerFilter implements Filter {
                 log.debug("session unlocked on Thread ");
             }
         }
+    }
+
+    private static DateFormat httpExpiresDateFormat() {
+        // formated http Expires: Thu, 01 Dec 1994 16:00:00 GMT
+        DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
+                Locale.US);
+        df.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return df;
+    }
+
+    /**
+     * Set cache parameters to httpReponse
+     *
+     * @param httpResponse
+     * @param cacheTime
+     */
+    public static void addCacheHeader(HttpServletResponse httpResponse, Boolean isPrivate, String cacheTime) {
+        httpResponse.addHeader("Cache-Control", "max-age=" + cacheTime);
+        if (isPrivate){
+            httpResponse.addHeader("Cache-Control", "private");
+        } else {
+            httpResponse.addHeader("Cache-Control", "public");
+        }
+
+        // Generating expires using current date and adding cache time.
+        // we are using the format Expires: Thu, 01 Dec 1994 16:00:00 GMT
+        Date date = new Date();
+        long newDate = date.getTime() + new Long(cacheTime) * 1000;
+        date.setTime(newDate);
+
+        httpResponse.setHeader("Expires",
+                HTTP_EXPIRES_DATE_FORMAT.format(date));
     }
 
     public void destroy() {
