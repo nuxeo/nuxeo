@@ -101,19 +101,19 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         assertNotNull(result);
         String textContent = result.getBlob().getString().trim();
 
-        // test that the first word is 'Internet' in arabic
-        assertTrue(textContent.startsWith("إنترنت"));
+        // test that the first word is 'internet' in arabic
+        assertTrue(textContent.startsWith("\u0625\u0646\u062a\u0631\u0646\u062a"));
 
         // other words that occur in the document
-        assertTrue(textContent.contains("تمثيل"));
-        assertTrue(textContent.contains("لشبكة"));
-        assertTrue(textContent.contains("من"));
-        assertTrue(textContent.contains("الطرق"));
-        assertTrue(textContent.contains("في"));
-        assertTrue(textContent.contains("جزء"));
-        assertTrue(textContent.contains("بسيط"));
-        assertTrue(textContent.contains("من"));
-        assertTrue(textContent.contains("الإنترنت"));
+        assertTrue(textContent.contains("\u062a\u0645\u062b\u064a\u0644"));
+        assertTrue(textContent.contains("\u0644\u0634\u0628\u0643\u0629"));
+        assertTrue(textContent.contains("\u0645\u0646"));
+        assertTrue(textContent.contains("\u0627\u0644\u0637\u0631\u0642"));
+        assertTrue(textContent.contains("\u0641\u064a"));
+        assertTrue(textContent.contains("\u062c\u0632\u0621"));
+        assertTrue(textContent.contains("\u0628\u0633\u064a\u0637"));
+        assertTrue(textContent.contains("\u0645\u0646"));
+        assertTrue(textContent.contains("\u0627\u0644\u0625\u0646\u062a\u0631\u0646\u062a"));
         assertTrue(textContent.contains("FTP"));
     }
 
