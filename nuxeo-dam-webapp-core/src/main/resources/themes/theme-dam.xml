@@ -263,14 +263,16 @@
         <background>transparent url(/nuxeo/img/data_title_bg.png) repeat-x top left</background>
       </selector>
       <selector path=".togglePanel h3">
-        <padding>3px 3px 3px 18px</padding>
+        <padding>4px 0</padding>
         <font-size>11px</font-size>
         <float>left</float>
       </selector>
       <selector path=".togglePanel h3 .folded">
+        <padding>0 0 0 18px</padding>
         <background>transparent url(/nuxeo/icons/arrow_folded.gif) top left no-repeat</background>
       </selector>
       <selector path=".togglePanel h3 .unfolded">
+        <padding>0 0 0 18px</padding>
         <background>transparent url(/nuxeo/icons/arrow_unfolded.gif) top left no-repeat</background>
       </selector>
       <selector path=".togglePanel h3 a,.togglePanel h3 a:link, .togglePanel h3 a:visited, .togglePanel h3 a:hover, .togglePanel h3 a:visited:hover">
