@@ -32,6 +32,9 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
+import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
+import org.nuxeo.ecm.core.api.externalblob.FileSystemExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.primitives.ExternalBlobProperty;
@@ -63,9 +66,19 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
                 "OSGI-INF/test-repo-core-types-contrib.xml");
 
         // deploy specific adapter for testing external blobs: files are stored
-        // in directory "/tmp/"
+        // in temporary directory
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-externalblob-adapters-contrib.xml");
+        // set container to temp directory here in case that depends on the OS
+        // or machine configuration and add funny characters to avoid problems
+        // due to xml parsing
+        BlobHolderAdapterService service = Framework.getService(BlobHolderAdapterService.class);
+        assertNotNull(service);
+        ExternalBlobAdapter adapter = service.getExternalBlobAdapterForPrefix("fs");
+        Map<String, String> props = new HashMap<String, String>();
+        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n"
+                + System.getProperty("java.io.tmpdir") + " ");
+        adapter.setProperties(props);
 
         openSession();
         doc = session.createDocumentModel("TestDocument");

@@ -14,7 +14,7 @@
       class="org.nuxeo.ecm.core.api.externalblob.FileSystemExternalBlobAdapter">
       <!-- will be set in tests to temp directory in case that depends
         on the OS or machine configuration -->
-      <!-- 
+      <!--
         <property name="container">/tmp/</property>
       -->
     </adapter>
