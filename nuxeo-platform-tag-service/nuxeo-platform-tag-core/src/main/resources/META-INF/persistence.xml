@@ -14,7 +14,7 @@
 		<class>org.nuxeo.ecm.platform.tag.entity.TaggingEntity</class>
 		
 		<properties>
-			<property name="hibernate.hbm2ddl.auto" value="update" />
+			<property name="hibernate.hbm2ddl.auto" value="never" />
 		</properties>
 	</persistence-unit>
 </persistence>
