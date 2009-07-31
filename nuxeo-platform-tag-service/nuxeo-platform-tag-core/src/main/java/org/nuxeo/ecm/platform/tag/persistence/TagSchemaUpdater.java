@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_C
 import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_TAG_ID;
 import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_NAME;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -98,8 +99,12 @@ public class TagSchemaUpdater {
     public static final Log log = LogFactory.getLog(TagSchemaUpdater.class);
 
     protected PersistenceMetadata doLoadMetadata() {
-        try {
-            Enumeration<URL> xmls = Thread.currentThread().getContextClassLoader().getResources("META-INF/persistence.xml");
+            Enumeration<URL> xmls = null;
+            try {
+                xmls = Thread.currentThread().getContextClassLoader().getResources("META-INF/persistence.xml");
+            } catch (IOException e1) {
+               throw new Error("No persistence.xml files in class path", e1);
+            }
             while (xmls.hasMoreElements()) {
                 URL url = xmls.nextElement();
                 List<PersistenceMetadata> metadataFiles = null;
@@ -116,13 +121,7 @@ public class TagSchemaUpdater {
                 }
             }
             throw new Error("cannot find nxtags persistence unit");
-        } catch (Exception e) {
-            if (e instanceof PersistenceException) {
-                throw (PersistenceException) e;
-            } else {
-                throw new PersistenceException(e);
-            }
-        }
+        
     }
 
     public static Dialect determineDialect(SessionImpl session) {
@@ -169,8 +168,8 @@ public class TagSchemaUpdater {
             Connection connection = settings.getConnectionProvider().getConnection();
             Statement statement = connection.createStatement();
             statement.execute(script);
-        } catch (Exception e) {
-            log.warn(e);
+        } catch (SQLException e) {
+            throw new Error("Cannot update schema", e);
         }
     }
 }
