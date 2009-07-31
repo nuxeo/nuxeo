@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,11 +50,18 @@ public class TestExternalBlob extends NXRuntimeTestCase {
                 "OSGI-INF/test-externalblob-types-contrib.xml");
         deployContrib("org.nuxeo.ecm.core.api.tests",
                 "OSGI-INF/test-externalblob-adapters-contrib.xml");
+
+        BlobHolderAdapterService service = Framework.getService(BlobHolderAdapterService.class);
+        assertNotNull(service);
+        ExternalBlobAdapter adapter = service.getExternalBlobAdapterForPrefix("fs");
+        Map<String, String> props = new HashMap<String, String>();
+        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME,
+                System.getProperty("java.io.tmpdir"));
+        adapter.setProperties(props);
     }
 
     protected File createTempFile() throws Exception {
-        File tmpdir = new File("/tmp");
-        File file = File.createTempFile("testExternalBlob", ".txt", tmpdir);
+        File file = File.createTempFile("testExternalBlob", ".txt");
         FileWriter fstream = new FileWriter(file);
         BufferedWriter out = new BufferedWriter(fstream);
         out.write("Hello External Blob");
@@ -70,7 +78,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         assertEquals("fs", adapter.getPrefix());
         assertTrue(adapter instanceof FileSystemExternalBlobAdapter);
         assertEquals(
-                "/tmp/",
+                System.getProperty("java.io.tmpdir"),
                 adapter.getProperty(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME));
 
         File file = createTempFile();
