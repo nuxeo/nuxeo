@@ -18,20 +18,21 @@
  */
 package org.nuxeo.ecm.core.chemistry.impl;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.chemistry.ACE;
+import org.apache.chemistry.ACLPropagation;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
@@ -44,6 +45,7 @@ import org.apache.chemistry.Policy;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
+import org.apache.chemistry.Rendition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
@@ -196,6 +198,12 @@ public class NuxeoConnection implements Connection, SPI {
      * ----- Navigation Services -----
      */
 
+    public List<ObjectEntry> getFolderTree(ObjectId folder, int depth,
+            String filter, boolean includeAllowableActions) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, String orderBy) {
@@ -237,9 +245,8 @@ public class NuxeoConnection implements Connection, SPI {
         return all.subList(fromIndex, toIndex);
     }
 
-    public List<ObjectEntry> getFolderParent(ObjectId folder, String filter,
-            boolean includeAllowableActions, boolean includeRelationships,
-            boolean returnToRoot) {
+    public ObjectEntry getFolderParent(ObjectId folder, String filter,
+            boolean includeAllowableActions, boolean includeRelationships) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -335,6 +342,11 @@ public class NuxeoConnection implements Connection, SPI {
         }
     }
 
+    public List<Rendition> getRenditions(ObjectId object, String filter,
+            int maxItems, int skipCount) {
+        return Collections.emptyList();
+    }
+
     public boolean hasContentStream(ObjectId document) {
         DocumentModel doc;
         try {
@@ -355,19 +367,17 @@ public class NuxeoConnection implements Connection, SPI {
         }
     }
 
-    public InputStream getContentStream(ObjectId document, int offset,
-            int length) throws IOException {
-        if (offset < 0) {
-            throw new IllegalArgumentException("Offset: " + offset);
-        }
+    public ContentStream getContentStream(ObjectId object,
+            String contentStreamId) throws IOException {
+        // TODO contentStreamId
         DocumentModel doc;
         try {
-            doc = session.getDocument(new IdRef(document.getId()));
+            doc = session.getDocument(new IdRef(object.getId()));
         } catch (ClientException e) {
-            throw new RuntimeException("Not found: " + document.getId(), e); // TODO
+            throw new RuntimeException("Not found: " + object.getId(), e); // TODO
         }
         if (doc == null) {
-            throw new RuntimeException("Not found: " + document.getId()); // TODO
+            throw new RuntimeException("Not found: " + object.getId()); // TODO
         }
         if (!doc.hasSchema("file")) {
             return null;
@@ -381,16 +391,7 @@ public class NuxeoConnection implements Connection, SPI {
         if (blob == null) {
             return null;
         }
-        InputStream stream = blob.getStream();
-
-        // offset, length
-        long skipped = stream.skip(offset);
-        if (skipped < offset) {
-            // assume we reached EOF
-            stream = new ByteArrayInputStream(new byte[0]);
-        }
-        // XXX TODO length
-        return stream;
+        return new NuxeoContentStream(blob);
     }
 
     public ObjectId setContentStream(ObjectId document, boolean overwrite,
@@ -410,7 +411,7 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void moveObject(ObjectId object, ObjectId targetFolder,
+    public ObjectId moveObject(ObjectId object, ObjectId targetFolder,
             ObjectId sourceFolder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
@@ -574,6 +575,14 @@ public class NuxeoConnection implements Connection, SPI {
         return res;
     }
 
+    public Iterator<ObjectEntry> getChangeLog(String changeLogToken,
+            boolean includeProperties, int maxItems, boolean[] hasMoreItems,
+            String[] lastChangeLogToken) {
+        hasMoreItems[0] = false;
+        lastChangeLogToken[0] = null;
+        return Collections.<ObjectEntry> emptyList().iterator();
+    }
+
     /*
      * ----- Versioning Services -----
      */
@@ -624,18 +633,35 @@ public class NuxeoConnection implements Connection, SPI {
      * ----- Policy Services -----
      */
 
-    public void applyPolicy(ObjectId policy, ObjectId object) {
+    public void applyPolicy(ObjectId object, ObjectId policy) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void removePolicy(ObjectId policy, ObjectId object) {
+    public void removePolicy(ObjectId object, ObjectId policy) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public Collection<ObjectEntry> getAppliedPolicies(ObjectId policy,
             String filter) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    /*
+     * ----- ACL Services -----
+     */
+
+    public List<ACE> getACL(ObjectId object, boolean onlyBasicPermissions,
+            boolean[] exact) {
+        // TODO Auto-generated method stub
+        return Collections.emptyList();
+    }
+
+    public List<ACE> applyACL(ObjectId object, List<ACE> addACEs,
+            List<ACE> removeACEs, ACLPropagation propagation, boolean[] exact,
+            String[] changeToken) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

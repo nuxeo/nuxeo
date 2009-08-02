@@ -29,10 +29,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.chemistry.ACLCapability;
+import org.apache.chemistry.ACLCapabilityType;
+import org.apache.chemistry.BaseType;
+import org.apache.chemistry.ChangeCapability;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.JoinCapability;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.QueryCapability;
+import org.apache.chemistry.RenditionCapability;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryEntry;
@@ -221,6 +226,23 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
         return this;
     }
 
+    public Set<BaseType> getChangeLogBaseTypes() {
+        return Collections.emptySet();
+    }
+
+    public boolean isChangeLogIncomplete() {
+        return false;
+    }
+
+    public String getLatestChangeLogToken() {
+        return "";
+    }
+
+    public ACLCapabilityType getACLCapabilityType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     public Collection<RepositoryEntry> getRelatedRepositories() {
         return Collections.emptySet();
     }
@@ -253,12 +275,29 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
         return true;
     }
 
+    public boolean hasGetDescendants() {
+        return false;
+    }
+
     public JoinCapability getJoinCapability() {
         return JoinCapability.INNER_AND_OUTER;
     }
 
     public QueryCapability getQueryCapability() {
         return QueryCapability.BOTH_COMBINED;
+    }
+
+    public RenditionCapability getRenditionCapability() {
+        return RenditionCapability.NONE;
+    }
+
+    public ChangeCapability getChangeCapability() {
+        return ChangeCapability.NONE;
+    }
+
+    public ACLCapability getACLCapability() {
+        // TODO Auto-generated method stub
+        return ACLCapability.NONE;
     }
 
 }

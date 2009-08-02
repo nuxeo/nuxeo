@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.chemistry.impl;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 
 import org.apache.chemistry.ContentStream;
@@ -79,14 +78,6 @@ public class NuxeoDocument extends NuxeoObject implements Document {
         } catch (ClientException e) {
             throw new RuntimeException(e.toString(), e); // TODO
         }
-    }
-
-    public InputStream getStream() throws IOException {
-        Blob blob = getBlob();
-        if (blob == null) {
-            return null;
-        }
-        return blob.getStream();
     }
 
     // TODO put in API?

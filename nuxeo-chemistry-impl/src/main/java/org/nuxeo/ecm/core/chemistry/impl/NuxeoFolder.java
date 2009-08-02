@@ -68,11 +68,6 @@ public class NuxeoFolder extends NuxeoObject implements Folder {
         throw new UnsupportedOperationException();
     }
 
-    public List<Folder> getAncestors() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     public List<CMISObject> getChildren() {
         DocumentModelList docs;
         try {

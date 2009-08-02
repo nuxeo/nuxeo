@@ -227,7 +227,15 @@ public class NuxeoType implements Type {
         return true;
     }
 
-    public boolean isControllable() {
+    public boolean isControllablePolicy() {
+        return true;
+    }
+
+    public boolean isControllableACL() {
+        return true;
+    }
+
+    public boolean isFulltextIndexed() {
         return true;
     }
 

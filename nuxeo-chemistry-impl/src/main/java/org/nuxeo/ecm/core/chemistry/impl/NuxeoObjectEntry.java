@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.ChangeInfo;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Type;
@@ -54,6 +55,10 @@ public class NuxeoObjectEntry implements ObjectEntry {
 
     public BaseType getBaseType() {
         return type.getBaseType();
+    }
+
+    public ChangeInfo getChangeInfo() {
+        return null;
     }
 
     public Serializable getValue(String id) {

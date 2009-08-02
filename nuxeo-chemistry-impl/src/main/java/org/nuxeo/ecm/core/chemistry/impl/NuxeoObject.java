@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
@@ -132,6 +133,11 @@ public class NuxeoObject extends BaseObject implements CMISObject {
         } catch (ClientException e) {
             throw new RuntimeException(e.toString(), e); // TODO
         }
+    }
+
+    public ContentStream getContentStream(String contentStreamId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     public void save() {
