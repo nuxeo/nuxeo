@@ -50,6 +50,10 @@ public class LongProperty extends ScalarProperty {
             return (Serializable)value;
         }
         if (value.getClass() == String.class) {
+            String string = (String)value;
+            if (string.length() == 0) {
+                return null;
+            }
             return Long.valueOf(value.toString());
         }
         if (value instanceof Number) {
