@@ -28,9 +28,9 @@ import org.xml.sax.helpers.DefaultHandler;
 public class OOoXmlContentHandler extends DefaultHandler {
 
     protected StringBuffer sb = new StringBuffer();
-    
+
     protected Stack<String> path = new Stack<String>();
-    
+
     protected boolean dumpText = false;
 
     public String getContent() {

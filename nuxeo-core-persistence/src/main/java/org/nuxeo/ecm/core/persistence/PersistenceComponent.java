@@ -48,15 +48,15 @@ public class PersistenceComponent extends DefaultComponent  implements Hibernate
         }
         if (contribution.hibernateProperties != null) {
             doPatchForTests(contribution.hibernateProperties);
-        } 
+        }
         if (!registry.containsKey(contribution.name)) {
             registry.put(contribution.name, contribution);
         } else {
             registry.get(contribution.name).merge(contribution);
         }
     }
-    
-    protected void doPatchForTests(Properties hibernateProperties) { 
+
+    protected void doPatchForTests(Properties hibernateProperties) {
         String url = hibernateProperties.getProperty("hibernate.connection.url");
         if (url != null) {
             url = Framework.expandVars(url);

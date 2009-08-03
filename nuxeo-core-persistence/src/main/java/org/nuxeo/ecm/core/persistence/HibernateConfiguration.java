@@ -58,9 +58,8 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
        if (expandedValue.startsWith("$")) {
            throw new PersistenceError("Cannot expand " + name + " for datasource");
        }
-       hibernateProperties.put("hibernate.connection.datasource", DataSourceHelper.getDataSourceJNDIName(name));;
+       hibernateProperties.put("hibernate.connection.datasource", DataSourceHelper.getDataSourceJNDIName(name));
     }
-
 
     @XNodeMap(value = "properties/property", key = "@name", type = Properties.class, componentType = String.class)
     public final Properties hibernateProperties = new Properties();
@@ -114,10 +113,10 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     }
 
     public void merge(HibernateConfiguration other) {
-        assert name.equals(other.name) : " cannot merge configuraton that do not have the same persistence unit";
-        this.annotedClasses.addAll(other.annotedClasses);
-        this.hibernateProperties.clear();
-        this.hibernateProperties.putAll(other.hibernateProperties);
+        assert name.equals(other.name) : " cannot merge configuration that do not have the same persistence unit";
+        annotedClasses.addAll(other.annotedClasses);
+        hibernateProperties.clear();
+        hibernateProperties.putAll(other.hibernateProperties);
     }
 
 }
