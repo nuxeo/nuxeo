@@ -19,7 +19,7 @@ package org.nuxeo.ecm.webengine.ui.wizard;
 
 /**
  * A web form is a single page wizard.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
