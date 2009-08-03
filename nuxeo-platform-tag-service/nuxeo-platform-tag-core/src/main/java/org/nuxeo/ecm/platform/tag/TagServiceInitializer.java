@@ -26,7 +26,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.com>"
- * 
+ *
  */
 public class TagServiceInitializer extends RepositoryInitializationHandler {
 

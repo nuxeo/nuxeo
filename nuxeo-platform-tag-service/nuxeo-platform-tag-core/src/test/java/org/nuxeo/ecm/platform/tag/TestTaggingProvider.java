@@ -41,12 +41,11 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TestTaggingProvider extends SQLRepositoryTestCase {
 
+    protected PersistenceProvider persistenceProvider;
+
     public TestTaggingProvider() {
         super(TestTaggingProvider.class.getName());
     }
-
-
-    protected PersistenceProvider persistenceProvider;
 
     @Override
     public void setUp() throws Exception {
@@ -73,11 +72,6 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
 
 
         taggingProvider = TaggingProvider.createProvider(entityManager);
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
     }
 
     protected TaggingEntity doCreateTaggingEntry(

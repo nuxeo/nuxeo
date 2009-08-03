@@ -34,15 +34,15 @@ public class TestSchemaUpdater extends SQLRepositoryTestCase {
     {
         database = DatabaseH2.INSTANCE;
     }
-    
+
     TagSchemaUpdater updater = new TagSchemaUpdater();
-    
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
         openSession();
     }
-    
+
     public void testUpdate() throws SQLException {
         updater.configuration.getClassMappings();
         updater.connectionProperties.clear();
@@ -55,4 +55,5 @@ public class TestSchemaUpdater extends SQLRepositoryTestCase {
         updater.connectionProperties.setProperty(Environment.PASS, repositoryProperties.get("Password"));
         updater.update();
     }
+
 }
