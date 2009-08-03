@@ -141,7 +141,7 @@ public class UIInputDateTime extends UIInput {
             }
         } else {
             // default value
-            return false;
+            return true;
         }
     }
 
