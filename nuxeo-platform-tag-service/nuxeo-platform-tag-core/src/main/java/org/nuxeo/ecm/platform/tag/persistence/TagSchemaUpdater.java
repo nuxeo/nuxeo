@@ -158,7 +158,7 @@ public class TagSchemaUpdater {
         column = new Column(TAGGING_TABLE_COLUMN_IS_PRIVATE, Types.BOOLEAN);
         table.addColumn(column);
         Dialect dialect = settings.getDialect();
-        if (dialect.equals(PostgreSQLDialect.class)) {
+        if (dialect instanceof PostgreSQLDialect) {
             dialect = new CustomPostgreSQLDialect();
         }
         String script = table.getCreateSql(dialect);
