@@ -105,12 +105,6 @@
             <url-pattern>/js/*</url-pattern>
         </servlet-mapping>
 
-        <filter-mapping>
-            <filter-name>simpleCacheFilter</filter-name>
-            <url-pattern>/js/*</url-pattern>
-        </filter-mapping>
-
-
         <servlet>
             <servlet-name>Nuxeo Ajax Proxy</servlet-name>
             <servlet-class>

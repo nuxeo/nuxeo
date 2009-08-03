@@ -4,10 +4,15 @@
 	<extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
 		point="filterConfig">
 
-		<filterConfig name="BigFileDownloaderRequest"
-			transactional="true" synchonize="true">
-			<pattern>/nuxeo/nxbigfile/.*</pattern>
-		</filterConfig>
+    <filterConfig name="BigFileDownloaderRequest" cached="true" private="true"
+      transactional="true" synchonize="true">
+      <pattern>/nuxeo/nxbigfile/.*</pattern>
+    </filterConfig>
+
+    <filterConfig name="nxfile" cached="true" private="true"
+      transactional="false" synchonize="false">
+      <pattern>/nuxeo/nxfile.*</pattern>
+    </filterConfig>
 
 		<filterConfig name="img" cached="true" cacheTime="3600">
 			<pattern>/nuxeo/img.*</pattern>

@@ -13,6 +13,26 @@
 
   <extension-point name="filterConfig">
   <documentation>
+      Define a new filterConfig.
+      
+      -filterConfig 
+        - name: name of the Filter.
+        - transactional: use transaction.
+        - synchonize: is synchronized
+        - cached: if true, add cache-control to header
+        - cacheTime: cache duration.
+        - private: if true, cache is private, public if false.
+
+      -pattern: url pattern to match
+
+      Example of a filterConfig Registration:
+      
+      <code>  
+		    <filterConfig name="filterName" transactional="true" synchonize="true"
+		     cached="true" private="true" cachetime="3600">
+		      <pattern>/nuxeo/urlPattern/.*</pattern>
+		    </filterConfig>
+      </code>
     @author Thierry Delprat (td@nuxeo.com)
   </documentation>
     <object
