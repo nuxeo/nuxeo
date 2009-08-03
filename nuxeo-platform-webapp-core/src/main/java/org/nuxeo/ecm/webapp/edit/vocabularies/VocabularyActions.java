@@ -30,13 +30,16 @@ import org.jboss.seam.annotations.Destroy;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.ui.web.directory.VocabularyEntry;
+import org.nuxeo.ecm.webapp.directory.DirectoryUIActionsBean;
 
 /**
  * Interface for an action listener that will provide methods to edit a
  * vocabulary.
  *
  * @author <a href="mailto:bt@nuxeo.com">Bogdan Tatar</a>
+ * @deprecated use {@link DirectoryUIActionsBean}
  */
+@Deprecated
 public interface VocabularyActions extends Serializable {
 
     /**

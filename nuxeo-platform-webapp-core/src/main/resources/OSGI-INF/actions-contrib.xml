@@ -44,9 +44,16 @@
       <filter-id>not_readonly</filter-id>
     </action>
 
+    <!-- deprecated: see directories_manager -->
     <action id="vocabularies_manager"
       link="#{vocabularyActions.viewAllVocabularies}" label="title.vocabularies"
-      order="30">
+      order="30" enabled="false">
+      <category>USER_SERVICES</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="directories_manager" link="view_directories"
+      label="title.vocabularies" order="30">
       <category>USER_SERVICES</category>
       <filter-id>only_for_manager</filter-id>
     </action>
