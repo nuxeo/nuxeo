@@ -24,7 +24,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +69,7 @@ public class ClassPath implements ClassPathScanner.Callback {
         new ClassPathScanner(this, scanForNestedJARs, blacklist).scan(files);
     }
 
-    public File handleBundle(BundleFile bf) throws IOException {
+    public File handleBundle(BundleFile bf) {
         bundles.add(bf);
         loader.addURL(bf.getURL());
         return nestedJARsDir;

@@ -19,8 +19,6 @@
 
 package org.nuxeo.runtime.tomcat;
 
-
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -36,8 +34,6 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.WebappLoader;
 import org.nuxeo.osgi.application.SharedClassLoader;
-
-
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -150,15 +146,14 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
             return;
         }
         try {
-        System.out.println("Stopping Nuxeo Framework");
-        Class<?> clazz = getClassLoader().loadClass("org.nuxeo.osgi.application.loader.Loader");
-        Method method = clazz.getMethod("shutdown");
-        method.invoke(null);
-    } catch (Throwable t) {
-        System.err.println("Failed to invoke nuxeo launcher");
-        t.printStackTrace();
-    }
-
+            System.out.println("Stopping Nuxeo Framework");
+            Class<?> clazz = getClassLoader().loadClass("org.nuxeo.osgi.application.loader.Loader");
+            Method method = clazz.getMethod("shutdown");
+            method.invoke(null);
+        } catch (Throwable t) {
+            System.err.println("Failed to invoke nuxeo launcher");
+            t.printStackTrace();
+        }
     }
 
     protected void startFramework() {
@@ -248,8 +243,6 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
 
     /**
      * This will also install env. properties as java system properties.
-     * @param homeDir
-     * @return
      */
     protected Properties createEnvironment(File homeDir) {
         Properties env = new Properties();
@@ -334,16 +327,13 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
 
     /**
      * Copied from org.nuxeo.runtime.api.Framework
-     *
+     * <p>
      * Expands any variable found in the given expression with the value
      * of the corresponding framework property.
      * <p>
      * The variable format is ${property_key}.
      * <p>
      * System properties are also expanded.
-     *
-     * @param expression
-     * @return
      */
     public static String expandVars(String expression, Map<Object,Object> vars) {
         int p = expression.indexOf("${");
@@ -395,6 +385,5 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         }
         return result.toString();
     }
-
 
 }

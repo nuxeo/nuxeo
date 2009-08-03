@@ -21,7 +21,7 @@ package org.nuxeo.runtime.api;
 
 /**
  * A service provider.
- *
+ * <p>
  * A service provider is used by the framework to be able to change the way
  * local services are found.
  * <p>
@@ -29,10 +29,9 @@ package org.nuxeo.runtime.api;
  * the nuxeo runtime framework to register services.
  * <p>
  * To set a service provider use:
- * {@link DefaultServiceProvider#setProvider(DefaultServiceProvider)}
+ * {@link DefaultServiceProvider#setProvider(ServiceProvider)}
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface ServiceProvider {
 

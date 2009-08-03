@@ -139,9 +139,8 @@ public class ClassPathScanner {
          * The callback may return null to skip nested JAR extraction
          *
          * @param bf the JAR found
-         * @throws IOException
          */
-        void handleNestedJar(BundleFile bf) throws IOException;
+        void handleNestedJar(BundleFile bf);
 
         /**
          * A JAR was found on the class path. Usually a callback should handle
@@ -155,9 +154,8 @@ public class ClassPathScanner {
          * @param bf the JAR found
          * @return the folder to be used to extract JARs or null to skip
          *         extraction
-         * @throws IOException
          */
-        File handleJar(BundleFile bf) throws IOException;
+        File handleJar(BundleFile bf);
 
         /**
          * A Bundle was found on the class path. Usually a callback should
@@ -172,9 +170,8 @@ public class ClassPathScanner {
          * @param bf the JAR found
          * @return the folder to be used to extract JARs or null to skip
          *         extraction
-         * @throws IOException
          */
-        File handleBundle(BundleFile bf) throws IOException;
+        File handleBundle(BundleFile bf);
 
     }
 

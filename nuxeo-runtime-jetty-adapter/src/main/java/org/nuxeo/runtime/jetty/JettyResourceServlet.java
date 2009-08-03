@@ -31,21 +31,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- *
- * Simple resource servlet used as default servlet when EP is deployed in Jetty
+ * Simple resource servlet used as default servlet when EP is deployed in Jetty.
  *
  * @author Thierry Delprat
- *
  */
 public class JettyResourceServlet extends HttpServlet {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     protected static final int BUFFER_SIZE = 1024 * 10;
 
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
@@ -98,7 +94,6 @@ public class JettyResourceServlet extends HttpServlet {
             if (in != null) {
                 in.close();
             }
-
         }
     }
 

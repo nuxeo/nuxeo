@@ -439,7 +439,7 @@ public final class Framework {
     /**
      * This method delete the given file when the marker object is collected by
      * GC.
-     * 
+     *
      * @param file The file to delete
      * @param marker the marker Object
      */
@@ -451,7 +451,7 @@ public final class Framework {
      * This method delete the given file when the marker object is collected by
      * GC. The fileDeleteStrategy can be used for instance do delete only empty
      * directory or force deletion.
-     * 
+     *
      * @param file The file to delete
      * @param marker the marker Object
      * @param fileDeleteStrategy add a custom delete strategy
@@ -460,7 +460,7 @@ public final class Framework {
             FileDeleteStrategy fileDeleteStrategy) {
         fileCleaningTracker.track(file, marker, fileDeleteStrategy);
     }
-    
+
     public static void main(String[] args) {
     }
 

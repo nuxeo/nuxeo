@@ -24,15 +24,21 @@ package org.nuxeo.runtime.tomcat;
  *
  */
 public interface Constants {
+
     static final String HOME_DIR = "org.nuxeo.app.home";
+
     // the web root
     static final String WEB_DIR = "org.nuxeo.app.web";
+
     // the config dir
     static final String CONFIG_DIR = "org.nuxeo.app.config";
+
     // the data dir
     static final String DATA_DIR = "org.nuxeo.app.data";
+
     // the log dir
     static final String LOG_DIR = "org.nuxeo.app.log";
+
     // the tmp dir
     static final String TMP_DIR = "org.nuxeo.app.tmp";
 

@@ -137,8 +137,7 @@ public final class BundleManifestReader {
             headers.put(Constants.REQUIRE_BUNDLE, val);
         }
         // Nuxeo headers
-        for (int i=0; i<CUSTOM_HEADERS.length; i++) {
-            String key = CUSTOM_HEADERS[i];
+        for (String key : CUSTOM_HEADERS) {
             val = attrs.getValue(key);
             if (val != null) {
                 headers.put(key, val);

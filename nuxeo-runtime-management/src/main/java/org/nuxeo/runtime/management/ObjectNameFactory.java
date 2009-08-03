@@ -67,7 +67,7 @@ public class ObjectNameFactory {
     public static String formatMetricQualifiedName(ComponentName name, String metricName) {
         return formatQualifiedName(name) + ",metric=" + metricName + ",management=metric";
     }
-    
+
     public static String formatMetricQualifiedName(ComponentName name, String metricName, String avas) {
         return formatQualifiedName(name) + ",metric=" + metricName + "," + avas + ",management=metric";
     }
