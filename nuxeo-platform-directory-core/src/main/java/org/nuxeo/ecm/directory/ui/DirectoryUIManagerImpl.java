@@ -46,7 +46,7 @@ public class DirectoryUIManagerImpl extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(DirectoryUIManagerImpl.class);
 
-    protected static final String EP_NAME = "directories";
+    protected static final String DIRECTORIES_EP_NAME = "directories";
 
     protected Map<String, DirectoryUI> registry;
 
@@ -75,7 +75,7 @@ public class DirectoryUIManagerImpl extends DefaultComponent implements
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (!extensionPoint.equals(EP_NAME)) {
+        if (!extensionPoint.equals(DIRECTORIES_EP_NAME)) {
             log.warn("Unknown extension point: " + extensionPoint);
             return;
         }
@@ -92,7 +92,7 @@ public class DirectoryUIManagerImpl extends DefaultComponent implements
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (!extensionPoint.equals(EP_NAME)) {
+        if (!extensionPoint.equals(DIRECTORIES_EP_NAME)) {
             log.warn("Unknown extension point: " + extensionPoint);
             return;
         }

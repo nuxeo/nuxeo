@@ -20,11 +20,15 @@
 package org.nuxeo.ecm.directory.api.ui;
 
 import java.io.Serializable;
+import java.util.List;
+
+import org.nuxeo.ecm.directory.DirectoryException;
 
 /**
  * Interface for directory UI info.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * @since 5.2.0 GA
  */
 public interface DirectoryUI extends Serializable {
 
@@ -47,5 +51,14 @@ public interface DirectoryUI extends Serializable {
      * Returns the sort field.
      */
     String getSortField();
+
+    /**
+     * Returns the directory delete constraints
+     *
+     * @see DirectoryUIDeleteConstraint
+     * @since 5.2.1
+     */
+    List<DirectoryUIDeleteConstraint> getDeleteConstraints()
+            throws DirectoryException;
 
 }

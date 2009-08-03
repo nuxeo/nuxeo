@@ -19,9 +19,15 @@
 
 package org.nuxeo.ecm.directory.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUI;
+import org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint;
 
 /**
  * Directory ui descriptor
@@ -37,14 +43,17 @@ public class DirectoryUIDescriptor implements DirectoryUI {
     @XNode("@name")
     String name;
 
-    @XNode("@layout")
-    String layout;
-
     @XNode("@view")
     String view;
 
+    @XNode("@layout")
+    String layout;
+
     @XNode("@sortField")
     String sortField;
+
+    @XNodeList(value = "deleteConstraint", type = ArrayList.class, componentType = DirectoryUIDeleteConstraintDescriptor.class)
+    List<DirectoryUIDeleteConstraintDescriptor> deleteConstraints;
 
     public String getName() {
         return name;
@@ -60,6 +69,17 @@ public class DirectoryUIDescriptor implements DirectoryUI {
 
     public String getSortField() {
         return sortField;
+    }
+
+    public List<DirectoryUIDeleteConstraint> getDeleteConstraints()
+            throws DirectoryException {
+        List<DirectoryUIDeleteConstraint> res = new ArrayList<DirectoryUIDeleteConstraint>();
+        if (deleteConstraints != null) {
+            for (DirectoryUIDeleteConstraintDescriptor deleteConstraintDescriptor : deleteConstraints) {
+                res.add(deleteConstraintDescriptor.getDeleteConstraint());
+            }
+        }
+        return res;
     }
 
 }
