@@ -46,15 +46,15 @@ public class TagServiceBean implements TagService {
     private static final Log log = LogFactory.getLog(TagServiceBean.class);
 
     protected TagService tagService;
-    
+
     @PersistenceContext(unitName="nxtags")
     protected EntityManager em;
 
-  
+
     protected TagServiceImpl getLocalTagService() throws ClientException {
         if (tagService == null) {
             try {
-                tagService = (TagServiceImpl) Framework.getRuntime().getComponent(
+                tagService = (TagService) Framework.getRuntime().getComponent(
                         TagService.ID);
             } catch (Exception e) {
                 log.error("Problems retrieveing the TagService ... ", e);
@@ -134,4 +134,5 @@ public class TagServiceBean implements TagService {
             throws ClientException {
         getLocalTagService().completeUntagDocument(em,document, tagId);
     }
+
 }

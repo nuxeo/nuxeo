@@ -33,7 +33,7 @@ public class TestTagService extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        
+
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core.schema");
@@ -41,9 +41,9 @@ public class TestTagService extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.comment.core");
         deployBundle("org.nuxeo.ecm.platform.tag");
         deployBundle("org.nuxeo.ecm.platform.tag.tests");
-        
+
         openSession();
-        
+
         TagServiceImpl service = (TagServiceImpl) Framework.getLocalService(TagService.class);
         service.updateSchema();
     }
@@ -62,10 +62,9 @@ public class TestTagService extends SQLRepositoryTestCase {
         assertNotNull("Failed to get tag service.", tagService);
         RepositoryManager repoService = Framework.getLocalService(RepositoryManager.class);
         assertNotNull("Failed to get repo service", repoService);
-        Repository repo = repoService.getRepository(
-                "test");
+        Repository repo = repoService.getRepository("test");
         assertNotNull("Failed to acess to test repo", repo);
-    };
+    }
 
     public void testTagCreation() throws Exception {
         TagService tagService = getTagService();
@@ -84,9 +83,7 @@ public class TestTagService extends SQLRepositoryTestCase {
                 tag);
         assertTrue("Private flag is not correctly set.",
                 ((Boolean) tag.getProperty("tag", "private")).booleanValue());
-        assertTrue("", tag.getProperty("dublincore", "creator").equals(
-                session.getPrincipal().getName()));
-
+        assertEquals(tag.getProperty("dublincore", "creator"), session.getPrincipal().getName());
     }
 
 }

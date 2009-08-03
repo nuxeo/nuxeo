@@ -36,8 +36,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
-import javax.persistence.PersistenceException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
@@ -54,9 +52,11 @@ import org.nuxeo.ecm.platform.tag.sql.Table;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.com>"
- * 
+ *
  */
 public class TagSchemaUpdater {
+
+    public static final Log log = LogFactory.getLog(TagSchemaUpdater.class);
 
     public final AnnotationConfiguration configuration = new AnnotationConfiguration();
 
@@ -96,32 +96,30 @@ public class TagSchemaUpdater {
         connectionProperties.setProperty(Environment.DATASOURCE, jtaDatasource);
     }
 
-    public static final Log log = LogFactory.getLog(TagSchemaUpdater.class);
-
     protected PersistenceMetadata doLoadMetadata() {
-            Enumeration<URL> xmls = null;
+        Enumeration<URL> xmls;
+        try {
+            xmls = TagSchemaUpdater.class.getClassLoader().getResources("META-INF/persistence.xml");
+        } catch (IOException e1) {
+            throw new Error("No persistence.xml files in class path", e1);
+        }
+        while (xmls.hasMoreElements()) {
+            URL url = xmls.nextElement();
+            List<PersistenceMetadata> metadataFiles = null;
             try {
-                xmls = TagSchemaUpdater.class.getClassLoader().getResources("META-INF/persistence.xml");
-            } catch (IOException e1) {
-               throw new Error("No persistence.xml files in class path", e1);
+                metadataFiles = PersistenceXmlLoader.deploy(
+                        url, Collections.EMPTY_MAP, configuration.getEntityResolver());
+            } catch (Exception e) {
+                log.warn("Cannot load " + url);
+                continue;
             }
-            while (xmls.hasMoreElements()) {
-                URL url = xmls.nextElement();
-                List<PersistenceMetadata> metadataFiles = null;
-                try {
-                    metadataFiles = PersistenceXmlLoader.deploy(url, Collections.EMPTY_MAP, configuration.getEntityResolver());
-                } catch (Exception e) {
-                    log.warn("Cannot load " + url);
-                    continue;
-                }
-                for (PersistenceMetadata metadata : metadataFiles) {
-                    if (metadata.getName().equals("nxtags")) {
-                        return metadata;
-                    }
+            for (PersistenceMetadata metadata : metadataFiles) {
+                if (metadata.getName().equals("nxtags")) {
+                    return metadata;
                 }
             }
-            throw new Error("cannot find nxtags persistence unit");
-        
+        }
+        throw new Error("cannot find nxtags persistence unit");
     }
 
     public static Dialect determineDialect(SessionImpl session) {
@@ -172,4 +170,5 @@ public class TagSchemaUpdater {
             throw new Error("Cannot update schema", e);
         }
     }
+
 }

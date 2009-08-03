@@ -36,8 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  */
 public interface TagService {
 
-    public static final String ID = "org.nuxeo.ecm.platform.tag.TagService";
-
+    String ID = "org.nuxeo.ecm.platform.tag.TagService";
 
     /**
      * Gets (and creates if not existing) the RootTag in the selected
