@@ -27,4 +27,12 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager"
+    point="directories">
+
+    <directory name="predicates" layout="vocabulary" sortField="label" />
+    <directory name="inverse_predicates" layout="vocabulary" sortField="label" />
+
+  </extension>
+
 </component>
