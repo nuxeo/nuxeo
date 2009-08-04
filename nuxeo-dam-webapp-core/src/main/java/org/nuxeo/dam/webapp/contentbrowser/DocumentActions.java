@@ -10,25 +10,29 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
+import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
+import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.common.utils.StringUtils;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.contexts.Contexts;
+import org.jboss.seam.contexts.Context;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
@@ -229,4 +233,5 @@ public class DocumentActions implements Serializable {
         }
         return null;
     }
+
 }

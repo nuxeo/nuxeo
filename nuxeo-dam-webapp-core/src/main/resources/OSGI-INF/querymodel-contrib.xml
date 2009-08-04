@@ -7,7 +7,7 @@
     point="model">
 
     <queryModel name="FILTERED_DOCUMENTS" docType="FilterQuery">
-      <max>10</max>
+      <max>20</max>
 
       <whereClause>
 
@@ -16,7 +16,7 @@
         </predicate>
 
         <fixedPart>
-        ecm:mixinType != 'HiddenInNavigation' AND ecm:primaryType IN ('Picture', 'File') 
+        ecm:mixinType != 'HiddenInNavigation' AND ecm:primaryType IN ('Picture', 'File')
         </fixedPart>
 
       </whereClause>

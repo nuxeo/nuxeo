@@ -344,9 +344,9 @@
         <text-align>center</text-align>
         <border-bottom preset="grayneutral (DAM borders)"/>
       </selector>
-      <selector path=".previewIframe html body">
-        <margin>0</margin>
-        <padding>0</padding>
+      <selector path=".infoTabContent">
+        <text-align>center</text-align>
+        <background-color>#6F6F6F</background-color>
       </selector>
     </style>
     <style element="page[1]/section[1]" inherit="common style">

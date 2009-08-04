@@ -1,6 +1,15 @@
 <?xml version="1.0"?>
 <fragment>
 
+  <extension target="web#STD-AUTH-FILTER">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/nxpicsfile/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+  </extension>
+  
   <extension target="application#MODULE">
     <module>
       <ejb>${bundle.fileName}</ejb>

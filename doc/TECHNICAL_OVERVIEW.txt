@@ -258,9 +258,8 @@ Preview integration
 ===================
 
 We will need to handle multiple preview for a same Picture document:
- - the default preview which takes the 512px view
  - the annotation preview which should take the original size
- - maybe we want the user to chose between different preview size
+ - maybe we want the user to chose between different preview size (?)
 
 For now, we can make a PreviewAdapterFactory for a given document type that will set the (only) blob to preview when asking for /default/, 
 or we can set in the preview URL the xpath of the blob we want to preview which end up with URLs like:
@@ -277,6 +276,8 @@ or
 ===> Default preview size to be discussed (a fixed smaller image that fits in a 400x400 iframe?)
 
 ===> How to handle preview without annotations (for the information tab)
+
+=======> Not really needed as we decided to not use the preview for the Informations 
 
 
 Annotations integration
@@ -320,7 +321,20 @@ Selected document
 -----------------
 
 - Seam component handling the current selected document for viewving / editing purposes
+
+The selected document is shown in the right column with multiple tabs:
+ - informations tab: thumbnail of the current document (rezied image for a Picture document, thumbnail of the first page for an Office document 
+ or a big icon representing the documenttype if the thumbnail is not available)
+ - Rights
+ - Transformations
+ - Delivery
+ 
+Selected documents
+------------------
+
 - Seam component handling the current selection editing: delegate to the service defined above (if a new service is done).
+
+As for one selected document, the selection is shown in the right column with displaying only the common metadata.
 
 
 Ajaxified document tabs
@@ -332,8 +346,9 @@ TODO
 Security model
 ==============
 
-ACL based.
-Probably different models for directory based or 
+Virtual storage (default one) will use SecurityPolicies to restrict permissions on assets.
+It will be probably done on checking metdata / tags on the assets
+==> Recreate permissions management screens
 
 
 Delivery Service

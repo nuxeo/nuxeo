@@ -48,5 +48,15 @@
       </layouts>
     </type>
 
+    <type id="Picture">
+      <label>Picture</label>
+      <default-view>view_documents</default-view>
+      <create-view>create_picture</create-view>
+      <icon>/icons/image.gif</icon>
+      <bigIcon>/icons/image_100.png</bigIcon>
+      <category>SimpleDocument</category>
+      <description>Picture.description</description>
+    </type>
+
   </extension>
 </component>

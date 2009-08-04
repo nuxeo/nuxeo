@@ -30,6 +30,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.platform.url.api.DocumentView;
 
 /**
  * TODO: remove RestHelper : waiting Techlead solution
@@ -45,12 +46,22 @@ public class RestHelper implements Serializable {
 
     private String baseURL = "";
 
+    private DocumentView documentView;
+
     @Factory(value = "baseURL", scope = ScopeType.CONVERSATION)
     public String getBaseURL() {
         if (baseURL.equals("")) {
             baseURL = BaseURL.getBaseURL();
         }
         return baseURL;
+    }
+
+    public DocumentView getDocumentView() {
+        return documentView;
+    }
+
+    public void setDocumentView(DocumentView documentView) {
+        this.documentView = documentView;
     }
 
 }

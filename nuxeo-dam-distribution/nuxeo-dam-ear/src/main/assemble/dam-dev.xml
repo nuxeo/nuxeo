@@ -42,6 +42,8 @@
       <artifact group="org.nuxeo.common" />
       <artifact name="nuxeo-runtime-jboss-extensions" />
 
+      <artifact name="nuxeo-platform-imaging-web" />
+
       <artifact name="nuxeo-platform-webapp" />
       <artifact name="nuxeo-platform-webapp-core" />
 
