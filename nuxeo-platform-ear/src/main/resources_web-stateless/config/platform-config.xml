@@ -112,6 +112,10 @@
       group="platform/directory">
       <locator>%DirectoryManagerBean</locator>
     </service>
+    <service class="org.nuxeo.ecm.directory.api.ui.DirectoryUIManager"
+      group="platform/directoryui">
+      <locator>%DirectoryUIManagerBean</locator>
+    </service>
     <service class="org.nuxeo.ecm.platform.jbpm.JbpmService" group="platform">
       <locator>%JbpmServiceBean</locator>
     </service>
