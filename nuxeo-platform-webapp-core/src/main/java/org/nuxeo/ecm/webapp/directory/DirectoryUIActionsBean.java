@@ -28,8 +28,6 @@ import java.util.Set;
 
 import javax.faces.application.FacesMessage;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.Create;
@@ -49,8 +47,8 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUI;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUIManager;
+import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Manages directories editable by administrators.
@@ -62,8 +60,6 @@ import org.nuxeo.runtime.api.Framework;
 public class DirectoryUIActionsBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Log log = LogFactory.getLog(DirectoryUIActionsBean.class);
 
     public static final String DIRECTORY_DEFAULT_VIEW = "view_directory";
 
@@ -99,15 +95,7 @@ public class DirectoryUIActionsBean implements Serializable {
 
     private void initDirService() {
         if (dirService == null) {
-            try {
-                dirService = Framework.getService(DirectoryService.class);
-            } catch (Exception e) {
-                log.error(e);
-            }
-            if (dirService == null) {
-                // can't throw
-                log.error("Failed to lookup directory service");
-            }
+            dirService = DirectoryHelper.getDirectoryService();
         }
     }
 
