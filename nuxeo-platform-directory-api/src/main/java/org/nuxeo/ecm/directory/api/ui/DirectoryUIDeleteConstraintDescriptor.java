@@ -17,8 +17,9 @@
  * $Id:  $
  */
 
-package org.nuxeo.ecm.directory.ui;
+package org.nuxeo.ecm.directory.api.ui;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +27,6 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint;
 
 /**
  * Directory ui descriptor
@@ -35,7 +35,7 @@ import org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint;
  *
  */
 @XObject("deleteConstraint")
-public class DirectoryUIDeleteConstraintDescriptor {
+public class DirectoryUIDeleteConstraintDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

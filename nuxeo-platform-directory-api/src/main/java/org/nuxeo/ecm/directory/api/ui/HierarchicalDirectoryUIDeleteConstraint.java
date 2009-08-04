@@ -14,7 +14,7 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.directory.ui;
+package org.nuxeo.ecm.directory.api.ui;
 
 import java.io.Serializable;
 import java.util.HashMap;

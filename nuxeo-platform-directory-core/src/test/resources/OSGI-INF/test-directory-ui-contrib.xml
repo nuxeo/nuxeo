@@ -7,7 +7,7 @@
 
     <directory name="continent" layout="vocabulary" sortField="label">
       <deleteConstraint
-        class="org.nuxeo.ecm.directory.ui.HierarchicalDirectoryUIDeleteConstraint">
+        class="org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint">
         <property name="targetDirectory">country</property>
         <property name="targetDirectoryField">parent</property>
       </deleteConstraint>

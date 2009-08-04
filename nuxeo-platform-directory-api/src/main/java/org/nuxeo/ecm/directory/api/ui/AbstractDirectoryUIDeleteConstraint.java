@@ -14,12 +14,11 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.directory.ui;
+package org.nuxeo.ecm.directory.api.ui;
 
 import java.util.Map;
 
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint;
 
 /**
  * Abstract class handling storage of properties.

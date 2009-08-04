@@ -17,7 +17,7 @@
  * $Id:  $
  */
 
-package org.nuxeo.ecm.directory.ui;
+package org.nuxeo.ecm.directory.api.ui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +26,6 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.api.ui.DirectoryUI;
-import org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint;
 
 /**
  * Directory ui descriptor
