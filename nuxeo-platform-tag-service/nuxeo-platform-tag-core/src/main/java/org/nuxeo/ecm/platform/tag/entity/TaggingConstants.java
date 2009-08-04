@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.tag.entity;
 /**
  * Utility class used for managing constants used in tagging.
  *
+ * TODO define queries with entities as named queries
  * @author rux
  */
 public class TaggingConstants {
@@ -25,13 +26,13 @@ public class TaggingConstants {
     /**
      * Utility constants that describe the NXP_TAGGING table.
      */
-    public static final String TAGGING_TABLE_NAME = "nxp_tagging";
-    public static final String TAGGING_TABLE_COLUMN_ID = "id";
-    public static final String TAGGING_TABLE_COLUMN_TAG_ID = "tag_id";
-    public static final String TAGGING_TABLE_COLUMN_AUTHOR = "author";
-    public static final String TAGGING_TABLE_COLUMN_DOCUMENT_ID = "document_id";
-    public static final String TAGGING_TABLE_COLUMN_CREATION_DATE = "creation_date";
-    public static final String TAGGING_TABLE_COLUMN_IS_PRIVATE = "is_private";
+    public static final String TAGGING_TABLE_NAME = "NXP_TAGGING";
+    public static final String TAGGING_TABLE_COLUMN_ID = "ID";
+    public static final String TAGGING_TABLE_COLUMN_TAG_ID = "TAG_ID";
+    public static final String TAGGING_TABLE_COLUMN_AUTHOR = "AUTHOR";
+    public static final String TAGGING_TABLE_COLUMN_DOCUMENT_ID = "DOCUMENT_ID";
+    public static final String TAGGING_TABLE_COLUMN_CREATION_DATE = "CREATION_DATE";
+    public static final String TAGGING_TABLE_COLUMN_IS_PRIVATE = "IS_PRIVATE";
 
     /**
      * Utility constants used to manage the defined named queries.

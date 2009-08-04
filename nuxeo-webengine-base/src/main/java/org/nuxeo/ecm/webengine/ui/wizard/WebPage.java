@@ -39,5 +39,5 @@ public class WebPage extends WizardPage {
     public WebPage(Class<? extends Form> formType, int style) {
         super("index", formType, style);
     }
-    
+
 }

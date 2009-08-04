@@ -15,7 +15,12 @@
 
 package org.nuxeo.ecm.platform.tag.persistence;
 
-import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.*;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.GET_TAGGING;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.GET_VOTE_TAG;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.LIST_DOCUMENTS_FOR_TAG;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.LIST_TAGS_FOR_DOCUMENT;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.LIST_TAGS_FOR_DOCUMENT_AND_USER;
+import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.REMOVE_TAGGING;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +33,7 @@ import javax.persistence.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.tag.Tag;
@@ -37,36 +43,22 @@ import org.nuxeo.ecm.platform.tag.entity.TagEntity;
 import org.nuxeo.ecm.platform.tag.entity.TaggingEntity;
 
 /**
- * Provider of almost all queries required for Tag service. Implemented as
- * singleton. Stores the EntityManager during service life.
+ * Provider of almost all queries required for Tag service.
  *
  * @author rux
- *
  */
 public class TaggingProvider {
 
     private static final Log log = LogFactory.getLog(TaggingProvider.class);
 
-    private final EntityManager em;
+    protected final EntityManager em;
 
-    private final TagPersistenceProvider tagPersistenceProvider = TagPersistenceProvider.getInstance();
-
-    private TaggingProvider() {
-        this.em = tagPersistenceProvider.getEntityManager(null);
-        tagPersistenceProvider.createTableTagging(em);
-    }
-
-    private TaggingProvider(EntityManager em) {
+    protected TaggingProvider(EntityManager em) {
         this.em = em;
-        tagPersistenceProvider.createTableTagging(em);
     }
 
     public static TaggingProvider createProvider(EntityManager em) {
         return new TaggingProvider(em);
-    }
-
-    public static TaggingProvider createProvider() {
-        return new TaggingProvider();
     }
 
     /**
@@ -80,17 +72,7 @@ public class TaggingProvider {
         if (log.isDebugEnabled()) {
             log.debug("addTagging() with tagging " + tagging.toString());
         }
-        try {
-            if (!em.getTransaction().isActive()) {
-                em.getTransaction().begin();
-                em.persist(tagging);
-                tagPersistenceProvider.doCommit(em);
-            } else {
-                em.persist(tagging);
-            }
-        } catch (Exception e) {
-            tagPersistenceProvider.doRollback(em);
-        }
+        em.persist(tagging);
     }
 
     @SuppressWarnings("unchecked")
@@ -102,7 +84,7 @@ public class TaggingProvider {
         return q.getResultList();
     }
 
-    protected List doQuery(String query, Object... params) {
+    protected List<?> doQuery(String query, Object... params) {
         Query q = em.createQuery(query);
         for (int i = 0; i < params.length; i++) {
             q.setParameter(i + 1, params[i]);
@@ -110,8 +92,7 @@ public class TaggingProvider {
         return q.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
-    protected List doNamedQuery(String namedQuery, Map<String, Object> params) {
+    protected List<?> doNamedQuery(String namedQuery, Map<String, Object> params) {
         Query query = em.createNamedQuery(namedQuery);
         for (String key : params.keySet()) {
             query.setParameter(key, params.get(key));
@@ -119,8 +100,7 @@ public class TaggingProvider {
         return query.getResultList();
     }
 
-    protected Object doNamedQuerySingle(String namedQuery,
-            Map<String, Object> params) {
+    protected Object doNamedQuerySingle(String namedQuery, Map<String, Object> params) {
         Query query = em.createNamedQuery(namedQuery);
         for (String key : params.keySet()) {
             query.setParameter(key, params.get(key));
@@ -132,7 +112,7 @@ public class TaggingProvider {
      * Persists to the 'NXP_TAGGING' table the information contained in the list
      * that is received as parameter.
      *
-     * @param taggings - the list with the information about the 'tagging'
+     * @param taggings the list with the information about the 'tagging'
      *            entries that will be persisted
      */
     public void addTaggingEntries(List<TaggingEntity> taggings) {
@@ -160,12 +140,10 @@ public class TaggingProvider {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("targetId", docId);
         params.put("userName", userName);
-        List<Object[]> queryResults = doNamedQuery(LIST_TAGS_FOR_DOCUMENT,
-                params);
+        List<Object[]> queryResults = (List<Object[]>) doNamedQuery(LIST_TAGS_FOR_DOCUMENT, params);
         List<Tag> listTagsForDocument = new ArrayList<Tag>();
         for (Object[] queryResult : queryResults) {
-            listTagsForDocument.add(new Tag(queryResult[0].toString(),
-                    queryResult[1].toString()));
+            listTagsForDocument.add(new Tag(queryResult[0].toString(), queryResult[1].toString()));
         }
         return listTagsForDocument;
     }
@@ -177,11 +155,11 @@ public class TaggingProvider {
      * @param tagLabel
      * @return
      */
+    @SuppressWarnings("unchecked")
     public String getTaggingId(String docId, String tagLabel, String author) {
-        final String query = "SELECT tg.id FROM Tagging tg JOIN tg.targetDocument doc JOIN tg.tag tag"
-                + " WHERE doc.id = ?1 AND tag.label = ?2 AND tg.author = ?3";
+        final String query = "SELECT tg.id FROM Tagging tg JOIN tg.targetDocument doc JOIN tg.tag tag" + " WHERE doc.id = ?1 AND tag.label = ?2 AND tg.author = ?3";
 
-        List<String> authors = doQuery(query, docId, tagLabel, author);
+        List<String> authors = (List<String>) doQuery(query, docId, tagLabel, author);
 
         return authors.size() > 0 ? authors.get(0) : null;
     }
@@ -202,12 +180,10 @@ public class TaggingProvider {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("targetId", docId);
         params.put("userName", userName);
-        List<Object[]> queryResults = doNamedQuery(
-                LIST_TAGS_FOR_DOCUMENT_AND_USER, params);
+        List<Object[]> queryResults = (List<Object[]>) doNamedQuery(LIST_TAGS_FOR_DOCUMENT_AND_USER, params);
         List<Tag> listTagsForDocument = new ArrayList<Tag>();
         for (Object[] queryResult : queryResults) {
-            listTagsForDocument.add(new Tag(queryResult[0].toString(),
-                    queryResult[1].toString()));
+            listTagsForDocument.add(new Tag(queryResult[0].toString(), queryResult[1].toString()));
         }
         return listTagsForDocument;
     }
@@ -246,20 +222,14 @@ public class TaggingProvider {
      */
     public boolean removeTagging(String docId, String tagId, String userName) {
         if (log.isDebugEnabled()) {
-            log.debug("removeTagging() with targetId " + docId + " and tagId "
-                    + tagId);
+            log.debug("removeTagging() with targetId " + docId + " and tagId " + tagId);
         }
-        if (!em.getTransaction().isActive()) {
-            em.getTransaction().begin();
-            Query query = em.createNamedQuery(REMOVE_TAGGING);
-            query.setParameter("targetId", docId);
-            query.setParameter("tagId", tagId);
-            query.setParameter("userName", userName);
-            int result = query.executeUpdate();
-            tagPersistenceProvider.doCommit(em);
-            return result == 1;
-        }
-        return false;
+        Query query = em.createNamedQuery(REMOVE_TAGGING);
+        query.setParameter("targetId", docId);
+        query.setParameter("tagId", tagId);
+        query.setParameter("userName", userName);
+        int result = query.executeUpdate();
+        return result == 1;
     }
 
     /**
@@ -271,27 +241,17 @@ public class TaggingProvider {
      *
      * @param docId - the UUID of the tagged document
      * @param tagId - the UUID of the tag document
-     * @param userName - the user name of the current logged user
+     *
      * @return true in case the deleting was successful or false otherwise.
      */
     public void removeAllTagging(String docId, String tagId) {
         if (log.isDebugEnabled()) {
-            log.debug("removeTagging() with targetId " + docId + " and tagId "
-                    + tagId);
+            log.debug("removeTagging() with targetId " + docId + " and tagId " + tagId);
         }
-        if (!em.getTransaction().isActive()) {
-            em.getTransaction().begin();
-            try {
-                Query query = em.createQuery("DELETE FROM Tagging tagging "
-                        + "WHERE tagging.targetDocument.id=:targetId AND  tagging.tag.id=:tagId");
-                query.setParameter("targetId", docId);
-                query.setParameter("tagId", tagId);
-                query.executeUpdate();
-                tagPersistenceProvider.doCommit(em);
-            } catch (Exception e) {
-                tagPersistenceProvider.doRollback(em);
-            }
-        }
+        Query query = em.createQuery("DELETE FROM Tagging tagging " + "WHERE tagging.targetDocument.id=:targetId AND  tagging.tag.id=:tagId");
+        query.setParameter("targetId", docId);
+        query.setParameter("tagId", tagId);
+        query.executeUpdate();
     }
 
     public TagEntity getTagById(String tagId) {
@@ -320,21 +280,17 @@ public class TaggingProvider {
      * @throws ClientException
      */
     @SuppressWarnings("unchecked")
-    public List<WeightedTag> getPopularCloud(DocumentModelList documents,
-            String userName) {
+    public List<WeightedTag> getPopularCloud(DocumentModelList documents, String userName) {
         if (log.isDebugEnabled()) {
             log.debug("getPopularTag() for " + documents.size() + " documents");
         }
         int count = 1;
-        StringBuilder sb = new StringBuilder(
-                "SELECT tag.id, tag.label, COUNT(DISTINCT tg.targetDocument.id) FROM Tagging tg "
-                        + "JOIN tg.tag tag JOIN tag.hierarchy h JOIN h.dublincore dc "
-                        + "WHERE tg.targetDocument.id IN ( ");
+        StringBuilder sb = new StringBuilder("SELECT tag.id, tag.label, COUNT(DISTINCT tg.targetDocument.id) FROM Tagging tg " + "JOIN tg.tag tag JOIN tag.hierarchy h JOIN h.dublincore dc "
+                + "WHERE tg.targetDocument.id IN ( ");
         List<String> params = new LinkedList<String>();
         for (DocumentModel document : documents) {
             params.add(document.getId());
-            sb.append('?').append(count).append(
-                    count < documents.size() ? ',' : "");
+            sb.append('?').append(count).append(count < documents.size() ? ',' : "");
             count++;
         }
         sb.append(") AND (tg.isPrivate=false OR tg.author=");
@@ -349,12 +305,10 @@ public class TaggingProvider {
         sb.append(") GROUP BY tag.id , tag.label");
         params.add(userName);
         params.add(userName);
-        List<Object[]> queryResults = (List<Object[]>) doQuery(sb.toString(),
-                params);
+        List<Object[]> queryResults = (List<Object[]>) doQuery(sb.toString(), params);
         List<WeightedTag> ret = new ArrayList<WeightedTag>();
         for (Object[] queryResult : queryResults) {
-            WeightedTag weightedTag = new WeightedTag((String) queryResult[0],
-                    (String) queryResult[1], ((Long) queryResult[2]).intValue());
+            WeightedTag weightedTag = new WeightedTag((String) queryResult[0], (String) queryResult[1], ((Long) queryResult[2]).intValue());
             ret.add(weightedTag);
         }
         return ret;
@@ -375,7 +329,7 @@ public class TaggingProvider {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("userName", userName);
         params.put("tagId", tagId);
-        List<Object> queryResults = doNamedQuery(LIST_DOCUMENTS_FOR_TAG, params);
+        List<Object> queryResults = (List<Object>) doNamedQuery(LIST_DOCUMENTS_FOR_TAG, params);
         List<String> ret = new ArrayList<String>();
         for (Object queryResult : queryResults) {
             ret.add(queryResult.toString());
@@ -393,8 +347,7 @@ public class TaggingProvider {
      */
     public boolean existTagging(String tagId, String docId, String userName) {
         if (log.isDebugEnabled()) {
-            log.debug("existTagging() with " + tagId + ", " + docId + ", "
-                    + userName);
+            log.debug("existTagging() with " + tagId + ", " + docId + ", " + userName);
         }
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("docId", docId);
@@ -403,4 +356,5 @@ public class TaggingProvider {
         Long result = (Long) doNamedQuerySingle(GET_TAGGING, params);
         return result > 0;
     }
+
 }

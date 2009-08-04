@@ -34,17 +34,17 @@ public class WizardSession extends HashMap<String, Object> {
 
     protected String id;
     protected Object data;
-    protected ValidationException error;    
-    
+    protected ValidationException error;
+
     protected WizardPage lastPage;
     protected Map<String, WizardPage> pages;
-    protected WizardPage[] orderedPages; 
-    
-    
+    protected WizardPage[] orderedPages;
+
+
     public WizardSession(String wizardId, WizardPage[] pages) {
         if (pages == null || pages.length == 0) {
             throw new WebException("Wizard has no pages!");
-        }        
+        }
         this.id = wizardId;
         this.lastPage = pages[0];
         this.pages = new HashMap<String, WizardPage>();
@@ -55,7 +55,7 @@ public class WizardSession extends HashMap<String, Object> {
         }
         this.orderedPages = pages;
     }
-    
+
     public WizardPage pushPage(String pageId) {
         WizardPage page = pages.get(pageId);
         if (page == null) {
@@ -69,7 +69,7 @@ public class WizardSession extends HashMap<String, Object> {
         }
         return page;
     }
-    
+
     public WizardPage popPage() {
         if (lastPage == null) {
             return null;
@@ -79,11 +79,11 @@ public class WizardSession extends HashMap<String, Object> {
         page.prev = null;
         return page;
     }
-    
+
     public int getPageCount() {
         return pages.size();
     }
-    
+
     public WizardPage getPage() {
         return lastPage;
     }
@@ -92,18 +92,18 @@ public class WizardSession extends HashMap<String, Object> {
         return pages.get(id);
     }
 
-    public String getPageAt(int index) {        
+    public String getPageAt(int index) {
         return index < orderedPages.length ? orderedPages[index].getId() : null;
     }
- 
+
     public String getId() {
         return id;
-    }        
-        
+    }
+
     public void setError(ValidationException e) {
         this.error = e;
     }
-    
+
     public ValidationException removeError() {
         ValidationException e = error;
         error = null;
@@ -118,8 +118,8 @@ public class WizardSession extends HashMap<String, Object> {
                 return (T)p.getForm();
             }
             p = p.prev;
-        }        
+        }
         return null;
     }
-    
+
 }

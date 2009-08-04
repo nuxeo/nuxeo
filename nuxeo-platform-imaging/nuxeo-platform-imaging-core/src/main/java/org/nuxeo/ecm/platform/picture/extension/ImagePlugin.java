@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,12 +12,10 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Thomas Roger
  */
 
-package org.nuxeo.ecm.platform.picture.web.extension;
+package org.nuxeo.ecm.platform.picture.extension;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,12 +34,13 @@ import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractPlugin;
+import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 
-public class ImagePlugin extends AbstractPlugin {
+public class ImagePlugin extends AbstractFileImporter {
 
     private static final long serialVersionUID = 5850210255138418118L;
     private static final Log log = LogFactory.getLog(ImagePlugin.class);
@@ -99,8 +98,10 @@ public class ImagePlugin extends AbstractPlugin {
             // updating icon
 
             Type imageType = typeService.getType("Picture");
-            String iconPath = imageType.getIcon();
-            docModel.setProperty("common", "icon", iconPath);
+            if (imageType != null) {
+                String iconPath = imageType.getIcon();
+                docModel.setProperty("common", "icon", iconPath);
+            }
         }
         documentManager.saveDocument(docModel);
         documentManager.save();

@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -69,6 +71,11 @@ public class PreviewRestlet extends BaseStatelessNuxeoRestlet {
         String docid = (String) req.getAttributes().get("docid");
         String xpath = (String) req.getAttributes().get("fieldPath");
         xpath = xpath.replace("-", "/");
+        try {
+            xpath = URLDecoder.decode(xpath, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            log.error(e);
+        }
         String subPath = (String) req.getAttributes().get("subPath");
         String blobPostProcessingParameter = getQueryParamValue(req, "blobPostProcessing", "false");
         boolean blobPostProcessing = Boolean.parseBoolean(blobPostProcessingParameter);

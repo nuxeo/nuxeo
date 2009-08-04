@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.tag;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
@@ -31,50 +30,48 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider;
+import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.platform.tag.Tag;
-import org.nuxeo.ecm.platform.tag.WeightedTag;
 import org.nuxeo.ecm.platform.tag.entity.DublincoreEntity;
 import org.nuxeo.ecm.platform.tag.entity.TagEntity;
 import org.nuxeo.ecm.platform.tag.entity.TaggingEntity;
-import org.nuxeo.ecm.platform.tag.persistence.TagPersistenceProvider;
 import org.nuxeo.ecm.platform.tag.persistence.TaggingProvider;
+import org.nuxeo.runtime.api.Framework;
 
 public class TestTaggingProvider extends SQLRepositoryTestCase {
+
+    protected PersistenceProvider persistenceProvider;
 
     public TestTaggingProvider() {
         super(TestTaggingProvider.class.getName());
     }
 
-    protected static final Log log = LogFactory.getLog(TestTaggingProvider.class);
-
-    public static final String SCHEMA_BUNDLE = "org.nuxeo.ecm.core.schema";
-
-    public static final String CORE_BUNDLE = "org.nuxeo.ecm.core";
-
-    private static final String BUNDLE_NAME = "org.nuxeo.ecm.platform.tag.service.tests";
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
 
-        deployBundle(CORE_BUNDLE);
-        deployBundle(SCHEMA_BUNDLE);
-        deployBundle(BUNDLE_NAME);
-        deployContrib(BUNDLE_NAME, "OSGI-INF/tag-service-core-types.xml");
-        deployContrib(BUNDLE_NAME, "OSGI-INF/TagService.xml");
+        deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core.persistence");
+        deployBundle("org.nuxeo.ecm.platform.tag");
+        deployBundle("org.nuxeo.ecm.platform.tag.tests");
 
         openSession();
-        createDataWarehouse();
-        entityManager = TagPersistenceProvider.getInstance().getEntityManager(
-                getProperties());
-        taggingProvider = TaggingProvider.createProvider(entityManager);
-    }
 
-    @Override
-    public void tearDown() throws Exception {
-        TagPersistenceProvider.getInstance().closePersistenceUnit();
-        super.tearDown();
+        TagServiceImpl service = (TagServiceImpl) Framework.getLocalService(TagService.class);
+        service.updateSchema();
+
+        createDataWarehouse();
+
+        PersistenceProviderFactory factory = Framework.getService(PersistenceProviderFactory.class);
+        persistenceProvider = factory.newProvider("nxtags");
+        persistenceProvider.openPersistenceUnit();
+        entityManager = persistenceProvider.acquireEntityManagerWithActiveTransaction();
+
+
+        taggingProvider = TaggingProvider.createProvider(entityManager);
     }
 
     protected TaggingEntity doCreateTaggingEntry(
@@ -169,7 +166,6 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         file3 = session.createDocument(file3);
         file3 = session.saveDocument(file3);
         session.save();
-
     }
 
     /**
@@ -224,15 +220,15 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         taggingProvider.addTagging(tg);
     }
 
+    public static final Log log = LogFactory.getLog(TestTaggingProvider.class);
+
     public void testGetById() throws Exception {
         DublincoreEntity dcEntity = taggingProvider.getDcById(file2.getId());
         TagEntity tagEntity = taggingProvider.getTagById(tag2.getId());
         assertNotNull("Failed to get document", dcEntity);
         assertNotNull("Failed to get tag", tagEntity);
-        assertTrue("Document title not equal", dcEntity.getTitle().equals(
-                file2.getTitle()));
-        assertTrue("Tag label not equal", tagEntity.getLabel().equals(
-                tag2.getPropertyValue("tag:label")));
+        assertEquals(dcEntity.getTitle(), file2.getTitle());
+        assertEquals(tagEntity.getLabel(), tag2.getPropertyValue("tag:label"));
     }
 
     public void testAddTagging() throws Exception {
@@ -244,18 +240,15 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         assertNotNull("No tagging created?", entry.getId());
         TaggingEntity tgEntry = entityManager.find(TaggingEntity.class,
                 entry.getId());
-        assertTrue("Isn't target document right?",
-                tgEntry.getTargetDocument().getId().equals(file2.getId()));
-        assertTrue("Isn't tag right?", tgEntry.getTag().getId().equals(
-                tag2.getId()));
+        assertEquals(tgEntry.getTargetDocument().getId(), file2.getId());
+        assertEquals(tgEntry.getTag().getId(), tag2.getId());
     }
 
     public void testListTagsForDocumentPublic() throws Exception {
         createTaggings();
         List<Tag> listTag = taggingProvider.listTagsForDocument(file1.getId(),
                 "hunus");
-        assertTrue("Found " + listTag.size() + " tags instead 2",
-                listTag.size() == 2);
+        assertEquals(2, listTag.size());
         for (Tag simpleTag : listTag) {
             assertTrue("Found " + simpleTag.tagLabel + " unknown",
                     "label1".equals(simpleTag.tagLabel)
@@ -275,15 +268,13 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         createTaggings();
         List<Tag> listTag = taggingProvider.listTagsForDocument(file3.getId(),
                 "hunus");
-        assertTrue("Found " + listTag.size() + " tags instead 1",
-                listTag.size() == 1);
+        assertEquals(1, listTag.size());
         String label = listTag.get(0).tagLabel;
-        assertTrue(label + " found instead label1", "label1".equals(label));
+        assertEquals("label1", label);
         listTag = taggingProvider.listTagsForDocument(file3.getId(), "private");
-        assertTrue("Found " + listTag.size() + " tags instead 1",
-                listTag.size() == 1);
+        assertEquals(1, listTag.size());
         label = listTag.get(0).tagLabel;
-        assertTrue(label + " found instead label2", "label2".equals(label));
+        assertEquals("label2", label);
     }
 
     public void testListDocumentsForTag() throws Exception {
@@ -291,13 +282,12 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         // tag2 was applied on file1 (and file3 by gigi or private)
         List<String> result = taggingProvider.getDocumentsForTag(tag2.getId(),
                 "gigi");
-        assertTrue("Found " + result.size() + " documents for tag2 instead 2",
-                result.size() == 2);
+        assertEquals(2, result.size());
         assertTrue("File1 not found", result.contains(file1.getId()));
         assertTrue("File3 not found", result.contains(file3.getId()));
+
         result = taggingProvider.getDocumentsForTag(tag2.getId(), "another");
-        assertTrue("Found " + result.size() + " documents for tag2 instead 1",
-                result.size() == 1);
+        assertEquals(1, result.size());
         assertTrue("File1 not found", result.contains(file1.getId()));
     }
 
@@ -324,16 +314,16 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         // check folder has tag3 applied
         List<Tag> listTag = taggingProvider.listTagsForDocument(folder.getId(),
                 "hunus");
-        assertTrue("Found " + listTag.size() + " tags instead 2",
-                listTag.size() == 2);
+        assertEquals(2, listTag.size());
+
         // remove the only one instance tag3 was applied
         boolean result = taggingProvider.removeTagging(folder.getId(),
                 tag3.getId(), "gigi");
         assertTrue("Failed to remove it", result);
+
         // now check there is only one
         listTag = taggingProvider.listTagsForDocument(folder.getId(), "hunus");
-        assertTrue("Found " + listTag.size() + " tags instead 1 after remove",
-                listTag.size() == 1);
+        assertEquals(1, listTag.size());
     }
 
     public void testPopularCloudGeneration() throws Exception {
@@ -345,53 +335,35 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         documents.add(folder);
         List<WeightedTag> cloud = taggingProvider.getPopularCloud(documents,
                 "hunus");
-        assertTrue("Expecting 3 tags, found " + cloud.size(), cloud.size() == 3);
+        assertEquals(3, cloud.size());
         for (WeightedTag weightedTag : cloud) {
             String label = weightedTag.tagLabel;
             if (label.equals("label1")) {
-                assertTrue("Expecting weight 3 for tag1, found "
-                        + weightedTag.weight, weightedTag.weight == 3);
+                assertEquals(3, weightedTag.weight);
             } else if (label.equals("label2")) {
-                assertTrue("Expecting weight 1 for tag2, found "
-                        + weightedTag.weight, weightedTag.weight == 1);
+                assertEquals(1, weightedTag.weight);
             } else if (label.equals("label3")) {
-                assertTrue("Expecting weight 2 for tag3, found "
-                        + weightedTag.weight, weightedTag.weight == 2);
+                assertEquals(2, weightedTag.weight);
             } else {
-                assertTrue("Unexpected label: " + label, false);
+                fail("Unexpected label: " + label);
             }
         }
         // popular cloud for root / private: tag1 - 3, tag2 - 2, tag3 - 2
         documents.add(file3);
         cloud = taggingProvider.getPopularCloud(documents, "private");
-        assertTrue("Expecting 3 tags, found " + cloud.size(), cloud.size() == 3);
+        assertEquals(3, cloud.size());
         for (WeightedTag weightedTag : cloud) {
             String label = weightedTag.tagLabel;
             if (label.equals("label1")) {
-                assertTrue("Expecting weight 3 for tag1, found "
-                        + weightedTag.weight, weightedTag.weight == 3);
+                assertEquals(3, weightedTag.weight);
             } else if (label.equals("label2")) {
-                assertTrue("Expecting weight 2 for tag2, found "
-                        + weightedTag.weight, weightedTag.weight == 2);
+                assertEquals(2, weightedTag.weight);
             } else if (label.equals("label3")) {
-                assertTrue("Expecting weight 2 for tag3, found "
-                        + weightedTag.weight, weightedTag.weight == 2);
+                assertEquals(2, weightedTag.weight);
             } else {
-                assertTrue("Unexpected label: " + label, false);
+                fail("Unexpected label: " + label);
             }
         }
-    }
-
-    private Properties getProperties() {
-        String dbUrl = System.getProperty("nuxeo.test.h2.path");
-        Properties properties = new Properties();
-        properties.put("hibernate.show_sql", "true"); // true to debug
-        properties.put("hibernate.connection.driver_class", "org.h2.Driver");
-        properties.put("hibernate.connection.username", "sa");
-        properties.put("hibernate.connection.password", "");
-        properties.put("hibernate.connection.url", "jdbc:h2:" + dbUrl);
-        properties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-        return properties;
     }
 
 }

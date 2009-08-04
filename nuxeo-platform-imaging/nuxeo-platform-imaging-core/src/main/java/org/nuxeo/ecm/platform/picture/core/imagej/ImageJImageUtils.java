@@ -33,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
+import org.nuxeo.runtime.api.Framework;
 
 public class ImageJImageUtils implements ImageUtils {
 
@@ -51,7 +52,9 @@ public class ImageJImageUtils implements ImageUtils {
             File resultFile = save(small, fileName.split("\\.")[0], "tmp",
                     f.getOriginalFileInfo().fileFormat);
             if (resultFile != null) {
-                return new FileInputStream(resultFile);
+                FileInputStream fis = new FileInputStream(resultFile);
+                Framework.trackFile(resultFile, fis);
+                return fis;
             }
         } catch (IOException e) {
             log.error("Cannot save the file", e);
@@ -73,7 +76,9 @@ public class ImageJImageUtils implements ImageUtils {
             File resultFile = save(cropImage, fileName.split("\\.")[0], "tmp",
                     f.getOriginalFileInfo().fileFormat);
             if (resultFile != null) {
-                return new FileInputStream(resultFile);
+                FileInputStream fis = new FileInputStream(resultFile);
+                Framework.trackFile(resultFile, fis);
+                return fis;
             }
         } catch (IOException e) {
             log.error("Cannot save the file", e);
@@ -99,7 +104,9 @@ public class ImageJImageUtils implements ImageUtils {
             File resultFile = save(newImage, fileName.split("\\.")[0], "tmp",
                     f.getOriginalFileInfo().fileFormat);
             if (resultFile != null) {
-                return new FileInputStream(resultFile);
+                FileInputStream fis = new FileInputStream(resultFile);
+                Framework.trackFile(resultFile, fis);
+                return fis;
             }
         } catch (IOException e) {
             log.error("Cannot save the file", e);
@@ -113,68 +120,55 @@ public class ImageJImageUtils implements ImageUtils {
         try {
             if (fileFormat == FileInfo.TIFF) {
                 File resultFile = File.createTempFile(path, "tiff");
-                resultFile.deleteOnExit();
                 fs.saveAsTiff(resultFile.getPath());
                 return resultFile;
             } else if (fileFormat == FileInfo.RAW) {
                 File resultFile = File.createTempFile(path, "raw");
-                resultFile.deleteOnExit();
                 fs.saveAsRaw(resultFile.getPath());
                 return resultFile;
             } else if (fileFormat == FileInfo.ZIP_ARCHIVE) {
                 File resultFile = File.createTempFile(path, "zip");
-                resultFile.deleteOnExit();
                 fs.saveAsZip(resultFile.getPath());
                 return resultFile;
             } else if (fileFormat == FileInfo.BMP) {
                 File resultFile = File.createTempFile(path, "bmp");
-                resultFile.deleteOnExit();
                 fs.saveAsBmp(resultFile.getPath());
                 return resultFile;
             } else if (ext.equals("tiff") || ext.equals("TIFF")) {
                 File resultFile = File.createTempFile(path, "tiff");
-                resultFile.deleteOnExit();
                 fs.saveAsTiff(resultFile.getPath());
                 return resultFile;
             } else if (ext.equals("gif") || ext.equals("GIF")) {
                 File resultFile = File.createTempFile(path, "gif");
-                resultFile.deleteOnExit();
                 fs.saveAsGif(resultFile.getPath());
                 return resultFile;
             } else if (ext.equals("jpg") || ext.equals("JPG")
                     || ext.equals("jpeg") || ext.equals("JPEG")) {
                 File resultFile = File.createTempFile(path, "jpg");
-                resultFile.deleteOnExit();
                 fs.saveAsJpeg(resultFile.getPath());
                 return resultFile;
             } else if (ext.equals("raw") || ext.equals("RAW")) {
                 File resultFile = File.createTempFile(path, "raw");
-                resultFile.deleteOnExit();
                 fs.saveAsRaw(resultFile.getPath());
                 return resultFile;
             } else if (ext.equals("zip") || ext.equals("ZIP")) {
                 File resultFile = File.createTempFile(path, "zip");
-                resultFile.deleteOnExit();
                 fs.saveAsZip(resultFile.getPath());
                 return resultFile;
             } else if (ext.equals("bmp") || ext.equals("BMP")) {
                 File resultFile = File.createTempFile(path, "bmp");
-                resultFile.deleteOnExit();
                 fs.saveAsBmp(resultFile.getPath());
                 return resultFile;
             } else if (ext.equals("png")) {
                 File resultFile = File.createTempFile(path, "PNG");
-                resultFile.deleteOnExit();
                 fs.saveAsPng(resultFile.getPath());
                 return resultFile;
             } else if (ext.equals("fits")) {
                 File resultFile = File.createTempFile(path, "fits");
-                resultFile.deleteOnExit();
                 fs.saveAsFits(resultFile.getPath());
                 return resultFile;
             } else {
                 File resultFile = File.createTempFile(path, "jpg");
-                resultFile.deleteOnExit();
                 fs.saveAsJpeg(resultFile.getPath());
                 return resultFile;
             }

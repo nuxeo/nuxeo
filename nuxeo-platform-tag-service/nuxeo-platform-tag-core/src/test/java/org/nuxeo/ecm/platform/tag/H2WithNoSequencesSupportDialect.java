@@ -12,24 +12,20 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     "Stephane Lacoin (aka matic) <slacoin@nuxeo.com>"
  */
-package org.nuxeo.ecm.webengine.ui.wizard;
+package org.nuxeo.ecm.platform.tag;
 
+import org.hibernate.dialect.H2Dialect;
 
 /**
- * A web form is a single page wizard.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.com>"
  *
  */
-public abstract class WebForm extends Wizard {
-
-    public abstract WizardPage createPage();
+public class H2WithNoSequencesSupportDialect extends H2Dialect {
 
     @Override
-    protected WizardPage[] createPages() {
-        return new WizardPage[] {createPage()};
+    public boolean supportsSequences() {
+        return false;
     }
-
 }
