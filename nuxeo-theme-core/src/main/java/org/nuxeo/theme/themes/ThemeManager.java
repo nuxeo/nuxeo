@@ -201,8 +201,9 @@ public final class ThemeManager implements Registrable {
         }
         return names;
     }
-    
-    public static ThemeDescriptor getThemeDescriptorByThemeName(final String templateEngine, final String themeName) {
+
+    public static ThemeDescriptor getThemeDescriptorByThemeName(
+            final String templateEngine, final String themeName) {
         for (ThemeDescriptor themeDef : getThemeDescriptors()) {
             // Skip customized themes
             if (themeDef.isCustomized()) {
@@ -874,6 +875,18 @@ public final class ThemeManager implements Registrable {
                     && !themeDef.isCustomized()) {
                 loadTheme(themeDef.getSrc());
             }
+        }
+    }
+
+    public void deletePage(String path) throws ThemeIOException, ThemeException {
+        PageElement page = getPageByPath(path);
+        if (page == null) {
+            throw new ThemeIOException("Failed to delete unkown page: " + path);
+        }
+        try {
+            destroyElement(page);
+        } catch (NodeException e) {
+            throw new ThemeIOException("Failed to delete page: " + path, e);
         }
     }
 

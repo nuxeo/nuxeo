@@ -539,4 +539,18 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(Manager.getUidManager().listUids().isEmpty());
     }
 
+    public void testDeletePage() throws ThemeIOException, NodeException,
+            ThemeException {
+        ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
+        theme.setName("theme");
+        PageElement page = (PageElement) ElementFactory.create("page");
+        page.setName("page");
+        Element section = ElementFactory.create("section");
+        theme.addChild(page).addChild(section);
+        themeManager.registerTheme(theme);
+       
+        assertSame(page, themeManager.getPageByPath("theme/page"));
+        themeManager.deletePage("theme/page");
+        assertNull(themeManager.getPageByPath("theme/page"));
+    }
 }
