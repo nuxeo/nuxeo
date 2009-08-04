@@ -64,6 +64,7 @@ import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.platform.ui.web.directory.VocabularyEntry;
+import org.nuxeo.ecm.webapp.directory.DirectoryUIActionsBean;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
@@ -71,11 +72,11 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  * for the management of vocabularies.
  *
  * @author <a href="mailto:bt@nuxeo.com">Bogdan Tatar</a>
- *
+ * @deprecated use {@link DirectoryUIActionsBean}
  */
-
 @Name("vocabularyActions")
 @Scope(CONVERSATION)
+@Deprecated
 public class VocabularyActionsBean implements VocabularyActions {
 
     private static final long serialVersionUID = -257772806500630093L;
@@ -426,9 +427,8 @@ public class VocabularyActionsBean implements VocabularyActions {
         String schemaName = dirService.getDirectorySchema(selectedVocabularyName);
         VocabularyEntry result;
         try {
-            result = new VocabularyEntry(
-                    (String) vocabularyEntry.getProperty(schemaName,
-                            VocabularyConstants.VOCABULARY_ID),
+            result = new VocabularyEntry((String) vocabularyEntry.getProperty(
+                    schemaName, VocabularyConstants.VOCABULARY_ID),
                     (String) vocabularyEntry.getProperty(schemaName,
                             VocabularyConstants.VOCABULARY_LABEL));
         } catch (ClientException e) {
@@ -454,8 +454,8 @@ public class VocabularyActionsBean implements VocabularyActions {
 
         if (isHierarchical()) {
             try {
-                result.setParent((String) vocabularyEntry.getProperty(schemaName,
-                        VocabularyConstants.VOCABULARY_PARENT));
+                result.setParent((String) vocabularyEntry.getProperty(
+                        schemaName, VocabularyConstants.VOCABULARY_PARENT));
             } catch (ClientException e) {
                 throw new ClientRuntimeException(e);
             }
@@ -614,8 +614,7 @@ public class VocabularyActionsBean implements VocabularyActions {
     }
 
     public boolean isHierarchical() throws DirectoryException {
-        return VocabularyConstants.VOCABULARY_TYPE_HIER.equals(
-                dirService.getDirectorySchema(selectedVocabularyName));
+        return VocabularyConstants.VOCABULARY_TYPE_HIER.equals(dirService.getDirectorySchema(selectedVocabularyName));
     }
 
     public boolean isNullParentAllowed() throws DirectoryException {

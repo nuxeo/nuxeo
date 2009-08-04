@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.webapp.edit.vocabularies;
 
+/**
+ * @deprecated: use DirectoryUIManager configuration instead
+ */
+@Deprecated
 public final class VocabularyConstants {
 
     public static final String VOCABULARY_TYPE_SIMPLE = "vocabulary";

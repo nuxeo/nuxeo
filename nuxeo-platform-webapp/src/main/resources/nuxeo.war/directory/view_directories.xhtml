@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{messages['title.vocabularies']}" />
+  </ui:define>
+
+  <ui:define name="body">
+
+    <h:form>
+
+      <h3><h:outputText value="#{messages['title.vocabularies']}" /></h3>
+
+      <div class="tabsContent">
+
+        <ul>
+          <c:forEach var="dirName" items="#{directoryUIActions.directoryNames}">
+            <li>
+              <h:commandLink
+                action="#{directoryUIActions.selectDirectory(dirName)}"
+                styleClass="button" immediate="true">
+                <h:outputText value="#{messages[dirName]}" />
+              </h:commandLink>
+            </li>
+          </c:forEach>
+        </ul>
+
+      </div>
+
+    </h:form>
+
+  </ui:define>
+
+</nxthemes:composition>
