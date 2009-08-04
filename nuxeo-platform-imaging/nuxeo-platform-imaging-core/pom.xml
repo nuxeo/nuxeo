@@ -8,7 +8,7 @@
     <artifactId>nuxeo-platform-imaging-parent</artifactId>
     <version>5.2.1-SNAPSHOT</version>
   </parent>
-  
+
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-imaging-core</artifactId>
   <name>Nuxeo Platform Imaging Core</name>
@@ -151,6 +151,10 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-commandline-executor</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-filemanager-core</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

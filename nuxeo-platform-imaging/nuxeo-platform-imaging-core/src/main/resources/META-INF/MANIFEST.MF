@@ -9,10 +9,15 @@ Nuxeo-Component: OSGI-INF/ImagingComponent.xml,
  OSGI-INF/picturebook-schemas-contrib.xml,
  OSGI-INF/picturebook-life-cycle-contrib.xml,
  OSGI-INF/libraryselector-config-framework.xml,
- OSGI-INF/commandline-imagemagick-contrib.xml
+ OSGI-INF/commandline-imagemagick-contrib.xml,
+ OSGI-INF/filemanager-plugins-contrib.xml
 Eclipse-LazyStart: true
 Bundle-Category: core,stateful
-Require-Bundle: org.nuxeo.ecm.platform.types.api, org.nuxeo.ecm.core.api, org.nuxeo.ecm.platform.picture.api, org.nuxeo.ecm.platform.commandline.executor
+Require-Bundle: org.nuxeo.ecm.platform.types.api,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.platform.picture.api,
+ org.nuxeo.ecm.platform.commandline.executor,
+ org.nuxeo.ecm.platform.filemanager.core
 Export-Package: org.nuxeo.ecm.platform.picture.core
 Bundle-ClassPath: .,
  lib/EditableImage.jar,
