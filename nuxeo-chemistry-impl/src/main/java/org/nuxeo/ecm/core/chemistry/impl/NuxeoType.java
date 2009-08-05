@@ -271,4 +271,9 @@ public class NuxeoType implements Type {
         return propertyDefinitions.get(name);
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + id + ')';
+    }
+
 }

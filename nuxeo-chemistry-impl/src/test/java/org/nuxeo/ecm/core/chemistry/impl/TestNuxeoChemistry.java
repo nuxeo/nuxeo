@@ -28,6 +28,7 @@ import org.apache.chemistry.Connection;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.Type;
+import org.apache.chemistry.impl.base.BaseRepository;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -41,7 +42,7 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
 
     public static final String REPOSITORY_NAME = "test";
 
-    public static final String ROOT_TYPE_ID = "Root"; // not in the spec
+    public static final String ROOT_TYPE_ID = "Root"; // from Nuxeo
 
     protected NuxeoRepository repository;
 
@@ -162,7 +163,7 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         assertNotNull(rootType);
         assertEquals(ROOT_TYPE_ID, rootType.getId());
         assertEquals(ROOT_TYPE_ID, root.getTypeId());
-        assertEquals("CMIS_Root_Folder", root.getName()); // from the spec
+        assertEquals(BaseRepository.ROOT_FOLDER_NAME, root.getName());
         assertEquals(null, root.getParent());
         Map<String, Property> props = root.getProperties();
         assertNotNull(props);
