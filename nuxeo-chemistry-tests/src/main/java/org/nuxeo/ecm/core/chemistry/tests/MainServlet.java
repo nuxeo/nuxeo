@@ -20,17 +20,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import javax.servlet.Servlet;
-
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.atompub.server.servlet.CMISServlet;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -46,25 +36,15 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
  */
 public class MainServlet extends SQLRepositoryTestCase {
 
-    private static final Log log = LogFactory.getLog(MainServlet.class);
-
-    private static final int MINUTES = 60 * 1000; // in ms
-
-    public static final String HOST = "0.0.0.0";
-
-    public static final int PORT = 8080;
-
-    public static final String SERVLET_PATH = "/cmis";
-
-    public static final String CMIS_SERVICE = "/repository";
-
     public static final String REPOSITORY_NAME = "test";
 
     public static void main(String[] args) throws Exception {
         MainServlet main = new MainServlet("test");
         main.setUp();
         try {
-            main.main();
+            Repository repository = main.makeRepository();
+            org.apache.chemistry.test.MainServlet.run(args, repository,
+                    "/cmis", "/repository");
         } finally {
             main.tearDown();
         }
@@ -161,26 +141,6 @@ public class MainServlet extends SQLRepositoryTestCase {
         session.save();
         closeSession();
         return new NuxeoRepository(REPOSITORY_NAME);
-    }
-
-    public void main() throws Exception {
-        Repository repository = makeRepository();
-        Server server = new Server();
-        Connector connector = new SocketConnector();
-        connector.setHost(HOST);
-        connector.setPort(PORT);
-        server.setConnectors(new Connector[] { connector });
-        Servlet servlet = new CMISServlet(repository);
-        Context context = new Context(server, SERVLET_PATH, Context.SESSIONS);
-        context.addServlet(new ServletHolder(servlet), "/*");
-        server.start();
-        String url = "http://" + HOST + ':' + PORT + SERVLET_PATH
-                + CMIS_SERVICE;
-        log.info("CMIS server started, AtomPub service url: " + url);
-        Thread.sleep(60 * MINUTES);
-        server.stop();
-        log.info("CMIS server stopped");
-
     }
 
 }

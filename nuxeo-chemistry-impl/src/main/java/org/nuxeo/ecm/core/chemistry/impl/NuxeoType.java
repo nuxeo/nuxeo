@@ -62,6 +62,8 @@ public class NuxeoType implements Type {
 
     private final String id;
 
+    private final String parentId;
+
     private final Map<String, PropertyDefinition> propertyDefinitions;
 
     private final ContentStreamPresence contentStreamAllowed;
@@ -69,6 +71,20 @@ public class NuxeoType implements Type {
     public NuxeoType(DocumentType documentType) {
         this.documentType = documentType;
         id = mappedId(documentType.getName());
+
+        // parent type id
+        DocumentType superType = (DocumentType) documentType.getSuperType();
+        if (id.equals(BaseType.DOCUMENT.getId())
+                || id.equals(BaseType.FOLDER.getId()) || superType == null) {
+            parentId = null;
+        } else {
+            String pid = mappedId(superType.getName());
+            if (pid.equals(BaseType.DOCUMENT.getId())
+                    && documentType.isFolder()) {
+                pid = BaseType.FOLDER.getId();
+            }
+            parentId = pid;
+        }
 
         Map<String, PropertyDefinition> map = new HashMap<String, PropertyDefinition>();
         for (PropertyDefinition def : SimpleType.getBasePropertyDefinitions(getBaseType())) {
@@ -200,12 +216,7 @@ public class NuxeoType implements Type {
     }
 
     public String getParentId() {
-        if (id.equals(BaseType.DOCUMENT.getId())
-                || id.equals(BaseType.FOLDER.getId())) {
-            return null;
-        }
-        org.nuxeo.ecm.core.schema.types.Type superType = documentType.getSuperType();
-        return superType == null ? null : mappedId(superType.getName());
+        return parentId;
     }
 
     public BaseType getBaseType() {

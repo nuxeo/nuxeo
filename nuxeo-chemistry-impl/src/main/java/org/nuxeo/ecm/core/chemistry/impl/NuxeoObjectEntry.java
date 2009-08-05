@@ -44,7 +44,7 @@ public class NuxeoObjectEntry implements ObjectEntry {
     protected NuxeoObjectEntry(DocumentModel doc, NuxeoConnection connection) {
         this.doc = doc;
         this.connection = connection;
-        type = connection.repository.getType(doc.getType());
+        type = connection.repository.getType(NuxeoType.mappedId(doc.getType()));
     }
 
     public String getId() {
@@ -52,7 +52,7 @@ public class NuxeoObjectEntry implements ObjectEntry {
     }
 
     public String getTypeId() {
-        return doc.getType();
+        return NuxeoType.mappedId(doc.getType());
     }
 
     public BaseType getBaseType() {
