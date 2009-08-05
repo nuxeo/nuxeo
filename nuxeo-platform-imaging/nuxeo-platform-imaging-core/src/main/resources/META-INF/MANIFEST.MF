@@ -13,11 +13,15 @@ Nuxeo-Component: OSGI-INF/ImagingComponent.xml,
  OSGI-INF/filemanager-plugins-contrib.xml
 Eclipse-LazyStart: true
 Bundle-Category: core,stateful
-Require-Bundle: org.nuxeo.ecm.platform.types.api,
+Nuxeo-Require: org.nuxeo.ecm.platform.types.api,
  org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.platform.picture.api,
  org.nuxeo.ecm.platform.commandline.executor,
  org.nuxeo.ecm.platform.filemanager.core
+Require-Bundle: org.nuxeo.ecm.platform.types.api,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.platform.picture.api,
+ org.nuxeo.ecm.platform.commandline.executor
 Export-Package: org.nuxeo.ecm.platform.picture.core
 Bundle-ClassPath: .,
  lib/EditableImage.jar,
