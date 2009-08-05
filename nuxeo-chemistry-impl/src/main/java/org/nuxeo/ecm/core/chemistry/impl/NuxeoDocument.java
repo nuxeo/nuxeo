@@ -119,7 +119,7 @@ public class NuxeoDocument extends NuxeoObject implements Document {
         } else {
             blob = new InputStreamBlob(contentStream.getStream(),
                     contentStream.getMimeType(), null,
-                    contentStream.getFilename(), null);
+                    contentStream.getFileName(), null);
         }
         try {
             doc.setProperty("file", "content", blob);

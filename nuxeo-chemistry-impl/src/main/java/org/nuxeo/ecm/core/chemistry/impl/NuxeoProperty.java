@@ -123,7 +123,7 @@ public class NuxeoProperty implements Property {
             value = null;
         } else if (Property.VERSION_SERIES_CHECKED_OUT_ID.equals(name)) {
             value = null;
-        } else if (Property.CHECKIN_COMMENT.equals(name)) {
+        } else if (Property.CHECK_IN_COMMENT.equals(name)) {
             value = null;
         } else if (Property.CONTENT_STREAM_LENGTH.equals(name)) {
             value = doc.hasSchema("file") ? doc.getPropertyValue("file:content/length")
@@ -134,7 +134,7 @@ public class NuxeoProperty implements Property {
         } else if (Property.CONTENT_STREAM_MIME_TYPE.equals(name)) {
             value = doc.hasSchema("file") ? doc.getPropertyValue("file:content/mime-type")
                     : null;
-        } else if (Property.CONTENT_STREAM_FILENAME.equals(name)) {
+        } else if (Property.CONTENT_STREAM_FILE_NAME.equals(name)) {
             value = null;
             prop = doc.hasSchema("file") ? doc.getProperty("file:filename")
                     : null;
@@ -146,13 +146,13 @@ public class NuxeoProperty implements Property {
             } else {
                 value = session.getDocument(parentRef).getId();
             }
+        } else if (Property.PATH.equals(name)) {
+            value = doc.getPathAsString();
         } else if (Property.ALLOWED_CHILD_OBJECT_TYPE_IDS.equals(name)) {
             value = null;
         } else if (Property.SOURCE_ID.equals(name)) {
             value = null;
         } else if (Property.TARGET_ID.equals(name)) {
-            value = null;
-        } else if (Property.POLICY_NAME.equals(name)) {
             value = null;
         } else if (Property.POLICY_TEXT.equals(name)) {
             value = null;

@@ -40,7 +40,7 @@ public class NuxeoContentStream implements ContentStream {
         return blob.getMimeType();
     }
 
-    public String getFilename() {
+    public String getFileName() {
         return blob.getFilename();
     }
 

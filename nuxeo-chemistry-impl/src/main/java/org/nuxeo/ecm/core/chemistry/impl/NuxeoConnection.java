@@ -31,6 +31,8 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.namespace.QName;
+
 import org.apache.chemistry.ACE;
 import org.apache.chemistry.ACLPropagation;
 import org.apache.chemistry.BaseType;
@@ -206,14 +208,16 @@ public class NuxeoConnection implements Connection, SPI {
 
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
             String filter, boolean includeAllowableActions,
-            boolean includeRelationships, String orderBy) {
+            boolean includeRelationships, boolean includeRenditions,
+            String orderBy) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public List<ObjectEntry> getChildren(ObjectId folder, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
-            int maxItems, int skipCount, String orderBy, boolean[] hasMoreItems) {
+            boolean includeRenditions, int maxItems, int skipCount,
+            String orderBy, boolean[] hasMoreItems) {
         // TODO orderBy
         DocumentModelList docs;
         try {
@@ -245,20 +249,18 @@ public class NuxeoConnection implements Connection, SPI {
         return all.subList(fromIndex, toIndex);
     }
 
-    public ObjectEntry getFolderParent(ObjectId folder, String filter,
-            boolean includeAllowableActions, boolean includeRelationships) {
+    public ObjectEntry getFolderParent(ObjectId folder, String filter) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public Collection<ObjectEntry> getObjectParents(ObjectId object,
-            String filter, boolean includeAllowableActions,
-            boolean includeRelationships) {
+            String filter) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> getCheckedoutDocuments(ObjectId folder,
+    public Collection<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, int maxItems, int skipCount,
             boolean[] hasMoreItems) {
@@ -270,33 +272,31 @@ public class NuxeoConnection implements Connection, SPI {
      * ----- Object Services -----
      */
 
-    public ObjectId createDocument(String typeId,
-            Map<String, Serializable> properties, ObjectId folder,
-            ContentStream contentStream, VersioningState versioningState) {
+    public ObjectId createDocument(Map<String, Serializable> properties,
+            ObjectId folder, ContentStream contentStream,
+            VersioningState versioningState) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId createFolder(String typeId,
-            Map<String, Serializable> properties, ObjectId folder) {
+    public ObjectId createFolder(Map<String, Serializable> properties,
+            ObjectId folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId createRelationship(String typeId,
-            Map<String, Serializable> properties, ObjectId source,
-            ObjectId target) {
+    public ObjectId createRelationship(Map<String, Serializable> properties) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId createPolicy(String typeId,
-            Map<String, Serializable> properties, ObjectId folder) {
+    public ObjectId createPolicy(Map<String, Serializable> properties,
+            ObjectId folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Collection<String> getAllowableActions(ObjectId object, String asUser) {
+    public Collection<QName> getAllowableActions(ObjectId object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -315,6 +315,17 @@ public class NuxeoConnection implements Connection, SPI {
             throw new RuntimeException(e); // TODO
         }
         return new NuxeoObjectEntry(doc, this);
+    }
+
+    public ObjectEntry getObjectByPath(String path, String filter,
+            boolean includeAllowableActions, boolean includeRelationships) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Folder getFolder(String path) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     public CMISObject getObject(ObjectId object) {
@@ -444,8 +455,8 @@ public class NuxeoConnection implements Connection, SPI {
 
     public Collection<ObjectEntry> query(String statement,
             boolean searchAllVersions, boolean includeAllowableActions,
-            boolean includeRelationships, int maxItems, int skipCount,
-            boolean[] hasMoreItems) {
+            boolean includeRelationships, boolean includeRenditions,
+            int maxItems, int skipCount, boolean[] hasMoreItems) {
         DocumentModelList docs;
         try {
             docs = session.query(cmisSqlToNXQL(statement), null, maxItems,
