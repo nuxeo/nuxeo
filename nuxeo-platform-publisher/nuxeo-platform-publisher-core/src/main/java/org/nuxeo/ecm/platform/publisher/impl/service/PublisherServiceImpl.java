@@ -115,7 +115,14 @@ public class PublisherServiceImpl extends DefaultComponent implements
     public PublicationTree getPublicationTree(String treeName,
             CoreSession coreSession, Map<String, String> params)
             throws ClientException {
+        return getPublicationTree(treeName, coreSession, params, null);
+    }
+
+    public PublicationTree getPublicationTree(String treeName, CoreSession coreSession, Map<String, String> params, DocumentModel currentDocument) throws ClientException {
         PublicationTree tree = getOrBuildTree(treeName, coreSession, params);
+        if (currentDocument != null) {
+            tree.setCurrentDocument(currentDocument);
+        }
         return new ProxyTree(tree, tree.getSessionId());
     }
 
@@ -154,7 +161,6 @@ public class PublisherServiceImpl extends DefaultComponent implements
             CoreSession coreSession, Map<String, String> params) {
         String key = computeTreeSessionId(treeConfigName, coreSession);
         PublicationTree tree;
-
         if (liveTrees.containsKey(key)) {
             tree = liveTrees.get(key);
         } else {
@@ -392,6 +398,16 @@ public class PublisherServiceImpl extends DefaultComponent implements
         } else {
             throw new ClientException(
                     "Calling getPublishedDocumentInNode on a closed tree");
+        }
+    }
+
+    public void setCurrentDocument(String sid, DocumentModel currentDocument) throws ClientException {
+        PublicationTree tree = liveTrees.get(sid);
+        if (tree != null) {
+            tree.setCurrentDocument(currentDocument);
+        } else {
+            throw new ClientException(
+                    "Calling validatorPublishDocument on a closed tree");
         }
     }
 

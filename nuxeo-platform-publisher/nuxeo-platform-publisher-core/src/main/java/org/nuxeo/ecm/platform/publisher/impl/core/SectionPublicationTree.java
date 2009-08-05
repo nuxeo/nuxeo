@@ -131,6 +131,10 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
 
     @Override
     public boolean canPublishTo(PublicationNode publicationNode) throws ClientException {
+        if (publicationNode.getParent() == null) {
+            // we can't publish in the root node
+            return false;
+        }
         DocumentRef docRef = new PathRef(publicationNode.getPath());
         return coreSession.hasPermission(docRef, CAN_ASK_FOR_PUBLISHING);
     }

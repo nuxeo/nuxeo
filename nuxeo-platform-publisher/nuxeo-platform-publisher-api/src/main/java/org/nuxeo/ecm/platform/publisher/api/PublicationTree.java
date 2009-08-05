@@ -45,6 +45,13 @@ public interface PublicationTree extends PublicationNode {
             Map<String, String> parameters, PublishedDocumentFactory factory,
             String configName) throws ClientException;
 
+    /**
+     * Set the current document on which the tree will be based, if needed. Can be useful for
+     * some implementations that need to know on which document the user is.
+     * @param currentDocument the current document
+     */
+    void setCurrentDocument(DocumentModel currentDocument) throws ClientException;
+
     void release();
 
     String getIconExpanded();

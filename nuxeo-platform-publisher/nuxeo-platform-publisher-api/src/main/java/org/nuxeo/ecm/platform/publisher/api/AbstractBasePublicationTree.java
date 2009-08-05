@@ -129,10 +129,9 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return rootNode.getPath();
     }
 
-    /**
-     * public List<PublicationNode> getTree() throws ClientException { return
-     * getChildrenNodes(); }
-     **/
+    public void setCurrentDocument(DocumentModel currentDocument) {
+        // Not used by default
+    }
 
     public String getIconExpanded() {
         return iconExpanded;
@@ -153,6 +152,10 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
     }
 
     public boolean canPublishTo(PublicationNode publicationNode) throws ClientException {
+        if (publicationNode.getParent() == null) {
+            // we can't publish in the root node
+            return false;
+        }
         return true;
     }
 

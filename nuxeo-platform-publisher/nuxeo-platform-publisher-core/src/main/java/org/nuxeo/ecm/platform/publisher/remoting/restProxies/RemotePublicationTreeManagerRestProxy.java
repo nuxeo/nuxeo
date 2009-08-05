@@ -161,6 +161,10 @@ public class RemotePublicationTreeManagerRestProxy implements
                 cparams);
     }
 
+    public void setCurrentDocument(String sid, DocumentModel currentDocument) throws ClientException {
+        // The current document is useless on a remote tree
+    }
+
     public void validatorPublishDocument(String sid, PublishedDocument publishedDocument) throws PublishingException {
         throw new UnsupportedOperationException();
     }
@@ -170,6 +174,9 @@ public class RemotePublicationTreeManagerRestProxy implements
     }
 
     public boolean canPublishTo(String sid, PublicationNode publicationNode) throws ClientException {
+        if (publicationNode.getParent() == null) {
+            return false;
+        }
         return true;
     }
 

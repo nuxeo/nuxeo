@@ -98,6 +98,10 @@ public abstract class AbstractRemotableTree implements PublicationTree {
         return null;
     }
 
+    public void setCurrentDocument(DocumentModel currentDocument) throws ClientException {
+        getTreeService().setCurrentDocument(getServerTreeSessionId(), currentDocument);
+    }
+
     protected boolean released = false;
 
     public void release() {

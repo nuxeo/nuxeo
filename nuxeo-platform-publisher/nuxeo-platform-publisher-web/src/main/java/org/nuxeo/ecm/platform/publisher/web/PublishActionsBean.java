@@ -15,6 +15,7 @@
  *     Narcis Paslaru
  *     Florent Guillaume
  *     Thierry Martins
+ *     Thomas Roger
  */
 
 package org.nuxeo.ecm.platform.publisher.web;
@@ -150,7 +151,7 @@ public class PublishActionsBean implements Serializable {
         if (currentPublicationTree == null) {
             currentPublicationTree = publisherService.getPublicationTree(
                     getCurrentPublicationTreeNameForPublishing(),
-                    documentManager, null);
+                    documentManager, null, navigationContext.getCurrentDocument());
         }
         return currentPublicationTree;
     }

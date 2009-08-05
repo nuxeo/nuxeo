@@ -48,6 +48,13 @@ public interface RemotePublicationTreeManager {
     Map<String, String> initRemoteSession(String treeConfigName,
             Map<String, String> params) throws Exception;
 
+    /**
+     * Set the current document on which the tree will be based, if needed. Can be useful for
+     * some implementations that need to know on which document the user is.
+     * @param currentDocument the current document
+     */
+    void setCurrentDocument(String sid, DocumentModel currentDocument) throws ClientException;
+
     void release(String sid);
 
     /**

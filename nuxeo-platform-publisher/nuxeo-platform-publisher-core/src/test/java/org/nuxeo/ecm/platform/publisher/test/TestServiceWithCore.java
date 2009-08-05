@@ -13,6 +13,7 @@ import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.impl.service.ProxyTree;
 import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
+import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.naming.Context;
@@ -124,7 +125,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         PublicationTree tree = service.getPublicationTree(
                 "DefaultSectionsTree", session, null);
         assertNotNull(tree);
-        assertEquals("SectionPublicationTree", tree.getTreeType());
+        assertEquals("RootSectionsPublicationTree", tree.getTreeType());
         assertEquals("DefaultSectionsTree", tree.getConfigName());
 
         Boolean isRemotable = false;
@@ -258,6 +259,57 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         assertNotNull(pubDoc);
         assertEquals(1, tree.getExistingPublishedDocument(
                 new DocumentLocationImpl(doc2Publish)).size());
+    }
+
+    public void testWithRootSections() throws Exception {
+        createInitialDocs();
+
+        RootSectionsManager rootSectionsManager = new RootSectionsManager(session);
+
+        DocumentModel section1 = session.getDocument(new PathRef(
+                "default-domain/sections/section1"));
+        DocumentModel ws1 = session.getDocument(new PathRef(
+                "default-domain/workspaces/ws1"));
+
+        assertTrue(rootSectionsManager.canAddSection(section1, ws1));
+
+        rootSectionsManager.addSection(section1.getId(), ws1);
+        String[] sectionIdsArray = (String[]) ws1
+                    .getPropertyValue(RootSectionsManager.SECTIONS_PROPERTY_NAME);
+        assertEquals(1, sectionIdsArray.length);
+
+        PublisherService service = Framework.getLocalService(PublisherService.class);
+
+        PublicationTree tree = service.getPublicationTree(
+                "DefaultSectionsTree", session, null, doc2Publish);
+        assertNotNull(tree);
+
+        List<PublicationNode> nodes = tree.getChildrenNodes();
+        assertEquals(1, nodes.size());
+
+        rootSectionsManager.removeSection(section1.getId(), ws1);
+        sectionIdsArray = (String[]) ws1
+                    .getPropertyValue(RootSectionsManager.SECTIONS_PROPERTY_NAME);
+        assertEquals(0, sectionIdsArray.length);
+
+        DocumentModel section2 = session.getDocument(new PathRef(
+                "default-domain/sections/section2"));
+        DocumentModel section11 = session.getDocument(new PathRef(
+                "default-domain/sections/section1/section11"));
+
+        rootSectionsManager.addSection(section2.getId(), ws1);
+        rootSectionsManager.addSection(section11.getId(), ws1);
+
+        // "hack" to reset the RootSectionsFinder used by the tree implementation
+        tree.setCurrentDocument(doc2Publish);
+        nodes = tree.getChildrenNodes();
+        assertEquals(2, nodes.size());
+
+        PublicationNode node = nodes.get(1);
+        assertEquals(0, node.getChildrenNodes().size());
+
+        assertNotNull(node.getParent());
+        assertEquals(tree.getPath(), node.getParent().getPath());
     }
 
 }

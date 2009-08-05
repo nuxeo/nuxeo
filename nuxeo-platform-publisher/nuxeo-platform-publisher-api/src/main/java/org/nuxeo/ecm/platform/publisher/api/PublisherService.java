@@ -20,6 +20,10 @@ public interface PublisherService {
             CoreSession coreSession, Map<String, String> params)
             throws ClientException;
 
+    PublicationTree getPublicationTree(String treeName,
+            CoreSession coreSession, Map<String, String> params, DocumentModel currentDocument)
+            throws ClientException;
+
     PublishedDocument publish(DocumentModel doc, PublicationNode targetNode)
             throws ClientException;
 

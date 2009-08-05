@@ -19,7 +19,7 @@
       </h:panelGroup>
       <h:panelGroup>
         <h:selectOneListbox class="dataInputText" size="1"
-          value="#{publishActions.currentSectionRootId}">
+          value="#{adminPublishActions.currentSectionRootId}">
           <nxu:selectItems value="#{defaultPublishingRoots}"
             var="root"
             itemValue="#{root.id}"
@@ -40,17 +40,17 @@
           rowKeyVar="rowKey"
           stateVar="nodeState">
           <rich:recursiveTreeNodesAdaptor
-            roots="#{publishActions.currentSectionsTree}"
+            roots="#{adminPublishActions.currentSectionsTree}"
             nodes="#{node.children}"
             var="node">
             <rich:treeNode
               highlightedClass="treeNodeHighlightedClass"
               selectedClass="treeNodeSelectedClass">
               <h:outputText value="#{nxd:titleOrId(node.document)}" />
-              <nxu:methodResult name="canAddSection" value="#{publishActions.getCanAddSection(node.document)}">
+              <nxu:methodResult name="canAddSection" value="#{adminPublishActions.canAddSection(node.document)}">
                 <a4j:commandLink immediate="true"
                   rendered="#{canAddSection}"
-                  action="#{publishActions.addSection(node.document.id)}"
+                  action="#{adminPublishActions.addSection(node.document.id)}"
                   reRender="sectionList">
                   <h:graphicImage value="/icons/back.png" />
                   <h:outputText value="#{messages['label.publish.add.section']}" />
@@ -77,7 +77,7 @@
         <!-- Remove -->
         <nxu:column styleClass="iconColumn">
           <a4j:commandLink immediate="true"
-            action="#{publishActions.removeSection(section.id)}"
+            action="#{adminPublishActions.removeSection(section.id)}"
             reRender="sectionList"
             ignoreDupResponses="true">
             <h:graphicImage value="/icons/action_delete.gif" />
@@ -89,7 +89,7 @@
           <f:facet name="header">
             <h:outputText value="#{messages['label.content.header.title']}" />
           </f:facet>
-          <nxu:methodResult name="formattedPath" value="#{publishActions.getFormattedPath(section)}">
+          <nxu:methodResult name="formattedPath" value="#{adminPublishActions.getFormattedPath(section)}">
             <nxd:restDocumentLink document="#{section}">
               <h:outputText value="#{formattedPath}" />
             </nxd:restDocumentLink>

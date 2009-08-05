@@ -1,4 +1,4 @@
-package org.nuxeo.ecm.platform.publisher.web;
+package org.nuxeo.ecm.platform.publisher.helper;
 
 import java.util.ArrayList;
 import java.util.Arrays;

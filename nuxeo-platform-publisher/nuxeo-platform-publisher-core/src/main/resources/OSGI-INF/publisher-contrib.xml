@@ -32,6 +32,8 @@
 
     <publicationTree name="CoreTree"
                      class="org.nuxeo.ecm.platform.publisher.impl.core.SectionPublicationTree"/>
+    <publicationTree name="RootSectionsCoreTree"
+                     class="org.nuxeo.ecm.platform.publisher.impl.core.RootSectionsPublicationTree"/>
     <publicationTree name="LocalFSTree"
                      class="org.nuxeo.ecm.platform.publisher.impl.localfs.LocalFSPublicationTree"/>
     <publicationTree name="ClientForRemoteTree"
@@ -45,7 +47,7 @@
       target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
       point="treeInstance">
 
-    <publicationTreeConfig name="DefaultSectionsTree" tree="CoreTree"
+    <publicationTreeConfig name="DefaultSectionsTree" tree="RootSectionsCoreTree"
                            factory="CoreProxy" localSectionTree="true">
       <parameters>
         <parameter name="RootPath">/default-domain/sections</parameter>
