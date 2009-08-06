@@ -38,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
@@ -340,20 +341,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public StringBuilder getServerURL() {
-        StringBuilder buf = new StringBuilder();
-        String scheme = request.getScheme();
-        int port = request.getServerPort();
-        String urlPath = request.getRequestURI();
-        if (urlPath.length() == 0) {
-            urlPath = "/";
-        }
-        buf.append(scheme).append("://").append(request.getServerName());
-        if ("http".equals(scheme) && port != 80 || "https".equals(scheme)
-                && port != 443) {
-            buf.append(':');
-            buf.append(request.getServerPort());
-        }
-        return buf;
+        return new StringBuilder(VirtualHostHelper.getServerURL(request));
     }
 
     public String getURI() {
