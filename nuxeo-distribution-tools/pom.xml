@@ -106,6 +106,12 @@
       <artifactId>maven-dependency-plugin</artifactId>
       <version>2.1</version>
     </dependency-->
+    
+    <dependency>
+      <groupId>org.nuxeo.build</groupId>
+      <artifactId>nuxeo-ant-tasks</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
 
   </dependencies>
 
