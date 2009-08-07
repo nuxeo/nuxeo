@@ -245,8 +245,10 @@ public interface WebContext extends Adaptable {
     String getBaseURL();
 
     /**
-     * Gets the server URL without any path. The returned string builder can be
-     * used to build the wanted URL.
+     * Gets the server URL without any path or trailing /. The returned string
+     * builder can be used to build the wanted URL. If the server is behind a
+     * proxy, return the server url of the proxy so writing the url in a webpage
+     * is safe.
      *
      * @return a string builder
      */

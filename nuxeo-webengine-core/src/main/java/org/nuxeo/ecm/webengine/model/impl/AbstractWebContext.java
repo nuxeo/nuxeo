@@ -341,7 +341,11 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public StringBuilder getServerURL() {
-        return new StringBuilder(VirtualHostHelper.getServerURL(request));
+        StringBuilder url = new StringBuilder(VirtualHostHelper.getServerURL(request));
+        if(url.toString().endsWith("/")) {
+            url.deleteCharAt(url.length() - 1);
+        }
+        return url;
     }
 
     public String getURI() {
