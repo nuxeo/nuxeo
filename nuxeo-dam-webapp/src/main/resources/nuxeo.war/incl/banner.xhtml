@@ -6,8 +6,8 @@
   xmlns:rich="http://richfaces.org/rich">
 
 <div class="banner_actions">
-   <rich:modalPanel id="importSetFormPanel" width="550" height="450"
-     onshow="javascript:initImportSetForm();">
+   <rich:modalPanel id="importSetFormPanel" autosized="true"
+     onshow="javascript:initImportSetForm();" styleClass="ImportSetFormPanel">
       <f:facet name="header">
         <h:panelGroup>
           <h:outputText value="${messages['popup.label.creation.importSet']}"/>

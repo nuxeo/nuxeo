@@ -1,25 +1,74 @@
 // Can 't be in theme because javascript creation
 
-/*.dataInput {
+.ImportSetFormPanel {
+ width:540px;
+}
+
+.dataInput {
+  font:normal 11px "Lucida Grande", Verdana, sans-serif;
   height: 100%;
   width: 100%;
 }
 
 .labelColumn {
-  width: 200px;
+  font:normal 11px "Lucida Grande", Verdana, sans-serif;
+  width: 160px;
   margin: 10px;
   vertical-align: top;
   font-weight: bold;
 }
 
 .fieldColumn {
+  font:normal 11px "Lucida Grande", Verdana, sans-serif;
   vertical-align: top;
   margin: 10px;
 }
 
+.fieldColumn input{
+  font:normal 11px "Lucida Grande", Verdana, sans-serif;
+  margin:0 5px 0 0;
+  width:305px;
+}
+
+.fieldColumn button{
+  margin:5px 0 0 0;
+}
+
+.fieldColumn textarea{
+  font:normal 11px "Lucida Grande", Verdana, sans-serif;
+  width:310px;
+}
+
+.fieldColumn select{
+  font:normal 11px "Lucida Grande", Verdana, sans-serif;
+  margin:0 0 5px;
+  width:310px;
+}
+
+.buttonsGadget{
+  text-align:center;
+}
+
+h3 {
+  font:normal 15px "Lucida Grande", Verdana, sans-serif;
+  color:#3c3c3c;
+  margin:10px 0px 15px;
+}
+
 .button {
-  margin: 10px;
-}*/
+  font:normal 11px "Lucida Grande", Verdana, sans-serif;
+  color:#333333;
+  border:1px solid #bfc5cb;
+  background:#cecfd1 url(/nuxeo/img/buttons.png) top left repeat-x;
+  margin:5px 10px 10px 0;
+  padding:2px 5px;
+  cursor:pointer;
+}
+
+.button:hover{
+  color:#000000;
+  border-color:#92999E;
+}
 
 #importset_creation_panel {
   margin: 10px;
@@ -27,7 +76,7 @@
 
 #fileUploadForm {
   height:98px;
-  width:100%;
+  width:465px;
   margin-bottom:30px;
   margin-left:10px;
   margin-right:10px;

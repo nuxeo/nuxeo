@@ -6,6 +6,7 @@
       xmlns:rich="http://richfaces.org/rich"
       xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
+  <h3><h:outputText value="${messages['label.importset.title.select.folder']}" /></h3>
 
   <a4j:region renderRegionOnly="true">
   <rich:fileUpload id="fileUploadForm" fileUploadListener="#{importActions.uploadListener}"
@@ -18,12 +19,15 @@
     stopEntryControlLabel="${messages['label.action.importset.creation.stop.upload']}"
     uploadControlLabel="${messages['label.action.importset.creation.start.upload']}"
     doneLabel="${messages['label.action.importset.creation.done']}"
-    transferErrorLabel="${messages[label.fileupload.message.error]}">
+    transferErrorLabel="${messages[label.fileupload.message.error]}"
+    listWidth="465px">
     <f:facet name="label">
       <h:outputText value="{_KB}KB from {KB}KB uploaded --- {mm}:{ss}" />
     </f:facet>
   </rich:fileUpload>
   </a4j:region>
+  
+  <h3><h:outputText value="${messages['label.importset.title.select.metadatas']}" /></h3>
 
   <a4j:form id="importset_form"
     ajaxSingle="true" enctype="multipart/form-data">
