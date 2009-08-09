@@ -23,17 +23,33 @@ package org.nuxeo.ecm.platform.publisher.web;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.*;
+import org.jboss.seam.annotations.Create;
+import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.Factory;
+import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.platform.publisher.api.*;
+import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
+import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
+import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
+import org.nuxeo.ecm.platform.publisher.api.PublisherService;
+import org.nuxeo.ecm.platform.publisher.api.PublishingEvent;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
@@ -42,8 +58,10 @@ import org.nuxeo.runtime.api.Framework;
 
 import javax.faces.application.FacesMessage;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -96,8 +114,10 @@ public class PublishActionsBean implements Serializable {
 
     @Destroy
     public void destroy() {
-        currentPublicationTree.release();
-        currentPublicationTree = null;
+        if (currentPublicationTree != null) {
+            currentPublicationTree.release();
+            currentPublicationTree = null;
+        }
     }
 
     @Factory(value = "availablePublicationTrees", scope = ScopeType.EVENT)
@@ -108,14 +128,24 @@ public class PublishActionsBean implements Serializable {
     public String doPublish(PublicationNode publicationNode)
             throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        PublishedDocument publishedDocument = getCurrentPublicationTreeForPublishing().publish(
-                currentDocument, publicationNode);
+        PublicationTree tree = getCurrentPublicationTreeForPublishing();
+        PublishedDocument publishedDocument = tree.publish(currentDocument,
+                publicationNode);
         if (publishedDocument.isPending()) {
+            String comment = "Document waiting for publication";
+            // Log event on live version
+            notifyEvent(PublishingEvent.documentWaitingPublication.name(),
+                    null, comment, null, currentDocument);
             facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    resourcesAccessor.getMessages().get("document_published"),
+                    resourcesAccessor.getMessages().get(
+                            "document_submitted_for_publication"),
                     resourcesAccessor.getMessages().get(
                             currentDocument.getType()));
         } else {
+            String comment = "Document published";
+            // Log event on live version
+            notifyEvent(PublishingEvent.documentPublished.name(), null,
+                    comment, null, currentDocument);
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get("document_published"),
                     resourcesAccessor.getMessages().get(
@@ -151,7 +181,8 @@ public class PublishActionsBean implements Serializable {
         if (currentPublicationTree == null) {
             currentPublicationTree = publisherService.getPublicationTree(
                     getCurrentPublicationTreeNameForPublishing(),
-                    documentManager, null, navigationContext.getCurrentDocument());
+                    documentManager, null,
+                    navigationContext.getCurrentDocument());
         }
         return currentPublicationTree;
     }
@@ -234,10 +265,21 @@ public class PublishActionsBean implements Serializable {
     }
 
     public String approveDocument() throws ClientException {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
         PublicationTree tree = publisherService.getPublicationTreeFor(
-                navigationContext.getCurrentDocument(), documentManager);
-        PublishedDocument publishedDocument = tree.wrapToPublishedDocument(navigationContext.getCurrentDocument());
+                currentDocument, documentManager);
+        PublishedDocument publishedDocument = tree.wrapToPublishedDocument(currentDocument);
         tree.validatorPublishDocument(publishedDocument);
+        DocumentModel sourceDocument = documentManager.getDocument(publishedDocument.getSourceDocumentRef());
+        notifyEvent(PublishingEvent.documentPublicationApproved.name(), null,
+                "Document approved", null, sourceDocument);
+
+        DocumentModel liveVersion = documentManager.getDocument(new IdRef(sourceDocument.getSourceId()));
+        if (!sourceDocument.getRef().equals(liveVersion.getRef())) {
+            notifyEvent(PublishingEvent.documentPublicationApproved.name(), null,
+                "Document approved", null, liveVersion);
+        }
+
         Events.instance().raiseEvent(PublishingEvent.documentPublished.name());
         return null;
     }
@@ -252,11 +294,22 @@ public class PublishActionsBean implements Serializable {
             return null;
         }
 
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
         PublicationTree tree = publisherService.getPublicationTreeFor(
-                navigationContext.getCurrentDocument(), documentManager);
-        PublishedDocument publishedDocument = tree.wrapToPublishedDocument(navigationContext.getCurrentDocument());
+                currentDocument, documentManager);
+        PublishedDocument publishedDocument = tree.wrapToPublishedDocument(currentDocument);
         tree.validatorRejectPublication(publishedDocument,
                 rejectPublishingComment);
+        DocumentModel sourceDocument = documentManager.getDocument(publishedDocument.getSourceDocumentRef());
+        notifyEvent(PublishingEvent.documentPublicationRejected.name(), null,
+                "Document rejected: " + rejectPublishingComment, null,
+                sourceDocument);
+
+        DocumentModel liveVersion = documentManager.getDocument(new IdRef(sourceDocument.getSourceId()));
+        if (!sourceDocument.getRef().equals(liveVersion.getRef())) {
+            notifyEvent(PublishingEvent.documentPublicationApproved.name(), null,
+                "Document approved", null, liveVersion);
+        }
         Events.instance().raiseEvent(
                 PublishingEvent.documentPublicationRejected.name());
 
@@ -301,7 +354,8 @@ public class PublishActionsBean implements Serializable {
             return null;
         }
 
-        PublicationNode targetNode = publisherService.wrapToPublicationNode(target, documentManager);
+        PublicationNode targetNode = publisherService.wrapToPublicationNode(
+                target, documentManager);
         if (targetNode == null) {
             return null;
         }
@@ -369,6 +423,51 @@ public class PublishActionsBean implements Serializable {
             return null;
         }
         return publishRoots;
+    }
+
+    public void notifyEvent(String eventId,
+            Map<String, Serializable> properties, String comment,
+            String category, DocumentModel dm) throws ClientException {
+
+        // Default category
+        if (category == null) {
+            category = DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
+        }
+
+        if (properties == null) {
+            properties = new HashMap<String, Serializable>();
+        }
+
+        properties.put(CoreEventConstants.REPOSITORY_NAME,
+                documentManager.getRepositoryName());
+        properties.put(CoreEventConstants.SESSION_ID,
+                documentManager.getSessionId());
+        properties.put(CoreEventConstants.DOC_LIFE_CYCLE,
+                dm.getCurrentLifeCycleState());
+
+        DocumentEventContext ctx = new DocumentEventContext(documentManager,
+                documentManager.getPrincipal(), dm);
+
+        ctx.setProperties(properties);
+        ctx.setComment(comment);
+        ctx.setCategory(category);
+
+        EventProducer evtProducer = null;
+
+        try {
+            evtProducer = Framework.getService(EventProducer.class);
+        } catch (Exception e) {
+            log.error("Unable to access EventProducer", e);
+            return;
+        }
+
+        Event event = ctx.newEvent(eventId);
+
+        try {
+            evtProducer.fireEvent(event);
+        } catch (Exception e) {
+            log.error("Error while sending event", e);
+        }
     }
 
 }

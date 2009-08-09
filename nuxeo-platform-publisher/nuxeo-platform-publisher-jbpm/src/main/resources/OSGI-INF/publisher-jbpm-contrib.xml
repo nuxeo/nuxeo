@@ -16,7 +16,7 @@
       target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
       point="treeInstance">
 
-    <publicationTreeConfig name="DefaultSectionsTree" tree="CoreTree"
+    <publicationTreeConfig name="DefaultSectionsTree" tree="RootSectionsCoreTree"
                            factory="CoreProxyWithWorkflow">
       <parameters>
         <parameter name="RootPath">/default-domain/sections</parameter>

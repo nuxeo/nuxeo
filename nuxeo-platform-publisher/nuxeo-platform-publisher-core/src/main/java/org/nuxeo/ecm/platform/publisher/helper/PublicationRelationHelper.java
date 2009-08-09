@@ -85,7 +85,7 @@ public class PublicationRelationHelper {
     public static boolean isPublished(DocumentModel documentModel) {
         List<Statement> stmts = RelationHelper.getStatements(documentModel,
                 PUBLISHED_BY);
-        return !stmts.isEmpty();
+        return stmts != null && !stmts.isEmpty();
     }
 
     /**

@@ -17,24 +17,25 @@
 
 package org.nuxeo.ecm.platform.publisher.web;
 
-import org.jboss.seam.annotations.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.*;
 import org.nuxeo.ecm.core.api.*;
-import org.nuxeo.ecm.webapp.tree.DocumentTreeNode;
-import org.nuxeo.ecm.webapp.tree.TreeActions;
-import org.nuxeo.ecm.webapp.tree.DocumentTreeNodeImpl;
-import org.nuxeo.ecm.webapp.tree.TreeManager;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionsFinder;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionsFinderHelper;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.ecm.webapp.tree.DocumentTreeNode;
+import org.nuxeo.ecm.webapp.tree.DocumentTreeNodeImpl;
+import org.nuxeo.ecm.webapp.tree.TreeActions;
+import org.nuxeo.ecm.webapp.tree.TreeManager;
 import org.nuxeo.runtime.api.Framework;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -46,8 +47,6 @@ public class AdministrationPublishActions implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(AdministrationPublishActions.class);
-
-
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
@@ -109,6 +108,10 @@ public class AdministrationPublishActions implements Serializable {
         return sectionsTree;
     }
 
+    public void setCurrentSectionRootId(String currentSectionRootId) {
+        this.currentSectionRootId = currentSectionRootId;
+    }
+
     protected DocumentTreeNode getDocumentTreeNode(DocumentModel documentModel) {
         DocumentTreeNode documentTreeNode = null;
         if (documentModel != null) {
@@ -120,10 +123,9 @@ public class AdministrationPublishActions implements Serializable {
                 sorter = getTreeManager().getSorter(
                         TreeActions.DEFAULT_TREE_PLUGIN_NAME);
             } catch (Exception e) {
-                log
-                        .error(
-                                "Could not fetch filter, sorter or node type for tree ",
-                                e);
+                log.error(
+                        "Could not fetch filter, sorter or node type for tree ",
+                        e);
             }
 
             documentTreeNode = new DocumentTreeNodeImpl(documentModel, filter,
@@ -145,10 +147,9 @@ public class AdministrationPublishActions implements Serializable {
         return treeManager;
     }
 
-    public boolean canAddSection(DocumentModel section)
-            throws ClientException {
+    public boolean canAddSection(DocumentModel section) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        return rootSectionsManager.canAddSection(section,  currentDocument);
+        return rootSectionsManager.canAddSection(section, currentDocument);
     }
 
     public String addSection(String sectionId) throws ClientException {
@@ -200,8 +201,7 @@ public class AdministrationPublishActions implements Serializable {
 
         DocumentModel parentDocument;
         try {
-            parentDocument = documentManager.getDocument(documentModel
-                    .getParentRef());
+            parentDocument = documentManager.getDocument(documentModel.getParentRef());
         } catch (Exception e) {
             log.error("Error building path", e);
             return;

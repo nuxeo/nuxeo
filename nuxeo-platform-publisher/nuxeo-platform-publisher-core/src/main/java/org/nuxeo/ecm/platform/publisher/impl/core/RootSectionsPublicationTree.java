@@ -32,9 +32,11 @@ import java.util.Map;
  */
 public class RootSectionsPublicationTree extends SectionPublicationTree {
 
-    DocumentModel currentDocument;
+    protected DocumentModel currentDocument;
 
-    RootSectionsFinder rootFinder;
+    protected RootSectionsFinder rootFinder;
+
+    protected boolean useRootSections = true;
 
     @Override
     public void initTree(String sid, CoreSession coreSession,
@@ -49,8 +51,12 @@ public class RootSectionsPublicationTree extends SectionPublicationTree {
 
     @Override
     public List<PublicationNode> getChildrenNodes() throws ClientException {
-        if (currentDocument != null) {
+        if (currentDocument != null && useRootSections) {
             DocumentModelList rootSections = rootFinder.getAccessibleSectionRoots(currentDocument);
+            if (rootSections.size() == 1 && rootSections.get(0).getPathAsString().equals(treeRoot.getPathAsString())) {
+                useRootSections = false;
+                return super.getChildrenNodes();
+            }
             List<PublicationNode> publicationNodes = new ArrayList<PublicationNode>();
             for (DocumentModel rootSection : rootSections) {
                 publicationNodes.add(new CoreFolderPublicationNode(rootSection,
@@ -65,10 +71,14 @@ public class RootSectionsPublicationTree extends SectionPublicationTree {
     public void setCurrentDocument(DocumentModel currentDocument) {
         this.currentDocument = currentDocument;
         rootFinder.reset();
+        useRootSections = true;
     }
 
     @Override
     public PublicationNode getNodeByPath(String path) throws ClientException {
+        if (!useRootSections) {
+            return super.getNodeByPath(path);
+        }
         // if we ask for the root path of this tree, returns this because
         // of the custom implementations of some methods (getChildrenNodes)
         if (path.equals(treeRoot.getPathAsString())) {
@@ -82,8 +92,8 @@ public class RootSectionsPublicationTree extends SectionPublicationTree {
                     return child;
                 }
             }
+            return super.getNodeByPath(path);
         }
-        return super.getNodeByPath(path);
     }
 
 }
