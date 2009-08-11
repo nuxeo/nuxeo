@@ -110,9 +110,9 @@ public interface CoreEventListenerService {
      */
     void transactionStarted();
 
-    /**
-     * Transaction is about to be commited
-     */
-    void transactionAboutToCommit();
+//    /**
+//     * Transaction is about to be commited
+//     */
+//    void transactionAboutToCommit();
 
 }

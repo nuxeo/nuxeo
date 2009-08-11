@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -31,6 +32,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
+import org.nuxeo.ecm.core.event.EventTransactionListener;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
@@ -56,6 +58,8 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         }
     };
 
+    protected ListenerList txListeners;
+    
     protected final EventListenerList listenerDescriptors;
 
     protected final AsyncEventExecutor asyncExec;
@@ -67,6 +71,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
     protected boolean bulkModeEnabled = false;
 
     public EventServiceImpl() {
+        txListeners = new ListenerList();
         listenerDescriptors = new EventListenerList();
         asyncExec = AsyncEventExecutor.create();
     }
@@ -239,6 +244,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
 
     public void transactionStarted() {
         bundle.get().setTransacted(true);
+        fireTxStarted();
     }
 
     public void transactionCommitted() throws ClientException {
@@ -247,10 +253,12 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         if (b != null && !b.isEmpty()) {
             fireEventBundle(b);
         }
+        fireTxCommited();
     }
 
     public void transactionRolledback() {
         bundle.remove();
+        fireTxRollbacked();
     }
 
     public boolean isTransactionStarted() {
@@ -339,6 +347,32 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
 
     public void setBulkModeEnabled(boolean bulkModeEnabled) {
         this.bulkModeEnabled = bulkModeEnabled;
+    }
+
+    public void addTransactionListener(EventTransactionListener listener) {
+        txListeners.add(listener);
+    }
+
+    public void removeTransactionListener(EventTransactionListener listener) {
+        txListeners.remove(listener);
+    }
+    
+    protected void fireTxStarted() {
+        for (Object listener : txListeners.getListeners()) {
+            ((EventTransactionListener)listener).transactionStarted();
+        }
+    }
+
+    protected void fireTxRollbacked() {
+        for (Object listener : txListeners.getListeners()) {
+            ((EventTransactionListener)listener).transactionRollbacked();
+        }        
+    }
+
+    protected void fireTxCommited() {
+        for (Object listener : txListeners.getListeners()) {
+            ((EventTransactionListener)listener).transactionCommitted();
+        }
     }
 
 }
