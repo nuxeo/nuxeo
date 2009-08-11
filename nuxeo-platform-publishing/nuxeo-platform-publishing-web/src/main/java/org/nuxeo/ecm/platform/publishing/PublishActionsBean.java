@@ -782,6 +782,9 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
             if (doc.getParentRef().equals(section.getRef())) {
                 unPublishDocument(doc);
+                facesMessages.add(FacesMessage.SEVERITY_INFO, resourcesAccessor
+                        .getMessages().get("document_unpublished"), resourcesAccessor
+                        .getMessages().get(doc.getType()));
             }
         }
         return null;

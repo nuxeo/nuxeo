@@ -12,6 +12,24 @@
   <a4j:outputPanel ajaxRendered="true">
   <a4j:form ajaxSubmit="true" id="publishTreeForm">
 
+  <div>
+    <div id="infoMessage" class="facesStatusMessage">
+      <h:messages globalOnly="true"
+        infoClass="infoFeedback"
+        warnClass="warningFeedback"
+        errorClass="errorFeedback"/>
+    </div>
+    <script>
+    <!--
+    function HideStatus()
+      {
+      document.getElementById("infoMessage").style.visibility="hidden";
+      }
+    window.setTimeout("HideStatus()",5000);
+    -->
+    </script>
+  </div>
+
   <h:panelGroup rendered="#{!empty availablePublishingRoots}">
     <h:panelGrid class="dataInput" columnClasses="labelColumn, fieldColumn" columns="2">
       <h:panelGroup>
@@ -54,7 +72,7 @@
                 <a4j:commandLink immediate="true"
                   action="#{publishActions.doPublish(node.document)}"
                   rendered="#{canPublishToSection}"
-                  reRender="publishingInfoList"
+                  reRender="publishCommandLink,infoMessage"
                   id="publishCommandLink">
                   <h:graphicImage value="/icons/back.png" />
                   <h:outputText value="#{messages['label.publish.publish']}" />
@@ -108,7 +126,7 @@
               value="#{messages['command.document.unpublish']}"
               action="#{publishActions.unPublishFromSection(info.section)}"
               rendered="#{nxd:hasPermission(info.section, 'Write') and section.ref != currentDocument.parentRef}"
-              reRender="publishingInfoList"
+              reRender="publishingInfoList,infoMessage"
               ignoreDupResponses="true">
             </a4j:commandLink>
           </nxu:methodResult>
