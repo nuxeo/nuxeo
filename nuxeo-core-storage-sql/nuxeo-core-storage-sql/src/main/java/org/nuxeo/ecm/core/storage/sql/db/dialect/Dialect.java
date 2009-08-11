@@ -138,7 +138,6 @@ public abstract class Dialect {
 
             byte[] bytes = (prefix + string).getBytes();
             digest.update(bytes, 0, bytes.length);
-            string = toHexString(digest.digest()).substring(0, 8);
 
             sb.append("O");
             sb.append(toHexString(digest.digest()).substring(0, 16));
