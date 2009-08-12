@@ -4,8 +4,12 @@
 
   <implementation
     class="org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent" />
-  <documentation>@author Thierry Delprat (td@nuxeo.com)</documentation>
-
+  <documentation>
+    The BlobHolderAdapter provides the BlobHolderAdapterService wich give the needed BlobHolder.
+    A BlobHolder is an adapter that provides methods to get binaries and related metadatas.
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+  
   <service>
     <provide
       interface="org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService" />
