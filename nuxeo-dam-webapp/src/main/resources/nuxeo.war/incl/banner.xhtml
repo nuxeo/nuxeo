@@ -26,11 +26,11 @@
 
     <h:form>
     
-      <h:outputLink value="javascript:Richfaces.showModalPanel('importSetFormPanel');" id="importset_creation_button">
+      <h:outputLink value="javascript:Richfaces.showModalPanel('importSetFormPanel');" id="importset_creation_button" disabled="true">
           <h:outputText class="importButton" value="${messages['label.action.createImportSet']}"/>
       </h:outputLink>
       
-      <h:outputLink id="settings_button" action="#{documentActions.logout}">
+      <h:outputLink id="settings_button" action="#{documentActions.logout}" disabled="true">
           <h:outputText class="settingsButton" value="${messages['label.action.settings']}"/>
       </h:outputLink>
       

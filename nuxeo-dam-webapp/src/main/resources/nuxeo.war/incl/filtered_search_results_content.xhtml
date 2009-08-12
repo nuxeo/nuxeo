@@ -1,0 +1,44 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="http://richfaces.org/a4j">
+  
+     
+  <a4j:region>
+    <a4j:outputPanel id="filterResultTable">
+      
+      <a4j:form>
+        <a4j:commandLink id="showListLink"
+          action="#{webActions.showListLink}"
+          reRender="filterResultTable, selectionView">
+          <h:graphicImage id="showList" url="/icons/list_view.png"
+            rendered="#{!webActions.showList}" />
+          <h:graphicImage id="showListSelected"
+            url="/icons/list_view_selected.png"
+            rendered="#{webActions.showList}" />
+        </a4j:commandLink>
+          
+        <a4j:commandLink id="showThumbnailLink"
+          action="#{webActions.showThumbnailLink}"
+          reRender="filterResultTable, selectionView">
+          <h:graphicImage id="showThumbnail" url="/icons/thumbnail_view.png"
+            rendered="#{!webActions.showThumbnail}" />
+          <h:graphicImage id="showThumbnailSelected"
+            url="/icons/thumbnail_view_selected.png"
+            rendered="#{webActions.showThumbnail}" />
+        </a4j:commandLink>
+      </a4j:form>  
+            
+      <ui:decorate template="/incl/documents_table_content.xhtml">
+        <ui:param name="provider" value="#{resultsProvidersCache.get('FILTERED_DOCUMENTS')}" />
+        <ui:param name="providerName" value="#{resultsProvidersCache.get('FILTERED_DOCUMENTS').name}" />
+        <ui:param name="documents" value="#{filterSelectModel}"/>
+      </ui:decorate>         
+    </a4j:outputPanel>
+  </a4j:region>
+
+</div>

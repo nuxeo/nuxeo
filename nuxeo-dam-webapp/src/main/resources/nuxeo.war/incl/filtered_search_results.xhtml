@@ -1,20 +1,7 @@
-<div xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:a4j="http://richfaces.org/a4j">
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
 
-<a4j:region renderRegionOnly="true">
-  <a4j:outputPanel ajaxRendered="true" id="filterResultTable">
-    <ui:decorate template="/incl/documents_table.xhtml">
-      <ui:param name="provider" value="#{resultsProvidersCache.get('FILTERED_DOCUMENTS')}" />
-      <ui:param name="providerName" value="#{resultsProvidersCache.get('FILTERED_DOCUMENTS').name}" />
-      <ui:param name="documents" value="#{filterSelectModel}"/>
-    </ui:decorate>
-  </a4j:outputPanel>
-</a4j:region>
-
+  <ui:define name="body">
+    <ui:include src="/incl/filtered_search_results_content.xhtml" />
+  </ui:define>
 </div>

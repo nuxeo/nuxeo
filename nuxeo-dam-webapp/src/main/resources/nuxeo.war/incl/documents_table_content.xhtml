@@ -1,0 +1,34 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <ui:include src="/pagination/pageNavigationControls.xhtml" />
+
+  <a4j:form id="#{documents.name}">
+    <a4j:region>
+    <a4j:outputPanel id="documentsList">
+    <h:outputText value="#{messages['label.content.empty.search']}"
+                  rendered="#{documents.rowCount == 0}" />
+
+    <f:subview id="showListSubview" rendered="#{webActions.showList}">
+	  <ui:decorate template="/incl/documents_table.xhtml" >
+	    <ui:param name="documents" value="#{documents}"/>
+	  </ui:decorate>
+	</f:subview>  
+	<f:subview id="showListThumbnail" rendered="#{webActions.showThumbnail}">
+	  <ui:decorate template="/incl/thumbnail_documents_table.xhtml" >
+	    <ui:param name="documents" value="#{documents}"/>
+	  </ui:decorate>
+	</f:subview>  
+    </a4j:outputPanel>
+    </a4j:region>
+  </a4j:form>
+
+
+</div>

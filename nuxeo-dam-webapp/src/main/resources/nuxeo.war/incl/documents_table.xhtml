@@ -8,149 +8,135 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <ui:include src="/pagination/pageNavigationControls.xhtml" />
+  <nxu:dataTable
+    id="dataTable"
+    value="#{documents.rows}"
+    var="row"
+    rowClasses="dataRowEven,dataRowOdd"
+    styleClass="dataOutput"
+    rendered="#{documents.rowCount > 0}">
 
-  <a4j:form id="#{documents.name}">
-    <a4j:region>
-    <a4j:outputPanel id="documentsList">
-    <h:outputText value="#{messages['label.content.empty.search']}"
-                  rendered="#{documents.rowCount == 0}" />
-
-    <nxu:dataTable
-      id="dataTable"
-      value="#{documents.rows}"
-      var="row"
-      rowClasses="dataRowEven,dataRowOdd"
-      styleClass="dataOutput"
-      rendered="#{documents.rowCount > 0}">
-
-      <!-- id and selection -->
-      <nxu:column styleClass="iconColumn">
-        <f:facet name="header">
-          <h:selectBooleanCheckbox rendered="true"
-              onclick="selectDataTablePage('#{documents.name}', '#{providerName}', this.checked)" title="#{messages['tooltip.content.select.all']}">
-          </h:selectBooleanCheckbox>
-        </f:facet>
-         <h:selectBooleanCheckbox
-            value="#{row.selected}"
-            onclick="selectDataTableRow('#{row.data.ref}', '#{providerName}', this)">
+    <!-- id and selection -->
+    <nxu:column styleClass="iconColumn">
+      <f:facet name="header">
+        <h:selectBooleanCheckbox rendered="true"
+            onclick="selectDataTablePage('#{documents.name}', '#{providerName}', this.checked)" title="#{messages['tooltip.content.select.all']}">
         </h:selectBooleanCheckbox>
-      </nxu:column>
+      </f:facet>
+       <h:selectBooleanCheckbox
+          value="#{row.selected}"
+          onclick="selectDataTableRow('#{row.data.ref}', '#{providerName}', this)">
+      </h:selectBooleanCheckbox>
+    </nxu:column>
 
-      <!-- Icon + Type -->
-      <nxu:column styleClass="iconColumn">
-         <div id="docRefTarget:#{row.data.ref}">
-          <div id="docRef:#{row.data.ref}" class="cell popupTarget" docRef="#{row.data.ref}">
-            <nxu:graphicImage
-              value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}" />
-          </div>
-          </div>
-      </nxu:column>
-
-      <!--  Title -->
-      <nxu:column styleClass="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
-        <f:facet name="header">
-          <h:panelGroup>
-          <a4j:commandLink id="title" action="#{sortActions.repeatSearch}"
-              rendered="#{provider.sortable}" reRender="filterResultTable" >
-            <h:outputText value="#{messages['label.content.header.title']}" />
-            <f:param name="providerName" value="#{providerName}" />
-            <f:param name="sortColumn" value="dc:title" />
-            <f:param name="invalidateSeamVariables" value="filterSelectModel" />
-            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'dc:title' }" >
-              <h:graphicImage value="/icons/arrow_down.gif"
-                rendered="#{provider.sortInfo.sortAscending}" />
-              <h:graphicImage value="/icons/arrow_up.gif"
-                rendered="#{!provider.sortInfo.sortAscending}" />
-            </h:panelGroup>
-          </a4j:commandLink>
-          <h:outputText value="#{messages['label.content.header.title']}"
-            rendered="#{!provider.sortable}" />
-          </h:panelGroup>
-        </f:facet>
-        <div class="popupTarget" docRef="#{row.data.ref}">
-            <!-- Title -->
-            <span id="title_#{row.data.ref}">
-              <a4j:commandLink id="titleLink" action="#{documentActions.setCurrentSelection(row.data)}"
-                reRender="documentsList, selectionView" >
-                <nxh:outputText value="#{nxd:titleOrId(row.data)}"
-                  title="#{row.data.dc.description}"
-                  rendered="#{!empty row.data.dc.description}"/>
-                <nxh:outputText value="#{nxd:titleOrId(row.data)}"
-                  rendered="#{empty row.data.dc.description}"/>
-              </a4j:commandLink>
-            </span>
-
+    <!-- Icon + Type -->
+    <nxu:column styleClass="iconColumn">
+       <div id="docRefTarget:#{row.data.ref}">
+        <div id="docRef:#{row.data.ref}" class="cell popupTarget" docRef="#{row.data.ref}">
+          <nxu:graphicImage
+            value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}" />
         </div>
+        </div>
+    </nxu:column>
 
-      </nxu:column>
-
-      <!--  Author -->
-      <h:column>
-        <f:facet name="header">
-          <h:panelGroup>
-          <a4j:commandLink action="#{sortActions.repeatSearch}"
-              rendered="#{provider.sortable}" reRender="filterResultTable" >
-            <h:outputText value="#{messages['label.content.header.author']}" />
-            <f:param name="providerName" value="#{providerName}" />
-            <f:param name="sortColumn" value="damc:author" />
-            <f:param name="invalidateSeamVariables" value="filterSelectModel" />
-            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'damc:author' }" >
-              <h:graphicImage value="/icons/arrow_down.gif"
-                rendered="#{provider.sortInfo.sortAscending}" />
-              <h:graphicImage value="/icons/arrow_up.gif"
-                rendered="#{!provider.sortInfo.sortAscending}" />
-            </h:panelGroup>
-          </a4j:commandLink>
-          <h:outputText value="#{messages['label.content.header.author']}"
-            rendered="#{!provider.sortable}" />
+    <!--  Title -->
+    <nxu:column styleClass="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
+      <f:facet name="header">
+        <h:panelGroup>
+        <a4j:commandLink id="title" action="#{sortActions.repeatSearch}"
+            rendered="#{provider.sortable}" reRender="filterResultTable" >
+          <h:outputText value="#{messages['label.content.header.title']}" />
+          <f:param name="providerName" value="#{providerName}" />
+          <f:param name="sortColumn" value="dc:title" />
+          <f:param name="invalidateSeamVariables" value="filterSelectModel" />
+          <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'dc:title' }" >
+            <h:graphicImage value="/icons/arrow_down.gif"
+              rendered="#{provider.sortInfo.sortAscending}" />
+            <h:graphicImage value="/icons/arrow_up.gif"
+              rendered="#{!provider.sortInfo.sortAscending}" />
           </h:panelGroup>
-        </f:facet>
-        <h:outputText value="#{nxu:userFullName(row.data.dam_common.author)}" />
-      </h:column>
+        </a4j:commandLink>
+        <h:outputText value="#{messages['label.content.header.title']}"
+          rendered="#{!provider.sortable}" />
+        </h:panelGroup>
+      </f:facet>
+      <div class="popupTarget" docRef="#{row.data.ref}">
 
-      <!-- import date -->
-      <h:column>
-        <f:facet name="header">
-          <h:panelGroup>
-          <a4j:commandLink action="#{sortActions.repeatSearch}"
-              rendered="#{provider.sortable}" reRender="filterResultTable" >
-            <h:outputText value="#{messages['label.content.header.authoringDate']}" />
-            <f:param name="providerName" value="#{providerName}" />
-            <f:param name="sortColumn" value="damc:authoringDate" />
-            <f:param name="invalidateSeamVariables" value="filterSelectModel" />
-            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'damc:authoringDate' }" >
-              <h:graphicImage value="/icons/arrow_down.gif"
-                rendered="#{provider.sortInfo.sortAscending}" />
-              <h:graphicImage value="/icons/arrow_up.gif"
-                rendered="#{!provider.sortInfo.sortAscending}" />
-            </h:panelGroup>
-          </a4j:commandLink>
-          <h:outputText value="#{messages['label.content.header.authoringDate']}"
-            rendered="#{!provider.sortable}" />
+          <!-- Title -->
+          <span id="title_#{row.data.ref}">
+            <a4j:commandLink id="titleLink" action="#{documentActions.setCurrentSelection(row.data)}"
+              reRender="documentsList, selectionView" >
+              <nxh:outputText value="#{nxd:titleOrId(row.data)}"
+                title="#{row.data.dc.description}"
+                rendered="#{!empty row.data.dc.description}"/>
+              <nxh:outputText value="#{nxd:titleOrId(row.data)}"
+                rendered="#{empty row.data.dc.description}"/>
+            </a4j:commandLink>
+          </span>
+       </div>
+
+    </nxu:column>
+
+    <!--  Author -->
+    <h:column>
+      <f:facet name="header">
+        <h:panelGroup>
+        <a4j:commandLink action="#{sortActions.repeatSearch}"
+            rendered="#{provider.sortable}" reRender="filterResultTable" >
+          <h:outputText value="#{messages['label.content.header.author']}" />
+          <f:param name="providerName" value="#{providerName}" />
+          <f:param name="sortColumn" value="damc:author" />
+          <f:param name="invalidateSeamVariables" value="filterSelectModel" />
+          <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'damc:author' }" >
+            <h:graphicImage value="/icons/arrow_down.gif"
+              rendered="#{provider.sortInfo.sortAscending}" />
+            <h:graphicImage value="/icons/arrow_up.gif"
+              rendered="#{!provider.sortInfo.sortAscending}" />
           </h:panelGroup>
-        </f:facet>
-        <h:outputText value="#{row.data.dam_common.authoringDate}">
-          <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
-            timeZone="#{timeZone}" />
-        </h:outputText>
-      </h:column>
+        </a4j:commandLink>
+        <h:outputText value="#{messages['label.content.header.author']}"
+          rendered="#{!provider.sortable}" />
+        </h:panelGroup>
+      </f:facet>
+      <h:outputText value="#{nxu:userFullName(row.data.dam_common.author)}" />
+    </h:column>
 
-      <!--  Size -->
-      <h:column>
-        <f:facet name="header">
-          <h:panelGroup>
-            <h:outputText value="#{messages['label.content.header.size']}" />
+    <!-- import date -->
+    <h:column>
+      <f:facet name="header">
+        <h:panelGroup>
+        <a4j:commandLink action="#{sortActions.repeatSearch}"
+            rendered="#{provider.sortable}" reRender="filterResultTable" >
+          <h:outputText value="#{messages['label.content.header.authoringDate']}" />
+          <f:param name="providerName" value="#{providerName}" />
+          <f:param name="sortColumn" value="damc:authoringDate" />
+          <f:param name="invalidateSeamVariables" value="filterSelectModel" />
+          <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'damc:authoringDate' }" >
+            <h:graphicImage value="/icons/arrow_down.gif"
+              rendered="#{provider.sortInfo.sortAscending}" />
+            <h:graphicImage value="/icons/arrow_up.gif"
+              rendered="#{!provider.sortInfo.sortAscending}" />
           </h:panelGroup>
-        </f:facet>
-        <h:outputText value="#{row.data.picture.views[1].content.length}" rendered="#{row.data.hasSchema('picture') and !empty row.data.picture.views}" />
-        <h:outputText value="#{row.data.file.content.length}" rendered="#{row.data.hasSchema('file')}" />
-      </h:column>
+        </a4j:commandLink>
+        <h:outputText value="#{messages['label.content.header.authoringDate']}"
+          rendered="#{!provider.sortable}" />
+        </h:panelGroup>
+      </f:facet>
+      <h:outputText value="#{row.data.dam_common.authoringDate}">
+        <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
+          timeZone="#{timeZone}" />
+      </h:outputText>
+    </h:column>
 
-    </nxu:dataTable>
-    </a4j:outputPanel>
-    </a4j:region>
-  </a4j:form>
-
-
+    <!--  Size -->
+    <h:column>
+      <f:facet name="header">
+        <h:panelGroup>
+          <h:outputText value="#{messages['label.content.header.size']}" />
+        </h:panelGroup>
+      </f:facet>
+      <h:outputText value="#{row.data.picture.views[1].content.length}" rendered="#{row.data.hasSchema('picture') and !empty row.data.picture.views}" />
+      <h:outputText value="#{row.data.file.content.length}" rendered="#{row.data.hasSchema('file')}" />
+    </h:column>
+  </nxu:dataTable>
 </div>
