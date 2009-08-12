@@ -8,10 +8,15 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>nuxeo-core-storage-sql-ra${artifactSuffix}</artifactId>
+  <artifactId>nuxeo-core-storage-sql-ra</artifactId>
   <packaging>rar</packaging>
   <name>Nuxeo Core SQL Storage JCA Resource Adapter</name>
   <description>Nuxeo Core: SQL Storage JCA Resource Adapter.</description>
+
+  <properties>
+    <raXml-jboss>src/main/resources/META-INF/jboss/ra.xml</raXml-jboss>
+    <raXml-j2ee>src/main/resources/META-INF/sun/ra.xml</raXml-j2ee>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -37,7 +42,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql</artifactId>
-      <version>${version}</version>
       <scope>provided</scope>
     </dependency>
 
@@ -45,7 +49,6 @@
     <dependency>
       <groupId>javax.ressource</groupId>
       <artifactId>jca-api</artifactId>
-      <version>1.5</version>
       <scope>provided</scope>
     </dependency>
 
@@ -69,48 +72,23 @@
     <dependency>
       <groupId>org.jboss.embedded</groupId>
       <artifactId>jboss-embedded-all</artifactId>
-      <version>beta3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.embedded</groupId>
       <artifactId>thirdparty-all</artifactId>
-      <version>beta3</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
-
-  <profiles>
-    <profile>
-      <id>jboss4</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <raDir>ra-jboss4</raDir>
-        <artifactSuffix></artifactSuffix>
-      </properties>
-    </profile>
-    <profile>
-      <id>javaee</id>
-      <properties>
-        <raDir>ra-javaee</raDir>
-        <!--artifactSuffix>-jee</artifactSuffix-->
-      </properties>
-    </profile>
-  </profiles>
 
   <build>
     <resources>
       <resource>
-        <directory>src/main/resources/${raDir}</directory>
-      </resource>
-      <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
         <excludes>
-          <exclude>ra-*/**</exclude>
+          <exclude>META-INF/jboss/ra.xml</exclude>
+          <exclude>META-INF/sun/ra.xml</exclude>
         </excludes>
       </resource>
     </resources>
@@ -119,17 +97,68 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-rar-plugin</artifactId>
-        <version>2.2</version>
         <configuration>
-          <rarSourceDirectory>${project.build.outputDirectory}</rarSourceDirectory> <!-- include class files -->
-          <raXmlFile>src/main/resources/${raDir}/META-INF/ra.xml</raXmlFile>
+          <rarSourceDirectory>${project.build.outputDirectory}</rarSourceDirectory> <!-- little workaround to include class files -->
           <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
+          <raXmlFile>${raXml-jboss}</raXmlFile>
         </configuration>
+        <executions>
+          <execution>
+            <id>j2ee</id>
+            <goals>
+              <goal>rar</goal>
+            </goals>
+            <configuration>
+              <raXmlFile>${raXml-j2ee}</raXmlFile>
+              <finalName>${project.build.finalName}-j2ee</finalName>
+            </configuration>
+          </execution>
+          <execution>
+            <id>jboss</id>
+            <goals>
+              <goal>rar</goal>
+            </goals>
+            <configuration>
+              <raXmlFile>${raXml-jboss}</raXmlFile>
+              <finalName>${project.build.finalName}-jboss</finalName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.build.directory}/${artifactId}-${version}-jboss.rar</file>
+                  <type>jar</type>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/${artifactId}-${version}-j2ee.rar</file>
+                  <type>rar</type>
+                  <classifier>j2ee</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/${artifactId}-${version}-j2ee.rar</file>
+                  <type>jar</type>
+                  <classifier>j2ee</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.4.3</version>
         <configuration>
           <!-- This is so that java.net.URL can load the handler for JBoss's vfs -->
           <useSystemClassLoader>true</useSystemClassLoader>

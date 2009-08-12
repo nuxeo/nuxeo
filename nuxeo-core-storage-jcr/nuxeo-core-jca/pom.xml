@@ -14,27 +14,10 @@
   <name>Nuxeo Core JCR Storage JCA Resource Adapter</name>
   <description>Nuxeo Core: JCR Storage JCA Resource Adapter.</description>
 
-  <!--
-    No more need to use profiles. Kept for script compatibility: this will define nature of default build
-  -->
-  <profiles>
-    <profile>
-      <id>jboss</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <raXml>src/main/resources/META-INF/jboss/ra.xml</raXml>
-      </properties>
-    </profile>
-    <profile>
-      <id>glassfish</id>
-      <properties>
-        <raXml>src/main/resources/META-INF/sun/ra.xml</raXml>
-      </properties>
-    </profile>
-  </profiles>
-
+  <properties>
+    <raXml-jboss>src/main/resources/META-INF/jboss/ra.xml</raXml-jboss>
+    <raXml-j2ee>src/main/resources/META-INF/sun/ra.xml</raXml-j2ee>
+  </properties>
 
   <dependencies>
     <!-- use provided scope to avoid dependencies being embedded in RAR -->
@@ -73,7 +56,6 @@
     <dependency>
       <groupId>javax.ressource</groupId>
       <artifactId>jca-api</artifactId>
-      <version>1.5</version>
       <scope>provided</scope>
     </dependency>
 
@@ -98,7 +80,7 @@
         <configuration>
           <rarSourceDirectory>${project.build.outputDirectory}</rarSourceDirectory> <!-- little workaround to include class files -->
           <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
-          <raXmlFile>${raXml}</raXmlFile> <!-- raXmlFile to use for default artifact -->
+          <raXmlFile>${raXml-jboss}</raXmlFile>
         </configuration>
         <executions>
           <execution>
@@ -107,7 +89,7 @@
               <goal>rar</goal>
             </goals>
             <configuration>
-              <raXmlFile>src/main/resources/META-INF/sun/ra.xml</raXmlFile>
+              <raXmlFile>${raXml-j2ee}</raXmlFile>
               <finalName>${project.build.finalName}-j2ee</finalName>
             </configuration>
           </execution>
@@ -117,7 +99,7 @@
               <goal>rar</goal>
             </goals>
             <configuration>
-              <raXmlFile>src/main/resources/META-INF/jboss/ra.xml</raXmlFile>
+              <raXmlFile>${raXml-jboss}</raXmlFile>
               <finalName>${project.build.finalName}-jboss</finalName>
             </configuration>
           </execution>
@@ -126,7 +108,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.1</version>
         <executions>
           <execution>
             <id>attach-artifacts</id>
