@@ -446,7 +446,18 @@ public class NavigationContextBean implements NavigationContextLocal,
         if (documentManager != null) {
             return documentManager;
         }
-        DocumentManagerBusinessDelegate documentManagerBD = (DocumentManagerBusinessDelegate) Contexts.lookupInStatefulContexts("documentManager");
+        // protect for unexpected wrong cast
+        Object supposedDocumentManager = Contexts.lookupInStatefulContexts("documentManager");
+        DocumentManagerBusinessDelegate documentManagerBD = null;
+        if (supposedDocumentManager != null) {
+            if (supposedDocumentManager instanceof DocumentManagerBusinessDelegate) {
+                documentManagerBD = (DocumentManagerBusinessDelegate) supposedDocumentManager;
+            } else {
+                log.error("Found the documentManager being "
+                        + supposedDocumentManager.getClass()
+                        + " instead of DocumentManagerBusinessDelegate. This is wrong.");
+            }
+        }
         if (documentManagerBD == null) {
             // this is the first time we select the location, create a
             // DocumentManagerBusinessDelegate instance
@@ -741,8 +752,8 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     /**
      * Alias to
-     * <code>navigateToDocument(DocumentModel doc, String viewId)</code> so
-     * that JSF EL sees no ambiguity)
+     * <code>navigateToDocument(DocumentModel doc, String viewId)</code> so that
+     * JSF EL sees no ambiguity)
      * <p>
      * The view is supposed to be set on the document type information. If such
      * a view id is not available for the type, use its default vieW.
