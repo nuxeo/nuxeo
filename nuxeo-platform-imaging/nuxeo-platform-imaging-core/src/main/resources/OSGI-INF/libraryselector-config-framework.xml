@@ -8,6 +8,10 @@
   </service>
 
   <documentation>
+    The Library Selector service's goal is to provide easy configuration of image processing backend.
+    It means you can contribute different implementation of an interface to process images. We currently provide
+    ImageMagick, Mistral and ImageJ implementations.
+    @author Laurent Doguin (ldoguin@nuxeo.com)
   </documentation>
 
   <extension-point name="LibrarySelector">
