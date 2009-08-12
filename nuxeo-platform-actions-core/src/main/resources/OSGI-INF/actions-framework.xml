@@ -44,6 +44,9 @@
       genral behaviour. A rule can hold several facets: it applies if current
       document in context has at least one of them.
 
+      - group: group like "members" to check against current user in context. A rule
+       can hold several groups: it applies if current user is in one of them.
+
       - condition: expression that can be evaluated against the current context.
       A rule can hold several conditions; it applies if at least one of the conditions
       is verified. The condition can be of the form #{somevar} or #{somevar.somemethod},

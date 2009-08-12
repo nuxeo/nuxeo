@@ -3,6 +3,9 @@
   <implementation
           class="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService" />
   <documentation>
+    The Request Controller service provides an extension point to apply specific configuration
+    to httpRequest mapping a defined URL pattern. It's possible to handle synchronization, transaction or cache
+    configuration.
     @author Thierry Delprat (td@nuxeo.com)
   </documentation>
 

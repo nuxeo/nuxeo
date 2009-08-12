@@ -5,7 +5,7 @@
       point="commandTester">
 
     <documentation>
-      Simple tester that only checks for command existance in the system path
+      Simple default tester that only checks for command existence in the system path.
     </documentation>
 
     <commandTester name="SystemPathTester"
