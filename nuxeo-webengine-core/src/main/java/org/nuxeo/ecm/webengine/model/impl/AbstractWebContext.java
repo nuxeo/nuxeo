@@ -314,21 +314,29 @@ public abstract class AbstractWebContext implements WebContext {
 
     public String getBasePath() {
         if (basePath == null) {
-            StringBuilder buf = new StringBuilder(
-                    request.getRequestURI().length());
-            String path = request.getContextPath();
-            if (path == null) {
-                path = "/nuxeo/site"; // for testing
+            String webenginePath = request.getHeader(WebContext.NUXEO_WEBENGINE_BASE_PATH);
+            if (",".equals(webenginePath)) {
+                webenginePath = "";
             }
-            buf.append(path).append(request.getServletPath());
-
-            int len = buf.length();
-            if (len > 0 && buf.charAt(len - 1) == '/') {
-                buf.setLength(len - 1);
-            }
-            basePath = buf.toString();
+            basePath = webenginePath != null ? webenginePath
+                    : getDefaultBasePath();
         }
         return basePath;
+    }
+
+    private String getDefaultBasePath() {
+        StringBuilder buf = new StringBuilder(request.getRequestURI().length());
+        String path = request.getContextPath();
+        if (path == null) {
+            path = "/nuxeo/site"; // for testing
+        }
+        buf.append(path).append(request.getServletPath());
+
+        int len = buf.length();
+        if (len > 0 && buf.charAt(len - 1) == '/') {
+            buf.setLength(len - 1);
+        }
+        return buf.toString();
     }
 
     public String getBaseURL() {
@@ -341,8 +349,9 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public StringBuilder getServerURL() {
-        StringBuilder url = new StringBuilder(VirtualHostHelper.getServerURL(request));
-        if(url.toString().endsWith("/")) {
+        StringBuilder url = new StringBuilder(
+                VirtualHostHelper.getServerURL(request));
+        if (url.toString().endsWith("/")) {
             url.deleteCharAt(url.length() - 1);
         }
         return url;
@@ -361,13 +370,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public StringBuilder getUrlPathBuffer() {
-        StringBuilder buf = new StringBuilder(request.getRequestURI().length());
-        String path = request.getContextPath();
-        if (path == null) {
-            path = "/nuxeo/site"; // for testing
-        }
-        buf.append(path).append(request.getServletPath());
-
+        StringBuilder buf = new StringBuilder(getBasePath());
         String pathInfo = request.getPathInfo();
         if (pathInfo != null) {
             buf.append(pathInfo);
@@ -617,7 +620,7 @@ public abstract class AbstractWebContext implements WebContext {
         bindings.put("Module", module);
         bindings.put("Engine", engine);
         bindings.put("basePath", getBasePath());
-        bindings.put("skinPath", module.getSkinPathPrefix());
+        bindings.put("skinPath", getSkinPathPrefix());
         bindings.put("Root", getRoot());
         if (obj != null) {
             bindings.put("This", obj);
@@ -636,6 +639,18 @@ public abstract class AbstractWebContext implements WebContext {
             } catch (Exception e) {
                 throw WebException.wrap("Failed to get a core session", e);
             }
+        }
+    }
+
+    private String getSkinPathPrefix() {
+        if(Framework.getProperty(WebEngine.SKIN_PATH_PREFIX_KEY) != null) {
+            return module.getSkinPathPrefix();
+        }
+        String webenginePath = request.getHeader(WebContext.NUXEO_WEBENGINE_BASE_PATH);
+        if (webenginePath == null) {
+            return module.getSkinPathPrefix();
+        } else {
+            return getBasePath() + "/" + module.getName() + "/skin";
         }
     }
 

@@ -190,19 +190,19 @@ public class WebEngine implements ResourceLocator {
             fm.setSharedVariable("Application", servletContextModel);
             fm.setSharedVariable("__FreeMarkerServlet.Application__", servletContextModel);
             fm.setSharedVariable("Application", servletContextModel);
-            fm.setSharedVariable("__FreeMarkerServlet.Application__", servletContextModel);            
-            fm.setSharedVariable("JspTaglibs", new TaglibFactory(servlet.getServletContext()));            
+            fm.setSharedVariable("__FreeMarkerServlet.Application__", servletContextModel);
+            fm.setSharedVariable("JspTaglibs", new TaglibFactory(servlet.getServletContext()));
         }
     }
-    
+
     public void initJspRequestSupport(GenericServlet servlet, HttpServletRequest request, HttpServletResponse response) {
         if (rendering instanceof FreemarkerEngine) {
             FreemarkerEngine fm = (FreemarkerEngine)rendering;
             HttpRequestHashModel requestModel = new HttpRequestHashModel(request, response, fm.getObjectWrapper());
             fm.setSharedVariable("__FreeMarkerServlet.Request__", requestModel);
-            fm.setSharedVariable("Request", requestModel);            
+            fm.setSharedVariable("Request", requestModel);
             fm.setSharedVariable("RequestParameters", new HttpRequestParametersHashModel(request));
-            
+
 //            HttpSessionHashModel sessionModel = null;
 //            HttpSession session = request.getSession(false);
 //            if(session != null) {
@@ -222,7 +222,7 @@ public class WebEngine implements ResourceLocator {
             //fm.setSharedVariable("Session", sessionModel);
         }
     }
-    
+
     public WebLoader getWebLoader() {
         return webLoader;
     }
@@ -314,7 +314,7 @@ public class WebEngine implements ResourceLocator {
                 /**
                  * the duplicate if is used avoid synchronizing when no needed.
                  * note that the this.moduleMgr member must be set at the end of the synchronized block
-                 * after the module manager is completely initialized  
+                 * after the module manager is completely initialized
                  */
                 if (moduleMgr == null) {
                     ModuleManager moduleMgr = new ModuleManager(this);
