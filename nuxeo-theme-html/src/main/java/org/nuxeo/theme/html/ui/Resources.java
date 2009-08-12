@@ -24,11 +24,19 @@ public class Resources {
     public static String render(Map<String, String> params) {
         StringBuilder sb = new StringBuilder();
 
-        final String resourcePath = "/nuxeo/nxthemes-lib/";
+        String resourcePath = "/nuxeo/nxthemes-lib/";
         final String themeUrl = params.get("themeUrl");
         final String path = params.get("path");
         final String basepath = params.get("basepath");
-
+        String nxthemeBasePath = basepath;
+        if(!path.startsWith("/nuxeo")) {
+            //we are behind a proxy, we let mod_rewrite do the work
+            resourcePath = path + "/nxthemes-lib/";
+        }
+        if("".equals(nxthemeBasePath)) {
+            //we are behind ap proxy, we
+            nxthemeBasePath = path;
+        }
         final ResourceManager resourceManager = Manager.getResourceManager();
 
         final StringBuilder combinedStyles = new StringBuilder();
@@ -66,7 +74,7 @@ public class Resources {
         // scripts
         sb.append(String.format(
                 "<script type=\"text/javascript\"><!--\n var nxthemesBasePath = \"%s\";\n //--></script>\n",
-                basepath));
+                nxthemeBasePath));
         if (hasScripts) {
             sb.append(String.format(
                     "<script type=\"text/javascript\" src=\"%s\"></script>",
