@@ -2,6 +2,7 @@
 <component name="org.nuxeo.ecm.platform.ui.web.htmleditor.service.HtmlEditorPluginServiceImpl">
 
   <documentation>
+    The HTMLEditorPLuginService provide extension points to configure TinyMCE in Nuxeo.
     @author Thomas Roger (troger@nuxeo.com)
   </documentation>
 
