@@ -23,6 +23,7 @@ import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.themes.ThemeManager;
 
 public class ThemeStyles {
+    private static final String DEFAULT_CSS_PATH = "/nuxeo/nxthemes-css";
 
     private static final boolean RESOLVE_PRESETS = true;
 
@@ -36,6 +37,8 @@ public class ThemeStyles {
             boolean inline) {
         String themeName = params.get("themeName");
         String path = params.get("path");
+        //if it doesn't starts with /nuxeo, we are behing a proxy => let mod_rewrite find the css
+        String cssPath = path.startsWith("/nuxeo") ? DEFAULT_CSS_PATH : path + "/nxthemes-css";
         if (inline) {
             final StringBuilder sb = new StringBuilder();
             sb.append("<style type=\"text/css\">");
@@ -55,11 +58,11 @@ public class ThemeStyles {
         }
         if (cache) {
             return String.format(
-                    "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"/nuxeo/nxthemes-css/?theme=%s&amp;path=%s\" />",
+                    "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + cssPath + "/?theme=%s&amp;path=%s\" />",
                     themeName, path);
         } else {
             return String.format(
-                    "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"/nuxeo/nxthemes-css/?theme=%s&amp;path=%s&amp;timestamp=%s\" />",
+                    "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + cssPath + "/?theme=%s&amp;path=%s&amp;timestamp=%s\" />",
                     themeName, path, new Date().getTime());
         }
     }
