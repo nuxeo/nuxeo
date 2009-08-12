@@ -29,6 +29,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
@@ -56,7 +57,7 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- * 
+ *
  */
 public class ThemeDirective implements TemplateDirectiveModel {
 
@@ -93,7 +94,7 @@ public class ThemeDirective implements TemplateDirectiveModel {
         if (themeUrl == null) {
             return;
         }
-        
+
         String rendered = "";
         try {
             rendered = renderTheme(themeUrl);
@@ -157,18 +158,17 @@ public class ThemeDirective implements TemplateDirectiveModel {
             return themeUrl;
         }
 
-        final String root = context.getModulePath();
         final ApplicationType application = (ApplicationType) Manager.getTypeRegistry().lookup(
-                TypeFamily.APPLICATION, root);
+                TypeFamily.APPLICATION, context.getModulePath(), context.getModule().getName());
 
         if (application == null) {
-            log.error("Application not set for: " + root);
+            log.error(getErrorMessage("Application not set for: ", context));
             return null;
         }
 
         final NegotiationDef negotiation = application.getNegotiation();
         if (negotiation == null) {
-            log.error("Negotiation not set for: " + root);
+            log.error(getErrorMessage("Negotiation not set for: ", context));
             return null;
         }
 
@@ -183,7 +183,7 @@ public class ThemeDirective implements TemplateDirectiveModel {
         }
 
         if (strategy == null) {
-            log.error("Negotiation strategy not set for: " + root);
+            log.error(getErrorMessage("Negotiation strategy not set for: ", context));
             return null;
         }
 
@@ -191,11 +191,15 @@ public class ThemeDirective implements TemplateDirectiveModel {
             final String spec = new WebNegotiator(strategy, context).getSpec();
             themeUrl = new URL(spec);
         } catch (NegotiationException e) {
-            log.error("Could not get negotiation information for: " + root);
+            log.error(getErrorMessage("Could not get negotiation information for: ", context));
             return null;
         }
 
         request.setAttribute("org.nuxeo.theme.url", themeUrl);
         return themeUrl;
+    }
+
+    private static String getErrorMessage(String message, WebContext context) {
+        return context.getModulePath() + "," + context.getModule().getName();
     }
 }
