@@ -61,6 +61,18 @@ public final class TypeRegistry implements Registrable {
         return registry.get(key);
     }
 
+    public Type lookup(final TypeFamily typeFamily, final String ... names) {
+        for(String name : names) {
+            String key = computeKey(typeFamily, name);
+            Type type = registry.get(key);
+            if(type != null) {
+                return type;
+            }
+        }
+        return null;
+
+    }
+
     public List<String> getTypeNames(final TypeFamily typeFamily) {
         if (!typeNames.containsKey(typeFamily)) {
             return new ArrayList<String>();
