@@ -28,8 +28,10 @@ import org.nuxeo.ecm.platform.pictures.tiles.gwt.client.model.TilingModelListene
 import org.nuxeo.ecm.platform.pictures.tiles.gwt.client.model.TilingModel.TilingModelEvent;
 import org.nuxeo.ecm.platform.pictures.tiles.gwt.client.util.Point;
 import org.nuxeo.ecm.platform.pictures.tiles.gwt.client.util.Rectangle;
+import org.nuxeo.ecm.platform.pictures.tiles.gwt.client.view.i18n.TranslationConstants;
 
 import com.allen_sauer.gwt.log.client.Log;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
@@ -90,6 +92,8 @@ public class TilingPreviewPanel extends Composite implements
     private HorizontalPanel createZoomButtons() {
         HorizontalPanel buttons = new HorizontalPanel();
 
+        TranslationConstants translationContants = GWT.create(TranslationConstants.class);
+
         Button resetZoomButton = new Button();
         resetZoomButton.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
@@ -98,7 +102,7 @@ public class TilingPreviewPanel extends Composite implements
             }
         });
         resetZoomButton.addStyleName("resetZoomButton");
-        resetZoomButton.setTitle("Default size");
+        resetZoomButton.setTitle(translationContants.zoom());
         buttons.add(resetZoomButton);
 
         Button zoomInButton = new Button();
@@ -108,7 +112,7 @@ public class TilingPreviewPanel extends Composite implements
             }
         });
         zoomInButton.addStyleName("zoomInButton");
-        zoomInButton.setTitle("Zoom in");
+        zoomInButton.setTitle(translationContants.zoomIn());
         buttons.add(zoomInButton);
 
         Button zoomOutButton = new Button();
@@ -118,7 +122,7 @@ public class TilingPreviewPanel extends Composite implements
             }
         });
         zoomOutButton.addStyleName("zoomOutButton");
-        zoomOutButton.setTitle("Zoom out");
+        zoomOutButton.setTitle(translationContants.zoomOut());
         buttons.add(zoomOutButton);
 
         return buttons;

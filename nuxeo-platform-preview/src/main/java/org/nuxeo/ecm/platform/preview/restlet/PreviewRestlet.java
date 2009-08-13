@@ -29,16 +29,23 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.restAPI.BaseStatelessNuxeoRestlet;
+import org.nuxeo.ecm.platform.ui.web.restAPI.BaseNuxeoRestlet;
+import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -49,7 +56,9 @@ import org.restlet.resource.OutputRepresentation;
  *
  * @author tiry
  */
-public class PreviewRestlet extends BaseStatelessNuxeoRestlet {
+@Name("previewRestlet")
+@Scope(ScopeType.EVENT)
+public class PreviewRestlet extends BaseNuxeoRestlet {
 
     private static final Log log = LogFactory.getLog(PreviewRestlet.class);
 
@@ -57,6 +66,11 @@ public class PreviewRestlet extends BaseStatelessNuxeoRestlet {
     protected NavigationContext navigationContext;
 
     protected CoreSession documentManager;
+
+    protected DocumentModel targetDocument;
+
+    @In(create = true)
+    protected transient LocaleSelector localeSelector;
 
     // cache duration in secondes
     //protected static int MAX_CACHE_LIFE = 60 * 10;
@@ -67,6 +81,10 @@ public class PreviewRestlet extends BaseStatelessNuxeoRestlet {
 
     @Override
     public void handle(Request req, Response res) {
+
+        // Forward locale from HttpRequest to Seam context
+        localeSelector.setLocale(getHttpRequest(req).getLocale());
+
         String repo = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
         String xpath = (String) req.getAttributes().get("fieldPath");
@@ -90,11 +108,20 @@ public class PreviewRestlet extends BaseStatelessNuxeoRestlet {
             handleError(res, "you must specify a documentId");
             return;
         }
-        Boolean init = initRepositoryAndTargetDocument(res, repo, docid);
+        try {
+            navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
+            documentManager = navigationContext.getOrCreateDocumentManager();
+            if (docid != null) {
+                targetDocument = documentManager.getDocument(new IdRef(docid));
+            }
+        } catch (ClientException e) {
+            handleError(res, e);
+            return;
+        }
 
         List<Blob> previewBlobs;
         try {
-            previewBlobs = initCachedBlob(res, xpath, init, blobPostProcessing);
+            previewBlobs = initCachedBlob(res, xpath, blobPostProcessing);
         } catch (Exception e) {
             handleError(res, "unable to get preview");
             return;
@@ -125,11 +152,7 @@ public class PreviewRestlet extends BaseStatelessNuxeoRestlet {
         }
     }
 
-    private List<Blob> initCachedBlob(Response res, String xpath, Boolean init, boolean blobPostProcessing) throws ClientException {
-        if (!init) {
-            handleError(res, "unable to init repository connection");
-            return null;
-        }
+    private List<Blob> initCachedBlob(Response res, String xpath, boolean blobPostProcessing) throws ClientException {
 
         HtmlPreviewAdapter preview = null; //getFromCache(targetDocument, xpath);
 
