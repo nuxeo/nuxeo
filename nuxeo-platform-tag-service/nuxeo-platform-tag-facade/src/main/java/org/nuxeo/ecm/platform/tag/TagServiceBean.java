@@ -68,17 +68,17 @@ public class TagServiceBean implements TagService {
 
     public DocumentModel getOrCreateTag(DocumentModel parent, String label,
             boolean privateFlag) throws ClientException {
-        return getLocalTagService().getOrCreateTag(em,parent, label, privateFlag);
+        return getOrCreateTag(parent.getCoreSession(), parent, label, privateFlag);
     }
 
     public List<WeightedTag> getPopularCloud(DocumentModel document)
             throws ClientException {
-        return getLocalTagService().getPopularCloud(em,document);
+        return getLocalTagService().getPopularCloud(em,document.getCoreSession(),document);
     }
 
     public WeightedTag getPopularTag(DocumentModel document, String tagId)
             throws ClientException {
-        return getLocalTagService().getPopularTag(em,document, tagId);
+        return getLocalTagService().getPopularTag(em,document.getCoreSession(), document, tagId);
     }
 
     public DocumentModel getRootTag(CoreSession session) throws ClientException {
@@ -87,37 +87,37 @@ public class TagServiceBean implements TagService {
 
     public List<WeightedTag> getVoteCloud(DocumentModel document)
             throws ClientException {
-        return getLocalTagService().getVoteCloud(em,document);
+        return getLocalTagService().getVoteCloud(em,document.getCoreSession(),document);
     }
 
     public WeightedTag getVoteTag(DocumentModel document, String tagId)
             throws ClientException {
-        return getLocalTagService().getVoteTag(em,document, tagId);
+        return getLocalTagService().getVoteTag(em,document.getCoreSession(),document, tagId);
     }
 
     public List<Tag> listTagsAppliedOnDocument(DocumentModel document)
             throws ClientException {
-        return getLocalTagService().listTagsAppliedOnDocument(em,document);
+        return getLocalTagService().listTagsAppliedOnDocument(em,document.getCoreSession(),document);
     }
 
     public List<Tag> listTagsAppliedOnDocumentByUser(DocumentModel document)
             throws ClientException {
-        return getLocalTagService().listTagsAppliedOnDocumentByUser(em,document);
+        return getLocalTagService().listTagsAppliedOnDocumentByUser(em,document.getCoreSession(),document);
     }
 
     public DocumentModelList listTagsInGroup(DocumentModel tag)
             throws ClientException {
-        return getLocalTagService().listTagsInGroup(em,tag);
+        return getLocalTagService().listTagsInGroup(em,tag.getCoreSession(),tag);
     }
 
     public void tagDocument(DocumentModel document, String tagId,
             boolean privateFlag) throws ClientException {
-        getLocalTagService().tagDocument(em,document, tagId, privateFlag);
+        getLocalTagService().tagDocument(em,document.getCoreSession(),document, tagId, privateFlag);
     }
 
     public void untagDocument(DocumentModel document, String tagId)
             throws ClientException {
-        getLocalTagService().untagDocument(em,document, tagId);
+        getLocalTagService().untagDocument(em,document.getCoreSession(),document, tagId);
     }
 
     public List<String> listDocumentsForTag(String tagId, String user)
@@ -133,6 +133,47 @@ public class TagServiceBean implements TagService {
     public void completeUntagDocument(DocumentModel document, String tagId)
             throws ClientException {
         getLocalTagService().completeUntagDocument(em,document, tagId);
+    }
+
+    public List<WeightedTag> getPopularCloud(CoreSession session,
+            DocumentModel document) throws ClientException {
+        return getLocalTagService().getPopularCloud(em, session, document);
+    }
+
+    public WeightedTag getPopularTag(CoreSession session,
+            DocumentModel document, String tagId) throws ClientException {
+        return getLocalTagService().getPopularTag(em, session, document, tagId);
+    }
+
+    public List<WeightedTag> getVoteCloud(CoreSession session,
+            DocumentModel document) throws ClientException {
+        return getLocalTagService().getVoteCloud(em, session, document);
+    }
+
+    public WeightedTag getVoteTag(CoreSession session, DocumentModel document,
+            String tagId) throws ClientException {
+        return getLocalTagService().getVoteTag(em, session, document, tagId);
+    }
+
+    public List<Tag> listTagsAppliedOnDocument(CoreSession session,
+            DocumentModel document) throws ClientException {
+        return getLocalTagService().listTagsAppliedOnDocument(em,session,document);
+    }
+
+    public List<Tag> listTagsAppliedOnDocumentByUser(CoreSession session,
+            DocumentModel document) throws ClientException {
+        return getLocalTagService().listTagsAppliedOnDocumentByUser(em, session, document);
+    }
+
+    public void tagDocument(CoreSession session, DocumentModel document,
+            String tagId, boolean privateFlag) throws ClientException {
+        getLocalTagService().tagDocument(em, session, document, tagId, privateFlag);
+    }
+
+    public DocumentModel getOrCreateTag(CoreSession session,
+            DocumentModel parent, String label, boolean privateFlag)
+            throws ClientException {
+        return getLocalTagService().getOrCreateTag(session, parent, label, privateFlag);
     }
 
 }

@@ -18,9 +18,13 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -29,6 +33,10 @@ import org.nuxeo.runtime.api.Framework;
 public class TestTagService extends SQLRepositoryTestCase {
 
     protected static final Log log = LogFactory.getLog(TestTagService.class);
+    private TagService tagService;
+    private DocumentModel tagRoot;
+    private DocumentModel tag1;
+    private DocumentModel file1;
 
     @Override
     public void setUp() throws Exception {
@@ -83,7 +91,40 @@ public class TestTagService extends SQLRepositoryTestCase {
                 tag);
         assertTrue("Private flag is not correctly set.",
                 ((Boolean) tag.getProperty("tag", "private")).booleanValue());
-        assertEquals(tag.getProperty("dublincore", "creator"), session.getPrincipal().getName());
+        assertEquals(tag.getProperty("dublincore", "creator"),
+                session.getPrincipal().getName());
     }
 
+    protected void createAndTagDocument() throws ClientException {
+        tagService = getTagService();
+        tagRoot = tagService.getRootTag(session);
+        assertNotNull(tagRoot);
+        tag1 = tagService.getOrCreateTag(tagRoot, "tag1", true);
+        file1 = session.createDocumentModel("/", "0006",
+        "File");
+        file1.setPropertyValue("dc:title", "File1");
+        file1 = session.createDocument(file1);
+        file1 = session.saveDocument(file1);
+        session.save();
+        tagService.tagDocument(session, file1, tag1.getId(), false);
+    }
+    public void testDetachedDocumentFailure() throws ClientException {
+        createAndTagDocument();
+        ((DocumentModelImpl)file1).detach(true);
+        try {
+            tagService.listTagsAppliedOnDocument(file1);
+        } catch (ClientException e) {
+            assertEquals("No session available", e.getMessage());
+            return;
+        }
+        fail("No exception throwed");
+    }
+    
+    public void testDetachedDocumentList() throws ClientException {
+        createAndTagDocument();
+        ((DocumentModelImpl)file1).detach(true);
+        List<Tag> tags = tagService.listTagsAppliedOnDocument(session,file1);
+        assertNotNull(tags);
+        assertEquals(1, tags.size());
+    }
 }
