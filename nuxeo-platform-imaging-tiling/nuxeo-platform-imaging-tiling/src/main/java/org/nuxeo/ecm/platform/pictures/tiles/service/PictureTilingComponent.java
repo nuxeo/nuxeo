@@ -45,12 +45,12 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- *
+ * 
  * Runtime component that expose the PictureTilingService interface Also exposes
  * the configuration Extension Point
- *
+ * 
  * @author tiry
- *
+ * 
  */
 public class PictureTilingComponent extends DefaultComponent implements
         PictureTilingService {
@@ -126,15 +126,15 @@ public class PictureTilingComponent extends DefaultComponent implements
 
         if (workingDirPath == null || "".equals(workingDirPath)) {
             workingDirPath = getEnvValue("WorkingDirPath",
-                    System.getProperty("java.io.tmpdir"));
-            if (!new File(workingDirPath).exists()) {
-                // if the folder doesn't exist, fall back on the default one
-                workingDirPath = System.getProperty("java.io.tmpdir");
+                    System.getProperty("java.io.tmpdir") + "/nuxeo-tiling-cache");
+            File workingDir = new File(workingDirPath);
+            if (!workingDir.exists()) {
+                workingDir.mkdir();
             }
         }
 
         if (!workingDirPath.endsWith("/")) {
-            workingDirPath = workingDirPath + "/";
+            workingDirPath += "/";
         }
         log.debug("Setting working dirPath to" + workingDirPath);
         return workingDirPath;
@@ -187,7 +187,8 @@ public class PictureTilingComponent extends DefaultComponent implements
                 PictureTilesImpl.LAST_MODIFICATION_DATE_KEY));
         return computeTiles(existingTiles.getSourceImageInfo(), outputDirPath,
                 existingTiles.getTilesWidth(), existingTiles.getTilesHeight(),
-                existingTiles.getMaxTiles(), xCenter, yCenter, lastModificationTime, false);
+                existingTiles.getMaxTiles(), xCenter, yCenter,
+                lastModificationTime, false);
     }
 
     @Deprecated
@@ -267,13 +268,29 @@ public class PictureTilingComponent extends DefaultComponent implements
 
             if (!inputFile.exists()) {
                 try {
-                    transferBlob(blob, inputFile);
+                    // create the empty file ASAP to avoid concurrent transfer
+                    // and conversions
+                    if (inputFile.createNewFile()) {
+                        transferBlob(blob, inputFile);
+                    }
                 } catch (Exception e) {
                     log.error("Unable to transfert blob", e);
                     throw new ClientException(
                             "Unable to transfer blob to temp file", e);
                 }
                 inputFile = new File(inputFilePath);
+            } else {
+                while (System.currentTimeMillis() - inputFile.lastModified() < 200) {
+                    try {
+                        log.debug("Waiting concurrent convert / dump");
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        throw new ClientException(
+                                "Error while waiting for another converting"
+                                        + " on the same resource", e);
+                    }
+                }
+
             }
             try {
                 cacheInfo = new PictureTilingCacheInfo(cacheKey, wdirPath,
@@ -352,7 +369,6 @@ public class PictureTilingComponent extends DefaultComponent implements
 
     protected void transferAndConvert(Blob blob, File file) throws Exception {
         File tmpFile = new File(file.getAbsolutePath() + ".tmp");
-
         blob.transferTo(tmpFile);
         ImageConverter.convert(tmpFile.getAbsolutePath(),
                 file.getAbsolutePath());

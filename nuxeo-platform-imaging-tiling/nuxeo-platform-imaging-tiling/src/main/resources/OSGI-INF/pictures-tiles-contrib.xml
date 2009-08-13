@@ -35,6 +35,12 @@
     point="imagesToConvert">
     <imageToConvert extension="bmp" mimeType="image/bmp"/>
     <imageToConvert extension="gif" mimeType="image/gif"/>
+    
+    <!-- the following are not strictly required but the results is less buggy and faster
+         when the source image is converted to JPEG first -->
+    <imageToConvert extension="tif" mimeType="image/tiff" />
+	<imageToConvert extension="tiff" mimeType="image/tiff" />
+    <imageToConvert extension="png" mimeType="image/png" />
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent"
