@@ -31,6 +31,9 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  * <p>As general rule, the flag private / public is always applied. It could be
  * ignored in the future: just simplify the queries.
  * The service is using super user, allowing anyone see / creates tags.
+ * The service retrieve the user name from the attached document session.
+ * If you're using a detached document, you should provide the core session yourself
+ * providing it as parameter.
  *
  * @author rux
  */
@@ -82,6 +85,7 @@ public interface TagService {
      * @throws ClientException
      */
     List<Tag> listTagsAppliedOnDocument(DocumentModel document) throws ClientException;
+    List<Tag> listTagsAppliedOnDocument(CoreSession session, DocumentModel document) throws ClientException;
 
     /**
      * @param docId
@@ -100,6 +104,7 @@ public interface TagService {
      * @throws ClientException
      */
     List<Tag> listTagsAppliedOnDocumentByUser(DocumentModel document) throws ClientException;
+    List<Tag> listTagsAppliedOnDocumentByUser(CoreSession session, DocumentModel document) throws ClientException;
 
     /**
      * Gets and creates if needed a tag in the provided tag group (or in tag root).
@@ -113,19 +118,21 @@ public interface TagService {
      * @throws ClientException
      */
     DocumentModel getOrCreateTag(DocumentModel parent, String label, boolean privateFlag) throws ClientException;
+    DocumentModel getOrCreateTag(CoreSession session, DocumentModel parent, String label, boolean privateFlag) throws ClientException;
 
     /**
      * Retrieves the "vote" weight of tag.
      *
      * More about Vote Tag Cloud {@link WeightedTag}.
      * The private taggings are not selected, but the ones owned by the current principal.
-     *
+     * 
      * @param document the tagged document
      * @param tagId
      * @return
      * @throws ClientException
      */
     WeightedTag getVoteTag(DocumentModel document, String tagId) throws ClientException;
+    WeightedTag getVoteTag(CoreSession session, DocumentModel document, String tagId) throws ClientException;
 
     /**
      * Retrieves the "popular" weight of tag.
@@ -139,6 +146,7 @@ public interface TagService {
      * @throws ClientException
      */
     WeightedTag getPopularTag(DocumentModel document, String tagId) throws ClientException;
+    WeightedTag getPopularTag(CoreSession session, DocumentModel document, String tagId) throws ClientException;
 
     /**
      * Retrieves the "vote" tag cloud. More about Vote Tag Cloud
@@ -150,6 +158,7 @@ public interface TagService {
      * @throws ClientException
      */
     List<WeightedTag> getVoteCloud(DocumentModel document) throws ClientException;
+    List<WeightedTag> getVoteCloud(CoreSession session, DocumentModel document) throws ClientException;
 
     /**
      * Retrieves the "popular" tag cloud.
@@ -163,6 +172,7 @@ public interface TagService {
      * @throws ClientException
      */
     List<WeightedTag> getPopularCloud(DocumentModel document) throws ClientException;
+    List<WeightedTag> getPopularCloud(CoreSession session, DocumentModel document) throws ClientException;
 
     /**
      * Tags a document.
@@ -176,7 +186,8 @@ public interface TagService {
      * @throws ClientException
      */
     void tagDocument(DocumentModel document, String tagId, boolean privateFlag) throws ClientException;
-
+    void tagDocument(CoreSession session, DocumentModel document, String tagId, boolean privateFlag) throws ClientException;
+    
     /**
      * Removes a tagging from a document.
      *
