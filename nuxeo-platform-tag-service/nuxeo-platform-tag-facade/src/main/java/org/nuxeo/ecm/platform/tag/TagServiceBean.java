@@ -173,7 +173,7 @@ public class TagServiceBean implements TagService {
     public DocumentModel getOrCreateTag(CoreSession session,
             DocumentModel parent, String label, boolean privateFlag)
             throws ClientException {
-        return getLocalTagService().getOrCreateTag(session, parent, label, privateFlag);
+        return getLocalTagService().getOrCreateTag(em, session, parent, label, privateFlag);
     }
 
 }
