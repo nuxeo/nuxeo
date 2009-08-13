@@ -14,7 +14,7 @@
       <a4j:form>
         <a4j:commandLink id="showListLink"
           action="#{webActions.showListLink}"
-          reRender="filterResultTable, selectionView">
+          reRender="filterResultTable">
           <h:graphicImage id="showList" url="/icons/list_view.png"
             rendered="#{!webActions.showList}" />
           <h:graphicImage id="showListSelected"
@@ -24,7 +24,7 @@
           
         <a4j:commandLink id="showThumbnailLink"
           action="#{webActions.showThumbnailLink}"
-          reRender="filterResultTable, selectionView">
+          reRender="filterResultTable">
           <h:graphicImage id="showThumbnail" url="/icons/thumbnail_view.png"
             rendered="#{!webActions.showThumbnail}" />
           <h:graphicImage id="showThumbnailSelected"

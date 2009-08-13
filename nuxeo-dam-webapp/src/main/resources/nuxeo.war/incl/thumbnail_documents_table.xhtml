@@ -13,17 +13,17 @@
     id="dataTable"
     value="#{documents.rows}"
     var="row"  
-    columns="3"
+    columns="4"
     rendered="#{documents.rowCount > 0}">
       
       <rich:panel><div class="popupTarget" docRef="#{row.data.ref}">
         <h:panelGrid>
           <nxh:graphicImage id="theImage"
             url="#{nxd:fileUrl('downloadPicture', row.data, 'Medium:content', row.data.dublincore.modified)}?conversationId=#{conversation.id}"
-            style="max-height: 100px;"
+            style="max-height: 80px;"
             rendered="#{row.data.hasSchema('picture')}"/>
           <nxh:graphicImage value="/img/file_preview.png"
-            style="max-height: 100px;"
+            style="max-height: 80px;"
             rendered="#{!row.data.hasSchema('picture')}"/> 
           <h:panelGroup>           
             <h:selectBooleanCheckbox

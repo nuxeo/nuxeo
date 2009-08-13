@@ -9,14 +9,7 @@
 
   <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
 
-    <nxdir:chainSelect id="#{widget.id}_viewselect" size="2" value="#{field_0}"
-      displayValueOnly="true">
-      <nxdir:chainSelectListbox index="0" size="0" directoryName="continent"
-        localize="true" id="#{widget.id}_continent" />
-      <nxdir:chainSelectListbox size="0" directoryName="country" index="1"
-        localize="true" id="#{widget.id}_country" />
-      <nxdir:chainSelectStatus display="value" id="#{widget.id}_status" />
-    </nxdir:chainSelect>
+    <h:outputText value="#{documentActions.currentSelectionCoverage}" />
 
   </c:if>
 
