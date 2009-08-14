@@ -30,15 +30,15 @@
               value="#{row.selected}"
               onclick="selectDataTableRow('#{row.data.ref}', '#{providerName}', this)">
             </h:selectBooleanCheckbox>
-            <span id="title_#{row.data.ref}">
-              <a4j:commandLink id="titleLink" action="#{documentActions.setCurrentSelection(row.data)}"
-                reRender="documentsList, selectionView" >
+            <span id="title_#{row.data.ref}" class="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
+              <h:commandLink id="titleLink" action="#{documentActions.setCurrentSelection(row.data)}">
                 <nxh:outputText value="#{nxd:titleOrId(row.data)}"
                   title="#{row.data.dc.description}"
                   rendered="#{!empty row.data.dc.description}"/>
                 <nxh:outputText value="#{nxd:titleOrId(row.data)}"
                   rendered="#{empty row.data.dc.description}"/>
-              </a4j:commandLink>
+                <a4j:support event="onclick" reRender="documentsList, selectionView" />
+              </h:commandLink>
             </span>
           </h:panelGroup>
           <h:panelGroup>  

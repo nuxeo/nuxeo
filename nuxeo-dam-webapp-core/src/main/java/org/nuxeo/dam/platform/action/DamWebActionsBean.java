@@ -79,7 +79,6 @@ public class DamWebActionsBean extends WebActionsBean {
     @Override
     protected ActionContext createActionContext() {
         ActionContext ctx = new ActionContext();
-        // ctx.setCurrentDocument(navigationContext.getCurrentDocument());
         ctx.setDocumentManager(documentManager);
         ctx.put("SeamContext", new SeamContextHelper());
         ctx.setCurrentPrincipal(currentNuxeoPrincipal);
@@ -87,7 +86,6 @@ public class DamWebActionsBean extends WebActionsBean {
     }
 
     public void showListLink() {
-        documentActions.setCurrentSelection(null);
         if (showList) {
             return;
         }
@@ -96,7 +94,6 @@ public class DamWebActionsBean extends WebActionsBean {
     }
 
     public void showThumbnailLink() {
-        documentActions.setCurrentSelection(null);
         if (showThumbnail) {
             return;
         }

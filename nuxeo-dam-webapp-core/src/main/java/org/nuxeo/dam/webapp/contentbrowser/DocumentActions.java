@@ -23,8 +23,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
-import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -34,7 +32,6 @@ import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
-import org.nuxeo.runtime.api.Framework;
 
 @Name("documentActions")
 @Scope(ScopeType.CONVERSATION)
@@ -59,8 +56,6 @@ public class DocumentActions implements Serializable {
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
 
-    protected static DirectoryService directoryService;
-
     /**
      * Current selected asset
      */
@@ -73,11 +68,6 @@ public class DocumentActions implements Serializable {
     protected String currentSelectionLink;
 
     protected String displayMode = "view";
-
-    /**
-     * The coverage of the current asset
-     */
-    protected String currentSelectionCoverage;
 
     @WebRemote
     public String processSelectRow(String docRef, String providerName,
@@ -161,13 +151,7 @@ public class DocumentActions implements Serializable {
         displayMode = "view";
 
         currentSelection = selection;
-        try {
-            updateCurrentSelectionCoverage();
-        } catch (Exception e) {
-            log.debug(
-                    "Problems setting the coverage information for the current selected document",
-                    e);
-        }
+
         // Set first tab as current tab
         List<Action> tabList = webActions.getTabsList();
         if (tabList != null && tabList.size() > 0) {
@@ -212,7 +196,7 @@ public class DocumentActions implements Serializable {
         if (currentSelection != null) {
             documentManager.saveDocument(currentSelection);
             documentManager.save();
-            updateCurrentSelectionCoverage();
+
             // Switch to view mode
             displayMode = "view";
         }
@@ -248,70 +232,6 @@ public class DocumentActions implements Serializable {
             context.responseComplete();
         }
         return null;
-    }
-
-    /**
-     * Utility method used to return the details about the coverage of a
-     * document model.
-     *
-     * @return
-     * @throws ClientException
-     */
-    protected void updateCurrentSelectionCoverage() throws ClientException {
-        String property = (String) currentSelection.getPropertyValue("dublincore:coverage");
-        if (property == null || "".equals(property)) {
-            setCurrentSelectionCoverage(null);
-            return;
-        }
-        String[] coverageDetails = property.split("/");
-        Session dirSession = null;
-        StringBuilder coverage = null;
-        try {
-            dirSession = getDirectoryService().open("continent");
-
-            coverage = new StringBuilder(
-                    resourcesAccessor.getMessages().get(
-                            (String) dirSession.getEntry(coverageDetails[0]).getPropertyValue(
-                                    "vocabulary:label"))).append("/");
-            dirSession.close();
-
-            dirSession = getDirectoryService().open("country");
-
-            coverage.append(resourcesAccessor.getMessages().get(
-                    (String) dirSession.getEntry(coverageDetails[1]).getPropertyValue(
-                            "xvocabulary:label")));
-        } finally {
-            if (dirSession != null) {
-                dirSession.close();
-            }
-
-        }
-        setCurrentSelectionCoverage(coverage.toString());
-    }
-
-    protected static DirectoryService getDirectoryService() {
-        if (directoryService == null) {
-            DirectoryService dirService = Framework.getLocalService(DirectoryService.class);
-            if (dirService == null) {
-                try {
-                    dirService = Framework.getService(DirectoryService.class);
-                } catch (Exception e) {
-                    log.error("Can't find Directory Service", e);
-                }
-            } else {
-                return dirService; // don't cache local service pointer
-            }
-            directoryService = dirService;
-        }
-        return directoryService;
-    }
-
-    public String getCurrentSelectionCoverage() {
-        return currentSelectionCoverage;
-    }
-
-    public void setCurrentSelectionCoverage(String currentSelectionCoverage) {
-        this.currentSelectionCoverage = currentSelectionCoverage;
     }
 
 }
