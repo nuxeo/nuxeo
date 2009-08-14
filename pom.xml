@@ -585,7 +585,7 @@
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate</artifactId>
-        <version>3.2.0.ga-NXP-3881</version>
+        <version>3.2.0.ga</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
