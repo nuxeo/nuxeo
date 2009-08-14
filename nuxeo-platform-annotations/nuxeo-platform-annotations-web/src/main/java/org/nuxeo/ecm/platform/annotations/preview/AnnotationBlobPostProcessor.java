@@ -31,7 +31,7 @@ import org.nuxeo.ecm.platform.preview.adapter.BlobPostProcessor;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
+ * 
  */
 public class AnnotationBlobPostProcessor implements BlobPostProcessor {
 
@@ -96,7 +96,8 @@ public class AnnotationBlobPostProcessor implements BlobPostProcessor {
             sb.append(m.group(1));
             sb.append(m.group(2));
             if (localeSelector != null) {
-                sb.append(String.format(GWT_LOCALE, localeSelector.getLocaleString()));
+                sb.append(String.format(GWT_LOCALE,
+                        localeSelector.getLocaleString()));
             }
             sb.append(INTERNET_EXPLORER_RANGE_JS);
             sb.append(ANNOTATION_MODULE_JS);
@@ -108,7 +109,8 @@ public class AnnotationBlobPostProcessor implements BlobPostProcessor {
                 sb.append(m.group(2));
                 sb.append("<head>");
                 if (localeSelector != null) {
-                    sb.append(String.format(GWT_LOCALE, localeSelector.getLocaleString()));
+                    sb.append(String.format(GWT_LOCALE,
+                            localeSelector.getLocaleString()));
                 }
                 sb.append(INTERNET_EXPLORER_RANGE_JS);
                 sb.append(ANNOTATION_MODULE_JS);
