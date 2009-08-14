@@ -3,12 +3,14 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
   
-  
-  <nxu:dataList var="tab" value="#{tabsActionsList}">
-    <a4j:commandLink styleClass="#{nxu:test(webActions.currentTabAction == tab, 'selected', '')}" action="#{documentActions.setCurrentTabAction(tab)}" reRender="selectionView" >
-      <h:outputText value="#{messages[tab.label]}" />
-    </a4j:commandLink>
-  </nxu:dataList>
+  <h:form>
+    <nxu:dataList var="tab" value="#{tabsActionsList}">
+      <h:commandLink styleClass="#{nxu:test(webActions.currentTabAction == tab, 'selected', '')}" action="#{documentActions.setCurrentTabAction(tab)}" >    
+        <h:outputText value="#{messages[tab.label]}" />      
+        <a4j:support event="onclick" reRender="selectionView" ></a4j:support>
+      </h:commandLink>
+    </nxu:dataList>
+  </h:form>
   <div style="clear:both;"/>
   
 </div>
