@@ -37,7 +37,6 @@
                   rendered="#{!empty row.data.dc.description}"/>
                 <nxh:outputText value="#{nxd:titleOrId(row.data)}"
                   rendered="#{empty row.data.dc.description}"/>
-                <a4j:support event="onclick" reRender="documentsList, selectionView" />
               </h:commandLink>
             </span>
           </h:panelGroup>
