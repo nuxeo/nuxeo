@@ -56,6 +56,12 @@ public class AnnotationBlobPostProcessor implements BlobPostProcessor {
                     | Pattern.DOTALL);
 
     public Blob process(Blob blob) {
+        String mimetype = blob.getMimeType();
+        if (mimetype == null || !mimetype.startsWith("text/")) {
+            // blob does not carry HTML payload hence there is no need to try to
+            // inject HTML metadata
+            return blob;
+        }
         try {
             String encoding = null;
             if (blob.getEncoding() == null) {
