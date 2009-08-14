@@ -259,7 +259,7 @@ public class DocumentActions implements Serializable {
      */
     protected void updateCurrentSelectionCoverage() throws ClientException {
         String property = (String) currentSelection.getPropertyValue("dublincore:coverage");
-        if (property == null) {
+        if (property == null || "".equals(property)) {
             setCurrentSelectionCoverage(null);
             return;
         }
