@@ -17,7 +17,7 @@
     rendered="#{documents.rowCount > 0}">
 
     <!-- id and selection -->
-    <nxu:column styleClass="iconColumn">
+    <nxu:column styleClass="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
       <f:facet name="header">
         <h:selectBooleanCheckbox rendered="true"
             onclick="selectDataTablePage('#{documents.name}', '#{providerName}', this.checked)" title="#{messages['tooltip.content.select.all']}">
@@ -30,7 +30,7 @@
     </nxu:column>
 
     <!-- Icon + Type -->
-    <nxu:column styleClass="iconColumn">
+    <nxu:column styleClass="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
        <div id="docRefTarget:#{row.data.ref}">
         <div id="docRef:#{row.data.ref}" class="cell popupTarget" docRef="#{row.data.ref}">
           <nxu:graphicImage
@@ -76,7 +76,7 @@
     </nxu:column>
 
     <!--  Author -->
-    <h:column>
+    <nxu:column styleClass="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
       <f:facet name="header">
         <h:panelGroup>
         <a4j:commandLink action="#{sortActions.repeatSearch}"
@@ -97,10 +97,10 @@
         </h:panelGroup>
       </f:facet>
       <h:outputText value="#{nxu:userFullName(row.data.dam_common.author)}" />
-    </h:column>
+    </nxu:column>
 
     <!-- import date -->
-    <h:column>
+    <nxu:column styleClass="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
       <f:facet name="header">
         <h:panelGroup>
         <a4j:commandLink action="#{sortActions.repeatSearch}"
@@ -124,10 +124,10 @@
         <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
           timeZone="#{timeZone}" />
       </h:outputText>
-    </h:column>
+    </nxu:column>
 
     <!--  Size -->
-    <h:column>
+    <nxu:column styleClass="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
       <f:facet name="header">
         <h:panelGroup>
           <h:outputText value="#{messages['label.content.header.size']}" />
@@ -135,6 +135,6 @@
       </f:facet>
       <h:outputText value="#{row.data.picture.views[1].content.length}" rendered="#{row.data.hasSchema('picture') and !empty row.data.picture.views}" />
       <h:outputText value="#{row.data.file.content.length}" rendered="#{row.data.hasSchema('file')}" />
-    </h:column>
+    </nxu:column>
   </nxu:dataTable>
 </div>
