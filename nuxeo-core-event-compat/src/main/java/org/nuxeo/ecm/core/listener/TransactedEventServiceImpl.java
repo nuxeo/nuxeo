@@ -28,6 +28,9 @@ import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.operation.Operation;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.EventTransactionListener;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This class handle the difference between operations (used by apogee) and core events.
@@ -43,7 +46,7 @@ import org.nuxeo.ecm.core.api.operation.Operation;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class TransactedEventServiceImpl implements TransactedEventService {
+public class TransactedEventServiceImpl implements TransactedEventService, EventTransactionListener {
 
     private static final Log log = LogFactory.getLog(TransactedEventServiceImpl.class);
 
@@ -59,6 +62,12 @@ public class TransactedEventServiceImpl implements TransactedEventService {
     protected final ListenerList saveListeners = new ListenerList();
 
 
+    public TransactedEventServiceImpl() {
+        EventService es = Framework.getLocalService(EventService.class);
+        es.addTransactionListener(this);
+    }
+    
+    
     public void addListener(TransactedListener listener) {
         if (listener instanceof OnSaveListener) {
             saveListeners.add(listener);
@@ -127,12 +136,13 @@ public class TransactedEventServiceImpl implements TransactedEventService {
         events.set(new EventList(true));
     }
 
-    public void transactionAboutToCommit() {
-        fireAboutToCommitEvents(events.get());
-    }
+//    public void transactionAboutToCommit() {
+//        fireAboutToCommitEvents(events.get());
+//    }
 
     public void transactionCommitted() {
         try {
+            fireAboutToCommitEvents(events.get()); // about to commit was merged with commit
             fireCommitEvents(events.get());
         } finally {
             events.remove();
@@ -233,4 +243,6 @@ public class TransactedEventServiceImpl implements TransactedEventService {
         }
     }
 
+    
+    
 }

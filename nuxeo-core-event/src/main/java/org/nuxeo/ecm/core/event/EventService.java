@@ -170,5 +170,16 @@ public interface EventService extends EventProducer {
      * Waits until all asynchronous tasks are finished.
      */
     void waitForAsyncCompletion();
+    
+    /**
+     * Add an event transaction listener 
+     * @param listener
+     */
+    void addTransactionListener(EventTransactionListener listener);
 
+    /**
+     * Remove the given event transaction listener
+     * @param listener
+     */
+    void removeTransactionListener(EventTransactionListener listener);
 }

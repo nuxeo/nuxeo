@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 
 import org.hibernate.exception.SQLExceptionConverter;
 import org.nuxeo.common.utils.StringUtils;
@@ -47,6 +48,10 @@ public abstract class Dialect {
     protected final org.hibernate.dialect.Dialect dialect;
 
     protected final boolean storesUpperCaseIdentifiers;
+
+    protected MessageDigest digest;
+
+    protected static final Random rand = new Random(System.currentTimeMillis());
 
     /**
      * Creates a {@code Dialect} by connecting to the datasource to check what
@@ -88,10 +93,16 @@ public abstract class Dialect {
     public Dialect(org.hibernate.dialect.Dialect dialect,
             DatabaseMetaData metadata) throws StorageException {
         this.dialect = dialect;
+
         try {
+
             storesUpperCaseIdentifiers = metadata.storesUpperCaseIdentifiers();
+            digest = MessageDigest.getInstance("MD5");
+
         } catch (SQLException e) {
-            throw new StorageException(e);
+            throw new StorageException("An error has occured.", e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new StorageException("An error has occured.", e);
         }
     }
 
@@ -120,19 +131,25 @@ public abstract class Dialect {
     }
 
     protected String makeName(String prefix, String string, String suffix) {
+        StringBuilder sb = new StringBuilder(prefix.length() + string.length()
+                + suffix.length());
+
         if (prefix.length() + string.length() + suffix.length() > getMaxNameSize()) {
-            MessageDigest digest;
-            try {
-                digest = MessageDigest.getInstance("MD5");
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e.toString(), e);
-            }
-            byte[] bytes = string.getBytes();
+
+            byte[] bytes = (prefix + string).getBytes();
             digest.update(bytes, 0, bytes.length);
-            string = toHexString(digest.digest()).substring(0, 8);
+
+            sb.append("O");
+            sb.append(toHexString(digest.digest()).substring(0, 16));
+            sb.append(Math.abs(rand.nextInt() % 999));
         }
-        suffix = storesUpperCaseIdentifiers() ? suffix : suffix.toLowerCase();
-        return prefix + string + suffix;
+
+        else {
+            sb.append(prefix).append(string);
+        }
+
+        sb.append(storesUpperCaseIdentifiers() ? suffix : suffix.toLowerCase());
+        return sb.toString();
     }
 
     protected static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
