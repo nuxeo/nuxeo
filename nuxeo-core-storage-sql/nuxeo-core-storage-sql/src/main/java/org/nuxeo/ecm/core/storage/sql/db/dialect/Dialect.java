@@ -27,7 +27,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 
 import org.hibernate.exception.SQLExceptionConverter;
 import org.nuxeo.common.utils.StringUtils;
@@ -50,8 +49,6 @@ public abstract class Dialect {
     protected final boolean storesUpperCaseIdentifiers;
 
     protected MessageDigest digest;
-
-    protected static final Random rand = new Random(System.currentTimeMillis());
 
     /**
      * Creates a {@code Dialect} by connecting to the datasource to check what
@@ -131,17 +128,22 @@ public abstract class Dialect {
     }
 
     protected String makeName(String prefix, String string, String suffix) {
-        StringBuilder sb = new StringBuilder(prefix.length() + string.length()
-                + suffix.length());
+        int length = prefix.length() + string.length() + suffix.length();
 
-        if (prefix.length() + string.length() + suffix.length() > getMaxNameSize()) {
+        StringBuilder sb = new StringBuilder(length);
+
+        if (length > getMaxNameSize()) {
 
             byte[] bytes = (prefix + string).getBytes();
             digest.update(bytes, 0, bytes.length);
 
             sb.append("O");
+            sb.append('_');
+            sb.append(prefix.charAt(0));
+            sb.append('_');
+            sb.append(string.charAt(0));
+            sb.append('_');
             sb.append(toHexString(digest.digest()).substring(0, 16));
-            sb.append(Math.abs(rand.nextInt() % 999));
         }
 
         else {
