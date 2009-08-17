@@ -130,6 +130,10 @@
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
     </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
   </dependencies>
 
   <profiles>
