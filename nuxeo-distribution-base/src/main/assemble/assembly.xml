@@ -34,6 +34,7 @@
       <artifact group="commons-io" name="commons-io" />
       <artifact name="jbossall-client" />
       <artifact group="log4j" name="log4j" />
+      <artifact group="com.sun.xml" name="xsom" />
     </includes>
   </artifactSet>
 
