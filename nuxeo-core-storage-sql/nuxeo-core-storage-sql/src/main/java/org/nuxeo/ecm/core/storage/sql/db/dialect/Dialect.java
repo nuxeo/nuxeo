@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.core.storage.sql.db.dialect;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -47,8 +46,6 @@ public abstract class Dialect {
     protected final org.hibernate.dialect.Dialect dialect;
 
     protected final boolean storesUpperCaseIdentifiers;
-
-    protected MessageDigest digest;
 
     /**
      * Creates a {@code Dialect} by connecting to the datasource to check what
@@ -94,11 +91,8 @@ public abstract class Dialect {
         try {
 
             storesUpperCaseIdentifiers = metadata.storesUpperCaseIdentifiers();
-            digest = MessageDigest.getInstance("MD5");
 
         } catch (SQLException e) {
-            throw new StorageException("An error has occured.", e);
-        } catch (NoSuchAlgorithmException e) {
             throw new StorageException("An error has occured.", e);
         }
     }
@@ -130,33 +124,43 @@ public abstract class Dialect {
     protected String makeName(String prefix, String string, String suffix) {
         int length = prefix.length() + string.length() + suffix.length();
 
-        StringBuilder sb = new StringBuilder(length);
+        try {
 
-        if (length > getMaxNameSize()) {
+            StringBuilder sb = new StringBuilder(length);
 
-            byte[] bytes = (prefix + string).getBytes();
-            digest.update(bytes, 0, bytes.length);
+            if (length > getMaxNameSize()) {
 
-            sb.append("O");
-            sb.append('_');
-            sb.append(prefix.charAt(0));
-            sb.append('_');
-            sb.append(string.charAt(0));
-            sb.append('_');
-            sb.append(toHexString(digest.digest()).substring(0, 16));
+                MessageDigest digest = MessageDigest.getInstance("MD5");
+
+                byte[] bytes = (prefix + string).getBytes();
+                digest.update(bytes, 0, bytes.length);
+
+                sb.append("O");
+                sb.append('_');
+                sb.append(prefix.charAt(0));
+                sb.append('_');
+                sb.append(string.charAt(0));
+                sb.append('_');
+                sb.append(toHexString(digest.digest()).substring(0, 16));
+            }
+
+            else {
+                sb.append(prefix).append(string);
+            }
+
+            sb.append(storesUpperCaseIdentifiers() ? suffix
+                    : suffix.toLowerCase());
+            return sb.toString();
         }
 
-        else {
-            sb.append(prefix).append(string);
+        catch (Exception e) {
+            throw new RuntimeException("Error", e);
         }
-
-        sb.append(storesUpperCaseIdentifiers() ? suffix : suffix.toLowerCase());
-        return sb.toString();
     }
 
     protected static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
 
-    protected static String toHexString(byte[] bytes) {
+    public static String toHexString(byte[] bytes) {
         StringBuilder buf = new StringBuilder(2 * bytes.length);
         for (byte b : bytes) {
             buf.append(HEX_DIGITS[(0xF0 & b) >> 4]);
