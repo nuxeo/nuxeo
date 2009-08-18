@@ -423,7 +423,9 @@ public class DocumentActionsBean extends InputController implements
 
     public String saveDocument(DocumentModel newDocument)
             throws ClientException {
-        //SUPNXP-1141 Document has already been created if it has an id
+        // Document has already been created if it has an id.
+        // This will avoid creation of many documents if user hit create button
+        // too many times.
         if (newDocument.getId() != null) {
             log.debug("Document " + newDocument.getName() + " already created");
             return navigationContext.navigateToDocument(newDocument,
