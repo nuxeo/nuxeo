@@ -100,7 +100,7 @@
             </goals>
             <configuration>
               <raXmlFile>${raXml-jboss}</raXmlFile>
-              <finalName>${project.build.finalName}-jboss</finalName>
+              <finalName>${project.build.finalName}</finalName>
             </configuration>
           </execution>
         </executions>
@@ -118,7 +118,7 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>${project.build.directory}/${artifactId}-${version}-jboss.rar</file>
+                  <file>${project.build.directory}/${artifactId}-${version}.rar</file>
                   <type>jar</type>
                 </artifact>
                 <artifact>
