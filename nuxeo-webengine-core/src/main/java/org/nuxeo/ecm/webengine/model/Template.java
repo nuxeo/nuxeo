@@ -108,8 +108,9 @@ public class Template {
     }
 
     public void render(OutputStream out) {
-        Writer w = new OutputStreamWriter(out);
+        Writer w;
         try {
+            w = new OutputStreamWriter(out);
             ctx.render(script(), args, w);
         } catch (Exception e) {
             throw WebException.wrap("Failed to write response", e);
