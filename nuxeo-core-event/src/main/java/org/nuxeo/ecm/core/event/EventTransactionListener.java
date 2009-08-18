@@ -13,36 +13,19 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
-package org.nuxeo.ecm.core.listener;
-
-import org.nuxeo.ecm.core.api.event.CoreEvent;
-import org.nuxeo.ecm.core.api.operation.Operation;
+package org.nuxeo.ecm.core.event;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
-public interface TransactedEventService {
+public interface EventTransactionListener {
 
-    void addListener(TransactedListener listener);
-
-    void removeListener(TransactedListener listener);
-
-    void transactionStarted();
-
-//    void transactionAboutToCommit();
-
-    void transactionCommitted();
-
-    void transactionRollbacked();
-
-    void record(Object event);
-
-    void recordEvent(CoreEvent event);
-
-    void recordOperation(Operation<?> event);
-
+    public void transactionStarted();
+    
+    public void transactionRollbacked();
+    
+    public void transactionCommitted();
+    
 }

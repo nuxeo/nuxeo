@@ -202,11 +202,11 @@ public class DefaultEventService extends DefaultComponent implements
         }
     }
 
-    public void transactionAboutToCommit() {
-        if (txEventMgr != null) {
-            txEventMgr.transactionAboutToCommit();
-        }
-    }
+//    public void transactionAboutToCommit() {
+//        if (txEventMgr != null) {
+//            txEventMgr.transactionAboutToCommit();
+//        }
+//    }
 
     public boolean isPostCommitEnabled() {
         return txEventMgr != null;
