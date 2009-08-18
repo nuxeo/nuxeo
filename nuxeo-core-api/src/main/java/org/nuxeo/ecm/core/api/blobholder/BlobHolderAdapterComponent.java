@@ -131,6 +131,9 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements
                 if (noteContent != null && !"".equals(noteContent)) {
                     try {
                         String mt = (String) doc.getPropertyValue("note:mime_type");
+                        if (mt == null) {
+                            mt = "text/plain";
+                        }
                         return new DocumentStringBlobHolder(doc, "note:note",
                                 mt);
                     } catch (PropertyException e) {
