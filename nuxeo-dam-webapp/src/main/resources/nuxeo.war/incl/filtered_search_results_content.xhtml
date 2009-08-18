@@ -11,7 +11,7 @@
   <a4j:region>
     <a4j:outputPanel id="filterResultTable">
       
-      <a4j:form>
+      <a4j:form id="toggleList">
         <a4j:commandLink id="showListLink"
           action="#{webActions.showListLink}"
           reRender="filterResultTable">
@@ -33,6 +33,7 @@
         </a4j:commandLink>
       </a4j:form>  
             
+      
       <ui:decorate template="/incl/documents_table_content.xhtml">
         <ui:param name="provider" value="#{resultsProvidersCache.get('FILTERED_DOCUMENTS')}" />
         <ui:param name="providerName" value="#{resultsProvidersCache.get('FILTERED_DOCUMENTS').name}" />
