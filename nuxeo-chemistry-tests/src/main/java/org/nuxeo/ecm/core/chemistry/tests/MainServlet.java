@@ -43,6 +43,9 @@ public class MainServlet extends SQLRepositoryTestCase {
         main.setUp();
         try {
             Repository repository = main.makeRepository();
+//            if (args.length == 0) {
+//                args = new String[] { "-p", "8082" };
+//            }
             org.apache.chemistry.test.MainServlet.run(args, repository,
                     "/cmis", "/repository");
         } finally {
@@ -121,6 +124,8 @@ public class MainServlet extends SQLRepositoryTestCase {
                 "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
         file3.setPropertyValue("dc:contributors",
                 new String[] { "bob", "john" });
+        file3.setPropertyValue("note:note", "this is a note.\n");
+        file3.setPropertyValue("note:mime_type", "text/plain");
         file3 = session.createDocument(file3);
 
         DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2",

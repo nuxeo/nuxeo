@@ -55,7 +55,6 @@ import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.impl.base.BaseRepository;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -390,19 +389,7 @@ public class NuxeoConnection implements Connection, SPI {
         if (doc == null) {
             throw new RuntimeException("Not found: " + object.getId()); // TODO
         }
-        if (!doc.hasSchema("file")) {
-            return null;
-        }
-        Blob blob;
-        try {
-            blob = (Blob) doc.getProperty("file", "content");
-        } catch (ClientException e) {
-            throw new RuntimeException(e.toString(), e); // TODO
-        }
-        if (blob == null) {
-            return null;
-        }
-        return new NuxeoContentStream(blob);
+        return NuxeoProperty.extractContentStream(doc);
     }
 
     public ObjectId setContentStream(ObjectId document, boolean overwrite,

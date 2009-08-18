@@ -24,14 +24,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Updatability;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
@@ -126,18 +129,17 @@ public class NuxeoProperty implements Property {
         } else if (Property.CHECK_IN_COMMENT.equals(name)) {
             value = null;
         } else if (Property.CONTENT_STREAM_LENGTH.equals(name)) {
-            value = doc.hasSchema("file") ? doc.getPropertyValue("file:content/length")
-                    : null;
-            if (value != null) {
-                value = Integer.valueOf(((Long) value).intValue());
-            }
+            ContentStream contentStream = extractContentStream(doc);
+            value = contentStream == null ? null
+                    : Integer.valueOf((int) contentStream.getLength());
         } else if (Property.CONTENT_STREAM_MIME_TYPE.equals(name)) {
-            value = doc.hasSchema("file") ? doc.getPropertyValue("file:content/mime-type")
-                    : null;
+            ContentStream contentStream = extractContentStream(doc);
+            value = contentStream == null ? null : contentStream.getMimeType();
         } else if (Property.CONTENT_STREAM_FILE_NAME.equals(name)) {
+            ContentStream contentStream = extractContentStream(doc);
+            value = contentStream == null ? null : contentStream.getFileName();
+        } else if (Property.CONTENT_STREAM_ID.equals(name)) {
             value = null;
-            prop = doc.hasSchema("file") ? doc.getProperty("file:filename")
-                    : null;
         } else if (Property.PARENT_ID.equals(name)) {
             // TODO cache this
             DocumentRef parentRef = doc.getParentRef();
@@ -171,6 +173,23 @@ public class NuxeoProperty implements Property {
         } else {
             return new NuxeoProperty(prop, pd);
         }
+    }
+
+    protected static ContentStream extractContentStream(DocumentModel doc) {
+        BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
+        if (blobHolder == null) {
+            return null;
+        }
+        Blob blob;
+        try {
+            blob = blobHolder.getBlob();
+        } catch (ClientException e) {
+            throw new RuntimeException(e.toString(), e); // TODO
+        }
+        if (blob == null) {
+            return null;
+        }
+        return new NuxeoContentStream(blob);
     }
 
     public PropertyDefinition getDefinition() {
