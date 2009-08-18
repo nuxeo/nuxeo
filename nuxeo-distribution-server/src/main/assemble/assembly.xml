@@ -8,7 +8,7 @@
     <artifact>org.nuxeo.ecm.webengine:nuxeo-webengine-core:${nuxeo.webengine.version}:jar</artifact>
     <includes>
        <include>Archetype.class</include>
-    </includes>    
+    </includes>
   </zipEntrySet>
 
   <fileSet id="template">
@@ -35,7 +35,7 @@
         <!-- only if profile jca enabled -->
         <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-jca" profile="jca"/>
         <artifact group="org.nuxeo.ecm.core" name="nuxeo-core"/>
-	<artifact group="org.nuxeo.ecm.core" name="nuxeo-core-persistence"/> 
+	<artifact group="org.nuxeo.ecm.core" name="nuxeo-core-persistence"/>
         <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-convert"/>
         <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-convert-api"/>
         <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-convert-plugins"/>
@@ -133,6 +133,8 @@
       <artifact group="org.apache.poi" name="poi-ooxml" />
       <artifact group="org.apache.poi" name="poi-scratchpad" />
       <artifact group="org.apache" name="xmlbeans" />
+      <artifact group="com.sun.xml" name="relaxngDatatype" />
+      <artifact group="org.wikimodel" name="wem" />
     </artifacts>
   </artifactSet>
 
@@ -192,7 +194,7 @@
     <file>nxclient.sh</file>
     <file>nxclient.cmd</file>
   </assemble>
-  
+
   <assemble>
     <set>archetype</set>
     <outputFile>extras/archetype</outputFile>
