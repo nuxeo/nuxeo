@@ -31,13 +31,13 @@
               onclick="selectDataTableRow('#{row.data.ref}', '#{providerName}', this)">
             </h:selectBooleanCheckbox>
             <span id="title_#{row.data.ref}" class="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
-              <h:commandLink id="titleLink" action="#{documentActions.setCurrentSelection(row.data)}">
+              <a4j:commandLink id="titleLink" action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
                 <nxh:outputText value="#{nxd:titleOrId(row.data)}"
                   title="#{row.data.dc.description}"
                   rendered="#{!empty row.data.dc.description}"/>
                 <nxh:outputText value="#{nxd:titleOrId(row.data)}"
                   rendered="#{empty row.data.dc.description}"/>
-              </h:commandLink>
+              </a4j:commandLink>
             </span>
           </h:panelGroup>
           <h:panelGroup>  
