@@ -14,9 +14,6 @@
  */
 package org.nuxeo.ecm.platform.preview.adapter.base;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -31,6 +28,9 @@ import org.nuxeo.ecm.platform.preview.adapter.MimeTypePreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManager;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.runtime.api.Framework;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -159,6 +159,18 @@ public class ConverterBasedHtmlPreviewAdapter extends
         BlobHolder result;
         try {
             result = getConversionService().convert(converterName, blobHolder2preview, null);
+
+            // Set the mimeType to 'text/html' of the first Blob (the one
+            // containing the HTML preview)
+            try {
+                Blob blob = result.getBlob();
+                if (blob.getMimeType() == null) {
+                    blob.setMimeType("text/html");
+                }
+            } catch (ClientException e) {
+                throw new ConversionException(
+                        "Unable to set the mimeType to 'text/html", e);
+            }
             return result.getBlobs();
         } catch (ConverterNotAvailable e) {
             throw new PreviewException(e.getMessage(), e);
