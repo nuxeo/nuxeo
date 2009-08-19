@@ -20,7 +20,7 @@
     <provide interface="org.nuxeo.ecm.platform.audit.api.AuditLogger"/>
     <provide interface="org.nuxeo.ecm.platform.audit.api.Logs"/>
   </service>
-  
+
   <extension-point name="event">
     <documentation>
       This service registers auditable events.
@@ -42,12 +42,7 @@
     <event name="documentModified"/>
     <event name="documentLocked"/>
     <event name="documentUnlocked"/>
-    <event name="documentPublished"/>
     <event name="documentSecurityUpdated"/>
-    <event name="documentUnPublished"/>
-    <event name="documentSubmitedForPublication"/>
-    <event name="documentPublicationRejected"/>
-    <event name="documentPublicationApproved"/>
     <event name="lifecycle_transition_event"/>
   </extension>
       </programlisting>
@@ -80,7 +75,7 @@
 			</properties>
 		</hibernateConfiguration>
   </extension>
-	
+
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
       point="event">
     <documentation>
@@ -98,22 +93,17 @@
     <event name="documentModified"/>
     <event name="documentLocked"/>
     <event name="documentUnlocked"/>
-    <event name="documentPublished"/>
     <event name="documentSecurityUpdated"/>
-    <event name="documentUnPublished"/>
-    <event name="documentSubmitedForPublication"/>
-    <event name="documentPublicationRejected"/>
-    <event name="documentPublicationApproved"/>
     <event name="lifecycle_transition_event"/>
     <event name="loginSuccess" />
     <event name="loginFailed" />
     <event name="logout" />
   </extension>
-  
+
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
 
     <listener name="auditLoggertListener" async="true" postCommit="true" class="org.nuxeo.ecm.platform.audit.listener.AuditEventLogger"/>
 
   </extension>
-  
+
 </component>

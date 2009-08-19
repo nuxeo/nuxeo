@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.publisher.jaxrs">
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+             point="resource">
+    <resource path="remotepublisher"
+              class="org.nuxeo.ecm.platform.publisher.remoting.restHandler.RestPublishingHandler"/>
+
+  </extension>
+</component>
