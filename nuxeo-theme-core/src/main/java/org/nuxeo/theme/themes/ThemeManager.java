@@ -173,10 +173,17 @@ public final class ThemeManager implements Registrable {
     }
 
     public static String getDefaultTheme(final String applicationPath) {
+        return getDefaultTheme(applicationPath, null);
+    }
+
+    public static String getDefaultTheme(final String applicationPath,
+            final String moduleName) {
         String defaultTheme = "";
+        ApplicationType application = null;
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        final ApplicationType application = (ApplicationType) typeRegistry.lookup(
-                TypeFamily.APPLICATION, applicationPath);
+        String[] appPathSegments = applicationPath.split("/");
+        application = (ApplicationType) typeRegistry.lookup(
+                TypeFamily.APPLICATION, applicationPath, moduleName, appPathSegments[appPathSegments.length - 1]);
         if (application != null) {
             NegotiationDef negotiation = application.getNegotiation();
             if (negotiation != null) {
