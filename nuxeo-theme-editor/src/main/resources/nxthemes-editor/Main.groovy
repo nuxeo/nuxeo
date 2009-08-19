@@ -289,8 +289,8 @@ public class Main extends ModuleRoot {
   @Path("add_page")
   public String addPage() {
       String pagePath = ctx.getForm().getString("path")
-	  try {
-	      return Editor.addPage(pagePath)
+    try {
+        return Editor.addPage(pagePath)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }      
@@ -300,8 +300,8 @@ public class Main extends ModuleRoot {
   @Path("add_theme")
   public String addTheme() {
       String name = ctx.getForm().getString("name")
-	  try {
-	      return Editor.addTheme(name)
+    try {
+        return Editor.addTheme(name)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
@@ -314,8 +314,8 @@ public class Main extends ModuleRoot {
       String id = form.getString("id")
       String position = form.getString("position")
       Element element = ThemeManager.getElementById(id)
-	  try {
-	      Editor.alignElement(element, position)
+    try {
+        Editor.alignElement(element, position)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }       
@@ -330,8 +330,8 @@ public class Main extends ModuleRoot {
       String propertyName = form.getString("property")
       String value = form.getString("value")          
       Element element = ThemeManager.getElementById(id)
-	  try {
-	      Editor.assignStyleProperty(element, propertyName, value)
+    try {
+        Editor.assignStyleProperty(element, propertyName, value)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }   
@@ -395,8 +395,8 @@ public class Main extends ModuleRoot {
       String themeName = form.getString("theme_name")
       String styleName = form.getString("style_name")
       Element element = ThemeManager.getElementById(id)
-	  try {
-	      Editor.createNamedStyle(element, styleName, themeName)
+    try {
+        Editor.createNamedStyle(element, styleName, themeName)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
@@ -406,8 +406,8 @@ public class Main extends ModuleRoot {
   @Path("create_style")
   public void createStyle() {
       Element element = getSelectedElement()
-	  try {
-	      Editor.createStyle(element)
+    try {
+        Editor.createStyle(element)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
@@ -419,8 +419,8 @@ public class Main extends ModuleRoot {
       FormData form = ctx.getForm()
       String id = form.getString("id")      
       Element element = ThemeManager.getElementById(id)
-	  try {
-	      Editor.deleteElement(element)
+    try {
+        Editor.deleteElement(element)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }            
@@ -434,8 +434,8 @@ public class Main extends ModuleRoot {
       String themeName = form.getString("theme_name")
       String styleName = form.getString("style_name")
       Element element = ThemeManager.getElementById(id)
-	  try {
-	      Editor.deleteNamedStyle(element, styleName, themeName)
+    try {
+        Editor.deleteNamedStyle(element, styleName, themeName)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }           
@@ -447,8 +447,8 @@ public class Main extends ModuleRoot {
       FormData form = ctx.getForm()
       String id = form.getString("id")        
       Element element = ThemeManager.getElementById(id)
-	  try {
-	      return Editor.duplicateElement(element)
+    try {
+        return Editor.duplicateElement(element)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
@@ -457,8 +457,8 @@ public class Main extends ModuleRoot {
   @POST
   @Path("expire_themes")
   public void expireThemes() {
-	  try {
-	      Editor.expireThemes()
+    try {
+        Editor.expireThemes()
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
@@ -471,8 +471,8 @@ public class Main extends ModuleRoot {
       String destId = form.getString("dest_id")    
       String typeName = form.getString("type_name")             
       Element destElement = ThemeManager.getElementById(destId)
-	  try {
-	      Editor.insertFragment(destElement, typeName)
+    try {
+        Editor.insertFragment(destElement, typeName)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }       
@@ -484,8 +484,8 @@ public class Main extends ModuleRoot {
       FormData form = ctx.getForm()
       String id = form.getString("id")           
       Element element = ThemeManager.getElementById(id)
-	  try {
-	      Editor.insertSectionAfter(element)
+    try {
+        Editor.insertSectionAfter(element)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       } 
@@ -559,8 +559,8 @@ public class Main extends ModuleRoot {
       String themeName = form.getString("theme_name")
       String presetName = form.getString("preset_name")        
       String value = form.getString("value")
-	  try {
-	      Editor.editPreset(themeName, presetName, value)
+    try {
+        Editor.editPreset(themeName, presetName, value)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
@@ -573,8 +573,8 @@ public class Main extends ModuleRoot {
       String themeName = form.getString("theme_name")
       String oldName = form.getString("old_name")
       String newName = form.getString("new_name")
-	  try {
-	      Editor.renamePreset(themeName, oldName, newName)
+    try {
+        Editor.renamePreset(themeName, oldName, newName)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }           
@@ -587,7 +587,7 @@ public class Main extends ModuleRoot {
       String themeName = form.getString("theme_name")
       String presetName = form.getString("preset_name")
      try {
-	      Editor.deletePreset(themeName, presetName)
+        Editor.deletePreset(themeName, presetName)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }           
@@ -601,8 +601,8 @@ public class Main extends ModuleRoot {
       String styleName = form.getString("style_name")
       String themeName = form.getString("theme_name")
       Element element = ThemeManager.getElementById(id)
-	  try {
-	      Editor.makeElementUseNamedStyle(element, styleName, themeName)
+    try {
+        Editor.makeElementUseNamedStyle(element, styleName, themeName)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
@@ -617,8 +617,8 @@ public class Main extends ModuleRoot {
       def order = form.getString("order") as Integer
       Element srcElement = ThemeManager.getElementById(srcId)
       Element destElement = ThemeManager.getElementById(destId)
-	  try {
-	     Editor.moveElement(srcElement, destElement, order)
+    try {
+       Editor.moveElement(srcElement, destElement, order)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }       
@@ -634,8 +634,8 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException("Nothing to paste")
       }
       Element element = ThemeManager.getElementById(id)
-	  try {
-	      return Editor.pasteElement(element, destId)
+    try {
+        return Editor.pasteElement(element, destId)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }      
@@ -644,10 +644,10 @@ public class Main extends ModuleRoot {
   @POST
   @Path("repair_theme")
   public void repairTheme() {
-	  FormData form = ctx.getForm()
+    FormData form = ctx.getForm()
       String src = form.getString("src")
-	  try {
-	      Editor.repairTheme(src)
+    try {
+        Editor.repairTheme(src)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
@@ -777,8 +777,8 @@ public class Main extends ModuleRoot {
       String id = form.getString("id")
       String description = form.getString("description")
       Element element = ThemeManager.getElementById(id)
-	  try {
-	      Editor.updateElementDescription(element, description)
+    try {
+        Editor.updateElementDescription(element, description)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
@@ -792,8 +792,8 @@ public class Main extends ModuleRoot {
       String property_map = form.getString("property_map")
       Map propertyMap = JSONObject.fromObject(property_map)
       Element element = ThemeManager.getElementById(id)
-	  try {
-	      Editor.updateElementProperties(element, propertyMap)
+    try {
+        Editor.updateElementProperties(element, propertyMap)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }      
@@ -806,8 +806,8 @@ public class Main extends ModuleRoot {
       String id = form.getString("id")
       String width = form.getString("width")         
       Format layout = ThemeManager.getFormatById(id)
-	  try {
-	      Editor.updateElementWidth(layout, width)
+    try {
+        Editor.updateElementWidth(layout, width)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
@@ -822,9 +822,9 @@ public class Main extends ModuleRoot {
       String cssSource = form.getString("css_source")      
       Element element = ThemeManager.getElementById(id)
       Style selectedStyleLayer = getSelectedStyleLayer()
-	  try {
-	      Editor.updateElementStyleCss(element, selectedStyleLayer, viewName, cssSource) 
-	  } catch (Exception e) {
+    try {
+        Editor.updateElementStyleCss(element, selectedStyleLayer, viewName, cssSource) 
+    } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -837,8 +837,8 @@ public class Main extends ModuleRoot {
       String cssSource = form.getString("css_source")
       Style style = (Style) ThemeManager.getFormatById(style_uid)
       try {
-	      Editor.updateNamedStyleCss(style, cssSource) 
-	  } catch (Exception e) {
+        Editor.updateNamedStyleCss(style, cssSource) 
+    } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -849,9 +849,9 @@ public class Main extends ModuleRoot {
       FormData form = ctx.getForm()
       String id = form.getString("id")      
       Element element = ThemeManager.getElementById(id)
-	  try {
-	      Editor.splitElement(element)
-	  } catch (Exception e) {
+    try {
+        Editor.splitElement(element)
+    } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
    }
@@ -867,9 +867,9 @@ public class Main extends ModuleRoot {
       Map propertyMap = JSONObject.fromObject(property_map)
       Element element = ThemeManager.getElementById(id)
       Style currentStyleLayer = getSelectedStyleLayer()
-	  try {
-	      Editor.updateElementStyle(element, currentStyleLayer, path, viewName, propertyMap)
-	  } catch (Exception e) {
+    try {
+        Editor.updateElementStyle(element, currentStyleLayer, path, viewName, propertyMap)
+    } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -882,9 +882,9 @@ public class Main extends ModuleRoot {
       List<String> perspectives = form.getList("perspectives")
       boolean alwaysVisible = Boolean.valueOf(form.getString("always_visible"))
       Element element = ThemeManager.getElementById(id)
-	  try {
-	      Editor.updateElementVisibility(element, perspectives, alwaysVisible)
-	  } catch (Exception e) {
+    try {
+        Editor.updateElementVisibility(element, perspectives, alwaysVisible)
+    } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -896,9 +896,9 @@ public class Main extends ModuleRoot {
       String property_map = form.getString("property_map")      
       Map propertyMap = JSONObject.fromObject(property_map)
       Element element = getSelectedElement()
-	  try {
-	      Editor.updateElementLayout(element, propertyMap)
-	  } catch (Exception e) {
+    try {
+        Editor.updateElementLayout(element, propertyMap)
+    } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }          
   }
@@ -910,9 +910,9 @@ public class Main extends ModuleRoot {
       String id = form.getString("id")
       String viewName = form.getString("view_name")
       Element element = ThemeManager.getElementById(id)
-	  try {
-	      Editor.updateElementWidget(element, viewName)
-	  } catch (Exception e) {
+    try {
+        Editor.updateElementWidget(element, viewName)
+    } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }          
   }
@@ -925,9 +925,9 @@ public class Main extends ModuleRoot {
       String viewName = form.getString("view_name")
       String themeName = form.getString("theme_name")
       Style style = (Style) ThemeManager.getFormatById(styleUid)
-	  try {
-	      Editor.deleteStyleView(style, viewName)
-	  } catch (Exception e) {
+    try {
+        Editor.deleteStyleView(style, viewName)
+    } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }          
   }
@@ -1409,7 +1409,13 @@ public class Main extends ModuleRoot {
   }
   
   public static String getDefaultTheme(applicationPath) {
-    return ThemeManager.getDefaultTheme(applicationPath)
+      String defaultTheme = ThemeManager.getDefaultTheme(applicationPath)
+      if(defaultTheme == null || defaultTheme.equals("")) {
+          def ctx = WebEngine.getActiveContext()
+          def moduleName = ctx.getModule().getName()
+          defaultTheme = ThemeManager.getDefaultTheme(applicationPath, moduleName)
+      }
+      return defaultTheme
   }
 
   public static String getCurrentThemeName(applicationPath) {
@@ -1417,7 +1423,7 @@ public class Main extends ModuleRoot {
     def ctx = WebEngine.getActiveContext()
     String currentPagePath = ctx.getCookie("nxthemes.theme")
     if (currentPagePath == null) {
-      currentPagePath = defaultTheme
+        return defaultTheme.split("/")[0]
     }
     return currentPagePath.split("/")[0]
   }
@@ -1473,4 +1479,3 @@ public class Main extends ModuleRoot {
   }
   
 }
-
