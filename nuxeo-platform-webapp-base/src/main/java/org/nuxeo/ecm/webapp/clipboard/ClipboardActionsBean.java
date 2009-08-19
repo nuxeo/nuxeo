@@ -837,12 +837,10 @@ public class ClipboardActionsBean extends InputController implements
 
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
         for (DocumentModel docChild : docList) {
-            BlobHolder bh = docChild.getAdapter(BlobHolder.class);
-            if (docChild.isFolder()) {
-                return isEmptyFolder(docChild, documentManager);
-            } else if (bh != null) {
+            //If there is a blob or a folder, it is not empty.
+            if( docChild.getAdapter(BlobHolder.class) != null || docChild.isFolder() ) {
                 return false;
-            }
+            }            
         }
         return true;
     }
