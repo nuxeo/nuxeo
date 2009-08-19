@@ -38,11 +38,11 @@ public class URNDocumentViewTranslator {
         return new URI("urn:nuxeo:" + server + ":" + id);
     }
 
-    public URI getUriFromDocumentView(DocumentView view)
+    public URI getUriFromDocumentView(String serverName, DocumentRef docRef)
             throws URISyntaxException {
         return new URI("urn:nuxeo:"
-                + view.getDocumentLocation().getServerName() + ":"
-                + view.getDocumentLocation().getDocRef());
+                + serverName + ":"
+                + docRef);
     }
 
     public DocumentView getDocumentViewFromUri(URI uri) {

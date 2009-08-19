@@ -54,7 +54,11 @@ public class NoteHtmlPreviewAdapter extends PreprocessedHtmlPreviewAdapter {
             sb.append("</body></html>");
 
             byte[] bytes = blob.getEncoding() == null ? sb.toString().getBytes() : sb.toString().getBytes(blob.getEncoding());
-            Blob newBlob = new ByteArrayBlob(bytes, blob.getMimeType(), blob.getEncoding());
+            String mimeType = blob.getMimeType();
+            if (mimeType == null) {
+                mimeType = "text/html";
+            }
+            Blob newBlob = new ByteArrayBlob(bytes, mimeType, blob.getEncoding());
             return newBlob;
         } catch(IOException e) {
             throw new PreviewException(e);

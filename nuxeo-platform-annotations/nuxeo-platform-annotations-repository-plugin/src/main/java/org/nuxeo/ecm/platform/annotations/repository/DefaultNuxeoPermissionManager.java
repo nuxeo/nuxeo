@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.repository.service.AnnotationsRepositoryService;
@@ -56,13 +57,18 @@ public class DefaultNuxeoPermissionManager implements PermissionManager {
     public boolean check(NuxeoPrincipal user, String permission, URI uri)
             throws AnnotationException {
         DocumentView view = translator.getDocumentViewFromUri(uri);
+        CoreSession session = null;
         try {
             RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-            CoreSession session = mgr.getDefaultRepository().open();
+            session = mgr.getDefaultRepository().open();
             DocumentModel model = session.getDocument(view.getDocumentLocation().getDocRef());
             return service.check(user, permission, model);
         } catch (Exception e) {
             throw new AnnotationException(e);
+        } finally {
+            if (session != null) {
+                CoreInstance.getInstance().close(session);
+            }
         }
     }
 
