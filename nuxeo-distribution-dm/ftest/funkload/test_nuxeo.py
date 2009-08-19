@@ -22,10 +22,12 @@ This suite is configured using the Nuxeo.conf file.
 import os
 import random
 import unittest
-
 from funkload.Lipsum import Lipsum
 from funkload.utils import xmlrpc_get_credential
-from nuxeo.pages import *
+if os.environ.get('JAVA6'):
+    from nuxeo.pagesjava6 import *
+else:
+    from nuxeo.pages import *
 from nuxeo.testcase import NuxeoTestCase
 
 

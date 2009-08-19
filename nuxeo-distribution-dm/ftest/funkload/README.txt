@@ -1,12 +1,12 @@
 ======================================
-Funkload Nuxeo EP jboss test scripts
+Funkload Nuxeo DM jboss test scripts
 ======================================
 
 Abstract
 ============
 
 This module contains python funkload scripts. These scripts can be used
-to do functional testing or benching of the default Nuxeo EP web interface
+to do functional testing or benching of the default Nuxeo DM web interface
 including rest api implemented in nuxeo-platform-ui-web.
 
 
@@ -69,6 +69,10 @@ Layout
   difference with web driver PageObjects is that they contains assertion to
   ease the fluent interface.
 
+* nuxeo/pagesjava6.py
+
+  Same as pages.py but for a Nuxeo DM running with java 6.
+
 * nuxeo/testcase.py
 
   Simple nuxeo test case that use an xmlrpc server to get credential to
@@ -86,7 +90,7 @@ Layout
 
 * test_nuxeo.py, Nuxeo.conf
 
-  A test suite used to test/bench a Nuxeo EP. This test will create many
+  A test suite used to test/bench a Nuxeo DM. This test will create many
   members accounts (the ones present in the password.txt files) and will add
   a new workspace and folder with few file documents.
 
@@ -170,3 +174,11 @@ Benching
   Bench the reader part only.
 
 
+
+Nuxeo DM running on JAVA 6
+---------------------------
+
+Changing the jvm change the html and ids of forms, to perform tests on a
+Nuxeo DM under Java 6 add the "JAVA6=true" option to any make invocation:
+
+  make bench-reader JAVA6=true
