@@ -213,6 +213,9 @@
       <artifact group="org.apache" name="xmlbeans" />
       <artifact group="com.sun.xml" name="relaxngDatatype" />
       <artifact group="com.sun.xml" name="xsom" />
+
+      <!-- Remote publication lib -->
+      <artifact group="org.apache.httpcomponents" name="httpclient" />
     </artifacts>
   </artifactSet>
 

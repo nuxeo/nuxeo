@@ -188,6 +188,9 @@
       <artifact group="jmimemagic" name="jmimemagic" />
       <artifact group="rome" name="rome" />
       <artifact group="commons-jexl" name="commons-jexl" />
+
+      <!-- Remote publication lib -->
+      <artifact group="org.apache.httpcomponents" name="httpclient" />
     </artifacts>
   </artifactSet>
 
