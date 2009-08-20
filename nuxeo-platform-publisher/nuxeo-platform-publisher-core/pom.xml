@@ -49,9 +49,8 @@
       <artifactId>jaxrs-api</artifactId>
     </dependency>
     <dependency>
-      <artifactId>httpclient</artifactId>
       <groupId>org.apache.httpcomponents</groupId>
-      <version>4.0-beta2</version>
+      <artifactId>httpclient</artifactId>
     </dependency>
 
     <dependency>
