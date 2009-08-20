@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
-import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
@@ -51,12 +50,14 @@ import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.api.PublishingEvent;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -98,7 +99,7 @@ public class PublishActionsBean implements Serializable {
 
     protected PublicationTree currentPublicationTree;
 
-    protected String rejectPublishingComment;
+    protected String publishingComment;
 
     protected static Set<String> sectionTypes;
 
@@ -131,8 +132,10 @@ public class PublishActionsBean implements Serializable {
         PublicationTree tree = getCurrentPublicationTreeForPublishing();
         PublishedDocument publishedDocument = tree.publish(currentDocument,
                 publicationNode);
+        FacesContext context = FacesContext.getCurrentInstance();
         if (publishedDocument.isPending()) {
-            String comment = "Document waiting for publication";
+            String comment = ComponentUtils.translate(context,
+                                "publishing.waiting", publicationNode.getPath());
             // Log event on live version
             notifyEvent(PublishingEvent.documentWaitingPublication.name(),
                     null, comment, null, currentDocument);
@@ -142,7 +145,8 @@ public class PublishActionsBean implements Serializable {
                     resourcesAccessor.getMessages().get(
                             currentDocument.getType()));
         } else {
-            String comment = "Document published";
+            String comment = ComponentUtils.translate(context,
+                                "publishing.done", publicationNode.getPath());
             // Log event on live version
             notifyEvent(PublishingEvent.documentPublished.name(), null,
                     comment, null, currentDocument);
@@ -256,12 +260,12 @@ public class PublishActionsBean implements Serializable {
         return publishedDocument.isPending();
     }
 
-    public String getRejectPublishingComment() {
-        return rejectPublishingComment;
+    public String getPublishingComment() {
+        return publishingComment;
     }
 
-    public void setRejectPublishingComment(String rejectPublishingComment) {
-        this.rejectPublishingComment = rejectPublishingComment;
+    public void setPublishingComment(String publishingComment) {
+        this.publishingComment = publishingComment;
     }
 
     public String approveDocument() throws ClientException {
@@ -271,13 +275,19 @@ public class PublishActionsBean implements Serializable {
         PublishedDocument publishedDocument = tree.wrapToPublishedDocument(currentDocument);
         tree.validatorPublishDocument(publishedDocument);
         DocumentModel sourceDocument = documentManager.getDocument(publishedDocument.getSourceDocumentRef());
+        FacesContext context = FacesContext.getCurrentInstance();
+        String comment = publishingComment != null && publishingComment.length() > 0 ?
+                ComponentUtils.translate(context,
+                                "publishing.approved.with.comment", publishedDocument.getParentPath(), publishingComment)
+                : ComponentUtils.translate(context,
+                                "publishing.approved.without.comment", publishedDocument.getParentPath());
         notifyEvent(PublishingEvent.documentPublicationApproved.name(), null,
-                "Document approved", null, sourceDocument);
+                comment, null, sourceDocument);
 
         DocumentModel liveVersion = documentManager.getDocument(new IdRef(sourceDocument.getSourceId()));
         if (!sourceDocument.getRef().equals(liveVersion.getRef())) {
             notifyEvent(PublishingEvent.documentPublicationApproved.name(), null,
-                "Document approved", null, liveVersion);
+                comment, null, liveVersion);
         }
 
         Events.instance().raiseEvent(PublishingEvent.documentPublished.name());
@@ -285,9 +295,9 @@ public class PublishActionsBean implements Serializable {
     }
 
     public String rejectDocument() throws ClientException {
-        if (rejectPublishingComment == null
-                || "".equals(rejectPublishingComment)) {
-            facesMessages.addToControl("rejectPublishingComment",
+        if (publishingComment == null
+                || "".equals(publishingComment)) {
+            facesMessages.addToControl("publishingComment",
                     FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.publishing.reject.user.comment.mandatory"));
@@ -299,16 +309,23 @@ public class PublishActionsBean implements Serializable {
                 currentDocument, documentManager);
         PublishedDocument publishedDocument = tree.wrapToPublishedDocument(currentDocument);
         tree.validatorRejectPublication(publishedDocument,
-                rejectPublishingComment);
+                publishingComment);
         DocumentModel sourceDocument = documentManager.getDocument(publishedDocument.getSourceDocumentRef());
+
+        FacesContext context = FacesContext.getCurrentInstance();
+        String comment = publishingComment != null && publishingComment.length() > 0 ?
+                ComponentUtils.translate(context,
+                                "publishing.rejected.with.comment", publishedDocument.getParentPath(), publishingComment)
+                : ComponentUtils.translate(context,
+                                "publishing.rejected.without.comment", publishedDocument.getParentPath());
         notifyEvent(PublishingEvent.documentPublicationRejected.name(), null,
-                "Document rejected: " + rejectPublishingComment, null,
+                comment, null,
                 sourceDocument);
 
         DocumentModel liveVersion = documentManager.getDocument(new IdRef(sourceDocument.getSourceId()));
         if (!sourceDocument.getRef().equals(liveVersion.getRef())) {
-            notifyEvent(PublishingEvent.documentPublicationApproved.name(), null,
-                "Document approved", null, liveVersion);
+            notifyEvent(PublishingEvent.documentPublicationRejected.name(), null,
+                comment, null, liveVersion);
         }
         Events.instance().raiseEvent(
                 PublishingEvent.documentPublicationRejected.name());

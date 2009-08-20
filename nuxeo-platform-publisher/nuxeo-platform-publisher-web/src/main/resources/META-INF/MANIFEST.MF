@@ -2,6 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo ECM Publisher Service Web
 Bundle-SymbolicName: org.nuxeo.ecm.platform.publisher.web;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
 Bundle-Version: 1.0.0
 Nuxeo-RequiredBy: org.nuxeo.ecm.war
 Require-Bundle: org.nuxeo.ecm.platform.publisher.api,
