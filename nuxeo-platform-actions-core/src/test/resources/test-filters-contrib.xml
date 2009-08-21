@@ -83,6 +83,12 @@
         <type>Section</type>
       </rule>
     </filter>
+    
+    <filter id="GroupFilter">
+      <rule grant="true">
+        <group>administrators</group>
+      </rule>
+    </filter>
 
   </extension>
 

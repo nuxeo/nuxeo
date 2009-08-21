@@ -178,5 +178,13 @@ public class TestActionFilter extends NXRuntimeTestCase {
         Object precomputed = context.get(DefaultActionFilter.PRECOMPUTED_KEY);
         assertNotNull(precomputed);
     }
+    
+    public void testGroupFilter() {
+		ActionFilter filter = getFilter("GroupFilter");
+		DefaultActionFilter dFilter = (DefaultActionFilter) filter;
+		assertEquals(1, dFilter.getRules().length);
+		FilterRule rule = dFilter.getRules()[0];
+		assertEquals("administrators", rule.groups[0]);
+	}
 
 }

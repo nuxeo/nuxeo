@@ -146,6 +146,14 @@ public class FilterRule {
                     sb.append(",");
                 }
             }
+            
+            if (groups != null && groups.length > 0) {
+				sb.append(":groups:");
+				for (String group : groups) {
+					sb.append(group);
+					sb.append(",");
+				}
+			}
             cacheKey = sb.toString();
         }
         return cacheKey;
