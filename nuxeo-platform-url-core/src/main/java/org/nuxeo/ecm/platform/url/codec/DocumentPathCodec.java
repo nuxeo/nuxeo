@@ -70,6 +70,14 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
     }
 
     public String getUrlFromDocumentView(DocumentView docView) {
+        // Use DocumentIdCodec if the document is a version
+        if ("true".equals(docView.getParameter("version"))) {
+            if (docView.getDocumentLocation().getIdRef() != null) {
+                DocumentIdCodec idCodec = new DocumentIdCodec();
+                return idCodec.getUrlFromDocumentView(docView);
+            }
+        }
+
         DocumentLocation docLoc = docView.getDocumentLocation();
         if (docLoc != null) {
             List<String> items = new ArrayList<String>();
