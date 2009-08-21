@@ -43,18 +43,20 @@ public class Main extends ModuleRoot {
 
     @GET
     @Path("themeSelector")
-    public Object renderThemeSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
+    public Object renderThemeSelector(@QueryParam("org.nuxeo.theme.application.path") String path,
+            @QueryParam("org.nuxeo.theme.application.name") String name) {
       return getTemplate("themeSelector.ftl").arg(
-              "current_theme_name", getCurrentThemeName(path)).arg(
-              "themes", getThemes(path))
+              "current_theme_name", getCurrentThemeName(path, name)).arg(
+              "themes", getThemes(path, name))
     }
 
   @GET
   @Path("pageSelector")
-  public Object renderPageSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderPageSelector(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("pageSelector.ftl").arg(
-            "current_theme_name", getCurrentThemeName(path)).arg(
-            "pages", getPages(path))
+            "current_theme_name", getCurrentThemeName(path, name)).arg(
+            "pages", getPages(path, name))
   }
 
   @GET
@@ -65,9 +67,10 @@ public class Main extends ModuleRoot {
 
   @GET
   @Path("presetManager")
-  public Object renderPresetManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderPresetManager(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("presetManager.ftl").arg(
-            "current_theme_name", getCurrentThemeName(path)).arg(            
+            "current_theme_name", getCurrentThemeName(path, name)).arg(            
             "preset_groups", getPresetGroups()).arg(
             "preset_manager_mode", getPresetManagerMode()).arg(         
             "selected_preset_group", getSelectedPresetGroup())
@@ -75,8 +78,9 @@ public class Main extends ModuleRoot {
   
   @GET
   @Path("styleManager")
-  public Object renderStyleManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    def styles = getNamedStyles(path)
+  public Object renderStyleManager(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
+    def styles = getNamedStyles(path, name)
     Style selectedStyle = getSelectedNamedStyle()
     if (!styles.contains(selectedStyle) && !styles.isEmpty()) {
         selectedStyle = styles[0];
@@ -86,14 +90,15 @@ public class Main extends ModuleRoot {
             "style_manager_mode", getStyleManagerMode()).arg(
             "selected_named_style", selectedStyle).arg(
             "selected_named_style_css", getRenderedPropertiesForNamedStyle(selectedStyle)).arg(
-            "current_theme_name", getCurrentThemeName(path))
+            "current_theme_name", getCurrentThemeName(path, name))
   }  
   
   @GET
   @Path("themeManager")
-  public Object renderThemeManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderThemeManager(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("themeManager.ftl").arg(
-            "current_theme_name", getCurrentThemeName(path))     
+            "current_theme_name", getCurrentThemeName(path, name))     
   }
 
   @GET
@@ -139,14 +144,15 @@ public class Main extends ModuleRoot {
 
   @GET
   @Path("elementStyle")
-  public Object renderElementStyle(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderElementStyle(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("elementStyle.ftl").arg(
             "selected_element", getSelectedElement()).arg(
             "style_of_selected_element", getStyleOfSelectedElement()).arg(
-            "current_theme_name", getCurrentThemeName(path)).arg(
+            "current_theme_name", getCurrentThemeName(path, name)).arg(
             "style_layers_of_selected_element", getStyleLayersOfSelectedElement()).arg(
             "inherited_style_name_of_selected_element", getInheritedStyleNameOfSelectedElement()).arg(
-            "named_styles", getNamedStyles(path))
+            "named_styles", getNamedStyles(path, name))
   }
 
   @GET
@@ -170,23 +176,25 @@ public class Main extends ModuleRoot {
 
   @GET
   @Path("stylePicker")
-  public Object renderStylePicker(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderStylePicker(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("stylePicker.ftl").arg(
             "style_category", getSelectedStyleCategory()).arg(
-            "current_theme_name", getCurrentThemeName(path)).arg(                          
+            "current_theme_name", getCurrentThemeName(path, name)).arg(                          
             "selected_preset_group", getSelectedPresetGroup()).arg(                            
             "preset_groups", getPresetGroupsForSelectedCategory()).arg(
-            "presets_for_selected_group", getPresetsForSelectedGroup(path))
+            "presets_for_selected_group", getPresetsForSelectedGroup(path, name))
   }
   
   @GET
   @Path("areaStyleChooser")
-  public Object renderAreaStyleChooser(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderAreaStyleChooser(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("areaStyleChooser.ftl").arg(
             "style_category", getSelectedStyleCategory()).arg(
-            "current_theme_name", getCurrentThemeName(path)).arg(                              
+            "current_theme_name", getCurrentThemeName(path, name)).arg(                              
             "preset_groups", getPresetGroupsForSelectedCategory()).arg(
-            "presets_for_selected_group", getPresetsForSelectedGroup(path)).arg(
+            "presets_for_selected_group", getPresetsForSelectedGroup(path, name)).arg(
             "selected_preset_group", getSelectedPresetGroup())
   }
 
@@ -939,8 +947,8 @@ public class Main extends ModuleRoot {
       return ThemeManager.getThemeDescriptor(themeName)
   }
   
-  public static List<Style> getNamedStyles(String applicationPath) {
-      String currentThemeName = getCurrentThemeName(applicationPath)
+  public static List<Style> getNamedStyles(String applicationPath, name) {
+      String currentThemeName = getCurrentThemeName(applicationPath, name)
       return Manager.getThemeManager().getNamedObjects(currentThemeName, "style")
   }
   
@@ -1338,7 +1346,7 @@ public class Main extends ModuleRoot {
       return presets
   }
 
-  public static List<PresetInfo> getPresetsForSelectedGroup(applicationPath) {
+  public static List<PresetInfo> getPresetsForSelectedGroup(applicationPath, name) {
       String category = getSelectedStyleCategory()
       String group = getSelectedPresetGroup()
       String themeName = getCurrentThemeName(applicationPath)
@@ -1408,18 +1416,18 @@ public class Main extends ModuleRoot {
       return ThemeManager.getTemplateEngineName(applicationPath)
   }
   
-  public static String getDefaultTheme(applicationPath) {
+  public static String getDefaultTheme(applicationPath, name) {
       String defaultTheme = ThemeManager.getDefaultTheme(applicationPath)
       if(defaultTheme == null || defaultTheme.equals("")) {
           def ctx = WebEngine.getActiveContext()
           def moduleName = ctx.getModule().getName()
-          defaultTheme = ThemeManager.getDefaultTheme(applicationPath, moduleName)
+          defaultTheme = ThemeManager.getDefaultTheme(applicationPath, name, moduleName)
       }
       return defaultTheme
   }
 
-  public static String getCurrentThemeName(applicationPath) {
-    String defaultTheme = getDefaultTheme(applicationPath)
+  public static String getCurrentThemeName(applicationPath, name) {
+    String defaultTheme = getDefaultTheme(applicationPath, name)
     def ctx = WebEngine.getActiveContext()
     String currentPagePath = ctx.getCookie("nxthemes.theme")
     if (currentPagePath == null) {
@@ -1428,11 +1436,11 @@ public class Main extends ModuleRoot {
     return currentPagePath.split("/")[0]
   }
 
-  public static List<PageElement> getPages(applicationPath) {
+  public static List<PageElement> getPages(applicationPath, name) {
     ThemeManager themeManager = Manager.getThemeManager()
     def ctx = WebEngine.getActiveContext()
     String currentPagePath = ctx.getCookie("nxthemes.theme")
-    String defaultTheme = getDefaultTheme(applicationPath)
+    String defaultTheme = getDefaultTheme(applicationPath, name)
     String defaultPageName = defaultTheme.split("/")[1]
 
     def pages = []
@@ -1460,16 +1468,16 @@ public class Main extends ModuleRoot {
     return pages
   }
   
-  public static List<ThemeInfo> getThemes(applicationPath) {
+  public static List<ThemeInfo> getThemes(applicationPath, name) {
     def themes = []
-    String defaultTheme = getDefaultTheme(applicationPath)
+    String defaultTheme = getDefaultTheme(applicationPath, name)
     String defaultThemeName = defaultTheme.split("/")[0]
     String defaultPageName = defaultTheme.split("/")[1]
-    String currentThemeName = getCurrentThemeName(applicationPath)
+    String currentThemeName = getCurrentThemeName(applicationPath, name)
     String templateEngine = getTemplateEngine(applicationPath)
-    for (name in ThemeManager.getThemeNames(templateEngine)) {
-      String path = String.format("%s/%s", name, defaultPageName)
-      themes.add(new ThemeInfo(name, path))
+    for (themeName in ThemeManager.getThemeNames(templateEngine)) {
+      String path = String.format("%s/%s", themeName, defaultPageName)
+      themes.add(new ThemeInfo(themeName, path))
     }
     return themes
   }
