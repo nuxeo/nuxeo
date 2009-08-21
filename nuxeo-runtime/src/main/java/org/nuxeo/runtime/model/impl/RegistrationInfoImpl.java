@@ -367,4 +367,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return null;
     }
 
+    public ServiceDescriptor getServiceDescriptor() {
+        return serviceDescriptor;
+    }
+    
 }

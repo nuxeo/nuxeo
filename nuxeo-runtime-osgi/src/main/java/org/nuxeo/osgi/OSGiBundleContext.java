@@ -20,6 +20,7 @@
 package org.nuxeo.osgi;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Dictionary;
 
@@ -115,8 +116,18 @@ public class OSGiBundleContext implements BundleContext {
     }
 
     public Bundle installBundle(String location) throws BundleException {
-        // TODO Auto-generated method stub
-        return null;
+        File file = new File(location);
+        try {
+            BundleFile bf = file.isDirectory() ? new DirectoryBundleFile(file) : new JarBundleFile(file);
+            BundleImpl b = null;
+            b = new BundleImpl(bundle.osgi, bf, bundle.loader);
+            if (b.getSymbolicName() != null) {
+                bundle.osgi.install(b);
+            }
+            return b;
+        } catch (IOException e) {
+            throw new BundleException("Failed to install bundle at "+location, e);
+        }
     }
 
     public Bundle installBundle(String location, InputStream input)
