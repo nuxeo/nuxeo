@@ -24,7 +24,6 @@
           <type>Server</type>
         </rule>
       </filter>
-      <filter-id>mutable_document</filter-id>
     </action>
   </extension>
 
