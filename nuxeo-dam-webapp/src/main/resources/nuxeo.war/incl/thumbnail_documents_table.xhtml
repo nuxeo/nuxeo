@@ -18,13 +18,15 @@
       
       <rich:panel><div class="popupTarget" docRef="#{row.data.ref}">
         <h:panelGrid>
-          <nxh:graphicImage id="theImage"
-            url="#{nxd:fileUrl('downloadPicture', row.data, 'Medium:content', row.data.dublincore.modified)}?conversationId=#{conversation.id}"
-            style="max-height: 80px;"
-            rendered="#{row.data.hasSchema('picture')}"/>
-          <nxh:graphicImage value="/img/file_preview.png"
-            style="max-height: 80px;"
-            rendered="#{!row.data.hasSchema('picture')}"/> 
+          <a4j:commandLink id="imageLink" action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
+            <nxh:graphicImage id="theImage"
+              url="#{nxd:fileUrl('downloadPicture', row.data, 'Medium:content', row.data.dublincore.modified)}?conversationId=#{conversation.id}"
+              style="max-height: 80px;"
+              rendered="#{row.data.hasSchema('picture')}"/>
+            <nxh:graphicImage value="/img/file_preview.png"
+              style="max-height: 80px;"
+              rendered="#{!row.data.hasSchema('picture')}"/> 
+          </a4j:commandLink>
           <h:panelGroup>           
             <h:selectBooleanCheckbox
               value="#{row.selected}"
