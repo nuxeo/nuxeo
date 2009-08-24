@@ -49,6 +49,7 @@
     <module>nuxeo-platform-notification-facade</module>
     <module>nuxeo-platform-notification-web</module>
     <module>nuxeo-platform-preview</module>
+    <module>nuxeo-platform-publisher</module>
     <module>nuxeo-platform-publishing</module>
     <module>nuxeo-platform-relations-api</module>
     <module>nuxeo-platform-relations-default-config</module>
@@ -798,6 +799,26 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-theme-webwidgets-ui</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-publisher-api</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-publisher-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-publisher-jbpm</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-publisher-web</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>

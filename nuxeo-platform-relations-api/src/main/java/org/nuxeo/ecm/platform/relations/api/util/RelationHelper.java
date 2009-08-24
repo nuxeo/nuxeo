@@ -17,28 +17,22 @@
 
 package org.nuxeo.ecm.platform.relations.api.util;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.platform.relations.api.Literal;
-import org.nuxeo.ecm.platform.relations.api.Node;
-import org.nuxeo.ecm.platform.relations.api.QNameResource;
-import org.nuxeo.ecm.platform.relations.api.RelationManager;
-import org.nuxeo.ecm.platform.relations.api.Resource;
-import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
-import org.nuxeo.ecm.platform.relations.api.Statement;
+import org.nuxeo.ecm.platform.relations.api.*;
 import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.runtime.api.Framework;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RelationHelper {
 
@@ -51,14 +45,12 @@ public class RelationHelper {
     }
 
     public static RelationManager getRelationManager() {
-        if (relationManager == null) {
-            try {
-                relationManager = Framework.getService(RelationManager.class);
-            } catch (Exception e) {
-                log.error(e);
-            }
+        try {
+            return Framework.getService(RelationManager.class);
+        } catch (Exception e) {
+            log.error(e);
         }
-        return relationManager;
+        return null;
     }
 
     /**
