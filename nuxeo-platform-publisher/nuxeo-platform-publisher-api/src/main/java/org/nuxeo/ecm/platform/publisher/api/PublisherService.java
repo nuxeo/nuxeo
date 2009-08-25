@@ -18,11 +18,11 @@ public interface PublisherService {
 
     PublicationTree getPublicationTree(String treeName,
             CoreSession coreSession, Map<String, String> params)
-            throws ClientException;
+            throws ClientException, PublicationTreeNotAvailable;
 
     PublicationTree getPublicationTree(String treeName,
             CoreSession coreSession, Map<String, String> params, DocumentModel currentDocument)
-            throws ClientException;
+            throws ClientException, PublicationTreeNotAvailable;
 
     PublishedDocument publish(DocumentModel doc, PublicationNode targetNode)
             throws ClientException;
@@ -37,6 +37,6 @@ public interface PublisherService {
 
     PublicationTree getPublicationTreeFor(DocumentModel doc, CoreSession coreSession) throws ClientException;
 
-    PublicationNode wrapToPublicationNode(DocumentModel documentModel, CoreSession coreSession) throws ClientException;
+    PublicationNode wrapToPublicationNode(DocumentModel documentModel, CoreSession coreSession) throws ClientException, PublicationTreeNotAvailable;
 
 }

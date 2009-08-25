@@ -49,6 +49,9 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.api.PublishingEvent;
+import org.nuxeo.ecm.platform.publisher.api.PublishingException;
+import org.nuxeo.ecm.platform.publisher.api.PublisherException;
+import org.nuxeo.ecm.platform.publisher.api.PublicationTreeNotAvailable;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -64,6 +67,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collections;
 
 /**
  * This Seam bean manages the publishing tab.
@@ -183,10 +187,14 @@ public class PublishActionsBean implements Serializable {
     public PublicationTree getCurrentPublicationTreeForPublishing()
             throws ClientException {
         if (currentPublicationTree == null) {
-            currentPublicationTree = publisherService.getPublicationTree(
+            try {
+                currentPublicationTree = publisherService.getPublicationTree(
                     getCurrentPublicationTreeNameForPublishing(),
                     documentManager, null,
                     navigationContext.getCurrentDocument());
+            } catch (PublicationTreeNotAvailable e) {
+                currentPublicationTree = null;
+            }
         }
         return currentPublicationTree;
     }
@@ -211,10 +219,14 @@ public class PublishActionsBean implements Serializable {
     public List<PublishedDocument> getPublishedDocumentsFor(String treeName)
             throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        PublicationTree tree = publisherService.getPublicationTree(treeName,
+        try {
+            PublicationTree tree = publisherService.getPublicationTree(treeName,
                 documentManager, null);
-        return tree.getExistingPublishedDocument(new DocumentLocationImpl(
+            return tree.getExistingPublishedDocument(new DocumentLocationImpl(
                 currentDocument));
+        } catch (PublicationTreeNotAvailable e) {
+            return null;
+        }
     }
 
     public String unPublish(PublishedDocument publishedDocument)

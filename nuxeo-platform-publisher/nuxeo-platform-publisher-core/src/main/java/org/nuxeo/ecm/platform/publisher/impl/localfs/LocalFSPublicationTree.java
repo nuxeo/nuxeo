@@ -23,7 +23,11 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
             Map<String, String> parameters, PublishedDocumentFactory factory,
             String configName) throws ClientException {
         super.initTree(sid, coreSession, parameters, factory, configName);
-        rootNode = new FSPublicationNode(rootPath, getTreeConfigName(), sid);
+        try {
+            rootNode = new FSPublicationNode(rootPath, getTreeConfigName(), sid);
+        } catch (IllegalArgumentException e) {
+            throw new ClientException(e);
+        }
     }
 
     @Override

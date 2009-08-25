@@ -31,7 +31,7 @@
 
     <dl>
     <dd class="menuForm">
-      <h:panelGroup id="sectionTree">
+      <h:panelGroup id="sectionTree" rendered="#{publishActions.currentPublicationTreeForPublishing != null}">
         <rich:tree
           icon="#{nodeState.isExpanded(rowKey)?publishActions.getCurrentPublicationTreeIconExpanded():publishActions.getCurrentPublicationTreeIconCollapsed()}"
           iconLeaf="#{publishActions.currentPublicationTreeIconCollapsed}"
@@ -64,10 +64,13 @@
       </h:panelGroup>
     </dd>
     </dl>
+    <h:outputText value="#{messages['label.publication.tree.not.available']}"
+                  rendered="#{publishActions.currentPublicationTreeForPublishing == null}" />
   </h:panelGroup>
 
   <h:panelGroup id="publishingInfoList">
-    <h:panelGroup rendered="#{!empty publishActions.publishedDocuments}">
+    <h:panelGroup rendered="#{publishActions.currentPublicationTreeForPublishing != null
+      and !empty publishActions.publishedDocuments}">
 
       <nxu:dataTable value="#{publishActions.publishedDocuments}" var="publishedDocument"
         preserveSort="true" preserveDataModel="false"

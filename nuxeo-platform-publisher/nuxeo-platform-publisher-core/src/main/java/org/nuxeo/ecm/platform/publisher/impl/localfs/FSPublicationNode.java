@@ -26,6 +26,9 @@ public class FSPublicationNode extends AbstractPublicationNode implements
     }
 
     public FSPublicationNode(File folder, String treeName, String sid) {
+        if (!folder.exists()) {
+            throw new IllegalArgumentException("Root publication folder does not exist");
+        }
         this.folder = folder;
         this.treeName = treeName;
         this.sid = sid;
