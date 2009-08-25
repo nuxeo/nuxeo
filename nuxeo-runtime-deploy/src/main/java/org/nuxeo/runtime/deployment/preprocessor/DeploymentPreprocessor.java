@@ -273,6 +273,8 @@ public class DeploymentPreprocessor {
         String fileName = directory.getName();
         if (file.isFile()) {
             fd = (FragmentDescriptor) xmap.load(file.toURL());
+        } else {
+            log.warn("No "+FRAGMENT_FILE+" found in directory:"+directory+ " (must exist, must have exact name)");
         }
         if (fd == null) {
             fd = new FragmentDescriptor();
@@ -310,6 +312,8 @@ public class DeploymentPreprocessor {
             if (mf != null) {
                 processManifest(fd, fileName, mf);
             }
+        } else {
+            log.warn("No "+FRAGMENT_FILE+" found in "+file.getPath()+" (must exist, must have exact name)");
         }
         return fd;
     }
