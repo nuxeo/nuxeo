@@ -16,10 +16,14 @@
  */
 package org.nuxeo.ecm.core.chemistry.jaxrs;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.chemistry.atompub.server.jaxrs.AbderaResource;
 import org.apache.chemistry.atompub.server.jaxrs.AbderaResponseProvider;
+import org.apache.chemistry.atompub.server.jaxrs.AbderaResource.PathMunger;
 import org.nuxeo.ecm.core.chemistry.impl.NuxeoRepository;
 import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -41,6 +45,41 @@ public class JaxrsNuxeoComponent extends DefaultComponent {
 
         // TODO should be done differently, not using a static field
         AbderaResource.repository = new NuxeoRepository("default");
+        AbderaResource.pathMunger = new WebEnginePathMunger();
+    }
+
+    /**
+     * Munges the request path according to WebEngine rules.
+     * <p>
+     * Uses the Nuxeo-Webengine-Base-Path header to provide a fake context &
+     * servlet path.
+     */
+    public static class WebEnginePathMunger implements PathMunger {
+        public ContextAndServletPath munge(HttpServletRequest request,
+                String contextPath, String servletPath) {
+            ContextAndServletPath cs = new ContextAndServletPath();
+            String basePath = request.getHeader(WebContext.NUXEO_WEBENGINE_BASE_PATH);
+            if (",".equals(basePath)) {
+                basePath = ""; // copied from AbstractWebContext#getBasePath
+            }
+            if (basePath == null) {
+                cs.contextPath = contextPath;
+                cs.servletPath = servletPath;
+            } else {
+                // replace context + servlet with our own base path
+                if (!basePath.startsWith("/")) {
+                    basePath = '/' + basePath;
+                }
+                if (basePath.equals("/")) {
+                    basePath = "";
+                } else if (basePath.endsWith("/")) {
+                    basePath = basePath.substring(0, basePath.length() - 1);
+                }
+                cs.contextPath = "";
+                cs.servletPath = basePath;
+            }
+            return cs;
+        }
     }
 
 }
