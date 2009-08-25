@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<fragment>
+
+    <extension target="application#MODULE">
+        <module>
+            <ejb>${bundle.fileName}</ejb>
+        </module>
+    </extension>
+
+</fragment>
+
