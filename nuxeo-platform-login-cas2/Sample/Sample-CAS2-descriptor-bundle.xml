@@ -32,4 +32,31 @@
     </authenticationChain>
   </extension>
 
+
+  <extension
+    target="org.nuxeo.ecm.platform.usermanager.UserService"
+    point="userManager">
+    <userManager>
+      <users>
+        <anonymousUser id="Anonymous">
+          <property name="firstName">Anonymous</property>
+          <property name="lastName">User</property>
+        </anonymousUser>
+      </users>
+    </userManager>
+  </extension>
+  
+  <!-- replace default login button to link to CAS authentication server -->
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="login" link="/casAuthentificationRedirection.xhtml"
+      label="command.login">
+      <category>USER_SERVICES_BOTTOM</category>
+      <filter-id>anonymous</filter-id>
+    </action>
+    
+  </extension>
+  
+
 </component>
