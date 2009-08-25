@@ -11,8 +11,7 @@
 
     <h:panelGroup rendered="#{publishActions.publishedDocument}">
 
-      <h3><h:outputText value="#{messages['label.publishing.title']}"/>
-      </h3>
+      <h3><h:outputText value="#{messages['label.publishing.title']}" /></h3>
 
       <br/>
 
@@ -73,9 +72,10 @@
 
   <nxu:dataTable value="#{availablePublicationTrees}" var="treeName"
                  styleClass="dataOutput">
+    <nxu:column>
     <h4><h:outputText value="#{treeName}"/></h4>
     <nxu:dataTable value="#{publishActions.getPublishedDocumentsFor(treeName)}"
-                   var="publishedDocument">
+                   var="publishedDocument" styleClass="dataOutput">
       <!-- id and selection -->
       <nxu:column>
         <h:outputText value="#{publishedDocument.parentPath}"/>
@@ -84,6 +84,7 @@
         <h:outputText value="#{publishedDocument.sourceVersionLabel}"/>
       </nxu:column>
     </nxu:dataTable>
+    </nxu:column>
   </nxu:dataTable>
 
 </div>

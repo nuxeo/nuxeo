@@ -333,7 +333,7 @@ public class PublishActionsBean implements Serializable {
         return navigationContext.navigateToRef(navigationContext.getCurrentDocument().getParentRef());
     }
 
-    public void unPublishDocumentsFromCurrentSelection() throws ClientException {
+    public void unpublishDocumentsFromCurrentSelection() throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION)) {
             unpublish(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION));
         } else {
