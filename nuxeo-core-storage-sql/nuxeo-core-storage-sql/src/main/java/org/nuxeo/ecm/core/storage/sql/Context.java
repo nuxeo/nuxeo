@@ -309,8 +309,8 @@ public class Context {
      * Finds the documents having dirty text or dirty binaries that have to be
      * reindexed as fulltext.
      *
-     * @param dirtyStrings set of ids that will be modified
-     * @param dirtyBinaries set of ids that will be modified
+     * @param dirtyStrings set of ids, updated by this method
+     * @param dirtyBinaries set of ids, updated by this method
      * @throws StorageException
      */
     public void findDirtyDocuments(Set<Serializable> dirtyStrings,

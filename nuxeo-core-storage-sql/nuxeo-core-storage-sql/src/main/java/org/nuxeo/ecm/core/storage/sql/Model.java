@@ -20,10 +20,13 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,6 +48,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionMaker;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 
@@ -209,6 +213,8 @@ public class Model {
 
     public static final String LOCK_KEY = "lock";
 
+    public static final String FULLTEXT_DEFAULT_INDEX = "default"; // not config
+
     public static final String FULLTEXT_TABLE_NAME = "fulltext";
 
     public static final String FULLTEXT_FULLTEXT_PROP = "ecm:fulltext";
@@ -270,6 +276,52 @@ public class Model {
         }
     }
 
+    /**
+     * Info about the fulltext configuration.
+     */
+    public static class FulltextInfo implements Serializable {
+
+        public static final String PROP_TYPE_STRING = "string";
+
+        public static final String PROP_TYPE_BLOB = "blob";
+
+        /** All index names. */
+        public Set<String> indexNames = new LinkedHashSet<String>();
+
+        /** Map of index to analyzer (may be null). */
+        public Map<String, String> indexAnalyzer = new HashMap<String, String>();
+
+        /** Map of index to catalog (may be null). */
+        public Map<String, String> indexCatalog = new HashMap<String, String>();
+
+        /** Indexes containing all simple properties. */
+        public Set<String> indexesAllSimple = new HashSet<String>();
+
+        /** Indexes containing all binaries properties. */
+        public Set<String> indexesAllBinary = new HashSet<String>();
+
+        /** Indexes for each specific simple property path. */
+        public Map<String, Set<String>> indexesByPropPathSimple = new HashMap<String, Set<String>>();
+
+        /** Indexes for each specific binary property path. */
+        public Map<String, Set<String>> indexesByPropPathBinary = new HashMap<String, Set<String>>();
+
+        /** Indexes for each specific simple property path excluded. */
+        public Map<String, Set<String>> indexesByPropPathExcludedSimple = new HashMap<String, Set<String>>();
+
+        /** Indexes for each specific binary property path excluded. */
+        public Map<String, Set<String>> indexesByPropPathExcludedBinary = new HashMap<String, Set<String>>();
+
+        // inverse of above maps
+        public Map<String, Set<String>> propPathsByIndexSimple = new HashMap<String, Set<String>>();
+
+        public Map<String, Set<String>> propPathsByIndexBinary = new HashMap<String, Set<String>>();
+
+        public Map<String, Set<String>> propPathsExcludedByIndexSimple = new HashMap<String, Set<String>>();
+
+        public Map<String, Set<String>> propPathsExcludedByIndexBinary = new HashMap<String, Set<String>>();
+    }
+
     private final BinaryManager binaryManager;
 
     protected final RepositoryDescriptor repositoryDescriptor;
@@ -294,9 +346,14 @@ public class Model {
     /** Merged properties (all schemas together + shared). */
     private final Map<String, PropertyInfo> mergedPropertyInfos;
 
-    private final Map<String, Map<String, PropertyInfo>> fulltextStringPropertyInfos;
+    /** Per-doctype map of path to property info. */
+    private final Map<String, Map<String, PropertyInfo>> pathPropertyInfos;
 
-    private final Map<String, Map<String, PropertyInfo>> fulltextBinaryPropertyInfos;
+    /** Per-doctype set of path to simple fulltext properties. */
+    private final Map<String, Set<String>> typeSimpleTextPaths;
+
+    /** Map of path (from all doc types) to property info. */
+    private final Map<String, PropertyInfo> allPathPropertyInfos;
 
     /** Per-table info about properties. */
     private final Map<String, Map<String, PropertyType>> fragmentsKeys;
@@ -334,6 +391,8 @@ public class Model {
     /** Map of doc type to its subtypes (including itself), for search. */
     protected final Map<String, Set<String>> documentSubTypes;
 
+    protected final FulltextInfo fulltextInfo;
+
     public Model(RepositoryImpl repository, SchemaManager schemaManager) {
         binaryManager = repository.getBinaryManager();
         repositoryDescriptor = repository.getRepositoryDescriptor();
@@ -346,8 +405,10 @@ public class Model {
         schemaPropertyInfos = new HashMap<String, Map<String, PropertyInfo>>();
         sharedPropertyInfos = new HashMap<String, PropertyInfo>();
         mergedPropertyInfos = new HashMap<String, PropertyInfo>();
-        fulltextStringPropertyInfos = new HashMap<String, Map<String, PropertyInfo>>();
-        fulltextBinaryPropertyInfos = new HashMap<String, Map<String, PropertyInfo>>();
+        pathPropertyInfos = new HashMap<String, Map<String, PropertyInfo>>();
+        typeSimpleTextPaths = new HashMap<String, Set<String>>();
+        allPathPropertyInfos = new HashMap<String, PropertyInfo>();
+        fulltextInfo = new FulltextInfo();
         fragmentsKeys = new HashMap<String, Map<String, PropertyType>>();
 
         collectionTables = new HashMap<String, PropertyType>();
@@ -371,10 +432,8 @@ public class Model {
         initLocksModel();
         initAclModel();
         initMiscModel();
-        initFullTextModel();
         initModels(schemaManager);
-
-        inferFulltextInfo();
+        initFullTextModel();
     }
 
     /**
@@ -471,8 +530,9 @@ public class Model {
         if (fragmentKey != null) {
             Map<String, PropertyType> fragmentKeys = fragmentsKeys.get(fragmentName);
             if (fragmentKeys == null) {
-                fragmentKeys = new LinkedHashMap<String, PropertyType>();
-                fragmentsKeys.put(fragmentName, fragmentKeys);
+                fragmentsKeys.put(
+                        fragmentName,
+                        fragmentKeys = new LinkedHashMap<String, PropertyType>());
             }
             fragmentKeys.put(fragmentKey, propertyType);
         }
@@ -526,28 +586,167 @@ public class Model {
     }
 
     /**
-     * Infers fulltext info for all schemas.
+     * Infers all possible paths for properties in this document type.
      */
-    private void inferFulltextInfo() {
-        for (Entry<String, Map<String, PropertyInfo>> entry : schemaPropertyInfos.entrySet()) {
-            Map<String, PropertyInfo> stringPropertyInfos = new HashMap<String, PropertyInfo>();
-            Map<String, PropertyInfo> binaryPropertyInfos = new HashMap<String, PropertyInfo>();
-            for (Entry<String, PropertyInfo> e : entry.getValue().entrySet()) {
-                String name = e.getKey();
-                PropertyInfo info = e.getValue();
-                if (!info.fulltext) {
+    private void inferTypePropertyPaths(DocumentType documentType) {
+        String typeName = documentType.getName();
+        Map<String, PropertyInfo> propertyInfoByPath = new HashMap<String, PropertyInfo>();
+        for (Schema schema : documentType.getSchemas()) {
+            if (schema == null) {
+                // happens when a type refers to a nonexistent schema
+                // TODO log and avoid nulls earlier
+                continue;
+            }
+            inferTypePropertyPaths(schema, "", propertyInfoByPath, null);
+        }
+        pathPropertyInfos.put(typeName, propertyInfoByPath);
+        allPathPropertyInfos.putAll(propertyInfoByPath);
+        // those for simpletext properties
+        Set<String> simplePaths = new HashSet<String>();
+        for (Entry<String, PropertyInfo> entry : propertyInfoByPath.entrySet()) {
+            PropertyInfo pi = entry.getValue();
+            if (pi.propertyType != PropertyType.STRING
+                    && pi.propertyType != PropertyType.ARRAY_STRING) {
+                continue;
+            }
+            simplePaths.add(entry.getKey());
+        }
+        typeSimpleTextPaths.put(typeName, simplePaths);
+    }
+
+    // recurses in a complex type
+    private void inferTypePropertyPaths(ComplexType complexType, String prefix,
+            Map<String, PropertyInfo> propertyInfoByPath, Set<String> done) {
+        if (done == null) {
+            done = new LinkedHashSet<String>();
+        }
+        String typeName = complexType.getName();
+        if (done.contains(typeName)) {
+            log.warn("Complex type " + typeName
+                    + " refers to itself recursively: " + done);
+            // stop recursion
+            return;
+        }
+        done.add(typeName);
+
+        for (Field field : complexType.getFields()) {
+            String propertyName = field.getName().getPrefixedName(); // TODO-prefixed?
+            String path = prefix + propertyName;
+            Type fieldType = field.getType();
+            if (fieldType.isComplexType()) {
+                // complex type
+                inferTypePropertyPaths((ComplexType) fieldType, path + '/',
+                        propertyInfoByPath, done);
+                continue;
+            } else if (fieldType.isListType()) {
+                Type listFieldType = ((ListType) fieldType).getFieldType();
+                if (!listFieldType.isSimpleType()) {
+                    // complex list
+                    inferTypePropertyPaths((ComplexType) listFieldType, path
+                            + "/*/", propertyInfoByPath, done);
                     continue;
                 }
-                if (info.propertyType == PropertyType.STRING
-                        || info.propertyType == PropertyType.ARRAY_STRING) {
-                    stringPropertyInfos.put(name, info);
-                } else if (info.propertyType == PropertyType.BINARY) {
-                    binaryPropertyInfos.put(name, info);
+                // else array
+            } else {
+                // else primitive type
+            }
+            PropertyInfo pi = schemaPropertyInfos.get(typeName).get(
+                    propertyName);
+            propertyInfoByPath.put(path, pi);
+        }
+        done.remove(typeName);
+    }
+
+    /**
+     * Infers fulltext info for all schemas.
+     */
+    @SuppressWarnings("unchecked")
+    private void inferFulltextInfo() {
+        List<FulltextIndexDescriptor> descs = repositoryDescriptor.fulltextIndexes;
+        if (descs == null) {
+            descs = new ArrayList<FulltextIndexDescriptor>(1);
+        }
+        if (descs.isEmpty()) {
+            descs.add(new FulltextIndexDescriptor());
+        }
+        for (FulltextIndexDescriptor desc : descs) {
+            String name = desc.name == null ? FULLTEXT_DEFAULT_INDEX
+                    : desc.name;
+            fulltextInfo.indexNames.add(name);
+            fulltextInfo.indexAnalyzer.put(
+                    name,
+                    desc.analyzer == null ? repositoryDescriptor.fulltextAnalyzer
+                            : desc.analyzer);
+            fulltextInfo.indexCatalog.put(name,
+                    desc.catalog == null ? repositoryDescriptor.fulltextCatalog
+                            : desc.catalog);
+            if (desc.fields == null) {
+                desc.fields = new HashSet<String>();
+            }
+            if (desc.excludeFields == null) {
+                desc.excludeFields = new HashSet<String>();
+            }
+
+            if (desc.fieldType != null) {
+                if (desc.fieldType.equals(FulltextInfo.PROP_TYPE_STRING)) {
+                    fulltextInfo.indexesAllSimple.add(name);
+                } else if (desc.fieldType.equals(FulltextInfo.PROP_TYPE_BLOB)) {
+                    fulltextInfo.indexesAllBinary.add(name);
+                } else {
+                    log.error("Ignoring unknow repository fulltext configuration fieldType: "
+                            + desc.fieldType);
+                }
+
+            }
+            if (desc.fields.isEmpty() && desc.fieldType == null) {
+                // no fields specified and no field type -> all of them
+                fulltextInfo.indexesAllSimple.add(name);
+                fulltextInfo.indexesAllBinary.add(name);
+            }
+
+            for (Set<String> fields : Arrays.asList(desc.fields,
+                    desc.excludeFields)) {
+                for (String path : fields) {
+                    PropertyInfo pi = allPathPropertyInfos.get(path);
+                    if (pi == null) {
+                        log.error(String.format(
+                                "Ignoring unknown property '%s' in fulltext configuration: %s",
+                                path, name));
+                        continue;
+                    }
+                    Map<String, Set<String>> indexesByPropPath;
+                    Map<String, Set<String>> propPathsByIndex;
+                    if (pi.propertyType == PropertyType.STRING
+                            || pi.propertyType == PropertyType.ARRAY_STRING) {
+                        indexesByPropPath = fields == desc.fields ? fulltextInfo.indexesByPropPathSimple
+                                : fulltextInfo.indexesByPropPathExcludedSimple;
+                        propPathsByIndex = fields == desc.fields ? fulltextInfo.propPathsByIndexSimple
+                                : fulltextInfo.propPathsExcludedByIndexSimple;
+                    } else if (pi.propertyType == PropertyType.BINARY) {
+                        indexesByPropPath = fields == desc.fields ? fulltextInfo.indexesByPropPathBinary
+                                : fulltextInfo.indexesByPropPathExcludedBinary;
+                        propPathsByIndex = fields == desc.fields ? fulltextInfo.propPathsByIndexBinary
+                                : fulltextInfo.propPathsExcludedByIndexBinary;
+                    } else {
+                        log.error(String.format(
+                                "Ignoring property '%s' with bad type %s in fulltext configuration: %s",
+                                path, pi.propertyType, name));
+                        continue;
+                    }
+                    Set<String> indexes = indexesByPropPath.get(path);
+                    if (indexes == null) {
+                        indexesByPropPath.put(path,
+                                indexes = new HashSet<String>());
+                    }
+                    indexes.add(name);
+                    Set<String> paths = propPathsByIndex.get(name);
+                    if (paths == null) {
+                        propPathsByIndex.put(name,
+                                paths = new LinkedHashSet<String>());
+                    }
+                    paths.add(path);
                 }
             }
-            String schemaName = entry.getKey();
-            fulltextStringPropertyInfos.put(schemaName, stringPropertyInfos);
-            fulltextBinaryPropertyInfos.put(schemaName, binaryPropertyInfos);
         }
     }
 
@@ -562,22 +761,24 @@ public class Model {
                 : sharedPropertyInfos.get(propertyName);
     }
 
-    public Map<String, PropertyInfo> getPropertyInfos(String typeName) {
-        return schemaPropertyInfos.get(typeName);
-    }
-
     public PropertyInfo getPropertyInfo(String propertyName) {
         return mergedPropertyInfos.get(propertyName);
     }
 
-    public Map<String, PropertyInfo> getFulltextStringPropertyInfos(
-            String schemaName) {
-        return fulltextStringPropertyInfos.get(schemaName);
+    public PropertyInfo getPathPropertyInfo(String typeName, String path) {
+        Map<String, PropertyInfo> propertyInfoByPath = pathPropertyInfos.get(typeName);
+        if (propertyInfoByPath == null) {
+            return null;
+        }
+        return propertyInfoByPath.get(path);
     }
 
-    public Map<String, PropertyInfo> getFulltextBinaryPropertyInfos(
-            String schemaName) {
-        return fulltextBinaryPropertyInfos.get(schemaName);
+    public Set<String> getTypeSimpleTextPropertyPaths(String typeName) {
+        return typeSimpleTextPaths.get(typeName);
+    }
+
+    public FulltextInfo getFulltextInfo() {
+        return fulltextInfo;
     }
 
     /**
@@ -799,6 +1000,7 @@ public class Model {
                 }
             }
             inferTypePropertyInfos(typeName, documentType.getSchemaNames());
+            inferTypePropertyPaths(documentType);
             for (String fragmentName : COMMON_SIMPLE_FRAGMENTS) {
                 addTypeSimpleFragment(typeName, fragmentName);
             }
@@ -830,6 +1032,8 @@ public class Model {
                 superType = documentSuperTypes.get(superType);
             } while (superType != null);
         }
+        // infer fulltext info
+        inferFulltextInfo();
     }
 
     /**
@@ -915,15 +1119,21 @@ public class Model {
      * Special model for the fulltext table.
      */
     private void initFullTextModel() {
-        addPropertyInfo(null, FULLTEXT_FULLTEXT_PROP, PropertyType.STRING,
-                FULLTEXT_TABLE_NAME, FULLTEXT_FULLTEXT_KEY, false,
-                StringType.INSTANCE);
-        addPropertyInfo(null, FULLTEXT_SIMPLETEXT_PROP, PropertyType.STRING,
-                FULLTEXT_TABLE_NAME, FULLTEXT_SIMPLETEXT_KEY, false,
-                StringType.INSTANCE);
-        addPropertyInfo(null, FULLTEXT_BINARYTEXT_PROP, PropertyType.STRING,
-                FULLTEXT_TABLE_NAME, FULLTEXT_BINARYTEXT_KEY, false,
-                StringType.INSTANCE);
+        for (String indexName : fulltextInfo.indexNames) {
+            String suffix = indexName.equals(FULLTEXT_DEFAULT_INDEX) ? ""
+                    : '_' + indexName;
+            addPropertyInfo(null, FULLTEXT_FULLTEXT_PROP + suffix,
+                    PropertyType.STRING, FULLTEXT_TABLE_NAME,
+                    FULLTEXT_FULLTEXT_KEY + suffix, false, StringType.INSTANCE);
+            addPropertyInfo(null, FULLTEXT_SIMPLETEXT_PROP + suffix,
+                    PropertyType.STRING, FULLTEXT_TABLE_NAME,
+                    FULLTEXT_SIMPLETEXT_KEY + suffix, false,
+                    StringType.INSTANCE);
+            addPropertyInfo(null, FULLTEXT_BINARYTEXT_PROP + suffix,
+                    PropertyType.STRING, FULLTEXT_TABLE_NAME,
+                    FULLTEXT_BINARYTEXT_KEY + suffix, false,
+                    StringType.INSTANCE);
+        }
     }
 
     /**

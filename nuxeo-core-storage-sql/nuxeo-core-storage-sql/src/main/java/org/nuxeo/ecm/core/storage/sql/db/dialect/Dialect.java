@@ -25,6 +25,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import org.hibernate.exception.SQLExceptionConverter;
@@ -32,6 +34,7 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
@@ -87,14 +90,15 @@ public abstract class Dialect {
     public Dialect(org.hibernate.dialect.Dialect dialect,
             DatabaseMetaData metadata) throws StorageException {
         this.dialect = dialect;
-
         try {
-
             storesUpperCaseIdentifiers = metadata.storesUpperCaseIdentifiers();
-
         } catch (SQLException e) {
             throw new StorageException("An error has occured.", e);
         }
+    }
+
+    public void computeFTInfo() {
+
     }
 
     public boolean storesUpperCaseIdentifiers() {
@@ -238,15 +242,18 @@ public abstract class Dialect {
      * <li>a potential query paramenter for it.</li>
      * </ul>
      *
-     * @param ftColumn the column containing the fulltext to match
-     * @param mainColumn the column with the main id, for joins
+     * @param indexName the fulltext index name to match
      * @param fulltextQuery the query to do
+     * @param mainColumn the column with the main id, for joins
+     * @param model the model
+     * @param database the database
      * @return a String array with the table join expression, the join param,
      *         the where expression and the where parm
      *
      */
-    public abstract String[] getFulltextMatch(Column ftColumn,
-            Column mainColumn, String fulltextQuery);
+    public abstract String[] getFulltextMatch(String indexName,
+            String fulltextQuery, Column mainColumn, Model model,
+            Database database);
 
     /**
      * Gets the type of a fulltext column has known by JDBC.

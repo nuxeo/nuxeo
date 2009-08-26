@@ -51,8 +51,9 @@ public class DialectMySQL extends Dialect {
     }
 
     @Override
-    public String[] getFulltextMatch(Column ftColumn, Column mainColumn,
-            String fulltextQuery) {
+    public String[] getFulltextMatch(String indexName, String fulltextQuery,
+            Column mainColumn, Model model, Database database) {
+        // TODO multiple indexes
         String whereExpr = "MATCH (`fulltext`.`simpletext`, `fulltext`.`binarytext`) AGAINST (?)";
         return new String[] { null, null, whereExpr, fulltextQuery };
     }

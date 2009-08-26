@@ -18,6 +18,8 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,7 +27,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -200,51 +201,31 @@ public class PersistenceContext {
                 continue;
             }
 
-            // collect strings on all the document's nodes recursively
-            // TODO use configuration to determine what strings to collect
-            List<String> strings = new LinkedList<String>();
-
-            // queue of nodes to visit for this document
-            Queue<Node> queue = new LinkedList<Node>();
-            queue.add(document);
-            do {
-                Node node = queue.remove();
-                // recurse into complex properties
-                // TODO could avoid recursion if no know fulltext properties
-                // there
-                queue.addAll(session.getChildren(node, null, true));
-
-                Map<String, PropertyInfo> infos = model.getFulltextStringPropertyInfos(node.getPrimaryType());
-                if (infos != null) {
-                    for (String name : infos.keySet()) {
-                        PropertyInfo info = infos.get(name);
-                        if (info.propertyType == PropertyType.STRING) {
-                            String v = node.getSimpleProperty(name).getString();
-                            if (v != null) {
-                                strings.add(v);
-                            }
-                        } else /* ARRAY_STRING */{
-                            for (Serializable v : node.getCollectionProperty(
-                                    name).getValue()) {
-                                if (v != null) {
-                                    strings.add((String) v);
-                                }
-                            }
-                        }
-                    }
+            for (String indexName : model.getFulltextInfo().indexNames) {
+                Set<String> paths;
+                if (model.getFulltextInfo().indexesAllSimple.contains(indexName)) {
+                    // index all string fields, minus excluded ones
+                    // TODO XXX excluded ones...
+                    paths = model.getTypeSimpleTextPropertyPaths(document.getPrimaryType());
+                } else {
+                    // index configured fields
+                    paths = model.getFulltextInfo().propPathsByIndexSimple.get(indexName);
                 }
-            } while (!queue.isEmpty());
-
-            // set the computed full text
-            // on INSERT/UPDATE a trigger will change the actual fulltext
-            document.setSingleProperty(model.FULLTEXT_SIMPLETEXT_PROP,
-                    StringUtils.join(strings, " "));
+                String strings = findFulltext(session, document, paths);
+                // Set the computed full text
+                // On INSERT/UPDATE a trigger will change the actual fulltext
+                String propName = model.FULLTEXT_SIMPLETEXT_PROP
+                        + (Model.FULLTEXT_DEFAULT_INDEX.equals(indexName) ? ""
+                                : '_' + indexName);
+                document.setSingleProperty(propName, strings);
+            }
         }
 
         if (!dirtyBinaries.isEmpty()) {
             log.debug("Queued documents for asynchronous fulltext extraction: "
                     + dirtyBinaries.size());
-            EventContext eventContext = new EventContextImpl(dirtyBinaries);
+            EventContext eventContext = new EventContextImpl(dirtyBinaries,
+                    model.getFulltextInfo());
             eventContext.setRepositoryName(session.getRepositoryName());
             Event event = eventContext.newEvent(BinaryTextListener.EVENT_NAME);
             try {
@@ -253,6 +234,74 @@ public class PersistenceContext {
                 throw new StorageException(e);
             }
         }
+    }
+
+    private String findFulltext(Session session, Node document,
+            Set<String> paths) throws StorageException {
+        if (paths == null) {
+            return "";
+        }
+
+        String documentType = document.getPrimaryType();
+        List<String> strings = new LinkedList<String>();
+
+        for (String path : paths) {
+            PropertyInfo pi = model.getPathPropertyInfo(documentType, path);
+            if (pi == null) {
+                continue; // doc type doesn't have this property
+            }
+            if (pi.propertyType != PropertyType.STRING
+                    && pi.propertyType != PropertyType.ARRAY_STRING) {
+                continue;
+            }
+            List<Node> nodes = new ArrayList<Node>(
+                    Collections.singleton(document));
+            String[] names = path.split("/");
+            for (int i = 0; i < names.length; i++) {
+                String name = names[i];
+                List<Node> newNodes;
+                if (i + 1 < names.length && "*".equals(names[i + 1])) {
+                    // traverse complex list
+                    i++;
+                    newNodes = new ArrayList<Node>();
+                    for (Node node : nodes) {
+                        newNodes.addAll(session.getChildren(node, name, true));
+                    }
+                } else {
+                    if (i == names.length - 1) {
+                        // last path component: get value
+                        for (Node node : nodes) {
+                            if (pi.propertyType == PropertyType.STRING) {
+                                String v = node.getSimpleProperty(name).getString();
+                                if (v != null) {
+                                    strings.add(v);
+                                }
+                            } else /* ARRAY_STRING */{
+                                for (Serializable v : node.getCollectionProperty(
+                                        name).getValue()) {
+                                    if (v != null) {
+                                        strings.add((String) v);
+                                    }
+                                }
+                            }
+                        }
+                        newNodes = Collections.emptyList();
+                    } else {
+                        // traverse
+                        newNodes = new ArrayList<Node>(nodes.size());
+                        for (Node node : nodes) {
+                            node = session.getChildNode(node, name, true);
+                            if (node != null) {
+                                newNodes.add(node);
+                            }
+                        }
+                    }
+                }
+                nodes = newNodes;
+            }
+
+        }
+        return StringUtils.join(strings, " ");
     }
 
     /**

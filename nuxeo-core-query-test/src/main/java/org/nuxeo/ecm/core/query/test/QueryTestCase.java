@@ -214,7 +214,8 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         DocumentModel sec = session.getDocument(new PathRef("/testfolder1"));
         DocumentModel proxy = session.publishDocument(doc, sec);
         session.save();
-        DocumentModelList proxies = session.getProxies(doc.getRef(), sec.getRef());
+        DocumentModelList proxies = session.getProxies(doc.getRef(),
+                sec.getRef());
         assertEquals(1, proxies.size());
         return proxy;
     }
@@ -1107,6 +1108,36 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         query = "SELECT * FROM Document WHERE ecm:fulltext = 'bzzt'";
         dml = session.query(query);
         assertIdSet(dml, file1.getId());
+    }
+
+    public void testFulltextSecondary() throws Exception {
+        createDocs();
+        String query;
+        DocumentModelList dml;
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        DocumentModel file2 = session.getDocument(new PathRef(
+                "/testfolder1/testfile2"));
+        DocumentModel file3 = session.getDocument(new PathRef(
+                "/testfolder1/testfile3"));
+
+        file1.setProperty("dublincore", "title", "hello world");
+        session.saveDocument(file1);
+        file2.setProperty("dublincore", "description", "the world is my oyster");
+        session.saveDocument(file2);
+        file3.setProperty("dublincore", "title", "brave new world");
+        session.saveDocument(file3);
+        session.save();
+        sleepForFulltext();
+
+        // check main fulltext index
+        query = "SELECT * FROM Document WHERE ecm:fulltext = 'world'";
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId(), file2.getId(), file3.getId());
+        // check secondary fulltext index, just for title field
+        query = "SELECT * FROM Document WHERE ecm:fulltext_title = 'world'";
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId(), file3.getId()); // file2 has it in descr
     }
 
     public void testFulltextBlob() throws Exception {

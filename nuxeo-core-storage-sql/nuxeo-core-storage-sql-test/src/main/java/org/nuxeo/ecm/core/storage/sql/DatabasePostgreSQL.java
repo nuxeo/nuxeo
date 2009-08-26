@@ -73,8 +73,9 @@ public class DatabasePostgreSQL extends DatabaseHelper {
                 PG_DATABASE);
         log.debug(sql);
         st.execute(sql);
-        sql = String.format("CREATE DATABASE \"%s\" OWNER \"%s\"", PG_DATABASE,
-                PG_DATABASE_OWNER);
+        sql = String.format(
+                "CREATE DATABASE \"%s\" OWNER \"%s\" ENCODING = 'UTF8'",
+                PG_DATABASE, PG_DATABASE_OWNER);
         log.debug(sql);
         st.execute(sql);
         st.close();

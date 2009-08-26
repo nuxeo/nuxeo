@@ -66,8 +66,11 @@ public class DialectDerby extends Dialect {
     }
 
     @Override
-    public String[] getFulltextMatch(Column ftColumn, Column mainColumn,
-            String fulltextQuery) {
+    public String[] getFulltextMatch(String indexName, String fulltextQuery,
+            Column mainColumn, Model model, Database database) {
+        // TODO multiple indexes
+        Column ftColumn = database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
+                model.FULLTEXT_FULLTEXT_KEY);
         String qname = ftColumn.getFullQuotedName();
         if (ftColumn.getSqlType() == Types.CLOB) {
             String colFmt = getClobCast(false);

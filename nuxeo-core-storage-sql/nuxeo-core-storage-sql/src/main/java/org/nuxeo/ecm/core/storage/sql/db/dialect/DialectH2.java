@@ -27,6 +27,7 @@ import org.hibernate.dialect.H2Dialect;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.Model.FulltextInfo;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
@@ -40,13 +41,9 @@ public class DialectH2 extends Dialect {
 
     private static final String DEFAULT_FULLTEXT_ANALYZER = "org.apache.lucene.analysis.standard.StandardAnalyzer";
 
-    private final String fulltextAnalyzer;
-
     public DialectH2(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(new H2Dialect(), metadata);
-        fulltextAnalyzer = repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
-                : repositoryDescriptor.fulltextAnalyzer;
     }
 
     @Override
@@ -56,10 +53,11 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
-    public String[] getFulltextMatch(Column ftColumn, Column mainColumn,
-            String fulltextQuery) {
-        String queryTable = String.format("NXFT_SEARCH('%s', '%s', ?)",
-                "PUBLIC", ftColumn.getTable().getName());
+    public String[] getFulltextMatch(String indexName, String fulltextQuery,
+            Column mainColumn, Model model, Database database) {
+        String phftname = database.getTable(model.FULLTEXT_TABLE_NAME).getName(); // physical
+        String fullIndexName = "PUBLIC_" + phftname + "_" + indexName;
+        String queryTable = String.format("NXFT_SEARCH('%s', ?)", fullIndexName);
         String whereExpr = String.format("%%s.KEY = %s",
                 mainColumn.getFullQuotedName());
         return new String[] { (queryTable + " %s"), fulltextQuery, whereExpr,
@@ -128,8 +126,6 @@ public class DialectH2 extends Dialect {
             throw new AssertionError(model.idGenPolicy);
         }
         Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
-        Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
-        Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY);
 
         List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
 
@@ -154,16 +150,29 @@ public class DialectH2 extends Dialect {
                         "CREATE ALIAS IF NOT EXISTS NXFT_INIT FOR \"%s.init\"; "
                                 + "CALL NXFT_INIT()", h2Fulltext)));
 
-        statements.add(new ConditionalStatement(
-                false, // late
-                Boolean.FALSE, // no drop
-                null, //
-                null, //
-                String.format(
-                        "CALL NXFT_CREATE_INDEX('PUBLIC', '%s', ('%s', '%s'), '%s')",
-                        ft.getName(), ftst.getPhysicalName(),
-                        ftbt.getPhysicalName(), fulltextAnalyzer)));
-
+        FulltextInfo fti = model.getFulltextInfo();
+        for (String indexName : fti.indexNames) {
+            String analyzer = fti.indexAnalyzer.get(indexName);
+            if (analyzer == null) {
+                analyzer = DEFAULT_FULLTEXT_ANALYZER;
+            }
+            String fullIndexName = String.format("PUBLIC_%s_%s", ft.getName(),
+                    indexName);
+            String suffix = indexName.equals(Model.FULLTEXT_DEFAULT_INDEX) ? ""
+                    : '_' + indexName;
+            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY + suffix);
+            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY + suffix);
+            statements.add(new ConditionalStatement(
+                    false, // late
+                    Boolean.FALSE, // no drop
+                    null, //
+                    null, //
+                    String.format(
+                            "CALL NXFT_CREATE_INDEX('%s', 'PUBLIC', '%s', ('%s', '%s'), '%s')",
+                            fullIndexName, ft.getName(),
+                            ftst.getPhysicalName(), ftbt.getPhysicalName(),
+                            analyzer)));
+        }
         return statements;
     }
 

@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
+import org.nuxeo.ecm.core.storage.sql.Model.FulltextInfo;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.runtime.api.Framework;
 
@@ -74,6 +75,7 @@ public class BinaryTextListener implements PostCommitEventListener {
             log.error("Incorrect event bundle type: " + eventBundle);
             return;
         }
+        FulltextInfo fulltextInfo;
         CoreSession session = null;
         Set<Serializable> ids = new HashSet<Serializable>();
         for (Event event : eventBundle) {
@@ -81,6 +83,7 @@ public class BinaryTextListener implements PostCommitEventListener {
                 continue;
             }
             EventContext eventContext = event.getContext();
+            fulltextInfo = getFulltextInfoFromEventContext(eventContext);
             ids.addAll(getIdsFromEventContext(eventContext));
             CoreSession s = eventContext.getCoreSession();
             if (session == null) {
@@ -132,6 +135,11 @@ public class BinaryTextListener implements PostCommitEventListener {
     @SuppressWarnings("unchecked")
     protected Set<Serializable> getIdsFromEventContext(EventContext eventContext) {
         return (Set<Serializable>) eventContext.getArguments()[0];
+    }
+
+    protected FulltextInfo getFulltextInfoFromEventContext(
+            EventContext eventContext) {
+        return (FulltextInfo) eventContext.getArguments()[1];
     }
 
     protected String blobsToText(List<Blob> blobs) {

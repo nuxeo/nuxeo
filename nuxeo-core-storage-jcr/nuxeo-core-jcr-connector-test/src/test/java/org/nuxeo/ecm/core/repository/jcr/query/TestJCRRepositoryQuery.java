@@ -61,6 +61,11 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
     }
 
     @Override
+    public void testFulltextSecondary() {
+        // no secondary fulltext indexes for JCR
+    }
+
+    @Override
     public void testFulltextBlob() {
         // TODO blob indexing configuration
     }

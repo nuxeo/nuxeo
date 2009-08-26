@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -19,8 +19,10 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,6 +41,28 @@ public class RepositoryDescriptor {
 
     private static final Log log = LogFactory.getLog(RepositoryDescriptor.class);
 
+    @XObject(value = "index")
+    public static class FulltextIndexDescriptor {
+        @XNode("@name")
+        public String name;
+
+        @XNode("@analyzer")
+        public String analyzer;
+
+        @XNode("@catalog")
+        public String catalog;
+
+        /** string or blob */
+        @XNode("fieldType")
+        public String fieldType;
+
+        @XNodeList(value = "field", type = HashSet.class, componentType = String.class)
+        public Set<String> fields;
+
+        @XNodeList(value = "excludeField", type = HashSet.class, componentType = String.class)
+        public Set<String> excludeFields;
+    }
+
     @XNode("@name")
     public String name;
 
@@ -54,8 +78,11 @@ public class RepositoryDescriptor {
     @XNode("indexing/fulltext@catalog")
     public String fulltextCatalog;
 
-    @XNodeList(value = "queryMaker@class", type = ArrayList.class, componentType = Class.class)
-    protected List<Class<?>> queryMakerClasses = null;
+    @XNodeList(value = "indexing/queryMaker@class", type = ArrayList.class, componentType = Class.class)
+    public List<Class<?>> queryMakerClasses;
+
+    @XNodeList(value = "indexing/fulltext/index", type = ArrayList.class, componentType = FulltextIndexDescriptor.class)
+    public List<FulltextIndexDescriptor> fulltextIndexes;
 
     /** Merges only non-JCA properties. */
     public void mergeFrom(RepositoryDescriptor other) {
@@ -64,6 +91,7 @@ public class RepositoryDescriptor {
         fulltextAnalyzer = other.fulltextAnalyzer;
         fulltextCatalog = other.fulltextCatalog;
         queryMakerClasses = other.queryMakerClasses;
+        fulltextIndexes = other.fulltextIndexes;
     }
 
     @XNode("xa-datasource")

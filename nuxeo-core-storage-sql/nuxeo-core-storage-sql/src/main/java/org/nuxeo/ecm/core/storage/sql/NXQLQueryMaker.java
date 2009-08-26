@@ -564,7 +564,7 @@ public class NXQLQueryMaker implements QueryMaker {
             return database.getTable(model.MISC_TABLE_NAME).getColumn(
                     model.MISC_LIFECYCLE_STATE_KEY);
         }
-        if (NXQL.ECM_FULLTEXT.equals(name)) {
+        if (name.startsWith(NXQL.ECM_FULLTEXT)) {
             throw new QueryMakerException(NXQL.ECM_FULLTEXT
                     + " must be used as left-hand operand");
         }
@@ -824,7 +824,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
                 return;
             }
-            if (NXQL.ECM_FULLTEXT.equals(name)) {
+            if (name.startsWith(NXQL.ECM_FULLTEXT)) {
                 if (sqlInfo.dialect.isFulltextTableNeeded()) {
                     // we only use this for its fragment name
                     props.add(model.FULLTEXT_SIMPLETEXT_PROP);
@@ -962,8 +962,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 visitExpressionIsProxy(node);
             } else if (NXQL.ECM_ISVERSION.equals(name)) {
                 visitExpressionIsVersion(node);
-            } else if (NXQL.ECM_FULLTEXT.equals(name)) {
-                visitExpressionFulltext(node);
+            } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT)) {
+                visitExpressionFulltext(node, name);
             } else if ((op == Operator.EQ || op == Operator.NOTEQ
                     || op == Operator.IN || op == Operator.NOTIN
                     || op == Operator.LIKE || op == Operator.NOTLIKE)
@@ -1146,7 +1146,13 @@ public class NXQLQueryMaker implements QueryMaker {
             buf.append(bool ? " IS NOT NULL" : " IS NULL");
         }
 
-        protected void visitExpressionFulltext(Expression node) {
+        protected void visitExpressionFulltext(Expression node, String name) {
+            if (name.equals(NXQL.ECM_FULLTEXT)) {
+                name = Model.FULLTEXT_DEFAULT_INDEX;
+            } else {
+                // ecm:fulltext_indexname
+                name = name.substring(NXQL.ECM_FULLTEXT.length() + 1);
+            }
             if (node.operator != Operator.EQ && node.operator != Operator.LIKE) {
                 throw new QueryMakerException(NXQL.ECM_FULLTEXT
                         + " requires = or LIKE operator");
@@ -1158,11 +1164,12 @@ public class NXQLQueryMaker implements QueryMaker {
             String fulltextQuery = ((StringLiteral) node.rvalue).value;
             // TODO parse query language for fulltext
             // for now just a sequence of words
-            Column ftColumn = database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
-                    model.FULLTEXT_FULLTEXT_KEY);
+            // Column ftColumn =
+            // database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
+            // model.FULLTEXT_FULLTEXT_KEY);
             Column mainColumn = joinedHierTable.getColumn(model.MAIN_KEY);
-            String[] info = sqlInfo.dialect.getFulltextMatch(ftColumn,
-                    mainColumn, fulltextQuery);
+            String[] info = sqlInfo.dialect.getFulltextMatch(name,
+                    fulltextQuery, mainColumn, model, database);
             String joinExpr = info[0];
             String joinParam = info[1];
             String whereExpr = info[2];

@@ -89,8 +89,8 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public String[] getFulltextMatch(Column ftColumn, Column mainColumn,
-            String fulltextQuery) {
+    public String[] getFulltextMatch(String name, String fulltextQuery,
+            Column mainColumn, Model model, Database database) {
         String whereExpr = String.format(
                 "FREETEXT([fulltext].*, ?, LANGUAGE %s)",
                 getQuotedFulltextAnalyzer());

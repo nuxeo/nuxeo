@@ -81,8 +81,11 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public String[] getFulltextMatch(Column ftColumn, Column mainColumn,
-            String fulltextQuery) {
+    public String[] getFulltextMatch(String name, String fulltextQuery,
+            Column mainColumn, Model model, Database database) {
+        // TODO multiple indexes
+        Column ftColumn = database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
+                model.FULLTEXT_FULLTEXT_KEY);
         String whereExpr = String.format("CONTAINS(%s, ?) > 0",
                 ftColumn.getFullQuotedName());
         return new String[] { null, null, whereExpr, fulltextQuery };
