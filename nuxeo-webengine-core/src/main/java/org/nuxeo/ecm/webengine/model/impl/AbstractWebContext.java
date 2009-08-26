@@ -316,6 +316,7 @@ public abstract class AbstractWebContext implements WebContext {
         if (basePath == null) {
             String webenginePath = request.getHeader(WebContext.NUXEO_WEBENGINE_BASE_PATH);
             if (",".equals(webenginePath)) {
+                // when the parameter is empty, request.getHeader return ',' on apache server.
                 webenginePath = "";
             }
             basePath = webenginePath != null ? webenginePath
