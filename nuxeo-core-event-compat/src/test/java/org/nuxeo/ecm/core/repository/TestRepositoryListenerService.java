@@ -44,6 +44,7 @@ public class TestRepositoryListenerService extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core.event.compat");
         deployTestContrib("org.nuxeo.ecm.core.event.compat",
                 "CoreEventListenerTestExtensions.xml");
