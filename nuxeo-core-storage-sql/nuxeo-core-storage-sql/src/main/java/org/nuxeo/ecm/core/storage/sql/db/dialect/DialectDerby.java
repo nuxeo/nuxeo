@@ -60,8 +60,8 @@ public class DialectDerby extends Dialect {
     }
 
     @Override
-    public String getCreateFulltextIndexSql(String indexName, String tableName,
-            List<String> columnNames) {
+    public String getCreateFulltextIndexSql(String indexName,
+            String quotedIndexName, String tableName, List<String> columnNames) {
         throw new UnsupportedOperationException();
     }
 

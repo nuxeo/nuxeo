@@ -23,15 +23,18 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.hibernate.dialect.PostgreSQLDialect;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.Model.FulltextInfo;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
@@ -63,18 +66,19 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public String getCreateFulltextIndexSql(String indexName, String tableName,
-            List<String> columnNames) {
-        return String.format("CREATE INDEX %s ON %s USING GIN(%s)", indexName,
-                tableName, columnNames.get(0));
+    public String getCreateFulltextIndexSql(String indexName,
+            String quotedIndexName, String tableName, List<String> columnNames) {
+        return String.format("CREATE INDEX %s ON %s USING GIN(%s)",
+                quotedIndexName.toLowerCase(), tableName, columnNames.get(0));
     }
 
     @Override
     public String[] getFulltextMatch(String indexName, String fulltextQuery,
             Column mainColumn, Model model, Database database) {
         // TODO multiple indexes
+        String suffix = model.getFulltextIndexSuffix(indexName);
         Column ftColumn = database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
-                model.FULLTEXT_FULLTEXT_KEY);
+                model.FULLTEXT_FULLTEXT_KEY + suffix);
         String whereExpr = String.format("NX_CONTAINS(%s, ?)",
                 ftColumn.getFullQuotedName());
         return new String[] { null, null, whereExpr, fulltextQuery };
@@ -255,9 +259,6 @@ public class DialectPostgreSQL extends Dialect {
             throw new AssertionError(model.idGenPolicy);
         }
         Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
-        Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY);
-        Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
-        Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY);
 
         List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
 
@@ -399,26 +400,35 @@ public class DialectPostgreSQL extends Dialect {
                         + "LANGUAGE plpgsql" //
         ));
 
-        statements.add(new ConditionalStatement(
-                //
+        FulltextInfo fti = model.getFulltextInfo();
+        List<String> lines = new ArrayList<String>(fti.indexNames.size());
+        for (String indexName : fti.indexNames) {
+            String suffix = model.getFulltextIndexSuffix(indexName);
+            Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY + suffix);
+            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY + suffix);
+            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY + suffix);
+            String line = String.format(
+                    "  NEW.%s := COALESCE(NEW.%s, ''::TSVECTOR) || COALESCE(NEW.%s, ''::TSVECTOR);",
+                    ftft.getQuotedName(), ftst.getQuotedName(),
+                    ftbt.getQuotedName());
+            lines.add(line);
+        }
+        statements.add(new ConditionalStatement( //
                 false, // late
                 Boolean.FALSE, // no drop needed
                 null, //
                 null, //
-                String.format(
-                        "CREATE OR REPLACE FUNCTION NX_UPDATE_FULLTEXT() " //
-                                + "RETURNS trigger " //
-                                + "AS $$ " //
-                                + "BEGIN" //
-                                + "  NEW.%s := COALESCE(NEW.%s, ''::TSVECTOR) || COALESCE(NEW.%s, ''::TSVECTOR);" //
-                                + "  RETURN NEW; " //
-                                + "END " //
-                                + "$$ " //
-                                + "LANGUAGE plpgsql " //
-                                + "VOLATILE " //
-                        , ftft.getQuotedName(), //
-                        ftst.getQuotedName(), //
-                        ftbt.getQuotedName())));
+                "CREATE OR REPLACE FUNCTION NX_UPDATE_FULLTEXT() " //
+                        + "RETURNS trigger " //
+                        + "AS $$ " //
+                        + "BEGIN" //
+                        + StringUtils.join(lines, "") //
+                        + "  RETURN NEW; " //
+                        + "END " //
+                        + "$$ " //
+                        + "LANGUAGE plpgsql " //
+                        + "VOLATILE " //
+        ));
 
         statements.add(new ConditionalStatement(
                 false, // late

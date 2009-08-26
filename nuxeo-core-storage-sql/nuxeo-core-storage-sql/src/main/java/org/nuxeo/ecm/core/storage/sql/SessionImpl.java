@@ -41,7 +41,6 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.PartialList;

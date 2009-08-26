@@ -70,8 +70,8 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public String getCreateFulltextIndexSql(String indexName, String tableName,
-            List<String> columnNames) {
+    public String getCreateFulltextIndexSql(String indexName,
+            String quotedIndexName, String tableName, List<String> columnNames) {
         StringBuilder buf = new StringBuilder();
         buf.append(String.format("CREATE FULLTEXT INDEX ON %s (", tableName));
         Iterator<String> it = columnNames.iterator();

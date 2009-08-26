@@ -215,8 +215,7 @@ public class PersistenceContext {
                 // Set the computed full text
                 // On INSERT/UPDATE a trigger will change the actual fulltext
                 String propName = model.FULLTEXT_SIMPLETEXT_PROP
-                        + (Model.FULLTEXT_DEFAULT_INDEX.equals(indexName) ? ""
-                                : '_' + indexName);
+                        + model.getFulltextIndexSuffix(indexName);
                 document.setSingleProperty(propName, strings);
             }
         }

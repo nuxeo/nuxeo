@@ -1120,8 +1120,7 @@ public class Model {
      */
     private void initFullTextModel() {
         for (String indexName : fulltextInfo.indexNames) {
-            String suffix = indexName.equals(FULLTEXT_DEFAULT_INDEX) ? ""
-                    : '_' + indexName;
+            String suffix = getFulltextIndexSuffix(indexName);
             addPropertyInfo(null, FULLTEXT_FULLTEXT_PROP + suffix,
                     PropertyType.STRING, FULLTEXT_TABLE_NAME,
                     FULLTEXT_FULLTEXT_KEY + suffix, false, StringType.INSTANCE);
@@ -1134,6 +1133,10 @@ public class Model {
                     FULLTEXT_BINARYTEXT_KEY + suffix, false,
                     StringType.INSTANCE);
         }
+    }
+
+    public String getFulltextIndexSuffix(String indexName) {
+        return indexName.equals(FULLTEXT_DEFAULT_INDEX) ? "" : '_' + indexName;
     }
 
     /**

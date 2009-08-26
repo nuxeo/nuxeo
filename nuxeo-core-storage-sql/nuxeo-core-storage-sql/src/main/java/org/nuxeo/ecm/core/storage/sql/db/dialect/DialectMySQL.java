@@ -44,10 +44,10 @@ public class DialectMySQL extends Dialect {
     }
 
     @Override
-    public String getCreateFulltextIndexSql(String indexName, String tableName,
-            List<String> columnNames) {
-        return String.format("CREATE FULLTEXT INDEX %s ON %s (%s)", indexName,
-                tableName, StringUtils.join(columnNames, ", "));
+    public String getCreateFulltextIndexSql(String indexName,
+            String quotedIndexName, String tableName, List<String> columnNames) {
+        return String.format("CREATE FULLTEXT INDEX %s ON %s (%s)",
+                quotedIndexName, tableName, StringUtils.join(columnNames, ", "));
     }
 
     @Override

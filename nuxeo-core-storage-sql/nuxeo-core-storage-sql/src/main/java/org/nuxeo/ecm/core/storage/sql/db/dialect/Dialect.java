@@ -25,8 +25,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 import org.hibernate.exception.SQLExceptionConverter;
@@ -34,7 +32,6 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
@@ -224,7 +221,7 @@ public abstract class Dialect {
      * Gets a CREATE INDEX statement for a fulltext index.
      */
     public abstract String getCreateFulltextIndexSql(String indexName,
-            String tableName, List<String> columnNames);
+            String quotedIndexName, String tableName, List<String> columnNames);
 
     /**
      * Gets the information needed to do a a fulltext match, either with a

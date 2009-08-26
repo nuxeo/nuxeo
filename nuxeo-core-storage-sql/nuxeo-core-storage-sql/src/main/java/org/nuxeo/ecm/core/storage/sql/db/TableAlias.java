@@ -101,7 +101,7 @@ public class TableAlias implements Table {
         throw new UnsupportedOperationException();
     }
 
-    public void addFulltextIndex(String... columnNames) {
+    public void addFulltextIndex(String indexName, String... columnNames) {
         throw new UnsupportedOperationException();
     }
 

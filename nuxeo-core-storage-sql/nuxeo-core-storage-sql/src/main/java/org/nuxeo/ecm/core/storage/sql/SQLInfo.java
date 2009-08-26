@@ -489,12 +489,16 @@ public class SQLInfo {
          * fulltext
          */
         table = database.getTable(model.FULLTEXT_TABLE_NAME);
-        int fulltextIndexedColumns = dialect.getFulltextIndexedColumns();
-        if (fulltextIndexedColumns == 1) {
-            table.addFulltextIndex(model.FULLTEXT_FULLTEXT_KEY);
-        } else if (fulltextIndexedColumns == 2) {
-            table.addFulltextIndex(model.FULLTEXT_SIMPLETEXT_KEY,
-                    model.FULLTEXT_BINARYTEXT_KEY);
+        for (String indexName : model.getFulltextInfo().indexNames) {
+            String suffix = model.getFulltextIndexSuffix(indexName);
+            int ftic = dialect.getFulltextIndexedColumns();
+            if (ftic == 1) {
+                table.addFulltextIndex(indexName, model.FULLTEXT_FULLTEXT_KEY
+                        + suffix);
+            } else if (ftic == 2) {
+                table.addFulltextIndex(indexName, model.FULLTEXT_SIMPLETEXT_KEY
+                        + suffix, model.FULLTEXT_BINARYTEXT_KEY + suffix);
+            }
         }
     }
 

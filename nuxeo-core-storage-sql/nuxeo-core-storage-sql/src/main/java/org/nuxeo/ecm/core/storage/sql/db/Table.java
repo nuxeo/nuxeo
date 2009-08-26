@@ -58,11 +58,12 @@ public interface Table extends Serializable {
     void addIndex(String... columnNames);
 
     /**
-     * Adds a fulltext index on one or several columns.
+     * Adds a named fulltext index on one or several columns.
      *
+     * @param indexName the index name
      * @param columnNames the column names
      */
-    void addFulltextIndex(String... columnNames);
+    void addFulltextIndex(String indexName, String... columnNames);
 
     /**
      * Checks if the table has some fulltext indexes.

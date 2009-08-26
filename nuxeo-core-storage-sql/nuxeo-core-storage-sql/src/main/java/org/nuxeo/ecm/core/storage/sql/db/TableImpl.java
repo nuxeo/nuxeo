@@ -20,10 +20,12 @@
 package org.nuxeo.ecm.core.storage.sql.db;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
@@ -51,7 +53,7 @@ public class TableImpl implements Table {
     private final List<String[]> indexedColumns;
 
     /** Those of the indexed columns that concern fulltext. */
-    private final List<String[]> fulltextIndexedColumns;
+    private final Map<String[], String> fulltextIndexedColumns;
 
     /**
      * Creates a new empty table.
@@ -63,7 +65,7 @@ public class TableImpl implements Table {
         // we use a LinkedHashMap to have deterministic ordering
         columns = new LinkedHashMap<String, Column>();
         indexedColumns = new LinkedList<String[]>();
-        fulltextIndexedColumns = new LinkedList<String[]>();
+        fulltextIndexedColumns = new HashMap<String[], String>();
     }
 
     public Dialect getDialect() {
@@ -115,9 +117,9 @@ public class TableImpl implements Table {
         indexedColumns.add(columnNames);
     }
 
-    public void addFulltextIndex(String... columnNames) {
+    public void addFulltextIndex(String indexName, String... columnNames) {
         indexedColumns.add(columnNames);
-        fulltextIndexedColumns.add(columnNames);
+        fulltextIndexedColumns.put(columnNames, indexName);
     }
 
     public boolean hasFulltextIndex() {
@@ -262,14 +264,15 @@ public class TableImpl implements Table {
                 qcols.add(col.getQuotedName());
                 pcols.add(col.getPhysicalName());
             }
-            String indexName = dialect.openQuote()
+            String quotedIndexName = dialect.openQuote()
                     + dialect.getIndexName(name, pcols) + dialect.closeQuote();
             String createIndexSql;
-            if (fulltextIndexedColumns.contains(columnNames)) {
+            String indexName = fulltextIndexedColumns.get(columnNames);
+            if (indexName != null) {
                 createIndexSql = dialect.getCreateFulltextIndexSql(indexName,
-                        getQuotedName(), qcols);
+                        quotedIndexName, getQuotedName(), qcols);
             } else {
-                createIndexSql = dialect.getCreateIndexSql(indexName,
+                createIndexSql = dialect.getCreateIndexSql(quotedIndexName,
                         getQuotedName(), qcols);
             }
             sqls.add(createIndexSql);

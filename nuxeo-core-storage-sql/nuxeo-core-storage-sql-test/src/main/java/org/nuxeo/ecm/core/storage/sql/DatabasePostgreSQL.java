@@ -43,7 +43,7 @@ public class DatabasePostgreSQL extends DatabaseHelper {
     private static final String PG_SUPER_USER = "postgres";
 
     /** Superusers's password. */
-    private static final String PG_SUPER_PASSWORD = "";
+    private static final String PG_SUPER_PASSWORD = "postgres";
 
     /** Database to connect to to issue CREATE DATABASE commands. */
     private static final String PG_SUPER_DATABASE = "postgres";
@@ -52,6 +52,8 @@ public class DatabasePostgreSQL extends DatabaseHelper {
 
     /** The name of the database where tests take place. */
     private static final String PG_DATABASE = "nuxeojunittests";
+
+    // CREATE USER nuxeo WITH PASSWORD 'nuxeo'
 
     /** The owner of the database where tests take place. */
     private static final String PG_DATABASE_OWNER = "nuxeo";
