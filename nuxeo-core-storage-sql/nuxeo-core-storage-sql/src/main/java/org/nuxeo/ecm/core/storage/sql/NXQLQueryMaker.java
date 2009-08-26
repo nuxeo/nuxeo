@@ -1152,6 +1152,10 @@ public class NXQLQueryMaker implements QueryMaker {
             } else {
                 // ecm:fulltext_indexname
                 name = name.substring(NXQL.ECM_FULLTEXT.length() + 1);
+                if (!model.fulltextInfo.indexNames.contains(name)) {
+                    throw new QueryMakerException("No such fulltext index: "
+                            + name);
+                }
             }
             if (node.operator != Operator.EQ && node.operator != Operator.LIKE) {
                 throw new QueryMakerException(NXQL.ECM_FULLTEXT

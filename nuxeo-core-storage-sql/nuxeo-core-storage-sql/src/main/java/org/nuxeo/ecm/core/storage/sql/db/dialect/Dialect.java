@@ -122,27 +122,28 @@ public abstract class Dialect {
         return 999;
     }
 
-    protected String makeName(String prefix, String string, String suffix) {
+    protected int getMaxIndexNameSize() {
+        return 999;
+    }
+
+    protected String makeName(String prefix, String string, String suffix,
+            int maxNameSize) {
         int length = prefix.length() + string.length() + suffix.length();
 
         try {
 
             StringBuilder sb = new StringBuilder(length);
 
-            if (length > getMaxNameSize()) {
+            if (length > maxNameSize) {
 
                 MessageDigest digest = MessageDigest.getInstance("MD5");
 
                 byte[] bytes = (prefix + string).getBytes();
                 digest.update(bytes, 0, bytes.length);
 
-                sb.append("O");
+                sb.append(prefix.substring(0, 4));
                 sb.append('_');
-                sb.append(prefix.charAt(0));
-                sb.append('_');
-                sb.append(string.charAt(0));
-                sb.append('_');
-                sb.append(toHexString(digest.digest()).substring(0, 16));
+                sb.append(toHexString(digest.digest()).substring(0, 8));
             }
 
             else {
@@ -173,12 +174,13 @@ public abstract class Dialect {
     public String getForeignKeyConstraintName(String tableName,
             String foreignColumnName, String foreignTableName) {
         return makeName(tableName + '_', foreignColumnName + '_'
-                + foreignTableName, "_FK");
+                + foreignTableName, "_FK", getMaxNameSize());
     }
 
     public String getIndexName(String tableName, List<String> columnNames) {
         return makeName(qualifyIndexName() ? tableName + '_' : "",
-                StringUtils.join(columnNames, '_'), "_IDX");
+                StringUtils.join(columnNames, '_'), "_IDX",
+                getMaxIndexNameSize());
     }
 
     public String getIdentitySelectString(String table, String column,

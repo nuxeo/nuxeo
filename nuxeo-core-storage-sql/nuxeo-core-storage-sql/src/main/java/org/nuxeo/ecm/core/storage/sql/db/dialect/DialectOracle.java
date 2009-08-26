@@ -23,16 +23,20 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.hibernate.dialect.Oracle9Dialect;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.Model.FulltextInfo;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
+import org.nuxeo.ecm.core.storage.sql.db.Table;
 
 /**
  * Oracle-specific dialect.
@@ -49,6 +53,12 @@ public class DialectOracle extends Dialect {
     @Override
     protected int getMaxNameSize() {
         return 30;
+    }
+
+    @Override
+    /* Avoid DRG-11439: index name length exceeds maximum of 25 bytes */
+    protected int getMaxIndexNameSize() {
+        return 25;
     }
 
     @Override
@@ -81,11 +91,11 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public String[] getFulltextMatch(String name, String fulltextQuery,
+    public String[] getFulltextMatch(String indexName, String fulltextQuery,
             Column mainColumn, Model model, Database database) {
-        // TODO multiple indexes
+        String suffix = model.getFulltextIndexSuffix(indexName);
         Column ftColumn = database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
-                model.FULLTEXT_FULLTEXT_KEY);
+                model.FULLTEXT_FULLTEXT_KEY + suffix);
         String whereExpr = String.format("CONTAINS(%s, ?) > 0",
                 ftColumn.getFullQuotedName());
         return new String[] { null, null, whereExpr, fulltextQuery };
@@ -254,7 +264,20 @@ public class DialectOracle extends Dialect {
                                 + "END;" //
                         , idType, declaredType)));
 
-        statements.add(new ConditionalStatement(
+        Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+        FulltextInfo fti = model.getFulltextInfo();
+        List<String> lines = new ArrayList<String>(fti.indexNames.size());
+        for (String indexName : fti.indexNames) {
+            String suffix = model.getFulltextIndexSuffix(indexName);
+            Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY + suffix);
+            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY + suffix);
+            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY + suffix);
+            String line = String.format("  :NEW.%s := :NEW.%s || :NEW.%s; ",
+                    ftft.getQuotedName(), ftst.getQuotedName(),
+                    ftbt.getQuotedName());
+            lines.add(line);
+        }
+        statements.add(new ConditionalStatement( //
                 false, // late
                 Boolean.FALSE, // no drop
                 null, //
@@ -263,7 +286,7 @@ public class DialectOracle extends Dialect {
                         + "BEFORE INSERT OR UPDATE ON \"FULLTEXT\" "
                         + "FOR EACH ROW " //
                         + "BEGIN" //
-                        + "  :NEW.FULLTEXT := :NEW.SIMPLETEXT || :NEW.BINARYTEXT; " //
+                        + StringUtils.join(lines, "") //
                         + "END;" //
         ));
 
