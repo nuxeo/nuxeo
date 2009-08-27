@@ -57,7 +57,10 @@ Selenium.prototype.doWatchA4jRequests = function() {
       testWindow = testWindow.wrappedJSObject;
   }
   testWindow.A4J.AJAX.AddListener({
-    onafterajax: function() {Selenium.A4jRequestFinished = true}
+    onbeforeajax: function() {Selenium.ActiveA4jRequestCount++}
+  });
+  testWindow.A4J.AJAX.AddListener({
+    onafterajax: function() {Selenium.ActiveA4jRequestCount--}
   });
 }
 
@@ -67,12 +70,8 @@ Selenium.prototype.doWatchA4jRequests = function() {
  */
 Selenium.prototype.doWaitForA4jRequest = function(timeout) {
   return Selenium.decorateFunctionWithTimeout(function() {
-    if (Selenium.A4jRequestFinished) {
-      Selenium.A4jRequestFinished = false;
-      return true;
-    }
-    return false;
+    return Selenium.ActiveA4jRequestCount == 0;
   }, timeout);
 }
 
-Selenium.A4jRequestFinished = false;
+Selenium.ActiveA4jRequestCount = 0;

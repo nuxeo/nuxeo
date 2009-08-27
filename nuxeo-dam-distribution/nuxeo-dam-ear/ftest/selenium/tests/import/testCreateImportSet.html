@@ -47,6 +47,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
 	<td>click</td>
 	<td>link=Import</td>
 	<td></td>
@@ -55,6 +60,11 @@
 	<td>type</td>
 	<td>fileUploadForm:file</td>
 	<td>${testfolderpath}/data/toImport.zip</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>20000</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
@@ -87,11 +97,6 @@
 	<td>06/8/09</td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
 	<td>select</td>
 	<td>importset_form:nxl_dublincore:nxw_coverage:nxw_coverage_continent</td>
 	<td>label=Africa</td>
@@ -102,19 +107,9 @@
 	<td></td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>importset_form:nxl_dublincore:nxw_coverage:nxw_coverage_country</td>
-	<td></td>
-</tr>
-<tr>
 	<td>select</td>
 	<td>importset_form:nxl_dublincore:nxw_coverage:nxw_coverage_country</td>
 	<td>label=Algeria</td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
 </tr>
 <tr>
 	<td>click</td>
