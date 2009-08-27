@@ -102,7 +102,9 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
         Map<String, String> options = new HashMap<String, String>();
         options.put("inputField", inputTextId);
         options.put("button", triggerButtonId);
-        options.put("showsTime", dateTimeComp.getShowsTime().toString());
+        /* in javascript: empty string == false, non empty string == true */
+        String showsTime = dateTimeComp.getShowsTime() ? "true" : "";
+        options.put("showsTime", showsTime);
         options.put("ifFormat", convertFormat(dateTimeComp.getFormat()));
         String calendarSetup = String.format("Calendar.setup(%s);",
                 generateOptions(options));

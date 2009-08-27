@@ -541,6 +541,10 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             if (viewId == null) {
                 viewId = getDefaultView(doc);
             }
+
+            if (doc.isVersion()) {
+                parameters.put("version", "true");
+            }
             DocumentView docView = new DocumentViewImpl(docLoc, viewId,
                     parameters);
 

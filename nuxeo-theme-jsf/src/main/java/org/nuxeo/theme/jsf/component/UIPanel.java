@@ -54,6 +54,7 @@ public class UIPanel extends UIOutput {
             applicationPath = context.getExternalContext().getRequestContextPath();
         }
         params.put("org.nuxeo.theme.application.path", applicationPath);
+        params.put("org.nuxeo.theme.application.name", "");
         Map<String, Object> attributes = getAttributes();
         params.put("identifier", (String) attributes.get("identifier"));
         params.put("url", (String) attributes.get("url"));

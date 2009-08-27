@@ -131,47 +131,6 @@
       <filter-class>org.jboss.seam.web.ContextFilter</filter-class>
     </filter>
 
-    <!-- simple cache filter configuration, filter is defined in web-common -->
-
-    <filter-mapping>
-      <filter-name>simpleCacheFilter</filter-name>
-      <url-pattern>/img/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>simpleCacheFilter</filter-name>
-      <url-pattern>/icons/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>simpleCacheFilter</filter-name>
-      <url-pattern>/css/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>simpleCacheFilter</filter-name>
-      <url-pattern>/scripts/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>simpleCacheFilter</filter-name>
-      <url-pattern>/waitdialog/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>simpleCacheFilter</filter-name>
-      <url-pattern>/showLogo.faces*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>simpleCacheFilter</filter-name>
-      <url-pattern>/seam/resource/remoting/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>simpleCacheFilter</filter-name>
-      <url-pattern>/a4j_3_2_1-SNAPSHOT*</url-pattern>
-    </filter-mapping>
   </extension>
 
   <!-- AT: mixing servlets and mappings for clarity, does not change

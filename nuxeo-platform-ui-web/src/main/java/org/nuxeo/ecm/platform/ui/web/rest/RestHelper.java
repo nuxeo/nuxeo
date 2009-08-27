@@ -97,6 +97,9 @@ public class RestHelper implements Serializable {
             Map<String, String> params = new HashMap<String, String>();
             params.put("tabId", webActions.getCurrentTabId());
             params.put("subTabId", webActions.getCurrentSubTabId());
+            if (currentDocument.isVersion()) {
+                params.put("version", "true");
+            }
             docView = new DocumentViewImpl(docLoc, typeInfo.getDefaultView(),
                     params);
         }
