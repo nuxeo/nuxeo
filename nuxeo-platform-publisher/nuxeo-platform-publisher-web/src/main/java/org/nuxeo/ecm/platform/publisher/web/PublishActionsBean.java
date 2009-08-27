@@ -49,8 +49,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.api.PublishingEvent;
-import org.nuxeo.ecm.platform.publisher.api.PublishingException;
-import org.nuxeo.ecm.platform.publisher.api.PublisherException;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTreeNotAvailable;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -67,7 +65,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collections;
 
 /**
  * This Seam bean manages the publishing tab.
@@ -209,6 +206,7 @@ public class PublishActionsBean implements Serializable {
         return getCurrentPublicationTreeForPublishing().getIconCollapsed();
     }
 
+    @Factory(value = "publishedDocuments", scope = ScopeType.EVENT)
     public List<PublishedDocument> getPublishedDocuments()
             throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();

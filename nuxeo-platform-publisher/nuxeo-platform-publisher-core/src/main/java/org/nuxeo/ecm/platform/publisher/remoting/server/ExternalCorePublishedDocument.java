@@ -11,7 +11,7 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.ExtendedDocumentLoca
 /**
  * {@link PublishedDocument} implementation that uses a {@link DocumentModel} to
  * store the result of a remote publication.
- * 
+ *
  * @author tiry
  */
 public class ExternalCorePublishedDocument implements PublishedDocument {
@@ -74,4 +74,9 @@ public class ExternalCorePublishedDocument implements PublishedDocument {
     public boolean isPending() {
         return isPending;
     }
+
+    public Type getType() {
+        return Type.REMOTE;
+    }
+
 }

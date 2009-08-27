@@ -8,11 +8,11 @@
   xmlns:rich="http://richfaces.org/rich"
   class="menu">
 
-  <a4j:region renderRegionOnly="true">
-  <a4j:outputPanel ajaxRendered="true">
-  <a4j:form ajaxSubmit="true" id="publishTreeForm">
 
+
+      <a4j:form ajaxSubmit="true" id="publishTreeForm">
   <h:panelGroup rendered="#{!empty availablePublicationTrees}">
+
     <h:panelGrid styleClass="dataInput" columnClasses="labelColumn, fieldColumn" columns="2">
       <h:panelGroup>
         <h:outputText value="#{messages['label.publish.sections']}" />
@@ -24,14 +24,15 @@
             var="root"
             itemValue="#{root}"
             itemLabel="#{root}" />
-            <a4j:support event="onchange" reRender="sectionTree" ignoreDupResponses="true" />
+            <a4j:support event="onchange" reRender="sectionTree,publishingInfoList" ignoreDupResponses="true" />
         </h:selectOneListbox>
       </h:panelGroup>
     </h:panelGrid>
 
+
     <dl>
     <dd class="menuForm">
-      <h:panelGroup id="sectionTree" rendered="#{publishActions.currentPublicationTreeForPublishing != null}">
+      <a4j:outputPanel id="sectionTree" rendered="#{publishActions.currentPublicationTreeForPublishing != null}">
         <rich:tree
           icon="#{nodeState.isExpanded(rowKey)?publishActions.getCurrentPublicationTreeIconExpanded():publishActions.getCurrentPublicationTreeIconCollapsed()}"
           iconLeaf="#{publishActions.currentPublicationTreeIconCollapsed}"
@@ -61,15 +62,15 @@
             </rich:treeNode>
           </rich:recursiveTreeNodesAdaptor>
         </rich:tree>
-      </h:panelGroup>
+      </a4j:outputPanel>
     </dd>
     </dl>
     <h:outputText value="#{messages['label.publication.tree.not.available']}"
                   rendered="#{publishActions.currentPublicationTreeForPublishing == null}" />
   </h:panelGroup>
 
-  <h:panelGroup id="publishingInfoList">
-    <h:panelGroup rendered="#{publishActions.currentPublicationTreeForPublishing != null
+
+    <a4j:outputPanel id="publishingInfoList" rendered="#{publishActions.currentPublicationTreeForPublishing != null
       and !empty publishActions.publishedDocuments}">
 
       <nxu:dataTable value="#{publishActions.publishedDocuments}" var="publishedDocument"
@@ -109,11 +110,6 @@
         </h:column>
       </nxu:dataTable>
 
-    </h:panelGroup>
-
-  </h:panelGroup>
-
-  </a4j:form>
-  </a4j:outputPanel>
-  </a4j:region>
+    </a4j:outputPanel>
+    </a4j:form>
 </div>

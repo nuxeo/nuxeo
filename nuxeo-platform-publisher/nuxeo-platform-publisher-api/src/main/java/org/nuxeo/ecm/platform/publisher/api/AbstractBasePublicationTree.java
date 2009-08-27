@@ -143,16 +143,22 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
 
     public void validatorPublishDocument(PublishedDocument publishedDocument)
             throws ClientException {
+        if (!accept(publishedDocument)) {
+            return;
+        }
         factory.validatorPublishDocument(publishedDocument);
     }
 
     public void validatorRejectPublication(PublishedDocument publishedDocument,
             String comment) throws ClientException {
+        if (!accept(publishedDocument)) {
+            return;
+        }
         factory.validatorRejectPublication(publishedDocument, comment);
     }
 
     public boolean canPublishTo(PublicationNode publicationNode) throws ClientException {
-        if (publicationNode.getParent() == null) {
+        if (publicationNode == null || publicationNode.getParent() == null) {
             // we can't publish in the root node
             return false;
         }
@@ -160,14 +166,23 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
     }
 
     public boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException {
+        if (!accept(publishedDocument)) {
+            return false;
+        }
         return true;
     }
 
     public boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException {
+        if (!accept(publishedDocument)) {
+            return false;
+        }
         return factory.hasValidationTask(publishedDocument);
     }
 
     public boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException {
+        if (!accept(publishedDocument)) {
+            return false;
+        }
         return factory.canManagePublishing(publishedDocument);
     }
 
@@ -182,5 +197,7 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
     public PublicationNode wrapToPublicationNode(DocumentModel documentModel) throws ClientException {
         throw new UnsupportedOperationException("");
     }
+
+    protected abstract boolean accept(PublishedDocument publishedDocument);
 
 }

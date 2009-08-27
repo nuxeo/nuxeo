@@ -104,6 +104,9 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
 
     public void unpublish(PublishedDocument publishedDocument)
             throws ClientException {
+        if (!accept(publishedDocument)) {
+            return;
+        }
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         PublicationRelationHelper.removePublicationRelation(proxy);
         getCoreSession().removeDocument(proxy.getRef());
@@ -131,7 +134,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
 
     @Override
     public boolean canPublishTo(PublicationNode publicationNode) throws ClientException {
-        if (publicationNode.getParent() == null) {
+        if (publicationNode == null || publicationNode.getParent() == null) {
             // we can't publish in the root node
             return false;
         }
@@ -141,6 +144,9 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
 
     @Override
     public boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException {
+        if (!accept(publishedDocument)) {
+            return false;
+        }
         DocumentRef docRef = new PathRef(publishedDocument.getParentPath());
         return coreSession.hasPermission(docRef, SecurityConstants.WRITE);
     }
@@ -165,6 +171,10 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
         }
         return new CoreFolderPublicationNode(documentModel, getConfigName(),
                 sid, factory);
+    }
+
+    protected boolean accept(PublishedDocument publishedDocument) {
+        return publishedDocument instanceof SimpleCorePublishedDocument;
     }
 
 }

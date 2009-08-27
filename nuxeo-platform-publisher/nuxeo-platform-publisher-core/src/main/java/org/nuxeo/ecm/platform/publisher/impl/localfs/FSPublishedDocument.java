@@ -160,4 +160,9 @@ public class FSPublishedDocument implements PublishedDocument {
     public boolean isPending() {
         return isPending;
     }
+
+    public Type getType() {
+        return Type.FILE_SYSTEM;
+    }
+
 }

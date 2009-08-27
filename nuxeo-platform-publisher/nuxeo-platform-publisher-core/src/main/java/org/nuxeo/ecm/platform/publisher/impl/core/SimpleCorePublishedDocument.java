@@ -11,7 +11,7 @@ import org.nuxeo.ecm.platform.publisher.helper.VersioningHelper;
 /**
  * Implementations of the {@link PublishedDocument} on top of the Core, using
  * simple proxies
- * 
+ *
  * @author tiry
  */
 public class SimpleCorePublishedDocument implements PublishedDocument {
@@ -68,6 +68,10 @@ public class SimpleCorePublishedDocument implements PublishedDocument {
 
     public boolean isPending() {
         return isPending;
+    }
+
+    public Type getType() {
+        return Type.LOCAL;
     }
 
 }

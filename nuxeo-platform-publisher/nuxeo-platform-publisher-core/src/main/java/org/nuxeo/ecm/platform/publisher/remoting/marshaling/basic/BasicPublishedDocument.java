@@ -5,7 +5,7 @@ import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 
 /**
  * Java implementation for the marshalled {@link PublishedDocument}
- * 
+ *
  * @author tiry
  */
 public class BasicPublishedDocument implements PublishedDocument {
@@ -65,4 +65,9 @@ public class BasicPublishedDocument implements PublishedDocument {
     public boolean isPending() {
         return isPending;
     }
+
+    public Type getType() {
+        return Type.REMOTE;
+    }
+
 }

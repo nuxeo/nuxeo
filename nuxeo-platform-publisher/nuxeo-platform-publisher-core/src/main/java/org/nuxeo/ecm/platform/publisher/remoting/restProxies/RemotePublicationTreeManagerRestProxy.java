@@ -174,7 +174,7 @@ public class RemotePublicationTreeManagerRestProxy implements
     }
 
     public boolean canPublishTo(String sid, PublicationNode publicationNode) throws ClientException {
-        if (publicationNode.getParent() == null) {
+        if (publicationNode == null || publicationNode.getParent() == null) {
             return false;
         }
         return true;

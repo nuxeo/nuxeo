@@ -5,13 +5,19 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import java.io.Serializable;
 
 /**
- * 
+ *
  * Interface of a Document that was published into a PublicationNode
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public interface PublishedDocument extends Serializable {
+
+    enum Type {
+        REMOTE,
+        LOCAL,
+        FILE_SYSTEM;
+    }
 
     DocumentRef getSourceDocumentRef();
 
@@ -30,5 +36,7 @@ public interface PublishedDocument extends Serializable {
      * otherwise.
      */
     boolean isPending();
+
+    Type getType();
 
 }

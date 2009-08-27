@@ -241,14 +241,18 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
     }
 
     public void unpublish(PublishedDocument pubDoc) throws ClientException {
-        if (pubDoc instanceof FSPublishedDocument) {
-            FSPublishedDocument fsPublishedDocument = (FSPublishedDocument) pubDoc;
-            new File(fsPublishedDocument.getPersistPath()).delete();
-            removeFromIndex(pubDoc);
+        if (!accept(pubDoc)) {
+            return;
         }
+        FSPublishedDocument fsPublishedDocument = (FSPublishedDocument) pubDoc;
+        new File(fsPublishedDocument.getPersistPath()).delete();
+        removeFromIndex(pubDoc);
     }
 
     public void release() {
     }
 
+    protected boolean accept(PublishedDocument publishedDocument) {
+        return publishedDocument instanceof FSPublishedDocument;
+    }
 }
