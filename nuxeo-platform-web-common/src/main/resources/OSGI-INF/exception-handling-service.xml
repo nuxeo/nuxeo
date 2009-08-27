@@ -13,8 +13,17 @@
 		nuxeo are caught by the NuxeoExceptionFilter.
 		This
 		service customize the handler that will deal with an exception.
-		@author Alexandre Russel (arussel@nuxeo.com)
+		@author Alexandre Russel (arussel@nuxeo.com), Benjamin JALON (bjalon@nuxeo.com)
 	</documentation>
+	<extension-point name="exceptionhandler">
+		<documentation>
+			Define an exceptionHandler that manages exceptions
+			To override just contribute again on the extension point,
+			parameters will be keep. Default contributed is DefaultNuxeoExceptionHandler.
+		</documentation>
+		<object
+			class="org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ExceptionHandlerDescriptor" />
+	</extension-point>
 	<extension-point name="errorhandlers">
 		<documentation>
 			Define a set key/exception to be used to output error

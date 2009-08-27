@@ -24,23 +24,27 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionHandler;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionHandlerParameters;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandlersDescriptor;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ExceptionHandlerDescriptor;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ListenerDescriptor;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.RequestDumpDescriptor;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * @author arussel
+ * @author arussel, Benjamin JALON
  *
  */
 public class ExceptionHandlingComponent extends DefaultComponent implements
         ExceptionHandlingService {
 
-    private final NuxeoExceptionHandler exceptionHandler = new NuxeoExceptionHandler();
+    protected NuxeoExceptionHandler exceptionHandler;
+
+    protected final NuxeoExceptionHandlerParameters exceptionHandlerParameters = new NuxeoExceptionHandlerParameters();
 
     public enum ExtensionPoint {
-        errorhandlers, requestdump, listener
+        exceptionhandler, errorhandlers, requestdump, listener
     }
 
     @Override
@@ -49,23 +53,28 @@ public class ExceptionHandlingComponent extends DefaultComponent implements
             throws Exception {
         ExtensionPoint ep = Enum.valueOf(ExtensionPoint.class, extensionPoint);
         switch (ep) {
+        case exceptionhandler:
+            ExceptionHandlerDescriptor ehd = (ExceptionHandlerDescriptor) contribution;
+            exceptionHandler = (NuxeoExceptionHandler) ehd.getKlass().newInstance();
+            exceptionHandler.setParameters(exceptionHandlerParameters);
+            break;
         case errorhandlers:
             ErrorHandlersDescriptor md = (ErrorHandlersDescriptor) contribution;
-            exceptionHandler.setBundleName(md.getBundle());
-            exceptionHandler.setHandlers(md.getMessages());
-            exceptionHandler.setLoggerName(md.getLoggerName());
-            exceptionHandler.setDefaultErrorPage(md.getDefaultPage());
+            exceptionHandlerParameters.setBundleName(md.getBundle());
+            exceptionHandlerParameters.setHandlers(md.getMessages());
+            exceptionHandlerParameters.setLoggerName(md.getLoggerName());
+            exceptionHandlerParameters.setDefaultErrorPage(md.getDefaultPage());
             break;
         case requestdump:
             RequestDumpDescriptor rdd = (RequestDumpDescriptor) contribution;
             RequestDumper dumper = rdd.getKlass().newInstance();
             List<String> attributes = rdd.getAttributes();
             dumper.setNotListedAttributes(attributes);
-            exceptionHandler.setRequestDumper(dumper);
+            exceptionHandlerParameters.setRequestDumper(dumper);
             break;
         case listener:
             ListenerDescriptor ld = (ListenerDescriptor) contribution;
-            exceptionHandler.setListener(ld.getKlass().newInstance());
+            exceptionHandlerParameters.setListener(ld.getKlass().newInstance());
             break;
         default:
             throw new RuntimeException(
@@ -82,5 +91,7 @@ public class ExceptionHandlingComponent extends DefaultComponent implements
     public NuxeoExceptionHandler getExceptionHandler() {
         return exceptionHandler;
     }
+    
+
 
 }
