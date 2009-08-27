@@ -55,9 +55,8 @@
     <nuxeo.features.version>5.2.1-SNAPSHOT</nuxeo.features.version>
     <nuxeo.webengine.version>5.2.1-SNAPSHOT</nuxeo.webengine.version>
     <nuxeo.services.version>5.2.1-SNAPSHOT</nuxeo.services.version>
-    <!-- Custom version -->
-    <nuxeo.dam.jsf.version>5.2.1-NXP-3610-SNAPSHOT</nuxeo.dam.jsf.version>
-    <nuxeo.dam.dm.version>5.2.1-NXP-3610-SNAPSHOT</nuxeo.dam.dm.version>
+    <nuxeo.jsf.version>5.2.1-SNAPSHOT</nuxeo.jsf.version>
+    <nuxeo.dm.version>5.2.1-SNAPSHOT</nuxeo.dm.version>
   </properties>
 
   <dependencies>
@@ -172,13 +171,13 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-webapp-base</artifactId>
-        <version>${nuxeo.dam.jsf.version}</version>
+        <version>${nuxeo.jsf.version}</version>
       </dependency>
 
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-ui-web</artifactId>
-        <version>${nuxeo.dam.jsf.version}</version>
+        <version>${nuxeo.jsf.version}</version>
       </dependency>
 
       <dependency>
