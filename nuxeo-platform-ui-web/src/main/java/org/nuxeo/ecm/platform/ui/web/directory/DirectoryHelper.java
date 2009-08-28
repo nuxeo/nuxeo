@@ -170,9 +170,15 @@ public final class DirectoryHelper {
             VocabularyEntryList directoryValues, Map<String, Serializable> filter, Boolean localize) {
         List<DirectorySelectItem> list = new ArrayList<DirectorySelectItem>();
 
+        Integer obsoleteInteger = (Integer) filter.get("obsolete");
+        Boolean obsolete = obsoleteInteger != null && 1 == obsoleteInteger;
+        String parentFilter = (String) filter.get("parent");
+
         FacesContext context = FacesContext.getCurrentInstance();
         for (VocabularyEntry entry : directoryValues.getEntries()) {
-            String parentFilter = (String) filter.get("parent");
+            if (obsolete != null && !obsolete.equals(entry.getObsolete())) {
+                continue;
+            }
             String parent = entry.getParent();
             if (parentFilter == null) {
                 if (parent != null) {
