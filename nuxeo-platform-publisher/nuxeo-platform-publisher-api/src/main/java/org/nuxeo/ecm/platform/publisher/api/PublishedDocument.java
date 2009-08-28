@@ -37,6 +37,9 @@ public interface PublishedDocument extends Serializable {
      */
     boolean isPending();
 
+    /**
+     * Returns the {@code Type} of this PublishedDocument.
+     */
     Type getType();
 
 }

@@ -35,6 +35,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
@@ -73,19 +75,11 @@ import java.util.Set;
  */
 @Name("publishActions")
 @Scope(ScopeType.CONVERSATION)
-public class PublishActionsBean implements Serializable {
-
-    private PublisherService publisherService;
+public class PublishActionsBean extends AbstractPublishActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(PublishActionsBean.class);
-
-    @In(create = true)
-    protected transient NavigationContext navigationContext;
-
-    @In(create = true, required = false)
-    protected transient CoreSession documentManager;
 
     @In(create = true)
     protected transient DocumentsListsManager documentsListsManager;
@@ -93,8 +87,7 @@ public class PublishActionsBean implements Serializable {
     @In(create = true, required = false)
     protected transient FacesMessages facesMessages;
 
-    @In(create = true)
-    protected transient ResourcesAccessor resourcesAccessor;
+    protected transient PublisherService publisherService;
 
     protected String currentPublicationTreeNameForPublishing;
 
@@ -369,8 +362,33 @@ public class PublishActionsBean implements Serializable {
                 params);
     }
 
+    public boolean isRemotePublishedDocument(PublishedDocument publishedDocument) {
+        return publishedDocument.getType().equals(PublishedDocument.Type.REMOTE);
+    }
+
+    public boolean isFileSystemPublishedDocument(PublishedDocument publishedDocument) {
+        return publishedDocument.getType().equals(PublishedDocument.Type.FILE_SYSTEM);
+    }
+
+    public boolean isLocalPublishedDocument(PublishedDocument publishedDocument) {
+        return publishedDocument.getType().equals(PublishedDocument.Type.LOCAL);
+    }
+
     public String publishWorkList() throws ClientException {
         return publishDocumentList(DocumentsListsManager.DEFAULT_WORKING_LIST);
+    }
+
+    public DocumentModel getDocumentModelFor(String path) throws ClientException {
+        DocumentRef docRef = new PathRef(path);
+        if (documentManager.exists(docRef)) {
+            return documentManager.getDocument(docRef);
+        }
+        return null;
+    }
+
+    public String getFormattedPath(String path) throws ClientException {
+        DocumentModel docModel = getDocumentModelFor(path);
+        return docModel != null ? getFormattedPath(docModel) : path;
     }
 
     public String publishDocumentList(String listName) throws ClientException {

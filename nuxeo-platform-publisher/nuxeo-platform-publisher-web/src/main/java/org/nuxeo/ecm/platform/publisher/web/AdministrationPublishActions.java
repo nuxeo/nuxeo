@@ -42,26 +42,17 @@ import java.util.List;
  */
 @Name("adminPublishActions")
 @Scope(ScopeType.CONVERSATION)
-public class AdministrationPublishActions implements Serializable {
+public class AdministrationPublishActions extends AbstractPublishActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(AdministrationPublishActions.class);
 
-    @In(create = true)
-    protected transient NavigationContext navigationContext;
-
-    @In(create = true, required = false)
-    protected transient CoreSession documentManager;
-
-    @In(create = true)
-    protected transient ResourcesAccessor resourcesAccessor;
-
     protected transient RootSectionsFinder rootFinder;
 
     protected transient RootSectionsManager rootSectionsManager;
 
-    protected TreeManager treeManager;
+    protected transient TreeManager treeManager;
 
     protected DocumentTreeNode sectionsTree;
 
