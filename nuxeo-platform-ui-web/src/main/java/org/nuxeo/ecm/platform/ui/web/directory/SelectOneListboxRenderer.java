@@ -128,7 +128,6 @@ public class SelectOneListboxRenderer extends Renderer {
         String cssStyleClass = comp.getStringProperty("cssStyleClass", null);
         String cssStyle = comp.getStringProperty("cssStyle", null);
         String id = comp.getClientId(context);
-        Boolean localize = comp.getLocalize();
         Boolean displayIdAndLabel = comp.getDisplayIdAndLabel();
         String display = comp.getStringProperty("display", "");
         // default value
@@ -161,9 +160,6 @@ public class SelectOneListboxRenderer extends Renderer {
             for (SelectItem item : options.values()) {
                 String optionId = (String) item.getValue();
                 String optionLabel = item.getLabel();
-                if (localize) {
-                    optionLabel = translate(context, optionLabel);
-                }
                 SelectItem newItem = new SelectItem(optionId, optionLabel);
                 newOptions.add(newItem);
             }

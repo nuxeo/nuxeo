@@ -176,9 +176,9 @@ public abstract class DirectoryAwareComponent extends UIInput {
         List<DirectorySelectItem> optionList;
         if (!StringUtils.isEmpty(directoryName)) {
             optionList = DirectoryHelper.instance().getSelectItems(
-                    directoryName, filter);
+                    directoryName, filter, localize);
         } else if (directoryValues != null) {
-            optionList = DirectoryHelper.getSelectItems(directoryValues, filter);
+            optionList = DirectoryHelper.getSelectItems(directoryValues, filter, localize);
         } else {
             optionList = new ArrayList<DirectorySelectItem>();
         }
