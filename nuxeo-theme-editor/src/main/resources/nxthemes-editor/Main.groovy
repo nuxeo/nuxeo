@@ -1349,7 +1349,7 @@ public class Main extends ModuleRoot {
   public static List<PresetInfo> getPresetsForSelectedGroup(applicationPath, name) {
       String category = getSelectedStyleCategory()
       String group = getSelectedPresetGroup()
-      String themeName = getCurrentThemeName(applicationPath)
+      String themeName = getCurrentThemeName(applicationPath, name)
       def presets = []
       def presetTypes = group ? PresetManager.getGlobalPresets(group, category) : PresetManager.getCustomPresets(themeName, category)
       for (preset in presetTypes) {
