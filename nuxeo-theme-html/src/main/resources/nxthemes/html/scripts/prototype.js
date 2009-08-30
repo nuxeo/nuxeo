@@ -1,4 +1,4 @@
-/*  Prototype JavaScript framework, version 1.6.1_rc2
+/*  Prototype JavaScript framework, version 1.6.1_rc3
  *  (c) 2005-2009 Sam Stephenson
  *
  *  Prototype is freely distributable under the terms of an MIT-style license.
@@ -7,38 +7,42 @@
  *--------------------------------------------------------------------------*/
 
 var Prototype = {
-  Version: '1.6.1_rc2',
+  Version: '1.6.1_rc3',
 
-  Browser: {
-    IE:     !!(window.attachEvent &&
-      navigator.userAgent.indexOf('Opera') === -1),
-    Opera:  navigator.userAgent.indexOf('Opera') > -1,
-    WebKit: navigator.userAgent.indexOf('AppleWebKit/') > -1,
-    Gecko:  navigator.userAgent.indexOf('Gecko') > -1 &&
-      navigator.userAgent.indexOf('KHTML') === -1,
-    MobileSafari: !!navigator.userAgent.match(/Apple.*Mobile.*Safari/)
-  },
+  Browser: (function(){
+    var ua = navigator.userAgent;
+    var isOpera = Object.prototype.toString.call(window.opera) == '[object Opera]';
+    return {
+      IE:             !!window.attachEvent && !isOpera,
+      Opera:          isOpera,
+      WebKit:         ua.indexOf('AppleWebKit/') > -1,
+      Gecko:          ua.indexOf('Gecko') > -1 && ua.indexOf('KHTML') === -1,
+      MobileSafari:   /Apple.*Mobile.*Safari/.test(ua)
+    }
+  })(),
 
   BrowserFeatures: {
     XPath: !!document.evaluate,
     SelectorsAPI: !!document.querySelector,
     ElementExtensions: (function() {
-      if (window.HTMLElement && window.HTMLElement.prototype)
-        return true;
-      if (window.Element && window.Element.prototype)
-        return true;
+      var constructor = window.Element || window.HTMLElement;
+      return !!(constructor && constructor.prototype);
     })(),
     SpecificElementExtensions: (function() {
       if (typeof window.HTMLDivElement !== 'undefined')
         return true;
 
       var div = document.createElement('div');
-      if (div['__proto__'] && div['__proto__'] !==
-       document.createElement('form')['__proto__']) {
-        return true;
+      var form = document.createElement('form');
+      var isSupported = false;
+
+      if (div['__proto__'] && (div['__proto__'] !== form['__proto__'])) {
+        isSupported = true;
       }
 
-      return false;
+      div = form = null;
+
+      return isSupported;
     })()
   },
 
@@ -75,6 +79,7 @@ var Try = {
 /* Based on Alex Arnell's inheritance implementation. */
 
 var Class = (function() {
+  function subclass() {};
   function create() {
     var parent = null, properties = $A(arguments);
     if (Object.isFunction(properties[0]))
@@ -89,7 +94,6 @@ var Class = (function() {
     klass.subclasses = [];
 
     if (parent) {
-      var subclass = function() {};
       subclass.prototype = parent.prototype;
       klass.prototype = new subclass;
       parent.subclasses.push(klass);
@@ -476,7 +480,7 @@ Object.extend(String.prototype, (function() {
   }
 
   function stripTags() {
-    return this.replace(/<\/?[^>]+>/gi, '');
+    return this.replace(/<\w+(\s+("[^"]*"|'[^']*'|[^>])+)?>|<\/\w+>/gi, '');
   }
 
   function stripScripts() {
@@ -507,6 +511,7 @@ Object.extend(String.prototype, (function() {
       $A(div.childNodes).inject('', function(memo, node) { return memo+node.nodeValue }) :
       div.childNodes[0].nodeValue) : '';
   }
+
 
   function toQueryParams(separator) {
     var match = this.strip().match(/([^?#]*)(#.*)?$/);
@@ -629,7 +634,7 @@ Object.extend(String.prototype, (function() {
     sub:            sub,
     scan:           scan,
     truncate:       truncate,
-    strip:          strip,
+    strip:          String.prototype.trim ? String.prototype.trim : strip,
     stripTags:      stripTags,
     stripScripts:   stripScripts,
     extractScripts: extractScripts,
@@ -669,13 +674,13 @@ String.prototype.escapeHTML.div.appendChild(String.prototype.escapeHTML.text);
 if ('<\n>'.escapeHTML() !== '&lt;\n&gt;') {
   String.prototype.escapeHTML = function() {
     return this.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
+  };
 }
 
 if ('&lt;\n&gt;'.unescapeHTML() !== '<\n>') {
   String.prototype.unescapeHTML = function() {
     return this.stripTags().replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
-  }
+  };
 }
 var Template = Class.create({
   initialize: function(template, pattern) {
@@ -684,11 +689,11 @@ var Template = Class.create({
   },
 
   evaluate: function(object) {
-    if (Object.isFunction(object.toTemplateReplacements))
+    if (object && Object.isFunction(object.toTemplateReplacements))
       object = object.toTemplateReplacements();
 
     return this.template.gsub(this.pattern, function(match) {
-      if (object == null) return '';
+      if (object == null) return (match[1] + '');
 
       var before = match[1] || '';
       if (before == '\\') return match[2];
@@ -961,7 +966,7 @@ var Enumerable = (function() {
 })();
 function $A(iterable) {
   if (!iterable) return [];
-  if ('toArray' in iterable) return iterable.toArray();
+  if ('toArray' in Object(iterable)) return iterable.toArray();
   var length = iterable.length || 0, results = new Array(length);
   while (length--) results[length] = iterable[length];
   return results;
@@ -1488,7 +1493,8 @@ Ajax.Request = Class.create(Ajax.Base, {
 
   success: function() {
     var status = this.getStatus();
-    return !status || (status >= 200 && status < 300);
+    // NXP-3600
+    return !status || (status >= 200 && status < 300) || status == 304 || status == 1223;
   },
 
   getStatus: function() {
@@ -1894,9 +1900,9 @@ Element.Methods = {
 
       if (SELECT_ELEMENT_INNERHTML_BUGGY || TABLE_ELEMENT_INNERHTML_BUGGY) {
         if (tagName in Element._insertionTranslations.tags) {
-          $A(element.childNodes).each(function(node) {
-            element.removeChild(node);
-          });
+          while (element.firstChild) {
+            element.removeChild(element.firstChild);
+          }
           Element._getContentFromAnonymousElement(tagName, content.stripScripts())
             .each(function(node) {
               element.appendChild(node)
@@ -2000,7 +2006,7 @@ Element.Methods = {
   },
 
   ancestors: function(element) {
-    return $(element).recursivelyCollect('parentNode');
+    return Element.recursivelyCollect(element, 'parentNode');
   },
 
   descendants: function(element) {
@@ -2021,16 +2027,17 @@ Element.Methods = {
   },
 
   previousSiblings: function(element) {
-    return $(element).recursivelyCollect('previousSibling');
+    return Element.recursivelyCollect(element, 'previousSibling');
   },
 
   nextSiblings: function(element) {
-    return $(element).recursivelyCollect('nextSibling');
+    return Element.recursivelyCollect(element, 'nextSibling');
   },
 
   siblings: function(element) {
     element = $(element);
-    return element.previousSiblings().reverse().concat(element.nextSiblings());
+    return Element.previousSiblings(element).reverse()
+      .concat(Element.nextSiblings(element));
   },
 
   match: function(element, selector) {
@@ -2042,22 +2049,22 @@ Element.Methods = {
   up: function(element, expression, index) {
     element = $(element);
     if (arguments.length == 1) return $(element.parentNode);
-    var ancestors = element.ancestors();
+    var ancestors = Element.ancestors(element);
     return Object.isNumber(expression) ? ancestors[expression] :
       Selector.findElement(ancestors, expression, index);
   },
 
   down: function(element, expression, index) {
     element = $(element);
-    if (arguments.length == 1) return element.firstDescendant();
-    return Object.isNumber(expression) ? element.descendants()[expression] :
+    if (arguments.length == 1) return Element.firstDescendant(element);
+    return Object.isNumber(expression) ? Element.descendants(element)[expression] :
       Element.select(element, expression)[index || 0];
   },
 
   previous: function(element, expression, index) {
     element = $(element);
     if (arguments.length == 1) return $(Selector.handlers.previousElementSibling(element));
-    var previousSiblings = element.previousSiblings();
+    var previousSiblings = Element.previousSiblings(element);
     return Object.isNumber(expression) ? previousSiblings[expression] :
       Selector.findElement(previousSiblings, expression, index);
   },
@@ -2065,28 +2072,28 @@ Element.Methods = {
   next: function(element, expression, index) {
     element = $(element);
     if (arguments.length == 1) return $(Selector.handlers.nextElementSibling(element));
-    var nextSiblings = element.nextSiblings();
+    var nextSiblings = Element.nextSiblings(element);
     return Object.isNumber(expression) ? nextSiblings[expression] :
       Selector.findElement(nextSiblings, expression, index);
   },
 
 
-  select: function() {
-    var args = $A(arguments), element = $(args.shift());
+  select: function(element) {
+    var args = Array.prototype.slice.call(arguments, 1);
     return Selector.findChildElements(element, args);
   },
 
-  adjacent: function() {
-    var args = $A(arguments), element = $(args.shift());
+  adjacent: function(element) {
+    var args = Array.prototype.slice.call(arguments, 1);
     return Selector.findChildElements(element.parentNode, args).without(element);
   },
 
   identify: function(element) {
     element = $(element);
-    var id = element.readAttribute('id');
+    var id = Element.readAttribute(element, 'id');
     if (id) return id;
     do { id = 'anonymous_element_' + Element.idCounter++ } while ($(id));
-    element.writeAttribute('id', id);
+    Element.writeAttribute(element, 'id', id);
     return id;
   },
 
@@ -2148,11 +2155,11 @@ Element.Methods = {
   },
 
   getHeight: function(element) {
-    return $(element).getDimensions().height;
+    return Element.getDimensions(element).height;
   },
 
   getWidth: function(element) {
-    return $(element).getDimensions().width;
+    return Element.getDimensions(element).width;
   },
 
   classNames: function(element) {
@@ -2168,7 +2175,7 @@ Element.Methods = {
 
   addClassName: function(element, className) {
     if (!(element = $(element))) return;
-    if (!element.hasClassName(className))
+    if (!Element.hasClassName(element, className))
       element.className += (element.className ? ' ' : '') + className;
     return element;
   },
@@ -2182,8 +2189,8 @@ Element.Methods = {
 
   toggleClassName: function(element, className) {
     if (!(element = $(element))) return;
-    return element[element.hasClassName(className) ?
-      'removeClassName' : 'addClassName'](className);
+    return Element[Element.hasClassName(element, className) ?
+      'removeClassName' : 'addClassName'](element, className);
   },
 
   cleanWhitespace: function(element) {
@@ -2219,7 +2226,7 @@ Element.Methods = {
 
   scrollTo: function(element) {
     element = $(element);
-    var pos = element.cumulativeOffset();
+    var pos = Element.cumulativeOffset(element);
     window.scrollTo(pos[0], pos[1]);
     return element;
   },
@@ -2267,7 +2274,7 @@ Element.Methods = {
 
   getDimensions: function(element) {
     element = $(element);
-    var display = element.getStyle('display');
+    var display = Element.getStyle(element, 'display');
     if (display != 'none' && display != null) // Safari bug
       return {width: element.offsetWidth, height: element.offsetHeight};
 
@@ -2358,9 +2365,9 @@ Element.Methods = {
 
   absolutize: function(element) {
     element = $(element);
-    if (element.getStyle('position') == 'absolute') return element;
+    if (Element.getStyle(element, 'position') == 'absolute') return element;
 
-    var offsets = element.positionedOffset();
+    var offsets = Element.positionedOffset(element);
     var top     = offsets[1];
     var left    = offsets[0];
     var width   = element.clientWidth;
@@ -2381,7 +2388,7 @@ Element.Methods = {
 
   relativize: function(element) {
     element = $(element);
-    if (element.getStyle('position') == 'relative') return element;
+    if (Element.getStyle(element, 'position') == 'relative') return element;
 
     element.style.position = 'relative';
     var top  = parseFloat(element.style.top  || 0) - (element._originalTop || 0);
@@ -2451,14 +2458,14 @@ Element.Methods = {
     }, arguments[2] || { });
 
     source = $(source);
-    var p = source.viewportOffset();
+    var p = Element.viewportOffset(source);
 
     element = $(element);
     var delta = [0, 0];
     var parent = null;
     if (Element.getStyle(element, 'position') == 'absolute') {
-      parent = element.getOffsetParent();
-      delta = parent.viewportOffset();
+      parent = Element.getOffsetParent(element);
+      delta = Element.viewportOffset(parent);
     }
 
     if (parent == document.body) {
@@ -2883,12 +2890,13 @@ Element._insertionTranslations = {
 };
 
 (function() {
-  Object.extend(this.tags, {
-    THEAD: this.tags.TBODY,
-    TFOOT: this.tags.TBODY,
-    TH:    this.tags.TD
+  var tags = Element._insertionTranslations.tags;
+  Object.extend(tags, {
+    THEAD: tags.TBODY,
+    TFOOT: tags.TBODY,
+    TH:    tags.TD
   });
-}).call(Element._insertionTranslations);
+})();
 
 Element.Methods.Simulated = {
   hasAttribute: function(element, attribute) {
@@ -2947,16 +2955,12 @@ Element.extend = (function() {
     if (HTMLOBJECTELEMENT_PROTOTYPE_BUGGY &&
         HTMLAPPLETELEMENT_PROTOTYPE_BUGGY) {
       return function(element) {
-        if (element && element.tagName) {
-          var tagName = element.tagName.toUpperCase();
-          if (tagName === 'OBJECT' || tagName === 'APPLET') {
+        if (element && typeof element._extendedByPrototype == 'undefined') {
+          var t = element.tagName;
+          if (t && (/^(?:object|applet|embed)$/i.test(t))) {
             extendElementWith(element, Element.Methods);
-            if (tagName === 'OBJECT') {
-              extendElementWith(element, Element.Methods.ByTag.OBJECT)
-            }
-            else if (tagName === 'APPLET') {
-              extendElementWith(element, Element.Methods.ByTag.APPLET)
-            }
+            extendElementWith(element, Element.Methods.Simulated);
+            extendElementWith(element, Element.Methods.ByTag[t.toUpperCase()]);
           }
         }
         return element;
@@ -3159,9 +3163,9 @@ Element.addMethods({
     if (!(element = $(element))) return;
 
     if (arguments.length === 2) {
-      element.getStorage().update(key);
+      Element.getStorage(element).update(key);
     } else {
-      element.getStorage().set(key, value);
+      Element.getStorage(element).set(key, value);
     }
 
     return element;
@@ -3333,8 +3337,6 @@ var Selector = Class.create({
       case 'selectorsAPI':
         if (root !== document) {
           var oldId = root.id, id = $(root).identify();
-          //NXP-3782 regexp bug, fixed in 1.6.1
-          id = id.replace(/([\.:])/g, "\\$1");
           e = "#" + id + " " + e;
         }
 
@@ -3582,11 +3584,31 @@ Object.extend(Selector, {
       return nodes;
     },
 
-    unmark: function(nodes) {
-      for (var i = 0, node; node = nodes[i]; i++)
-        node._countedByPrototype = undefined;
-      return nodes;
-    },
+    unmark: (function(){
+
+      var PROPERTIES_ATTRIBUTES_MAP = (function(){
+        var el = document.createElement('div'),
+            isBuggy = false,
+            propName = '_countedByPrototype',
+            value = 'x'
+        el[propName] = value;
+        isBuggy = (el.getAttribute(propName) === value);
+        el = null;
+        return isBuggy;
+      })();
+
+      return PROPERTIES_ATTRIBUTES_MAP ?
+        function(nodes) {
+          for (var i = 0, node; node = nodes[i]; i++)
+            node.removeAttribute('_countedByPrototype');
+          return nodes;
+        } :
+        function(nodes) {
+          for (var i = 0, node; node = nodes[i]; i++)
+            node._countedByPrototype = void 0;
+          return nodes;
+        }
+    })(),
 
     index: function(parentNode, reverse, ofType) {
       parentNode._countedByPrototype = Prototype.emptyFunction;
@@ -3928,12 +3950,6 @@ if (Prototype.Browser.IE) {
       for (var i = 0, node; node = b[i]; i++)
         if (node.tagName !== "!") a.push(node);
       return a;
-    },
-
-    unmark: function(nodes) {
-      for (var i = 0, node; node = nodes[i]; i++)
-        node.removeAttribute('_countedByPrototype');
-      return nodes;
     }
   });
 }
@@ -4030,7 +4046,7 @@ Form.Methods = {
     }).sortBy(function(element) { return element.tabIndex }).first();
 
     return firstByIndex ? firstByIndex : elements.find(function(element) {
-      return ['input', 'select', 'textarea'].include(element.tagName.toLowerCase());
+      return /^(?:input|select|textarea)$/i.test(element.tagName);
     });
   },
 
@@ -4116,7 +4132,7 @@ Form.Element.Methods = {
     try {
       element.focus();
       if (element.select && (element.tagName.toLowerCase() != 'input' ||
-          !['button', 'reset', 'submit'].include(element.type)))
+          !(/^(?:button|reset|submit)$/i.test(element.type))))
         element.select();
     } catch (e) { }
     return element;
@@ -4310,6 +4326,10 @@ Form.EventObserver = Class.create(Abstract.EventObserver, {
     cache: {}
   };
 
+  var docEl = document.documentElement;
+  var MOUSEENTER_MOUSELEAVE_EVENTS_SUPPORTED = 'onmouseenter' in docEl
+    && 'onmouseleave' in docEl;
+
   var _isButton;
   if (Prototype.Browser.IE) {
     var buttonMap = { 0: 1, 1: 4, 2: 2 };
@@ -4462,7 +4482,7 @@ Form.EventObserver = Class.create(Abstract.EventObserver, {
     }
 
     var respondersForEvent = registry.get(eventName);
-    if (Object.isUndefined()) {
+    if (Object.isUndefined(respondersForEvent)) {
       respondersForEvent = [];
       registry.set(eventName, respondersForEvent);
     }
@@ -4482,7 +4502,7 @@ Form.EventObserver = Class.create(Abstract.EventObserver, {
         handler.call(element, event);
       };
     } else {
-      if (!Prototype.Browser.IE &&
+      if (!MOUSEENTER_MOUSELEAVE_EVENTS_SUPPORTED &&
        (eventName === "mouseenter" || eventName === "mouseleave")) {
         if (eventName === "mouseenter" || eventName === "mouseleave") {
           responder = function(event) {
@@ -4530,7 +4550,7 @@ Form.EventObserver = Class.create(Abstract.EventObserver, {
 
   var _getDOMEventName = Prototype.K;
 
-  if (!Prototype.Browser.IE) {
+  if (!MOUSEENTER_MOUSELEAVE_EVENTS_SUPPORTED) {
     _getDOMEventName = function(eventName) {
       var translations = { mouseenter: "mouseover", mouseleave: "mouseout" };
       return eventName in translations ? translations[eventName] : eventName;
