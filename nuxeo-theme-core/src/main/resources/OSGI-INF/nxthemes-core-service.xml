@@ -221,5 +221,10 @@
   <extension-point name="vocabularies">
     <object class="org.nuxeo.theme.vocabularies.VocabularyType"/>
   </extension-point>
+  
+  <extension-point name="previews">
+    <documentation>This extension point is used to register visible previews of CSS properties, presets, etc.</documentation>
+    <object class="org.nuxeo.theme.PreviewType"/>
+  </extension-point>
 
 </component>
