@@ -515,4 +515,10 @@ public final class Utils {
         }
     }
 
+    public static boolean isVirtualHosting(final HttpServletRequest request) {
+        if (request.getHeader("X-Forwarded-Host") != null) {
+            return true;
+        }
+        return false;
+    }
 }

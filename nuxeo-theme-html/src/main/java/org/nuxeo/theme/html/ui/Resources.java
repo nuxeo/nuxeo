@@ -21,7 +21,7 @@ import org.nuxeo.theme.resources.ResourceManager;
 
 public class Resources {
 
-    public static String render(Map<String, String> params) {
+    public static String render(Map<String, String> params, boolean virtualHosting) {
         StringBuilder sb = new StringBuilder();
 
         String resourcePath = "/nuxeo/nxthemes-lib/";
@@ -29,14 +29,12 @@ public class Resources {
         final String path = params.get("path");
         final String basepath = params.get("basepath");
         String nxthemeBasePath = basepath;
-        if(!path.startsWith("/nuxeo")) {
-            //we are behind a proxy, we let mod_rewrite do the work
+        
+        if (virtualHosting) {
             resourcePath = path + "/nxthemes-lib/";
-        }
-        if("".equals(nxthemeBasePath)) {
-            //we are behind ap proxy, we
             nxthemeBasePath = path;
         }
+
         final ResourceManager resourceManager = Manager.getResourceManager();
 
         final StringBuilder combinedStyles = new StringBuilder();
