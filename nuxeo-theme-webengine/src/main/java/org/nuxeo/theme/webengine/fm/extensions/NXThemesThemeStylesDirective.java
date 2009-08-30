@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.html.ui.ThemeStyles;
 import org.nuxeo.theme.themes.ThemeManager;
 
@@ -76,6 +77,8 @@ public class NXThemesThemeStylesDirective implements TemplateDirectiveModel {
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put("themeName", ThemeManager.getThemeNameByUrl(themeUrl));
         attributes.put("path", context.getModulePath());
-        writer.write(ThemeStyles.render(attributes, cache, inline));
+        
+        Boolean virtualHosting = Utils.isVirtualHosting(request);
+        writer.write(ThemeStyles.render(attributes, cache, inline, virtualHosting));
     }
 }

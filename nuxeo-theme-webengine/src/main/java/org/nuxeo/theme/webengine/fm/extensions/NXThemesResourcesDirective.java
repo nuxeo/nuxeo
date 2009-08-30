@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.html.ui.Resources;
 
 import freemarker.core.Environment;
@@ -70,6 +71,7 @@ public class NXThemesResourcesDirective implements TemplateDirectiveModel {
         attributes.put("path", context.getModulePath());
         attributes.put("basepath", context.getBasePath());
 
-        writer.write(Resources.render(attributes));
+        Boolean virtualHosting = Utils.isVirtualHosting(request);
+        writer.write(Resources.render(attributes, virtualHosting));
     }
 }
