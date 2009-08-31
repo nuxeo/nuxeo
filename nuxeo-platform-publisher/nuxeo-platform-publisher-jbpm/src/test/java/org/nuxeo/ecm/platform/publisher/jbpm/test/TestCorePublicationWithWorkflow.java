@@ -17,12 +17,13 @@
 
 package org.nuxeo.ecm.platform.publisher.jbpm.test;
 
+import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -30,14 +31,13 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.jbpm.test.JbpmTestConstants;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
-import org.nuxeo.ecm.platform.jbpm.test.JbpmTestConstants;
 import org.nuxeo.runtime.api.Framework;
-import org.hsqldb.jdbc.jdbcDataSource;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -80,13 +80,13 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.versioning");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
+        deployContrib("org.nuxeo.ecm.platform.publisher.jbpm.test",
+                "OSGI-INF/relations-default-jena-contrib.xml");
         deployBundle("org.nuxeo.ecm.platform.publisher.core");
         deployBundle("org.nuxeo.ecm.platform.publisher.jbpm");
         deployBundle("org.nuxeo.ecm.platform.publisher.jbpm.test");
         deployBundle(JbpmTestConstants.CORE_BUNDLE_NAME);
         deployBundle(JbpmTestConstants.TESTING_BUNDLE_NAME);
-        deployContrib("org.nuxeo.ecm.platform.publisher.jbpm.test",
-                "OSGI-INF/relations-default-jena-contrib.xml");
         openSession();
 
         directoryService = Framework.getService(DirectoryService.class);
@@ -203,20 +203,24 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         PublishedDocument publishedDocument = treeUser1.publish(doc2Publish,
                 targetNode);
         assertTrue(publishedDocument.isPending());
-        assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(1, treeUser1.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish)).size());
 
         // myuser3 can't see the document waiting for validation
         changeUser("myuser3");
-        session.save(); // Save session to get modifications made by other sessions
+        session.save(); // Save session to get modifications made by other
+                        // sessions
         PublicationTree treeUser3 = publisherService.getPublicationTree(
                 "DefaultSectionsTree", session, null);
-        assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(0, treeUser3.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish)).size());
 
         // myuser2 can see it, it's the validator
         changeUser("myuser2");
         PublicationTree treeUser2 = publisherService.getPublicationTree(
                 "DefaultSectionsTree", session, null);
-        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish));
+        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(
+                doc2Publish));
         assertEquals(1, publishedDocuments.size());
 
         publishedDocument = publishedDocuments.get(0);
@@ -227,8 +231,10 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
 
         // published so myuser3 can see it
         changeUser("myuser3");
-        session.save(); // Save session to get modifications made by other sessions (here, removing workflow ACL)
-        assertEquals(1, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+        session.save(); // Save session to get modifications made by other
+                        // sessions (here, removing workflow ACL)
+        assertEquals(1, treeUser3.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish)).size());
     }
 
     public void testRejectPublication() throws Exception {
@@ -245,20 +251,24 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         PublishedDocument publishedDocument = treeUser1.publish(doc2Publish,
                 targetNode);
         assertTrue(publishedDocument.isPending());
-        assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(1, treeUser1.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish)).size());
 
         // myuser3 can't see the document waiting for validation
         changeUser("myuser3");
-        session.save(); // Save session to get modifications made by other sessions
+        session.save(); // Save session to get modifications made by other
+                        // sessions
         PublicationTree treeUser3 = publisherService.getPublicationTree(
                 "DefaultSectionsTree", session, null);
-        assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(0, treeUser3.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish)).size());
 
         // myuser2 can see it, it's the validator
         changeUser("myuser2");
         PublicationTree treeUser2 = publisherService.getPublicationTree(
                 "DefaultSectionsTree", session, null);
-        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish));
+        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(
+                doc2Publish));
         assertEquals(1, publishedDocuments.size());
 
         publishedDocument = publishedDocuments.get(0);
@@ -269,16 +279,20 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         treeUser2.validatorRejectPublication(publishedDocument, "Rejected!");
         assertTrue(publishedDocument.isPending());
         // No more document to approve
-        assertEquals(0, treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(0, treeUser2.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish)).size());
 
         // published so myuser3 still can't see it
         changeUser("myuser3");
-        session.save(); // Save session to get modifications made by other sessions (here, removing workflow ACL)
-        assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+        session.save(); // Save session to get modifications made by other
+                        // sessions (here, removing workflow ACL)
+        assertEquals(0, treeUser3.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish)).size());
 
         // No more document published for myuser1
         changeUser("myuser1");
-        assertEquals(0, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+        assertEquals(0, treeUser1.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish)).size());
 
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         assertFalse(session.exists(proxy.getRef()));

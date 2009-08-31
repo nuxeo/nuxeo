@@ -144,6 +144,10 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
         BufferedReader reader = null;
         BufferedWriter writer = null;
         try {
+            if (!fileIndex.exists()) {
+                fileIndex.createNewFile();
+            }
+
             reader = new BufferedReader(new FileReader(fileIndex));
             writer = new BufferedWriter(new FileWriter(fileIndexTmp));
             String pathToAdd = pubDoc.getPath();

@@ -17,28 +17,24 @@
 
 package org.nuxeo.ecm.platform.publisher.test;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hsqldb.jdbc.jdbcDataSource;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
-import org.nuxeo.ecm.platform.publisher.api.PublisherService;
-import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
-import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
+import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
+import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
+import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.helper.PublicationRelationHelper;
-import org.nuxeo.ecm.platform.relations.api.RelationManager;
-import org.nuxeo.ecm.platform.relations.api.util.RelationHelper;
+import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
-
-import org.hsqldb.jdbc.jdbcDataSource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.util.List;
 
 /**
@@ -77,14 +73,9 @@ public class TestPublicationRelations extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.versioning");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
-        deployContrib("org.nuxeo.ecm.platform.publisher.core",
-                "OSGI-INF/publisher-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.publisher.core",
-                "OSGI-INF/publisher-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.publisher.core",
-                "OSGI-INF/publisher-relations-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.publisher.test",
                 "OSGI-INF/relations-default-jena-contrib.xml");
+        deployBundle("org.nuxeo.ecm.platform.publisher.core");
 
         openSession();
     }
@@ -147,7 +138,8 @@ public class TestPublicationRelations extends SQLRepositoryTestCase {
         DocumentModel proxy = ((SimpleCorePublishedDocument) pubDoc).getProxy();
         assertTrue(PublicationRelationHelper.isPublished(proxy));
 
-        assertEquals(tree.getConfigName(), service.getPublicationTreeFor(proxy, session).getConfigName());
+        assertEquals(tree.getConfigName(), service.getPublicationTreeFor(proxy,
+                session).getConfigName());
     }
 
 }

@@ -11,9 +11,9 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
+import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
 import org.nuxeo.ecm.platform.publisher.impl.service.ProxyTree;
 import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
-import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.naming.Context;
@@ -58,14 +58,14 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.versioning");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
+        deployContrib("org.nuxeo.ecm.platform.publisher.test",
+                "OSGI-INF/relations-default-jena-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.publisher.core",
                 "OSGI-INF/publisher-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.publisher.core",
                 "OSGI-INF/publisher-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.publisher.core",
                 "OSGI-INF/publisher-relations-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.publisher.test",
-                "OSGI-INF/relations-default-jena-contrib.xml");
 
         openSession();
     }
@@ -246,13 +246,16 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         PublicationTree tree = service.getPublicationTree(
                 "DefaultSectionsTree", session, null);
 
-        DocumentModel ws1 = session.getDocument(new PathRef("default-domain/workspaces/ws1"));
+        DocumentModel ws1 = session.getDocument(new PathRef(
+                "default-domain/workspaces/ws1"));
         assertFalse(tree.isPublicationNode(ws1));
 
-        DocumentModel section1 = session.getDocument(new PathRef("default-domain/sections/section1"));
+        DocumentModel section1 = session.getDocument(new PathRef(
+                "default-domain/sections/section1"));
         assertTrue(tree.isPublicationNode(section1));
 
-        PublicationNode targetNode = service.wrapToPublicationNode(section1, session);
+        PublicationNode targetNode = service.wrapToPublicationNode(section1,
+                session);
         assertNotNull(targetNode);
 
         PublishedDocument pubDoc = tree.publish(doc2Publish, targetNode);
@@ -264,7 +267,8 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
     public void testWithRootSections() throws Exception {
         createInitialDocs();
 
-        RootSectionsManager rootSectionsManager = new RootSectionsManager(session);
+        RootSectionsManager rootSectionsManager = new RootSectionsManager(
+                session);
 
         DocumentModel section1 = session.getDocument(new PathRef(
                 "default-domain/sections/section1"));
@@ -274,8 +278,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         assertTrue(rootSectionsManager.canAddSection(section1, ws1));
 
         rootSectionsManager.addSection(section1.getId(), ws1);
-        String[] sectionIdsArray = (String[]) ws1
-                    .getPropertyValue(RootSectionsManager.SECTIONS_PROPERTY_NAME);
+        String[] sectionIdsArray = (String[]) ws1.getPropertyValue(RootSectionsManager.SECTIONS_PROPERTY_NAME);
         assertEquals(1, sectionIdsArray.length);
 
         PublisherService service = Framework.getLocalService(PublisherService.class);
@@ -288,8 +291,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         assertEquals(1, nodes.size());
 
         rootSectionsManager.removeSection(section1.getId(), ws1);
-        sectionIdsArray = (String[]) ws1
-                    .getPropertyValue(RootSectionsManager.SECTIONS_PROPERTY_NAME);
+        sectionIdsArray = (String[]) ws1.getPropertyValue(RootSectionsManager.SECTIONS_PROPERTY_NAME);
         assertEquals(0, sectionIdsArray.length);
 
         DocumentModel section2 = session.getDocument(new PathRef(
@@ -300,7 +302,8 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         rootSectionsManager.addSection(section2.getId(), ws1);
         rootSectionsManager.addSection(section11.getId(), ws1);
 
-        // "hack" to reset the RootSectionsFinder used by the tree implementation
+        // "hack" to reset the RootSectionsFinder used by the tree
+        // implementation
         tree.setCurrentDocument(doc2Publish);
         nodes = tree.getChildrenNodes();
         assertEquals(2, nodes.size());

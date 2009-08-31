@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.relations.api.*;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
-import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.ecm.platform.relations.api.util.RelationHelper;
 
 import java.io.Serializable;
@@ -39,6 +38,8 @@ import java.util.Map;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 public class PublicationRelationHelper {
+
+    public static final String PUBLICATION_GRAPH_NAME = "publication";
 
     public static final String PUBLICATION_TREE_NAMESPACE = "http://www.nuxeo.org/publication/tree/";
 
@@ -59,7 +60,7 @@ public class PublicationRelationHelper {
                 publicationTree, null);
         Statement stmt = new StatementImpl(docResource, PUBLISHED_BY,
                 treeResource);
-        rm.add(RelationConstants.GRAPH_NAME, Collections.singletonList(stmt));
+        rm.add(PUBLICATION_GRAPH_NAME, Collections.singletonList(stmt));
     }
 
     /**
@@ -69,11 +70,11 @@ public class PublicationRelationHelper {
      */
     public static void removePublicationRelation(DocumentModel documentModel)
             throws ClientException {
-        List<Statement> stmts = RelationHelper.getStatements(documentModel,
+        List<Statement> stmts = RelationHelper.getStatements(PUBLICATION_GRAPH_NAME, documentModel,
                 PUBLISHED_BY);
         RelationManager rm = RelationHelper.getRelationManager();
         if (stmts != null) {
-            rm.remove(RelationConstants.GRAPH_NAME, stmts);
+            rm.remove(PUBLICATION_GRAPH_NAME, stmts);
         }
     }
 
@@ -83,7 +84,7 @@ public class PublicationRelationHelper {
      * @return
      */
     public static boolean isPublished(DocumentModel documentModel) {
-        List<Statement> stmts = RelationHelper.getStatements(documentModel,
+        List<Statement> stmts = RelationHelper.getStatements(PUBLICATION_GRAPH_NAME, documentModel,
                 PUBLISHED_BY);
         return stmts != null && !stmts.isEmpty();
     }
@@ -102,7 +103,7 @@ public class PublicationRelationHelper {
                     + documentModel.getPathAsString()
                     + " is not a published document");
         }
-        List<Statement> stmts = RelationHelper.getStatements(documentModel,
+        List<Statement> stmts = RelationHelper.getStatements(PUBLICATION_GRAPH_NAME, documentModel,
                 PUBLISHED_BY);
         Statement statement = stmts.get(0);
 
