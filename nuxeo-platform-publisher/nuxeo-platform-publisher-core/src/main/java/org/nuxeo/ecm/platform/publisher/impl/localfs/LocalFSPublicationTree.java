@@ -138,15 +138,41 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
     }
 
     private void addToIndex(PublishedDocument pubDoc) throws ClientException {
-        File indexFile = new File(rootPath, INDEX_FILENAME);
+        File fileIndex = new File(rootPath, INDEX_FILENAME);
+        File fileIndexTmp = new File(rootPath, INDEX_FILENAME_TMP);
+
+        BufferedReader reader = null;
         BufferedWriter writer = null;
         try {
-            writer = new BufferedWriter(new FileWriter(indexFile, true));
-            writer.write(pubDoc.getPath());
-            writer.newLine();
+            reader = new BufferedReader(new FileReader(fileIndex));
+            writer = new BufferedWriter(new FileWriter(fileIndexTmp));
+            String pathToAdd = pubDoc.getPath();
+            String line;
+            boolean pathAlreadyFound = false;
+            while ((line = reader.readLine()) != null) {
+                if (line.equals(pathToAdd)) {
+                    pathAlreadyFound = true;
+                }
+                writer.write(line);
+                writer.newLine();
+            }
+            if (!pathAlreadyFound) {
+                writer.write(pathToAdd);
+                writer.newLine();
+            }
+            if (fileIndex.delete()) {
+                fileIndexTmp.renameTo(fileIndex);
+            }
         } catch (IOException e) {
             throw new ClientException(e);
         } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                }
+            }
+
             if (writer != null) {
                 try {
                     writer.flush();
