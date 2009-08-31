@@ -88,11 +88,16 @@ public class RelationHelper {
 
     public static DocumentModelList getSubjectDocuments(Resource predicat,
             String stringObject, String sessionId) {
+        return getSubjectDocuments(RelationConstants.GRAPH_NAME, predicat, stringObject, sessionId);
+    }
+
+    public static DocumentModelList getSubjectDocuments(String graphName, Resource predicat,
+            String stringObject, String sessionId) {
         try {
             Literal literal = new LiteralImpl(stringObject);
             Statement pattern = new StatementImpl(null, predicat, literal);
             List<Statement> stmts = getRelationManager().getStatements(
-                    RelationConstants.GRAPH_NAME, pattern);
+                    graphName, pattern);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
@@ -112,11 +117,16 @@ public class RelationHelper {
 
     public static DocumentModelList getSubjectDocuments(Resource predicat,
             DocumentModel objectDocument) {
+        return getSubjectDocuments(RelationConstants.GRAPH_NAME, predicat, objectDocument);
+    }
+
+    public static DocumentModelList getSubjectDocuments(String graphName, Resource predicat,
+            DocumentModel objectDocument) {
         try {
             QNameResource docResource = getDocumentResource(objectDocument);
             Statement pattern = new StatementImpl(null, predicat, docResource);
             List<Statement> stmts = getRelationManager().getStatements(
-                    RelationConstants.GRAPH_NAME, pattern);
+                    graphName, pattern);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
@@ -136,11 +146,16 @@ public class RelationHelper {
 
     public static DocumentModelList getSubjectDocumentsOut(Resource predicat,
             DocumentModel objectDocument) {
+        return getSubjectDocumentsOut(RelationConstants.GRAPH_NAME, predicat, objectDocument);
+    }
+
+    public static DocumentModelList getSubjectDocumentsOut(String graphName, Resource predicat,
+            DocumentModel objectDocument) {
         try {
             QNameResource docResource = getDocumentResource(objectDocument);
             Statement pattern = new StatementImpl(docResource, predicat, null);
             List<Statement> stmts = getRelationManager().getStatements(
-                    RelationConstants.GRAPH_NAME, pattern);
+                    graphName, pattern);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
@@ -160,8 +175,13 @@ public class RelationHelper {
 
     public static DocumentModelList getObjectDocuments(
             DocumentModel subjectDoc, Resource predicat) {
+        return getObjectDocuments(RelationConstants.GRAPH_NAME, subjectDoc, predicat);
+    }
+
+    public static DocumentModelList getObjectDocuments(String graphName,
+            DocumentModel subjectDoc, Resource predicat) {
         try {
-            List<Statement> stmts = getStatements(subjectDoc, predicat);
+            List<Statement> stmts = getStatements(graphName, subjectDoc, predicat);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
@@ -181,11 +201,16 @@ public class RelationHelper {
 
     public static List<Statement> getStatements(DocumentModel subjectDoc,
             Resource predicat) {
+        return getStatements(RelationConstants.GRAPH_NAME, subjectDoc, predicat);
+    }
+
+    public static List<Statement> getStatements(String graphName, DocumentModel subjectDoc,
+            Resource predicat) {
         try {
             QNameResource docResource = getDocumentResource(subjectDoc);
             Statement pattern = new StatementImpl(docResource, predicat, null);
             return getRelationManager().getStatements(
-                    RelationConstants.GRAPH_NAME, pattern);
+                    graphName, pattern);
         } catch (ClientException e) {
             log.error(e);
         }
@@ -194,13 +219,18 @@ public class RelationHelper {
 
     public static void removeRelation(DocumentModel subjectDoc,
             Resource predicat, DocumentModel objectDoc) {
+        removeRelation(RelationConstants.GRAPH_NAME, subjectDoc, predicat, objectDoc);
+    }
+
+    public static void removeRelation(String graphName, DocumentModel subjectDoc,
+            Resource predicat, DocumentModel objectDoc) {
         try {
             QNameResource subject = getDocumentResource(subjectDoc);
             QNameResource object = getDocumentResource(objectDoc);
             List<Statement> stmts = new ArrayList<Statement>();
             Statement stmt = new StatementImpl(subject, predicat, object);
             stmts.add(stmt);
-            getRelationManager().remove(RelationConstants.GRAPH_NAME, stmts);
+            getRelationManager().remove(graphName, stmts);
         } catch (ClientException e) {
             log.error(e);
         }
