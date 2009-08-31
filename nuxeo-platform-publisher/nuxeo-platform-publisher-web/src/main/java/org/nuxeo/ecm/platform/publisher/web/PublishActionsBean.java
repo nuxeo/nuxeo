@@ -363,14 +363,23 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
     }
 
     public boolean isRemotePublishedDocument(PublishedDocument publishedDocument) {
+        if (publishedDocument == null) {
+            return false;
+        }
         return publishedDocument.getType().equals(PublishedDocument.Type.REMOTE);
     }
 
     public boolean isFileSystemPublishedDocument(PublishedDocument publishedDocument) {
+        if (publishedDocument == null) {
+            return false;
+        }
         return publishedDocument.getType().equals(PublishedDocument.Type.FILE_SYSTEM);
     }
 
     public boolean isLocalPublishedDocument(PublishedDocument publishedDocument) {
+        if (publishedDocument == null) {
+            return false;
+        }
         return publishedDocument.getType().equals(PublishedDocument.Type.LOCAL);
     }
 
