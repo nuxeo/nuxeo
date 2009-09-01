@@ -11,10 +11,10 @@
 
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-jsf-parent</artifactId>
+  <version>5.2.1-SNAPSHOT</version>
   <name>Nuxeo JSF Parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo JSF: Parent.</description>
-  <version>5.2.1-SNAPSHOT</version>
 
   <properties>
     <nuxeo.common.version>1.5.1-SNAPSHOT</nuxeo.common.version>
