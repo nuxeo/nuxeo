@@ -352,11 +352,13 @@ public class CommandLineService extends DefaultComponent implements
             if (newArgs.length > 0) {
                 System.arraycopy(args, k, newArgs, 0, newArgs.length);
             }
-            StandaloneApplication.setMainTask(new Runnable() {
+            Runnable task = new Runnable() {
                 public void run() {
                     Main.main(newArgs);
                 }
-            });
+            };
+            StandaloneApplication.setMainTask(task);
+            env.getProperties().put("mainTask", task);
         }
     }
 
