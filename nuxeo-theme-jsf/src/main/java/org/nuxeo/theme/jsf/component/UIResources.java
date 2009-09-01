@@ -23,7 +23,9 @@ import javax.faces.component.UIOutput;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import javax.servlet.http.HttpServletRequest;
 
+import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.html.ui.Resources;
 
 public class UIResources extends UIOutput {
@@ -34,12 +36,16 @@ public class UIResources extends UIOutput {
         final ExternalContext externalContext = context.getExternalContext();
 
         Map<String, String> params = new HashMap<String, String>();
-        URL themeUrl = (URL) externalContext.getRequestMap().get(
-                "org.nuxeo.theme.url");
+
+        Map<String, Object> requestMap = externalContext.getRequestMap();
+        URL themeUrl = (URL) requestMap.get("org.nuxeo.theme.url");
+
         params.put("themeUrl", themeUrl.toString());
         params.put("path", externalContext.getRequestContextPath());
         // XXX
         params.put("basepath", "/nuxeo/site");
-        writer.write(Resources.render(params));
+        
+        Boolean virtualHosting = Utils.isVirtualHosting((HttpServletRequest) externalContext.getRequest());
+        writer.write(Resources.render(params, virtualHosting));
     }
 }

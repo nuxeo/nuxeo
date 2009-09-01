@@ -23,7 +23,9 @@ import javax.faces.component.UIOutput;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import javax.servlet.http.HttpServletRequest;
 
+import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.html.ui.ThemeStyles;
 import org.nuxeo.theme.themes.ThemeManager;
 
@@ -58,14 +60,16 @@ public class UIThemeStyles extends UIOutput {
         final ResponseWriter writer = context.getResponseWriter();
         final ExternalContext externalContext = context.getExternalContext();
 
-        final URL themeUrl = (URL) externalContext.getRequestMap().get(
-                "org.nuxeo.theme.url");
+        Map<String, Object> requestMap = externalContext.getRequestMap();
+        final URL themeUrl = (URL) requestMap.get("org.nuxeo.theme.url");
+        
         Map<String, String> params = new HashMap<String, String>();
 
         params.put("themeName", ThemeManager.getThemeNameByUrl(themeUrl));
         params.put("path", externalContext.getRequestContextPath());
 
+        Boolean virtualHosting = Utils.isVirtualHosting((HttpServletRequest) externalContext.getRequest());
         writer.write(ThemeStyles.render(params, Boolean.parseBoolean(cache),
-                Boolean.parseBoolean(inline)));
+                Boolean.parseBoolean(inline), virtualHosting));
     }
 }
