@@ -63,6 +63,7 @@
     <profile>
       <id>shell</id>
       <modules>
+        <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-shell</module>
       </modules>
@@ -70,6 +71,7 @@
     <profile>
       <id>jetty</id>
       <modules>
+        <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-jetty</module>
