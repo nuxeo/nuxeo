@@ -61,6 +61,8 @@ public class ComponentManagerImpl implements ComponentManager {
 
     private final Map<String, RegistrationInfoImpl> services;
 
+    protected Set<String> blacklist;
+    
 
     public ComponentManagerImpl(RuntimeService runtime) {
         registry = new HashMap<ComponentName, RegistrationInfoImpl>();
@@ -68,6 +70,7 @@ public class ComponentManagerImpl implements ComponentManager {
         pendingExtensions = new HashMap<ComponentName, Set<Extension>>();
         listeners = new ListenerList();
         services = new Hashtable<String, RegistrationInfoImpl>();
+        blacklist = new HashSet<String>();
     }
 
     public Collection<RegistrationInfo> getRegistrations() {
@@ -142,8 +145,20 @@ public class ComponentManagerImpl implements ComponentManager {
         _register((RegistrationInfoImpl) regInfo);
     }
 
+    public Set<String> getBlacklist() {
+        return blacklist;
+    }
+    
+    public void setBlacklist(Set<String> blacklist) {
+        this.blacklist = blacklist;
+    }
+    
     private void _register(RegistrationInfoImpl ri) {
         ComponentName name = ri.getName();
+        if (blacklist.contains(name.getName())) {
+            log.warn("Component "+name.getName()+" was blacklisted. Ignoring.");
+            return;
+        }
         if (isRegistered(name)) {
             if (name.getName().startsWith("org.nuxeo.runtime.")) {
                 // XXX we hide the fact that nuxeo-runtime bundles are

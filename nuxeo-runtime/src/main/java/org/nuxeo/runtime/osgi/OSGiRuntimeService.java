@@ -25,7 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -229,6 +231,20 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         } else {
             componentDebugLog.info("Configuration: no host application");
         }
+        
+        File blacklistFile = new File(env.getConfig(), "blacklist");
+        if (blacklistFile.isFile()) {
+            List<String> lines = FileUtils.readLines(blacklistFile);
+            HashSet<String> blacklist = new HashSet<String>();
+            for (String line : lines) {
+                line = line.trim();
+                if (line.length() > 0) {
+                    blacklist.add(line);
+                }
+            }
+            manager.setBlacklist(new HashSet<String>(lines));
+        }
+        
         // TODO: in JBoss there is a deployer that will deploy nuxeo
         // configuration files ..
         if (env != null && !"JBoss".equals(env.getHostApplicationName())) {

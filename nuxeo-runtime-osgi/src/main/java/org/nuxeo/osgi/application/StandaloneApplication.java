@@ -298,6 +298,10 @@ public class StandaloneApplication extends OSGiAdapter {
     public static void setMainTask(Runnable mainTask) {
         StandaloneApplication.mainTask = mainTask;
     }
+    
+    public static Runnable getMainTask() {
+        return mainTask;
+    }
 
     public static void main(URL systemBundle, List<File> classPath, String[] args) {
         SharedClassLoader classLoader = (SharedClassLoader)Thread.currentThread().getContextClassLoader();
