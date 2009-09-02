@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.publishing.permissions.contrib">
+
+  <require>org.nuxeo.ecm.core.security.defaultPermissions</require>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissions">
+
+    <permission name="CanAskForPublishing" />
+
+    <permission name="Read">
+      <include>Browse</include>
+      <include>ReadVersion</include>
+      <include>ReadProperties</include>
+      <include>ReadChildren</include>
+      <include>ReadLifeCycle</include>
+      <include>ReadSecurity</include>
+      <include>ReviewParticipant</include>
+      <include>Version</include><!-- use ReadVersion instead once alias works -->
+      <include>CanAskForPublishing</include>
+    </permission>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissionsVisibility">
+
+    <visibility type="Section">
+      <item show="true" order="10">Read</item>
+      <item show="true" order="50" denyPermission="Write">ReadWrite</item>
+      <item show="true" order="60" denyPermission="Remove">ReadRemove</item>
+      <item show="true" order="100">Everything</item>
+      <item show="true" order="150">CanAskForPublishing</item>
+    </visibility>
+
+    <visibility type="SectionRoot">
+      <item show="true" order="10">Read</item>
+      <item show="true" order="50" denyPermission="Write">ReadWrite</item>
+      <item show="true" order="60" denyPermission="Remove">ReadRemove</item>
+      <item show="true" order="100">Everything</item>
+      <item show="true" order="150">CanAskForPublishing</item>
+    </visibility>
+
+  </extension>
+
+</component>

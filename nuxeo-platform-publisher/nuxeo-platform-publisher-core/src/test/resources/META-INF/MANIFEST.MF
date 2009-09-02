@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Publisher service
+Bundle-SymbolicName: org.nuxeo.ecm.platform.publisher.test;singleton:=true
+Bundle-Version: 1.0.0
+Require-Bundle: org.nuxeo.ecm.platform.ui,
+ org.nuxeo.ecm.webengine.core
+Nuxeo-Component: OSGI-INF/publisher-remote-contrib-test.xml,
+ OSGI-INF/relations-default-jena-contrib.xml
