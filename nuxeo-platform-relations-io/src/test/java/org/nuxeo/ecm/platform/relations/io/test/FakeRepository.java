@@ -43,12 +43,12 @@ public class FakeRepository implements Repository {
     }
 
     public Session getSession(long sessionId) throws DocumentException {
-        return new FakeSession();
+        return FakeSession.getSession();
     }
 
     public Session getSession(Map<String, Serializable> context)
             throws DocumentException {
-        return new FakeSession();
+        return FakeSession.getSession();
     }
 
     public int getActiveSessionsCount() {

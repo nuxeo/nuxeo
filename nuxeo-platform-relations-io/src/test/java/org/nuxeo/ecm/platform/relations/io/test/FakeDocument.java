@@ -61,7 +61,7 @@ public class FakeDocument implements Document {
     }
 
     public Session getSession() {
-        return new FakeSession();
+        return FakeSession.getSession();
     }
 
     public DocumentType getType() {
