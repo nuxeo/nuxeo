@@ -3,8 +3,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-features-parent</artifactId>
+    <!--groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-features-parent</artifactId-->
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
     <version>5.2.1-SNAPSHOT</version>
   </parent>
 
@@ -17,6 +19,33 @@
   <properties>
     <application.name>${project.artifactId}-${project.version}</application.name>
   </properties>
+
+<profiles>
+  <profile>
+    <id>embedded-standalone</id>
+    <properties>
+        <embedded.type>all</embedded.type>
+        <embedded.includeNestedJars>true</embedded.includeNestedJars>
+        <embedded.excludeLibs>false</embedded.excludeLibs>            
+    </properties>        
+  </profile>
+  <profile>
+    <id>embedded-osgi</id>
+    <properties>
+        <embedded.type>osgi</embedded.type>
+        <embedded.includeNestedJars>true</embedded.includeNestedJars>
+        <embedded.excludeLibs>false</embedded.excludeLibs>            
+    </properties>        
+  </profile>
+  <profile>
+    <id>embedded-minimal</id>
+    <properties>
+        <embedded.type>minmal</embedded.type>
+        <embedded.includeNestedJars>false</embedded.includeNestedJars>
+        <embedded.excludeLibs>true</embedded.excludeLibs>        
+    </properties>
+  </profile>
+</profiles>
 
   <build>
     <plugins>
@@ -54,6 +83,20 @@
               <type>zip</type>
             </configuration>
           </execution>
+	  <execution>
+	    <id>all-in-one</id>
+	    <!--phase>package</phase-->
+	    <goals>
+	      <goal>allinone</goal>
+	    </goals>
+	    <configuration>
+          <includeNestedJars>${embedded.includeNestedJars}</includeNestedJars>
+          <excludeLibs>${embedded.excludeLibs}</excludeLibs>
+	      <src>${basedir}/target/${application.name}.zip</src>
+	      <target>${basedir}/target/nuxeo-${embedded.type}-${project.version}.jar</target>
+          <launcher>org.nuxeo.ecm.distribution:nuxeo-embedded-launcher:${project.version}</launcher>
+	    </configuration>
+	  </execution>
         </executions>
       </plugin>
     </plugins>
