@@ -23,6 +23,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +47,24 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestJMSEventBundle extends NXRuntimeTestCase {
 
-    protected final CoreSession fakeCoreSession = new FakeCoreSession();
+    protected static class CoreSessionInvocationHandler implements
+            InvocationHandler {
+        public Object invoke(Object proxy, Method method, Object[] args)
+                throws Throwable {
+            final String name = method.getName();
+            if (name.equals("getRepositoryName")) {
+                return "default";
+            } else if (name.equals("exists")) {
+                return Boolean.FALSE;
+            }
+            return null;
+        }
+    }
+
+    protected final CoreSession fakeCoreSession = (CoreSession) Proxy.newProxyInstance(
+            CoreSession.class.getClassLoader(),
+            new Class<?>[] { CoreSession.class },
+            new CoreSessionInvocationHandler());
 
     @Override
     public void setUp() throws Exception {
