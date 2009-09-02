@@ -26,7 +26,6 @@
         </namespace>
         <namespace name="dcterms">http://purl.org/dc/terms/</namespace>
         <namespace name="nuxeo">http://www.nuxeo.org/document/uid/</namespace>
-        <namespace name="pTree">http://www.nuxeo.org/publication/tree/</namespace>
       </namespaces>
     </graph>
   </extension>
