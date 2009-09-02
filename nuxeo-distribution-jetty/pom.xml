@@ -52,7 +52,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-nuxeo-plugin</artifactId>
-    	<version>1.0.11</version>
         <extensions>false</extensions>
         <executions>
           <execution>
