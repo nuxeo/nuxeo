@@ -155,7 +155,7 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
         FacesContext context = FacesContext.getCurrentInstance();
         if (publishedDocument.isPending()) {
             String comment = ComponentUtils.translate(context,
-                                "publishing.waiting", publicationNode.getPath());
+                                "publishing.waiting", tree.getConfigName(), publicationNode.getPath());
             // Log event on live version
             notifyEvent(PublishingEvent.documentWaitingPublication.name(),
                     null, comment, null, currentDocument);
@@ -166,7 +166,7 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
                             currentDocument.getType()));
         } else {
             String comment = ComponentUtils.translate(context,
-                                "publishing.done", publicationNode.getPath());
+                                "publishing.done", tree.getConfigName(), publicationNode.getPath());
             // Log event on live version
             notifyEvent(PublishingEvent.documentPublished.name(), null,
                     comment, null, currentDocument);
@@ -307,9 +307,9 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
         FacesContext context = FacesContext.getCurrentInstance();
         String comment = publishingComment != null && publishingComment.length() > 0 ?
                 ComponentUtils.translate(context,
-                                "publishing.approved.with.comment", publishedDocument.getParentPath(), publishingComment)
+                                "publishing.approved.with.comment", tree.getConfigName(), publishedDocument.getParentPath(), publishingComment)
                 : ComponentUtils.translate(context,
-                                "publishing.approved.without.comment", publishedDocument.getParentPath());
+                                "publishing.approved.without.comment", tree.getConfigName(), publishedDocument.getParentPath());
         notifyEvent(PublishingEvent.documentPublicationApproved.name(), null,
                 comment, null, sourceDocument);
 
@@ -344,9 +344,9 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
         FacesContext context = FacesContext.getCurrentInstance();
         String comment = publishingComment != null && publishingComment.length() > 0 ?
                 ComponentUtils.translate(context,
-                                "publishing.rejected.with.comment", publishedDocument.getParentPath(), publishingComment)
+                                "publishing.rejected.with.comment", tree.getConfigName(), publishedDocument.getParentPath(), publishingComment)
                 : ComponentUtils.translate(context,
-                                "publishing.rejected.without.comment", publishedDocument.getParentPath());
+                                "publishing.rejected.without.comment", tree.getConfigName(), publishedDocument.getParentPath());
         notifyEvent(PublishingEvent.documentPublicationRejected.name(), null,
                 comment, null,
                 sourceDocument);
