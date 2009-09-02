@@ -41,9 +41,11 @@ public interface PublicationTree extends PublicationNode {
 
     String getTreeType();
 
+    String getTreeTitle();
+
     void initTree(String sid, CoreSession coreSession,
             Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName) throws ClientException;
+            String configName, String title) throws ClientException;
 
     /**
      * Set the current document on which the tree will be based, if needed. Can be useful for

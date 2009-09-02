@@ -38,8 +38,8 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
     @Override
     public void initTree(String sid, CoreSession coreSession,
             Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName) throws ClientException {
-        super.initTree(sid, coreSession, parameters, factory, configName);
+            String configName, String title) throws ClientException {
+        super.initTree(sid, coreSession, parameters, factory, configName, title);
         treeRoot = coreSession.getDocument(new PathRef(rootPath));
         rootNode = new CoreFolderPublicationNode(treeRoot, getConfigName(),
                 sid, factory);

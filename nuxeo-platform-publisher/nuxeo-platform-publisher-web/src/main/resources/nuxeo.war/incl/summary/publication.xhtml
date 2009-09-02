@@ -70,12 +70,12 @@
     </h:panelGroup>
   </div>
 
-  <nxu:dataTable value="#{availablePublicationTrees}" var="treeName"
+  <nxu:dataTable value="#{availablePublicationTrees}" var="tree"
                  styleClass="dataOutput">
     <nxu:column>
-      <h4><h:outputText value="#{treeName}"/></h4>
+      <h4><h:outputText value="#{messages[tree.title]}"/></h4>
       <nxu:methodResult name="publishedDocuments"
-                        value="#{publishActions.getPublishedDocumentsFor(treeName)}">
+                        value="#{publishActions.getPublishedDocumentsFor(tree.name)}">
         <h:outputText
                 value="#{messages['label.publication.tree.not.available']}"
                 rendered="#{publishedDocuments == null}"/>

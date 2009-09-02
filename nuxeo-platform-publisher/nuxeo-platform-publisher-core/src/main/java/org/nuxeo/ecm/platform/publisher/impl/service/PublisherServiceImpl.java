@@ -112,6 +112,15 @@ public class PublisherServiceImpl extends DefaultComponent implements
         return treeConfigs;
     }
 
+    public Map<String, String> getAvailablePublicationTrees() {
+        Map<String, String> trees = new HashMap<String, String>();
+        for (PublicationTreeConfigDescriptor desc : treeConfigDescriptors.values()) {
+            String title = desc.getTitle() == null ? desc.getName() : desc.getTitle();
+            trees.put(desc.getName(), title);
+        }
+        return trees;
+    }
+
     public PublicationTree getPublicationTree(String treeName,
             CoreSession coreSession, Map<String, String> params)
             throws ClientException, PublicationTreeNotAvailable {
@@ -178,7 +187,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
             Map<String, String> allParameters = computeAllParameters(config, params);
             PublicationTreeDescriptor treeDescriptor = getPublicationTreeDescriptor(config);
             PublishedDocumentFactory publishedDocumentFactory = getPublishedDocumentFactory(config, treeDescriptor, coreSession, allParameters);
-            return getPublicationTree(treeDescriptor,  sid, coreSession, allParameters, publishedDocumentFactory, config.getName());
+            return getPublicationTree(treeDescriptor,  sid, coreSession, allParameters, publishedDocumentFactory, config.getName(), config.getTitle());
         } catch (PublisherException e) {
             log.error("Unable to build PublicationTree", e);
             return null;
@@ -259,7 +268,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
     }
 
     protected PublicationTree getPublicationTree(PublicationTreeDescriptor treeDescriptor, String sid, CoreSession coreSession, Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName) throws PublisherException, PublicationTreeNotAvailable {
+            String configName, String treeTitle) throws PublisherException, PublicationTreeNotAvailable {
         PublicationTree treeImpl;
         try {
             treeImpl = treeDescriptor.getKlass().newInstance();
@@ -268,7 +277,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
 
         try {
-            treeImpl.initTree(sid, coreSession, parameters, factory, configName);
+            treeImpl.initTree(sid, coreSession, parameters, factory, configName, treeTitle);
         } catch (Exception e) {
             throw new PublicationTreeNotAvailable("Error during tree init", e);
         }

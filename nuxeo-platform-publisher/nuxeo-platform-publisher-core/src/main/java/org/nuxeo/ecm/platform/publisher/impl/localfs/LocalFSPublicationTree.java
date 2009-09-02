@@ -19,10 +19,11 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
 
     public static final String INDEX_FILENAME_TMP = INDEX_FILENAME + ".tmp";
 
+    @Override
     public void initTree(String sid, CoreSession coreSession,
             Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName) throws ClientException {
-        super.initTree(sid, coreSession, parameters, factory, configName);
+            String configName, String title) throws ClientException {
+        super.initTree(sid, coreSession, parameters, factory, configName, title);
         try {
             rootNode = new FSPublicationNode(rootPath, getTreeConfigName(), sid);
         } catch (IllegalArgumentException e) {

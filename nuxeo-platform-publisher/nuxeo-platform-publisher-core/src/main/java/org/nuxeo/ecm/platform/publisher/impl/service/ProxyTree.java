@@ -13,9 +13,9 @@ import java.util.Map;
  * some {@link PublicationTree} implementation may be bound to local resources
  * (network connexions, local filesystem ...) all {@link PublicationTree}
  * returned by the service are wrapped into this RemotablePublicationTree.
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class ProxyTree extends AbstractRemotableTree implements PublicationTree {
 
@@ -37,6 +37,8 @@ public class ProxyTree extends AbstractRemotableTree implements PublicationTree 
     protected String iconExpanded;
 
     protected ProxyNode rootNode;
+
+    protected String treeTitle;
 
     protected String getTargetTreeName() {
         return name;
@@ -64,6 +66,7 @@ public class ProxyTree extends AbstractRemotableTree implements PublicationTree 
         this.sessionId = sid;
         this.name = tree.getName();
         this.title = tree.getTitle();
+        this.treeTitle = tree.getTreeTitle();
         this.treeType = tree.getTreeType();
         this.path = tree.getPath();
         this.rootNode = new ProxyNode(tree, sid);
@@ -74,6 +77,10 @@ public class ProxyTree extends AbstractRemotableTree implements PublicationTree 
 
     public String getTitle() {
         return title;
+    }
+
+    public String getTreeTitle() {
+        return treeTitle;
     }
 
     public String getName() {
@@ -87,6 +94,12 @@ public class ProxyTree extends AbstractRemotableTree implements PublicationTree 
     public void initTree(String sid, CoreSession coreSession,
             Map<String, String> parameters, PublishedDocumentFactory factory,
             String configName) throws ClientException {
+        // NOP
+    }
+
+    public void initTree(String sid, CoreSession coreSession,
+            Map<String, String> parameters, PublishedDocumentFactory factory,
+            String configName, String title) throws ClientException {
         // NOP
     }
 

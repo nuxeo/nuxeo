@@ -21,9 +21,9 @@
             <h:selectOneListbox styleClass="dataInputText" size="1"
                                 value="#{publishActions.currentPublicationTreeNameForPublishing}">
               <nxu:selectItems value="#{availablePublicationTrees}"
-                               var="root"
-                               itemValue="#{root}"
-                               itemLabel="#{root}"/>
+                               var="tree"
+                               itemValue="#{tree.name}"
+                               itemLabel="#{messages[tree.title]}"/>
               <a4j:support event="onchange"
                            reRender="sectionTree,publishingInfoList"
                            ignoreDupResponses="true"/>

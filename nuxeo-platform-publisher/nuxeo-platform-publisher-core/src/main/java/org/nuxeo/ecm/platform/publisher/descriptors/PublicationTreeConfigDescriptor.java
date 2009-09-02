@@ -24,6 +24,9 @@ public class PublicationTreeConfigDescriptor implements Serializable {
     @XNode("@tree")
     private String tree;
 
+    @XNode("@title")
+    private String title;
+
     @XNode("@validatorsRule")
     private String validatorsRule;
 
@@ -74,6 +77,10 @@ public class PublicationTreeConfigDescriptor implements Serializable {
 
     public void setParameters(Map<String, String> parameters) {
         this.parameters = parameters;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
 }

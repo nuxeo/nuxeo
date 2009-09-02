@@ -67,6 +67,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.ArrayList;
 
 /**
  * This Seam bean manages the publishing tab.
@@ -76,6 +77,26 @@ import java.util.Set;
 @Name("publishActions")
 @Scope(ScopeType.CONVERSATION)
 public class PublishActionsBean extends AbstractPublishActions implements Serializable {
+
+    public static class PublicationTreeInformation {
+
+        private String name;
+
+        private String title;
+
+        public PublicationTreeInformation(String treeName, String treeTitle) {
+            this.name = treeName;
+            this.title = treeTitle;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+    }
 
     private static final long serialVersionUID = 1L;
 
@@ -116,8 +137,13 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
     }
 
     @Factory(value = "availablePublicationTrees", scope = ScopeType.EVENT)
-    public List<String> getAvailablePublicationTrees() throws ClientException {
-        return publisherService.getAvailablePublicationTree();
+    public List<PublicationTreeInformation> getAvailablePublicationTrees() throws ClientException {
+        Map<String, String> trees = publisherService.getAvailablePublicationTrees();
+        List<PublicationTreeInformation> treesInformation = new ArrayList<PublicationTreeInformation>();
+        for (Map.Entry<String, String> entry : trees.entrySet()) {
+            treesInformation.add(new PublicationTreeInformation(entry.getKey(), entry.getValue()));
+        }
+        return treesInformation;
     }
 
     public String doPublish(PublicationNode publicationNode)
@@ -166,7 +192,7 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
     public String getCurrentPublicationTreeNameForPublishing()
             throws ClientException {
         if (currentPublicationTreeNameForPublishing == null) {
-            List<String> publicationTrees = getAvailablePublicationTrees();
+            List<String> publicationTrees = new ArrayList<String>(publisherService.getAvailablePublicationTree());
             if (!publicationTrees.isEmpty()) {
                 currentPublicationTreeNameForPublishing = publicationTrees.get(0);
             }

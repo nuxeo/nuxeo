@@ -16,6 +16,12 @@ public interface PublisherService {
 
     List<String> getAvailablePublicationTree();
 
+    /**
+     * Returns a {@code Map} with tree name as key and tree title as value.
+     * @return
+     */
+    Map<String ,String> getAvailablePublicationTrees();
+
     PublicationTree getPublicationTree(String treeName,
             CoreSession coreSession, Map<String, String> params)
             throws ClientException, PublicationTreeNotAvailable;

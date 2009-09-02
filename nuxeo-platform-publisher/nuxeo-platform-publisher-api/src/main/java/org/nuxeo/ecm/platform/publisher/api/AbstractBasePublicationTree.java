@@ -15,6 +15,8 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
 
     public static final String ICON_COLLAPSED_KEY = "iconCollapsed";
 
+    public static final String TITLE_KEY = "title";
+
     protected PublicationNode rootNode;
 
     protected PublishedDocumentFactory factory;
@@ -27,6 +29,8 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
 
     protected String rootPath;
 
+    protected String treeTitle;
+
     protected String iconCollapsed = "/icons/folder.gif";
 
     protected String iconExpanded = "/icons/folder_open.gif";
@@ -37,7 +41,7 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
 
     public void initTree(String sid, CoreSession coreSession,
             Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName)
+            String configName, String title)
             throws ClientException {
         this.sid = sid;
         this.coreSession = coreSession;
@@ -60,6 +64,7 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         if (parameters.containsKey(ICON_EXPANDED_KEY)) {
             iconExpanded = parameters.get(ICON_EXPANDED_KEY);
         }
+        treeTitle = title != null ? title : configName;
 
         this.configName = configName;
     }
@@ -82,6 +87,10 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
 
     public String getTreeType() {
         return getType();
+    }
+
+    public String getTreeTitle() {
+        return treeTitle;
     }
 
     public List<PublishedDocument> getPublishedDocumentInNode(

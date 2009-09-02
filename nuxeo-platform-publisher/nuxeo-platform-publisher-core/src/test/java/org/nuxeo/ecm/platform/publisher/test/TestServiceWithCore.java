@@ -125,6 +125,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         PublicationTree tree = service.getPublicationTree(
                 "DefaultSectionsTree", session, null);
         assertNotNull(tree);
+        assertEquals("label.publication.tree.local.sections", tree.getTreeTitle());
         assertEquals("RootSectionsPublicationTree", tree.getTreeType());
         assertEquals("DefaultSectionsTree", tree.getConfigName());
 

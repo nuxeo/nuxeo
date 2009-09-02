@@ -20,6 +20,7 @@
     <publicationTreeConfig name="ClientRemoteTree2" tree="ClientForRemoteTree"
                            factory="ClientProxyFactory">
       <parameters>
+        <parameter name="title">label.publication.tree.remote.sections</parameter>
         <parameter name="userName">Administrator</parameter>
         <parameter name="password">Administrator</parameter>
         <parameter name="baseURL">

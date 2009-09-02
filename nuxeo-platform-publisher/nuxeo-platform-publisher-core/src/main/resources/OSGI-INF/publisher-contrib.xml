@@ -48,7 +48,8 @@
       point="treeInstance">
 
     <publicationTreeConfig name="DefaultSectionsTree" tree="RootSectionsCoreTree"
-                           factory="CoreProxy" localSectionTree="true">
+                           factory="CoreProxy" localSectionTree="true"
+                           title="label.publication.tree.local.sections" >
       <parameters>
         <parameter name="RootPath">/default-domain/sections</parameter>
         <parameter name="enableSnapshot">true</parameter>

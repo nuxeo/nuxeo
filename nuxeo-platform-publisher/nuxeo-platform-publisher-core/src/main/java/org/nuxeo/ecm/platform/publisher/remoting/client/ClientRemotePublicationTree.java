@@ -19,12 +19,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 
+ *
  * {@link PublicationTree} implementation that points to a remote tree on a
  * remote server
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class ClientRemotePublicationTree extends AbstractRemotableTree
         implements PublicationTree {
@@ -50,11 +50,15 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
 
     public static final String ICON_COLLAPSED_KEY = "iconCollapsed";
 
+    public static final String TITLE_KEY = "title";
+
     protected String targetTreeName;
 
     protected String name;
 
     protected String serverSessionId;
+
+    protected String title;
 
     protected String treeTitle;
 
@@ -107,13 +111,14 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
 
     public void initTree(String sid, CoreSession coreSession,
             Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName) throws ClientException {
+            String configName, String title) throws ClientException {
 
         this.sessionId = sid;
         this.name = "Remote";
         this.configName = configName;
         this.factory = factory;
         this.coreSession = coreSession;
+        treeTitle = title;
 
         String userName = parameters.get(USERNAME_KEY);
         String password = parameters.get(PASSWORD_KEY);
@@ -156,7 +161,7 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
                     targetTreeName, remoteParameters);
 
             serverSessionId = rTree.get("sessionId");
-            treeTitle = rTree.get("title");
+            title = rTree.get("title");
             rootPath = rTree.get("path");
             nodeType = rTree.get("nodeType");
 
@@ -166,7 +171,7 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
         }
 
         PublicationNode basicRootNode = new BasicPublicationNode(nodeType,
-                rootPath, treeTitle, configName, sessionId);
+                rootPath, title, configName, sessionId);
         rootNode = new ClientRemotePublicationNode(configName, sessionId,
                 basicRootNode, serverSessionId, treeService,
                 getTargetTreeName());
@@ -194,6 +199,10 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
     }
 
     public String getTitle() {
+        return title;
+    }
+
+    public String getTreeTitle() {
         return treeTitle;
     }
 
