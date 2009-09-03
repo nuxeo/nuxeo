@@ -221,12 +221,7 @@
 
 
 
-    <action id="TAB_ADMIN_PUBLICATION_TREES"
-      link="/incl/tabs/admin_publication_trees.xhtml" order="110"
-      label="action.admin.publication.tree" icon="/icons/file.gif">
-      <category>TAB_MANAGE_sub_tab</category>
-      <filter-id>admin_publication_trees_filter</filter-id>
-    </action>
+
 
     <action id="TAB_THEME" link="/incl/tabs/document_theme.xhtml" order="60"
       label="action.view.theme" icon="/icons/file.gif">
@@ -678,13 +673,6 @@
         <condition>
           document.getCurrentLifeCycleState().equals("approved")
         </condition>
-      </rule>
-    </filter>
-
-    <filter id="admin_publication_trees_filter">
-      <rule grant="true">
-        <permission>Write</permission>
-        <schema>publishing</schema>
       </rule>
     </filter>
 
