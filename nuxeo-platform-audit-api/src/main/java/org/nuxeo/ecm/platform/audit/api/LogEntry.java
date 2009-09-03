@@ -43,7 +43,6 @@ import javax.persistence.TemporalType;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
-import org.hibernate.annotations.*;
 /**
  * Log entry .
  *
@@ -66,9 +65,7 @@ import org.hibernate.annotations.*;
         @NamedQuery(name = "LogEntry.findEventIds",
                 query = "select distinct log.eventId from LogEntry log")
         })
-@Table(name = "NXP_LOGS")
-@org.hibernate.annotations.Table(appliesTo = "NXP_LOGS",
-        indexes = {@Index(name = "LOG_DOC_UUID_IDX", columnNames = {"LOG_DOC_UUID"}) })
+        @Table(name = "NXP_LOGS")
 public class LogEntry implements Serializable {
 
     private static final long serialVersionUID = 3037187381843636097L;
@@ -162,7 +159,6 @@ public class LogEntry implements Serializable {
      * @return the doc UUID related to the log entry.
      */
     @Column(name = "LOG_DOC_UUID")
-    @org.hibernate.annotations.Index(name = "LOG_DOC_UUID_IDX")
     public String getDocUUID() {
         return docUUID;
     }

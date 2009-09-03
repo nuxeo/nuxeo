@@ -16,7 +16,7 @@
 		<class>org.nuxeo.ecm.platform.audit.api.ExtendedInfo$BlobInfo</class>
 		<class>org.nuxeo.ecm.platform.audit.api.LogEntry</class>
 		<properties>
-			<property name="hibernate.hbm2ddl.auto" value="create" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
 		</properties>
 	</persistence-unit>
 </persistence>
