@@ -71,7 +71,7 @@
 		<hibernateConfiguration name="nxaudit-logs">
 			<datasource>nxaudit-logs</datasource>
 			<properties>
-	                  <property name="hibernate.hbm2ddl.auto">update</property>
+	                  <property name="hibernate.hbm2ddl.auto">create</property>
 			</properties>
 		</hibernateConfiguration>
   </extension>
