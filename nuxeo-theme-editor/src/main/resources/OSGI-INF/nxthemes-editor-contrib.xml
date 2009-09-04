@@ -511,4 +511,36 @@
 
   </extension>
 
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="previews">
+
+    <preview category="color">
+      <class>org.nuxeo.theme.editor.previews.Color</class>
+      <properties>color,border-color,background-color</properties>
+    </preview>
+
+    <preview category="background">
+      <class>org.nuxeo.theme.editor.previews.Background</class>
+      <properties>background</properties>
+    </preview>
+
+    <preview category="border">
+      <class>org.nuxeo.theme.editor.previews.Border</class>
+      <properties>
+        border,border-top,border-bottom,border-left,border-right
+      </properties>
+    </preview>
+
+    <preview category="font">
+      <class>org.nuxeo.theme.editor.previews.Font</class>
+      <properties>font</properties>
+    </preview>
+
+    <preview category="image">
+      <class>org.nuxeo.theme.editor.previews.Image</class>
+      <properties>background-image,list-style-image</properties>
+    </preview>
+
+  </extension>
+
 </component>
