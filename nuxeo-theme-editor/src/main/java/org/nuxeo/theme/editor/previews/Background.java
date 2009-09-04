@@ -14,6 +14,8 @@
 
 package org.nuxeo.theme.editor.previews;
 
+import org.nuxeo.theme.Preview;
+
 public class Background implements Preview {
 
     public String render(final String value) {

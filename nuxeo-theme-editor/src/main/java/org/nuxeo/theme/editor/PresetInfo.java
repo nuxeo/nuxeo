@@ -16,9 +16,13 @@ package org.nuxeo.theme.editor;
 
 import java.util.Properties;
 
-import org.nuxeo.theme.editor.previews.Preview;
+import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.Preview;
+import org.nuxeo.theme.PreviewType;
 import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.presets.PresetType;
+import org.nuxeo.theme.types.TypeFamily;
+import org.nuxeo.theme.types.TypeRegistry;
 
 public class PresetInfo {
 
@@ -46,8 +50,10 @@ public class PresetInfo {
 
     public String getPreview() {
         final String category = preset.getCategory();
-        final String previewClassName = getPreviewProperties().getProperty(
-                category);
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        PreviewType previewType = (PreviewType) typeRegistry.lookup(
+                TypeFamily.PREVIEW, category);
+        final String previewClassName = previewType.getClassName();
         if (previewClassName == null) {
             return "";
         }
