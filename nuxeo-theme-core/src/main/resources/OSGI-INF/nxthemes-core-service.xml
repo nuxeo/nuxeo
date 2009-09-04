@@ -225,6 +225,23 @@
   <extension-point name="previews">
     <documentation>This extension point is used to register visible previews of CSS properties, presets, etc.</documentation>
     <object class="org.nuxeo.theme.PreviewType"/>
+    <documentation>
+      Extension Point for registering previews.
+
+      The XML syntax is:
+
+      <code>
+        <preview category="color">
+          <class>org.nuxeo.theme.ColorPreview</class>
+          <properties>color,background-color</properties>
+        </preview>
+      </code>
+
+      where:
+      - 'category' is the category of the preview.
+      - 'class' is the java class implementing org.nuxeo.theme.Preview 
+      - 'properties' is the list of properties in the specified category (typically CSS properties)
+    </documentation>    
   </extension-point>
 
 </component>
