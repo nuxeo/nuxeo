@@ -60,12 +60,12 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployContrib("org.nuxeo.ecm.platform.publisher.test",
                 "OSGI-INF/relations-default-jena-contrib.xml");
+
+        deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
         deployContrib("org.nuxeo.ecm.platform.publisher.core",
                 "OSGI-INF/publisher-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.publisher.core",
                 "OSGI-INF/publisher-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.publisher.core",
-                "OSGI-INF/publisher-relations-contrib.xml");
 
         openSession();
     }

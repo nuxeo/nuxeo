@@ -73,6 +73,7 @@ public class TestPublicationRelations extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.versioning");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
+        deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
         deployContrib("org.nuxeo.ecm.platform.publisher.test",
                 "OSGI-INF/relations-default-jena-contrib.xml");
         deployBundle("org.nuxeo.ecm.platform.publisher.core");

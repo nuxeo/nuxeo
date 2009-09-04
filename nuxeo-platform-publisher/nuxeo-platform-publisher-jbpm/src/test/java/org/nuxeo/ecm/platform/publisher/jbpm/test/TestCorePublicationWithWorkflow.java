@@ -82,6 +82,7 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployContrib("org.nuxeo.ecm.platform.publisher.jbpm.test",
                 "OSGI-INF/relations-default-jena-contrib.xml");
+        deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
         deployBundle("org.nuxeo.ecm.platform.publisher.core");
         deployBundle("org.nuxeo.ecm.platform.publisher.jbpm");
         deployBundle("org.nuxeo.ecm.platform.publisher.jbpm.test");
