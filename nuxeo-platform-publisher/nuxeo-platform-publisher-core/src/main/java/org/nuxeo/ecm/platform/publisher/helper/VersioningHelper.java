@@ -32,7 +32,7 @@ public class VersioningHelper {
     }
 
     private static VersioningManager getService() throws Exception {
-        return Framework.getLocalService(VersioningManager.class);
+        return Framework.getService(VersioningManager.class);
     }
 
     public static String getVersionLabelFor(DocumentModel doc) {
