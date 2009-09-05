@@ -25,10 +25,4 @@
     </graph>
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
-    point="resourceadapters">
-    <adapter namespace="http://www.nuxeo.org/publication/tree/"
-      class="org.nuxeo.ecm.platform.publisher.adapters.PublicationTreeResourceAdapter" />
-  </extension>
-
 </component>
