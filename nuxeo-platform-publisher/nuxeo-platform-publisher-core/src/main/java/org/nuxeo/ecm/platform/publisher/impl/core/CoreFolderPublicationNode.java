@@ -1,22 +1,45 @@
 package org.nuxeo.ecm.platform.publisher.impl.core;
 
-import org.nuxeo.ecm.core.api.*;
-import org.nuxeo.ecm.platform.publisher.api.*;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.impl.CompoundFilter;
+import org.nuxeo.ecm.core.api.impl.FacetFilter;
+import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
+import org.nuxeo.ecm.core.api.tree.DefaultDocumentTreeSorter;
+import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.platform.publisher.api.AbstractPublicationNode;
+import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
+import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
+import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
+import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
+
 /**
- * 
+ *
  * Implementation of the {@link PublicationNode} for Simple Core Folders
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class CoreFolderPublicationNode extends AbstractPublicationNode
         implements PublicationNode {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Log log = LogFactory.getLog(CoreFolderPublicationNode.class);
+
+    private static final String DEFAULT_SORT_PROP_NAME = "dc:title";
+
+    private static final String DELETED_STATE_NAME = "deleted";
 
     protected DocumentModel folder;
 
@@ -71,34 +94,46 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
 
     public List<PublishedDocument> getChildrenDocuments()
             throws ClientException {
+        DefaultDocumentTreeSorter sorter = new DefaultDocumentTreeSorter();
+        sorter.setSortPropertyPath(DEFAULT_SORT_PROP_NAME);
+        FacetFilter facetFilter = new FacetFilter(null,
+                Arrays.asList(new String[] { FacetNames.FOLDERISH,
+                        FacetNames.HIDDEN_IN_NAVIGATION }));
+        LifeCycleFilter lfFilter = new LifeCycleFilter(DELETED_STATE_NAME,
+                false);
         DocumentModelList children = getCoreSession().getChildren(
-                folder.getRef());
+                folder.getRef(), null, null,
+                new CompoundFilter(facetFilter, lfFilter), sorter);
 
         List<PublishedDocument> childrenDocs = new ArrayList<PublishedDocument>();
-
         for (DocumentModel child : children) {
-            if (!child.hasFacet("Folderish")) {
-                try {
-                    childrenDocs.add(factory.wrapDocumentModel(child));
-                } catch (Exception e) {
-                    // Nothing to do for now
-                }
+            try {
+                childrenDocs.add(factory.wrapDocumentModel(child));
+            } catch (Exception e) {
+                // Nothing to do for now
+                log.error(e);
             }
         }
         return childrenDocs;
     }
 
     public List<PublicationNode> getChildrenNodes() throws ClientException {
+        DefaultDocumentTreeSorter sorter = new DefaultDocumentTreeSorter();
+        sorter.setSortPropertyPath(DEFAULT_SORT_PROP_NAME);
+        FacetFilter facetFilter = new FacetFilter(
+                Arrays.asList(new String[] { FacetNames.FOLDERISH }),
+                Arrays.asList(new String[] { FacetNames.HIDDEN_IN_NAVIGATION }));
+        LifeCycleFilter lfFilter = new LifeCycleFilter(DELETED_STATE_NAME,
+                false);
         DocumentModelList children = getCoreSession().getChildren(
-                folder.getRef());
+                folder.getRef(), null, null,
+                new CompoundFilter(facetFilter, lfFilter), sorter);
 
         List<PublicationNode> childrenNodes = new ArrayList<PublicationNode>();
 
         for (DocumentModel child : children) {
-            if (child.hasFacet("Folderish")) {
-                childrenNodes.add(new CoreFolderPublicationNode(child,
-                        treeConfigName, sid, this, factory));
-            }
+            childrenNodes.add(new CoreFolderPublicationNode(child,
+                    treeConfigName, sid, this, factory));
         }
         return childrenNodes;
     }
@@ -128,6 +163,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
         return folder.getPathAsString();
     }
 
+    @Override
     public String getTreeConfigName() {
         return treeConfigName;
     }
