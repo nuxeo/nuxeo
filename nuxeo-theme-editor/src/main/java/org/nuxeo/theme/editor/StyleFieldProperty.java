@@ -22,6 +22,8 @@ package org.nuxeo.theme.editor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.nuxeo.theme.themes.ThemeManager;
+
 
 
 /*
@@ -48,8 +50,6 @@ public class StyleFieldProperty {
 
     private static final Pattern cssChoicePattern = Pattern.compile("\\[(.*?)\\]");
 
-    private static final Pattern cssCategoryPattern = Pattern.compile("<(.*?)>");
-
     public StyleFieldProperty(String name, String value, String type) {
         this.name = name;
         // escape quotes (used internally to represent presets)
@@ -71,10 +71,9 @@ public class StyleFieldProperty {
         rendered.append("<label>").append(label).append("</label>");
 
         final Matcher choiceMatcher = cssChoicePattern.matcher(type);
-        final Matcher categoryMatcher = cssCategoryPattern.matcher(type);
 
         final boolean hasChoices = choiceMatcher.find();
-        final boolean hasCategory = categoryMatcher.find();
+        final String category = ThemeManager.getPreviewCategoryForProperty(name);
 
         if (hasChoices) {
             // render selection list
@@ -95,8 +94,7 @@ public class StyleFieldProperty {
             rendered.append(input);
         }
 
-        if (hasCategory) {
-            String category = categoryMatcher.group(1);
+        if (category != null) {
             // add a style picker
             rendered.append(String.format(
                     "<input type=\"button\" class=\"picker\" property=\"%s\" category=\"%s\" value=\"\" />",

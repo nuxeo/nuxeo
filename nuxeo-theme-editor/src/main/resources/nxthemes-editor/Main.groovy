@@ -4,8 +4,6 @@ import java.io.*
 import javax.ws.rs.*
 import javax.ws.rs.core.*
 import javax.ws.rs.core.Response.ResponseBuilder
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 import net.sf.json.JSONObject
 import org.nuxeo.ecm.core.rest.*
 import org.nuxeo.ecm.webengine.forms.*
@@ -86,7 +84,7 @@ public class Main extends ModuleRoot {
         selectedStyle = styles[0];
     }
     return getTemplate("styleManager.ftl").arg(
-            "named_styles", getNamedStyles(path)).arg(
+            "named_styles", styles).arg(
             "style_manager_mode", getStyleManagerMode()).arg(
             "selected_named_style", selectedStyle).arg(
             "selected_named_style_css", getRenderedPropertiesForNamedStyle(selectedStyle)).arg(
@@ -1065,7 +1063,6 @@ public class Main extends ModuleRoot {
   }
   
   public static List<StyleFieldProperty> getElementStyleProperties() {
-      Pattern cssCategoryPattern = Pattern.compile("<(.*?)>")
       Style style = getStyleOfSelectedElement()
       Style selectedStyleLayer = getSelectedStyleLayer()
       if (selectedStyleLayer != null) {
@@ -1091,17 +1088,11 @@ public class Main extends ModuleRoot {
       while (propertyNames.hasMoreElements()) {
           String name = (String) propertyNames.nextElement()
           String value = properties == null ? "" : properties.getProperty(name, "")
+          String category = ThemeManager.getPreviewCategoryForProperty(name)
           String type = cssProperties.getProperty(name)
-          if (!selectedCategory.equals("*")) {
-              Matcher categoryMatcher = cssCategoryPattern.matcher(type)
-              if (!categoryMatcher.find()) {
-                  continue
-              }
-              if (!categoryMatcher.group(1).equals(selectedCategory)) {
-                  continue
-              }
+          if (selectedCategory.equals("*") || selectedCategory.equals(category)) {
+              fieldProperties.add(new StyleFieldProperty(name, value, type))
           }
-          fieldProperties.add(new StyleFieldProperty(name, value, type))
       }
       return fieldProperties    
   }
@@ -1126,23 +1117,16 @@ public class Main extends ModuleRoot {
       }
       Properties properties = style.getPropertiesFor(viewName, path)
       String selectedCategory = getSelectedStylePropertyCategory()
-      Pattern cssCategoryPattern = Pattern.compile("<(.*?)>")
+
       Properties cssProperties = org.nuxeo.theme.html.Utils.getCssProperties()
       Enumeration<?> propertyNames = cssProperties.propertyNames()
       while (propertyNames.hasMoreElements()) {
           String name = (String) propertyNames.nextElement()
           String value = properties == null ? "" : properties.getProperty(name, "")
-                  String type = cssProperties.getProperty(name)
-          if (!selectedCategory.equals("")) {
-              Matcher categoryMatcher = cssCategoryPattern.matcher(type)
-              if (!categoryMatcher.find()) {
-                  continue
-              }
-              if (!categoryMatcher.group(1).equals(selectedCategory)) {
-                  continue
-              }
+          String category = ThemeManager.getPreviewCategoryForProperty(name)
+          if (selectedCategory.equals("") || selectedCategory.equals(category)) {
+              fieldProperties.add(new StyleFieldProperty(name, value, category))
           }
-          fieldProperties.add(new StyleFieldProperty(name, value, type))
       }
       return fieldProperties
   }
@@ -1157,18 +1141,11 @@ public class Main extends ModuleRoot {
   
   public static List<StyleCategory> getStyleCategories() {
       String selectedStyleCategory = getSelectedStylePropertyCategory()
-      Pattern cssCategoryPattern = Pattern.compile("<(.*?)>")
       Map<String, StyleCategory> categories = new LinkedHashMap<String, StyleCategory>()
-      Enumeration<?> elements = org.nuxeo.theme.html.Utils.getCssProperties().elements()
       categories.put("", new StyleCategory("*", "all", selectedStyleCategory.equals("*")))
-      while (elements.hasMoreElements()) {
-          String element = (String) elements.nextElement()
-          Matcher categoryMatcher = cssCategoryPattern.matcher(element)
-          if (categoryMatcher.find()) {
-              String value = categoryMatcher.group(1)
-              boolean selected = value.equals(selectedStyleCategory)
-              categories.put(value, new StyleCategory(value, value, selected))
-          }
+      for (String category : ThemeManager.getPreviewCategories()) {
+            boolean selected = category.equals(selectedStyleCategory)
+            categories.put(category, new StyleCategory(category, category, selected))
       }
       return new ArrayList<StyleCategory>(categories.values())
   }
