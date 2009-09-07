@@ -44,7 +44,7 @@ public class DefaultDocumentTreeFilter implements DocumentTreeFilter {
 
     public boolean accept(DocumentModel document) {
         String docType = document.getType();
-        if (excludedTypes.contains(docType)) {
+        if (excludedTypes != null && excludedTypes.contains(docType)) {
             return false;
         }
         // exclude deleted documents from tree
