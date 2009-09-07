@@ -177,8 +177,12 @@ public class NavigationContextBean implements NavigationContextLocal,
             }
             path = docs.get(0).getPath();
         }
-        String[] segs = { path.segment(0) };
-        return Path.createFromSegments(segs).toString();
+        if (path.segmentCount() > 0) {
+            String[] segs = { path.segment(0) };
+            return Path.createFromSegments(segs).toString();
+        } else {
+            return null;
+        }
     }
 
     public void setCurrentDocument(DocumentModel documentModel)
@@ -600,7 +604,11 @@ public class NavigationContextBean implements NavigationContextLocal,
         }
         // reinit lower tree
         docType = currentDocument.getType();
-        if (docType.equals("Domain")) {
+        if (docType.equals("Root")) {
+            setCurrentDomain(null);
+            setCurrentContentRoot(null);
+            setCurrentWorkspace(null);
+        } else if (docType.equals("Domain")) {
             setCurrentDomain(currentDocument);
             setCurrentContentRoot(null);
             setCurrentWorkspace(null);
@@ -752,8 +760,8 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     /**
      * Alias to
-     * <code>navigateToDocument(DocumentModel doc, String viewId)</code> so that
-     * JSF EL sees no ambiguity)
+     * <code>navigateToDocument(DocumentModel doc, String viewId)</code> so
+     * that JSF EL sees no ambiguity)
      * <p>
      * The view is supposed to be set on the document type information. If such
      * a view id is not available for the type, use its default vieW.

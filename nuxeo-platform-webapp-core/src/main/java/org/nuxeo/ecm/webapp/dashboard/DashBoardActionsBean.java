@@ -16,6 +16,7 @@ package org.nuxeo.ecm.webapp.dashboard;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.Remove;
@@ -28,6 +29,7 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Context;
@@ -35,17 +37,22 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.EmptyResultsProvider;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.jbpm.dashboard.DashBoardItem;
 import org.nuxeo.ecm.platform.jbpm.dashboard.DocumentProcessItem;
 import org.nuxeo.ecm.platform.jbpm.dashboard.WorkflowDashBoard;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
+import org.nuxeo.ecm.webapp.clipboard.ClipboardActionsBean;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
+
 /**
  * Dash board actions.
  * <p>
@@ -89,6 +96,10 @@ public class DashBoardActionsBean implements DashboardActions {
     @In(required = false)
     protected transient Principal currentUser;
 
+    protected transient DocumentModel selectedDomain;
+
+    protected transient List<DocumentModel> availableDomains;
+
     @In(create = true)
     protected transient WebActions webActions;
 
@@ -98,7 +109,7 @@ public class DashBoardActionsBean implements DashboardActions {
     @In(create = true)
     protected transient ResultsProvidersCache resultsProvidersCache;
 
-    @In(create=true, required=false)
+    @In(create = true, required = false)
     protected WorkflowDashBoard workflowDashBoardActions;
 
     @RequestParameter("sortColumn")
@@ -106,11 +117,10 @@ public class DashBoardActionsBean implements DashboardActions {
 
     protected SortInfo sortInfo;
 
-
     @Factory(value = "currentUserTasks", scope = ScopeType.EVENT)
     public Collection<DashBoardItem> computeDashboardItems()
             throws ClientException {
-        if (workflowDashBoardActions==null) {
+        if (workflowDashBoardActions == null) {
             return new ArrayList<DashBoardItem>();
         }
         return workflowDashBoardActions.computeDashboardItems();
@@ -120,21 +130,21 @@ public class DashBoardActionsBean implements DashboardActions {
     public Collection<DocumentProcessItem> computeDocumentProcessItems()
             throws ClientException {
 
-           if (workflowDashBoardActions==null) {
-               return new ArrayList<DocumentProcessItem>();
-           }
-           return workflowDashBoardActions.computeDocumentProcessItems();
+        if (workflowDashBoardActions == null) {
+            return new ArrayList<DocumentProcessItem>();
+        }
+        return workflowDashBoardActions.computeDocumentProcessItems();
     }
 
     public void invalidateDocumentProcessItems() {
-           if (workflowDashBoardActions==null) {
-               return;
-           }
-           workflowDashBoardActions.invalidateDocumentProcessItems();
+        if (workflowDashBoardActions == null) {
+            return;
+        }
+        workflowDashBoardActions.invalidateDocumentProcessItems();
     }
 
     public void invalidateDashboardItems() {
-        if (workflowDashBoardActions==null) {
+        if (workflowDashBoardActions == null) {
             return;
         }
         workflowDashBoardActions.invalidateDashboardItems();
@@ -150,32 +160,50 @@ public class DashBoardActionsBean implements DashboardActions {
         return "user_dashboard";
     }
 
+    @Observer(value = { EventNames.DOMAIN_SELECTION_CHANGED }, create = false, inject = false)
+    public void invalidateDomainBoundInfo() throws ClientException {
+        selectedDomain = null;
+        invalidateDomainResultProviders();
+    }
+
+    public void invalidateDomainResultProviders() throws ClientException {
+        String[] domainProviders = { BOARD_USER, BOARD_LATEST_MODIFIED,
+                BOARD_LATEST_PUBLISHED, BOARD_WORKSPACES, BOARD_SITES,
+                BOARD_SECTIONS };
+        for (String providerName : domainProviders) {
+            resultsProvidersCache.invalidate(providerName);
+        }
+    }
+
     public PagedDocumentsProvider getResultsProvider(String name,
             SortInfo sortInfo) throws ClientException,
             ResultsProviderFarmUserException {
 
-        String location = navigationContext.getCurrentDomainPath();
-        if (location == null) {
+        DocumentModel domain = getSelectedDomain();
+        if (domain == null) {
             return new EmptyResultsProvider();
         }
 
+        String location = domain.getPathAsString();
         String templates = location + "/templates";
+
         Object[] params;
         if (BOARD_USER.equals(name)) {
-            params = new Object[] { currentUser.getName() };
+            params = new Object[] { currentUser.getName(), location };
         } else if (BOARD_LATEST_MODIFIED.equals(name)) {
             params = new Object[] { location, templates };
         } else if (BOARD_LATEST_PUBLISHED.equals(name)) {
             params = new Object[] { location };
         } else if (BOARD_WORKSPACES.equals(name)) {
-            params = new Object[] { templates };
+            params = new Object[] { location, templates };
         } else if (BOARD_SITES.equals(name)) {
-            params = new Object[] { templates };
+            params = new Object[] { location, templates };
         } else if (BOARD_SECTIONS.equals(name)) {
-            params = null;
+            params = new Object[] { location };
         } else {
             throw new ClientException("Unknown board: " + name);
         }
+
         PagedDocumentsProvider provider;
         try {
             provider = getQmDocuments(name, params, sortInfo);
@@ -221,14 +249,14 @@ public class DashBoardActionsBean implements DashboardActions {
     }
 
     public String refreshDashboardItems() {
-        if (workflowDashBoardActions==null) {
+        if (workflowDashBoardActions == null) {
             return null;
         }
         return workflowDashBoardActions.refreshDashboardItems();
     }
 
     public String refreshDocumentProcessItems() {
-        if (workflowDashBoardActions==null) {
+        if (workflowDashBoardActions == null) {
             return null;
         }
         return workflowDashBoardActions.refreshDocumentProcessItems();
@@ -246,5 +274,66 @@ public class DashBoardActionsBean implements DashboardActions {
 
     public SortInfo getSortInfo() {
         return sortInfo;
+    }
+
+    public DocumentModel getSelectedDomain() throws ClientException {
+        List<DocumentModel> availableDomains = getAvailableDomains();
+        if (selectedDomain == null) {
+            // initialize to current domain, or take first domain found
+            DocumentModel currentDomain = navigationContext.getCurrentDomain();
+            if (currentDomain != null) {
+                selectedDomain = currentDomain;
+            } else {
+                if (availableDomains != null && !availableDomains.isEmpty()) {
+                    selectedDomain = availableDomains.get(0);
+                }
+            }
+        } else if (availableDomains != null
+                && !availableDomains.contains(selectedDomain)) {
+            // reset old domain: it's not available anymore
+            selectedDomain = availableDomains.get(0);
+        }
+        return selectedDomain;
+    }
+
+    @Factory(value = "availableDomains", scope = ScopeType.EVENT)
+    public List<DocumentModel> getAvailableDomains() throws ClientException {
+        if (availableDomains == null) {
+            DocumentModel rootDocument = documentManager.getRootDocument();
+            String query = String.format(
+                    "SELECT * from Document WHERE ecm:parentId = '%s' "
+                            + "AND ecm:currentLifeCycleState != '%s' "
+                            + "AND ecm:mixinType != '%s'",
+                    rootDocument.getId(),
+                    ClipboardActionsBean.DELETED_LIFECYCLE_STATE,
+                    FacetNames.HIDDEN_IN_NAVIGATION);
+            availableDomains = documentManager.query(query);
+        }
+        return availableDomains;
+    }
+
+    @Observer(value = { EventNames.DOCUMENT_CHANGED,
+            EventNames.DOCUMENT_SECURITY_CHANGED,
+            EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false)
+    public void invalidateAvailableDomains() throws ClientException {
+        availableDomains = null;
+    }
+
+    public String getSelectedDomainId() throws ClientException {
+        DocumentModel selectedDomain = getSelectedDomain();
+        if (selectedDomain != null) {
+            return selectedDomain.getId();
+        }
+        return null;
+    }
+
+    public void setSelectedDomainId(String selectedDomainId)
+            throws ClientException {
+        selectedDomain = documentManager.getDocument(new IdRef(selectedDomainId));
+    }
+
+    public String submitSelectedDomainChange() throws ClientException {
+        invalidateDomainResultProviders();
+        return null;
     }
 }

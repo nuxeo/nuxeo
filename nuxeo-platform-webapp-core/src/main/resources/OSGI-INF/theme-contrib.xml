@@ -15,6 +15,13 @@
       <title>Calendar management mode</title>
     </perspective>
 
+    <perspective name="multiple_domains">
+      <title>
+        Perspective conditioning appearance of fragments when there are
+        multiple domains
+      </title>
+    </perspective>
+
   </extension>
 
   <!--  themes -->
@@ -102,6 +109,12 @@
     <view name="nuxeo5 breadcrumbs" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/breadcrumb.xhtml</template>
+    </view>
+
+    <view name="nuxeo5 dashboard domain selection"
+      template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/dashboard_domain_selection.xhtml</template>
     </view>
 
     <view name="nuxeo5 tree explorer" template-engine="jsf-facelets">
@@ -353,6 +366,10 @@
       <scheme>org.nuxeo.theme.jsf.negotiation.perspective.ViewId</scheme>
       <!-- local perspective (specific to nuxeo5) -->
       <scheme>org.nuxeo.ecm.webapp.theme.negotiation.LocalPerspective</scheme>
+      <!-- multiple domaines perspective (specific to nuxeo5) -->
+      <scheme>
+        org.nuxeo.ecm.webapp.dashboard.MultipleDomainsPerspectiveNegotiator
+      </scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.perspective.DefaultPerspective
       </scheme>

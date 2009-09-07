@@ -66,6 +66,8 @@
         <cell>
           <!-- breadcrumbs -->
           <fragment type="generic fragment"/>
+          <!-- domain selection -->
+          <fragment perspectives="multiple_domains" type="generic fragment" />
         </cell>
       </section>
       <section>
@@ -269,6 +271,9 @@
     <!-- Page 3 / Section 2 breadcrumb -->
     <widget element="page[3]/section[2]/cell[1]/fragment[1]">
       <view>nuxeo5 breadcrumbs</view>
+    </widget>
+    <widget element="page[3]/section[2]/cell[1]/fragment[2]">
+      <view>nuxeo5 dashboard domain selection</view>
     </widget>
     <widget element="page[3]/section[3]/cell[1]/fragment[1]">
       <view>nuxeo5 user tasks</view>
@@ -1557,6 +1562,11 @@
     </style>
     <style element="page[3]/section[2]/cell[1]/fragment[1]" inherit="breadcrumbs style">
       <selector path="" view="nuxeo5 breadcrumbs">
+        <padding>5px 22px</padding>
+      </selector>
+    </style>
+    <style element="page[3]/section[2]/cell[1]/fragment[2]" inherit="breadcrumbs style">
+      <selector path="" view="nuxeo5 dashboard domain selection">
         <padding>5px 22px</padding>
       </selector>
     </style>
