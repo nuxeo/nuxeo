@@ -42,6 +42,7 @@ import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.CustomThemeNameFilter;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
+import org.nuxeo.theme.PreviewType;
 import org.nuxeo.theme.Registrable;
 import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.elements.Element;
@@ -1319,4 +1320,20 @@ public final class ThemeManager implements Registrable {
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         return (ThemeSet) typeRegistry.lookup(TypeFamily.THEMESET, name);
     }
+    
+    // Previews
+    public static String getPreviewCategoryForProperty(String name) {
+        for (Type type : Manager.getTypeRegistry().getTypes(TypeFamily.PREVIEW)) {
+            PreviewType previewType = (PreviewType) type;
+            if (previewType.getProperties().contains(name)) {
+                return previewType.getCategory();
+            }
+        }
+        return null;
+    }
+    
+    public static List<String> getPreviewCategories() {
+        return Manager.getTypeRegistry().getTypeNames(TypeFamily.PREVIEW);
+    }
+    
 }

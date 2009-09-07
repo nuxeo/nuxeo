@@ -14,6 +14,9 @@
 
 package org.nuxeo.theme;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.theme.types.Type;
@@ -56,8 +59,8 @@ public class PreviewType implements Type {
         return className;
     }
 
-    public String getProperties() {
-        return properties;
+    public List<String> getProperties() {
+        return Arrays.asList(properties.split(","));
     }
 
 }
