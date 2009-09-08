@@ -958,7 +958,9 @@ public class NXQLQueryMaker implements QueryMaker {
             Operator op = node.operator;
             if (op == Operator.STARTSWITH) {
                 visitExpressionStartsWith(node, name);
-            } else if (NXQL.ECM_ISPROXY.equals(name)) {
+            } else if (NXQL.ECM_PATH.equals(name)) {
+                visitExpressionEcmPath(node);
+            }  else if (NXQL.ECM_ISPROXY.equals(name)) {
                 visitExpressionIsProxy(node);
             } else if (NXQL.ECM_ISVERSION.equals(name)) {
                 visitExpressionIsVersion(node);
@@ -1098,6 +1100,37 @@ public class NXQLQueryMaker implements QueryMaker {
             buf.append(')');
             if (isArray) {
                 buf.append(')');
+            }
+        }
+
+        protected void visitExpressionEcmPath(Expression node) {
+            if (node.operator != Operator.EQ && node.operator != Operator.NOTEQ) {
+                throw new QueryMakerException(NXQL.ECM_PATH
+                        + " requires = or <> operator");
+            }
+            if (!(node.rvalue instanceof StringLiteral)) {
+                throw new QueryMakerException(NXQL.ECM_PATH
+                        + " requires literal path as right argument");
+            }
+            String path = ((StringLiteral) node.rvalue).value;
+            if (path.length() > 1 && path.endsWith(PATH_SEP)) {
+                path = path.substring(0, path.length() - PATH_SEP.length());
+            }
+            Serializable id;
+            try {
+                Node n = session.getNodeByPath(path, null);
+                id = n == null ? null : n.getId();
+            } catch (StorageException e) {
+                throw new QueryMakerException(e);
+            }
+            if (id == null) {
+                // no such path, always return a false
+                // TODO remove the expression more intelligently from the parse
+                // tree
+                buf.append("0 = 1");
+            } else {
+                buf.append(hierTable.getColumn(model.MAIN_KEY).getFullQuotedName() + " = ?");
+                whereParams.add(id);
             }
         }
 

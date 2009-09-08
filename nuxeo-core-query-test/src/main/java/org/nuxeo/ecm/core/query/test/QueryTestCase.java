@@ -531,7 +531,16 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
     }
 
     // from TestSQLWithPath
+    public void testEcmPathEqual() throws Exception {
+        String sql;
+        DocumentModelList dml;
+        createDocs();
 
+        sql = "SELECT * FROM document WHERE ecm:path='/testfolder1/'";
+        dml = session.query(sql);
+        assertEquals(1, dml.size());
+    }
+    
     public void testStartsWith() throws Exception {
         String sql;
         DocumentModelList dml;
