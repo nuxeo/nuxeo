@@ -79,11 +79,11 @@ public class ServiceTicketValidator {
   //*********************************************************************
   // Private state
 
-  private String casValidateUrl, proxyCallbackUrl, st, service, pgtIou,
+  protected String casValidateUrl, proxyCallbackUrl, st, service, pgtIou,
     user, errorCode, errorMessage, entireResponse;
-  private boolean renew = false;
-  private boolean attemptedAuthentication;
-  private boolean successfulAuthentication;
+  protected boolean renew = false;
+  protected boolean attemptedAuthentication;
+  protected boolean successfulAuthentication;
 
 
   //*********************************************************************

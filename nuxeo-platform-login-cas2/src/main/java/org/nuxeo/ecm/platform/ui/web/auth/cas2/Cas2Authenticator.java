@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.ui.web.auth.cas2;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -33,6 +34,7 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.runtime.api.Framework;
 import org.xml.sax.SAXException;
 
 import edu.yale.its.tp.cas.client.ProxyTicketValidator;
@@ -42,10 +44,11 @@ import edu.yale.its.tp.cas.client.ServiceTicketValidator;
  * @author Thierry Delprat
  * @author Olivier Adam
  * @author M.-A. Darche
+ * @author Benjamin Jalon
  */
 public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         NuxeoAuthenticationPluginLogoutExtension {
-    
+
     protected static final Log log = LogFactory.getLog(Cas2Authenticator.class);
 
     protected String ticketKey = "ticket";
@@ -72,6 +75,16 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
 
     protected String defaultCasServer = "";
 
+    protected String ticketValidatorClassName = "edu.yale.its.tp.cas.client.ServiceTicketValidator";
+
+    protected String proxyValidatorClassName = "edu.yale.its.tp.cas.client.ProxyTicketValidator";
+
+    protected ProxyTicketValidator proxyValidator;
+
+    protected ServiceTicketValidator ticketValidator;
+
+    protected boolean promptLogin = true;
+
     protected final static String CAS_SERVER_HEADER_KEY = "CasServer";
 
     protected final static String CAS_SERVER_PATTERN_KEY = "$CASSERVER";
@@ -91,7 +104,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         return null;
     }
 
-    private String getServiceURL(HttpServletRequest httpRequest, String action) {
+    protected String getServiceURL(HttpServletRequest httpRequest, String action) {
         String url = "";
         if (action.equals(LOGIN_ACTION)) {
             url = serviceLoginURL;
@@ -136,7 +149,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         return true;
     }
 
-    private String getAppURL(HttpServletRequest httpRequest) {
+    protected String getAppURL(HttpServletRequest httpRequest) {
         if ((appURL == null) || (appURL.equals(""))) {
             appURL = NUXEO_SERVER_PATTERN_KEY;
         }
@@ -151,7 +164,8 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         String casTicket = httpRequest.getParameter(ticketKey);
 
-        // Retrieve the proxy parameter for knowing if the caller is à proxy CAS
+        // Retrieve the proxy parameter for knowing if the caller is à proxy
+        // CAS
         String proxy = httpRequest.getParameter(proxyKey);
 
         if (casTicket == null) {
@@ -175,6 +189,26 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         UserIdentificationInfo uui = new UserIdentificationInfo(userName,
                 casTicket);
         uui.setToken(casTicket);
+        
+//        Cookie[] cookies = httpRequest.getCookies();
+//        for (Cookie cookie : cookies) {
+//            if (SecurityExceptionHandler.COOKIE_URL_TO_REACH.equals(cookie.getName())) {
+//                String urlToReach = cookie.getValue();
+//                
+//                log.debug("Redirection - User asking this URL :" + urlToReach);
+//                try {
+//                    httpResponse.resetBuffer();
+//                    
+////                    Cookie cookieUrlToReach = new Cookie(SecurityExceptionHandler.COOKIE_URL_TO_REACH, null);
+////                    httpResponse.addCookie(cookieUrlToReach);
+//                    httpRequest.getRequestDispatcher("/cas2backToRequestedURL.jsp").forward(httpRequest, httpResponse);
+//                    break;
+//                } catch (Exception e) {
+//                    log.debug("Redirection failed", e);
+//                }
+//            }
+//        }
+
         return uui;
     }
 
@@ -206,10 +240,19 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         if (parameters.containsKey(CAS2Parameters.DEFAULT_CAS_SERVER_KEY)) {
             defaultCasServer = parameters.get(CAS2Parameters.DEFAULT_CAS_SERVER_KEY);
         }
+        if (parameters.containsKey(CAS2Parameters.SERVICE_VALIDATOR_CLASS)) {
+            ticketValidatorClassName = parameters.get(CAS2Parameters.SERVICE_VALIDATOR_CLASS);
+        }
+        if (parameters.containsKey(CAS2Parameters.PROXY_VALIDATOR_CLASS)) {
+            proxyValidatorClassName = parameters.get(CAS2Parameters.PROXY_VALIDATOR_CLASS);
+        }
+        if (parameters.containsKey(CAS2Parameters.PROMPT_LOGIN)) {
+            promptLogin = Boolean.parseBoolean(parameters.get(CAS2Parameters.PROMPT_LOGIN));
+        }
     }
 
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
-        return true;
+        return promptLogin;
     }
 
     public Boolean handleLogout(HttpServletRequest httpRequest,
@@ -227,7 +270,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         return true;
     }
 
-    private String checkProxyCasTicket(String ticket,
+    protected String checkProxyCasTicket(String ticket,
             HttpServletRequest httpRequest) {
         // Get the service passed by the portlet
         String service = httpRequest.getParameter(serviceKey);
@@ -236,7 +279,20 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
             return null;
         }
 
-        ProxyTicketValidator proxyValidator = new ProxyTicketValidator();
+        try {
+            proxyValidator = (ProxyTicketValidator) Framework.getRuntime().getContext().loadClass(
+                    proxyValidatorClassName).newInstance();
+        } catch (InstantiationException e) {
+            log.error("checkProxyCasTicket during the ProxyTicketValidator initialization with InstantiationException:", e);
+            return null;
+        } catch (IllegalAccessException e) {
+            log.error("checkProxyCasTicket during the ProxyTicketValidator initialization with IllegalAccessException:", e);
+            return null;
+        } catch (ClassNotFoundException e) {
+            log.error("checkProxyCasTicket during the ProxyTicketValidator initialization with ClassNotFoundException:", e);
+            return null;
+        }
+
         proxyValidator.setCasValidateUrl(getServiceURL(httpRequest,
                 PROXY_VALIDATE_ACTION));
         proxyValidator.setService(service);
@@ -259,13 +315,29 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         String username = proxyValidator.getUser();
         log.debug("checkProxyCasTicket: validation returned username = "
                 + username);
+        
         return username;
     }
 
     // Cas2 Ticket management
-    private String checkCasTicket(String ticket, HttpServletRequest httpRequest) {
+    protected String checkCasTicket(String ticket,
+            HttpServletRequest httpRequest) {
+        
+        try {
+            ticketValidator = (ServiceTicketValidator) Framework.getRuntime().getContext().loadClass(
+                    ticketValidatorClassName).newInstance();
+        } catch (InstantiationException e) {
+            log.error("checkCasTicket during the ServiceTicketValidator initialization with InstantiationException:", e);
+            return null;
+        } catch (IllegalAccessException e) {
+            log.error("checkCasTicket during the ServiceTicketValidator initialization with IllegalAccessException:", e);
+            return null;
+        } catch (ClassNotFoundException e) {
+            log.error("checkCasTicket during the ServiceTicketValidator initialization with ClassNotFoundException:", e);
+            return null;
+        }
 
-        ServiceTicketValidator ticketValidator = new ServiceTicketValidator();
+
         ticketValidator.setCasValidateUrl(getServiceURL(httpRequest,
                 VALIDATE_ACTION));
         ticketValidator.setService(getAppURL(httpRequest));

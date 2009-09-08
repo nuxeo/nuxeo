@@ -28,6 +28,11 @@
       <artifactId>jsp-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>javax.ejb</groupId>
+      <artifactId>ejb-api</artifactId>
+    </dependency>
+    
 
     <dependency>
       <groupId>commons-logging</groupId>
@@ -43,18 +48,45 @@
     <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
     	<groupId>org.nuxeo.ecm.platform</groupId>
     	<artifactId>nuxeo-platform-login</artifactId>
     </dependency>
+
+
+
     <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>catalina</artifactId>
-      <version>6.0.18</version>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-usermanager-api</artifactId>
       <scope>test</scope>
     </dependency>
-  </dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-usermanager-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-sql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-webapp-base</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.jboss.seam</groupId>
+    	<artifactId>jboss-seam</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.nuxeo.ecm.platform</groupId>
+    	<artifactId>nuxeo-platform-web-common</artifactId>
+    </dependency>  </dependencies>
 
 </project>

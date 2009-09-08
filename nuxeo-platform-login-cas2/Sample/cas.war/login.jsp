@@ -14,8 +14,8 @@
 </font>
 
 <font face="Arial,Helvetica">
-<p> Entrez votre identifiant et votre mot de passe ci-desous; puis cliquez sur 
-  le bouton <b>OK</b> pour continuer.</p>
+<p> Entrez votre identifiant et votre mot de passe ci-desous; puis cli quez sur 
+  le bouton <b>OK</b>  ou bien cliquer <a href="http://localhost:8080/nuxeo">ici</a> pour vous connecter sur Nuxeo en utilisateur anonyme</p>
 </font>
 
 

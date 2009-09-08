@@ -45,8 +45,14 @@ public final class CAS2Parameters {
 
     public final static String DEFAULT_CAS_SERVER_KEY = "defaultCasServer";
 
+    public final static String SERVICE_VALIDATOR_CLASS = "serviceValidatorClass";
+
+    public final static String PROXY_VALIDATOR_CLASS = "proxyValidatorClass";
+
+    public final static String PROMPT_LOGIN = "promptLogin";
+
     // Constant utility class.
-    private CAS2Parameters() {
+    protected CAS2Parameters() {
     }
 
 }
