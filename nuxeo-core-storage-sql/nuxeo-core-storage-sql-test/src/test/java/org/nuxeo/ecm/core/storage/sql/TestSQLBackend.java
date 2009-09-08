@@ -390,7 +390,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session3 = repository.getConnection();
         Node root3 = session3.getRootNode();
         Node foo3 = session3.getChildNode(root3, "foo", false);
-        assertTrue(foo3.getId() == foo1.getId() || foo3.getId() == foo2.getId());
+        assertTrue(foo3.getId().equals(foo1.getId())
+                || foo3.getId().equals(foo2.getId()));
         // try again, has been fixed (only one error in logs)
         Session session4 = repository.getConnection();
         Node root4 = session4.getRootNode();
