@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
@@ -46,8 +47,13 @@ public class PreviewActionBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public static final String TAB_PREVIEW_ID = "TAB_PREVIEW";
+
     @In(create = true, required = false)
     transient NavigationContext navigationContext;
+
+    @In(create = true, required = false)
+    protected WebActions webActions;
 
     @RequestParameter
     private String fieldXPath;
@@ -90,8 +96,7 @@ public class PreviewActionBean implements Serializable {
         if (fieldXPath != null) {
             fieldXPathValue = fieldXPath.replace("/", "-");
         }
-
-        return null;
+        return webActions.setCurrentTabAndNavigate(TAB_PREVIEW_ID);
     }
 
 }
