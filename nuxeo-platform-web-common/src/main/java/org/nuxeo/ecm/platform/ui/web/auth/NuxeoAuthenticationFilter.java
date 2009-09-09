@@ -104,6 +104,10 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     protected static final String URLPolicyService_DISABLE_REDIRECT_REQUEST_KEY = "nuxeo.disable.redirect.wrapper";
 
+    public static final String SSO_INITIAL_URL_REQUEST = "sso.initial.url.request";
+    
+    public static final String SSO_INITIAL_URL_REQUEST_TO_REMOVE = "sso.initial.url.request.remove.cookie";
+
     public void destroy() {
     }
 
@@ -302,7 +306,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                 return;
             }
         }
-
+        
         if (request instanceof NuxeoSecuredRequestWrapper) {
             log.debug("ReEntering Nuxeo Authentication Filter ... exiting directly");
             chain.doFilter(request, response);
@@ -384,7 +388,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                     }
                 } else {
                     // restore saved Starting page
-                    targetPageURL = getSavedRequestedURL(httpRequest);
+                    targetPageURL = getSavedRequestedURL(httpRequest, httpResponse);
                 }
 
                 if (userIdent != null && userIdent.containsValidIdentity()) {
@@ -480,6 +484,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
         log.debug("Exit Nuxeo Authentication filter");
     }
+
 
     public NuxeoAuthenticationPlugin getAuthenticator(
             CachableUserIdentificationInfo ci) {
@@ -581,21 +586,35 @@ public class NuxeoAuthenticationFilter implements Filter {
         return false;
     }
 
-    protected static String getSavedRequestedURL(HttpServletRequest httpRequest) {
-        String requestedPage = httpRequest.getParameter(START_PAGE_SAVE_KEY);
-        if (requestedPage == null) {
-            HttpSession session = httpRequest.getSession(false);
-            if (session == null) {
-                return null;
-            }
-            requestedPage = (String) session.getAttribute(START_PAGE_SAVE_KEY);
-            if (requestedPage == null) {
-                return null;
-            }
+    protected static String getSavedRequestedURL(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
-            // clean up session
-            session.removeAttribute(START_PAGE_SAVE_KEY);
+        String requestedPage = null;
+
+        if (httpRequest.getParameter(START_PAGE_SAVE_KEY) == null) {
+            HttpSession session = httpRequest.getSession(false);
+            if (session != null) {
+                requestedPage = (String) session.getAttribute(START_PAGE_SAVE_KEY);
+                if (requestedPage != null) {
+                    // clean up session
+                    session.removeAttribute(START_PAGE_SAVE_KEY);
+                }
+            }
+        } else {
+            requestedPage = httpRequest.getParameter(START_PAGE_SAVE_KEY);
         }
+        
+        // if SSO authentication cookie store the initial URL asked
+        
+        Cookie[] cookies = httpRequest.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (SSO_INITIAL_URL_REQUEST.equals(cookie.getName())) {
+                    requestedPage = cookie.getValue();
+                    cookie.setMaxAge(0);
+                }
+            }
+        }
+
         return requestedPage;
     }
 
