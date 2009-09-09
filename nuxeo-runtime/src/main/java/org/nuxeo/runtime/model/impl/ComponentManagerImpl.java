@@ -62,7 +62,7 @@ public class ComponentManagerImpl implements ComponentManager {
     private final Map<String, RegistrationInfoImpl> services;
 
     protected Set<String> blacklist;
-    
+
 
     public ComponentManagerImpl(RuntimeService runtime) {
         registry = new HashMap<ComponentName, RegistrationInfoImpl>();
@@ -148,11 +148,11 @@ public class ComponentManagerImpl implements ComponentManager {
     public Set<String> getBlacklist() {
         return blacklist;
     }
-    
+
     public void setBlacklist(Set<String> blacklist) {
         this.blacklist = blacklist;
     }
-    
+
     private void _register(RegistrationInfoImpl ri) {
         ComponentName name = ri.getName();
         if (blacklist.contains(name.getName())) {

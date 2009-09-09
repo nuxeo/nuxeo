@@ -370,5 +370,5 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     public ServiceDescriptor getServiceDescriptor() {
         return serviceDescriptor;
     }
-    
+
 }

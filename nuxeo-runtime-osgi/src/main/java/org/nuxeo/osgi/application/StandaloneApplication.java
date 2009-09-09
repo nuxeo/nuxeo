@@ -298,7 +298,7 @@ public class StandaloneApplication extends OSGiAdapter {
     public static void setMainTask(Runnable mainTask) {
         StandaloneApplication.mainTask = mainTask;
     }
-    
+
     public static Runnable getMainTask() {
         return mainTask;
     }

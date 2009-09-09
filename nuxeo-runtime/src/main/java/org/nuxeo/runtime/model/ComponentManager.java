@@ -160,7 +160,7 @@ public interface ComponentManager {
     ComponentInstance getComponentProvidingService(Class<?> serviceClass);
 
     Set<String> getBlacklist();
-    
+
     void setBlacklist(Set<String> blacklist);
-    
+
 }
