@@ -10,7 +10,8 @@ import javax.ws.rs.QueryParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
-import org.nuxeo.ecm.platform.importer.base.ImporterRunner;
+import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
+import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
 import org.nuxeo.ecm.platform.importer.source.FileWithMetadataSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
@@ -29,7 +30,11 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
     public String run(@QueryParam("inputPath") String inputPath, @QueryParam("targetPath") String targetPath, @QueryParam("batchSize") Integer batchSize , @QueryParam("nbThreads") Integer nbTheards, @QueryParam("interactive") Boolean interactive) throws Exception {
         File srcFile = new File(inputPath);
         SourceNode source = new FileWithMetadataSourceNode(srcFile);
-        ImporterRunner runner = new GenericMultiThreadedImporter(source, targetPath, batchSize, nbTheards, getLogger());
+        GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(source, targetPath, batchSize, nbTheards, getLogger());
+
+        ImporterFilter filter = new EventServiceConfiguratorFilter(false, false, false, true);
+        runner.addFilter(filter);
+
         return doRun(runner, interactive);
     }
 

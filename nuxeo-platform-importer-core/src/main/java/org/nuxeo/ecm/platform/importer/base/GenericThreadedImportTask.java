@@ -38,11 +38,11 @@ import org.nuxeo.ecm.platform.importer.threading.ImporterThreadingPolicy;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * 
+ *
  * Generic importer task
- * 
+ *
  * @author Thierry Delprat
- * 
+ *
  */
 public class GenericThreadedImportTask implements Runnable {
 
@@ -72,7 +72,7 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected TxHelper txHelper = new TxHelper();
 
-    protected static final int TX_TIMEOUT = 60;
+    protected static final int TX_TIMEOUT = 600;
 
     protected ImporterThreadingPolicy threadPolicy;
 
