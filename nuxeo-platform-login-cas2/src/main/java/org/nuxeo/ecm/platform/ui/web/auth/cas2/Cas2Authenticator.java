@@ -190,25 +190,6 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
                 casTicket);
         uui.setToken(casTicket);
         
-//        Cookie[] cookies = httpRequest.getCookies();
-//        for (Cookie cookie : cookies) {
-//            if (SecurityExceptionHandler.COOKIE_URL_TO_REACH.equals(cookie.getName())) {
-//                String urlToReach = cookie.getValue();
-//                
-//                log.debug("Redirection - User asking this URL :" + urlToReach);
-//                try {
-//                    httpResponse.resetBuffer();
-//                    
-////                    Cookie cookieUrlToReach = new Cookie(SecurityExceptionHandler.COOKIE_URL_TO_REACH, null);
-////                    httpResponse.addCookie(cookieUrlToReach);
-//                    httpRequest.getRequestDispatcher("/cas2backToRequestedURL.jsp").forward(httpRequest, httpResponse);
-//                    break;
-//                } catch (Exception e) {
-//                    log.debug("Redirection failed", e);
-//                }
-//            }
-//        }
-
         return uui;
     }
 

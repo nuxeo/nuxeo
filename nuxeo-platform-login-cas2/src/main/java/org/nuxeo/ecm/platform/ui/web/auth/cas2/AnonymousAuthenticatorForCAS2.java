@@ -65,13 +65,14 @@ public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
 
             try {
                 httpResponse.sendRedirect(urlToReach);
+                return true;
             } catch (IOException e) {
                 log.error("Unable to redirect to CAS logout screen:", e);
                 return false;
             }
         }
         
-        return true;
+        return super.handleLogout(httpRequest, httpResponse);
     }
 
     protected Cas2Authenticator casAuthenticator = null;

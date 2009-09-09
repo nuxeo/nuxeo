@@ -11,7 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
-import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
+import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.DefaultNuxeoExceptionHandler;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -43,12 +44,11 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
 
         response.resetBuffer();
 
-        if (!response.containsHeader(NuxeoAuthenticationFilter.SSO_INITIAL_URL_REQUEST)) {
-            Cookie cookieUrlToReach = new Cookie(NuxeoAuthenticationFilter.SSO_INITIAL_URL_REQUEST, request.getRequestURL().toString() + "?" + request.getQueryString());
-            cookieUrlToReach.setPath("/");
-            cookieUrlToReach.setMaxAge(-1);
-            response.addCookie(cookieUrlToReach);
-        }
+        String urlToReach = getURLToReach(request);
+        Cookie cookieUrlToReach = new Cookie(NuxeoAuthenticationFilter.SSO_INITIAL_URL_REQUEST, urlToReach);
+        cookieUrlToReach.setPath("/");
+        cookieUrlToReach.setMaxAge(60);
+        response.addCookie(cookieUrlToReach);
         
         if (!response.isCommitted()) {
             request.getRequestDispatcher(CAS_REDIRECTION_URL).forward(request, response);
@@ -79,6 +79,33 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
             
         }
         return cas2Authenticator;
+    }
+    
+    protected String getURLToReach(HttpServletRequest request) {
+        DocumentView docView = (DocumentView) request.getAttribute(URLPolicyService.DOCUMENT_VIEW_REQUEST_KEY);
+        
+        if (docView != null) {
+            String urlToReach = getURLPolicyService().getUrlFromDocumentView(docView, "");
+
+            if (urlToReach != null) {
+                return urlToReach;
+            }
+        }
+        return request.getRequestURL().toString() + "?" + request.getQueryString();
+    }
+    
+    
+    protected URLPolicyService urlService = null;
+    
+    protected URLPolicyService getURLPolicyService() {
+        if (urlService==null) {
+            try {
+                urlService = Framework.getService(URLPolicyService.class);
+            } catch (Exception e) {
+                log.error("Could not retrieve the URLPolicyService",e);
+            }
+        }
+        return urlService;
     }
 
 
