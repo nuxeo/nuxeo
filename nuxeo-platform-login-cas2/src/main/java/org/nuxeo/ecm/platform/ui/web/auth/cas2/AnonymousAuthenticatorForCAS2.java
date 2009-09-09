@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.plugins.AnonymousAuthenticator;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
@@ -50,7 +51,7 @@ public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
         
         Cookie[] cookies = httpRequest.getCookies();
         for (Cookie cookie : cookies) {
-            if (SecurityExceptionHandler.COOKIE_URL_TO_REACH.equals(cookie.getName())) {
+            if (NuxeoAuthenticationFilter.SSO_INITIAL_URL_REQUEST.equals(cookie.getName())) {
                 isRedirectionToCas = true;
                 break;
             }

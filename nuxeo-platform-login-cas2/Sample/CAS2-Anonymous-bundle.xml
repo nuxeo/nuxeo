@@ -31,8 +31,8 @@
       point="chain">
     <authenticationChain>
       <plugins>
-        <plugin>ANONYMOUS_AUTH_FOR_CAS2</plugin>
         <plugin>CAS2_AUTH</plugin>
+        <plugin>ANONYMOUS_AUTH_FOR_CAS2</plugin>
       </plugins>
     </authenticationChain>
   </extension>

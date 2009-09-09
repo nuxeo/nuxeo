@@ -11,14 +11,15 @@
   
   </head>
   <body>
-    <script type="text/javascript">
+    <script type="text/javascript"> 
 
-     // var obj = 'window.location.replace("http://127.0.0.1:8080/cas/login?service=http://127.0.0.1:8080/nuxeo/nxstartup.faces");'; 
-     var obj = 'window.location.replace("http://127.0.0.1:8080/nuxeo/logout");';
-     setTimeout(obj,1);
+    var indexEndServerName = location.href.indexOf('/', 7);
+    var indexEndBaseURL = location.href.indexOf('/', indexEndServerName + 2);
+    var logoutURL = location.href.substring(0, indexEndBaseURL) + '/logout';
+
+    var obj = 'window.location.replace("' + logoutURL + '");';
+    setTimeout(obj,0);
 
     </script>
-
-      You will be redirect to the correct place 
   </body>
 </html> 

@@ -8,23 +8,6 @@
     </module>
   </extension>
   
-  <extension target="web#AUTH-FILTER">
-    <filter>
-      <display-name>CAS Filer to redirect to the url asked</display-name>
-      <filter-name>CAS2Filter</filter-name>
-      <filter-class>
-        org.nuxeo.ecm.platform.ui.web.auth.cas2.CAS2Filter
-      </filter-class>
-    </filter>
-
-    <filter-mapping>
-      <filter-name>CAS2Filter</filter-name>
-      <url-pattern>/nxstartup.faces</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-  </extension>
-
   <install>
     <!--  unzip the war template -->
     <unzip from="${bundle.fileName}" to="/">

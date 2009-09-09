@@ -9,15 +9,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.DefaultNuxeoExceptionHandler;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.runtime.api.Framework;
 
 public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
 
-    public static final String COOKIE_URL_TO_REACH = "cookie.name.url.to.reach.from.sso";
     public static final String CAS_REDIRECTION_URL = "/cas2.jsp";
+    
+    public static final String COOKIE_NAME_LOGOUT_URL = "cookie.name.logout.url";
+
     Cas2Authenticator cas2Authenticator = null;
     
     public SecurityExceptionHandler() throws Exception {
@@ -32,31 +36,23 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
         Throwable unwrappedException = unwrapException(t);
         
         if ((! ExceptionHelper.isSecurityError(unwrappedException))
-                && (! response.containsHeader(COOKIE_URL_TO_REACH))) {
+                && (! response.containsHeader(NuxeoAuthenticationFilter.SSO_INITIAL_URL_REQUEST))) {
             super.handleException(request, response, t);
             return;
         }
 
         response.resetBuffer();
 
-        if (!response.containsHeader(COOKIE_URL_TO_REACH)) {
-            Cookie cookieUrlToReach = new Cookie(COOKIE_URL_TO_REACH, request.getRequestURL().toString() + "?" + request.getQueryString());
+        if (!response.containsHeader(NuxeoAuthenticationFilter.SSO_INITIAL_URL_REQUEST)) {
+            Cookie cookieUrlToReach = new Cookie(NuxeoAuthenticationFilter.SSO_INITIAL_URL_REQUEST, request.getRequestURL().toString() + "?" + request.getQueryString());
             cookieUrlToReach.setPath("/");
             cookieUrlToReach.setMaxAge(-1);
             response.addCookie(cookieUrlToReach);
-
-            Cookie cookieUrlToAuthenticate;
-            try {
-                cookieUrlToAuthenticate = new Cookie(COOKIE_URL_TO_REACH,  getCasAuthenticator().getServiceURL(request, CAS2Parameters.SERVICE_LOGIN_URL_KEY) + "?service=" + getCasAuthenticator().getAppURL(request));
-                cookieUrlToAuthenticate.setPath("/");
-                cookieUrlToAuthenticate.setMaxAge(-1);
-                response.addCookie(cookieUrlToAuthenticate);
-            } catch (ClientException e) {
-                log.error("can't get CAS URL to authenticate user", e);
-            }
         }
         
-        request.getRequestDispatcher(CAS_REDIRECTION_URL).forward(request, response);
+        if (!response.isCommitted()) {
+            request.getRequestDispatcher(CAS_REDIRECTION_URL).forward(request, response);
+        }
         FacesContext.getCurrentInstance().responseComplete();
         
     }
