@@ -22,6 +22,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -122,7 +123,7 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
     }
 
     @Override
-    public void removeChild(String name) {
+    public void removeChild(String name) throws DocumentException {
         throw new UnsupportedOperationException();
     }
 
@@ -132,7 +133,8 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
     }
 
     @Override
-    public Document addChild(String name, String typeName) {
+    public Document addChild(String name, String typeName)
+            throws DocumentException {
         throw new UnsupportedOperationException();
     }
 
@@ -142,17 +144,22 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
     }
 
     @Override
-    public Iterator<Document> getChildren() {
+    public Iterator<Document> getChildren() throws DocumentException {
         return EmptyDocumentIterator.INSTANCE;
     }
 
     @Override
-    public boolean hasChild(String name) {
+    public List<String> getChildrenIds() throws DocumentException {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean hasChild(String name) throws DocumentException {
         return false;
     }
 
     @Override
-    public boolean hasChildren() {
+    public boolean hasChildren() throws DocumentException {
         return false;
     }
 

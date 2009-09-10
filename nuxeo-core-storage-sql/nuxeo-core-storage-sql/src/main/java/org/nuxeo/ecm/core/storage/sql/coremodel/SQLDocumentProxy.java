@@ -17,6 +17,9 @@
 
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentVersionProxy;
@@ -93,6 +96,51 @@ public class SQLDocumentProxy extends SQLDocumentVersion implements
     @Override
     public Document getParent() throws DocumentException {
         return session.getParent(proxyNode);
+    }
+
+    /*
+     * ----- folder overrides -----
+     */
+
+    @Override
+    public boolean isFolder() {
+        return _isFolder();
+    }
+
+    @Override
+    public void removeChild(String name) throws DocumentException {
+        _removeChild(name);
+    }
+
+    @Override
+    public Document addChild(String name, String typeName)
+            throws DocumentException {
+        return _addChild(name, typeName);
+    }
+
+    @Override
+    public Document getChild(String name) throws DocumentException {
+        return _getChild(name);
+    }
+
+    @Override
+    public Iterator<Document> getChildren() throws DocumentException {
+        return _getChildren();
+    }
+
+    @Override
+    public List<String> getChildrenIds() throws DocumentException {
+        return _getChildrenIds();
+    }
+
+    @Override
+    public boolean hasChild(String name) throws DocumentException {
+        return _hasChild(name);
+    }
+
+    @Override
+    public boolean hasChildren() throws DocumentException {
+        return _hasChildren();
     }
 
     /*

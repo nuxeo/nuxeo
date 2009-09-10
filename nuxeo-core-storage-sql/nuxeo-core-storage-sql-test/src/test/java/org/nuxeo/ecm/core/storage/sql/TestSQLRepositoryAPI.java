@@ -791,9 +791,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(name2, returnedChildDocs.get(1).getName());
 
         /*
-         * Filter filter = new NameFilter(name2); // get folder children
-         * List<DocumentModel> retrievedChilds =
-         * session.getChildren(root.getRef(), null, null, filter, null);
+         * Filter filter = new NameFilter(name2); // get folder children List<DocumentModel>
+         * retrievedChilds = session.getChildren(root.getRef(), null, null,
+         * filter, null);
          *
          * assertNotNull(retrievedChilds); assertEquals(1,
          * retrievedChilds.size());
@@ -2728,6 +2728,39 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(expected, actual);
     }
 
+    public void testProxyChildren() throws Exception {
+        DocumentModel root = session.getRootDocument();
+        DocumentModel doc1 = new DocumentModelImpl(root.getPathAsString(),
+                "doc1", "Book");
+        doc1 = session.createDocument(doc1);
+        DocumentModel doc2 = new DocumentModelImpl(root.getPathAsString(),
+                "doc2", "Book");
+        doc2 = session.createDocument(doc2);
+
+        // create proxy pointing to doc1
+        DocumentModel proxy1 = session.publishDocument(doc1, root);
+
+        // check proxy1 children methods
+        DocumentModelList children = session.getChildren(proxy1.getRef());
+        assertEquals(0, children.size());
+        assertFalse(session.hasChildren(proxy1.getRef()));
+
+        // create proxy pointing to doc2, under proxy1
+        DocumentModel proxy2 = session.publishDocument(doc2, proxy1);
+        session.save();
+
+        // check that sub proxy really exists
+        assertEquals(proxy2, session.getDocument(proxy2.getRef()));
+
+        // check proxy1 children methods
+        children = session.getChildren(proxy1.getRef());
+        assertEquals(1, children.size());
+        assertEquals(proxy2, children.get(0));
+        assertEquals(proxy2,
+                session.getChild(proxy1.getRef(), proxy2.getName()));
+        assertTrue(session.hasChildren(proxy1.getRef()));
+    }
+
     public static byte[] createBytes(int size, byte val) {
         byte[] bytes = new byte[size];
         Arrays.fill(bytes, val);
@@ -2870,7 +2903,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         // assertEquals(name, doc.getName()); // no path -> no name...
         assertEquals("Ver title", (String) ver.getProperty("dublincore",
                 "title"));
-        assertEquals(mod, (Calendar) ver.getProperty("dublincore", "modified"));
+        assertEquals(mod, ver.getProperty("dublincore", "modified"));
         assertEquals("v lcp", ver.getLifeCyclePolicy());
         assertEquals("v lcst", ver.getCurrentLifeCycleState());
         assertEquals(Long.valueOf(3), ver.getProperty("uid", "major_version"));
@@ -2904,8 +2937,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(name, proxy.getName());
         assertEquals("Ver title", (String) proxy.getProperty("dublincore",
                 "title"));
-        assertEquals(mod,
-                (Calendar) proxy.getProperty("dublincore", "modified"));
+        assertEquals(mod, proxy.getProperty("dublincore", "modified"));
         assertEquals("v lcp", proxy.getLifeCyclePolicy());
         assertEquals("v lcst", proxy.getCurrentLifeCycleState());
         assertFalse(proxy.isVersion());

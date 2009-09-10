@@ -82,6 +82,10 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public boolean isFolder() {
+        return _isFolder();
+    }
+
+    protected boolean _isFolder() {
         return ((DocumentType) type).isFolder();
     }
 
@@ -380,14 +384,26 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public Document getChild(String name) throws DocumentException {
+        return _getChild(name);
+    }
+
+    protected Document _getChild(String name) throws DocumentException {
         return session.getChild(getHierarchyNode(), name);
     }
 
     public Iterator<Document> getChildren() throws DocumentException {
+        return _getChildren();
+    }
+
+    protected Iterator<Document> _getChildren() throws DocumentException {
         return getChildren(0);
     }
 
     public DocumentIterator getChildren(int start) throws DocumentException {
+        return _getChildren(start);
+    }
+
+    protected DocumentIterator _getChildren(int start) throws DocumentException {
         if (!isFolder()) {
             return EmptyDocumentIterator.INSTANCE;
         }
@@ -403,6 +419,10 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public List<String> getChildrenIds() throws DocumentException {
+        return _getChildrenIds();
+    }
+
+    protected List<String> _getChildrenIds() throws DocumentException {
         if (!isFolder()) {
             return Collections.emptyList();
         }
@@ -416,6 +436,10 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public boolean hasChild(String name) throws DocumentException {
+        return _hasChild(name);
+    }
+
+    protected boolean _hasChild(String name) throws DocumentException {
         if (!isFolder()) {
             return false;
         }
@@ -423,6 +447,10 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public boolean hasChildren() throws DocumentException {
+        return _hasChildren();
+    }
+
+    protected boolean _hasChildren() throws DocumentException {
         if (!isFolder()) {
             return false;
         }
@@ -430,6 +458,11 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public Document addChild(String name, String typeName)
+            throws DocumentException {
+        return _addChild(name, typeName);
+    }
+
+    protected Document _addChild(String name, String typeName)
             throws DocumentException {
         if (!isFolder()) {
             throw new IllegalArgumentException("Not a folder");
@@ -443,6 +476,10 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public void removeChild(String name) throws DocumentException {
+        _removeChild(name);
+    }
+
+    protected void _removeChild(String name) throws DocumentException {
         if (!isFolder()) {
             return; // ignore non folder documents XXX urgh
         }
