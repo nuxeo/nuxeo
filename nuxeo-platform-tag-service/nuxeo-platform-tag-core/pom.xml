@@ -49,7 +49,11 @@
       <artifactId>osgi-core</artifactId>
     </dependency>
 
-
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+    
     <!-- Persistence -->
     <dependency>
       <groupId>javax.persistence</groupId>
