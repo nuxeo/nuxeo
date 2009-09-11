@@ -25,16 +25,20 @@ import javax.servlet.ServletException;
 
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
-import org.nuxeo.ecm.platform.ui.web.auth.simple.AbstractTestAuthenticator;
+import org.nuxeo.ecm.platform.ui.web.auth.simple.AbstractAuthenticator;
 
 /**
  * @author Benjamin JALON
  */
-public class TestCASAuthenticator extends AbstractTestAuthenticator {
+public class TestCASAuthenticator extends AbstractAuthenticator {
 
     protected static final String CAS_USER = "CasUser";
 
     protected String TICKET_KEY = "ticket";
+    
+    public TestCASAuthenticator() {
+        super();
+    }
 
     @Override
     public void setUp() throws Exception {

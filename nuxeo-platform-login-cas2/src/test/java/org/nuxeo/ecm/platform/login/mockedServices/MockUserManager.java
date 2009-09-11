@@ -19,6 +19,8 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 
 public class MockUserManager implements UserManager{
 
+    private static final long serialVersionUID = 1L;
+
     public Boolean areGroupsReadOnly() throws ClientException {
         // TODO Auto-generated method stub
         return null;

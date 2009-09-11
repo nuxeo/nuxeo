@@ -42,7 +42,7 @@ import sun.misc.BASE64Encoder;
 /**
  * @author Benjamin JALON
  */
-public class AbstractTestAuthenticator extends NXRuntimeTestCase {
+public abstract class AbstractAuthenticator extends NXRuntimeTestCase {
 
     protected PluggableAuthenticationService authService;
 

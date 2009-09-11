@@ -28,8 +28,12 @@ import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 /**
  * @author Benjamin JALON
  */
-public class TestAuthenticator extends AbstractTestAuthenticator {
+public class TestAuthenticator extends AbstractAuthenticator {
 
+
+    public TestAuthenticator() {
+        super();
+    }
 
     @Override
     public void setUp() throws Exception {
