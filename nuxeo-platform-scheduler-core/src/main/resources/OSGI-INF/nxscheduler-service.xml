@@ -4,10 +4,14 @@
 
   <documentation>
      Core scheduler registry service.
-
      @version 1.0
      @author <a href="mailto:fg@nuxeo.com">Florent Guillaume</a>
   </documentation>
+
+  
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.scheduler.core.interfaces.SchedulerRegistry" />
+  </service>	
 
   <implementation class="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService" />
 

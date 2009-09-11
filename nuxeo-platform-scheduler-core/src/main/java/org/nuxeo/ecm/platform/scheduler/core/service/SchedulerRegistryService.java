@@ -129,6 +129,17 @@ public class SchedulerRegistryService extends DefaultComponent implements
         }
     }
 
+    public void unregisterSchedule(String scheduleId) {
+        log.info("Unregistering schedule with id" + scheduleId);
+        try {
+            scheduler.deleteJob(scheduleId, "nuxeo");
+        } catch (SchedulerException e) {
+            log.error(String.format(
+                    "failed to unschedule job with '%s': %s",
+                    scheduleId, e.getMessage()), e);
+        }
+    }
+    
     public void unregisterSchedule(Schedule schedule) {
         log.info("Unregistering " + schedule);
         try {

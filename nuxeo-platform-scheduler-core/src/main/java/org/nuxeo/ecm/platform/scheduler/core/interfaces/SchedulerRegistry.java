@@ -32,4 +32,12 @@ public interface SchedulerRegistry {
      */
     void registerSchedule(Schedule schedule);
 
+    
+    /**
+     * UnRegisters a schedule.
+     *
+     * @param scheduleId the schedule id 
+     */
+    void unregisterSchedule(String scheduleId);
+    
 }
