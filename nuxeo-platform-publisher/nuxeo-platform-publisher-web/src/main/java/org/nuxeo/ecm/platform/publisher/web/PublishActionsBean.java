@@ -20,6 +20,17 @@
 
 package org.nuxeo.ecm.platform.publisher.web;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -32,11 +43,10 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
@@ -48,26 +58,14 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
+import org.nuxeo.ecm.platform.publisher.api.PublicationTreeNotAvailable;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.api.PublishingEvent;
-import org.nuxeo.ecm.platform.publisher.api.PublicationTreeNotAvailable;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
-
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.ArrayList;
 
 /**
  * This Seam bean manages the publishing tab.
@@ -76,13 +74,14 @@ import java.util.ArrayList;
  */
 @Name("publishActions")
 @Scope(ScopeType.CONVERSATION)
-public class PublishActionsBean extends AbstractPublishActions implements Serializable {
+public class PublishActionsBean extends AbstractPublishActions implements
+        Serializable {
 
     public static class PublicationTreeInformation {
 
-        private String name;
+        private final String name;
 
-        private String title;
+        private final String title;
 
         public PublicationTreeInformation(String treeName, String treeTitle) {
             this.name = treeName;
@@ -137,11 +136,13 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
     }
 
     @Factory(value = "availablePublicationTrees", scope = ScopeType.EVENT)
-    public List<PublicationTreeInformation> getAvailablePublicationTrees() throws ClientException {
+    public List<PublicationTreeInformation> getAvailablePublicationTrees()
+            throws ClientException {
         Map<String, String> trees = publisherService.getAvailablePublicationTrees();
         List<PublicationTreeInformation> treesInformation = new ArrayList<PublicationTreeInformation>();
         for (Map.Entry<String, String> entry : trees.entrySet()) {
-            treesInformation.add(new PublicationTreeInformation(entry.getKey(), entry.getValue()));
+            treesInformation.add(new PublicationTreeInformation(entry.getKey(),
+                    entry.getValue()));
         }
         return treesInformation;
     }
@@ -155,7 +156,8 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
         FacesContext context = FacesContext.getCurrentInstance();
         if (publishedDocument.isPending()) {
             String comment = ComponentUtils.translate(context,
-                                "publishing.waiting", tree.getConfigName(), publicationNode.getPath());
+                    "publishing.waiting", tree.getConfigName(),
+                    publicationNode.getPath());
             // Log event on live version
             notifyEvent(PublishingEvent.documentWaitingPublication.name(),
                     null, comment, null, currentDocument);
@@ -166,7 +168,8 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
                             currentDocument.getType()));
         } else {
             String comment = ComponentUtils.translate(context,
-                                "publishing.done", tree.getConfigName(), publicationNode.getPath());
+                    "publishing.done", tree.getConfigName(),
+                    publicationNode.getPath());
             // Log event on live version
             notifyEvent(PublishingEvent.documentPublished.name(), null,
                     comment, null, currentDocument);
@@ -192,7 +195,8 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
     public String getCurrentPublicationTreeNameForPublishing()
             throws ClientException {
         if (currentPublicationTreeNameForPublishing == null) {
-            List<String> publicationTrees = new ArrayList<String>(publisherService.getAvailablePublicationTree());
+            List<String> publicationTrees = new ArrayList<String>(
+                    publisherService.getAvailablePublicationTree());
             if (!publicationTrees.isEmpty()) {
                 currentPublicationTreeNameForPublishing = publicationTrees.get(0);
             }
@@ -205,9 +209,9 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
         if (currentPublicationTree == null) {
             try {
                 currentPublicationTree = publisherService.getPublicationTree(
-                    getCurrentPublicationTreeNameForPublishing(),
-                    documentManager, null,
-                    navigationContext.getCurrentDocument());
+                        getCurrentPublicationTreeNameForPublishing(),
+                        documentManager, null,
+                        navigationContext.getCurrentDocument());
             } catch (PublicationTreeNotAvailable e) {
                 currentPublicationTree = null;
             }
@@ -237,10 +241,10 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
             throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         try {
-            PublicationTree tree = publisherService.getPublicationTree(treeName,
-                documentManager, null);
+            PublicationTree tree = publisherService.getPublicationTree(
+                    treeName, documentManager, null);
             return tree.getExistingPublishedDocument(new DocumentLocationImpl(
-                currentDocument));
+                    currentDocument));
         } catch (PublicationTreeNotAvailable e) {
             return null;
         }
@@ -305,18 +309,21 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
         tree.validatorPublishDocument(publishedDocument);
         DocumentModel sourceDocument = documentManager.getDocument(publishedDocument.getSourceDocumentRef());
         FacesContext context = FacesContext.getCurrentInstance();
-        String comment = publishingComment != null && publishingComment.length() > 0 ?
-                ComponentUtils.translate(context,
-                                "publishing.approved.with.comment", tree.getConfigName(), publishedDocument.getParentPath(), publishingComment)
-                : ComponentUtils.translate(context,
-                                "publishing.approved.without.comment", tree.getConfigName(), publishedDocument.getParentPath());
+        String comment = publishingComment != null
+                && publishingComment.length() > 0 ? ComponentUtils.translate(
+                context, "publishing.approved.with.comment",
+                tree.getConfigName(), publishedDocument.getParentPath(),
+                publishingComment) : ComponentUtils.translate(context,
+                "publishing.approved.without.comment", tree.getConfigName(),
+                publishedDocument.getParentPath());
         notifyEvent(PublishingEvent.documentPublicationApproved.name(), null,
                 comment, null, sourceDocument);
 
-        DocumentModel liveVersion = documentManager.getDocument(new IdRef(sourceDocument.getSourceId()));
+        DocumentModel liveVersion = documentManager.getDocument(new IdRef(
+                sourceDocument.getSourceId()));
         if (!sourceDocument.getRef().equals(liveVersion.getRef())) {
-            notifyEvent(PublishingEvent.documentPublicationApproved.name(), null,
-                comment, null, liveVersion);
+            notifyEvent(PublishingEvent.documentPublicationApproved.name(),
+                    null, comment, null, liveVersion);
         }
 
         Events.instance().raiseEvent(PublishingEvent.documentPublished.name());
@@ -324,8 +331,7 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
     }
 
     public String rejectDocument() throws ClientException {
-        if (publishingComment == null
-                || "".equals(publishingComment)) {
+        if (publishingComment == null || "".equals(publishingComment)) {
             facesMessages.addToControl("publishingComment",
                     FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
@@ -337,24 +343,25 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
         PublicationTree tree = publisherService.getPublicationTreeFor(
                 currentDocument, documentManager);
         PublishedDocument publishedDocument = tree.wrapToPublishedDocument(currentDocument);
-        tree.validatorRejectPublication(publishedDocument,
-                publishingComment);
+        tree.validatorRejectPublication(publishedDocument, publishingComment);
         DocumentModel sourceDocument = documentManager.getDocument(publishedDocument.getSourceDocumentRef());
 
         FacesContext context = FacesContext.getCurrentInstance();
-        String comment = publishingComment != null && publishingComment.length() > 0 ?
-                ComponentUtils.translate(context,
-                                "publishing.rejected.with.comment", tree.getConfigName(), publishedDocument.getParentPath(), publishingComment)
-                : ComponentUtils.translate(context,
-                                "publishing.rejected.without.comment", tree.getConfigName(), publishedDocument.getParentPath());
+        String comment = publishingComment != null
+                && publishingComment.length() > 0 ? ComponentUtils.translate(
+                context, "publishing.rejected.with.comment",
+                tree.getConfigName(), publishedDocument.getParentPath(),
+                publishingComment) : ComponentUtils.translate(context,
+                "publishing.rejected.without.comment", tree.getConfigName(),
+                publishedDocument.getParentPath());
         notifyEvent(PublishingEvent.documentPublicationRejected.name(), null,
-                comment, null,
-                sourceDocument);
+                comment, null, sourceDocument);
 
-        DocumentModel liveVersion = documentManager.getDocument(new IdRef(sourceDocument.getSourceId()));
+        DocumentModel liveVersion = documentManager.getDocument(new IdRef(
+                sourceDocument.getSourceId()));
         if (!sourceDocument.getRef().equals(liveVersion.getRef())) {
-            notifyEvent(PublishingEvent.documentPublicationRejected.name(), null,
-                comment, null, liveVersion);
+            notifyEvent(PublishingEvent.documentPublicationRejected.name(),
+                    null, comment, null, liveVersion);
         }
         Events.instance().raiseEvent(
                 PublishingEvent.documentPublicationRejected.name());
@@ -395,11 +402,13 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
         return publishedDocument.getType().equals(PublishedDocument.Type.REMOTE);
     }
 
-    public boolean isFileSystemPublishedDocument(PublishedDocument publishedDocument) {
+    public boolean isFileSystemPublishedDocument(
+            PublishedDocument publishedDocument) {
         if (publishedDocument == null) {
             return false;
         }
-        return publishedDocument.getType().equals(PublishedDocument.Type.FILE_SYSTEM);
+        return publishedDocument.getType().equals(
+                PublishedDocument.Type.FILE_SYSTEM);
     }
 
     public boolean isLocalPublishedDocument(PublishedDocument publishedDocument) {
@@ -413,7 +422,8 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
         return publishDocumentList(DocumentsListsManager.DEFAULT_WORKING_LIST);
     }
 
-    public DocumentModel getDocumentModelFor(String path) throws ClientException {
+    public DocumentModel getDocumentModelFor(String path)
+            throws ClientException {
         DocumentRef docRef = new PathRef(path);
         if (documentManager.exists(docRef)) {
             return documentManager.getDocument(docRef);
