@@ -486,4 +486,24 @@ public abstract class Dialect {
         return null;
     }
 
+    /**
+     * Does the dialect support an optimized read security checks
+     *
+     */
+    public boolean supportsReadAcl() {
+        return false;
+    }
+
+    /**
+     * Gets the expression to check if access is allowed using read acl the
+     * dialect must suppportsReadAcl
+     *
+     * @param idColumnName the quoted name of the read acl_id column to use
+     * @return an SQL expression with one parameter (principals) that is true if
+     *         access is allowed
+     */
+    public String getAcessAllowedCheckSql(String idColumnName) {
+        return null;
+    }
+
 }

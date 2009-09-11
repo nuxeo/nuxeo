@@ -229,6 +229,12 @@ public class Model {
 
     public static final String FULLTEXT_BINARYTEXT_KEY = "binarytext";
 
+    public static final String HIER_READ_ACL_TABLE_NAME = "hierarchy_read_acl";
+
+    public static final String HIER_READ_ACL_ID = "id";
+
+    public static final String HIER_READ_ACL_ACL_ID = "acl_id";
+
     /** Special (non-schema-based) simple fragments present in all types. */
     public static final String[] COMMON_SIMPLE_FRAGMENTS = { MISC_TABLE_NAME,
             FULLTEXT_TABLE_NAME };
@@ -1156,6 +1162,7 @@ public class Model {
         addPropertyInfo(null, ACL_PROP, PropertyType.COLL_ACL, fragmentName,
                 null, false, null);
     }
+
 
     /**
      * Creates the model for one schema or complex type.
