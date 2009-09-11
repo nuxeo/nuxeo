@@ -103,7 +103,9 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     }
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
+            EventNames.DOCUMENT_CHANGED,
+            EventNames.DOCUMENT_SUBMITED_FOR_PUBLICATION,
+            EventNames.DOCUMENT_PUBLISHED }, create = false, inject = false)
     @BypassInterceptors
     public void resetVersions() {
         versionModelList = null;
@@ -223,8 +225,8 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
                     docRef, selectedVersion);
             return documentManager.canRemoveDocument(docVersion.getRef());
         } catch (ClientException e) {
-            log.debug("ClientException in canRemoveArchivedVersion: " +
-                    e.getMessage());
+            log.debug("ClientException in canRemoveArchivedVersion: "
+                    + e.getMessage());
             return false;
         }
     }
