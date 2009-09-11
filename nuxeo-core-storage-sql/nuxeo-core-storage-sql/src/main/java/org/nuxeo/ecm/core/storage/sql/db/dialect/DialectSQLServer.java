@@ -17,18 +17,27 @@
 
 package org.nuxeo.ecm.core.storage.sql.db.dialect;
 
+import java.io.Serializable;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.hibernate.dialect.SQLServerDialect;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
+import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 
 /**
@@ -57,16 +66,139 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public String getTypeName(int sqlType, int length, int precision, int scale) {
-        if (sqlType == Column.ExtendedTypes.FULLTEXT) {
-            sqlType = Types.CLOB;
+    public JDBCInfo getJDBCTypeAndString(ColumnType type) {
+        switch (type) {
+        case VARCHAR:
+            return jdbcInfo("NVARCHAR(4000)", Types.VARCHAR);
+        case CLOB:
+            return jdbcInfo("NVARCHAR(MAX)", Types.CLOB);
+        case BOOLEAN:
+            return jdbcInfo("BIT", Types.BIT);
+        case LONG:
+            return jdbcInfo("BIGINT", Types.BIGINT);
+        case DOUBLE:
+            return jdbcInfo("DOUBLE PRECISION", Types.DOUBLE);
+        case TIMESTAMP:
+            return jdbcInfo("DATETIME", Types.TIMESTAMP);
+        case BLOBID:
+            return jdbcInfo("VARCHAR(32)", Types.VARCHAR);
+            // -----
+        case NODEID:
+        case NODEIDFK:
+        case NODEIDFKNP:
+        case NODEIDFKMUL:
+        case NODEIDFKNULL:
+        case NODEVAL:
+            return jdbcInfo("VARCHAR(36)", Types.VARCHAR);
+        case SYSNAME:
+            return jdbcInfo("VARCHAR(256)", Types.VARCHAR);
+        case TINYINT:
+            return jdbcInfo("TINYINT", Types.TINYINT);
+        case INTEGER:
+            return jdbcInfo("INT", Types.INTEGER);
+        case FTINDEXED:
+            throw new AssertionError(type);
+        case FTSTORED:
+            return jdbcInfo("NVARCHAR(MAX)", Types.CLOB);
+        case CLUSTERNODE:
+            return jdbcInfo("INT", Types.INTEGER);
+        case CLUSTERFRAGS:
+            return jdbcInfo("VARCHAR(8000)", Types.VARCHAR);
         }
-        if (sqlType == Types.VARCHAR) {
-            return "NVARCHAR(" + length + ')';
-        } else if (sqlType == Types.CLOB) {
-            return "NVARCHAR(MAX)";
+        throw new AssertionError(type);
+    }
+
+    @Override
+    public boolean isAllowedConversion(int expected, int actual,
+            String actualName, int actualSize) {
+        // CLOB vs VARCHAR compatibility
+        if (expected == Types.VARCHAR && actual == Types.CLOB) {
+            return true;
         }
-        return super.getTypeName(sqlType, length, precision, scale);
+        if (expected == Types.CLOB && actual == Types.VARCHAR) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void setToPreparedStatement(PreparedStatement ps, int index,
+            Serializable value, Column column) throws SQLException {
+        switch (column.getJdbcType()) {
+        case Types.VARCHAR:
+        case Types.CLOB:
+            String v;
+            if (column.getType() == ColumnType.BLOBID) {
+                v = ((Binary) value).getDigest();
+            } else {
+                v = (String) value;
+            }
+            ps.setString(index, v);
+            break;
+        case Types.BIT:
+            ps.setBoolean(index, ((Boolean) value).booleanValue());
+            return;
+        case Types.TINYINT:
+        case Types.INTEGER:
+        case Types.BIGINT:
+            ps.setLong(index, ((Long) value).longValue());
+            return;
+        case Types.DOUBLE:
+            ps.setDouble(index, ((Double) value).doubleValue());
+            return;
+        case Types.TIMESTAMP:
+            Calendar cal = (Calendar) value;
+            Timestamp ts = new Timestamp(cal.getTimeInMillis());
+            ps.setTimestamp(index, ts, cal); // cal passed for timezone
+            return;
+        default:
+            throw new SQLException("Unhandled JDBC type: "
+                    + column.getJdbcType());
+        }
+    }
+
+    @Override
+    @SuppressWarnings("boxing")
+    public Serializable getFromResultSet(ResultSet rs, int index, Column column)
+            throws SQLException {
+        switch (column.getJdbcType()) {
+        case Types.VARCHAR:
+        case Types.LONGVARCHAR:
+            String string = rs.getString(index);
+            if (column.getType() == ColumnType.BLOBID && string != null) {
+                return column.getModel().getBinary(string);
+            } else {
+                return string;
+            }
+        case Types.BIT:
+            return rs.getBoolean(index);
+        case Types.TINYINT:
+        case Types.INTEGER:
+        case Types.BIGINT:
+            return rs.getLong(index);
+        case Types.DOUBLE:
+            return rs.getDouble(index);
+        case Types.TIMESTAMP:
+            Timestamp ts = rs.getTimestamp(index);
+            if (ts == null) {
+                return null;
+            } else {
+                Serializable cal = new GregorianCalendar(); // XXX timezone
+                ((Calendar) cal).setTimeInMillis(ts.getTime());
+                return cal;
+            }
+        }
+        throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
+    }
+
+    @Override
+    public boolean getMaterializeFulltextSyntheticColumn() {
+        return false;
+    }
+
+    @Override
+    public int getFulltextIndexedColumns() {
+        return 2;
     }
 
     @Override
@@ -102,11 +234,6 @@ public class DialectSQLServer extends Dialect {
             return String.format("'%s'", fulltextAnalyzer);
         }
         return fulltextAnalyzer;
-    }
-
-    @Override
-    public int getFulltextIndexedColumns() {
-        return 2;
     }
 
     @Override
@@ -259,6 +386,21 @@ public class DialectSQLServer extends Dialect {
                                 + "END" //
                         , idType)));
 
+        return statements;
+    }
+
+    @Override
+    public Collection<ConditionalStatement> getTestConditionalStatements(
+            Model model, Database database) {
+        List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
+        statements.add(new ConditionalStatement(true, Boolean.FALSE, null,
+                null,
+                // here use a NVARCHAR(MAX) instead of a NVARCHAR(4000) to test
+                // compatibility
+                "CREATE TABLE TESTSCHEMA2 (ID VARCHAR(36) NOT NULL, TITLE NVARCHAR(MAX) NULL)"));
+        statements.add(new ConditionalStatement(true, Boolean.FALSE, null,
+                null,
+                "ALTER TABLE TESTSCHEMA2 ADD CONSTRAINT TESTSCHEMA2_PK PRIMARY KEY (ID)"));
         return statements;
     }
 

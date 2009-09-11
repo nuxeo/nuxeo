@@ -235,6 +235,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         // create a snapshot of the last change (B)
         file.putContextData(ScopeType.REQUEST,
                 VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        maybeSleepToNextSecond();
         file = session.saveDocument(file);
         checkVersions(file, "1", "2");
 
@@ -248,6 +249,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         // but last change (C) now has to be saved on snapshot
         file.putContextData(ScopeType.REQUEST,
                 VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        maybeSleepToNextSecond();
         file = session.saveDocument(file);
         checkVersions(file, "1", "2", "3");
 
@@ -258,6 +260,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         // then snapshot
         file.putContextData(ScopeType.REQUEST,
                 VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        maybeSleepToNextSecond();
         file = session.saveDocument(file);
         checkVersions(file, "1", "2", "3", "4");
     }

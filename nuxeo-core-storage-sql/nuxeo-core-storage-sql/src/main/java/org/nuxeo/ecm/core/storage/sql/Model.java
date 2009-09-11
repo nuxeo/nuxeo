@@ -51,6 +51,8 @@ import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionMaker;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
+import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
+import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
 
 /**
  * The {@link Model} is the link between high-level types and SQL-level objects
@@ -326,6 +328,8 @@ public class Model {
 
     protected final RepositoryDescriptor repositoryDescriptor;
 
+    private final Dialect dialect;
+
     /** The id generation policy. */
     public final IdGenPolicy idGenPolicy;
 
@@ -355,8 +359,8 @@ public class Model {
     /** Map of path (from all doc types) to property info. */
     private final Map<String, PropertyInfo> allPathPropertyInfos;
 
-    /** Per-table info about properties. */
-    private final Map<String, Map<String, PropertyType>> fragmentsKeys;
+    /** Per-table info about fragments keys type. */
+    private final Map<String, Map<String, ColumnType>> fragmentsKeys;
 
     /** Maps collection table names to their type. */
     private final Map<String, PropertyType> collectionTables;
@@ -393,11 +397,13 @@ public class Model {
 
     protected final FulltextInfo fulltextInfo;
 
-    public Model(RepositoryImpl repository, SchemaManager schemaManager) {
+    public Model(RepositoryImpl repository, SchemaManager schemaManager,
+            Dialect dialect) {
         binaryManager = repository.getBinaryManager();
         repositoryDescriptor = repository.getRepositoryDescriptor();
         idGenPolicy = repositoryDescriptor.idGenPolicy;
         separateMainTable = repositoryDescriptor.separateMainTable;
+        this.dialect = dialect;
         temporaryIdCounter = new AtomicLong(0);
         hierTableName = HIER_TABLE_NAME;
         mainTableName = separateMainTable ? MAIN_TABLE_NAME : HIER_TABLE_NAME;
@@ -409,7 +415,7 @@ public class Model {
         typeSimpleTextPaths = new HashMap<String, Set<String>>();
         allPathPropertyInfos = new HashMap<String, PropertyInfo>();
         fulltextInfo = new FulltextInfo();
-        fragmentsKeys = new HashMap<String, Map<String, PropertyType>>();
+        fragmentsKeys = new HashMap<String, Map<String, ColumnType>>();
 
         collectionTables = new HashMap<String, PropertyType>();
         collectionOrderBy = new HashMap<String, String>();
@@ -443,6 +449,13 @@ public class Model {
      */
     public RepositoryDescriptor getRepositoryDescriptor() {
         return repositoryDescriptor;
+    }
+
+    /**
+     * Gets the dialect used for this model.
+     */
+    public Dialect getDialect() {
+        return dialect;
     }
 
     /**
@@ -510,7 +523,7 @@ public class Model {
      */
     private void addPropertyInfo(String schemaName, String propertyName,
             PropertyType propertyType, String fragmentName, String fragmentKey,
-            boolean readonly, Type type) {
+            boolean readonly, Type coreType, ColumnType type) {
         // per-type
         Map<String, PropertyInfo> propertyInfos;
         if (schemaName == null) {
@@ -526,20 +539,19 @@ public class Model {
                 fragmentName, fragmentKey, readonly);
         propertyInfos.put(propertyName, propertyInfo);
 
-        // per-table
+        // per-fragment keys type
         if (fragmentKey != null) {
-            Map<String, PropertyType> fragmentKeys = fragmentsKeys.get(fragmentName);
+            Map<String, ColumnType> fragmentKeys = fragmentsKeys.get(fragmentName);
             if (fragmentKeys == null) {
-                fragmentsKeys.put(
-                        fragmentName,
-                        fragmentKeys = new LinkedHashMap<String, PropertyType>());
+                fragmentsKeys.put(fragmentName,
+                        fragmentKeys = new LinkedHashMap<String, ColumnType>());
             }
-            fragmentKeys.put(fragmentKey, propertyType);
+            fragmentKeys.put(fragmentKey, type);
         }
 
         // system properties
-        if (type != null) {
-            specialPropertyTypes.put(propertyName, type);
+        if (coreType != null) {
+            specialPropertyTypes.put(propertyName, coreType);
         }
 
         // merged properties
@@ -813,16 +825,16 @@ public class Model {
 
     private void addCollectionFragmentInfos(String fragmentName,
             PropertyType propertyType, CollectionMaker maker, String orderBy,
-            Map<String, PropertyType> fragmentKeys) {
+            Map<String, ColumnType> keysType) {
         collectionTables.put(fragmentName, propertyType);
         collectionMakers.put(fragmentName, maker);
         collectionOrderBy.put(fragmentName, orderBy);
         // set all keys types
-        Map<String, PropertyType> old = fragmentsKeys.get(fragmentName);
+        Map<String, ColumnType> old = fragmentsKeys.get(fragmentName);
         if (old == null) {
-            fragmentsKeys.put(fragmentName, fragmentKeys);
+            fragmentsKeys.put(fragmentName, keysType);
         } else {
-            old.putAll(fragmentKeys);
+            old.putAll(keysType);
         }
     }
 
@@ -846,7 +858,7 @@ public class Model {
         return fragmentsKeys.keySet();
     }
 
-    public Map<String, PropertyType> getFragmentKeysType(String fragmentName) {
+    public Map<String, ColumnType> getFragmentKeysType(String fragmentName) {
         return fragmentsKeys.get(fragmentName);
     }
 
@@ -1046,16 +1058,20 @@ public class Model {
      */
     private void initMainModel() {
         addPropertyInfo(null, MAIN_PRIMARY_TYPE_PROP, PropertyType.STRING,
-                mainTableName, MAIN_PRIMARY_TYPE_KEY, true, null);
+                mainTableName, MAIN_PRIMARY_TYPE_KEY, true, null,
+                ColumnType.SYSNAME);
         addPropertyInfo(null, MAIN_CHECKED_IN_PROP, PropertyType.BOOLEAN,
-                mainTableName, MAIN_CHECKED_IN_KEY, false, BooleanType.INSTANCE);
+                mainTableName, MAIN_CHECKED_IN_KEY, false,
+                BooleanType.INSTANCE, ColumnType.BOOLEAN);
         addPropertyInfo(null, MAIN_BASE_VERSION_PROP, mainIdType(),
                 mainTableName, MAIN_BASE_VERSION_KEY, false,
-                StringType.INSTANCE);
+                StringType.INSTANCE, ColumnType.NODEVAL);
         addPropertyInfo(null, MAIN_MAJOR_VERSION_PROP, PropertyType.LONG,
-                mainTableName, MAIN_MAJOR_VERSION_KEY, false, LongType.INSTANCE);
+                mainTableName, MAIN_MAJOR_VERSION_KEY, false,
+                LongType.INSTANCE, ColumnType.INTEGER);
         addPropertyInfo(null, MAIN_MINOR_VERSION_PROP, PropertyType.LONG,
-                mainTableName, MAIN_MINOR_VERSION_KEY, false, LongType.INSTANCE);
+                mainTableName, MAIN_MINOR_VERSION_KEY, false,
+                LongType.INSTANCE, ColumnType.INTEGER);
     }
 
     /**
@@ -1064,18 +1080,19 @@ public class Model {
     private void initMiscModel() {
         addPropertyInfo(null, MISC_LIFECYCLE_POLICY_PROP, PropertyType.STRING,
                 MISC_TABLE_NAME, MISC_LIFECYCLE_POLICY_KEY, false,
-                StringType.INSTANCE);
+                StringType.INSTANCE, ColumnType.SYSNAME);
         addPropertyInfo(null, MISC_LIFECYCLE_STATE_PROP, PropertyType.STRING,
                 MISC_TABLE_NAME, MISC_LIFECYCLE_STATE_KEY, false,
-                StringType.INSTANCE);
+                StringType.INSTANCE, ColumnType.SYSNAME);
         addPropertyInfo(null, MISC_DIRTY_PROP, PropertyType.BOOLEAN,
-                MISC_TABLE_NAME, MISC_DIRTY_KEY, false, BooleanType.INSTANCE);
+                MISC_TABLE_NAME, MISC_DIRTY_KEY, false, BooleanType.INSTANCE,
+                ColumnType.BOOLEAN);
         addPropertyInfo(null, MISC_WF_IN_PROGRESS_PROP, PropertyType.BOOLEAN,
                 MISC_TABLE_NAME, MISC_WF_IN_PROGRESS_KEY, false,
-                BooleanType.INSTANCE);
+                BooleanType.INSTANCE, ColumnType.BOOLEAN);
         addPropertyInfo(null, MISC_WF_INC_OPTION_PROP, PropertyType.STRING,
                 MISC_TABLE_NAME, MISC_WF_INC_OPTION_KEY, false,
-                StringType.INSTANCE);
+                StringType.INSTANCE, ColumnType.SYSNAME);
     }
 
     /**
@@ -1084,16 +1101,16 @@ public class Model {
     private void initVersionsModel() {
         addPropertyInfo(null, VERSION_VERSIONABLE_PROP, mainIdType(),
                 VERSION_TABLE_NAME, VERSION_VERSIONABLE_KEY, false,
-                StringType.INSTANCE);
+                StringType.INSTANCE, ColumnType.NODEVAL);
         addPropertyInfo(null, VERSION_CREATED_PROP, PropertyType.DATETIME,
                 VERSION_TABLE_NAME, VERSION_CREATED_KEY, false,
-                DateType.INSTANCE);
+                DateType.INSTANCE, ColumnType.TIMESTAMP);
         addPropertyInfo(null, VERSION_LABEL_PROP, PropertyType.STRING,
                 VERSION_TABLE_NAME, VERSION_LABEL_KEY, false,
-                StringType.INSTANCE);
+                StringType.INSTANCE, ColumnType.SYSNAME);
         addPropertyInfo(null, VERSION_DESCRIPTION_PROP, PropertyType.STRING,
                 VERSION_TABLE_NAME, VERSION_DESCRIPTION_KEY, false,
-                StringType.INSTANCE);
+                StringType.INSTANCE, ColumnType.VARCHAR);
     }
 
     /**
@@ -1101,9 +1118,11 @@ public class Model {
      */
     private void initProxiesModel() {
         addPropertyInfo(PROXY_TYPE, PROXY_TARGET_PROP, mainIdType(),
-                PROXY_TABLE_NAME, PROXY_TARGET_KEY, false, null);
+                PROXY_TABLE_NAME, PROXY_TARGET_KEY, false, null,
+                ColumnType.NODEIDFKNP);
         addPropertyInfo(PROXY_TYPE, PROXY_VERSIONABLE_PROP, mainIdType(),
-                PROXY_TABLE_NAME, PROXY_VERSIONABLE_KEY, false, null);
+                PROXY_TABLE_NAME, PROXY_VERSIONABLE_KEY, false, null,
+                ColumnType.NODEVAL);
         addTypeSimpleFragment(PROXY_TYPE, PROXY_TABLE_NAME);
     }
 
@@ -1112,7 +1131,7 @@ public class Model {
      */
     private void initLocksModel() {
         addPropertyInfo(null, LOCK_PROP, PropertyType.STRING, LOCK_TABLE_NAME,
-                LOCK_KEY, false, StringType.INSTANCE);
+                LOCK_KEY, false, StringType.INSTANCE, ColumnType.SYSNAME);
     }
 
     /**
@@ -1121,17 +1140,20 @@ public class Model {
     private void initFullTextModel() {
         for (String indexName : fulltextInfo.indexNames) {
             String suffix = getFulltextIndexSuffix(indexName);
-            addPropertyInfo(null, FULLTEXT_FULLTEXT_PROP + suffix,
-                    PropertyType.STRING, FULLTEXT_TABLE_NAME,
-                    FULLTEXT_FULLTEXT_KEY + suffix, false, StringType.INSTANCE);
+            if (dialect.getMaterializeFulltextSyntheticColumn()) {
+                addPropertyInfo(null, FULLTEXT_FULLTEXT_PROP + suffix,
+                        PropertyType.STRING, FULLTEXT_TABLE_NAME,
+                        FULLTEXT_FULLTEXT_KEY + suffix, false,
+                        StringType.INSTANCE, ColumnType.FTINDEXED);
+            }
             addPropertyInfo(null, FULLTEXT_SIMPLETEXT_PROP + suffix,
                     PropertyType.STRING, FULLTEXT_TABLE_NAME,
                     FULLTEXT_SIMPLETEXT_KEY + suffix, false,
-                    StringType.INSTANCE);
+                    StringType.INSTANCE, ColumnType.FTSTORED);
             addPropertyInfo(null, FULLTEXT_BINARYTEXT_PROP + suffix,
                     PropertyType.STRING, FULLTEXT_TABLE_NAME,
                     FULLTEXT_BINARYTEXT_KEY + suffix, false,
-                    StringType.INSTANCE);
+                    StringType.INSTANCE, ColumnType.FTSTORED);
         }
     }
 
@@ -1143,18 +1165,18 @@ public class Model {
      * Special collection-like model for the ACL table.
      */
     private void initAclModel() {
-        Map<String, PropertyType> fragmentKeys = new LinkedHashMap<String, PropertyType>();
-        fragmentKeys.put(ACL_POS_KEY, PropertyType.LONG);
-        fragmentKeys.put(ACL_NAME_KEY, PropertyType.STRING);
-        fragmentKeys.put(ACL_GRANT_KEY, PropertyType.BOOLEAN);
-        fragmentKeys.put(ACL_PERMISSION_KEY, PropertyType.STRING);
-        fragmentKeys.put(ACL_USER_KEY, PropertyType.STRING);
-        fragmentKeys.put(ACL_GROUP_KEY, PropertyType.STRING);
+        Map<String, ColumnType> keysType = new LinkedHashMap<String, ColumnType>();
+        keysType.put(ACL_POS_KEY, ColumnType.INTEGER);
+        keysType.put(ACL_NAME_KEY, ColumnType.SYSNAME);
+        keysType.put(ACL_GRANT_KEY, ColumnType.BOOLEAN);
+        keysType.put(ACL_PERMISSION_KEY, ColumnType.SYSNAME);
+        keysType.put(ACL_USER_KEY, ColumnType.SYSNAME);
+        keysType.put(ACL_GROUP_KEY, ColumnType.SYSNAME);
         String fragmentName = ACL_TABLE_NAME;
         addCollectionFragmentInfos(fragmentName, PropertyType.COLL_ACL,
-                ACLsFragment.MAKER, ACL_POS_KEY, fragmentKeys);
+                ACLsFragment.MAKER, ACL_POS_KEY, keysType);
         addPropertyInfo(null, ACL_PROP, PropertyType.COLL_ACL, fragmentName,
-                null, false, null);
+                null, false, null, null);
     }
 
     /**
@@ -1194,17 +1216,16 @@ public class Model {
                         String fragmentName = collectionFragmentName(propertyName);
                         PropertyType propertyType = PropertyType.fromFieldType(
                                 listFieldType, true);
+                        ColumnType type = ColumnType.fromFieldType(listFieldType);
                         addPropertyInfo(typeName, propertyName, propertyType,
-                                fragmentName, null, false, null);
+                                fragmentName, null, false, null, null);
 
-                        Map<String, PropertyType> fragmentKeys = new LinkedHashMap<String, PropertyType>();
-                        fragmentKeys.put(COLL_TABLE_POS_KEY, PropertyType.LONG); // TODO
-                        // INT
-                        fragmentKeys.put(COLL_TABLE_VALUE_KEY,
-                                propertyType.getArrayBaseType());
+                        Map<String, ColumnType> keysType = new LinkedHashMap<String, ColumnType>();
+                        keysType.put(COLL_TABLE_POS_KEY, ColumnType.INTEGER);
+                        keysType.put(COLL_TABLE_VALUE_KEY, type);
                         addCollectionFragmentInfos(fragmentName, propertyType,
                                 ArrayFragment.MAKER, COLL_TABLE_POS_KEY,
-                                fragmentKeys);
+                                keysType);
 
                         addTypeCollectionFragment(typeName, fragmentName);
                     } else {
@@ -1222,6 +1243,7 @@ public class Model {
                     String fragmentName = typeFragmentName(complexType);
                     PropertyType propertyType = PropertyType.fromFieldType(
                             fieldType, false);
+                    ColumnType type = ColumnType.fromFieldType(fieldType);
                     String fragmentKey = field.getName().getLocalName();
                     if (fragmentName.equals(UID_SCHEMA_NAME)
                             && (fragmentKey.equals(UID_MAJOR_VERSION_KEY) || fragmentKey.equals(UID_MINOR_VERSION_KEY))) {
@@ -1230,10 +1252,10 @@ public class Model {
                         fragmentKey = fragmentKey.equals(UID_MAJOR_VERSION_KEY) ? MAIN_MAJOR_VERSION_KEY
                                 : MAIN_MINOR_VERSION_KEY;
                         addPropertyInfo(typeName, propertyName, propertyType,
-                                mainTableName, fragmentKey, false, null);
+                                mainTableName, fragmentKey, false, null, type);
                     } else {
                         addPropertyInfo(typeName, propertyName, propertyType,
-                                fragmentName, fragmentKey, false, null);
+                                fragmentName, fragmentKey, false, null, type);
                         // note that this type has a fragment
                         thisFragmentName = fragmentName;
                     }

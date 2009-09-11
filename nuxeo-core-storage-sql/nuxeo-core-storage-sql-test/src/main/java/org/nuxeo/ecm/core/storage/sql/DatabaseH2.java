@@ -98,4 +98,9 @@ public class DatabaseH2 extends DatabaseHelper {
         return descriptor;
     }
 
+    @Override
+    public boolean supportsClustering() {
+        return true;
+    }
+
 }

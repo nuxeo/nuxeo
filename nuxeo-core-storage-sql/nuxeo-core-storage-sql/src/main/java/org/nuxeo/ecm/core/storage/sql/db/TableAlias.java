@@ -92,8 +92,7 @@ public class TableAlias implements Table {
         return result;
     }
 
-    public Column addColumn(String name, PropertyType type, int sqlType,
-            String sqlTypeString, String key, Model model) {
+    public Column addColumn(String name, ColumnType type, String key, Model model) {
         throw new UnsupportedOperationException();
     }
 

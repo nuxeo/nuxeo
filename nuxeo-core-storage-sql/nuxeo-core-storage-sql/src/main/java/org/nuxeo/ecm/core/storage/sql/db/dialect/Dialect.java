@@ -17,11 +17,13 @@
 
 package org.nuxeo.ecm.core.storage.sql.db.dialect;
 
+import java.io.Serializable;
 import java.security.MessageDigest;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
@@ -33,6 +35,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
+import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
 
@@ -42,6 +45,21 @@ import org.nuxeo.ecm.core.storage.sql.db.Table;
  * @author Florent Guillaume
  */
 public abstract class Dialect {
+
+    public static final class JDBCInfo {
+        public final String string;
+
+        public final int jdbcType;
+
+        public JDBCInfo(String string, int jdbcType) {
+            this.string = string;
+            this.jdbcType = jdbcType;
+        }
+    }
+
+    public JDBCInfo jdbcInfo(String string, int jdbcType) {
+        return new JDBCInfo(string, jdbcType);
+    }
 
     protected final org.hibernate.dialect.Dialect dialect;
 
@@ -94,9 +112,25 @@ public abstract class Dialect {
         }
     }
 
-    public void computeFTInfo() {
+    /**
+     * Gets the JDBC type and string from Nuxeo's type abstraction.
+     */
+    public abstract JDBCInfo getJDBCTypeAndString(ColumnType type);
 
+    /**
+     * Check mismatches between expected and actual JDBC types read from
+     * database introspection.
+     */
+    public boolean isAllowedConversion(int expected, int actual,
+            String actualName, int actualSize) {
+        return false;
     }
+
+    public abstract void setToPreparedStatement(PreparedStatement ps,
+            int index, Serializable value, Column column) throws SQLException;
+
+    public abstract Serializable getFromResultSet(ResultSet rs, int index,
+            Column column) throws SQLException;
 
     public boolean storesUpperCaseIdentifiers() {
         return storesUpperCaseIdentifiers;
@@ -183,26 +217,6 @@ public abstract class Dialect {
                 getMaxIndexNameSize());
     }
 
-    public String getIdentitySelectString(String table, String column,
-            int sqlType) {
-        return dialect.getIdentitySelectString(table, column, sqlType);
-    }
-
-    public boolean hasDataTypeInIdentityColumn() {
-        return dialect.hasDataTypeInIdentityColumn();
-    }
-
-    public String getIdentityColumnString(int sqlType) {
-        return dialect.getIdentityColumnString(sqlType);
-    }
-
-    public String getTypeName(int sqlType, int length, int precision, int scale) {
-        if (sqlType == Column.ExtendedTypes.FULLTEXT) {
-            sqlType = Types.CLOB;
-        }
-        return dialect.getTypeName(sqlType, length, precision, scale);
-    }
-
     /**
      * Gets a CREATE INDEX statement for a normal index.
      */
@@ -218,6 +232,11 @@ public abstract class Dialect {
      * @return 0 for none, 1 for the synthetic one, 2 for the individual ones
      */
     public abstract int getFulltextIndexedColumns();
+
+    /**
+     * Does the fulltext synthetic column have to be materialized.
+     */
+    public abstract boolean getMaterializeFulltextSyntheticColumn();
 
     /**
      * Gets a CREATE INDEX statement for a fulltext index.
@@ -270,10 +289,10 @@ public abstract class Dialect {
      * usually for conversion (this is the case for PostgreSQL fulltext {@code
      * TSVECTOR} columns for instance).
      *
-     * @param type the JDBC or extended type
+     * @param type the column type
      * @return the expression containing a free variable
      */
-    public String getFreeVariableSetterForType(int type) {
+    public String getFreeVariableSetterForType(ColumnType type) {
         return "?";
     }
 
@@ -424,27 +443,14 @@ public abstract class Dialect {
     public abstract Collection<ConditionalStatement> getConditionalStatements(
             Model model, Database database);
 
-    /**
-     * Gets the type of the column containing the cluster node id.
-     */
-    public int getClusterNodeType() throws StorageException {
-        throw new StorageException("Clustering not implemented for "
-                + dialect.getClass().getSimpleName());
-    }
+    public abstract Collection<ConditionalStatement> getTestConditionalStatements(
+            Model model, Database database);
 
     /**
-     * Gets the type of the column containing the cluster fragments.
+     * Checks that clustering is supported.
      */
-    public int getClusterFragmentsType() throws StorageException {
-        return 0;
-    }
-
-    /**
-     * Gets a dialect-specific string for the type of the cluster fragments
-     * column.
-     */
-    public String getClusterFragmentsTypeString() {
-        return null;
+    public boolean isClusteringSupported() {
+        return false;
     }
 
     /**

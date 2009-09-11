@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
 
 /**
@@ -92,20 +91,17 @@ public class TableImpl implements Table {
         return columns.values();
     }
 
-    /**
-     * Adds a {@link Column} to the table.
-     */
-    public Column addColumn(String name, PropertyType type, int sqlType,
-            String sqlTypeString, String key, Model model) {
+    public Column addColumn(String name, ColumnType type, String key,
+            Model model) {
         String physicalName = database.getColumnPhysicalName(name);
         if (columns.containsKey(physicalName)) {
             throw new IllegalArgumentException("duplicate column "
                     + physicalName);
         }
-        Column column = new Column(this, physicalName, type, sqlType,
-                sqlTypeString, key, model);
+        Column column = new Column(this, physicalName, type, key, model);
         columns.put(name, column);
         return column;
+
     }
 
     /**
@@ -174,11 +170,7 @@ public class TableImpl implements Table {
         buf.append(column.getQuotedName());
         buf.append(' ');
         if (column.isIdentity()) {
-            if (dialect.hasDataTypeInIdentityColumn()) {
-                buf.append(column.getSqlTypeString());
-                buf.append(' ');
-            }
-            buf.append(dialect.getIdentityColumnString(column.getSqlType()));
+            throw new UnsupportedOperationException();
         } else {
             buf.append(column.getSqlTypeString());
             String defaultValue = column.getDefaultValue();

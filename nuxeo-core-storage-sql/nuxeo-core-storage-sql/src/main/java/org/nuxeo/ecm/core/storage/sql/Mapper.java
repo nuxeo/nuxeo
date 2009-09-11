@@ -79,6 +79,8 @@ public class Mapper {
 
     private static final Log log = LogFactory.getLog(Mapper.class);
 
+    protected static boolean debugTestUpgrade;
+
     /** The repository from which this was built. */
     private final RepositoryImpl repository;
 
@@ -303,6 +305,10 @@ public class Mapper {
         try {
             Collection<ConditionalStatement> statements = sqlInfo.getConditionalStatements();
             executeConditionalStatements(statements, true);
+            if (debugTestUpgrade) {
+                executeConditionalStatements(
+                        sqlInfo.getTestConditionalStatements(), true);
+            }
             createTables();
             executeConditionalStatements(statements, false);
         } catch (SQLException e) {
@@ -365,6 +371,8 @@ public class Mapper {
              */
             ResultSet rs = metadata.getColumns(null, null, tableName, "%");
             Map<String, Integer> columnTypes = new HashMap<String, Integer>();
+            Map<String, String> columnTypeNames = new HashMap<String, String>();
+            Map<String, Integer> columnTypeSizes = new HashMap<String, Integer>();
             while (rs.next()) {
                 String schema = rs.getString("TABLE_SCHEM");
                 if (schema != null) { // null for MySQL, doh!
@@ -374,15 +382,19 @@ public class Mapper {
                     }
                 }
                 String columnName = rs.getString("COLUMN_NAME").toUpperCase();
-                int sqlType = rs.getInt("DATA_TYPE");
-                columnTypes.put(columnName, Integer.valueOf(sqlType));
+                columnTypes.put(columnName,
+                        Integer.valueOf(rs.getInt("DATA_TYPE")));
+                columnTypeNames.put(columnName, rs.getString("TYPE_NAME"));
+                columnTypeSizes.put(columnName,
+                        Integer.valueOf(rs.getInt("COLUMN_SIZE")));
             }
 
             /*
              * Update types and create missing columns.
              */
             for (Column column : table.getColumns()) {
-                Integer type = columnTypes.remove(column.getPhysicalName().toUpperCase());
+                String upperName = column.getPhysicalName().toUpperCase();
+                Integer type = columnTypes.remove(upperName);
                 if (type == null) {
                     log.warn("Adding missing column in database: "
                             + column.getFullQuotedName());
@@ -390,56 +402,17 @@ public class Mapper {
                     log(sql);
                     st.execute(sql);
                 } else {
-                    int sqlType = type.intValue();
-                    int t = column.getSqlType();
-                    if (t != sqlType) {
-                        // type in database is different...
-                        if (t == Column.ExtendedTypes.FULLTEXT) {
-                            // fulltext, keep our extend type info in the column
-                            continue;
-                        }
-                        if ((sqlType == Types.OTHER)
-                                && ((t == Types.CLOB) || (t == Types.VARCHAR))) {
-                            continue;
-                            // Oracle turns NCLOB and NVARCHAR2 into OTHER
-                            // keep our original type
-                        }
-                        if ((sqlType == Types.DECIMAL)
-                                && ((t == Types.BIT) || (t == Types.INTEGER))) {
-                            // Oracle turns BIT and INTEGER into NUMBER(...)
-                            // reflected as DECIMAL
-                            // keep our original type
-                            continue;
-                        }
-                        if ((sqlType == Types.FLOAT) && (t == Types.DOUBLE)) {
-                            // Oracle turns DOUBLE into FLOAT
-                            // keep our original type
-                            continue;
-                        }
-
-                        // record the actual type
-                        column.setSqlType(sqlType);
-
-                        // some databases are known to change requested types
-                        if ((t == Types.BIT) && //
-                                ((sqlType == Types.SMALLINT // Derby
-                                        )
-                                        || (sqlType == Types.BOOLEAN // H2
-                                        ) || (sqlType == Types.TINYINT // MSSQLServer
-                                ))) {
-                            continue;
-                        }
-                        if ((t == Types.CLOB) && //
-                                ((sqlType == Types.LONGVARCHAR // MySQL
-                                ) || (sqlType == Types.VARCHAR // PostgreSQL
-                                ))) {
-                            continue;
-                        }
-                        // otherwise log this
+                    int expected = column.getJdbcType();
+                    int actual = type.intValue();
+                    String actualName = columnTypeNames.get(upperName);
+                    Integer actualSize = columnTypeSizes.get(upperName);
+                    if (!column.setJdbcType(actual, actualName,
+                            actualSize.intValue())) {
                         log.error(String.format(
-                                "SQL type mismatch for %s: expected %s, database has %s",
-                                column.getFullQuotedName(), Integer.valueOf(t),
-                                type));
+                                "SQL type mismatch for %s: expected %s, database has %s / %s (%s)",
+                                column.getFullQuotedName(),
+                                Integer.valueOf(expected), type, actualName,
+                                actualSize));
                     }
                 }
             }
@@ -800,43 +773,7 @@ public class Mapper {
             } catch (SQLException e) {
                 throw new StorageException("Could not insert: " + sql, e);
             }
-
-            // TODO only do this if the id was not inserted!
-            switch (model.idGenPolicy) {
-            case APP_UUID:
-                // nothing to do, id is already known
-                break;
-            case DB_IDENTITY:
-                // post insert fetch idrow
-                // TODO PG 8.2 has INSERT ... RETURNING ... which can avoid this
-                // separate query
-                String isql = sqlInfo.getIdentityFetchSql(tableName);
-                if (isql != null) {
-                    Column icolumn = sqlInfo.getIdentityFetchColumn(tableName);
-                    try {
-                        // logDebug(isql);
-                        ps.close();
-                        ps = connection.prepareStatement(isql);
-                        ResultSet rs;
-                        try {
-                            rs = ps.executeQuery();
-                        } catch (SQLException e) {
-                            throw new StorageException("Could not select: "
-                                    + isql, e);
-                        }
-                        rs.next();
-                        Serializable iv = icolumn.getFromResultSet(rs, 1);
-                        row.setId(iv);
-                        if (isLogEnabled()) {
-                            log("  -> " + icolumn.getKey() + '=' + iv);
-                        }
-                    } catch (SQLException e) {
-                        throw new StorageException("Could not fetch: " + isql,
-                                e);
-                    }
-                }
-                break;
-            }
+            // TODO DB_IDENTITY : post insert fetch idrow
         } finally {
             if (ps != null) {
                 try {
@@ -1535,14 +1472,8 @@ public class Mapper {
         String sql = sqlInfo.getCopyHierSql(explicitName, createVersion);
         PreparedStatement ps = connection.prepareStatement(sql);
         try {
-            switch (model.idGenPolicy) {
-            case APP_UUID:
-                newId = model.generateNewId();
-                break;
-            case DB_IDENTITY:
-                newId = null;
-                break;
-            }
+            // TODO DB_IDENTITY
+            newId = model.generateNewId();
 
             List<Serializable> debugValues = null;
             if (isLogEnabled()) {
@@ -1584,21 +1515,8 @@ public class Mapper {
             int count = ps.executeUpdate();
             logCount(count);
 
-            if (newId == null) {
-                // post insert fetch idrow
-                // TODO PG 8.2 has INSERT ... RETURNING ... which can avoid this
-                // separate query
-                String isql = sqlInfo.getIdentityFetchSql(model.hierTableName);
-                Column icolumn = sqlInfo.getIdentityFetchColumn(model.hierTableName);
-                ps.close();
-                ps = connection.prepareStatement(isql);
-                ResultSet rs = ps.executeQuery();
-                rs.next();
-                newId = icolumn.getFromResultSet(rs, 1);
-                if (isLogEnabled()) {
-                    log("  -> " + icolumn.getKey() + '=' + newId);
-                }
-            }
+            // TODO DB_IDENTITY
+            // post insert fetch idrow
 
             idMap.put(id, newId);
         } finally {

@@ -196,6 +196,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         nodea.setSingleProperty("tst:title", "hello world");
         nodea.setSingleProperty("tst:rate", Double.valueOf(1.5));
+        nodea.setSingleProperty("tst:count", Long.valueOf(123456789));
         Calendar cal = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34,
                 56);
         nodea.setSingleProperty("tst:created", cal);
@@ -207,6 +208,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 nodea.getSimpleProperty("tst:title").getString());
         assertEquals(Double.valueOf(1.5),
                 nodea.getSimpleProperty("tst:rate").getValue());
+        assertEquals(Long.valueOf(123456789),
+                nodea.getSimpleProperty("tst:count").getValue());
         assertNotNull(nodea.getSimpleProperty("tst:created").getValue());
         String[] subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         String[] tags = nodea.getCollectionProperty("tst:tags").getStrings();
@@ -218,6 +221,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // now modify a property and re-save
         nodea.setSingleProperty("tst:title", "another");
         nodea.setSingleProperty("tst:rate", Double.valueOf(3.14));
+        nodea.setSingleProperty("tst:count", Long.valueOf(1234567891234L));
         nodea.setCollectionProperty("tst:subjects", new String[] { "z", "c" });
         nodea.setCollectionProperty("tst:tags", new String[] { "3" });
         session.save();
@@ -242,6 +246,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 nodea.getSimpleProperty("tst:title").getString());
         assertEquals(Double.valueOf(3.14),
                 nodea.getSimpleProperty("tst:rate").getValue());
+        assertEquals(Long.valueOf(1234567891234L),
+                nodea.getSimpleProperty("tst:count").getValue());
         subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         tags = nodea.getCollectionProperty("tst:tags").getStrings();
         assertEquals(Arrays.asList("z", "c"), Arrays.asList(subjects));
@@ -250,6 +256,15 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // delete the node
         // session.removeNode(nodea);
         // session.save();
+    }
+
+    public void testBasicsUpgrade() throws Exception {
+        try {
+            Mapper.debugTestUpgrade = true;
+            testBasics();
+        } finally {
+            Mapper.debugTestUpgrade = false;
+        }
     }
 
     public void testPropertiesSameName() throws Exception {
@@ -545,6 +560,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     public void testClustering() throws Exception {
+        if (!DatabaseHelper.DATABASE.supportsClustering()) {
+            System.err.println("Skipping clustering test for unsupported database");
+            return;
+        }
+
         repository.close();
         // get two clustered repositories
         long DELAY = 500; // ms

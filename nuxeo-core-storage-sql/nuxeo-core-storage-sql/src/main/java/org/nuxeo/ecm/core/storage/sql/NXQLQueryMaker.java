@@ -1252,7 +1252,7 @@ public class NXQLQueryMaker implements QueryMaker {
             Column column = findColumn(node.name, allowArray, inOrderBy);
             String qname = column.getFullQuotedName();
             // some databases (Derby) can't do comparisons on CLOB
-            if (column.getSqlType() == Types.CLOB) {
+            if (column.getJdbcType() == Types.CLOB) {
                 String colFmt = dialect.getClobCast(inOrderBy);
                 if (colFmt != null) {
                     qname = String.format(colFmt, qname, Integer.valueOf(255));
