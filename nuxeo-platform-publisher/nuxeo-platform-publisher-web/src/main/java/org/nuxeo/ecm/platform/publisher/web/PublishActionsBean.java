@@ -65,6 +65,7 @@ import org.nuxeo.ecm.platform.publisher.api.PublishingEvent;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -161,6 +162,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
             // Log event on live version
             notifyEvent(PublishingEvent.documentWaitingPublication.name(),
                     null, comment, null, currentDocument);
+            Events.instance().raiseEvent(
+                    EventNames.DOCUMENT_SUBMITED_FOR_PUBLICATION);
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
                             "document_submitted_for_publication"),
@@ -173,6 +176,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
             // Log event on live version
             notifyEvent(PublishingEvent.documentPublished.name(), null,
                     comment, null, currentDocument);
+            Events.instance().raiseEvent(EventNames.DOCUMENT_PUBLISHED);
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get("document_published"),
                     resourcesAccessor.getMessages().get(
@@ -326,7 +330,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
                     null, comment, null, liveVersion);
         }
 
-        Events.instance().raiseEvent(PublishingEvent.documentPublished.name());
+        Events.instance().raiseEvent(EventNames.DOCUMENT_PUBLISHED);
+        Events.instance().raiseEvent(EventNames.DOCUMENT_PUBLICATION_APPROVED);
         return null;
     }
 
@@ -363,8 +368,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
             notifyEvent(PublishingEvent.documentPublicationRejected.name(),
                     null, comment, null, liveVersion);
         }
-        Events.instance().raiseEvent(
-                PublishingEvent.documentPublicationRejected.name());
+
+        Events.instance().raiseEvent(EventNames.DOCUMENT_PUBLICATION_REJECTED);
 
         return navigationContext.navigateToRef(navigationContext.getCurrentDocument().getParentRef());
     }
