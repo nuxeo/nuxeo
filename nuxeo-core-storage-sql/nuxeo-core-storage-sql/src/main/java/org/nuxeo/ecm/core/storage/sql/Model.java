@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionMaker;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
@@ -230,6 +231,9 @@ public class Model {
     public static final String FULLTEXT_BINARYTEXT_PROP = "ecm:binaryText";
 
     public static final String FULLTEXT_BINARYTEXT_KEY = "binarytext";
+
+    /** Specified in ext. point to use CLOBs. */
+    public static final String FIELD_TYPE_LARGETEXT = "largetext";
 
     /** Special (non-schema-based) simple fragments present in all types. */
     public static final String[] COMMON_SIMPLE_FRAGMENTS = { MISC_TABLE_NAME,
@@ -1217,6 +1221,8 @@ public class Model {
                         PropertyType propertyType = PropertyType.fromFieldType(
                                 listFieldType, true);
                         ColumnType type = ColumnType.fromFieldType(listFieldType);
+                        // don't check repositoryDescriptor.schemaFields, assume
+                        // arrays never contain CLOBs
                         addPropertyInfo(typeName, propertyName, propertyType,
                                 fragmentName, null, false, null, null);
 
@@ -1244,6 +1250,14 @@ public class Model {
                     PropertyType propertyType = PropertyType.fromFieldType(
                             fieldType, false);
                     ColumnType type = ColumnType.fromFieldType(fieldType);
+                    if (type == ColumnType.VARCHAR) {
+                        for (FieldDescriptor fd : repositoryDescriptor.schemaFields) {
+                            if (propertyName.equals(fd.field)
+                                    && FIELD_TYPE_LARGETEXT.equals(fd.type)) {
+                                type = ColumnType.CLOB;
+                            }
+                        }
+                    }
                     String fragmentKey = field.getName().getLocalName();
                     if (fragmentName.equals(UID_SCHEMA_NAME)
                             && (fragmentKey.equals(UID_MAJOR_VERSION_KEY) || fragmentKey.equals(UID_MINOR_VERSION_KEY))) {

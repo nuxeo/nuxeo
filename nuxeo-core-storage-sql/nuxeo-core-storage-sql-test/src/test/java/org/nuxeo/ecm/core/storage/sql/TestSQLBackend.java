@@ -267,6 +267,31 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    public void testBigText() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
+
+        StringBuilder buf = new StringBuilder(5000);
+        for (int i = 0; i < 1000; i++) {
+            buf.append(String.format("%-5d", Integer.valueOf(i)));
+        }
+        String bigtext = buf.toString();
+        assertEquals(5000, bigtext.length());
+        nodea.setSingleProperty("tst:bignote", bigtext);
+        assertEquals(bigtext, nodea.getSimpleProperty("tst:bignote").getString());
+        session.save();
+
+        // now read from another session
+        session.close();
+        session = repository.getConnection();
+        root = session.getRootNode();
+        assertNotNull(root);
+        nodea = session.getChildNode(root, "foo", false);
+        String readtext = nodea.getSimpleProperty("tst:bignote").getString();
+        assertEquals(bigtext, readtext);
+    }
+
     public void testPropertiesSameName() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();

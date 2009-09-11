@@ -30,6 +30,7 @@
   </xs:complexType>
 
   <xs:element name="title" type="xs:string"/>
+  <xs:element name="bignote" type="xs:string"/>
   <xs:element name="created" type="xs:date"/>
   <xs:element name="count" type="xs:int"/>
   <xs:element name="rate" type="xs:double"/>

@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -63,6 +64,15 @@ public class RepositoryDescriptor {
         public Set<String> excludeFields;
     }
 
+    @XObject(value = "field")
+    public static class FieldDescriptor {
+        @XNode("@type")
+        public String type;
+
+        @XNode
+        public String field;
+    }
+
     @XNode("@name")
     public String name;
 
@@ -71,6 +81,9 @@ public class RepositoryDescriptor {
 
     @XNode("clustering@delay")
     public long clusteringDelay;
+
+    @XNodeList(value = "schema/field", type = ArrayList.class, componentType = FieldDescriptor.class)
+    public List<FieldDescriptor> schemaFields = Collections.emptyList();
 
     @XNode("indexing/fulltext@analyzer")
     public String fulltextAnalyzer;
@@ -88,6 +101,7 @@ public class RepositoryDescriptor {
     public void mergeFrom(RepositoryDescriptor other) {
         clusteringEnabled = other.clusteringEnabled;
         clusteringDelay = other.clusteringDelay;
+        schemaFields = other.schemaFields;
         fulltextAnalyzer = other.fulltextAnalyzer;
         fulltextCatalog = other.fulltextCatalog;
         queryMakerClasses = other.queryMakerClasses;

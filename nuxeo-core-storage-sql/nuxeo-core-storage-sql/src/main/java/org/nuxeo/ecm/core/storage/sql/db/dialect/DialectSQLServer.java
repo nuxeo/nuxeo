@@ -163,7 +163,7 @@ public class DialectSQLServer extends Dialect {
             throws SQLException {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
-        case Types.LONGVARCHAR:
+        case Types.CLOB:
             String string = rs.getString(index);
             if (column.getType() == ColumnType.BLOBID && string != null) {
                 return column.getModel().getBinary(string);
