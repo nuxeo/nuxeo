@@ -57,7 +57,10 @@ public class DialectMySQL extends Dialect {
     public JDBCInfo getJDBCTypeAndString(ColumnType type) {
         switch (type) {
         case VARCHAR:
-            return jdbcInfo("VARCHAR(256)", Types.VARCHAR);
+            // don't use the max 65535 because this max is actually for the
+            // total size of all columns of a given table, so allow several
+            // varchar columns in the same table
+            return jdbcInfo("VARCHAR(6000)", Types.VARCHAR);
         case CLOB:
             return jdbcInfo("LONGTEXT", Types.LONGVARCHAR);
         case BOOLEAN:
