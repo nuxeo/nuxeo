@@ -40,6 +40,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.storage.DefaultPlatformComponentCleanupManagedConnectionFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
@@ -53,11 +54,12 @@ import org.nuxeo.runtime.api.Framework;
  * to create new {@link ManagedConnection} (the physical connection).
  * <p>
  * It also is a factory for {@link ConnectionFactory}s.
- *
+ * 
  * @author Florent Guillaume
  */
 public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
-        ResourceAdapterAssociation, RepositoryManagement {
+        ResourceAdapterAssociation, RepositoryManagement,
+        DefaultPlatformComponentCleanupManagedConnectionFactory {
 
     private static final Log log = LogFactory.getLog(ManagedConnectionFactoryImpl.class);
 
@@ -103,7 +105,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      * Properties are specified in the format key=val1[;key2=val2;...]
      * <p>
      * If a value has to contain a semicolon, it can be escaped by doubling it.
-     *
+     * 
      * @see #parseProperties(String)
      * @param property
      */
@@ -248,6 +250,15 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
         }
     }
 
+    // NXP 3992 -- exposed this for clean shutdown on cluster
+    public void terminateRepository() {
+        synchronized (this) {
+            if (repository != null) {
+                repository.close();
+            }
+        }
+    }
+
     /**
      * Gets the repository descriptor provided by the repository extension
      * point. It's where clustering, indexing, etc. are configured.
@@ -291,7 +302,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      * Syntax errors are reported using the logger and will stop the parsing but
      * already collected properties will be available. The ';' or '=' characters
      * cannot be escaped in keys.
-     *
+     * 
      * @param expr the expression to parse
      * @return a key/value map
      */

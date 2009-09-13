@@ -92,6 +92,8 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
+        assertTrue(cs.isConverterAvailable(converter).isAvailable());
+
         String converterName = cs.getConverterName(srcMT, "text/plain");
         assertEquals(converter, converterName);
 

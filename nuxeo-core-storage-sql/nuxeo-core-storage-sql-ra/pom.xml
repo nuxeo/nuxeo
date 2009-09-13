@@ -79,6 +79,12 @@
       <artifactId>thirdparty-all</artifactId>
       <scope>test</scope>
     </dependency>
+    
+    <!-- for activator -->
+    <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>osgi-core</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

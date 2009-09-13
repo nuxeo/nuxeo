@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,31 +46,31 @@ import org.nuxeo.runtime.api.Framework;
  * CoreSessionFactory objects are implementation-dependent and may be registered
  * using extension points. See {@link CoreSessionFactory} for more details.
  * <p>
- * Thus you can use a different implementation for the local ServerConnector than
- * the one for the remote ServerConnector.
+ * Thus you can use a different implementation for the local ServerConnector
+ * than the one for the remote ServerConnector.
  * <p>
  * When clients need to perform a connection to a repository, they simply open a
  * new session using the {@link CoreInstance#open(String, Map)} method.
  * <p>
- * When the client has done its work it <b>must</b> close its session by
- * calling {@link CoreInstance#close(CoreSession)}.
+ * When the client has done its work it <b>must</b> close its session by calling
+ * {@link CoreInstance#close(CoreSession)}.
  * <p>
  * This ensures correctly freeing all the resources held by the client session.
  * <p>
  * So a client session looks something like this:
  * <p>
- *
- * <pre><code>
+ * 
+ * <pre>
+ * &lt;code&gt;
  * CoreInstance server = CoreInstance.getInstance();
  * CoreSession client = server.open(&quot;demo&quot;, null);
  * DocumentModel root = client.getRootDocument();
- *
  * // ... do something in that session ...
- *
  * // close the client -&gt; this is closing the core session
  * server.close(client);
- * </code></pre>
- *
+ * &lt;/code&gt;
+ * </pre>
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class CoreInstance implements Serializable {
@@ -94,7 +95,7 @@ public class CoreInstance implements Serializable {
 
     /**
      * Gets the CoreInstance singleton.
-     *
+     * 
      * @return the server instance
      */
     public static CoreInstance getInstance() {
@@ -109,8 +110,8 @@ public class CoreInstance implements Serializable {
         docTypes.put(docType.getName(), docType);
     }
 
-    public CoreSession open(String repositoryName, Map<String, Serializable> context)
-            throws ClientException {
+    public CoreSession open(String repositoryName,
+            Map<String, Serializable> context) throws ClientException {
         // instantiate a new client
         try {
             RepositoryManager rm = Framework.getService(RepositoryManager.class);
@@ -118,9 +119,10 @@ public class CoreInstance implements Serializable {
             if (rm != null) {
                 Repository repo = rm.getRepository(repositoryName);
                 if (repo == null) {
-                    throw new ClientException("No such repository: " + repositoryName);
+                    throw new ClientException("No such repository: "
+                            + repositoryName);
                 }
-                //connect to the server
+                // connect to the server
                 session = repo.open(context);
             }
             // ------ FIXME only for compat with tests ---
@@ -137,13 +139,14 @@ public class CoreInstance implements Serializable {
     }
 
     /**
-     * Obsolete method only for compatibility with existing tests.
-     * Should be removed.
+     * Obsolete method only for compatibility with existing tests. Should be
+     * removed.
+     * 
      * @deprecated remove it
      */
     @Deprecated
-    private CoreSession compatOpen(String repositoryName, Map<String, Serializable> context)
-            throws ClientException {
+    private CoreSession compatOpen(String repositoryName,
+            Map<String, Serializable> context) throws ClientException {
         // instantiate a new client
         CoreSession client = factory.getSession();
         // connect to the server
@@ -177,12 +180,13 @@ public class CoreInstance implements Serializable {
     /** @deprecated unused */
     @Deprecated
     public CoreSession[] getSessions() {
-        return (CoreSession[]) sessions.values().toArray();
+        Collection<CoreSession> valuesOfMap = sessions.values();
+        return valuesOfMap.toArray(new CoreSession[0]);
     }
 
     /**
      * Gets the client bound to the given session.
-     *
+     * 
      * @param sid the session id
      * @return the client
      */

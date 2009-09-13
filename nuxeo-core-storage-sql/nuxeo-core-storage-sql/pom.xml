@@ -49,6 +49,28 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert-api</artifactId>
     </dependency>
+    <!-- added for bundle activator -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
+    </dependency>
+   
+
+    <!-- mbean hacks -->
+    <!-- 
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-jmx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-common</artifactId>
+    </dependency>
+     <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-system</artifactId>
+    </dependency> -->
+    
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
