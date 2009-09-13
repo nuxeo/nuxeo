@@ -21,15 +21,21 @@ package org.nuxeo.runtime.api;
 
 import java.io.Serializable;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class ServiceGroup implements Serializable {
+
+    private static final Log log = LogFactory.getLog(ServiceGroup.class);
 
     private static final long serialVersionUID = -206692130381710767L;
 
     private final String name;
+
     private final ServiceGroup parent;
 
     private ServiceHost server;
@@ -57,11 +63,19 @@ public class ServiceGroup implements Serializable {
     public ServiceHost getServer() {
         if (server == null) {
             if (parent == null) {
-                // if no server was defined use the local runtime service locator
-                server  = ServiceHost.LOCAL_SERVER;
+                // if no server was defined use the local runtime service
+                // locator
+                server = ServiceHost.LOCAL_SERVER;
             } else {
                 server = parent.getServer();
             }
+        }
+        if (server.getServiceLocatorClass() == null) {
+            log.warn("Trying to save the service group from an NPE! "
+                    + "Returning a LOCAL_SERVER instead of a ServiceHost "
+                    + "that has no hope of working!");
+            return ServiceHost.LOCAL_SERVER;
+
         }
         return server;
     }
@@ -92,6 +106,13 @@ public class ServiceGroup implements Serializable {
     }
 
     public void setServer(ServiceHost server) {
+        if (server == null) {
+            log.warn("service group " + getName() + " no longer has a server!");
+        } else if (server.getServiceLocatorClass() == null) {
+            log.warn("service group " + getName()
+                    + " has just had it's ServiceHost removed!");
+
+        }
         this.server = server;
     }
 
