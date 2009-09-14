@@ -16,7 +16,7 @@
 
             <nxu:column>
               <h:graphicImage id="tagIcon" url="/icons/tag_blue.png"/>
-              <h:outputText value="#{tag.tagLabel}" />
+              <h:outputText value="#{tag}" />
               [<a4j:commandLink id="removeTag" action="#{tagActionsBean.removeTagging(tag.tagId)}" ajaxSingle="true"
                 reRender="taggingPanel" rendered="#{tagActionsBean.canModifyTag(tag)}">X
               </a4j:commandLink>]

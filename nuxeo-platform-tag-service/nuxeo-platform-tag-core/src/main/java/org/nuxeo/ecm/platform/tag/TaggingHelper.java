@@ -23,13 +23,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.tag.Tag;
-import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Utility class used to perform the actions specific to tagging. It willbe used
- * both in the JSF backoffice UI and webengine UI.
+ * Utility class used to perform the actions specific to tagging. It will be
+ * used both in the JSF backoffice UI and webengine UI.
  *
  * @author btatar
  *
@@ -62,15 +60,18 @@ public class TaggingHelper {
 
         // there could be more tags provided, which are separated by ','
         String[] tagLabelArray = tagLabel.split(",");
-
+        DocumentModel rootTag = getTagService().getRootTag(session);
+        if (rootTag == null) {
+            log.debug("The root tag document was not properly generated ...");
+            return;
+        }
         for (int i = 0; i < tagLabelArray.length; i++) {
             String currentTagLabel = tagLabelArray[i].trim();
             if (currentTagLabel.length() > 0) {
                 DocumentModel tagDocument = getTagService().getOrCreateTag(
-                        getTagService().getRootTag(session), currentTagLabel,
-                        false);
-                getTagService().tagDocument(document, tagDocument.getId(),
-                        false);
+                        session, rootTag, currentTagLabel, false);
+                getTagService().tagDocument(session, document,
+                        tagDocument.getId(), false);
             }
         }
     }

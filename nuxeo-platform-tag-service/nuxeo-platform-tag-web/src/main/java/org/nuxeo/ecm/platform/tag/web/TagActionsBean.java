@@ -75,12 +75,6 @@ public class TagActionsBean implements Serializable {
     private String tagsLabel;
 
     /**
-     * Keeps the id of the tagging that will be removed from the current
-     * document.
-     */
-//    private String taggingId;
-
-    /**
      * Used for controlling the presence of the tagging text field in UI.
      */
     private Boolean addTag;
@@ -160,7 +154,6 @@ public class TagActionsBean implements Serializable {
      */
     public void reset() {
         tagsLabel = null;
-//        taggingId = null;
     }
 
     /**

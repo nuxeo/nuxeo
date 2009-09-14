@@ -61,4 +61,8 @@ public class Tag implements Serializable {
         this.tagLabel = tagLabel;
     }
 
+    public String toString() {
+        return tagLabel;
+    }
+
 }
