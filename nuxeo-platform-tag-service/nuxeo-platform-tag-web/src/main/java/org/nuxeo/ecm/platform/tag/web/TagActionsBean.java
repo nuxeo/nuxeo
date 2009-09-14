@@ -17,6 +17,7 @@ package org.nuxeo.ecm.platform.tag.web;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
@@ -35,6 +36,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TaggingHelper;
+import org.nuxeo.ecm.platform.tag.WeightedTag;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
@@ -134,6 +136,22 @@ public class TagActionsBean implements Serializable {
                 taggingId);
 
         return null;
+    }
+
+    /**
+     * Returns the details about the tag cloud that have been created under the
+     * current document, which should be a Workspace
+     *
+     * @return
+     * @throws ClientException
+     */
+    public List<WeightedTag> getPopularCloud() throws ClientException {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        List<WeightedTag> tagCloud = new ArrayList<WeightedTag>();
+        if (currentDocument.getType().equals("Workspace")) {
+            tagCloud = taggingHelper.getPopularCloud(currentDocument);
+        }
+        return tagCloud;
     }
 
     /**

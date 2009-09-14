@@ -124,6 +124,23 @@ public class TaggingHelper {
     }
 
     /**
+     * Returns the details about the tag cloud that have been created under a
+     * document.
+     *
+     * @param document
+     * @return
+     * @throws ClientException
+     */
+    public List<WeightedTag> getPopularCloud(DocumentModel document)
+            throws ClientException {
+        if (null == document) {
+            throw new ClientException(
+                    "Can not retrieve popular cloud on document null.");
+        }
+        return getTagService().getPopularCloud(document);
+    }
+
+    /**
      * Specify whether the current logged user has enough rights to modify a tag
      * that is applied on the received <b>document</b> parameter
      *
