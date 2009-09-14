@@ -5,9 +5,16 @@
     <repository name="default"
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository name="default">
+        <schema>
+          <field type="largetext">note</field>
+        </schema>
         <indexing>
           <!-- for PostgreSQL (Text Search Configuration): -->
-          <fulltext analyzer="english"/>
+          <fulltext analyzer="english">
+            <index name="default"> 
+              <!-- all props implied -->
+            </index>
+          </fulltext> 
         </indexing>
       </repository>
     </repository>
