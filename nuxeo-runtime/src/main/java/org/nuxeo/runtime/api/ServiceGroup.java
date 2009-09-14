@@ -26,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class ServiceGroup implements Serializable {
 
@@ -71,9 +71,7 @@ public class ServiceGroup implements Serializable {
             }
         }
         if (server.getServiceLocatorClass() == null) {
-            log.warn("Trying to save the service group from an NPE! "
-                    + "Returning a LOCAL_SERVER instead of a ServiceHost "
-                    + "that has no hope of working!");
+            log.warn("No ServiceLocator Returning a LOCAL_SERVER instead of a ServiceHost");
             return ServiceHost.LOCAL_SERVER;
 
         }
@@ -107,11 +105,10 @@ public class ServiceGroup implements Serializable {
 
     public void setServer(ServiceHost server) {
         if (server == null) {
-            log.warn("service group " + getName() + " no longer has a server!");
+            log.debug("service group " + getName() + " no longer has a server!");
         } else if (server.getServiceLocatorClass() == null) {
-            log.warn("service group " + getName()
-                    + " has just had it's ServiceHost removed!");
-
+            log.debug("service group " + getName()
+                    + " just had its ServiceHost removed!");
         }
         this.server = server;
     }
