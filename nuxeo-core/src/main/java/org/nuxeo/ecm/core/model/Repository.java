@@ -46,10 +46,6 @@ public interface Repository {
 
     Session[] getOpenedSessions() throws DocumentException;
 
-    /**
-     * TODO: hide shutdown from public API.
-     *
-     */
     void shutdown();
 
     // stats for debug

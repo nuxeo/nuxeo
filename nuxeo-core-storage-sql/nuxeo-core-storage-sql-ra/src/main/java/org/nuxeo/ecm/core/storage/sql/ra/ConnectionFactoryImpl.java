@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.ecm.core.storage.Credentials;
-import org.nuxeo.ecm.core.storage.DefaultPlatformComponentCleanupConnectionFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
 import org.nuxeo.ecm.core.storage.sql.Repository;
@@ -53,12 +52,11 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * An instance of this class is returned to the application when a JNDI lookup
  * is done. This is the datasource equivalent of {@link SQLRepository}.
- * 
+ *
  * @author Florent Guillaume
  */
 public class ConnectionFactoryImpl implements Repository,
-        org.nuxeo.ecm.core.model.Repository,
-        DefaultPlatformComponentCleanupConnectionFactory {
+        org.nuxeo.ecm.core.model.Repository {
 
     private static final long serialVersionUID = 1L;
 
@@ -136,7 +134,7 @@ public class ConnectionFactoryImpl implements Repository,
 
     /**
      * Gets a new connection, with no credentials.
-     * 
+     *
      * @return the connection
      */
     public Session getConnection() throws StorageException {
@@ -153,7 +151,7 @@ public class ConnectionFactoryImpl implements Repository,
 
     /**
      * Gets a new connection.
-     * 
+     *
      * @param connectionSpec the connection spec, containing credentials
      * @return the connection
      */
@@ -272,8 +270,7 @@ public class ConnectionFactoryImpl implements Repository,
     }
 
     public void shutdown() {
-        throw new UnsupportedOperationException("Not implemented");
-        // close();
+        managedConnectionFactory.shutdown();
     }
 
     public int getStartedSessionsCount() {

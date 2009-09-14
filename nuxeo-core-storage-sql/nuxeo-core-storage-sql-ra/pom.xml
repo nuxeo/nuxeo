@@ -79,11 +79,11 @@
       <artifactId>thirdparty-all</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <!-- for activator -->
     <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>osgi-core</artifactId>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
     </dependency>
   </dependencies>
 
@@ -168,7 +168,7 @@
         <configuration>
           <!-- This is so that java.net.URL can load the handler for JBoss's vfs -->
           <useSystemClassLoader>true</useSystemClassLoader>
-          <!-- Surefire 2.4.3: don't keep the single bootstrap jar on the classpath 
+          <!-- Surefire 2.4.3: don't keep the single bootstrap jar on the classpath
                otherwise NXRuntimeTestCase bundle lookup fails -->
           <useManifestOnlyJar>false</useManifestOnlyJar>
           <systemProperties>

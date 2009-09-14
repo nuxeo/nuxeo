@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,30 +12,36 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.repository;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.local.LocalSession;
+import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.services.event.Event;
+import org.nuxeo.runtime.services.event.EventListener;
 import org.nuxeo.runtime.services.event.EventService;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author Bogdan Stefanescu
+ * @author Florent Guillaume
  */
 @SuppressWarnings({"SuppressionAnnotation"})
-public class RepositoryService extends DefaultComponent {
+public class RepositoryService extends DefaultComponent implements EventListener {
 
     public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.repository.RepositoryService");
+
+    private static final Log log = LogFactory.getLog(RepositoryService.class);
 
     // event IDs
     public static final String REPOSITORY = "repository";
@@ -53,6 +59,7 @@ public class RepositoryService extends DefaultComponent {
         if (eventService == null) {
             throw new Exception("Event Service was not found");
         }
+        eventService.addListener(REPOSITORY, this);
     }
 
     @Override
@@ -67,6 +74,25 @@ public class RepositoryService extends DefaultComponent {
 
     void fireRepositoryUnRegistered(RepositoryDescriptor rd) {
         eventService.sendEvent(new Event(REPOSITORY, REPOSITORY_UNREGISTERED, this, rd.getName()));
+    }
+
+    // org.nuxeo.runtime.services.event.EventListener
+    public boolean aboutToHandleEvent(Event event) {
+        return false;
+    }
+
+    // org.nuxeo.runtime.services.event.EventListener
+    public void handleEvent(Event event) {
+        if (event.getId().equals(REPOSITORY_UNREGISTERED)) {
+            String name = (String) event.getData();
+            try {
+                Repository repo = NXCore.getRepository(name);
+                log.info("Closing repository: " + name);
+                repo.shutdown();
+            } catch (Exception e) {
+                log.error("Failed to close repository: " + name);
+            }
+        }
     }
 
     @Override

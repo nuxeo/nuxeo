@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.model.Repository;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class RepositoryManager {
 
@@ -62,7 +62,7 @@ public class RepositoryManager {
      * Gets a repository given its name.
      * <p>
      * Null is returned if no repository with that name was registered.
-     * 
+     *
      * @param name the repository name
      * @return the repository instance or null if no repository with that name
      *         was registered
@@ -89,7 +89,7 @@ public class RepositoryManager {
      * <p>
      * When the repository reference count becomes 0, the repository is
      * shutdown.
-     * 
+     *
      * @param name the repository name
      */
     public void releaseRepository(String name) {
@@ -145,7 +145,6 @@ public class RepositoryManager {
         synchronized (repositories) {
             Ref ref = repositories.get(rd.getName());
             if (ref == null) {
-                log.info("Registering repository: " + rd.getName());
                 String name = rd.getName();
                 log.info("Registering repository: " + name);
                 descriptors.add(rd);
@@ -158,19 +157,7 @@ public class RepositoryManager {
     }
 
     public void unregisterRepository(RepositoryDescriptor rd) {
-        log.info("About to unregistering repository: " + rd.getName()
-                + "...cleaning up");
-
-        try {
-            Repository repo = getRepository(rd.getName());
-            String clazzName = repo.getClass().getName();
-            log.info("in cleanup, repo is " + clazzName);
-        } catch (Exception e) {
-            log.error(
-                    "Unable to cleanly shutdown repository during unregister!",
-                    e);
-        }
-
+        log.info("Unregistering repository: " + rd.getName());
         if (descriptors.contains(rd)) {
             synchronized (repositories) {
                 descriptors.remove(rd);
