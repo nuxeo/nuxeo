@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ${user}
+ *     nulrich
  *
  * $Id
  */
@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.web.CommentManagerActions;
@@ -58,7 +59,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * This Action Listener represents a Thread inside a forum.
- *
+ * 
  * @author <a href="bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
  */
 @Name("threadAction")
@@ -144,16 +145,22 @@ public class ThreadActionBean implements ThreadAction {
         docThread.setProperty(schema, "moderated", moderated);
 
         if (moderated) {
+
             // XXX: hack, administrators should have the right to moderate
             // without being in this list
-            // We automatically add administrators as moderators
-            if (!selectedModerators.contains(SecurityConstants.ADMINISTRATORS)) {
-                selectedModerators.add(SecurityConstants.ADMINISTRATORS);
+            // We automatically add administrators (with prefix) as moderators
+            if (!selectedModerators.contains(NuxeoGroup.PREFIX
+                    + SecurityConstants.ADMINISTRATORS)) {
+                selectedModerators.add(NuxeoGroup.PREFIX
+                        + SecurityConstants.ADMINISTRATORS);
             }
             // We can also remove Administrator since his group is added
-            if (selectedModerators.contains(SecurityConstants.ADMINISTRATOR)) {
-                selectedModerators.remove(SecurityConstants.ADMINISTRATOR);
+            if (selectedModerators.contains(NuxeoPrincipal.PREFIX
+                    + SecurityConstants.ADMINISTRATOR)) {
+                selectedModerators.remove(NuxeoPrincipal.PREFIX
+                        + SecurityConstants.ADMINISTRATOR);
             }
+
             docThread.setProperty(schema, "moderators", selectedModerators);
         }
 
@@ -176,8 +183,10 @@ public class ThreadActionBean implements ThreadAction {
         List<String> moderators = getModerators();
 
         boolean moderator = false;
-        if (isPrincipalGroupModerator() || moderators != null
-                && moderators.contains(principal.getName())) {
+        if (isPrincipalGroupModerator()
+                || moderators != null
+                && moderators.contains(NuxeoPrincipal.PREFIX
+                        + principal.getName())) {
             moderator = true;
         }
         return moderator;
@@ -189,7 +198,8 @@ public class ThreadActionBean implements ThreadAction {
         List<String> principalGroups = principal.getAllGroups();
 
         for (String principalGroup : principalGroups) {
-            if (moderators != null && moderators.contains(principalGroup)) {
+            if (moderators != null
+                    && moderators.contains(NuxeoGroup.PREFIX + principalGroup)) {
                 return true;
             }
         }
