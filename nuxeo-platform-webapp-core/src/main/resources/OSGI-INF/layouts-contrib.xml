@@ -280,6 +280,11 @@
         <fields>
           <field>note:note</field>
         </fields>
+        <properties mode="view">
+          <property name="value">
+            #{noteActions.translateImageLinks(value.note.note)}
+          </property>
+        </properties>
       </widget>
     </layout>
 
