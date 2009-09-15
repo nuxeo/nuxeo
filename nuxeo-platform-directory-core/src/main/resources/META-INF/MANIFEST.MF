@@ -10,7 +10,6 @@ Export-Package: org.nuxeo.ecm.directory,
  org.nuxeo.ecm.directory.api,
  org.nuxeo.ecm.directory.constants
 Eclipse-LazyStart: true
-Nuxeo-Component: OSGI-INF/DirectoryService.xml,
- OSGI-INF/directory-ui-framework.xml
+Nuxeo-Component: OSGI-INF/DirectoryService.xml
 Require-Bundle: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.directory.api

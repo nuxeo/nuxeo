@@ -17,7 +17,7 @@
  * $Id: DirectoryUIManagerBean.java 57103 2008-08-23 00:40:52Z atchertchian $
  */
 
-package org.nuxeo.ecm.platform.directory.ejb;
+package org.nuxeo.ecm.directory.ui.ejb;
 
 import java.util.List;
 

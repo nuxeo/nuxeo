@@ -14,13 +14,10 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.directory.sql.ui;
+package org.nuxeo.ecm.directory.ui;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.directory.Directory;
-import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUI;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint;
@@ -33,7 +30,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * @author Anahide Tchertchian
  *
  */
-public class TestDirectoryUIManager extends NXRuntimeTestCase {
+public class TestDirectoryUIManagerRegistration extends NXRuntimeTestCase {
 
     DirectoryService dirService;
 
@@ -43,17 +40,14 @@ public class TestDirectoryUIManager extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        // deploy directory service + sql factory
+        // deploy directory
         deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-        // deploy schemas for test dirs
-        deployContrib("org.nuxeo.ecm.core.schema", "OSGI-INF/SchemaService.xml");
-        deployContrib("org.nuxeo.ecm.directory.types.contrib",
-                "OSGI-INF/DirectoryTypes.xml");
+        // deploy directory ui service
+        deployBundle("org.nuxeo.ecm.directory.web");
 
         // deploy test dirs + ui config
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-directory-ui-contrib.xml");
+        deployContrib("org.nuxeo.ecm.directory.web.tests",
+                "OSGI-INF/test-directory-ui-contrib.xml");
 
         service = Framework.getService(DirectoryUIManager.class);
         assertNotNull(service);
@@ -86,49 +80,10 @@ public class TestDirectoryUIManager extends NXRuntimeTestCase {
         assertEquals("country", country.getName());
         assertEquals("country_vocabulary", country.getLayout());
         assertEquals("parent", country.getSortField());
-        assertNull(country.getView());
+        assertEquals("foo", country.getView());
         constraints = country.getDeleteConstraints();
         assertNotNull(constraints);
         assertEquals(0, constraints.size());
-    }
-
-    public void testDirectoryUIDeleteConstraint() throws Exception {
-        Session continentSession = null;
-        Session countrySession = null;
-        try {
-            Directory continentDir = dirService.getDirectory("continent");
-            assertNotNull(continentDir);
-            continentSession = dirService.open("continent");
-            assertTrue(continentSession.hasEntry("asia"));
-
-            Directory country = dirService.getDirectory("country");
-            assertNotNull(country);
-            countrySession = dirService.open("country");
-            assertTrue(countrySession.hasEntry("Afghanistan"));
-            DocumentModel afgha = countrySession.getEntry("Afghanistan");
-            assertEquals("asia", afgha.getProperty("xvocabulary", "parent"));
-
-            DirectoryUI continent = service.getDirectoryInfo("continent");
-            assertNotNull(continent);
-            List<DirectoryUIDeleteConstraint> constraints = continent.getDeleteConstraints();
-            assertNotNull(constraints);
-            assertEquals(1, constraints.size());
-            DirectoryUIDeleteConstraint constraint = constraints.get(0);
-            assertTrue(constraint instanceof HierarchicalDirectoryUIDeleteConstraint);
-
-            // test can delete when there a dep in child dir
-            assertEquals(false, constraint.canDelete(dirService, "asia"));
-            assertEquals(true, constraint.canDelete(dirService, "antartica"));
-
-        } finally {
-            if (continentSession != null) {
-                continentSession.close();
-            }
-            if (countrySession != null) {
-                countrySession.close();
-            }
-        }
-
     }
 
 }

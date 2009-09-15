@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Directory Web
+Bundle-SymbolicName: org.nuxeo.ecm.directory.web;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: stateless
+Require-Bundle: org.nuxeo.ecm.directory.api
+Nuxeo-Component: OSGI-INF/directory-ui-framework.xml
