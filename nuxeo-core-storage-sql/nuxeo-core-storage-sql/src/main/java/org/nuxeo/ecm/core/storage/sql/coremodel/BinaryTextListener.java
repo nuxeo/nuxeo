@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
@@ -39,7 +40,6 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
-import org.nuxeo.ecm.core.storage.sql.Model.FulltextInfo;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.runtime.api.Framework;
 
@@ -70,12 +70,13 @@ public class BinaryTextListener implements PostCommitEventListener {
         }
     }
 
+ 
+    
     public void handleEvent(EventBundle eventBundle) throws ClientException {
         if (!(eventBundle instanceof ReconnectedEventBundle)) {
             log.error("Incorrect event bundle type: " + eventBundle);
             return;
         }
-        FulltextInfo fulltextInfo;
         CoreSession session = null;
         Set<Serializable> ids = new HashSet<Serializable>();
         for (Event event : eventBundle) {
@@ -83,7 +84,6 @@ public class BinaryTextListener implements PostCommitEventListener {
                 continue;
             }
             EventContext eventContext = event.getContext();
-            fulltextInfo = getFulltextInfoFromEventContext(eventContext);
             ids.addAll(getIdsFromEventContext(eventContext));
             CoreSession s = eventContext.getCoreSession();
             if (session == null) {
@@ -104,10 +104,11 @@ public class BinaryTextListener implements PostCommitEventListener {
         // we have all the info from the bundle, now do the extraction
         boolean save = false;
         BlobsExtractor extractor = new BlobsExtractor();
+        final DocumentRef rootRef = session.getRootDocument().getRef();
         for (Serializable id : ids) {
             IdRef docRef = new IdRef(((String) id));
-            if (!session.exists(docRef)) {
-                // doc is gone
+            // Check hierarchy for documents gone http://jira.nuxeo.org/browse/NXP-4022
+            if (!NXP4022HierachyChecker.exists(session, rootRef, docRef)) {
                 continue;
             }
             DocumentModel doc = session.getDocument(docRef);
@@ -135,11 +136,6 @@ public class BinaryTextListener implements PostCommitEventListener {
     @SuppressWarnings("unchecked")
     protected Set<Serializable> getIdsFromEventContext(EventContext eventContext) {
         return (Set<Serializable>) eventContext.getArguments()[0];
-    }
-
-    protected FulltextInfo getFulltextInfoFromEventContext(
-            EventContext eventContext) {
-        return (FulltextInfo) eventContext.getArguments()[1];
     }
 
     protected String blobsToText(List<Blob> blobs) {
