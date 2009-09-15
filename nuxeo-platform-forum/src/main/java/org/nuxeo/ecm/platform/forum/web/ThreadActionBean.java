@@ -146,6 +146,13 @@ public class ThreadActionBean implements ThreadAction {
 
         if (moderated) {
 
+            // The current user should have the right to moderate
+            if (!selectedModerators.contains(NuxeoPrincipal.PREFIX
+                    + currentUser.getName())) {
+                selectedModerators.add(NuxeoPrincipal.PREFIX
+                        + currentUser.getName());
+            }
+
             // XXX: hack, administrators should have the right to moderate
             // without being in this list
             // We automatically add administrators (with prefix) as moderators
@@ -248,20 +255,21 @@ public class ThreadActionBean implements ThreadAction {
     protected ThreadAdapter adapter;
 
     public ThreadAdapter getAdapter(DocumentModel thread) {
-        if (thread==null) {
+        if (thread == null) {
             return null;
         }
-        if (adapter!=null && adapter.getThreadDoc().getRef().equals(thread.getRef())) {
+        if (adapter != null
+                && adapter.getThreadDoc().getRef().equals(thread.getRef())) {
             return adapter;
         }
-        if (thread.getSessionId()==null) {
+        if (thread.getSessionId() == null) {
             try {
                 thread = documentManager.getDocument(thread.getRef());
             } catch (ClientException e) {
                 log.error("Unable to reconnect doc !,", e);
             }
         }
-        adapter =thread.getAdapter(ThreadAdapter.class);
+        adapter = thread.getAdapter(ThreadAdapter.class);
         return adapter;
     }
 
