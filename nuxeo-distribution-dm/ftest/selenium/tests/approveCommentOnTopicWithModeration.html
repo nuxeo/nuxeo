@@ -1,6 +1,9 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
 <title>approveCommentOnTopicWithModeration</title>
 </head>
 <body>
@@ -16,7 +19,7 @@
 </tr>
 <tr>
 	<td>open</td>
-	<td>/nuxeo/nxpath/default/default-domain/workspaces/testworskspace1/testforum1/testtopicwithmoderation@view_documents</td>
+	<td>/nuxeo/</td>
 	<td></td>
 </tr>
 <tr>
@@ -35,12 +38,27 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>You are logged as bree</td>
+	<td>clickAndWait</td>
+	<td>link=Dashboard</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
+	<td>Moderate the document</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>testTopicWithModeration</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testTopicWithModeration</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
 	<td>testTopicWithModerationComment</td>
 	<td></td>
 </tr>
