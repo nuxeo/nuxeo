@@ -17,6 +17,12 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.test.QueryTestCase;
 
 /**
@@ -50,6 +56,18 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
         deployBundle("org.nuxeo.ecm.core.storage.sql"); // event listener
         super.testFulltextBlob();
+    }
+
+    public void testQueryIterable() throws Exception {
+        createDocs();
+
+        IterableQueryResult res = session.queryAndFetch("SELECT * FROM File",
+                "NXQL");
+        List<Map<String, Serializable>> l = new LinkedList<Map<String, Serializable>>();
+        for (Map<String, Serializable> x : res) {
+            l.add(x);
+        }
+        assertEquals(3, l.size());
     }
 
 }

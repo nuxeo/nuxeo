@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.resource.cci.Connection;
 
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -355,5 +356,12 @@ public interface Session extends Connection {
      */
     PartialList<Serializable> query(String query, QueryFilter queryFilter,
             boolean countTotal) throws StorageException;
+
+    /**
+     *
+     * @throws StorageException
+     */
+    IterableQueryResult queryAndFetch(String query, String queryType,
+            QueryFilter queryFilter, Object... params) throws StorageException;
 
 }

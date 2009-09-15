@@ -61,7 +61,7 @@ public class SQLInfo {
 
     public final Database database;
 
-    protected final Dialect dialect;
+    public final Dialect dialect;
 
     private final Model model;
 
@@ -928,14 +928,23 @@ public class SQLInfo {
 
         public final List<Column> whatColumns;
 
+        public final List<String> whatColumnsAliases;
+
         public final List<Column> whereColumns;
 
         public final List<Column> opaqueColumns;
 
         public SQLInfoSelect(String sql, List<Column> whatColumns,
                 List<Column> whereColumns, List<Column> opaqueColumns) {
+            this(sql, whatColumns, null, whereColumns, opaqueColumns);
+        }
+
+        public SQLInfoSelect(String sql, List<Column> whatColumns,
+                List<String> whatColumnsAliases, List<Column> whereColumns,
+                List<Column> opaqueColumns) {
             this.sql = sql;
             this.whatColumns = new ArrayList<Column>(whatColumns);
+            this.whatColumnsAliases = whatColumnsAliases;
             this.whereColumns = whereColumns == null ? null
                     : new ArrayList<Column>(whereColumns);
             this.opaqueColumns = opaqueColumns == null ? null

@@ -33,8 +33,10 @@ import java.util.regex.Pattern;
 import javax.resource.ResourceException;
 import javax.transaction.xa.XAResource;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
@@ -399,6 +401,12 @@ public class SQLSession implements Session {
         }
     }
 
+    public IterableQueryResult queryAndFetch(String query, String queryType,
+            QueryFilter queryFilter, Object... params) throws QueryException {
+        return new SQLSessionQuery(query, queryType).executeAndFetch(
+                queryFilter, params);
+    }
+
     protected static final Pattern ORDER_BY_PATH_ASC = Pattern.compile(
             "(.*)\\s+ORDER\\s+BY\\s+" + NXQL.ECM_PATH + "\\s*$",
             Pattern.CASE_INSENSITIVE);
@@ -411,8 +419,16 @@ public class SQLSession implements Session {
 
         protected final String query;
 
+        protected final String queryType;
+
         public SQLSessionQuery(String query) {
             this.query = query;
+            queryType = "NXQL";
+        }
+
+        public SQLSessionQuery(String query, String queryType) {
+            this.query = query;
+            this.queryType = queryType;
         }
 
         public QueryResult execute() throws QueryException {
@@ -457,6 +473,16 @@ public class SQLSession implements Session {
                 throw new QueryException(e.getMessage(), e);
             }
         }
+
+        public IterableQueryResult executeAndFetch(QueryFilter queryFilter,
+                Object... params) throws QueryException {
+            try {
+                return session.queryAndFetch(query, queryType, queryFilter, params);
+            } catch (StorageException e) {
+                throw new QueryException(e.getMessage(), e);
+            }
+        }
+
     }
 
     /*

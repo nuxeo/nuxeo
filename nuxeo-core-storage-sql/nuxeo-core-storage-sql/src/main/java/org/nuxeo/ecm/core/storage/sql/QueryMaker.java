@@ -57,9 +57,11 @@ public interface QueryMaker {
      * @param session the session
      * @param query the query
      * @param queryFilter the query filter
+     * @param params additional parameters, maker-specific
      */
     Query buildQuery(SQLInfo sqlInfo, Model model, Session session,
-            String query, QueryFilter queryFilter) throws StorageException;
+            String query, QueryFilter queryFilter, Object... params)
+            throws StorageException;
 
     /**
      * A SQL query that can be executed by the backend.

@@ -1093,6 +1093,13 @@ public interface CoreSession {
             long offset, boolean countTotal) throws ClientException;
 
     /**
+     *
+     * @throws ClientException
+     */
+    IterableQueryResult queryAndFetch(String query,
+            String queryType, Object... params) throws ClientException;
+
+    /**
      * Executes the given NXQL query and returns an iterators of results.
      *
      * @param query the query to execute

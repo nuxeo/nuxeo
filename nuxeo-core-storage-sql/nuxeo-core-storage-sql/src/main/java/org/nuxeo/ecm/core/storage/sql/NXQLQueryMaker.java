@@ -177,11 +177,13 @@ public class NXQLQueryMaker implements QueryMaker {
     }
 
     public boolean accepts(String queryString) {
-        return queryString.toLowerCase().trim().startsWith("select ");
+        return queryString.equals("NXQL")
+                || queryString.toLowerCase().trim().startsWith("select ");
     }
 
     public Query buildQuery(SQLInfo sqlInfo, Model model, Session session,
-            String query, QueryFilter queryFilter) throws StorageException {
+            String query, QueryFilter queryFilter, Object... params)
+            throws StorageException {
         this.sqlInfo = sqlInfo;
         database = sqlInfo.database;
         dialect = sqlInfo.dialect;

@@ -45,6 +45,7 @@ import org.apache.jackrabbit.core.XASessionImpl;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
@@ -52,6 +53,7 @@ import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.UnsupportedQueryTypeException;
 import org.nuxeo.ecm.core.repository.jcr.versioning.Versioning;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -201,6 +203,11 @@ public class JCRSession implements Session {
         }
 
         throw new UnsupportedQueryTypeException(qType);
+    }
+
+    public IterableQueryResult queryAndFetch(String query, String queryType,
+            QueryFilter queryFilter, Object... params) throws QueryException {
+        throw new UnsupportedOperationException();
     }
 
     public SchemaManager getTypeManager() {

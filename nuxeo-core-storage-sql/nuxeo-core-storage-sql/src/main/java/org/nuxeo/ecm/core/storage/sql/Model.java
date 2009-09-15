@@ -781,6 +781,10 @@ public class Model {
         return mergedPropertyInfos.get(propertyName);
     }
 
+    public Set<String> getPropertyInfoNames() {
+        return mergedPropertyInfos.keySet();
+    }
+
     public PropertyInfo getPathPropertyInfo(String typeName, String path) {
         Map<String, PropertyInfo> propertyInfoByPath = pathPropertyInfos.get(typeName);
         if (propertyInfoByPath == null) {

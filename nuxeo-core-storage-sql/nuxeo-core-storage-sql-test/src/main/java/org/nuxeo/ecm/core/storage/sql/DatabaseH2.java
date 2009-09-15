@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -54,7 +53,8 @@ public class DatabaseH2 extends DatabaseHelper {
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-h2-contrib.xml";
 
     @Override
-    public void setUp() throws IOException {
+    public void setUp() throws Exception {
+        Class.forName("org.h2.Driver");
         h2TempDir = File.createTempFile("nxsqltests-h2-", null);
         h2TempDir.delete();
         h2TempDir.mkdir();

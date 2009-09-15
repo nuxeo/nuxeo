@@ -30,6 +30,7 @@ import javax.resource.cci.ResultSetInfo;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.PartialList;
@@ -131,7 +132,8 @@ public class ConnectionImpl implements Session {
 
     private Session getSession() throws StorageException {
         if (session == null) {
-            throw new StorageException("Cannot use closed connection handle: " + this);
+            throw new StorageException("Cannot use closed connection handle: "
+                    + this);
         }
         return session;
     }
@@ -263,6 +265,11 @@ public class ConnectionImpl implements Session {
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
         return getSession().query(query, queryFilter, countTotal);
+    }
+
+    public IterableQueryResult queryAndFetch(String query, String queryType,
+            QueryFilter queryFilter, Object... params) throws StorageException {
+        return getSession().queryAndFetch(query, queryType, queryFilter, params);
     }
 
 }
