@@ -1,6 +1,9 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
 <title>addCommentToBeApproved</title>
 </head>
 <body>
@@ -41,7 +44,7 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Add"]</td>
+	<td>//input[@value=&quot;Add&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -51,17 +54,17 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//table[@class="dataInput"]/tbody/tr//td[2]/input</td>
+	<td>//table[@class=&quot;dataInput&quot;]/tbody/tr//td[2]/input</td>
 	<td>testTopicWithModerationComment</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//table[@class="dataInput"]//textarea</td>
+	<td>//table[@class=&quot;dataInput&quot;]//textarea</td>
 	<td>comment n°1 in testTopicWithModeration</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//div[@class="buttonsGadget"]/input</td>
+	<td>//div[@class=&quot;buttonsGadget&quot;]/input</td>
 	<td></td>
 </tr>
 <tr>
@@ -116,17 +119,17 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextNotPresent</td>
+	<td>verifyTextPresent</td>
 	<td>testTopicWithModerationComment</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextNotPresent</td>
+	<td>verifyTextPresent</td>
 	<td>comment n°1 in testTopicWithModeration</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextNotPresent</td>
+	<td>verifyTextPresent</td>
 	<td>Waiting for approval</td>
 	<td></td>
 </tr>
