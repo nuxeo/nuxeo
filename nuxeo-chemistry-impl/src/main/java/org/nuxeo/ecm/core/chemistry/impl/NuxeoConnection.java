@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,6 +55,8 @@ import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.impl.base.BaseRepository;
+import org.apache.chemistry.impl.simple.SimpleData;
+import org.apache.chemistry.impl.simple.SimpleObjectEntry;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -62,6 +65,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 
 public class NuxeoConnection implements Connection, SPI {
@@ -441,6 +445,41 @@ public class NuxeoConnection implements Connection, SPI {
      */
 
     public Collection<ObjectEntry> query(String statement,
+            boolean searchAllVersions, boolean includeAllowableActions,
+            boolean includeRelationships, boolean includeRenditions,
+            int maxItems, int skipCount, boolean[] hasMoreItems) {
+        IterableQueryResult iterable;
+        try {
+            iterable = session.queryAndFetch(statement, CMISQLQueryMaker.TYPE,
+                    this);
+        } catch (ClientException e) {
+            throw new RuntimeException(e.toString(), e);
+        }
+        List<ObjectEntry> entries = new ArrayList<ObjectEntry>();
+        if (skipCount > 0) {
+            iterable.skipTo(skipCount);
+        }
+        if (maxItems == 0) {
+            maxItems = -1;
+        }
+        for (Map<String, Serializable> next : iterable) {
+            SimpleData data = new SimpleData(null, null);
+            // don't use putAll, null values are forbidden
+            for (Entry<String, Serializable> entry : next.entrySet()) {
+                Serializable value = entry.getValue();
+                if (value != null) {
+                    data.put(entry.getKey(), value);
+                }
+            }
+            entries.add(new SimpleObjectEntry(data, this));
+            if (--maxItems == 0) {
+                break;
+            }
+        }
+        return entries;
+    }
+
+    public Collection<ObjectEntry> queryOLD(String statement,
             boolean searchAllVersions, boolean includeAllowableActions,
             boolean includeRelationships, boolean includeRenditions,
             int maxItems, int skipCount, boolean[] hasMoreItems) {

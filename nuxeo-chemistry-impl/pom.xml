@@ -17,6 +17,59 @@
   <name>Nuxeo Chemistry Bindings</name>
   <description>Nuxeo Core: Chemistry Bindings</description>
 
+  <build>
+    <resources>
+      <resource>
+        <directory>target/generated-resources</directory>
+      </resource>
+    </resources>
+
+    <plugins>
+
+      <!--
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.chemistry</groupId>
+                  <artifactId>chemistry-commons</artifactId>
+                </artifactItem>
+              </artifactItems>
+              <includes>org/apache/chemistry/cmissql/CmisSqlParser.tokens</includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      -->
+
+      <plugin>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr3-maven-plugin</artifactId>
+        <version>3.1.3-1</version>
+        <executions>
+          <execution>
+            <!-- default phase: process-sources -->
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>antlr</goal>
+            </goals>
+            <configuration>
+              <libDirectory>src/main/antlr3/org/apache/chemistry/cmissql</libDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
@@ -36,6 +89,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-schema</artifactId>
     </dependency>
     <dependency>
@@ -45,6 +102,19 @@
     <dependency>
       <groupId>org.apache.chemistry</groupId>
       <artifactId>chemistry-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr-runtime</artifactId>
+      <version>3.1.3</version>
+    </dependency>
+
+    <!-- scope provided -->
+    <dependency>
+      <groupId>javax.resource</groupId>
+      <artifactId>connector</artifactId>
+      <version>1.0</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- scope test -->
@@ -66,6 +136,17 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert-plugins</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- needed by H2 fulltext -->
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

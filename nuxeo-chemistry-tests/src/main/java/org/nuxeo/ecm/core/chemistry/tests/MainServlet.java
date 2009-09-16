@@ -57,6 +57,15 @@ public class MainServlet extends SQLRepositoryTestCase {
         super(name);
     }
 
+    // needed to change the repo config
+    @Override
+    public void deployContrib(String bundle, String contrib) throws Exception {
+        if (bundle.equals("org.nuxeo.ecm.core.storage.sql.test")
+                && contrib.startsWith("OSGI-INF/test-repo-repository")) {
+            bundle = "org.nuxeo.ecm.core.chemistry.tests";
+        }
+        super.deployContrib(bundle, contrib);
+    }
     @Override
     public void setUp() throws Exception {
         super.setUp();

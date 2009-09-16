@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.chemistry.impl;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -26,11 +27,14 @@ import java.util.TimeZone;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Property;
+import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.impl.base.BaseRepository;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.event.EventService;
@@ -51,6 +55,16 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
     protected String folder2id;
 
     protected String file4id;
+
+    // needed to change the repo config
+    @Override
+    public void deployContrib(String bundle, String contrib) throws Exception {
+        if (bundle.equals("org.nuxeo.ecm.core.storage.sql.test")
+                && contrib.startsWith("OSGI-INF/test-repo-repository")) {
+            bundle = "org.nuxeo.ecm.core.chemistry.impl.tests";
+        }
+        super.deployContrib(bundle, contrib);
+    }
 
     @Override
     public void setUp() throws Exception {
@@ -173,8 +187,55 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         assertEquals(2, entries.size());
     }
 
-    public void testQuery() {
+    public void testQuery() throws Exception {
         Connection conn = repository.getConnection(null);
+        SPI spi = conn.getSPI();
+        boolean[] hasMoreItems = new boolean[1];
+        String query;
+        Collection<ObjectEntry> col;
+        ObjectEntry ob;
+        Iterator<ObjectEntry> it;
+        DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        DocumentModel file2 = session.getDocument(new PathRef(
+                "/testfolder1/testfile2"));
+        DocumentModel file3 = session.getDocument(new PathRef(
+                "/testfolder1/testfile3"));
+
+        // simple query through SPI
+        query = "SELECT cmis:objectId, dc:DESCRIPTION" //
+                + " FROM cmis:document" //
+                + " WHERE dc:title = 'testfile1_Title'";
+        col = spi.query(query, false, false, false, false, 0, 0, hasMoreItems);
+        assertEquals(1, col.size());
+        it = col.iterator();
+        ob = it.next();
+        assertEquals("testfile1_description", ob.getValue("dc:description"));
+        assertEquals(file1.getId(), ob.getValue("cmis:ObjectId"));
+
+        // JOIN query through SPI
+        query = "SELECT A.dc:title, B.cmis:OBJECTID, B.dc:title" //
+                + " FROM cmis:Document A" //
+                + " JOIN cmis:Document B ON A.cmis:ObjectId = B.cmis:ParentId" //
+                + " WHERE A.dc:title = 'testfolder1_Title'" //
+                + " ORDER BY B.dc:title";
+        col = spi.query(query, false, false, false, false, 0, 0, hasMoreItems);
+        assertEquals(3, col.size());
+        it = col.iterator();
+        ob = it.next();
+        assertEquals("testfolder1_Title", ob.getValue("A.dc:title"));
+        assertEquals("testfile1_Title", ob.getValue("B.dc:title"));
+        assertEquals(file1.getId(), ob.getValue("B.cmis:ObjectId"));
+        ob = it.next();
+        assertEquals("testfolder1_Title", ob.getValue("A.dc:title"));
+        assertEquals("testfile2_Title", ob.getValue("B.dc:title"));
+        assertEquals(file2.getId(), ob.getValue("B.cmis:ObjectId"));
+        ob = it.next();
+        assertEquals("testfolder1_Title", ob.getValue("A.dc:title"));
+        assertEquals("testfile3_Title", ob.getValue("B.dc:title"));
+        assertEquals(file3.getId(), ob.getValue("B.cmis:ObjectId"));
+
         Collection<CMISObject> res = conn.query("SELECT * FROM cmis:document",
                 false);
         assertNotNull(res);
