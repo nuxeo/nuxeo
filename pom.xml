@@ -21,12 +21,14 @@
   <modules>
     <module>nuxeo-chemistry-impl</module>
     <module>nuxeo-chemistry-jaxrs</module>
+    <module>nuxeo-chemistry-ws</module>
     <module>nuxeo-chemistry-tests</module>
   </modules>
 
   <properties>
     <chemistry.version>0.1-SNAPSHOT</chemistry.version>
     <nuxeo.webengine.version>5.2.1-SNAPSHOT</nuxeo.webengine.version>
+    <metro.version>1.4</metro.version>
   </properties>
 
   <dependencyManagement>
@@ -69,8 +71,29 @@
       </dependency>
       <dependency>
 	<groupId>org.apache.chemistry</groupId>
+	<artifactId>chemistry-ws</artifactId>
+	<version>${chemistry.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>org.apache.chemistry</groupId>
 	<artifactId>chemistry-tests</artifactId>
 	<version>${chemistry.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>metro.webservices</groupId>
+        <artifactId>webservices-api</artifactId>
+        <version>${metro.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>metro.webservices</groupId>
+        <artifactId>webservices-rt</artifactId>
+        <version>${metro.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>metro.webservices</groupId>
+        <artifactId>webservices-tools</artifactId>
+        <version>${metro.version}</version>
       </dependency>
 
       <dependency>

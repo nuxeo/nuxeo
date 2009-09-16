@@ -18,38 +18,7 @@
   <description>Nuxeo Core: Chemistry Bindings</description>
 
   <build>
-    <resources>
-      <resource>
-        <directory>target/generated-resources</directory>
-      </resource>
-    </resources>
-
     <plugins>
-
-      <!--
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.apache.chemistry</groupId>
-                  <artifactId>chemistry-commons</artifactId>
-                </artifactItem>
-              </artifactItems>
-              <includes>org/apache/chemistry/cmissql/CmisSqlParser.tokens</includes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      -->
-
       <plugin>
         <groupId>org.antlr</groupId>
         <artifactId>antlr3-maven-plugin</artifactId>

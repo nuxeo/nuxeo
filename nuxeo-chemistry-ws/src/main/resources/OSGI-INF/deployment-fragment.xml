@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<fragment>
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+  <extension target="jaxws#ENDPOINT">
+    <endpoint name="RepositoryService"
+      implementation="org.nuxeo.ecm.core.chemistry.ws.RepositoryServicePortImpl"
+      url-pattern="/webservices/cmis/RepositoryService" />
+  </extension>
+  <extension target="jaxws#ENDPOINT">
+    <endpoint name="DiscoveryService"
+      implementation="org.nuxeo.ecm.core.chemistry.ws.DiscoveryServicePortImpl"
+      url-pattern="/webservices/cmis/DiscoveryService" />
+  </extension>
+</fragment>
