@@ -44,7 +44,6 @@ import org.nuxeo.ecm.platform.tag.persistence.TagSchemaUpdater;
 import org.nuxeo.ecm.platform.tag.persistence.TaggingProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
@@ -54,7 +53,8 @@ import org.osgi.framework.FrameworkListener;
  *
  * @author rux
  */
-public class TagServiceImpl extends DefaultComponent implements TagService, TagConfigurator {
+public class TagServiceImpl extends DefaultComponent implements TagService {
+
 
     private static final Log log = LogFactory.getLog(TagServiceImpl.class);
 
@@ -74,28 +74,6 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
     public void deactivate(ComponentContext context) throws Exception {
         deactivatePersistenceProvider();
         super.deactivate(context);
-    }
-    
-    
-
-    @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
-        if ("configs".equals(extensionPoint)) {
-            setConfig((TagConfig) contribution);
-        }
-    }
-
-
-    protected TagConfig config = new TagConfig();
-    
-    public void setConfig(TagConfig config) {
-        this.config = config;
-    }
-
-    public TagConfig getConfig() {
-        return config;
     }
 
     protected PersistenceProvider persistenceProvider;
@@ -234,8 +212,6 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
         return getPopularCloud(document.getCoreSession(), document);
     }
 
- 
-
     public List<WeightedTag> getPopularCloud(EntityManager em, CoreSession session, DocumentModel document)
             throws ClientException {
         // the NXSQL queries can't be used together with the native queries, for
@@ -247,8 +223,8 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
             log.debug("Going for popular cloud for " + document.getTitle());
         }
         String query = String.format(
-                    "SELECT * FROM Document WHERE ecm:path STARTSWITH '%s' AND ecm:isProxy = %d",
-                document.getPathAsString(), config.isQueryingForProxy() ? 1 : 0);
+                TagConstants.DOCUMENTS_IN_DOMAIN_QUERY_TEMPLATE,
+                document.getPathAsString());
         UnrestrictedSessionRunQuery runner = new UnrestrictedSessionRunQuery(
                 session, query);
         runner.runUnrestricted();
@@ -419,8 +395,8 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
         }
         String user = getUserName(session);
         String query = String.format(
-                "SELECT * FROM Tag WHERE ecm:path STARTSWITH '%s' AND (tag:private = 0 or dc:creator = '%s') AND ecm:isProxy = %d",
-               tag.getPathAsString(), user, config.isQueryingForProxy() ? 1 : 0);
+                TagConstants.TAGS_IN_DOMAIN_QUERY_TEMPLATE,
+                tag.getPathAsString(), user);
         UnrestrictedSessionRunQuery runner = new UnrestrictedSessionRunQuery(
                 session, query);
         runner.runUnrestricted();
@@ -553,7 +529,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
      *
      * @author rux
      */
-    protected class UnrestrictedSessionCreateTag extends
+    protected static class UnrestrictedSessionCreateTag extends
             UnrestrictedSessionRunner {
 
         // need to return somehow the result
@@ -587,8 +563,8 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
                 // for each label look for a public or user owned tag. If not,
                 // create it
                 String query = String.format(
-                        "SELECT * FROM Tag WHERE ecm:parentId = '%s' AND tag:label = '%s' AND ecm:isProxy = %d",
-                        relativeParent.getId(), atomicLabel, config.queryProxy ? 1 : 0);
+                        "SELECT * FROM Tag WHERE ecm:parentId = '%s' AND tag:label = '%s'",
+                        relativeParent.getId(), atomicLabel);
                 DocumentModelList tags = session.query(query);
 
                 DocumentModel foundTag = null;

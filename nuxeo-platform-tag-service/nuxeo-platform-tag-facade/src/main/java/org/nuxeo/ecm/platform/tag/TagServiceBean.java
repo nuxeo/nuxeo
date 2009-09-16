@@ -20,8 +20,6 @@ import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -68,7 +66,6 @@ public class TagServiceBean implements TagService {
         return (TagServiceImpl)tagService;
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public DocumentModel getOrCreateTag(DocumentModel parent, String label,
             boolean privateFlag) throws ClientException {
         return getOrCreateTag(parent.getCoreSession(), parent, label, privateFlag);
@@ -113,7 +110,6 @@ public class TagServiceBean implements TagService {
         return getLocalTagService().listTagsInGroup(em,tag.getCoreSession(),tag);
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void tagDocument(DocumentModel document, String tagId,
             boolean privateFlag) throws ClientException {
         getLocalTagService().tagDocument(em,document.getCoreSession(),document, tagId, privateFlag);
@@ -169,13 +165,11 @@ public class TagServiceBean implements TagService {
         return getLocalTagService().listTagsAppliedOnDocumentByUser(em, session, document);
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void tagDocument(CoreSession session, DocumentModel document,
             String tagId, boolean privateFlag) throws ClientException {
         getLocalTagService().tagDocument(em, session, document, tagId, privateFlag);
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public DocumentModel getOrCreateTag(CoreSession session,
             DocumentModel parent, String label, boolean privateFlag)
             throws ClientException {
