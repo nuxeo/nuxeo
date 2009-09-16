@@ -30,14 +30,14 @@
     var="statement" styleClass="dataOutput">
     <nxu:column>
       <nxdir:directoryEntryOutput
-      value="#{statement.predicate.uri}"
-      directoryName="predicates"
-      localize="true" />
+        value="#{statement.predicate.uri}"
+        directoryName="inverse_predicates"
+        localize="true" />
     </nxu:column>
     <nxu:column>
     <ui:include src="/relation_node_template.xhtml">
       <ui:param name="statement" value="#{statement}" />
-      <ui:param name="node" value="#{statement.objectInfo}" />
+      <ui:param name="node" value="#{statement.subjectInfo}" />
     </ui:include>  
     </nxu:column>
   </nxu:dataTable>
