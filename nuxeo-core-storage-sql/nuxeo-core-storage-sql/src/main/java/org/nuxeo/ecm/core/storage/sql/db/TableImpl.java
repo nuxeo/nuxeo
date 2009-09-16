@@ -67,6 +67,14 @@ public class TableImpl implements Table {
         fulltextIndexedColumns = new HashMap<String[], String>();
     }
 
+    public boolean isAlias() {
+        return false;
+    }
+
+    public Table getRealTable() {
+        return this;
+    }
+
     public Dialect getDialect() {
         return dialect;
     }

@@ -32,6 +32,10 @@ import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
  */
 public interface Table extends Serializable {
 
+    boolean isAlias();
+
+    Table getRealTable();
+
     Dialect getDialect();
 
     String getName();
