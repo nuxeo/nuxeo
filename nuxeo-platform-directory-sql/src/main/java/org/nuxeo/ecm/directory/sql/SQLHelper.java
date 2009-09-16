@@ -319,7 +319,9 @@ public class SQLHelper {
                     formatColumnValues(columnValues)), e);
         } finally {
             try {
-                csvReader.close();
+                if (csvReader != null) {
+                    csvReader.close();
+                }
             } catch (IOException e) {
                 throw new DirectoryException("Error closing data file: "
                         + dataFileName, e);
