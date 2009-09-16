@@ -86,4 +86,26 @@ public class TestDirectoryUIManagerRegistration extends NXRuntimeTestCase {
         assertEquals(0, constraints.size());
     }
 
+    public void testDirectoryUIOverride() throws Exception {
+        deployContrib("org.nuxeo.ecm.directory.web.tests",
+                "OSGI-INF/test-directory-ui-override-contrib.xml");
+
+        List<String> dirs = service.getDirectoryNames();
+        assertNotNull(dirs);
+        assertEquals(1, dirs.size());
+        assertEquals("country", dirs.get(0));
+
+        DirectoryUI continent = service.getDirectoryInfo("continent");
+        assertNull(continent);
+
+        DirectoryUI country = service.getDirectoryInfo("country");
+        assertNotNull(country);
+        assertEquals("country", country.getName());
+        assertEquals("country_vocabulary", country.getLayout());
+        assertEquals("parent", country.getSortField());
+        assertEquals("foo", country.getView());
+        List<DirectoryUIDeleteConstraint> constraints = country.getDeleteConstraints();
+        assertNotNull(constraints);
+        assertEquals(0, constraints.size());
+    }
 }

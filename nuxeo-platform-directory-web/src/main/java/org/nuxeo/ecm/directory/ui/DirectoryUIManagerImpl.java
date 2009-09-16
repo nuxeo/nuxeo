@@ -83,10 +83,15 @@ public class DirectoryUIManagerImpl extends DefaultComponent implements
 
         DirectoryUIDescriptor desc = (DirectoryUIDescriptor) contribution;
         String name = desc.getName();
+        boolean disabled = Boolean.FALSE.equals(desc.isEnabled());
         if (registry.containsKey(name)) {
             log.info("Overriding " + name);
         }
-        registry.put(name, desc);
+        if (disabled) {
+            registry.remove(name);
+        } else {
+            registry.put(name, desc);
+        }
     }
 
     @Override

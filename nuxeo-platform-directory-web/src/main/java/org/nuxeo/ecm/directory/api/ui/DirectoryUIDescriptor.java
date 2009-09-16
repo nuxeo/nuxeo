@@ -50,6 +50,9 @@ public class DirectoryUIDescriptor implements DirectoryUI {
     @XNode("@sortField")
     String sortField;
 
+    @XNode("@enabled")
+    Boolean enabled;
+
     @XNodeList(value = "deleteConstraint", type = ArrayList.class, componentType = DirectoryUIDeleteConstraintDescriptor.class)
     List<DirectoryUIDeleteConstraintDescriptor> deleteConstraints;
 
@@ -67,6 +70,10 @@ public class DirectoryUIDescriptor implements DirectoryUI {
 
     public String getSortField() {
         return sortField;
+    }
+
+    public Boolean isEnabled() {
+        return enabled;
     }
 
     public List<DirectoryUIDeleteConstraint> getDeleteConstraints()
