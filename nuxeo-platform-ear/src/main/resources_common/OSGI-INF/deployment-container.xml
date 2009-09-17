@@ -41,6 +41,8 @@
     <mkdir path="${war}" />
     <copy from="/OSGI-INF/templates/WAR_MANIFEST.MF"
       to="${war}/META-INF/MANIFEST.MF" />
+    <copy from="/OSGI-INF/templates/WAR_deployment-fragment.xml"
+      to="${war}/OSGI-INF/deployment-fragment.xml" />
 
   </install>
 
