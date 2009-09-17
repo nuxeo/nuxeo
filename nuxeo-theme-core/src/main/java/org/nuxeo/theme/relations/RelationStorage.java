@@ -149,7 +149,7 @@ public final class RelationStorage implements Registrable {
     private List<String> computeIndexString(List<Relate> relates) {
         List<String> indexString = new ArrayList<String>();
         for (Relate relate : relates) {
-            if (relate == null) {
+            if (relate == null || relate.hash() == null) {
                 indexString.add("*");
             } else {
                 indexString.add(relate.hash());
