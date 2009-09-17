@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.platform.annotations.repository.service;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -34,18 +31,28 @@ import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
 
-public class AnnotatedDocumentEventListenerImpl implements AnnotatedDocumentEventListener {
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+public class AnnotatedDocumentEventListenerImpl implements
+        AnnotatedDocumentEventListener {
 
     private static final Log log = LogFactory.getLog(AnnotatedDocumentEventListenerImpl.class);
 
     private static final String ANNOTATION_CREATED = "annotationCreated";
+
     private static final String ANNOTATION_UPDATED = "annotationUpdated";
+
     private static final String ANNOTATION_DELETED = "annotationDeleted";
 
     private transient EventService eventService;
@@ -71,12 +78,12 @@ public class AnnotatedDocumentEventListenerImpl implements AnnotatedDocumentEven
 
     public void afterAnnotationCreated(DocumentLocation documentLoc,
             Annotation annotation) {
-        sendMessage(documentLoc, annotation, ANNOTATION_CREATED);
+        notifyEvent(ANNOTATION_CREATED, annotation, documentLoc);
     }
 
     public void afterAnnotationDeleted(DocumentLocation documentLoc,
             Annotation annotation) {
-        sendMessage(documentLoc, annotation, ANNOTATION_DELETED);
+        notifyEvent(ANNOTATION_DELETED, annotation, documentLoc);
     }
 
     public void afterAnnotationRead(DocumentLocation documentLoc,
@@ -86,28 +93,27 @@ public class AnnotatedDocumentEventListenerImpl implements AnnotatedDocumentEven
 
     public void afterAnnotationUpdated(DocumentLocation documentLoc,
             Annotation annotation) {
-        sendMessage(documentLoc, annotation, ANNOTATION_UPDATED);
+        notifyEvent(ANNOTATION_UPDATED, annotation, documentLoc);
     }
 
-    public void sendMessage(DocumentLocation documentLocation,
-            Annotation annotation, String eventName) {
+    protected void notifyEvent(String eventId, Annotation annotation,
+            DocumentLocation documentLocation) {
         try {
-            DocumentModel document = getDocument(documentLocation);
+            DocumentModel dm = getDocument(documentLocation);
+            Map<String, Serializable> properties = new HashMap<String, Serializable>();
+
             DocumentEventContext ctx = new DocumentEventContext(null,
-                    new NuxeoPrincipalImpl(annotation.getCreator()), document);
+                    new NuxeoPrincipalImpl(annotation.getCreator()), dm);
+            ctx.setRepositoryName(dm.getRepositoryName());
+            ctx.setProperties(properties);
+            ctx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
 
-            ctx.setProperty(CoreEventConstants.REPOSITORY_NAME,
-                    document.getRepositoryName());
-            ctx.setProperty(CoreEventConstants.SESSION_ID,
-                    document.getSessionId());
-            ctx.setProperty("category",
-                    DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
-
-            Event event = ctx.newEvent(eventName);
-            event.setInline(true);
-            fireEvent(event);
+            Event event = ctx.newEvent(eventId);
+            EventProducer evtProducer;
+            evtProducer = Framework.getService(EventProducer.class);
+            evtProducer.fireEvent(event);
         } catch (Exception e) {
-            log.error("Error while sending event", e);
+            log.error("Unable to send the " + eventId + " event", e);
         }
     }
 
@@ -137,22 +143,6 @@ public class AnnotatedDocumentEventListenerImpl implements AnnotatedDocumentEven
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         Repository repository = repositoryManager.getRepository(repoName);
         return repository.open();
-    }
-
-    protected EventService getEventService() {
-        if (eventService == null) {
-            try {
-                eventService = Framework.getLocalService(EventService.class);
-            } catch (Exception e) {
-                throw new Error(
-                        "Nuxeo is misconfigured - Core Event Service was not found");
-            }
-        }
-        return eventService;
-    }
-
-    protected void fireEvent(Event event) throws ClientException {
-        getEventService().fireEvent(event);
     }
 
 }
