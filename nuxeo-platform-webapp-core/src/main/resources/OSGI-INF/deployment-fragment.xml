@@ -5,13 +5,6 @@
     <module>
       <ejb>${bundle.fileName}</ejb>
     </module>
-
-    <module>
-      <web>
-        <web-uri>nuxeo.war</web-uri>
-        <context-root>/nuxeo</context-root>
-      </web>
-    </module>
   </extension>
 
   <!-- uncomment that to enable tomcat based auth
@@ -63,7 +56,7 @@
       action="#{startupHelper.initDomainAndFindStartupPage('Default domain', 'view')}" />
 
     <!-- To redirect to the user dashboard instead, use instead:
-      
+
       <page view-id="/nxstartup.xhtml"
       action="#{startupHelper.initDomainAndFindStartupPage('Default domain', 'user_dashboard')}" />
     -->
