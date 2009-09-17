@@ -100,12 +100,10 @@ public class NuxeoAuthenticationFilter implements Filter {
      */
     protected String securityDomain = LOGIN_DOMAIN;
 
-    protected static List<String> validStartURLs;
-
     protected static final String URLPolicyService_DISABLE_REDIRECT_REQUEST_KEY = "nuxeo.disable.redirect.wrapper";
 
     public static final String SSO_INITIAL_URL_REQUEST = "sso.initial.url.request";
-    
+
     public static final String SSO_INITIAL_URL_REQUEST_TO_REMOVE = "sso.initial.url.request.remove.cookie";
 
     public void destroy() {
@@ -306,7 +304,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                 return;
             }
         }
-        
+
         if (request instanceof NuxeoSecuredRequestWrapper) {
             log.debug("ReEntering Nuxeo Authentication Filter ... exiting directly");
             chain.doFilter(request, response);
@@ -529,17 +527,6 @@ public class NuxeoAuthenticationFilter implements Filter {
             throw new ServletException(
                     "Can't initialize Nuxeo Pluggable Authentication Service");
         }
-
-        // gather unAuthenticated URLs
-        unAuthenticatedURLPrefix = new ArrayList<String>();
-        for (String pluginName : service.getAuthChain()) {
-            NuxeoAuthenticationPlugin plugin = service.getPlugin(pluginName);
-            List<String> prefix = plugin.getUnAuthenticatedURLPrefix();
-            if (prefix != null && !prefix.isEmpty()) {
-                unAuthenticatedURLPrefix.addAll(prefix);
-            }
-        }
-        validStartURLs = service.getStartURLPatterns();
     }
 
     /**
@@ -547,7 +534,7 @@ public class NuxeoAuthenticationFilter implements Filter {
      *
      * Returns true if target url is a valid startup page.
      */
-    public static boolean saveRequestedURLBeforeRedirect(
+    public boolean saveRequestedURLBeforeRedirect(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
         HttpSession session;
@@ -602,9 +589,9 @@ public class NuxeoAuthenticationFilter implements Filter {
         } else {
             requestedPage = httpRequest.getParameter(START_PAGE_SAVE_KEY);
         }
-        
+
         // if SSO authentication cookie store the initial URL asked
-        
+
         Cookie[] cookies = httpRequest.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -618,8 +605,8 @@ public class NuxeoAuthenticationFilter implements Filter {
         return requestedPage;
     }
 
-    protected static boolean isStartPageValid(String startPage) {
-        for (String prefix : validStartURLs) {
+    protected boolean isStartPageValid(String startPage) {
+        for (String prefix : service.getStartURLPatterns()) {
             if (startPage.startsWith(prefix)) {
                 return true;
             }
@@ -686,7 +673,23 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     // Plugin API
 
+    protected void initUnAuthenticatedURLPrefix() {
+        // gather unAuthenticated URLs
+        unAuthenticatedURLPrefix = new ArrayList<String>();
+        for (String pluginName : service.getAuthChain()) {
+            NuxeoAuthenticationPlugin plugin = service.getPlugin(pluginName);
+            List<String> prefix = plugin.getUnAuthenticatedURLPrefix();
+            if (prefix != null && !prefix.isEmpty()) {
+                unAuthenticatedURLPrefix.addAll(prefix);
+            }
+        }
+    }
+
     protected boolean bypassAuth(HttpServletRequest httpRequest) {
+        if (unAuthenticatedURLPrefix == null) {
+            // late init to allow plugins registered after this filter init
+            initUnAuthenticatedURLPrefix();
+        }
         String requestPage = getRequestedPage(httpRequest);
         for (String prefix : unAuthenticatedURLPrefix) {
             if (requestPage.startsWith(prefix)) {
