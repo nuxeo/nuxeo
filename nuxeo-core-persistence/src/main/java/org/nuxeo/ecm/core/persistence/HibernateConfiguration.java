@@ -19,7 +19,9 @@ package org.nuxeo.ecm.core.persistence;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.persistence.EntityManagerFactory;
@@ -27,6 +29,7 @@ import javax.persistence.EntityManagerFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.ejb.Ejb3Configuration;
+import org.hibernate.ejb.HibernatePersistence;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -34,6 +37,7 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.TransactionTypeHelper;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
@@ -79,6 +83,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
 
     public Ejb3Configuration setupConfiguration() {
         cfg = new Ejb3Configuration();
+
         cfg.configure(name, Collections.emptyMap());
 
         // Load hibernate properties
@@ -88,7 +93,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         for (Class<?> annotedClass : annotedClasses) {
             cfg.addAnnotatedClass(annotedClass);
         }
-
+        
         // needed for correct setup
         cfg.configure("fake-hibernate.cfg.xml");
 
@@ -99,7 +104,12 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         if (cfg == null) {
             setupConfiguration();
         }
-        return cfg.buildEntityManagerFactory();
+        Map<String,String> properties = new HashMap<String,String>();
+        String txType = TransactionTypeHelper.getTxType();
+        if (txType != null) {
+        	properties.put(HibernatePersistence.TRANSACTION_TYPE, "RESOURCE_LOCAL");
+        }
+        return cfg.createEntityManagerFactory(properties);
     }
 
     public static HibernateConfiguration load(URL location) {
