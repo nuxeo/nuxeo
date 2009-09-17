@@ -91,12 +91,12 @@
 
       <artifact group="org.jbpm.jbpm3" name="jbpm-jpdl" version="3.3.0.GA" />  
 
-      <artifact group="org.openoffice" name="ridl" version="2.2.0" />  
-      <artifact group="org.openoffice" name="juh" version="2.2.0" />  
-      <artifact group="org.openoffice" name="unoil" version="2.2.0" />  
-      <artifact group="org.openoffice" name="jurt" version="2.2.0" />  
-      <artifact group="com.artofsolving" name="jodconverter" version="2.2.1" />  
-      <artifact group="com.thoughtworks.xstream" name="xstream" version="1.2" />  
+      <artifact group="org.openoffice" name="ridl" version="3.0.1" />  
+      <artifact group="org.openoffice" name="juh" version="3.0.1" />  
+      <artifact group="org.openoffice" name="unoil" version="3.0.1" />  
+      <artifact group="org.openoffice" name="jurt" version="3.0.1" />  
+      <artifact group="com.artofsolving" name="jodconverter" version="2.2.2" />  
+      <artifact group="com.thoughtworks.xstream" name="xstream" version="1.3.1" />  
       <artifact group="pdfbox" name="pdfbox" version="0.7.3" />  
 
       <artifact group="org.richfaces.framework" name="richfaces-api" version="3.2.1.GA" />  
