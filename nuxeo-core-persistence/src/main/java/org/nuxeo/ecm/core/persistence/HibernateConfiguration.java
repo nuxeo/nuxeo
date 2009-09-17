@@ -26,6 +26,7 @@ import javax.persistence.EntityManagerFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.cfg.Environment;
 import org.hibernate.ejb.Ejb3Configuration;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -34,6 +35,7 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.TransactionFactoryHelper;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
@@ -98,6 +100,10 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     public EntityManagerFactory getFactory() {
         if (cfg == null) {
             setupConfiguration();
+        }
+        String txFactoryClass = TransactionFactoryHelper.getTxFactoryClass();
+        if (txFactoryClass != null) {
+        	cfg.setProperty(Environment.TRANSACTION_STRATEGY, txFactoryClass);
         }
         return cfg.buildEntityManagerFactory();
     }
