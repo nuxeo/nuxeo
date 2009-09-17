@@ -89,7 +89,7 @@ public class HtmlPreviewConverter implements ExternalConverter {
                 subConverters.add("pdf2html");
             }
         } else {
-            if (getCanUsePDF2Html()) {
+            if (getCanUseOOo2Html()) {
                 subConverters.add("office2html");
             } else {
                 return null;
