@@ -28,6 +28,10 @@
 
       <!-- Microsoft office documents -->
       <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
+      <!-- Microsoft office 2007 documents -->
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      </sourceMimeType>
       <!-- OpenOffice.org 1.x documents -->
       <sourceMimeType>application/vnd.sun.xml.calc</sourceMimeType>
       <sourceMimeType>application/vnd.sun.xml.calc.template</sourceMimeType>
@@ -56,6 +60,10 @@
 
       <!-- Microsoft office documents -->
       <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
+      <!-- Microsoft office 2007 documents -->
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.presentationml.presentation
+      </sourceMimeType>
       <!-- OpenOffice.org 1.x documents -->
       <sourceMimeType>application/vnd.sun.xml.impress</sourceMimeType>
       <sourceMimeType>application/vnd.sun.xml.impress.template</sourceMimeType>
@@ -91,6 +99,17 @@
       <sourceMimeType>application/msword</sourceMimeType>
       <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
       <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
+
+      <!-- Microsoft office 2007 documents -->
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.presentationml.presentation
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      </sourceMimeType>
 
       <!-- OpenOffice.org 1.x documents -->
       <sourceMimeType>application/vnd.sun.xml.writer</sourceMimeType>
@@ -148,6 +167,17 @@
       <sourceMimeType>application/msword</sourceMimeType>
       <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
       <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
+
+      <!-- Microsoft office 2007 documents -->
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.presentationml.presentation
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      </sourceMimeType>
 
       <!-- OpenOffice.org 1.x documents -->
       <sourceMimeType>application/vnd.sun.xml.writer</sourceMimeType>

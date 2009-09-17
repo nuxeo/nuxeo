@@ -46,10 +46,10 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
+import com.artofsolving.jodconverter.DefaultDocumentFormatRegistry;
 import com.artofsolving.jodconverter.DocumentFamily;
 import com.artofsolving.jodconverter.DocumentFormat;
 import com.artofsolving.jodconverter.DocumentFormatRegistry;
-import com.artofsolving.jodconverter.XmlDocumentFormatRegistry;
 import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter;
@@ -60,7 +60,7 @@ public class JODBasedConverter implements ExternalConverter {
 
     private static final Log log = LogFactory.getLog(JODBasedConverter.class);
 
-    private static final DocumentFormatRegistry formatRegistry = new XmlDocumentFormatRegistry();
+    private static final DocumentFormatRegistry formatRegistry = new DefaultDocumentFormatRegistry();
 
     private static final String DEFAULT_OOO_HOST_URL = "localhost";
 
@@ -298,9 +298,17 @@ public class JODBasedConverter implements ExternalConverter {
                 File[] files = null;
                 try {
 
+                    // Get original file extension
+                    String ext = inputBlob.getFilename();
+                    int dotPosition = ext.lastIndexOf(".");
+                    if (dotPosition == -1) {
+                        ext = ".bin";
+                    } else {
+                        ext = ext.substring(dotPosition);
+                    }
                     // Copy in a file to be able to read it several time
                     sourceFile = File.createTempFile(
-                            "NXJOOoConverterDocumentIn", ".bin");
+                            "NXJOOoConverterDocumentIn", ext);
                     InputStream stream = inputBlob.getStream();
                     //if (stream.markSupported()) {
                     //    stream.reset(); // works on a JCRBlobInputStream
