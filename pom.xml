@@ -428,6 +428,11 @@
         <version>3.3.0.GA</version>
       </dependency>
       <dependency>
+        <groupId>cglib</groupId>
+        <artifactId>cglib</artifactId>
+        <version>2.2</version>
+      </dependency>
+      <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss</artifactId>
         <version>${jboss.version}</version>
@@ -585,19 +590,19 @@
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate</artifactId>
-        <version>3.2.0.ga</version>
+        <version>3.2.1.ga.NXP-3881</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-annotations</artifactId>
-        <version>3.2.0.ga</version>
+        <version>3.2.1.ga</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
-        <version>3.2.0.ga</version>
+        <version>3.2.1.ga</version>
         <scope>provided</scope>
       </dependency>
 
@@ -1808,6 +1813,17 @@
     <repository>
       <id>public</id>
       <url>http://maven.nuxeo.org/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <!-- needed for NXP-3881, nexus indexes are broken for org.hibernate in public repository -->
+    <repository>
+      <id>vendor</id>
+      <url>http://maven.nuxeo.org/vendor-release</url>
       <releases>
         <enabled>true</enabled>
       </releases>
