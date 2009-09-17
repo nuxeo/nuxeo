@@ -118,7 +118,11 @@
       <artifact group="net.sf.opencsv" name="opencsv" version="1.7" />
       <artifact group="xerces" name="xercesImpl" version="2.8.1" />
       <artifact group="org.apache.derby" name="derby" />
-      <artifact group="org.hibernate" name="hibernate" />
+<!--
+      <artifact group="hibernate" name="hibernate3" version="3.2.1.ga-NXP-3881"/>
+      <artifact group="org.hibernate" name="hibernate-annotations" version="3.2.1.ga" />
+ -->
+      <artifact group="org.hibernate" name="hibernate"/>
       <artifact group="org.hibernate" name="hibernate-annotations" />
       <artifact group="org.slf4j" name="slf4j-api" />
       <artifact group="org.slf4j" name="slf4j-log4j12" />
