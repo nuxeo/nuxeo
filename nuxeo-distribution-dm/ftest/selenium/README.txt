@@ -97,15 +97,75 @@ previous tests to be run to succeed.
 Generic advice when writing tests
 ---------------------------------
 
+- Have a look at selenium commands to see what is available.
+
+- Write small test cases, and try to make them as unit as possible. Do not
+  forget to set a timeout at the beginning of your test (it default to
+  3000ms may not be enough) and to start and end the test by logging out of
+  the nuxeo application.
+
 - Be specific when testing an element: a vague xpath reference may trigger a
   false error if the HTML page slightly changes. If you can't be specific,
   then page rendering should be changed to ease this process.
 
-- Handle ajax requests properly: using the Selenium command
-  "waitForCondition" with appropriate javascript testing is usually enough
-  to test that the ajax response has been received. If this condition is not
-  set, or not appropriate, it may lead to "heisenbugs", e.g. tests
+- Handle ajax requests properly: if the test cannot detect correctly when
+  the ajax call is finished, it may lead to "heisenbugs", e.g. tests
   alternatively failing or succeeding with no apparent reason.
+
+  1. when triggering an ajax call through a4j or richfaces JSF libraries,
+     the following commands have been made available in the nuxeo suites
+     user-extensions.js file: "watchA4jRequests" and
+     "waitForA4jRequest". "watchA4jRequests" has to be called *before* any
+     command that will trigger an ajax call, it does not take any
+     parameters. "waitForA4jRequest" has to be called *after* the command
+     that will trigger an ajax call, it takes a timeout as parameter.
+
+     Sample usage:
+
+     <tr>
+       <td>watchA4jRequests</td>
+       <td></td>
+       <td></td>
+     </tr>
+     <tr>
+       <td>typeKeys</td>
+       <td>//input[@name='createUser:nxl_user:nxw_groups_suggest']</td>
+       <td>members</td>
+     </tr>
+     <tr>
+       <td>waitForA4jRequest</td>
+       <td>10000</td>
+       <td></td>
+     </tr>
+
+  2. when triggering a remote call using jQuery or prototype Javascript
+     libraries, the following command has been made available in the nuxeo
+     suites user-extensions.js file: waitForJSQueries. It takes a timeout
+     has parameter.
+
+     Sample usage:
+
+     <tr>
+       <td>waitForQueries</td>
+       <td>100000</td>
+       <td></td>
+     </tr>
+
+  3. when triggering any other call (Javascript call with Seam remoting
+     calls for instance), using the Selenium command "waitForCondition" with
+     appropriate javascript testing is usually enough to test that the ajax
+     response has been received. Commands "waitForEditable" or
+     "waitForTextPresent" may also be helpful.
+
+     Sample usage:
+
+     <!-- wait for table to disappear -->
+     <tr>
+       <td>waitForCondition</td>
+       <td>selenium.browserbot.getCurrentWindow().document.getElementById('editGroup:nxl_group:nxw_members_list:2:nxw_members_listItem') == null</td>
+       <td>10000</td>
+     </tr>
+
 
 
 Test suites description

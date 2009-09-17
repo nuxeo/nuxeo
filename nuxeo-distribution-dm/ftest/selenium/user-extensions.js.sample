@@ -56,8 +56,20 @@ Selenium.prototype.doWatchA4jRequests = function() {
   if (testWindow.wrappedJSObject) {
       testWindow = testWindow.wrappedJSObject;
   }
+  Selenium.A4jRequestFinished = false;
+  Selenium.ActiveA4jRequestCount = 0;
   testWindow.A4J.AJAX.AddListener({
-    onafterajax: function() {Selenium.A4jRequestFinished = true}
+    onbeforeajax: function() {
+      Selenium.ActiveA4jRequestCount++;
+    }
+  });
+  testWindow.A4J.AJAX.AddListener({
+    onafterajax: function() {
+      Selenium.ActiveA4jRequestCount--;
+      if (Selenium.ActiveA4jRequestCount == 0) {
+        Selenium.A4jRequestFinished = true;
+      }
+    }
   });
 }
 
@@ -76,3 +88,20 @@ Selenium.prototype.doWaitForA4jRequest = function(timeout) {
 }
 
 Selenium.A4jRequestFinished = false;
+Selenium.ActiveA4jRequestCount = 0;
+
+
+// wait for jquery and/or prototype calls
+Selenium.prototype.doWaitForJSQueries = function(timeout) {
+  return Selenium.decorateFunctionWithTimeout(function() {
+  	var testWindow = selenium.browserbot.getCurrentWindow();
+    if (testWindow.wrappedJSObject) {
+        testWindow = testWindow.wrappedJSObject;
+    }
+    if (testWindow.jQuery.active == 0 && testWindow.Ajax.activeRequestCount == 0) {
+      return true;
+    }
+    return false;
+  }, timeout);
+}
+
