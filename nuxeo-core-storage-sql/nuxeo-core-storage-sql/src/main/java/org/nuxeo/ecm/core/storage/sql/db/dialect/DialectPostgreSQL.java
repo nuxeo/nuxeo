@@ -117,6 +117,13 @@ public class DialectPostgreSQL extends Dialect {
         if (expected == Types.CLOB && actual == Types.VARCHAR) {
             return true;
         }
+        // INTEGER vs BIGINT compatibility
+        if (expected == Types.BIGINT && actual == Types.INTEGER) {
+            return true;
+        }
+        if (expected == Types.INTEGER && actual == Types.BIGINT) {
+            return true;
+        }
         return false;
     }
 

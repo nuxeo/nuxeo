@@ -102,11 +102,18 @@ public class DialectMySQL extends Dialect {
     @Override
     public boolean isAllowedConversion(int expected, int actual,
             String actualName, int actualSize) {
-        // CLOB vs VARCHAR compatibility
+        // LONGVARCHAR vs VARCHAR compatibility
         if (expected == Types.VARCHAR && actual == Types.LONGVARCHAR) {
             return true;
         }
         if (expected == Types.LONGVARCHAR && actual == Types.VARCHAR) {
+            return true;
+        }
+        // INTEGER vs BIGINT compatibility
+        if (expected == Types.BIGINT && actual == Types.INTEGER) {
+            return true;
+        }
+        if (expected == Types.INTEGER && actual == Types.BIGINT) {
             return true;
         }
         return false;
