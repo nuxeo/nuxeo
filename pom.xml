@@ -590,7 +590,7 @@
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate</artifactId>
-        <version>3.2.1.ga.NXP-3881</version>
+        <version>3.2.1.ga-NXP-3881</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -1822,8 +1822,8 @@
     </repository>
     <!-- needed for NXP-3881, nexus indexes are broken for org.hibernate in public repository -->
     <repository>
-      <id>vendor</id>
-      <url>http://maven.nuxeo.org/vendor-release</url>
+      <id>central</id>
+      <url>http://maven.nuxeo.org/nuxeo-central</url>
       <releases>
         <enabled>true</enabled>
       </releases>
