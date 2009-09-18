@@ -140,8 +140,8 @@ public class DeleteActionsBean extends InputController implements
 
     private Boolean searchDeletedDocuments;
 
-
-    private static class PathComparator implements Comparator<DocumentModel>, Serializable {
+    private static class PathComparator implements Comparator<DocumentModel>,
+            Serializable {
 
         private static final long serialVersionUID = -6449747704324789701L;
 
@@ -252,8 +252,7 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public boolean getCanDelete() {
-        List<DocumentModel> docsToDelete
-                = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
 
         if (docsToDelete == null || docsToDelete.isEmpty()) {
             return false;
@@ -264,8 +263,7 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public boolean getCanDeleteSections() {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(
-                DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
         if (docsToDelete == null || docsToDelete.isEmpty()) {
             return false;
@@ -287,8 +285,7 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public boolean getCanPurge() throws ClientException {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(
-                DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
+        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
 
         if (docsToDelete == null || docsToDelete.isEmpty()) {
             return false;
@@ -398,8 +395,7 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public String deleteSelectionSections() throws ClientException {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(
-                DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
         if (docsToDelete == null || docsToDelete.isEmpty()) {
             return null;
@@ -528,7 +524,6 @@ public class DeleteActionsBean extends InputController implements
         }
     }
 
-
     public String undeleteSelection() throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION)) {
             return undeleteSelection(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION));
@@ -636,23 +631,19 @@ public class DeleteActionsBean extends InputController implements
 
             // restore children
             /*
-            if (document.isFolder()) {
-
-                DocumentRef parentRef = document.getRef();
-                String transition = UNDELETE_TRANSITION;
-                String aUser = currentUser.toString();
-                String repository = currentServerLocation.getName();
-
-                MassLifeCycleTransitionMessage msg = new MassLifeCycleTransitionMessage(
-                        aUser, transition, repository, parentRef);
-
-                try {
-                    getDocumentMessageProducer().produce(msg);
-
-                } catch (Exception e) {
-                    throw new ClientException(e);
-                }
-            }*/
+             * if (document.isFolder()) {
+             *
+             * DocumentRef parentRef = document.getRef(); String transition =
+             * UNDELETE_TRANSITION; String aUser = currentUser.toString();
+             * String repository = currentServerLocation.getName();
+             *
+             * MassLifeCycleTransitionMessage msg = new
+             * MassLifeCycleTransitionMessage( aUser, transition, repository,
+             * parentRef);
+             *
+             * try { getDocumentMessageProducer().produce(msg);
+             *  } catch (Exception e) { throw new ClientException(e); } }
+             */
         }
     }
 
@@ -674,8 +665,7 @@ public class DeleteActionsBean extends InputController implements
             throws ClientException {
 
         DocumentModelList documents = getCurrentDocumentDeletedChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
-                DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(
                 DocumentActions.CHILDREN_DOCUMENT_LIST, documents,
                 selectedDocuments);
