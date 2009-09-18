@@ -53,9 +53,15 @@ import org.nuxeo.ecm.core.storage.sql.db.Table;
  */
 public class DialectOracle extends Dialect {
 
+    private static final String DEFAULT_FULLTEXT_LEXER = "BASIC_LEXER";
+
+    protected final String fulltextLexer;
+
     public DialectOracle(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(new Oracle9Dialect(), metadata);
+        fulltextLexer = repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_LEXER
+                : repositoryDescriptor.fulltextAnalyzer;
     }
 
     @Override
@@ -234,8 +240,8 @@ public class DialectOracle extends Dialect {
             String quotedIndexName, String tableName, List<String> columnNames) {
         return String.format(
                 "CREATE INDEX %s ON %s(%s) INDEXTYPE IS CTXSYS.CONTEXT "
-                        + "PARAMETERS('SYNC (ON COMMIT) TRANSACTIONAL')",
-                quotedIndexName, tableName, columnNames.get(0));
+                        + "PARAMETERS('LEXER %s SYNC (ON COMMIT) TRANSACTIONAL')",
+                quotedIndexName, tableName, columnNames.get(0), fulltextLexer);
     }
 
     @Override
