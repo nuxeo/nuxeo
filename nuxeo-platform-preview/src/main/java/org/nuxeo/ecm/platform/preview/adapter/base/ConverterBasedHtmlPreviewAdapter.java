@@ -176,9 +176,7 @@ public class ConverterBasedHtmlPreviewAdapter extends
         for (Blob blob : result.getBlobs()) {
             String filename = blob.getFilename();
             if (filename != null && filename.endsWith("html")) {
-                if (blob.getMimeType() == null) {
-                    blob.setMimeType("text/html");
-                }
+                blob.setMimeType("text/html");
                 foundHtmlBlob = true;
             }
         }
