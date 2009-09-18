@@ -67,7 +67,6 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleEventTypes;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
@@ -78,7 +77,6 @@ import org.nuxeo.ecm.core.model.PathComparator;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.FilterableQuery;
 import org.nuxeo.ecm.core.query.Query;
-import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.QueryResult;
@@ -241,8 +239,8 @@ public abstract class AbstractSession implements CoreSession,
      * be unique in the system)
      *
      * <ul>
-     * <li>A is the repository name (which uniquely identifies the repository in
-     * the system)
+     * <li>A is the repository name (which uniquely identifies the repository
+     * in the system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>
      *
@@ -2370,14 +2368,18 @@ public abstract class AbstractSession implements CoreSession,
             if (operationResult) {
                 // Construct a map holding meta information about the event.
                 Map<String, Serializable> options = new HashMap<String, Serializable>();
-                options.put(LifeCycleEventTypes.OPTION_NAME_FROM,
+                options.put(
+                        org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_FROM,
                         formerStateName);
-                options.put(LifeCycleEventTypes.OPTION_NAME_TO,
+                options.put(
+                        org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TO,
                         doc.getCurrentLifeCycleState());
-                options.put(LifeCycleEventTypes.OPTION_NAME_TRANSITION,
+                options.put(
+                        org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION,
                         transition);
                 DocumentModel docModel = readModel(doc, null);
-                notifyEvent(LifeCycleEventTypes.LIFECYCLE_TRANSITION_EVENT,
+                notifyEvent(
+                        org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT,
                         docModel, options,
                         DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY,
                         null, true, false);
