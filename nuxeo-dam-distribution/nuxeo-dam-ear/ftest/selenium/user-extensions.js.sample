@@ -56,22 +56,58 @@ Selenium.prototype.doWatchA4jRequests = function() {
   if (testWindow.wrappedJSObject) {
       testWindow = testWindow.wrappedJSObject;
   }
+  Selenium.A4jRequestFinished = false;
+  Selenium.ActiveA4jRequestCount = 0;
   testWindow.A4J.AJAX.AddListener({
-    onbeforeajax: function() {Selenium.ActiveA4jRequestCount++}
+    onbeforeajax: function() {
+      Selenium.ActiveA4jRequestCount++;
+    }
   });
   testWindow.A4J.AJAX.AddListener({
-    onafterajax: function() {Selenium.ActiveA4jRequestCount--}
+    onafterajax: function() {
+      Selenium.ActiveA4jRequestCount--;
+      if (Selenium.ActiveA4jRequestCount == 0) {
+        Selenium.A4jRequestFinished = true;
+      }
+    }
   });
 }
 
-/**
- * If you've set up with watchA4jRequests, this routine will wait until
- * an Ajax request has finished and then return.
- */
 Selenium.prototype.doWaitForA4jRequest = function(timeout) {
   return Selenium.decorateFunctionWithTimeout(function() {
-    return Selenium.ActiveA4jRequestCount == 0;
+    if (Selenium.A4jRequestFinished) {
+      Selenium.A4jRequestFinished = false;
+      //Selenium.prototype.doPause(2000);
+      return true;
+    }
+    return false;
   }, timeout);
 }
 
+Selenium.A4jRequestFinished = false;
 Selenium.ActiveA4jRequestCount = 0;
+
+// works for jquery and prototype calls
+Selenium.prototype.doWaitForQueries = function(timeout) {
+  return Selenium.decorateFunctionWithTimeout(function() {
+  	var testWindow = selenium.browserbot.getCurrentWindow();
+    if (testWindow.wrappedJSObject) {
+        testWindow = testWindow.wrappedJSObject;
+    }
+    if (testWindow.jQuery.active == 0 && testWindow.Ajax.activeRequestCount == 0) {
+      return true;
+    }
+    return false;
+  }, timeout);
+}
+
+/**
+ * Return the JQueryWindow (needed as it differ in Selenium IDE and using run.sh
+ **/
+Selenium.prototype.getJQueryWindow = function() {
+    var testWindowJQuery = selenium.browserbot.getCurrentWindow();
+    if (testWindowJQuery.wrappedJSObject) {
+        testWindowJQuery = testWindowJQuery.wrappedJSObject;
+    }
+    return testWindowJQuery;
+}
