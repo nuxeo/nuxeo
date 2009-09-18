@@ -11,12 +11,17 @@
         <indexing>
           <!-- for H2 (Lucene Analyzer): -->
           <fulltext analyzer="org.apache.lucene.analysis.fr.FrenchAnalyzer">
-            <index name="default"> 
+            <index name="default">
               <!-- all props implied -->
             </index>
-          </fulltext> 
+          </fulltext>
           <!-- for PostgreSQL (Text Search Configuration):
+               http://www.postgresql.org/docs/8.3/static/textsearch-configuration.html
           <fulltext analyzer="english"/>
+          -->
+          <!-- for Oracle (Oracle Text Lexer):
+               http://download.oracle.com/docs/cd/B19306_01/text.102/b14218/cdatadic.htm#sthref505
+          <fulltext analyzer="BASIC_LEXER"/>
           -->
         </indexing>
       </repository>
