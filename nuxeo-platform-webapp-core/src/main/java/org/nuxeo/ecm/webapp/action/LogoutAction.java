@@ -19,8 +19,10 @@
 
 package org.nuxeo.ecm.webapp.action;
 
-import java.io.IOException;
 import java.io.Serializable;
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ejb.Remove;
 import javax.faces.context.ExternalContext;
@@ -34,6 +36,8 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.common.utils.URIUtils;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
@@ -48,7 +52,6 @@ import org.nuxeo.ecm.webapp.base.InputController;
 
 @Name("loginLogoutAction")
 @Scope(ScopeType.STATELESS)
-// @Startup
 public class LogoutAction extends InputController implements Serializable {
 
     private static final long serialVersionUID = -5100044672151458204L;
@@ -64,9 +67,10 @@ public class LogoutAction extends InputController implements Serializable {
      * anymore.
      *
      * @return the next page that is going to be displayed
-     * @throws IOException
+     * @throws Exception
      */
-    public static String logout() throws IOException {
+    public static String logout() throws Exception {
+        Map<String, String> parameters = new HashMap<String, String>();
         FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext eContext = context.getExternalContext();
         Object req = eContext.getRequest();
@@ -79,12 +83,22 @@ public class LogoutAction extends InputController implements Serializable {
         if (resp instanceof HttpServletResponse) {
             response = (HttpServletResponse) resp;
         }
-
-        if (response != null && request != null && !context.getResponseComplete()) {
-            String baseURL = BaseURL.getBaseURL(request);
+        Principal principal = request.getUserPrincipal();
+        NuxeoPrincipal nuxeoPrincipal = null;
+        if (principal instanceof NuxeoPrincipal) {
+            nuxeoPrincipal = (NuxeoPrincipal) principal;
+            if (nuxeoPrincipal.isAnonymous()) {
+                parameters.put(NXAuthConstants.FORCE_ANONYMOUS_LOGIN, "true");
+            }
+        }
+        if (response != null && request != null
+                && !context.getResponseComplete()) {
+            String baseURL = BaseURL.getBaseURL(request)
+                    + NXAuthConstants.LOGOUT_PAGE;
             request.setAttribute(URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY,
                     true);
-            response.sendRedirect(baseURL + NXAuthConstants.LOGOUT_PAGE);
+            baseURL = URIUtils.addParametersToURIQuery(baseURL, parameters);
+            response.sendRedirect(baseURL);
             context.responseComplete();
         }
         return null;

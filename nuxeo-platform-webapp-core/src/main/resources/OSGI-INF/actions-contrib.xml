@@ -27,7 +27,7 @@
       <filter-id>not_anonymous</filter-id>
     </action>
 
-    <action id="login" link="#{anonymousLoginManager.login}"
+    <action id="login" link="#{loginLogoutAction.logout}"
       label="command.login">
       <category>USER_SERVICES_BOTTOM</category>
       <filter-id>anonymous</filter-id>
