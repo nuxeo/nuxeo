@@ -40,6 +40,15 @@ public interface ConversionService {
     String getConverterName(String sourceMimeType, String destinationMimeType);
 
     /**
+     * Gets the available convertNames given a source and destination MimeType
+     *
+     * @param sourceMimeType
+     * @param destinationMimeType
+     * @return
+     */
+    List<String> getConverterNames(String sourceMimeType, String destinationMimeType);
+
+    /**
      * Do a Blob conversion given a converter name.
      *
      * @param converterName

@@ -200,10 +200,18 @@ public class ConversionServiceImpl extends DefaultComponent implements
         return convert(converterName, blobHolder, parameters);
     }
 
+    public List<String> getConverterNames(String sourceMimeType, String destinationMimeType) {
+        return MimeTypeTranslationHelper.getConverterNames(sourceMimeType,
+                destinationMimeType);
+    }
+
     public String getConverterName(String sourceMimeType,
             String destinationMimeType) {
-        return MimeTypeTranslationHelper.getConverterName(sourceMimeType,
-                destinationMimeType);
+        List<String> converterNames = getConverterNames(sourceMimeType, destinationMimeType);
+        if (!converterNames.isEmpty()) {
+            return converterNames.get(converterNames.size() - 1);
+        }
+        return null;
     }
 
     public ConverterCheckResult isConverterAvailable(String converterName)
