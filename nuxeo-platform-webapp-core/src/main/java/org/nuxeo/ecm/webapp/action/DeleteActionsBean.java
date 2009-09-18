@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
@@ -88,10 +89,6 @@ public class DeleteActionsBean extends InputController implements
     private static final long serialVersionUID = 9860854328986L;
 
     private static final Log log = LogFactory.getLog(DeleteActionsBean.class);
-
-    private static final String DOC_REF = "ref";
-
-    private static final String WANTED_TRANSITION = "transition";
 
     private static final String DELETE_OUTCOME = "after_delete";
 
@@ -292,7 +289,7 @@ public class DeleteActionsBean extends InputController implements
         }
 
         for (DocumentModel doc : docsToDelete) {
-            if (!"deleted".equals(doc.getCurrentLifeCycleState())) {
+            if (!LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
                 return false;
             }
         }
@@ -629,21 +626,7 @@ public class DeleteActionsBean extends InputController implements
                         + " Life Cycle is not available 1");
             }
 
-            // restore children
-            /*
-             * if (document.isFolder()) {
-             *
-             * DocumentRef parentRef = document.getRef(); String transition =
-             * UNDELETE_TRANSITION; String aUser = currentUser.toString();
-             * String repository = currentServerLocation.getName();
-             *
-             * MassLifeCycleTransitionMessage msg = new
-             * MassLifeCycleTransitionMessage( aUser, transition, repository,
-             * parentRef);
-             *
-             * try { getDocumentMessageProducer().produce(msg);
-             *  } catch (Exception e) { throw new ClientException(e); } }
-             */
+            // restore of children done in core listener
         }
     }
 
@@ -809,7 +792,7 @@ public class DeleteActionsBean extends InputController implements
         String[] states = null;
         if (searchDeletedDocuments) {
             states = new String[] { "project", "approved", "obsolete",
-                    "deleted" };
+                    LifeCycleConstants.DELETED_STATE };
         } else {
             states = new String[] { "project", "approved", "obsolete" };
         }
@@ -827,7 +810,7 @@ public class DeleteActionsBean extends InputController implements
     public boolean getCanRestoreCurrentDoc() throws ClientException {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc != null) {
-            return "deleted".equals(currentDoc.getCurrentLifeCycleState());
+            return LifeCycleConstants.DELETED_STATE.equals(currentDoc.getCurrentLifeCycleState());
         } else {
             // this shouldn't happen, if it happens probably there is a
             // customization bug, we guard this though

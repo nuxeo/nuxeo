@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.action.TypesTool;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -122,7 +123,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
             List<DocumentModel> deleted = new ArrayList<DocumentModel>();
             for (Iterator<DocumentModel> it = templates.iterator(); it.hasNext();) {
                 DocumentModel current = it.next();
-                if (current.getCurrentLifeCycleState().equals("deleted")) {
+                if (LifeCycleConstants.DELETED_STATE.equals(current.getCurrentLifeCycleState())) {
                     deleted.add(current);
                 }
             }
