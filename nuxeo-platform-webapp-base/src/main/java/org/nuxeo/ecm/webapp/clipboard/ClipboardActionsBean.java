@@ -198,9 +198,9 @@ public class ClipboardActionsBean extends InputController implements
             Object[] params = { docsList.size() };
 
             FacesMessage message = FacesMessages.createFacesMessage(
-                    FacesMessage.SEVERITY_INFO,
-                    "#0 " + resourcesAccessor.getMessages().get("n_copied_docs"),
-                    params);
+                    FacesMessage.SEVERITY_INFO, "#0 "
+                            + resourcesAccessor.getMessages().get(
+                                    "n_copied_docs"), params);
 
             facesMessages.add(message);
 
@@ -225,9 +225,9 @@ public class ClipboardActionsBean extends InputController implements
         canEditSelectedDocs = null;
         if (null != docsList) {
             Object[] params = { docsList.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    "#0 " + resourcesAccessor.getMessages().get("n_added_to_worklist_docs"),
-                    params);
+            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+                    + resourcesAccessor.getMessages().get(
+                            "n_added_to_worklist_docs"), params);
 
             // Add to the default working list
             documentsListsManager.addToWorkingList(
@@ -248,8 +248,8 @@ public class ClipboardActionsBean extends InputController implements
     public void copySelection(List<DocumentModel> copiedDocs) {
         if (null != copiedDocs) {
             Object[] params = { copiedDocs.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    "#0 " + resourcesAccessor.getMessages().get("n_copied_docs"),
+            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+                    + resourcesAccessor.getMessages().get("n_copied_docs"),
                     params);
 
             // clipboard.copy(copiedDocs);
@@ -300,8 +300,8 @@ public class ClipboardActionsBean extends InputController implements
                     getParent(currentDocument), docPaste);
 
             Object[] params = { newDocs.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    "#0 " + resourcesAccessor.getMessages().get("n_pasted_docs"),
+            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+                    + resourcesAccessor.getMessages().get("n_pasted_docs"),
                     params);
 
             eventManager.raiseEventsOnDocumentSelected(currentDocument);
@@ -324,8 +324,8 @@ public class ClipboardActionsBean extends InputController implements
                     targetDoc, docPaste);
 
             Object[] params = { newDocs.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    "#0 " + resourcesAccessor.getMessages().get("n_pasted_docs"),
+            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+                    + resourcesAccessor.getMessages().get("n_pasted_docs"),
                     params);
 
             eventManager.raiseEventsOnDocumentSelected(targetDoc);
@@ -369,7 +369,8 @@ public class ClipboardActionsBean extends InputController implements
         return newDocs;
     }
 
-    public String moveDocumentList(String listName, String docId) throws ClientException {
+    public String moveDocumentList(String listName, String docId)
+            throws ClientException {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(listName);
         DocumentModel targetDoc = documentManager.getDocument(new IdRef(docId));
         // Get all parent folders
@@ -378,15 +379,13 @@ public class ClipboardActionsBean extends InputController implements
             parentRefs.add(doc.getParentRef());
         }
 
-        List<DocumentModel> newDocs = moveDocumentsToNewParent(
-                targetDoc, docs);
+        List<DocumentModel> newDocs = moveDocumentsToNewParent(targetDoc, docs);
 
         documentsListsManager.getWorkingList(listName).clear();
 
         Object[] params = { newDocs.size() };
         facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
-                + resourcesAccessor.getMessages().get("n_moved_docs"),
-                params);
+                + resourcesAccessor.getMessages().get("n_moved_docs"), params);
 
         eventManager.raiseEventsOnDocumentSelected(targetDoc);
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
@@ -402,7 +401,6 @@ public class ClipboardActionsBean extends InputController implements
 
         return null;
     }
-
 
     public String moveDocumentList(String listName) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -436,7 +434,6 @@ public class ClipboardActionsBean extends InputController implements
         moveDocumentList(DocumentsListsManager.CLIPBOARD, docId);
         return null;
     }
-
 
     /**
      * Creates the documents in the backend under the target parent.
@@ -590,7 +587,8 @@ public class ClipboardActionsBean extends InputController implements
                 }
 
                 // NXP-2334 : skip deleted docs
-                if (doc.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE)) {
+                if (doc.getCurrentLifeCycleState().equals(
+                        DELETED_LIFECYCLE_STATE)) {
                     continue;
                 }
 
@@ -724,7 +722,8 @@ public class ClipboardActionsBean extends InputController implements
      * child of the current document
      * </ul>
      */
-    public boolean getCanMoveInside(String listName, DocumentModel document) throws ClientException {
+    public boolean getCanMoveInside(String listName, DocumentModel document)
+            throws ClientException {
         if (documentsListsManager.isWorkingListEmpty(listName)
                 || document == null) {
             return false;
@@ -806,7 +805,8 @@ public class ClipboardActionsBean extends InputController implements
         for (DocumentModel docChild : docList) {
 
             // NXP-2334 : skip deleted docs
-            if (docChild.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE)) {
+            if (docChild.getCurrentLifeCycleState().equals(
+                    DELETED_LIFECYCLE_STATE)) {
                 continue;
             }
 
@@ -837,10 +837,11 @@ public class ClipboardActionsBean extends InputController implements
 
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
         for (DocumentModel docChild : docList) {
-            //If there is a blob or a folder, it is not empty.
-            if( docChild.getAdapter(BlobHolder.class) != null || docChild.isFolder() ) {
+            // If there is a blob or a folder, it is not empty.
+            if (docChild.getAdapter(BlobHolder.class) != null
+                    || docChild.isFolder()) {
                 return false;
-            }            
+            }
         }
         return true;
     }
