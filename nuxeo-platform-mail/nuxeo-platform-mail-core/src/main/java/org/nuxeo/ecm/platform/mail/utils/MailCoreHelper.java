@@ -72,8 +72,6 @@ public final class MailCoreHelper {
 
     public static final String INBOX = "INBOX";
 
-    public static final String DELETED_LIFECYCLE_STATE = "deleted";
-
     public static final long EMAILS_LIMIT_DEFAULT = 100;
 
     private static MailService mailService;

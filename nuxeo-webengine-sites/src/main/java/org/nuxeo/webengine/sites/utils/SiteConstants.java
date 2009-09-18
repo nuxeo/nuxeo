@@ -16,6 +16,8 @@
  */
 package org.nuxeo.webengine.sites.utils;
 
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
+
 /**
  * Utility class used for registering constants.
  */
@@ -76,7 +78,9 @@ public final class SiteConstants {
 
     /**
      * LifeCycle
+     * @deprecated use {@link LifeCycleConstants#DELETED_STATE}
      */
+    @Deprecated
     public static final String DELETED = "deleted";
 
     /**
