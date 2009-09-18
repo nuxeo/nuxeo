@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 
 /**
  * Default filter for tree elements.
@@ -49,8 +50,7 @@ public class DefaultDocumentTreeFilter implements DocumentTreeFilter {
         }
         // exclude deleted documents from tree
         try {
-            // FIXME: avoid harcoded reference
-            if ("deleted".equals(document.getCurrentLifeCycleState())) {
+            if (LifeCycleConstants.DELETED_STATE.equals(document.getCurrentLifeCycleState())) {
                 return false;
             }
         } catch (ClientException e) {
