@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
 
 public final class FileManagerUtils {
@@ -140,7 +141,7 @@ public final class FileManagerUtils {
         for (DocumentModel doc : docList) {
             String currentLifeCycleState = doc.getCurrentLifeCycleState();
             // CB: NXP-2483 - This check should be done only for the documents which aren't deleted
-            if (!"deleted".equals(currentLifeCycleState)) {
+            if (!LifeCycleConstants.DELETED_STATE.equals(currentLifeCycleState)) {
                 String existFileName = (String) doc.getProperty("file", "filename");
                 if (existFileName != null && existFileName.equals(filename)) {
                     existing = doc;
@@ -167,7 +168,7 @@ public final class FileManagerUtils {
         for (DocumentModel doc : docList) {
             String currentLifeCycleState = doc.getCurrentLifeCycleState();
             // CB: NXP-2483 - This check should be done only for the documents which aren't deleted
-            if (!"deleted".equals(currentLifeCycleState)) {
+            if (!LifeCycleConstants.DELETED_STATE.equals(currentLifeCycleState)) {
                 String existTitle = (String) doc.getProperty("dublincore", "title");
                 if (existTitle != null && existTitle.equals(title)) {
                     existing = doc;
