@@ -278,6 +278,11 @@ nxthemes css is not used in login.jsp */
                   <fmt:message bundle="${messages}" key="label.login.missingUsername" />
             </div>
           </c:if>
+          <c:if test="${param.securityError}">
+            <div class="errorMessage">
+                  <fmt:message bundle="${messages}" key="label.login.securityError" />
+            </div>
+          </c:if>
       </td>
     </tr>
     </table>
