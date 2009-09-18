@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
@@ -91,7 +92,8 @@ public class DocumentChildrenStdFarm extends InputController implements
             DocumentRef docRef) throws ClientException {
         FacetFilter facetFilter = new FacetFilter(
                 FacetNames.HIDDEN_IN_NAVIGATION, false);
-        LifeCycleFilter lifeCycleFilter = new LifeCycleFilter("deleted", false);
+        LifeCycleFilter lifeCycleFilter = new LifeCycleFilter(
+                LifeCycleConstants.DELETED_STATE, false);
         CompoundFilter filter = new CompoundFilter(facetFilter, lifeCycleFilter);
         DocumentModelIterator resultDocsIt = documentManager.getChildrenIterator(
                 docRef, null, SecurityConstants.READ, filter);

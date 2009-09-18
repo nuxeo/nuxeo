@@ -63,6 +63,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -101,8 +102,10 @@ public class ClipboardActionsBean extends InputController implements
 
     private static final String PASTE_OUTCOME = "after_paste";
 
-    private static final String MOVE_OUTCOME = "after_move";
-
+    /**
+     * @deprecated use {@link LifeCycleConstants#DELETED_STATE}
+     */
+    @Deprecated
     public static final String DELETED_LIFECYCLE_STATE = "deleted";
 
     @In(create = true, required = false)
@@ -587,8 +590,7 @@ public class ClipboardActionsBean extends InputController implements
                 }
 
                 // NXP-2334 : skip deleted docs
-                if (doc.getCurrentLifeCycleState().equals(
-                        DELETED_LIFECYCLE_STATE)) {
+                if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
                     continue;
                 }
 
@@ -805,8 +807,7 @@ public class ClipboardActionsBean extends InputController implements
         for (DocumentModel docChild : docList) {
 
             // NXP-2334 : skip deleted docs
-            if (docChild.getCurrentLifeCycleState().equals(
-                    DELETED_LIFECYCLE_STATE)) {
+            if (LifeCycleConstants.DELETED_STATE.equals(docChild.getCurrentLifeCycleState())) {
                 continue;
             }
 
