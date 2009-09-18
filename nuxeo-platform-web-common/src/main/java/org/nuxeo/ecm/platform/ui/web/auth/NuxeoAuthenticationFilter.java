@@ -572,18 +572,22 @@ public class NuxeoAuthenticationFilter implements Filter {
             return false;
         }
 
-        String completeURI = httpRequest.getRequestURI();
-        String qs = httpRequest.getQueryString();
-        String context = httpRequest.getContextPath() + '/';
-        String requestPage = completeURI.substring(context.length());
-        if (qs != null && qs.length() > 0) {
-            // remove conversationId if present
-            if (qs.contains("conversationId")) {
-                qs = qs.replace("conversationId", "old_conversationId");
+        String requestPage;
+        if (httpRequest.getParameter(NXAuthConstants.REQUESTED_URL) != null) {
+            requestPage = httpRequest.getParameter(NXAuthConstants.REQUESTED_URL);
+        } else {
+            String completeURI = httpRequest.getRequestURI();
+            String qs = httpRequest.getQueryString();
+            String context = httpRequest.getContextPath() + '/';
+            requestPage = completeURI.substring(context.length());
+            if (qs != null && qs.length() > 0) {
+                // remove conversationId if present
+                if (qs.contains("conversationId")) {
+                    qs = qs.replace("conversationId", "old_conversationId");
+                }
+                requestPage = requestPage + '?' + qs;
             }
-            requestPage = requestPage + '?' + qs;
         }
-
         // avoid redirect if not usefull
         if (requestPage.equals(DEFAULT_START_PAGE)) {
             return true;
@@ -600,6 +604,10 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected static String getSavedRequestedURL(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
         String requestedPage = null;
+
+        if (httpRequest.getParameter(NXAuthConstants.REQUESTED_URL) != null) {
+            return httpRequest.getParameter(NXAuthConstants.REQUESTED_URL);
+        }
 
         if (httpRequest.getParameter(START_PAGE_SAVE_KEY) == null) {
             HttpSession session = httpRequest.getSession(false);
@@ -647,9 +655,17 @@ public class NuxeoAuthenticationFilter implements Filter {
         service.invalidateSession(request);
 
         Map<String, String> parameters = new HashMap<String, String>();
+        String securityError = request.getParameter(NXAuthConstants.SECURITY_ERROR);
+        if (securityError != null) {
+            parameters.put(NXAuthConstants.SECURITY_ERROR, securityError);
+        }
         String forceAnonymousLogin = request.getParameter(NXAuthConstants.FORCE_ANONYMOUS_LOGIN);
         if (forceAnonymousLogin != null) {
             parameters.put(NXAuthConstants.FORCE_ANONYMOUS_LOGIN, forceAnonymousLogin);
+        }
+        String requestedUrl = request.getParameter(NXAuthConstants.REQUESTED_URL);
+        if (requestedUrl != null) {
+            parameters.put(NXAuthConstants.REQUESTED_URL, requestedUrl);
         }
         // Reset JSESSIONID Cookie
         HttpServletResponse httpResponse = (HttpServletResponse) response;

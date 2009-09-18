@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.auth.plugins;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
@@ -47,18 +49,23 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
             HttpServletResponse httpResponse, String baseURL) {
         try {
             log.debug("Forward to Login Screen");
-            String loginError = (String) httpRequest.getAttribute(NXAuthConstants.LOGIN_ERROR);
-            if (loginError == null) {
-                httpResponse.sendRedirect(baseURL + loginPage);
+            Map<String, String> parameters = new HashMap<String, String>();
+            String redirectUrl = baseURL + loginPage;
+            String securityError = httpRequest.getParameter(NXAuthConstants.SECURITY_ERROR);
+            if (securityError != null) {
+                parameters.put(NXAuthConstants.SECURITY_ERROR, securityError);
             } else {
-                if (NXAuthConstants.ERROR_USERNAME_MISSING.equals(loginError)) {
-                    httpResponse.sendRedirect(baseURL + loginPage
-                            + "?loginMissing=true");
-                } else {
-                    httpResponse.sendRedirect(baseURL + loginPage
-                            + "?loginFailed=true");
+                String loginError = (String) httpRequest.getAttribute(NXAuthConstants.LOGIN_ERROR);
+                if (loginError != null) {
+                    if (NXAuthConstants.ERROR_USERNAME_MISSING.equals(loginError)) {
+                        parameters.put(NXAuthConstants.ERROR_USERNAME_MISSING, "true");
+                    } else {
+                        parameters.put(NXAuthConstants.ERROR_AUTHENTICATION_FAILED, "true");
+                    }
                 }
             }
+            redirectUrl = URIUtils.addParametersToURIQuery(redirectUrl, parameters);
+            httpResponse.sendRedirect(redirectUrl);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
