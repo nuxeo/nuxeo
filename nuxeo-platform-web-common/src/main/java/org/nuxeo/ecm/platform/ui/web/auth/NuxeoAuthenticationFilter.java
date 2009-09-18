@@ -44,6 +44,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
@@ -56,6 +57,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -83,6 +85,8 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected static final String LOGIN_JMS_CATEGORY = "NuxeoAuthentication";
 
     private static final Log log = LogFactory.getLog(NuxeoAuthenticationFilter.class);
+
+    private static String anonymous;
 
     protected final boolean avoidReauthenticate = true;
 
@@ -378,6 +382,13 @@ public class NuxeoAuthenticationFilter implements Filter {
                     || cachableUserIdent.getUserInfo() == null) {
                 UserIdentificationInfo userIdent = handleRetrieveIdentity(
                         httpRequest, httpResponse);
+                if (userIdent != null
+                        && userIdent.getUserName().equals(getAnonymousId())) {
+                    String forceAuth = httpRequest.getParameter(NXAuthConstants.FORCE_ANONYMOUS_LOGIN);
+                    if (forceAuth != null && forceAuth.equals("true")) {
+                        userIdent = null;
+                    }
+                }
                 if ((userIdent == null || !userIdent.containsValidIdentity())
                         && !bypassAuth(httpRequest)) {
                     boolean res = handleLoginPrompt(httpRequest, httpResponse);
@@ -508,8 +519,21 @@ public class NuxeoAuthenticationFilter implements Filter {
         return null;
     }
 
+    private String getAnonymousId() throws ServletException {
+        if (anonymous == null) {
+            try {
+                UserManager um = Framework.getService(UserManager.class);
+                anonymous = um.getAnonymousUserId();
+            } catch (Exception e) {
+                log.error("Can't find anonymous User id", e);
+                anonymous = "";
+                throw new ServletException("Can't find anonymous user id");
+            }
+        }
+        return anonymous;
+    }
+    
     public void init(FilterConfig config) throws ServletException {
-
         String val = config.getInitParameter("byPassAuthenticationLog");
         if (val != null && Boolean.parseBoolean(val)) {
             byPassAuthenticationLog = true;
@@ -622,6 +646,11 @@ public class NuxeoAuthenticationFilter implements Filter {
         // invalidate Session !
         service.invalidateSession(request);
 
+        Map<String, String> parameters = new HashMap<String, String>();
+        String forceAnonymousLogin = request.getParameter(NXAuthConstants.FORCE_ANONYMOUS_LOGIN);
+        if (forceAnonymousLogin != null) {
+            parameters.put(NXAuthConstants.FORCE_ANONYMOUS_LOGIN, forceAnonymousLogin);
+        }
         // Reset JSESSIONID Cookie
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         Cookie cookie= new Cookie("JSESSIONID", null);
@@ -648,8 +677,9 @@ public class NuxeoAuthenticationFilter implements Filter {
                 && !XMLHTTP_REQUEST_TYPE.equalsIgnoreCase(httpRequest.getHeader("X-Requested-With"))) {
             String baseURL = service.getBaseURL(request);
             try {
-                ((HttpServletResponse) response).sendRedirect(baseURL
-                        + DEFAULT_START_PAGE);
+                String url = baseURL + DEFAULT_START_PAGE;
+                url = URIUtils.addParametersToURIQuery(url, parameters);
+                ((HttpServletResponse) response).sendRedirect(url);
                 redirected = true;
             } catch (IOException e) {
                 log.error("Unable to redirect to default start page after logout : "

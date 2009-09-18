@@ -112,8 +112,6 @@ public class AnonymousAuthenticator implements NuxeoAuthenticationPlugin,
 
     public Boolean handleLogout(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
-        HttpSession session = httpRequest.getSession(true);
-        session.setAttribute(BLOCK_ANONYMOUS_LOGIN_KEY, Boolean.TRUE);
         return Boolean.FALSE;
     }
 

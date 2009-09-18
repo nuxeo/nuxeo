@@ -36,6 +36,9 @@ public final class NXAuthConstants {
 
     public static final String ERROR_AUTHENTICATION_FAILED = "authentication.failed";
     public static final String ERROR_USERNAME_MISSING = "username.missing";
+    
+    public static final String FORCE_ANONYMOUS_LOGIN = "forceAnonymousLogin";
+    public static final String REQUESTED_URL = "requestedUrl";
 
     // Constant utility class.
     private NXAuthConstants() {
