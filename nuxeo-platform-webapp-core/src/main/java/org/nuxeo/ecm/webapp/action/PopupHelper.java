@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -341,7 +342,7 @@ public class PopupHelper implements Serializable {
         }
         try {
             // test if the document still exists in the repository
-            if (doc.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE) == true) {
+            if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
                 return true;
             }
         } catch (ClientException ex) {
