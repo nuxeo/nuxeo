@@ -15,7 +15,7 @@
       child cannot perform the transition, it will be removed.
     </documentation>
     <listener name="bulkLifeCycleChangeListener" async="true" postCommit="true"
-      class="org.nuxeo.ecm.webapp.lifecycle.BulkLifeCycleChangeListener">
+      class="org.nuxeo.ecm.core.lifecycle.event.BulkLifeCycleChangeListener">
     </listener>
 
   </extension>
