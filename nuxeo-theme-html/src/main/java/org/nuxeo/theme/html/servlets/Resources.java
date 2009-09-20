@@ -127,7 +127,8 @@ public final class Resources extends HttpServlet implements Serializable {
                 if (resourceName.endsWith(".js") && resource.isShrinkable()) {
                     source = JSUtils.compressSource(source);
                 } else if (resourceName.endsWith(".css")) {
-                    source = source.replaceAll("\\$\\{basePath\\}", basePath);
+                    source = source.replaceAll("\\$\\{basePath\\}",
+                            Matcher.quoteReplacement(basePath));
                 }
                 themeManager.setResource(resourceName, source);
             }
@@ -157,7 +158,7 @@ public final class Resources extends HttpServlet implements Serializable {
             in = Thread.currentThread().getContextClassLoader().getResourceAsStream(
                     resource.getPath());
 
-            if (in==null) {
+            if (in == null) {
                 in = Thread.currentThread().getContextClassLoader().getResourceAsStream(
                         "nuxeo.war/" + resource.getPath());
 
