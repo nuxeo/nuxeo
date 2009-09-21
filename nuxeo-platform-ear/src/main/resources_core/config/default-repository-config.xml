@@ -19,9 +19,9 @@
                http://www.postgresql.org/docs/8.3/static/textsearch-configuration.html
           <fulltext analyzer="english"/>
           -->
-          <!-- for Oracle (Oracle Text Lexer):
-               http://download.oracle.com/docs/cd/B19306_01/text.102/b14218/cdatadic.htm#sthref505
-          <fulltext analyzer="BASIC_LEXER"/>
+          <!-- for Oracle (Oracle Text indexing parmeters):
+               http://download.oracle.com/docs/cd/B19306_01/text.102/b14218/cdatadic.htm
+          <fulltext analyzer="LEXER MY_LEXER"/>
           -->
         </indexing>
       </repository>
