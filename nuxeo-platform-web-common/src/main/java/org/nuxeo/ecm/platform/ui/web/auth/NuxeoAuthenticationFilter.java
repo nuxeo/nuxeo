@@ -104,7 +104,7 @@ public class NuxeoAuthenticationFilter implements Filter {
      */
     protected String securityDomain = LOGIN_DOMAIN;
 
-    protected static final String URLPolicyService_DISABLE_REDIRECT_REQUEST_KEY = "nuxeo.disable.redirect.wrapper";
+    public static final String URLPolicyService_DISABLE_REDIRECT_REQUEST_KEY = "nuxeo.disable.redirect.wrapper";
 
     public static final String SSO_INITIAL_URL_REQUEST = "sso.initial.url.request";
 
@@ -576,17 +576,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         if (httpRequest.getParameter(NXAuthConstants.REQUESTED_URL) != null) {
             requestPage = httpRequest.getParameter(NXAuthConstants.REQUESTED_URL);
         } else {
-            String completeURI = httpRequest.getRequestURI();
-            String qs = httpRequest.getQueryString();
-            String context = httpRequest.getContextPath() + '/';
-            requestPage = completeURI.substring(context.length());
-            if (qs != null && qs.length() > 0) {
-                // remove conversationId if present
-                if (qs.contains("conversationId")) {
-                    qs = qs.replace("conversationId", "old_conversationId");
-                }
-                requestPage = requestPage + '?' + qs;
-            }
+            requestPage = getRequestedUrl(httpRequest);
         }
         // avoid redirect if not usefull
         if (requestPage.equals(DEFAULT_START_PAGE)) {
@@ -599,6 +589,21 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
 
         return false;
+    }
+
+    public static String getRequestedUrl(HttpServletRequest httpRequest) {
+        String completeURI = httpRequest.getRequestURI();
+        String qs = httpRequest.getQueryString();
+        String context = httpRequest.getContextPath() + '/';
+        String requestPage = completeURI.substring(context.length());
+        if (qs != null && qs.length() > 0) {
+            // remove conversationId if present
+            if (qs.contains("conversationId")) {
+                qs = qs.replace("conversationId", "old_conversationId");
+            }
+            requestPage = requestPage + '?' + qs;
+        }
+        return requestPage;
     }
 
     protected static String getSavedRequestedURL(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {

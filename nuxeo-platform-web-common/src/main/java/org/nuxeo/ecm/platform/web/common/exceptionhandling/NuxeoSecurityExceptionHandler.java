@@ -31,9 +31,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
-import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
-import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
-import org.nuxeo.ecm.platform.url.api.DocumentView;
+import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
+import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -43,8 +42,11 @@ import org.nuxeo.runtime.api.Framework;
 public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
 
     protected static final Log log = LogFactory.getLog(NuxeoSecurityExceptionHandler.class);
+    
+    private PluggableAuthenticationService service;
 
     public NuxeoSecurityExceptionHandler() throws Exception {
+      //  initAuthentificationService();
     }
 
     public void handleException(HttpServletRequest request,
@@ -67,13 +69,13 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
                 urlParameters.put(NXAuthConstants.SECURITY_ERROR, "true");
                 urlParameters.put(NXAuthConstants.FORCE_ANONYMOUS_LOGIN, "true");
                 urlParameters.put(NXAuthConstants.REQUESTED_URL,
-                        getURLToReach(request));
+                        NuxeoAuthenticationFilter.getRequestedUrl(request));
                 // Redirect to login with urlParameters
                 if (!response.isCommitted()) {
-                    String baseURL = BaseURL.getBaseURL(request)
+                    String baseURL = initAuthentificationService().getBaseURL(request)
                             + NXAuthConstants.LOGOUT_PAGE;
                     request.setAttribute(
-                            URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY, true);
+                            NuxeoAuthenticationFilter.URLPolicyService_DISABLE_REDIRECT_REQUEST_KEY, true);
                     baseURL = URIUtils.addParametersToURIQuery(baseURL,
                             urlParameters);
                     response.sendRedirect(baseURL);
@@ -86,30 +88,15 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
         super.handleException(request, response, t);
     }
 
-    protected String getURLToReach(HttpServletRequest request) {
-        DocumentView docView = (DocumentView) request.getAttribute(URLPolicyService.DOCUMENT_VIEW_REQUEST_KEY);
-        if (docView != null) {
-            String urlToReach = getURLPolicyService().getUrlFromDocumentView(
-                    docView, "");
-            if (urlToReach != null) {
-                return urlToReach;
-            }
+    private PluggableAuthenticationService initAuthentificationService() throws ServletException {
+        service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
+            PluggableAuthenticationService.NAME);
+        if (service == null) {
+            log.error("Unable to get Service "
+                    + PluggableAuthenticationService.NAME);
+            throw new ServletException(
+                    "Can't initialize Nuxeo Pluggable Authentication Service");
         }
-        return request.getRequestURL().toString() + "?"
-                + request.getQueryString();
+        return service;
     }
-
-    protected URLPolicyService urlService = null;
-
-    protected URLPolicyService getURLPolicyService() {
-        if (urlService == null) {
-            try {
-                urlService = Framework.getService(URLPolicyService.class);
-            } catch (Exception e) {
-                log.error("Could not retrieve the URLPolicyService", e);
-            }
-        }
-        return urlService;
-    }
-
 }
