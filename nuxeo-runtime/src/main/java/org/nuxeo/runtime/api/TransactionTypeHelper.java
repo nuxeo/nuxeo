@@ -22,7 +22,7 @@ package org.nuxeo.runtime.api;
 
 /**
  * Helper class to detect transaction type needed, cloned from DataSourceHelper
- * 
+ *
  *
  * @author Stephane Lacoin
  */
@@ -65,8 +65,8 @@ public class TransactionTypeHelper {
                 if (txType == null) {
                     autodetect();
                 }
-                txType = RESOURCE_LOCAL;
             }
+            txType = RESOURCE_LOCAL;
         }
         return txType;
     }
