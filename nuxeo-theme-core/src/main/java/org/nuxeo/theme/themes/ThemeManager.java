@@ -219,7 +219,8 @@ public final class ThemeManager implements Registrable {
                     && !themeDef.isCompatibleWith(templateEngine)) {
                 continue;
             }
-            if (themeDef.getName().equals(themeName)) {
+            final String name = themeDef.getName();
+            if (name != null && name.equals(themeName)) {
                 return themeDef;
             }
         }
