@@ -82,8 +82,6 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
 
         assertEquals("test widget", widget1.getName());
         assertEquals("test widget 2", widget2.getName());
-        assertEquals("1", widget1.getUid());
-        assertEquals("2", widget2.getUid());
     }
 
     public void testGetWidgetByUid() throws ProviderException {
