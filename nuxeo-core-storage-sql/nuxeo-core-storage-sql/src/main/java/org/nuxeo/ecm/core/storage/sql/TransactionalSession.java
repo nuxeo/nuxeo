@@ -98,8 +98,11 @@ public class TransactionalSession implements XAResource {
 
     public void rollback(Xid xid) throws XAException {
         try {
-            mapper.rollback(xid);
-            session.rollback();
+            try {
+                mapper.rollback(xid);
+            } finally {
+                session.rollback();
+            }
         } finally {
             inTransaction = false;
             try {
