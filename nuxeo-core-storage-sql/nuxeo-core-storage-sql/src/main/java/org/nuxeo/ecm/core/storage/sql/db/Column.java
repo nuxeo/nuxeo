@@ -20,20 +20,15 @@
 package org.nuxeo.ecm.core.storage.sql.db;
 
 import java.io.Serializable;
-import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
+import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect.JDBCInfo;
 
 /**
  * An SQL {@code column}.
@@ -41,22 +36,6 @@ import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
  * @author Florent Guillaume
  */
 public class Column implements Serializable {
-
-    /**
-     * Extended (internal) types beyond the standard JDBC ones.
-     */
-    public static class ExtendedTypes {
-
-        private ExtendedTypes() {
-        }
-
-        /** A column holding full text information. */
-        public static final int FULLTEXT = Types.OTHER + 10;
-
-        public static boolean hasElement(int type) {
-            return type == FULLTEXT;
-        }
-    }
 
     private static final long serialVersionUID = 1L;
 
@@ -70,14 +49,22 @@ public class Column implements Serializable {
 
     private final String freeVariableSetter;
 
-    /** The backend type */
-    private final PropertyType type;
+    /** The abstract type. */
+    private final ColumnType type;
 
-    /** The {@link java.sql.Types} type */
-    private int sqlType;
+    /**
+     * The JDBC {@link java.sql.Types} type. Used for:
+     *
+     * - comparison with database introspected type
+     *
+     * - switch() to get from result set or set to prepared statement
+     *
+     * - setNull to prepared statement
+     */
+    private int jdbcType;
 
-    /** The type string, if non-standard */
-    private String sqlTypeString;
+    /** The JDBC type string. */
+    private final String jdbcTypeString;
 
     private final String key;
 
@@ -86,12 +73,6 @@ public class Column implements Serializable {
     private boolean identity;
 
     private boolean primary;
-
-    private int length = 255; // Hibernate default
-
-    private int precision = 19; // Hibernate default
-
-    private int scale = 2; // Hibernate default
 
     private boolean nullable = true;
 
@@ -103,38 +84,34 @@ public class Column implements Serializable {
     private String foreignKey;
 
     /**
-     * Creates a new column with the given name and type, with a specified SQL
-     * type.
+     * Creates a new column with the given name and type.
      *
      * @param table the column's table
-     * @param physicalName the column name
-     * @param type the backend type
-     * @param sqlType the SQL type
-     * @param sqlTypeString the SQL type string (if non-standard), or {@code
-     *            null}
+     * @param physicalName the column physical name
+     * @param type the column's type
      * @param key the associated field name
      * @param model the model (to fetch binaries)
      */
-    public Column(Table table, String physicalName, PropertyType type,
-            int sqlType, String sqlTypeString, String key, Model model) {
+    public Column(Table table, String physicalName, ColumnType type,
+            String key, Model model) {
         this.table = table;
         dialect = table.getDialect();
         this.physicalName = physicalName;
         this.type = type;
-        this.sqlType = sqlType;
-        this.sqlTypeString = sqlTypeString;
+        JDBCInfo jdbcInfo = dialect.getJDBCTypeAndString(type);
+        jdbcType = jdbcInfo.jdbcType;
+        jdbcTypeString = jdbcInfo.string;
         this.key = key;
         this.model = model;
         quotedName = dialect.openQuote() + physicalName + dialect.closeQuote();
-        freeVariableSetter = dialect.getFreeVariableSetterForType(sqlType);
+        freeVariableSetter = dialect.getFreeVariableSetterForType(type);
     }
 
     /**
      * Creates a column from an existing column and an aliased table.
      */
     public Column(Column column, Table table) {
-        this(table, column.physicalName, column.type, column.sqlType,
-                column.sqlTypeString, column.key, column.model);
+        this(table, column.physicalName, column.type, column.key, column.model);
     }
 
     public Table getTable() {
@@ -153,8 +130,16 @@ public class Column implements Serializable {
         return table.getQuotedName() + '.' + quotedName;
     }
 
-    public int getSqlType() {
-        return sqlType;
+    public int getJdbcType() {
+        return jdbcType;
+    }
+
+    public ColumnType getType() {
+        return type;
+    }
+
+    public Model getModel() {
+        return model;
     }
 
     public String getFreeVariableSetter() {
@@ -162,11 +147,19 @@ public class Column implements Serializable {
     }
 
     public boolean isOpaque() {
-        return ExtendedTypes.hasElement(sqlType);
+        return type == ColumnType.FTINDEXED || type == ColumnType.FTSTORED;
     }
 
-    public void setSqlType(int sqlType) {
-        this.sqlType = sqlType;
+    public boolean setJdbcType(int actual, String actualName, int actualSize) {
+        int expected = jdbcType;
+        if (actual == expected) {
+            return true;
+        }
+        if (dialect.isAllowedConversion(expected, actual, actualName,
+                actualSize)) {
+            return true;
+        }
+        return false;
     }
 
     public String getKey() {
@@ -187,30 +180,6 @@ public class Column implements Serializable {
 
     public boolean isPrimary() {
         return primary;
-    }
-
-    public int getLength() {
-        return length;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
-    }
-
-    public int getPrecision() {
-        return precision;
-    }
-
-    public void setPrecision(int scale) {
-        precision = scale;
-    }
-
-    public int getScale() {
-        return scale;
-    }
-
-    public void setScale(int scale) {
-        this.scale = scale;
     }
 
     public void setNullable(boolean nullable) {
@@ -243,124 +212,24 @@ public class Column implements Serializable {
     }
 
     public String getSqlTypeString() {
-        if (sqlTypeString != null) {
-            return sqlTypeString;
-        } else {
-            return dialect.getTypeName(sqlType, getLength(), getPrecision(),
-                    getScale());
-        }
+        return jdbcTypeString;
     }
 
     public void setToPreparedStatement(PreparedStatement ps, int index,
             Serializable value) throws SQLException {
         if (value == null) {
-            ps.setNull(
-                    index,
-                    sqlType == ExtendedTypes.FULLTEXT ? dialect.getFulltextType()
-                            : sqlType);
+            ps.setNull(index, jdbcType);
             return;
         }
-        switch (sqlType) {
-        case Types.BIGINT:
-            ps.setLong(index, ((Long) value).longValue());
-            return;
-        case Types.INTEGER:
-            ps.setInt(index, ((Long) value).intValue());
-            return;
-        case Types.DOUBLE:
-            ps.setDouble(index, ((Double) value).doubleValue());
-            return;
-        case Types.VARCHAR:
-        case Types.LONGVARCHAR: // MySQL
-            String v;
-            if (type == PropertyType.BINARY) {
-                v = ((Binary) value).getDigest();
-            } else {
-                v = (String) value;
-            }
-            ps.setString(index, v);
-            break;
-        case Types.CLOB:
-            ps.setString(index, (String) value);
-            return;
-        case Types.BIT:
-        case Types.SMALLINT: // Derby
-        case Types.BOOLEAN: // H2
-        case Types.TINYINT: // MS SQL Server
-            ps.setBoolean(index, ((Boolean) value).booleanValue());
-            return;
-        case Types.TIMESTAMP:
-            Calendar cal = (Calendar) value;
-            Timestamp ts = new Timestamp(cal.getTimeInMillis());
-            ps.setTimestamp(index, ts, cal); // cal passed for timezone
-            return;
-        case ExtendedTypes.FULLTEXT:
-            ps.setString(index, (String) value);
-            return;
-        case Types.ARRAY:
-            if (!(value instanceof String[])) {
-                throw new SQLException("Expected String[] instead of: " + value);
-            }
-            Array array = dialect.createArrayOf(Types.VARCHAR,
-                    (Object[]) value, ps.getConnection());
-            ps.setArray(index, array);
-            return;
-        default:
-            throw new SQLException("Unhandled SQL type: " + sqlType);
+        if (jdbcType == Types.ARRAY && !(value instanceof String[])) {
+            throw new SQLException("Expected String[] instead of: " + value);
         }
+        dialect.setToPreparedStatement(ps, index, value, this);
     }
 
-    // XXX this should be handled by specific type classes associated with the
-    // column
-    @SuppressWarnings("boxing")
     public Serializable getFromResultSet(ResultSet rs, int index)
             throws SQLException {
-        // Here we make sure that we get the types we want, we don't let the
-        // driver's getObject() return what it fancies.
-        Serializable result;
-        switch (sqlType) {
-        case Types.BIGINT:
-            result = rs.getLong(index);
-            break;
-        case Types.INTEGER:
-            result = rs.getLong(index);
-            break;
-        case Types.DOUBLE:
-            result = rs.getDouble(index);
-            break;
-        case Types.VARCHAR:
-        case Types.LONGVARCHAR: // MySQL
-            String string = rs.getString(index);
-            if (type == PropertyType.BINARY && string != null) {
-                result = model.getBinary(string);
-            } else {
-                result = string;
-            }
-            break;
-        case Types.CLOB:
-            result = rs.getString(index);
-            break;
-        case Types.TIMESTAMP:
-            Timestamp ts = rs.getTimestamp(index);
-            if (ts == null) {
-                result = null;
-            } else {
-                result = new GregorianCalendar(); // XXX timezone
-                ((Calendar) result).setTimeInMillis(ts.getTime());
-            }
-            break;
-        case Types.BIT:
-        case Types.SMALLINT: // Derby
-        case Types.BOOLEAN: // H2
-        case Types.TINYINT: // MS SQL Server
-            result = rs.getBoolean(index);
-            break;
-        case Types.ARRAY:
-            result = (Serializable) rs.getArray(index).getArray();
-            break;
-        default:
-            throw new SQLException("Unhandled SQL type: " + sqlType);
-        }
+        Serializable result = dialect.getFromResultSet(rs, index, this);
         if (rs.wasNull()) {
             result = null;
         }

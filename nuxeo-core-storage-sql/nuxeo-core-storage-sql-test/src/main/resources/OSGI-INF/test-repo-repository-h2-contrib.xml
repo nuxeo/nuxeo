@@ -10,6 +10,8 @@
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository>
         <indexing>
+          <queryMaker class="org.nuxeo.ecm.core.storage.sql.NXQLQueryMaker" />
+          <queryMaker class="org.nuxeo.ecm.core.storage.sql.CapturingQueryMaker" />
           <fulltext analyzer="org.apache.lucene.analysis.fr.FrenchAnalyzer">
             <index> <!-- name="default" implied -->
               <!-- all props implied -->

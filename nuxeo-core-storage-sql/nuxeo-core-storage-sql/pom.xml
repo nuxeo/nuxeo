@@ -49,6 +49,12 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert-api</artifactId>
     </dependency>
+    <!-- for bundle activator -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>

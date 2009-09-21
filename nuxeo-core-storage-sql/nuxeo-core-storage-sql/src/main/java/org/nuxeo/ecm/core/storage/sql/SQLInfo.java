@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,7 +31,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
+import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Delete;
 import org.nuxeo.ecm.core.storage.sql.db.Insert;
@@ -60,17 +61,13 @@ public class SQLInfo {
 
     public final Database database;
 
-    protected final Dialect dialect;
+    public final Dialect dialect;
 
     private final Model model;
 
     private String selectRootIdSql;
 
     private Column selectRootIdWhatColumn;
-
-    private final Map<String, String> identityFetchSqlMap; // statement
-
-    private final Map<String, Column> identityFetchColumnMap;
 
     private final Map<String, String> insertSqlMap; // statement
 
@@ -169,8 +166,6 @@ public class SQLInfo {
         selectRootIdWhatColumn = null;
 
         selectFragmentById = new HashMap<String, SQLInfoSelect>();
-        identityFetchSqlMap = new HashMap<String, String>();
-        identityFetchColumnMap = new HashMap<String, Column>();
 
         selectByChildNameAllSql = null;
         selectByChildNameAllWhatColumns = null;
@@ -325,17 +320,6 @@ public class SQLInfo {
         return insertColumnsMap.get(tableName);
     }
 
-    // ----- post insert fetch -----
-
-    // statement to fetch all values auto-incremented by an insert
-    public String getIdentityFetchSql(String tableName) {
-        return identityFetchSqlMap.get(tableName);
-    }
-
-    public Column getIdentityFetchColumn(String tableName) {
-        return identityFetchColumnMap.get(tableName);
-    }
-
     // ----- update -----
 
     // TODO these two methods are redundant with one another
@@ -435,6 +419,10 @@ public class SQLInfo {
 
         // structural tables
         if (model.getRepositoryDescriptor().clusteringEnabled) {
+            if (!dialect.isClusteringSupported()) {
+                throw new StorageException("Clustering not supported for "
+                        + dialect.getClass().getSimpleName());
+            }
             initClusterSQL();
         }
         initHierarchySQL();
@@ -503,24 +491,16 @@ public class SQLInfo {
     }
 
     protected void initClusterSQL() throws StorageException {
-        int clusterNodeType = dialect.getClusterNodeType();
-        int clusterFragmentsType = dialect.getClusterFragmentsType();
-        String clusterFragmentsTypeString = dialect.getClusterFragmentsTypeString();
-
         TableMaker maker = new TableMaker(model.CLUSTER_NODES_TABLE_NAME);
-        maker.newColumn(model.CLUSTER_NODES_NODEID_KEY, null, clusterNodeType,
-                null);
-        maker.newColumn(model.CLUSTER_NODES_CREATED_KEY, null, Types.TIMESTAMP,
-                null);
+        maker.newColumn(model.CLUSTER_NODES_NODEID_KEY, ColumnType.CLUSTERNODE);
+        maker.newColumn(model.CLUSTER_NODES_CREATED_KEY, ColumnType.TIMESTAMP);
 
         maker = new TableMaker(model.CLUSTER_INVALS_TABLE_NAME);
-        maker.newColumn(model.CLUSTER_INVALS_NODEID_KEY, null, clusterNodeType,
-                null);
-        maker.newMainKey(model.CLUSTER_INVALS_ID_KEY); // not a reference
-        maker.newColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY, null,
-                clusterFragmentsType, clusterFragmentsTypeString);
-        maker.newColumn(model.CLUSTER_INVALS_KIND_KEY, null, Types.INTEGER,
-                null);
+        maker.newColumn(model.CLUSTER_INVALS_NODEID_KEY, ColumnType.CLUSTERNODE);
+        maker.newColumn(model.CLUSTER_INVALS_ID_KEY, ColumnType.NODEVAL);
+        maker.newColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY,
+                ColumnType.CLUSTERFRAGS);
+        maker.newColumn(model.CLUSTER_INVALS_KIND_KEY, ColumnType.TINYINT);
         maker.table.addIndex(model.CLUSTER_INVALS_NODEID_KEY);
         maker.postProcessClusterInvalidations();
     }
@@ -531,9 +511,8 @@ public class SQLInfo {
      */
     protected void initRepositorySQL() {
         TableMaker maker = new TableMaker(model.REPOINFO_TABLE_NAME);
-        maker.newPrimaryKey(); // foreign key to main id
-        maker.newColumn(model.REPOINFO_REPONAME_KEY, PropertyType.STRING,
-                Types.VARCHAR, null);
+        maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFK);
+        maker.newColumn(model.REPOINFO_REPONAME_KEY, ColumnType.SYSNAME);
         maker.postProcessRepository();
     }
 
@@ -541,19 +520,18 @@ public class SQLInfo {
      * Creates the SQL for the table holding hierarchy information.
      */
     protected void initHierarchySQL() {
+        assert model.idGenPolicy == IdGenPolicy.APP_UUID;
         TableMaker maker = new TableMaker(model.hierTableName);
         if (model.separateMainTable) {
-            maker.newPrimaryKey();
+            maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFK);
         } else {
-            maker.newId(); // global primary key / generation
+            maker.newColumn(model.MAIN_KEY, ColumnType.NODEID);
         }
-        maker.newMainKeyReference(model.HIER_PARENT_KEY, true);
-        maker.newColumn(model.HIER_CHILD_POS_KEY, PropertyType.LONG,
-                Types.INTEGER, null);
-        maker.newColumn(model.HIER_CHILD_NAME_KEY, PropertyType.STRING,
-                Types.VARCHAR, null); // text?
-        maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, PropertyType.BOOLEAN,
-                Types.BIT, null); // not null
+        Column column = maker.newColumn(model.HIER_PARENT_KEY,
+                ColumnType.NODEIDFKNULL);
+        maker.newColumn(model.HIER_CHILD_POS_KEY, ColumnType.INTEGER);
+        maker.newColumn(model.HIER_CHILD_NAME_KEY, ColumnType.VARCHAR);
+        maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, ColumnType.BOOLEAN); // notnull
         if (!model.separateMainTable) {
             maker.newFragmentFields();
         }
@@ -577,13 +555,12 @@ public class SQLInfo {
         boolean isMain = tableName.equals(model.mainTableName);
 
         if (isMain) {
-            maker.newId(); // global primary key / generation
+            maker.newColumn(model.MAIN_KEY, ColumnType.NODEID);
         } else {
             if (model.isCollectionFragment(tableName)) {
-                maker.newMainKeyReference(model.MAIN_KEY, false);
-                maker.table.addIndex(model.MAIN_KEY);
+                maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFKMUL);
             } else {
-                maker.newPrimaryKey();
+                maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFK);
             }
         }
 
@@ -611,135 +588,35 @@ public class SQLInfo {
             orderBy = model.getCollectionOrderBy(tableName);
         }
 
-        protected Column newMainKey(String name) {
-            Column column;
-            switch (model.idGenPolicy) {
-            case APP_UUID:
-                column = newColumn(name, PropertyType.STRING, Types.VARCHAR,
-                        null);
-                column.setLength(36);
-                break;
-            case DB_IDENTITY:
-                column = newColumn(name, PropertyType.LONG, Types.BIGINT, null);
-                break;
-            default:
-                throw new AssertionError(model.idGenPolicy);
-            }
-            return column;
-        }
-
-        protected Column newMainKeyReference(String name, boolean nullable) {
-            Column column = newMainKey(name);
-            column.setReferences(database.getTable(model.mainTableName),
-                    model.MAIN_KEY);
-            column.setNullable(nullable);
-            return column;
-        }
-
-        protected void newPrimaryKey() {
-            Column column = newMainKeyReference(model.MAIN_KEY, false);
-            column.setPrimary(true);
-        }
-
-        protected void newId() {
-            Column column = newMainKey(model.MAIN_KEY);
-            switch (model.idGenPolicy) {
-            case APP_UUID:
-                break;
-            case DB_IDENTITY:
-                column.setIdentity(true);
-                break;
-            default:
-                throw new AssertionError(model.idGenPolicy);
-            }
-            column.setNullable(false);
-            column.setPrimary(true);
-        }
-
         protected void newFragmentFields() {
-            Map<String, PropertyType> keysType = model.getFragmentKeysType(tableName);
-            for (Entry<String, PropertyType> entry : keysType.entrySet()) {
-                newPrimitiveField(entry.getKey(), entry.getValue());
+            Map<String, ColumnType> keysType = model.getFragmentKeysType(tableName);
+            for (Entry<String, ColumnType> entry : keysType.entrySet()) {
+                newColumn(entry.getKey(), entry.getValue());
             }
         }
 
-        protected void newPrimitiveField(String key, PropertyType type) {
-            // TODO find a way to put these exceptions in model
-            if (tableName.equals(model.VERSION_TABLE_NAME)
-                    && key.equals(model.VERSION_VERSIONABLE_KEY)) {
-                newMainKey(key); // not a foreign key
-                return;
-            }
-            if (tableName.equals(model.mainTableName)) {
-                if (key.equals(model.MAIN_BASE_VERSION_KEY)) {
-                    newMainKey(key); // not a foreign key
-                    return;
-                }
-            }
-            if (tableName.equals(model.PROXY_TABLE_NAME)) {
-                if (key.equals(model.PROXY_TARGET_KEY)) {
-                    newMainKeyReference(key, true);
-                    return;
-                }
-                if (key.equals(model.PROXY_VERSIONABLE_KEY)) {
-                    newMainKey(key); // not a foreign key
-                    return;
-                }
-            }
-            int sqlType;
-            switch (type) {
-            case STRING:
-                // hack, make this more configurable
-                if (tableName.equals(model.VERSION_TABLE_NAME)
-                        && key.equals(model.VERSION_LABEL_KEY)) {
-                    // these are columns that need to be searchable, as some
-                    // databases (Derby) don't allow matches on CLOB columns
-                    sqlType = Types.VARCHAR;
-                } else if (tableName.equals(model.mainTableName)
-                        || tableName.equals(model.ACL_TABLE_NAME)
-                        || tableName.equals(model.MISC_TABLE_NAME)) {
-                    // or VARCHAR for system tables // TODO size?
-                    sqlType = Types.VARCHAR;
-                } else if (tableName.equals(model.FULLTEXT_TABLE_NAME)) {
-                    sqlType = Column.ExtendedTypes.FULLTEXT;
-                } else {
-                    sqlType = Types.CLOB;
-                }
-                break;
-            case BOOLEAN:
-                sqlType = Types.BIT; // many databases don't know BOOLEAN
-                // turned into SMALLINT by Derby
-                break;
-            case LONG:
-                sqlType = Types.INTEGER;
-                break;
-            case DOUBLE:
-                sqlType = Types.DOUBLE;
-                break;
-            case DATETIME:
-                sqlType = Types.TIMESTAMP;
-                break;
-            case BINARY:
-                // TODO depends on repository conf for blob storage, also
-                // depends on Column implementation
-                sqlType = Types.VARCHAR;
-                break;
-            default:
-                throw new RuntimeException("Bad type: " + type);
-            }
-            Column column = newColumn(key, type, sqlType, null);
-            if (type == PropertyType.BINARY) {
-                // log them, will be useful for GC of binaries
-                SQLInfo.log.info("Binary column: " + column.getFullQuotedName());
-            }
-            // XXX apply defaults
-        }
-
-        protected Column newColumn(String key, PropertyType type, int sqlType,
-                String sqlTypeString) {
+        protected Column newColumn(String key, ColumnType type) {
             String columnName = key;
-            Column column = table.addColumn(columnName, type, sqlType,
-                    sqlTypeString, key, model);
+            Column column = table.addColumn(columnName, type, key, model);
+            if (type == ColumnType.NODEID) {
+                // column.setIdentity(true); if idGenPolicy identity
+                column.setNullable(false);
+                column.setPrimary(true);
+            }
+            if (type == ColumnType.NODEIDFK) {
+                column.setNullable(false);
+                column.setPrimary(true);
+            }
+            if (type == ColumnType.NODEIDFKMUL) {
+                column.setNullable(false);
+                table.addIndex(key);
+            }
+            if (type == ColumnType.NODEIDFK || type == ColumnType.NODEIDFKNP
+                    || type == ColumnType.NODEIDFKNULL
+                    || type == ColumnType.NODEIDFKMUL) {
+                column.setReferences(database.getTable(model.mainTableName),
+                        model.MAIN_KEY);
+            }
             return column;
         }
 
@@ -800,15 +677,7 @@ public class SQLInfo {
          * Additional SQL for the main table.
          */
         protected void postProcessIdGeneration() {
-            switch (model.idGenPolicy) {
-            case APP_UUID:
-                break;
-            case DB_IDENTITY:
-                postProcessIdentityFetch();
-                break;
-            default:
-                throw new AssertionError(model.idGenPolicy);
-            }
+            assert model.idGenPolicy == IdGenPolicy.APP_UUID;
         }
 
         /**
@@ -941,22 +810,6 @@ public class SQLInfo {
             insertColumnsMap.put(tableName, insertColumns);
         }
 
-        protected void postProcessIdentityFetch() {
-            // post-insert select of identity value
-            String sql = null;
-            Column identityColumn = null;
-            for (Column column : table.getColumns()) {
-                if (column.isIdentity()) {
-                    sql = dialect.getIdentitySelectString(tableName,
-                            column.getPhysicalName(), column.getSqlType());
-                    identityColumn = column;
-                    break; // only one identity per table
-                }
-            }
-            identityFetchSqlMap.put(tableName, sql);
-            identityFetchColumnMap.put(tableName, identityColumn);
-        }
-
         protected void postProcessDelete() {
             Delete delete = new Delete(table);
             List<String> wheres = new LinkedList<String>();
@@ -1075,14 +928,23 @@ public class SQLInfo {
 
         public final List<Column> whatColumns;
 
+        public final List<String> whatColumnsAliases;
+
         public final List<Column> whereColumns;
 
         public final List<Column> opaqueColumns;
 
         public SQLInfoSelect(String sql, List<Column> whatColumns,
                 List<Column> whereColumns, List<Column> opaqueColumns) {
+            this(sql, whatColumns, null, whereColumns, opaqueColumns);
+        }
+
+        public SQLInfoSelect(String sql, List<Column> whatColumns,
+                List<String> whatColumnsAliases, List<Column> whereColumns,
+                List<Column> opaqueColumns) {
             this.sql = sql;
             this.whatColumns = new ArrayList<Column>(whatColumns);
+            this.whatColumnsAliases = whatColumnsAliases;
             this.whereColumns = whereColumns == null ? null
                     : new ArrayList<Column>(whereColumns);
             this.opaqueColumns = opaqueColumns == null ? null
@@ -1193,4 +1055,7 @@ public class SQLInfo {
         return dialect.getConditionalStatements(model, database);
     }
 
+    public Collection<ConditionalStatement> getTestConditionalStatements() {
+        return dialect.getTestConditionalStatements(model, database);
+    }
 }

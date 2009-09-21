@@ -176,7 +176,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
             ConnectionRequestInfo connectionRequestInfo)
             throws ResourceException {
         assert connectionRequestInfo instanceof ConnectionRequestInfoImpl;
-        initializeRepository();
+        initialize();
         return new ManagedConnectionImpl(this,
                 (ConnectionRequestInfoImpl) connectionRequestInfo);
     }
@@ -231,7 +231,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      * ----- -----
      */
 
-    private void initializeRepository() throws StorageException {
+    private void initialize() throws StorageException {
         synchronized (this) {
             if (repository == null) {
                 // XXX TODO
@@ -244,6 +244,14 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
                 repositoryDescriptor.mergeFrom(getRepositoryDescriptor(repositoryDescriptor.name));
                 repository = new RepositoryImpl(repositoryDescriptor,
                         schemaManager);
+            }
+        }
+    }
+
+    public void shutdown() {
+        synchronized (this) {
+            if (repository != null) {
+                repository.close();
             }
         }
     }

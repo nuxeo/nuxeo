@@ -17,8 +17,11 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.util.Arrays;
+
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -46,6 +49,10 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         RepositoryDescriptor descriptor = DatabaseHelper.DATABASE.getRepositoryDescriptor();
         descriptor.clusteringEnabled = clusteringDelay != -1;
         descriptor.clusteringDelay = clusteringDelay;
+        FieldDescriptor schemaField = new FieldDescriptor();
+        schemaField.field = "tst:bignote";
+        schemaField.type = Model.FIELD_TYPE_LARGETEXT;
+        descriptor.schemaFields = Arrays.asList(schemaField);
         return new RepositoryImpl(descriptor, schemaManager);
     }
 

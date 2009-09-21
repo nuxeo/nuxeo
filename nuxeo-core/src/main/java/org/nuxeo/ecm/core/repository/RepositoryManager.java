@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.model.Repository;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class RepositoryManager {
@@ -44,14 +44,15 @@ public class RepositoryManager {
     // repository descriptors - used to prevent registering repositories twice
     private final Set<RepositoryDescriptor> descriptors = new HashSet<RepositoryDescriptor>();
 
-    // registered repositories - map the repository name to the repository reference
+    // registered repositories - map the repository name to the repository
+    // reference
     private final Map<String, Ref> repositories = new HashMap<String, Ref>();
 
     private final RepositoryService repositoryService;
 
-    //TODO: is this really needed?
-    // currently is used to remove dependency between jca adapter and nxframework
-
+    // TODO: is this really needed?
+    // currently is used to remove dependency between jca adapter and
+    // nxframework
 
     public RepositoryManager(RepositoryService repositoryService) {
         this.repositoryService = repositoryService;
@@ -63,8 +64,10 @@ public class RepositoryManager {
      * Null is returned if no repository with that name was registered.
      *
      * @param name the repository name
-     * @return the repository instance or null if no repository with that name was registered
-     * @throws Exception if any error occurs when trying to initialize the repository
+     * @return the repository instance or null if no repository with that name
+     *         was registered
+     * @throws Exception if any error occurs when trying to initialize the
+     *             repository
      */
     public Repository getRepository(String name) throws Exception {
         if (log.isTraceEnabled()) {
@@ -81,13 +84,13 @@ public class RepositoryManager {
         }
     }
 
-
     /**
      * Releases the reference to the repository.
      * <p>
-     * When the repository reference count becomes 0, the repository is shutdown.
+     * When the repository reference count becomes 0, the repository is
+     * shutdown.
      *
-     *  @param name the repository name
+     * @param name the repository name
      */
     public void releaseRepository(String name) {
         if (log.isTraceEnabled()) {
@@ -108,7 +111,8 @@ public class RepositoryManager {
 
     public String[] getRepositoryNames() {
         synchronized (repositories) {
-            return repositories.keySet().toArray(new String[repositories.size()]);
+            return repositories.keySet().toArray(
+                    new String[repositories.size()]);
         }
     }
 
@@ -136,11 +140,11 @@ public class RepositoryManager {
         }
     }
 
-    public Repository getOrRegisterRepository(RepositoryDescriptor rd) throws Exception {
+    public Repository getOrRegisterRepository(RepositoryDescriptor rd)
+            throws Exception {
         synchronized (repositories) {
             Ref ref = repositories.get(rd.getName());
             if (ref == null) {
-                log.info("Registering repository: " + rd.getName());
                 String name = rd.getName();
                 log.info("Registering repository: " + name);
                 descriptors.add(rd);
@@ -151,7 +155,6 @@ public class RepositoryManager {
             return ref.get();
         }
     }
-
 
     public void unregisterRepository(RepositoryDescriptor rd) {
         log.info("Unregistering repository: " + rd.getName());
@@ -183,7 +186,9 @@ public class RepositoryManager {
 
     public static final class Ref {
         private int refcnt;
+
         private RepositoryDescriptor descriptor;
+
         private Repository repository;
 
         private Ref(RepositoryDescriptor descriptor) {

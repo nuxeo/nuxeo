@@ -24,6 +24,7 @@ import java.util.HashSet;
 import junit.framework.TestCase;
 
 import org.nuxeo.common.xmap.XMap;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 
 public class TestRepositoryDescriptor extends TestCase {
@@ -88,6 +89,18 @@ public class TestRepositoryDescriptor extends TestCase {
         assertEquals(new HashSet(), fti.excludeFields);
         assertEquals("martian", fti.analyzer);
         assertEquals("other", fti.catalog);
+    }
+
+    public void testLargeTextFields() throws Exception {
+        assertNotNull(desc.schemaFields);
+        assertEquals(2, desc.schemaFields.size());
+        FieldDescriptor fd;
+        fd = desc.schemaFields.get(0);
+        assertEquals("my:bignote", fd.field);
+        assertEquals("biig", fd.type);
+        fd = desc.schemaFields.get(1);
+        assertEquals("foo", fd.field);
+        assertEquals("xyz", fd.type);
     }
 
 }

@@ -67,7 +67,6 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleEventTypes;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
@@ -81,6 +80,7 @@ import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.QueryResult;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.NXSchema;
@@ -239,8 +239,8 @@ public abstract class AbstractSession implements CoreSession,
      * be unique in the system)
      *
      * <ul>
-     * <li>A is the repository name (which uniquely identifies the repository in
-     * the system)
+     * <li>A is the repository name (which uniquely identifies the repository
+     * in the system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>
      *
@@ -1406,6 +1406,29 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    public IterableQueryResult queryAndFetch(String query, String queryType,
+            Object... params) throws ClientException {
+        try {
+            SecurityService securityService = getSecurityService();
+            Principal principal = getPrincipal();
+            String permission = BROWSE;
+            String[] principals;
+            if (principal.getName().equals("system")) {
+                principals = null; // means: no security check needed
+            } else {
+                principals = SecurityService.getPrincipalsToCheck(principal);
+            }
+            String[] permissions = securityService.getPermissionsToCheck(permission);
+            QueryFilter queryFilter = new QueryFilter(principals, permissions,
+                    null, Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
+            return getSession().queryAndFetch(query, queryType, queryFilter,
+                    params);
+        } catch (Exception e) {
+            throw new ClientException("Failed to execute query: " + queryType
+                    + ": " + query + ": " + tryToExtractMeaningfulErrMsg(e), e);
+        }
+    }
+
     public DocumentModelIterator queryIt(String query, Filter filter, int max)
             throws ClientException {
         DocsQueryProviderDef def = new DocsQueryProviderDef(
@@ -1906,7 +1929,8 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     public DocumentModel restoreToVersion(DocumentRef docRef,
-            VersionModel version, boolean skipSnapshotCreation) throws ClientException {
+            VersionModel version, boolean skipSnapshotCreation)
+            throws ClientException {
         assert docRef != null;
         assert version != null;
 
@@ -2344,14 +2368,18 @@ public abstract class AbstractSession implements CoreSession,
             if (operationResult) {
                 // Construct a map holding meta information about the event.
                 Map<String, Serializable> options = new HashMap<String, Serializable>();
-                options.put(LifeCycleEventTypes.OPTION_NAME_FROM,
+                options.put(
+                        org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_FROM,
                         formerStateName);
-                options.put(LifeCycleEventTypes.OPTION_NAME_TO,
+                options.put(
+                        org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TO,
                         doc.getCurrentLifeCycleState());
-                options.put(LifeCycleEventTypes.OPTION_NAME_TRANSITION,
+                options.put(
+                        org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION,
                         transition);
                 DocumentModel docModel = readModel(doc, null);
-                notifyEvent(LifeCycleEventTypes.LIFECYCLE_TRANSITION_EVENT,
+                notifyEvent(
+                        org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT,
                         docModel, options,
                         DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY,
                         null, true, false);
@@ -2498,7 +2526,7 @@ public abstract class AbstractSession implements CoreSession,
         if (SecurityConstants.ADMINISTRATOR.equals(principal.getName())) {
             return true;
         }
-        if("system".equals(principal.getName())){
+        if ("system".equals(principal.getName())) {
             return true;
         }
         if (principal instanceof NuxeoPrincipal) {
@@ -2747,19 +2775,22 @@ public abstract class AbstractSession implements CoreSession,
 
     /**
      * This method is for compatibility reasons to notify an operation start.
-     * Operations must be reworked to use the new event model. In order for operation notification to work
-     * the event compatibility bundle must be deployed.
-     * @see org.nuxeo.ecm.core.event.compat.CompatibilityListener in nuxeo-core-event-compat
+     * Operations must be reworked to use the new event model. In order for
+     * operation notification to work the event compatibility bundle must be
+     * deployed.
+     *
+     * @see org.nuxeo.ecm.core.event.compat.CompatibilityListener in
+     *      nuxeo-core-event-compat
      */
     public void startOperation(Operation<?> operation) {
-        EventContextImpl ctx = new EventContextImpl(this,
-                getPrincipal(), operation);
+        EventContextImpl ctx = new EventContextImpl(this, getPrincipal(),
+                operation);
         Event event = ctx.newEvent("!OPERATION_START!");
         event.setInline(true); // avoid recording the event in bundle events
         try {
             fireEvent(event);
         } catch (ClientException e) {
-            log.error("Failed to notify operation start for: "+operation, e);
+            log.error("Failed to notify operation start for: " + operation, e);
         }
         // old code was:
         // CoreEventListenerService service =
@@ -2769,19 +2800,22 @@ public abstract class AbstractSession implements CoreSession,
 
     /**
      * This method is for compatibility reasons to notify an operation end.
-     * Operations must be reworked to use the new event model. In order for operation notification to work
-     * the event compatibility bundle must be deployed.
-     * @see org.nuxeo.ecm.core.event.compat.CompatibilityListener in nuxeo-core-event-compat
+     * Operations must be reworked to use the new event model. In order for
+     * operation notification to work the event compatibility bundle must be
+     * deployed.
+     *
+     * @see org.nuxeo.ecm.core.event.compat.CompatibilityListener in
+     *      nuxeo-core-event-compat
      */
     public void endOperation(Operation<?> operation) {
-        EventContextImpl ctx = new EventContextImpl(this,
-                getPrincipal(), operation);
+        EventContextImpl ctx = new EventContextImpl(this, getPrincipal(),
+                operation);
         Event event = ctx.newEvent("!OPERATION_END!");
         event.setInline(true); // avoid recording the event in bundle events
         try {
             fireEvent(event);
         } catch (ClientException e) {
-            log.error("Failed to notify operation end for: "+operation, e);
+            log.error("Failed to notify operation end for: " + operation, e);
         }
         // old code was:
         // CoreEventListenerService service =

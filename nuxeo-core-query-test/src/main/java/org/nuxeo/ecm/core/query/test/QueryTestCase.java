@@ -540,7 +540,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         dml = session.query(sql);
         assertEquals(1, dml.size());
     }
-    
+
     public void testStartsWith() throws Exception {
         String sql;
         DocumentModelList dml;
@@ -1117,6 +1117,72 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         query = "SELECT * FROM Document WHERE ecm:fulltext = 'bzzt'";
         dml = session.query(query);
         assertIdSet(dml, file1.getId());
+    }
+
+    public void testFulltextExpressionSyntax() throws Exception {
+        createDocs();
+        sleepForFulltext();
+        String query;
+        DocumentModelList dml;
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+
+        file1.setProperty("dublincore", "title", "the world is my oyster");
+        session.saveDocument(file1);
+        session.save();
+        sleepForFulltext();
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'world'";
+        dml = session.query(query);
+        assertEquals(1, dml.size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'oyster'";
+        dml = session.query(query);
+        assertEquals(1, dml.size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'kangaroo'"; // absent
+        dml = session.query(query);
+        assertEquals(0, dml.size());
+
+        // implicit AND
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'world oyster'";
+        dml = session.query(query);
+        assertEquals(1, dml.size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'world kangaroo'";
+        dml = session.query(query);
+        assertEquals(0, dml.size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'kangaroo oyster'";
+        dml = session.query(query);
+        assertEquals(0, dml.size());
+
+        // NOT
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'world -oyster'";
+        dml = session.query(query);
+        assertEquals(0, dml.size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = '-world oyster'";
+        dml = session.query(query);
+        assertEquals(0, dml.size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'world -kangaroo'";
+        dml = session.query(query);
+        assertEquals(1, dml.size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = '-world kangaroo'";
+        dml = session.query(query);
+        assertEquals(0, dml.size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'kangaroo -oyster'";
+        dml = session.query(query);
+        assertEquals(0, dml.size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = '-kangaroo oyster'";
+        dml = session.query(query);
+        assertEquals(1, dml.size());
     }
 
     public void testFulltextSecondary() throws Exception {

@@ -23,6 +23,7 @@
       <artifactId>lucene-core</artifactId>
       <scope>provided</scope>
     </dependency>
+    
   </dependencies>
 
 </project>

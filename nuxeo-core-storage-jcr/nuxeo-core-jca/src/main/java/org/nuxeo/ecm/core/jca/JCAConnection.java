@@ -25,15 +25,16 @@ import javax.transaction.xa.XAResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityManager;
-
 
 /**
  * The JCA connection wraps a Session.
@@ -52,12 +53,10 @@ public final class JCAConnection implements Session {
      */
     private final Session session;
 
-
     /**
      * Managed connection.
      */
     private JCAManagedConnection mc;
-
 
     /**
      * Constructs a new session handle.
@@ -87,7 +86,6 @@ public final class JCAConnection implements Session {
     public Session getSession() {
         return session;
     }
-
 
     public long getSessionId() {
         return session.getSessionId();
@@ -134,8 +132,14 @@ public final class JCAConnection implements Session {
         return session.getSecurityManager();
     }
 
-    public Query createQuery(String query, Query.Type qType, String... params) throws QueryException {
+    public Query createQuery(String query, Query.Type qType, String... params)
+            throws QueryException {
         return session.createQuery(query, qType, params);
+    }
+
+    public IterableQueryResult queryAndFetch(String query, String queryType,
+            QueryFilter queryFilter, Object... params) throws QueryException {
+        return session.queryAndFetch(query, queryType, queryFilter, params);
     }
 
     public Document resolvePath(String path) throws DocumentException {
@@ -162,11 +166,13 @@ public final class JCAConnection implements Session {
         return session.getRootDocument();
     }
 
-    public Document copy(Document src, Document dst, String name) throws DocumentException {
+    public Document copy(Document src, Document dst, String name)
+            throws DocumentException {
         return session.copy(src, dst, name);
     }
 
-    public Document move(Document src, Document dst, String name) throws DocumentException {
+    public Document move(Document src, Document dst, String name)
+            throws DocumentException {
         return session.move(src, dst, name);
     }
 
@@ -174,7 +180,8 @@ public final class JCAConnection implements Session {
         return session.getDataStream(key);
     }
 
-    public Document createProxyForVersion(Document parent, Document doc, String versionLabel) throws DocumentException {
+    public Document createProxyForVersion(Document parent, Document doc,
+            String versionLabel) throws DocumentException {
         return session.createProxyForVersion(parent, doc, versionLabel);
     }
 

@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
 
 /**
@@ -51,6 +50,14 @@ public class TableAlias implements Table {
         dialect = table.getDialect();
     }
 
+    public boolean isAlias() {
+        return true;
+    }
+
+    public Table getRealTable() {
+        return table;
+    }
+
     public Dialect getDialect() {
         return dialect;
     }
@@ -71,7 +78,7 @@ public class TableAlias implements Table {
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append("Table(");
-        buf.append(getName());
+        buf.append(table.getName());
         buf.append(" AS ");
         buf.append(alias);
         buf.append(')');
@@ -92,8 +99,7 @@ public class TableAlias implements Table {
         return result;
     }
 
-    public Column addColumn(String name, PropertyType type, int sqlType,
-            String sqlTypeString, String key, Model model) {
+    public Column addColumn(String name, ColumnType type, String key, Model model) {
         throw new UnsupportedOperationException();
     }
 

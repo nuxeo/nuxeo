@@ -41,7 +41,7 @@ public class DatabaseOracle extends DatabaseHelper {
 
     // ----- change this to test on a different Oracle instance -----
 
-    private static final String URL = "jdbc:oracle:thin:@192.168.133.129:1521:XE";
+    private static final String URL = "jdbc:oracle:thin:@192.168.133.137:1521:XE";
 
     private static final String USER = "NUXEO";
 
@@ -104,8 +104,6 @@ public class DatabaseOracle extends DatabaseHelper {
         properties.put("User", USER);
         properties.put("Password", PASSWORD);
         descriptor.properties = properties;
-        // descriptor.fulltextAnalyzer = "french";
-        // descriptor.fulltextCatalog = "nuxeo";
         return descriptor;
     }
 

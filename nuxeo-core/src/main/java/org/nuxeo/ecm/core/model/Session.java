@@ -26,10 +26,13 @@ import java.util.Map;
 
 import javax.transaction.xa.XAResource;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityManager;
 
@@ -86,6 +89,13 @@ public interface Session {
      */
     Query createQuery(String query, Query.Type qType, String... params)
             throws QueryException;
+
+    /**
+     *
+     * @throws QueryException
+     */
+    IterableQueryResult queryAndFetch(String query, String queryType,
+            QueryFilter queryFilter, Object... params) throws QueryException;
 
     /**
      * Gets the type manager used by the repository.

@@ -84,6 +84,24 @@ public class MimeTypeTranslationHelper {
         return null;
     }
 
+    public static List<String> getConverterNames(String sourceMimeType, String destMimeType) {
+        List<ConvertOption> sco = srcMappings.get(sourceMimeType);
+        List<String> converterNames = new ArrayList<String>();
+        if (sco == null) {
+            // use wildcard
+            sco = srcMappings.get("*");
+            if (sco == null) {
+                return converterNames;
+            }
+        }
+        for (ConvertOption co : sco) {
+            if (co.mimeType.equals(destMimeType)) {
+                converterNames.add(co.getConverterName());
+            }
+        }
+        return converterNames;
+    }
+
     public static List<String> getDestinationMimeTypes(String sourceMimeType) {
         List<String> dst = new ArrayList<String>();
 

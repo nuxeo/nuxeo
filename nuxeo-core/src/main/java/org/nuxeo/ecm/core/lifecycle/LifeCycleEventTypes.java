@@ -22,7 +22,9 @@ package org.nuxeo.ecm.core.lifecycle;
  * Life cycle event types.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @deprecated use {@link LifeCycleConstants} instead
  */
+@Deprecated
 public final class LifeCycleEventTypes {
 
     public static final String LIFECYCLE_TRANSITION_EVENT = "lifecycle_transition_event";

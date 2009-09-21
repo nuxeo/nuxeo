@@ -177,11 +177,13 @@ public class NXQLQueryMaker implements QueryMaker {
     }
 
     public boolean accepts(String queryString) {
-        return queryString.toLowerCase().trim().startsWith("select ");
+        return queryString.equals("NXQL")
+                || queryString.toLowerCase().trim().startsWith("select ");
     }
 
     public Query buildQuery(SQLInfo sqlInfo, Model model, Session session,
-            String query, QueryFilter queryFilter) throws StorageException {
+            String query, QueryFilter queryFilter, Object... params)
+            throws StorageException {
         this.sqlInfo = sqlInfo;
         database = sqlInfo.database;
         dialect = sqlInfo.dialect;
@@ -839,7 +841,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 return;
             }
             if (name.startsWith(NXQL.ECM_FULLTEXT)) {
-                if (sqlInfo.dialect.isFulltextTableNeeded()) {
+                if (dialect.isFulltextTableNeeded()) {
                     // we only use this for its fragment name
                     props.add(model.FULLTEXT_SIMPLETEXT_PROP);
                 }
@@ -1214,14 +1216,10 @@ public class NXQLQueryMaker implements QueryMaker {
                         + " requires literal string as right argument");
             }
             String fulltextQuery = ((StringLiteral) node.rvalue).value;
-            // TODO parse query language for fulltext
-            // for now just a sequence of words
-            // Column ftColumn =
-            // database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
-            // model.FULLTEXT_FULLTEXT_KEY);
+            fulltextQuery = dialect.getDialectFulltextQuery(fulltextQuery);
             Column mainColumn = joinedHierTable.getColumn(model.MAIN_KEY);
-            String[] info = sqlInfo.dialect.getFulltextMatch(name,
-                    fulltextQuery, mainColumn, model, database);
+            String[] info = dialect.getFulltextMatch(name, fulltextQuery,
+                    mainColumn, model, database);
             String joinExpr = info[0];
             String joinParam = info[1];
             String whereExpr = info[2];
@@ -1267,7 +1265,7 @@ public class NXQLQueryMaker implements QueryMaker {
             Column column = findColumn(node.name, allowArray, inOrderBy);
             String qname = column.getFullQuotedName();
             // some databases (Derby) can't do comparisons on CLOB
-            if (column.getSqlType() == Types.CLOB) {
+            if (column.getJdbcType() == Types.CLOB) {
                 String colFmt = dialect.getClobCast(inOrderBy);
                 if (colFmt != null) {
                     qname = String.format(colFmt, qname, Integer.valueOf(255));

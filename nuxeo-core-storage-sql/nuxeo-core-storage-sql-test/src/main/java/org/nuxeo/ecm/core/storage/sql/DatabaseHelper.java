@@ -53,4 +53,11 @@ public abstract class DatabaseHelper {
         return 0;
     }
 
+    /**
+     * For databases that don't support clustering.
+     */
+    public boolean supportsClustering() {
+        return false;
+    }
+
 }

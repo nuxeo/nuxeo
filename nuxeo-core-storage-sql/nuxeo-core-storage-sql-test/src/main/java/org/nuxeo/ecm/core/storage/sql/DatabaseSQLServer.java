@@ -43,7 +43,7 @@ public class DatabaseSQLServer extends DatabaseHelper {
 
     private static final String MSSQL_HOST_PROPERTY = "nuxeo.test.mssql.host";
 
-    private static final String MSSQL_HOST = "172.16.245.128";
+    private static final String MSSQL_HOST = "192.168.133.128";
 
     private static final String MSSQL_PORT = "1433";
 

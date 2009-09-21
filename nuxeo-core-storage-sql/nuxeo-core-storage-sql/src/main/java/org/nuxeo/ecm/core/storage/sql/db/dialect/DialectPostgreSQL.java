@@ -17,14 +17,19 @@
 
 package org.nuxeo.ecm.core.storage.sql.db.dialect;
 
+import java.io.Serializable;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -32,10 +37,12 @@ import java.util.Map;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.Model.FulltextInfo;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
+import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
 
@@ -58,11 +65,151 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public String getTypeName(int sqlType, int length, int precision, int scale) {
-        if (sqlType == Column.ExtendedTypes.FULLTEXT) {
-            return "tsvector";
+    public JDBCInfo getJDBCTypeAndString(ColumnType type) {
+        switch (type) {
+        case VARCHAR:
+            return jdbcInfo("varchar", Types.VARCHAR);
+        case CLOB:
+            return jdbcInfo("text", Types.CLOB);
+        case BOOLEAN:
+            return jdbcInfo("bool", Types.BIT);
+        case LONG:
+            return jdbcInfo("int8", Types.BIGINT);
+        case DOUBLE:
+            return jdbcInfo("float8", Types.DOUBLE);
+        case TIMESTAMP:
+            return jdbcInfo("timestamp", Types.TIMESTAMP);
+        case BLOBID:
+            return jdbcInfo("varchar(32)", Types.VARCHAR);
+            // -----
+        case NODEID:
+        case NODEIDFK:
+        case NODEIDFKNP:
+        case NODEIDFKMUL:
+        case NODEIDFKNULL:
+        case NODEVAL:
+            return jdbcInfo("varchar(36)", Types.VARCHAR);
+        case SYSNAME:
+            return jdbcInfo("varchar(250)", Types.VARCHAR);
+        case TINYINT:
+            return jdbcInfo("int2", Types.SMALLINT);
+        case INTEGER:
+            return jdbcInfo("int4", Types.INTEGER);
+        case FTINDEXED:
+            return jdbcInfo("tsvector", Types.OTHER);
+        case FTSTORED:
+            return jdbcInfo("tsvector", Types.OTHER);
+        case CLUSTERNODE:
+            return jdbcInfo("int4", Types.INTEGER);
+        case CLUSTERFRAGS:
+            return jdbcInfo("varchar[]", Types.ARRAY);
         }
-        return super.getTypeName(sqlType, length, precision, scale);
+        throw new AssertionError(type);
+    }
+
+    @Override
+    public boolean isAllowedConversion(int expected, int actual,
+            String actualName, int actualSize) {
+        // CLOB vs VARCHAR compatibility
+        if (expected == Types.VARCHAR && actual == Types.CLOB) {
+            return true;
+        }
+        if (expected == Types.CLOB && actual == Types.VARCHAR) {
+            return true;
+        }
+        // INTEGER vs BIGINT compatibility
+        if (expected == Types.BIGINT && actual == Types.INTEGER) {
+            return true;
+        }
+        if (expected == Types.INTEGER && actual == Types.BIGINT) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void setToPreparedStatement(PreparedStatement ps, int index,
+            Serializable value, Column column) throws SQLException {
+        switch (column.getJdbcType()) {
+        case Types.VARCHAR:
+        case Types.CLOB:
+            String v;
+            if (column.getType() == ColumnType.BLOBID) {
+                v = ((Binary) value).getDigest();
+            } else {
+                v = (String) value;
+            }
+            ps.setString(index, v);
+            break;
+        case Types.BIT:
+            ps.setBoolean(index, ((Boolean) value).booleanValue());
+            return;
+        case Types.SMALLINT:
+            ps.setInt(index, ((Long) value).intValue());
+            return;
+        case Types.INTEGER:
+        case Types.BIGINT:
+            ps.setLong(index, ((Long) value).longValue());
+            return;
+        case Types.DOUBLE:
+            ps.setDouble(index, ((Double) value).doubleValue());
+            return;
+        case Types.TIMESTAMP:
+            Calendar cal = (Calendar) value;
+            Timestamp ts = new Timestamp(cal.getTimeInMillis());
+            ps.setTimestamp(index, ts, cal); // cal passed for timezone
+            return;
+        case Types.ARRAY:
+            Array array = createArrayOf(Types.VARCHAR, (Object[]) value,
+                    ps.getConnection());
+            ps.setArray(index, array);
+            return;
+        case Types.OTHER:
+            if (column.getType() == ColumnType.FTSTORED) {
+                ps.setString(index, (String) value);
+                return;
+            }
+            throw new SQLException("Unhandled type: " + column.getType());
+        default:
+            throw new SQLException("Unhandled JDBC type: "
+                    + column.getJdbcType());
+        }
+    }
+
+    @Override
+    @SuppressWarnings("boxing")
+    public Serializable getFromResultSet(ResultSet rs, int index, Column column)
+            throws SQLException {
+        switch (column.getJdbcType()) {
+        case Types.VARCHAR:
+        case Types.CLOB:
+            String string = rs.getString(index);
+            if (column.getType() == ColumnType.BLOBID && string != null) {
+                return column.getModel().getBinary(string);
+            } else {
+                return string;
+            }
+        case Types.BIT:
+            return rs.getBoolean(index);
+        case Types.SMALLINT:
+        case Types.INTEGER:
+        case Types.BIGINT:
+            return rs.getLong(index);
+        case Types.DOUBLE:
+            return rs.getDouble(index);
+        case Types.TIMESTAMP:
+            Timestamp ts = rs.getTimestamp(index);
+            if (ts == null) {
+                return null;
+            } else {
+                Serializable cal = new GregorianCalendar(); // XXX timezone
+                ((Calendar) cal).setTimeInMillis(ts.getTime());
+                return cal;
+            }
+        case Types.ARRAY:
+            return (Serializable) rs.getArray(index).getArray();
+        }
+        throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
     }
 
     @Override
@@ -70,6 +217,21 @@ public class DialectPostgreSQL extends Dialect {
             String quotedIndexName, String tableName, List<String> columnNames) {
         return String.format("CREATE INDEX %s ON %s USING GIN(%s)",
                 quotedIndexName.toLowerCase(), tableName, columnNames.get(0));
+    }
+
+    @Override
+    public String getDialectFulltextQuery(String query) {
+        query = query.replace(" & ", " "); // PostgreSQL compatibility BBB
+        query = query.replaceAll(" +", " ");
+        List<String> res = new LinkedList<String>();
+        for (String word : StringUtils.split(query, ' ', false)) {
+            if (word.startsWith("-")) {
+                res.add("!" + word.substring(1));
+            } else {
+                res.add(word);
+            }
+        }
+        return StringUtils.join(res, " & ");
     }
 
     @Override
@@ -85,18 +247,18 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
+    public boolean getMaterializeFulltextSyntheticColumn() {
+        return true;
+    }
+
+    @Override
     public int getFulltextIndexedColumns() {
         return 1;
     }
 
     @Override
-    public int getFulltextType() {
-        return Types.OTHER;
-    }
-
-    @Override
-    public String getFreeVariableSetterForType(int type) {
-        if (type == Column.ExtendedTypes.FULLTEXT) {
+    public String getFreeVariableSetterForType(ColumnType type) {
+        if (type == ColumnType.FTSTORED) {
             return "NX_TO_TSVECTOR(?)";
         }
         return "?";
@@ -144,7 +306,7 @@ public class DialectPostgreSQL extends Dialect {
         if (elements == null || elements.length == 0) {
             return null;
         }
-        String typeName = getTypeName(type, 0, 0, 0);
+        String typeName = dialect.getTypeName(type);
         return new PostgreSQLArray(type, typeName, elements);
     }
 
@@ -456,18 +618,8 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public int getClusterNodeType() {
-        return Types.INTEGER;
-    }
-
-    @Override
-    public int getClusterFragmentsType() {
-        return Types.ARRAY;
-    }
-
-    @Override
-    public String getClusterFragmentsTypeString() {
-        return "varchar[]";
+    public boolean isClusteringSupported() {
+        return true;
     }
 
     @Override
@@ -509,6 +661,20 @@ public class DialectPostgreSQL extends Dialect {
     public String getClusterGetInvalidations() {
         // TODO id type
         return "SELECT * FROM NX_CLUSTER_GET_INVALS() "
-                + "AS invals(id varchar(36), fragments varchar[], kind int)";
+                + "AS invals(id varchar(36), fragments varchar[], kind int2)";
+    }
+
+    @Override
+    public Collection<ConditionalStatement> getTestConditionalStatements(
+            Model model, Database database) {
+        List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
+        statements.add(new ConditionalStatement(true, Boolean.FALSE, null,
+                null,
+                // here use a TEXT instead of a VARCHAR to test compatibility
+                "CREATE TABLE testschema2 (id varchar(36) NOT NULL, title text)"));
+        statements.add(new ConditionalStatement(true, Boolean.FALSE, null,
+                null,
+                "ALTER TABLE testschema2 ADD CONSTRAINT testschema2_pk PRIMARY KEY (id)"));
+        return statements;
     }
 }

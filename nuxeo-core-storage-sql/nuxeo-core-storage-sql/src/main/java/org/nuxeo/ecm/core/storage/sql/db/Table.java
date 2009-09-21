@@ -32,6 +32,10 @@ import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
  */
 public interface Table extends Serializable {
 
+    boolean isAlias();
+
+    Table getRealTable();
+
     Dialect getDialect();
 
     String getName();
@@ -47,8 +51,7 @@ public interface Table extends Serializable {
     /**
      * Adds a {@link Column} to the table.
      */
-    Column addColumn(String name, PropertyType type, int sqlType,
-            String sqlTypeString, String key, Model model);
+    Column addColumn(String name, ColumnType type, String key, Model model);
 
     /**
      * Adds an index on one or several columns.

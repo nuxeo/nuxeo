@@ -17,24 +17,32 @@
 
 package org.nuxeo.ecm.core.storage.sql.db.dialect;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.hibernate.dialect.Oracle9Dialect;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.Model.FulltextInfo;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
+import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
 
@@ -45,9 +53,173 @@ import org.nuxeo.ecm.core.storage.sql.db.Table;
  */
 public class DialectOracle extends Dialect {
 
+    protected final String fulltextParameters;
+
     public DialectOracle(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(new Oracle9Dialect(), metadata);
+        fulltextParameters = repositoryDescriptor.fulltextAnalyzer == null ? ""
+                : repositoryDescriptor.fulltextAnalyzer;
+    }
+
+    @Override
+    public JDBCInfo getJDBCTypeAndString(ColumnType type) {
+        switch (type) {
+        case VARCHAR:
+            return jdbcInfo("NVARCHAR2(2000)", Types.VARCHAR);
+        case CLOB:
+            return jdbcInfo("NCLOB", Types.CLOB);
+        case BOOLEAN:
+            return jdbcInfo("NUMBER(1,0)", Types.BIT);
+        case LONG:
+            return jdbcInfo("NUMBER(19,0)", Types.BIGINT);
+        case DOUBLE:
+            return jdbcInfo("DOUBLE PRECISION", Types.DOUBLE);
+        case TIMESTAMP:
+            return jdbcInfo("TIMESTAMP", Types.TIMESTAMP);
+        case BLOBID:
+            return jdbcInfo("VARCHAR2(32)", Types.VARCHAR);
+            // -----
+        case NODEID:
+        case NODEIDFK:
+        case NODEIDFKNP:
+        case NODEIDFKMUL:
+        case NODEIDFKNULL:
+        case NODEVAL:
+            return jdbcInfo("VARCHAR2(36)", Types.VARCHAR);
+        case SYSNAME:
+            return jdbcInfo("VARCHAR2(250)", Types.VARCHAR);
+        case TINYINT:
+            return jdbcInfo("NUMBER(3,0)", Types.TINYINT);
+        case INTEGER:
+            return jdbcInfo("NUMBER(10,0)", Types.INTEGER);
+        case FTINDEXED:
+            return jdbcInfo("CLOB", Types.CLOB);
+        case FTSTORED:
+            return jdbcInfo("NCLOB", Types.CLOB);
+        case CLUSTERNODE:
+            return jdbcInfo("NUMBER(10,0)", Types.INTEGER);
+        case CLUSTERFRAGS:
+            return jdbcInfo("VARCHAR2(4000)", Types.VARCHAR);
+        }
+        throw new AssertionError(type);
+    }
+
+    @Override
+    public boolean isAllowedConversion(int expected, int actual,
+            String actualName, int actualSize) {
+        // Oracle internal conversions
+        if (expected == Types.DOUBLE && actual == Types.FLOAT) {
+            return true;
+        }
+        if (expected == Types.VARCHAR && actual == Types.OTHER
+                && actualName.equals("NVARCHAR2")) {
+            return true;
+        }
+        if (expected == Types.CLOB && actual == Types.OTHER
+                && actualName.equals("NCLOB")) {
+            return true;
+        }
+        if (expected == Types.BIT && actual == Types.DECIMAL
+                && actualName.equals("NUMBER") && actualSize == 1) {
+            return true;
+        }
+        if (expected == Types.INTEGER && actual == Types.DECIMAL
+                && actualName.equals("NUMBER") && actualSize == 10) {
+            return true;
+        }
+        if (expected == Types.BIGINT && actual == Types.DECIMAL
+                && actualName.equals("NUMBER") && actualSize == 19) {
+            return true;
+        }
+        // CLOB vs VARCHAR compatibility
+        if (expected == Types.VARCHAR && actual == Types.OTHER
+                && actualName.equals("NCLOB")) {
+            return true;
+        }
+        if (expected == Types.CLOB && actual == Types.OTHER
+                && actualName.equals("NVARCHAR2")) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void setToPreparedStatement(PreparedStatement ps, int index,
+            Serializable value, Column column) throws SQLException {
+        switch (column.getJdbcType()) {
+        case Types.VARCHAR:
+        case Types.CLOB:
+            String v;
+            if (column.getType() == ColumnType.BLOBID) {
+                v = ((Binary) value).getDigest();
+            } else {
+                v = (String) value;
+            }
+            ps.setString(index, v);
+            break;
+        case Types.BIT:
+            ps.setBoolean(index, ((Boolean) value).booleanValue());
+            return;
+        case Types.SMALLINT:
+            ps.setInt(index, ((Long) value).intValue());
+            return;
+        case Types.INTEGER:
+        case Types.BIGINT:
+            ps.setLong(index, ((Long) value).longValue());
+            return;
+        case Types.DOUBLE:
+            ps.setDouble(index, ((Double) value).doubleValue());
+            return;
+        case Types.TIMESTAMP:
+            Calendar cal = (Calendar) value;
+            Timestamp ts = new Timestamp(cal.getTimeInMillis());
+            ps.setTimestamp(index, ts, cal); // cal passed for timezone
+            return;
+            // case Types.OTHER:
+            // if (column.getType() == Type.FTSTORED) {
+            // ps.setString(index, (String) value);
+            // return;
+            // }
+            // throw new SQLException("Unhandled type: " + column.getType());
+        default:
+            throw new SQLException("Unhandled JDBC type: "
+                    + column.getJdbcType());
+        }
+    }
+
+    @Override
+    @SuppressWarnings("boxing")
+    public Serializable getFromResultSet(ResultSet rs, int index, Column column)
+            throws SQLException {
+        switch (column.getJdbcType()) {
+        case Types.VARCHAR:
+        case Types.CLOB:
+            String string = rs.getString(index);
+            if (column.getType() == ColumnType.BLOBID && string != null) {
+                return column.getModel().getBinary(string);
+            } else {
+                return string;
+            }
+        case Types.BIT:
+            return rs.getBoolean(index);
+        case Types.SMALLINT:
+        case Types.INTEGER:
+        case Types.BIGINT:
+            return rs.getLong(index);
+        case Types.DOUBLE:
+            return rs.getDouble(index);
+        case Types.TIMESTAMP:
+            Timestamp ts = rs.getTimestamp(index);
+            if (ts == null) {
+                return null;
+            } else {
+                Serializable cal = new GregorianCalendar(); // XXX timezone
+                ((Calendar) cal).setTimeInMillis(ts.getTime());
+                return cal;
+            }
+        }
+        throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
     }
 
     @Override
@@ -62,32 +234,35 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public String getTypeName(int sqlType, int length, int precision, int scale) {
-        if (sqlType == Column.ExtendedTypes.FULLTEXT) {
-            return "CLOB";
-        }
-        if (sqlType == Types.VARCHAR) {
-            if (length == 36) {
-                // uuid
-                return "VARCHAR2(36)";
-            } else {
-                return "NVARCHAR2(" + length + ')';
-            }
-        }
-        if (sqlType == Types.CLOB) {
-            // return "NCLOB";
-            return "NVARCHAR2(2000)"; // until we get finer-grained config
-        }
-        return super.getTypeName(sqlType, length, precision, scale);
-    }
-
-    @Override
     public String getCreateFulltextIndexSql(String indexName,
             String quotedIndexName, String tableName, List<String> columnNames) {
         return String.format(
                 "CREATE INDEX %s ON %s(%s) INDEXTYPE IS CTXSYS.CONTEXT "
-                        + "PARAMETERS('SYNC (ON COMMIT) TRANSACTIONAL')",
-                quotedIndexName, tableName, columnNames.get(0));
+                        + "PARAMETERS('%s SYNC (ON COMMIT) TRANSACTIONAL')",
+                quotedIndexName, tableName, columnNames.get(0),
+                fulltextParameters);
+    }
+
+    @Override
+    public String getDialectFulltextQuery(String query) {
+        query = query.replaceAll(" +", " ");
+        List<String> pos = new LinkedList<String>();
+        List<String> neg = new LinkedList<String>();
+        for (String word : StringUtils.split(query, ' ', false)) {
+            if (word.startsWith("-")) {
+                neg.add(word.substring(1));
+            } else {
+                pos.add(word);
+            }
+        }
+        if (pos.isEmpty()) {
+            return "DONTMATCHANYTHINGFOREMPTYQUERY";
+        }
+        String res = StringUtils.join(pos, " & ");
+        if (!neg.isEmpty()) {
+            res += " ~ " + StringUtils.join(neg, " ~ ");
+        }
+        return res;
     }
 
     @Override
@@ -99,6 +274,11 @@ public class DialectOracle extends Dialect {
         String whereExpr = String.format("CONTAINS(%s, ?) > 0",
                 ftColumn.getFullQuotedName());
         return new String[] { null, null, whereExpr, fulltextQuery };
+    }
+
+    @Override
+    public boolean getMaterializeFulltextSyntheticColumn() {
+        return true;
     }
 
     @Override
@@ -290,6 +470,20 @@ public class DialectOracle extends Dialect {
                         + "END;" //
         ));
 
+        return statements;
+    }
+
+    @Override
+    public Collection<ConditionalStatement> getTestConditionalStatements(
+            Model model, Database database) {
+        List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
+        statements.add(new ConditionalStatement(true, Boolean.FALSE, null,
+                null,
+                // here use a NCLOB instead of a NVARCHAR2 to test compatibility
+                "CREATE TABLE TESTSCHEMA2 (ID VARCHAR2(36) NOT NULL, TITLE NCLOB)"));
+        statements.add(new ConditionalStatement(true, Boolean.FALSE, null,
+                null,
+                "ALTER TABLE TESTSCHEMA2 ADD CONSTRAINT TESTSCHEMA2_PK PRIMARY KEY (ID)"));
         return statements;
     }
 

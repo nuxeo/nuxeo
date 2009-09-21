@@ -67,6 +67,11 @@ public class PostCommitSynchronousRunner {
         runSync();
     }
 
+    protected void handleUnfinishedThread(Thread runner) {
+        log.warn("PostCommitListeners are too slow, check debug log ...");
+        log.warn("Exit before the end of processing");
+    }
+
     protected void runSync() {
         log.debug("Starting sync executor from Thread "
                 + Thread.currentThread().getId());
@@ -75,8 +80,7 @@ public class PostCommitSynchronousRunner {
         try {
             runner.join(timeout);
             if (runner.isAlive()) {
-                log.warn("PostCommitListeners are too slow, check debug log ...");
-                log.warn("Exit before the end of processing");
+                handleUnfinishedThread(runner);
             }
         } catch (InterruptedException e) {
             log.error("Exit before the end of processing", e);
