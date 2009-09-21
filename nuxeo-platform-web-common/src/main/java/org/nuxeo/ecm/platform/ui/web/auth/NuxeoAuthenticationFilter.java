@@ -653,20 +653,21 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     protected boolean handleLogout(ServletRequest request,
             ServletResponse response,
-            CachableUserIdentificationInfo cachedUserInfo) {
+            CachableUserIdentificationInfo cachedUserInfo) throws ServletException {
         logLogout(cachedUserInfo.getUserInfo());
 
         // invalidate Session !
         service.invalidateSession(request);
 
+        request.setAttribute(URLPolicyService_DISABLE_REDIRECT_REQUEST_KEY,
+                true);
         Map<String, String> parameters = new HashMap<String, String>();
         String securityError = request.getParameter(NXAuthConstants.SECURITY_ERROR);
         if (securityError != null) {
             parameters.put(NXAuthConstants.SECURITY_ERROR, securityError);
         }
-        String forceAnonymousLogin = request.getParameter(NXAuthConstants.FORCE_ANONYMOUS_LOGIN);
-        if (forceAnonymousLogin != null) {
-            parameters.put(NXAuthConstants.FORCE_ANONYMOUS_LOGIN, forceAnonymousLogin);
+        if (cachedUserInfo.getPrincipal().getName().equals(getAnonymousId())) {
+            parameters.put(NXAuthConstants.FORCE_ANONYMOUS_LOGIN, "true");
         }
         String requestedUrl = request.getParameter(NXAuthConstants.REQUESTED_URL);
         if (requestedUrl != null) {
