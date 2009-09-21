@@ -63,6 +63,7 @@ public class TransactionalSession implements XAResource {
         }
         mapper.start(xid, flags);
         inTransaction = true;
+        session.checkThread();
     }
 
     public void end(Xid xid, int flags) throws XAException {
@@ -89,7 +90,11 @@ public class TransactionalSession implements XAResource {
         } finally {
             inTransaction = false;
             try {
-                session.sendInvalidationsToOthers();
+                try {
+                    session.sendInvalidationsToOthers();
+                } finally {
+                    session.clearThread();
+                }
             } catch (StorageException e) {
                 throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
             }
@@ -106,7 +111,11 @@ public class TransactionalSession implements XAResource {
         } finally {
             inTransaction = false;
             try {
-                session.sendInvalidationsToOthers();
+                try {
+                    session.sendInvalidationsToOthers();
+                } finally {
+                    session.clearThread();
+                }
             } catch (StorageException e) {
                 throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
             }

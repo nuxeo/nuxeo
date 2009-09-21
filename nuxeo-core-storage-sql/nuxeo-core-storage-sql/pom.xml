@@ -163,8 +163,9 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>
-            <!--  Synthetic classes for switch() (surefire bug) -->
-            <exclude>**/*$1.java</exclude>
+            <!-- Synthetic classes for switch() (surefire bug) -->
+            <!-- Inner classes -->
+            <exclude>**/*$*.java</exclude>
           </excludes>
         </configuration>
       </plugin>

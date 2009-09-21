@@ -73,6 +73,8 @@ public class SessionImpl implements Session {
 
     private Node rootNode;
 
+    private long threadId;
+
     SessionImpl(RepositoryImpl repository, SchemaManager schemaManager,
             Mapper mapper, Credentials credentials) throws StorageException {
         this.repository = repository;
@@ -102,7 +104,26 @@ public class SessionImpl implements Session {
             // avoid potential multi-threaded access to active session
             return 0;
         }
-        return context.clearCaches();
+        int n = context.clearCaches();
+        clearThread();
+        return n;
+    }
+
+    protected void checkThread() {
+        long currentThreadId = Thread.currentThread().getId();
+        if (threadId == 0) {
+            threadId = currentThreadId;
+        } else if (threadId != currentThreadId) {
+            log.error(
+                    String.format(
+                            "Session was started in thread %s but is now used in thread %s",
+                            threadId, currentThreadId), new Exception(
+                            "Concurrency Error"));
+        }
+    }
+
+    protected void clearThread() {
+        threadId = 0;
     }
 
     /*
@@ -153,6 +174,7 @@ public class SessionImpl implements Session {
     }
 
     public Node getRootNode() {
+        checkThread();
         checkLive();
         return rootNode;
     }
@@ -176,7 +198,9 @@ public class SessionImpl implements Session {
         }
     }
 
+    // also called by TransactionalSession#end
     protected void flush() throws StorageException {
+        checkThread();
         context.updateFulltext(this);
         context.save();
     }
@@ -212,6 +236,7 @@ public class SessionImpl implements Session {
     }
 
     public Node getNodeById(Serializable id) throws StorageException {
+        checkThread();
         checkLive();
         if (id == null) {
             throw new IllegalArgumentException("Illegal null id");
