@@ -16,15 +16,22 @@
  */
 package org.nuxeo.ecm.core.utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -36,75 +43,122 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Extractor for all the blobs of a document.
- *
+ * 
  * @author Florent Guillaume
+ * @author Benjamin Jalon
  */
 public class BlobsExtractor {
 
-    protected final SchemaManager schemaManager;
+    protected Log log = LogFactory.getLog(BlobsExtractor.class);
 
-    protected List<Field> blobFields;
+    protected Map<String, Map<String, List<String>>> blobFieldPaths = new HashMap<String, Map<String, List<String>>>();
 
-    protected List<Type> interestingTypes;
+    protected List<String> docTypeCached = new ArrayList<String>();
 
-    protected List<Blob> blobsFound;
+    protected SchemaManager schemaManager;
 
-    public BlobsExtractor() throws ClientException {
-        try {
-            schemaManager = Framework.getService(SchemaManager.class);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+    protected SchemaManager getSchemaManager() throws Exception {
         if (schemaManager == null) {
-            throw new ClientException("No schema manager");
+            schemaManager = Framework.getService(SchemaManager.class);
         }
+        return schemaManager;
     }
 
     /**
-     * Finds all the blobs of the document.
-     * <p>
-     * This method is not thread-safe.
-     *
-     * @param doc the document
-     * @return the list of blobs in the document
+     * Get properties of the given document that contain a blob value. This
+     * method use the cache engine to find these properties.
+     * 
+     * @param doc
+     * @return
+     * @throws Exception
      */
-    public List<Blob> getBlobs(DocumentModel doc) throws ClientException {
-        blobFields = new LinkedList<Field>();
-        interestingTypes = new LinkedList<Type>();
-        blobsFound = new LinkedList<Blob>();
+    public List<Property> getBlobsProperties(DocumentModel doc)
+            throws Exception {
 
-        // find all fields which are blobs
-        // and all types containing one such field
-        for (Schema schema : doc.getDocumentType().getSchemas()) {
-            findInteresting(schema);
-        }
+        List<Property> result = new ArrayList<Property>();
+        for (String schema : getBlobFieldPathForDocumentType(doc.getType()).keySet()) {
+            List<String> pathsList = getBlobFieldPathForDocumentType(
+                    doc.getType()).get(schema);
+            for (String path : pathsList) {
+                List<String> pathSplitted = Arrays.asList(path.split("/[*]/"));
+                if (pathSplitted.size() == 0) {
+                    throw new Exception("Path detected not wellformed: "
+                            + pathsList);
+                }
+                Property prop = doc.getProperty(pathSplitted.get(0));
 
-        // get actual blobs
-        for (String schemaName : doc.getDocumentType().getSchemaNames()) {
-            Schema schema = schemaManager.getSchema(schemaName);
-            if (!interestingTypes.contains(schema)) {
-                continue;
+                if (pathSplitted.size() >= 1) {
+                    List<String> subPath = pathSplitted.subList(1,
+                            pathSplitted.size());
+                    getBlobValue(prop, subPath, path, result);
+                }
             }
-            findBlobs(schema, doc.getDataModel(schemaName));
         }
 
-        // cleanup
-        List<Blob> blobs = blobsFound;
-        blobFields = null;
-        interestingTypes = null;
-        blobsFound = null;
+        return result;
+    }
 
-        return blobs;
+    /**
+     * Get path list of properties that may contain a blob for the given
+     * document type.
+     * 
+     * @param documentType document type name
+     * @return return the property names that contain blob
+     * @throws Exception
+     */
+    public Map<String, List<String>> getBlobFieldPathForDocumentType(
+            String documentType) throws Exception {
+        DocumentType docType = getSchemaManager().getDocumentType(documentType);
+
+        if (!docTypeCached.contains(documentType)) {
+            Map<String, List<String>> paths = new HashMap<String, List<String>>();
+            blobFieldPaths.put(docType.getName(), paths);
+
+            createCacheForDocumentType(docType);
+        }
+
+        return blobFieldPaths.get(documentType);
+    }
+
+    public void invalidateDocumentTypeCache(String docType) {
+        if (docTypeCached.contains(docType)) {
+            docTypeCached.remove(docType);
+        }
+    }
+
+    public void invalidateCache() {
+        docTypeCached = new ArrayList<String>();
+    }
+
+    protected void createCacheForDocumentType(DocumentType docType)
+            throws Exception {
+
+        for (Schema schema : docType.getSchemas()) {
+            findInteresting(docType, schema, "", schema);
+        }
+
+        if (!docTypeCached.contains(docType.getName())) {
+            docTypeCached.add(docType.getName());
+        }
     }
 
     /**
      * Analyzes the document's schemas to find which fields and complex types
-     * contain blobs.
-     *
+     * contain blobs. For each blob fields type found,
+     * {@link BlobsExtractor#blobMatched(DocumentType, Schema, String, Field)} is
+     * called and for each property that contains a subProperty containing a
+     * Blob,
+     * {@link BlobsExtractor#containsBlob(DocumentType, Schema, String, Field)}
+     * is called
+     * 
+     * @param schema The parent schema that contains the field
+     * @param ct Current type parsed
      * @return {@code true} if the passed complex type contains at least one
      *         blob field
+     * @throws Exception thrown if a field is named '*' (name forbidden)
      */
-    protected boolean findInteresting(ComplexType ct) {
+    protected boolean findInteresting(DocumentType docType, Schema schema,
+            String path, ComplexType ct) throws Exception {
         boolean interesting = false;
         for (Field field : ct.getFields()) {
             Type type = field.getType();
@@ -113,8 +167,17 @@ public class BlobsExtractor {
             } else if (type.isListType()) {
                 Type ftype = ((ListType) type).getField().getType();
                 if (ftype.isComplexType()) {
-                    if (findInteresting((ComplexType) ftype)) {
-                        interestingTypes.add(type);
+                    path = path
+                            + String.format("/%s/*",
+                                    field.getName().getLocalName());
+                    if ("*".equals(field.getName())) {
+                        throw new Exception(
+                                "A field can't be named '*' please check this field: "
+                                        + path);
+                    }
+                    if (findInteresting(docType, schema, path,
+                            (ComplexType) ftype)) {
+                        containsBlob(docType, schema, path, field);
                         interesting |= true;
                     }
                 } else {
@@ -122,68 +185,103 @@ public class BlobsExtractor {
                 }
             } else { // complex type
                 ComplexType ctype = (ComplexType) type;
-                if (TypeConstants.isContentType(type)
-                        || TypeConstants.isExternalContentType(type)) {
-                    blobFields.add(field);
-                    interestingTypes.add(type);
+                if (type.getName().equals(TypeConstants.CONTENT)) {
+                    // CB: Fix for NXP-3847 - do not accumulate field name in
+                    // the path
+                    String blobMatchedPath = path
+                            + String.format("/%s",
+                                    field.getName().getLocalName());
+                    blobMatched(docType, schema, blobMatchedPath, field);
                     interesting = true;
                 } else {
-                    interesting |= findInteresting(ctype);
+                    path = path
+                            + String.format("/%s",
+                                    field.getName().getLocalName());
+                    interesting |= findInteresting(docType, schema, path, ctype);
                 }
             }
         }
         if (interesting) {
-            interestingTypes.add(ct);
+            containsBlob(docType, schema, path, null);
         }
         return interesting;
     }
 
     /**
-     * Finds the blobs in a DataModel.
+     * Call during the parsing of the schema structure in
+     * {@link BlobsExtractor#findInteresting(Schema, ComplexType)} if field is a
+     * Blob Type. This method stores the path to that Field.
+     * 
+     * @param schema The parent schema that contains the field
+     * @param field Field that is a BlobType
      */
-    protected void findBlobs(ComplexType ct, DataModel data) {
-        for (Field field : ct.getFields()) {
-            Type type = field.getType();
-            if (!interestingTypes.contains(type)) {
-                continue;
+    protected void blobMatched(DocumentType docType, Schema schema,
+            String path, Field field) {
+        Map<String, List<String>> blobPathsForDocType = blobFieldPaths.get(docType.getName());
+        List<String> pathsList = blobPathsForDocType.get(schema.getSchemaName());
+        if (pathsList == null) {
+            pathsList = new ArrayList<String>();
+            blobPathsForDocType.put(schema.getName(), pathsList);
+            blobFieldPaths.put(docType.getName(), blobPathsForDocType);
+        }
+        pathsList.add(path);
+    }
+
+    /**
+     * Call during the parsing of the schema structure in
+     * {@link BlobsExtractor#findInteresting(Schema, ComplexType)} if field
+     * contains a subfield of type Blob. This method do nothing.
+     * 
+     * @param schema The parent schema that contains the field
+     * @param field Field that contains a subField of type BlobType
+     */
+    protected void containsBlob(DocumentType docType, Schema schema,
+            String path, Field field) {
+
+    }
+
+    protected void getBlobValue(Property prop, List<String> subPath,
+            String completePath, List<Property> result) throws Exception {
+        if (subPath.size() == 0) {
+            if (!(prop.getValue() instanceof Blob)) {
+                log.debug("Path Field not contains a blob value: "
+                        + completePath);
+                return;
             }
-            Object value;
-            try {
-                value = data.getData(field.getName().getLocalName());
-            } catch (PropertyException e) {
-                continue;
+            result.add(prop);
+            return;
+        }
+
+        for (Property childProp : prop.getChildren()) {
+            if ("/*".equals(subPath.get(0))) {
+                log.debug("TODO : BLOB IN A LIST NOT IMPLEMENTED for this path "
+                        + completePath);
             }
-            findBlobs(field, value);
+            Property childSubProp = childProp.get(subPath.get(0));
+            getBlobValue(childSubProp, subPath.subList(1, subPath.size()),
+                    completePath, result);
         }
     }
 
     /**
-     * Finds the blobs in a value.
+     * Finds all the blobs of the document.
+     * <p>
+     * This method is not thread-safe.
+     * 
+     * @param doc the document
+     * @return the list of blobs in the document
      */
-    @SuppressWarnings("unchecked")
-    protected void findBlobs(Field field, Object value) {
-        if (value == null) {
-            return;
-        }
-        if (blobFields.contains(field)) {
-            blobsFound.add((Blob) value);
-            return;
-        }
-        Type type = field.getType();
-        if (!interestingTypes.contains(type)) {
-            return;
-        }
-        if (type.isListType()) {
-            for (Object o : ((List<Object>) value)) {
-                findBlobs(((ListType) type).getField(), o);
-            }
-        } else { // complex type
-            ComplexType ctype = (ComplexType) type;
-            Map<String, Object> map = (Map<String, Object>) value;
-            for (String k : map.keySet()) {
-                findBlobs(ctype.getField(k), map.get(k));
-            }
-        }
-    }
+    public List<Blob> getBlobs(DocumentModel doc) throws ClientException {
+        List<Blob> result = new ArrayList<Blob>();
 
+        try {
+            for (Property blobField : getBlobsProperties(doc)) {
+                Blob blob = (Blob) blobField.getValue();
+                result.add(blob);
+            }
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+        return result;
+    }
 }
