@@ -245,6 +245,14 @@ public abstract class Dialect {
             String quotedIndexName, String tableName, List<String> columnNames);
 
     /**
+     * Get the dialect-specific version of a fulltext query.
+     *
+     * @param query the CMIS-syntax-based fulltext query string
+     * @return the dialect native fulltext query string
+     */
+    public abstract String getDialectFulltextQuery(String query);
+
+    /**
      * Gets the information needed to do a a fulltext match, either with a
      * direct expression in the WHERE clause, or using a join with an additional
      * table.

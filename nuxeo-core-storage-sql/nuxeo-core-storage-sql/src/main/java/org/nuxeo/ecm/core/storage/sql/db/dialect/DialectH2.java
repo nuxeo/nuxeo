@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.hibernate.dialect.H2Dialect;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -192,6 +193,29 @@ public class DialectH2 extends Dialect {
     public String getCreateFulltextIndexSql(String indexName,
             String quotedIndexName, String tableName, List<String> columnNames) {
         return null; // no SQL index for H2
+    }
+
+    @Override
+    // translate into Lucene-based syntax
+    public String getDialectFulltextQuery(String query) {
+        query = query.replaceAll(" +", " ");
+        List<String> pos = new LinkedList<String>();
+        List<String> neg = new LinkedList<String>();
+        for (String word : StringUtils.split(query, ' ', false)) {
+            if (word.startsWith("-")) {
+                neg.add(word);
+            } else {
+                pos.add("+" + word);
+            }
+        }
+        if (pos.isEmpty()) {
+            return "+DONTMATCHANYTHINGFOREMPTYQUERY";
+        }
+        String res = StringUtils.join(pos, " ");
+        if (!neg.isEmpty()) {
+            res += " " + StringUtils.join(neg, " ");
+        }
+        return res;
     }
 
     @Override

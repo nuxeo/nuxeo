@@ -104,8 +104,6 @@ public class DatabaseOracle extends DatabaseHelper {
         properties.put("User", USER);
         properties.put("Password", PASSWORD);
         descriptor.properties = properties;
-        // descriptor.fulltextAnalyzer = "french";
-        // descriptor.fulltextCatalog = "nuxeo";
         return descriptor;
     }
 

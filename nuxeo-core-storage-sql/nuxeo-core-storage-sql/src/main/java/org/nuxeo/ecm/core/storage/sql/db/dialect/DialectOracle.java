@@ -53,14 +53,12 @@ import org.nuxeo.ecm.core.storage.sql.db.Table;
  */
 public class DialectOracle extends Dialect {
 
-    private static final String DEFAULT_FULLTEXT_LEXER = "BASIC_LEXER";
-
-    protected final String fulltextLexer;
+    protected final String fulltextParameters;
 
     public DialectOracle(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(new Oracle9Dialect(), metadata);
-        fulltextLexer = repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_LEXER
+        fulltextParameters = repositoryDescriptor.fulltextAnalyzer == null ? ""
                 : repositoryDescriptor.fulltextAnalyzer;
     }
 
@@ -240,8 +238,31 @@ public class DialectOracle extends Dialect {
             String quotedIndexName, String tableName, List<String> columnNames) {
         return String.format(
                 "CREATE INDEX %s ON %s(%s) INDEXTYPE IS CTXSYS.CONTEXT "
-                        + "PARAMETERS('LEXER %s SYNC (ON COMMIT) TRANSACTIONAL')",
-                quotedIndexName, tableName, columnNames.get(0), fulltextLexer);
+                        + "PARAMETERS('%s SYNC (ON COMMIT) TRANSACTIONAL')",
+                quotedIndexName, tableName, columnNames.get(0),
+                fulltextParameters);
+    }
+
+    @Override
+    public String getDialectFulltextQuery(String query) {
+        query = query.replaceAll(" +", " ");
+        List<String> pos = new LinkedList<String>();
+        List<String> neg = new LinkedList<String>();
+        for (String word : StringUtils.split(query, ' ', false)) {
+            if (word.startsWith("-")) {
+                neg.add(word.substring(1));
+            } else {
+                pos.add(word);
+            }
+        }
+        if (pos.isEmpty()) {
+            return "DONTMATCHANYTHINGFOREMPTYQUERY";
+        }
+        String res = StringUtils.join(pos, " & ");
+        if (!neg.isEmpty()) {
+            res += " ~ " + StringUtils.join(neg, " ~ ");
+        }
+        return res;
     }
 
     @Override

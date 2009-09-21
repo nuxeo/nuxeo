@@ -827,7 +827,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 return;
             }
             if (name.startsWith(NXQL.ECM_FULLTEXT)) {
-                if (sqlInfo.dialect.isFulltextTableNeeded()) {
+                if (dialect.isFulltextTableNeeded()) {
                     // we only use this for its fragment name
                     props.add(model.FULLTEXT_SIMPLETEXT_PROP);
                 }
@@ -1201,14 +1201,10 @@ public class NXQLQueryMaker implements QueryMaker {
                         + " requires literal string as right argument");
             }
             String fulltextQuery = ((StringLiteral) node.rvalue).value;
-            // TODO parse query language for fulltext
-            // for now just a sequence of words
-            // Column ftColumn =
-            // database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
-            // model.FULLTEXT_FULLTEXT_KEY);
+            fulltextQuery = dialect.getDialectFulltextQuery(fulltextQuery);
             Column mainColumn = joinedHierTable.getColumn(model.MAIN_KEY);
-            String[] info = sqlInfo.dialect.getFulltextMatch(name,
-                    fulltextQuery, mainColumn, model, database);
+            String[] info = dialect.getFulltextMatch(name, fulltextQuery,
+                    mainColumn, model, database);
             String joinExpr = info[0];
             String joinParam = info[1];
             String whereExpr = info[2];

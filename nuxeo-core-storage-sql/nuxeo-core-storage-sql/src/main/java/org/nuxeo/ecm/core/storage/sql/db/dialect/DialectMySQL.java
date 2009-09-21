@@ -197,10 +197,33 @@ public class DialectMySQL extends Dialect {
     }
 
     @Override
+    public String getDialectFulltextQuery(String query) {
+        query = query.replaceAll(" +", " ");
+        List<String> pos = new LinkedList<String>();
+        List<String> neg = new LinkedList<String>();
+        for (String word : StringUtils.split(query, ' ', false)) {
+            if (word.startsWith("-")) {
+                neg.add(word);
+            } else {
+                pos.add("+" + word);
+            }
+        }
+        if (pos.isEmpty()) {
+            return "+DONTMATCHANYTHINGFOREMPTYQUERY";
+        }
+        String res = StringUtils.join(pos, " ");
+        if (!neg.isEmpty()) {
+            res += " " + StringUtils.join(neg, " ");
+        }
+        return res;
+    }
+
+    @Override
     public String[] getFulltextMatch(String indexName, String fulltextQuery,
             Column mainColumn, Model model, Database database) {
         // TODO multiple indexes
-        String whereExpr = "MATCH (`fulltext`.`simpletext`, `fulltext`.`binarytext`) AGAINST (?)";
+        String whereExpr = "MATCH (`fulltext`.`simpletext`, `fulltext`.`binarytext`)"
+                + " AGAINST (? IN BOOLEAN MODE)";
         return new String[] { null, null, whereExpr, fulltextQuery };
     }
 

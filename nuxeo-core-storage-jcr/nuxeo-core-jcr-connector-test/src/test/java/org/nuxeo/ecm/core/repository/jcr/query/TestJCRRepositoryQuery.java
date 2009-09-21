@@ -61,6 +61,11 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
     }
 
     @Override
+    public void testFulltextExpressionSyntax() {
+        // no fulltext expressions for JCR
+    }
+
+    @Override
     public void testFulltextSecondary() {
         // no secondary fulltext indexes for JCR
     }

@@ -200,6 +200,11 @@ public class DialectDerby extends Dialect {
     }
 
     @Override
+    public String getDialectFulltextQuery(String query) {
+        return query; // TODO
+    }
+
+    @Override
     public String[] getFulltextMatch(String indexName, String fulltextQuery,
             Column mainColumn, Model model, Database database) {
         // TODO multiple indexes

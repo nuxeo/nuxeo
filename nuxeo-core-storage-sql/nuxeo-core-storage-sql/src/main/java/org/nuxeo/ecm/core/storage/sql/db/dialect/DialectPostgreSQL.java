@@ -220,6 +220,21 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
+    public String getDialectFulltextQuery(String query) {
+        query = query.replace(" & ", " "); // PostgreSQL compatibility BBB
+        query = query.replaceAll(" +", " ");
+        List<String> res = new LinkedList<String>();
+        for (String word : StringUtils.split(query, ' ', false)) {
+            if (word.startsWith("-")) {
+                res.add("!" + word.substring(1));
+            } else {
+                res.add(word);
+            }
+        }
+        return StringUtils.join(res, " & ");
+    }
+
+    @Override
     public String[] getFulltextMatch(String indexName, String fulltextQuery,
             Column mainColumn, Model model, Database database) {
         // TODO multiple indexes

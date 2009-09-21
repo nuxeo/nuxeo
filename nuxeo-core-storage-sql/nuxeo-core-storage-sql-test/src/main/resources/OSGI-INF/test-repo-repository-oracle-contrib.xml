@@ -10,7 +10,7 @@
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository>
         <indexing>
-          <fulltext analyzer="BASIC_LEXER">
+          <fulltext>
             <index> <!-- name="default" implied -->
               <!-- all props implied -->
             </index>
