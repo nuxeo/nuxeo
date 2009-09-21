@@ -35,6 +35,7 @@ import org.nuxeo.theme.webwidgets.WidgetState;
 @Entity
 @Table(name = "NXP_WEBW_WIDG")
 @NamedQueries( {
+        @NamedQuery(name = "Widget.removeAll", query = "DELETE WidgetEntity"),
         @NamedQuery(name = "Widget.findAll", query = "FROM WidgetEntity widget WHERE widget.region=:region ORDER BY widget.order"),
         @NamedQuery(name = "Widget.findByScope", query = "FROM WidgetEntity widget WHERE widget.region=:region AND widget.scope=:scope ORDER BY widget.order") })
 public class WidgetEntity implements Widget {
