@@ -93,7 +93,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         for (Class<?> annotedClass : annotedClasses) {
             cfg.addAnnotatedClass(annotedClass);
         }
-        
+
         // needed for correct setup
         cfg.configure("fake-hibernate.cfg.xml");
 
@@ -107,7 +107,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         Map<String,String> properties = new HashMap<String,String>();
         String txType = TransactionTypeHelper.getTxType();
         if (txType != null) {
-        	properties.put(HibernatePersistence.TRANSACTION_TYPE, "RESOURCE_LOCAL");
+        	properties.put(HibernatePersistence.TRANSACTION_TYPE, txType);
         }
         return cfg.createEntityManagerFactory(properties);
     }
