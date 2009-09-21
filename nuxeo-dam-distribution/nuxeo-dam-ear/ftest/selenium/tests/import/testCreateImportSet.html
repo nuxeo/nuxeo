@@ -128,13 +128,33 @@
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
-	<td>20000</td>
+	<td>30000</td>
 	<td></td>
 </tr>
 <tr>
-    <td>waitForTextPresent</td>
-    <td>P-01</td>
-    <td></td>
+	<td>storeEval</td>
+	<td>selenium.browserbot.getCurrentWindow().document.body.innerHTML</td>
+	<td>innerhtml</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${innerhtml}</td>
+	<td></td>
+</tr>
+<tr>
+  <td>waitForTextPresent</td>
+  <td>P-01</td>
+  <td></td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>selenium.browserbot.getCurrentWindow().document.body.innerHTML</td>
+	<td>innerhtml</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${innerhtml}</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
