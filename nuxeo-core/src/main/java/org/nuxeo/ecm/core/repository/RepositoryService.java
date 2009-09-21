@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.local.LocalSession;
+import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
@@ -89,8 +90,10 @@ public class RepositoryService extends DefaultComponent implements EventListener
                 Repository repo = NXCore.getRepository(name);
                 log.info("Closing repository: " + name);
                 repo.shutdown();
+            } catch (NoSuchRepositoryException e) {
+                // already torn down
             } catch (Exception e) {
-                log.error("Failed to close repository: " + name);
+                log.error("Failed to close repository: " + name, e);
             }
         }
     }
