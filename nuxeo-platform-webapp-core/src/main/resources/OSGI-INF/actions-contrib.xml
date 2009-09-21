@@ -21,13 +21,13 @@
       </action>
     -->
 
-    <action id="non_anonymous_logout" link="#{loginLogoutAction.logout}"
+    <action id="non_anonymous_logout" link="logout"
       label="command.logout">
       <category>USER_SERVICES_BOTTOM</category>
       <filter-id>not_anonymous</filter-id>
     </action>
 
-    <action id="login" link="#{loginLogoutAction.logout}"
+    <action id="login" link="logout"
       label="command.login">
       <category>USER_SERVICES_BOTTOM</category>
       <filter-id>anonymous</filter-id>
