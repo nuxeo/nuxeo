@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.webapp.action;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -37,13 +40,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.webapp.edit.lock.LockActions;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 @Name("popupHelper")
 @Scope(CONVERSATION)
@@ -55,8 +57,6 @@ public class PopupHelper implements Serializable {
     private static final Log log = LogFactory.getLog(PopupHelper.class);
 
     public static final String POPUP_CATEGORY = "POPUP";
-
-    public static final String DELETED_LIFECYCLE_STATE = "deleted";
 
     @In(required = true, create = true)
     protected transient ActionContextProvider actionContextProvider;
@@ -342,7 +342,7 @@ public class PopupHelper implements Serializable {
         }
         try {
             // test if the document still exists in the repository
-            if (doc.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE) == true) {
+            if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
                 return true;
             }
         } catch (ClientException ex) {
