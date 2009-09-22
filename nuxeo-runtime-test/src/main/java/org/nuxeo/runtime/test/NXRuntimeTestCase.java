@@ -45,6 +45,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkEvent;
 
 /**
  * Abstract base class for test cases that require a test runtime service.
@@ -73,6 +74,10 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
     protected Map<String, BundleFile> bundles;
 
     protected boolean restart = false;
+
+    protected OSGiAdapter osgi;
+
+    protected Bundle runtimeBundle;
 
     public NXRuntimeTestCase() {
     }
@@ -107,6 +112,14 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
         }
     }
 
+    /**
+     * Fire the event {@code FrameworkEvent.STARTED}.
+     * @throws Exception
+     */
+    public void fireFrameworkStarted() throws Exception {
+        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, runtimeBundle, null));
+    }
+
     @Override
     public void tearDown() throws Exception {
         wipeRuntime();
@@ -138,7 +151,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
             log.error("Could not init working directory", e);
             throw e;
         }
-        OSGiAdapter osgi = new OSGiAdapter(workingDir);
+        osgi = new OSGiAdapter(workingDir);
         bundleLoader = new StandaloneBundleLoader(osgi,
                 NXRuntimeTestCase.class.getClassLoader());
         Thread.currentThread().setContextClassLoader(bundleLoader.getSharedClassLoader());
@@ -147,9 +160,10 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
         bundleLoader.setExtractNestedJARs(false);
 
         BundleFile bundleFile = lookupBundle("org.nuxeo.runtime");
-        Bundle bundle = new RootRuntimeBundle(osgi, bundleFile,
+        runtimeBundle = new RootRuntimeBundle(osgi, bundleFile,
                 bundleLoader.getClass().getClassLoader(), true);
-        bundle.start();
+        runtimeBundle.start();
+
         runtime = Framework.getRuntime();
         assertNotNull(runtime);
 
