@@ -87,6 +87,7 @@ public class Manager {
                     throw new WidgetException("Provider class : " + className
                             + " for provider: " + name + " not found.");
                 }
+                provider.activate();
                 providers.put(name, provider);
             }
             return provider;

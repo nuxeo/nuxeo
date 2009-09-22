@@ -146,7 +146,7 @@ public class PersistentProvider implements Provider {
             log.error("No hibernate configurator available, aborting", e);
             return;
         }
-        HibernateConfiguration config = configurator.getHibernateConfiguration("nxwidgets");
+        HibernateConfiguration config = configurator.getHibernateConfiguration("nxwebwidgets");
         em = config.getFactory().createEntityManager();
     }
 

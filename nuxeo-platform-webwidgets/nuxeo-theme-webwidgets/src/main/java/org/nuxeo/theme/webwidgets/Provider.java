@@ -20,6 +20,12 @@ import java.util.Map;
 public interface Provider {
 
     /**
+     * Activate a provider. The implementation is responsible for acquiring resources
+     * needed for service
+     */
+    void activate();
+
+    /**
      * Create a new widget. The implementation is responsible for generating a
      * unique widget identifier.
      *
