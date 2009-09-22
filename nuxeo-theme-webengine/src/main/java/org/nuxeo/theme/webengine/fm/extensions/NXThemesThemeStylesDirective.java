@@ -68,7 +68,7 @@ public class NXThemesThemeStylesDirective implements TemplateDirectiveModel {
         if (params.containsKey("cache")) {
             cache = Boolean.parseBoolean(params.get("cache").toString());
         }
-        
+
         Boolean inline = false;
         if (params.containsKey("inline")) {
             inline = Boolean.parseBoolean(params.get("inline").toString());
@@ -77,8 +77,10 @@ public class NXThemesThemeStylesDirective implements TemplateDirectiveModel {
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put("themeName", ThemeManager.getThemeNameByUrl(themeUrl));
         attributes.put("path", context.getModulePath());
-        
+        attributes.put("basepath", context.getBasePath());
+
         Boolean virtualHosting = Utils.isVirtualHosting(request);
-        writer.write(ThemeStyles.render(attributes, cache, inline, virtualHosting));
+        writer.write(ThemeStyles.render(attributes, cache, inline,
+                virtualHosting));
     }
 }
