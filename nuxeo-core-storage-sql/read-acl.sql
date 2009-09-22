@@ -72,7 +72,7 @@ CREATE INDEX hierarchy_read_acl_acl_id_idx ON hierarchy_read_acl USING btree (ac
 --
 DROP TABLE IF EXISTS hierarchy_modified_acl;
 CREATE TABLE hierarchy_modified_acl (
-  id character varying(36) PRIMARY KEY,
+  id character varying(36),
   is_new boolean
 );
 
