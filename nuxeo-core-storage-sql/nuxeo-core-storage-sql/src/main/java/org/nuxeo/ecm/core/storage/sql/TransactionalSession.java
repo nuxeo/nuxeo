@@ -21,6 +21,8 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -29,6 +31,8 @@ import org.nuxeo.ecm.core.storage.StorageException;
  * @author Florent Guillaume
  */
 public class TransactionalSession implements XAResource {
+
+    private static final Log log = LogFactory.getLog(TransactionalSession.class);
 
     private final SessionImpl session;
 
@@ -58,6 +62,7 @@ public class TransactionalSession implements XAResource {
             try {
                 session.processReceivedInvalidations();
             } catch (StorageException e) {
+                log.error("Could not start transaction", e);
                 throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
             }
         }
@@ -67,16 +72,26 @@ public class TransactionalSession implements XAResource {
     }
 
     public void end(Xid xid, int flags) throws XAException {
+        boolean failed = true;
         try {
             if (flags != TMFAIL) {
                 try {
                     session.flush();
                 } catch (StorageException e) {
+                    log.error("Could not end transaction", e);
                     throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
                 }
             }
-        } finally {
+            failed = false;
             mapper.end(xid, flags);
+        } finally {
+            if (failed) {
+                try {
+                    mapper.end(xid, TMFAIL);
+                } finally {
+                    rollback(xid);
+                }
+            }
         }
     }
 
@@ -96,6 +111,7 @@ public class TransactionalSession implements XAResource {
                     session.clearThread();
                 }
             } catch (StorageException e) {
+                log.error("Could not commit transaction", e);
                 throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
             }
         }
@@ -117,6 +133,7 @@ public class TransactionalSession implements XAResource {
                     session.clearThread();
                 }
             } catch (StorageException e) {
+                log.error("Could not rollback transaction", e);
                 throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
             }
         }
