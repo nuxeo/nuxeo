@@ -736,7 +736,7 @@ public final class ThemeManager implements Registrable {
     }
 
     public void stylesModified(String themeName) {
-        setCachedStyles(themeName, null);
+        setCachedStyles(themeName, null, null);
     }
 
     // Registration
@@ -1130,12 +1130,20 @@ public final class ThemeManager implements Registrable {
     }
 
     // Cached styles
-    public String getCachedStyles(String themeName) {
-        return cachedStyles.get(themeName);
+    public String getCachedStyles(String themeName, String basePath) {
+        String key = themeName;
+        if (basePath != null) {
+            key = String.format("%s|%s", key, basePath);
+        }
+        return cachedStyles.get(key);
     }
 
-    public synchronized void setCachedStyles(String themeName, String css) {
-        cachedStyles.put(themeName, css);
+    public synchronized void setCachedStyles(String themeName, String basePath, String css) {
+        String key = themeName;
+        if (basePath != null) {
+            key = String.format("%s|%s", key, basePath);
+        }
+        cachedStyles.put(key, css);
     }
 
     public String getResource(String name) {

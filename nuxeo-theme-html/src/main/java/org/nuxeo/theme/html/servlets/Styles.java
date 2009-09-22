@@ -17,6 +17,7 @@ package org.nuxeo.theme.html.servlets;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.regex.Matcher;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServlet;
@@ -56,7 +57,7 @@ public final class Styles extends HttpServlet implements Serializable {
         response.addHeader("content-type", "text/css");
 
         final String themeName = request.getParameter("theme");
-        
+
         // cache control
         final String applicationPath = request.getParameter("path");
         if (applicationPath != null) {
@@ -76,8 +77,11 @@ public final class Styles extends HttpServlet implements Serializable {
             os = new GZIPOutputStream(os);
         }
 
+        final String basePath = request.getParameter("basepath");
+        
         final ThemeManager themeManager = Manager.getThemeManager();
-        String rendered = themeManager.getCachedStyles(themeName);
+        String rendered = themeManager.getCachedStyles(themeName, basePath);
+
         if (rendered == null) {
             final StringBuilder sb = new StringBuilder();
             for (Style style : themeManager.getNamedStyles(themeName)) {
@@ -91,7 +95,12 @@ public final class Styles extends HttpServlet implements Serializable {
                         INDENT));
             }
             rendered = sb.toString();
-            themeManager.setCachedStyles(themeName, rendered);
+
+            if (basePath != null) {
+                rendered = rendered.replaceAll("\\$\\{basePath\\}",
+                        Matcher.quoteReplacement(basePath));
+            }
+            themeManager.setCachedStyles(themeName, basePath, rendered);
         }
 
         os.write(rendered.getBytes());

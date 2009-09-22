@@ -16,6 +16,7 @@ package org.nuxeo.theme.html.ui;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.formats.styles.Style;
@@ -36,7 +37,8 @@ public class ThemeStyles {
             boolean inline, boolean virtualHosting) {
         String themeName = params.get("themeName");
         String path = params.get("path");
-        
+        String basePath = params.get("basepath");
+
         String cssPath = "/nuxeo/nxthemes-css";
         if (virtualHosting) {
             cssPath = path + "/nxthemes-css";
@@ -57,19 +59,25 @@ public class ThemeStyles {
                         INDENT));
             }
             sb.append("</style>");
-            return sb.toString();
+            String rendered = sb.toString();
+            if (basePath != null) {
+                rendered = rendered.replaceAll("\\$\\{basePath\\}",
+                        Matcher.quoteReplacement(basePath));
+            }
+            return rendered;
         }
         if (cache) {
             return String.format(
                     "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\""
-                            + cssPath + "/?theme=%s&amp;path=%s\" />",
-                    themeName, path);
+                            + cssPath
+                            + "/?theme=%s&amp;path=%s&amp;basepath=%s\" />",
+                    themeName, path, basePath);
         } else {
             return String.format(
                     "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\""
                             + cssPath
-                            + "/?theme=%s&amp;path=%s&amp;timestamp=%s\" />",
-                    themeName, path, new Date().getTime());
+                            + "/?theme=%s&amp;path=%s&amp;basepath=%s&amp;timestamp=%s\" />",
+                    themeName, path, basePath, new Date().getTime());
         }
     }
 }
