@@ -51,11 +51,7 @@ public class PropertyWrapper {
             if (property.isScalar()) {
                 Object value = property.getValue();
                 if (value == null) {
-                    if (property.getType() == DateType.INSTANCE) {
-                        value = Calendar.getInstance();
-                    } else {
-                        return TemplateModel.NOTHING;
-                    }
+                    return TemplateModel.NOTHING;
                 }
                 if (property.getType() == DateType.INSTANCE) {
                     return new SimpleDate(((Calendar) value).getTime(),
