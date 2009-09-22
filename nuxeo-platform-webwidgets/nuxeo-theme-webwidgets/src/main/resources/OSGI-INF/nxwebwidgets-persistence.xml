@@ -6,7 +6,7 @@
   
   <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
     point="hibernate">
-    <hibernateConfiguration name="nxaudit-logs">
+    <hibernateConfiguration name="nxwebwidgets">
       <datasource>nxwebwidgets</datasource>
       <properties>
         <property name="hibernate.hbm2ddl.auto">update</property>
