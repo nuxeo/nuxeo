@@ -7,6 +7,6 @@
   <mbean code="org.jboss.naming.NamingAlias"
     name="jboss.jca:name=nxwebwidgets,service=DataSourceBinding">
     <attribute name="ToName">java:/NuxeoDS</attribute>
-    <attribute name="FromName">jdbc/nxwebwidgets</attribute>
+    <attribute name="FromName">java:/nxwebwidgets</attribute>
   </mbean>
 </datasources>
