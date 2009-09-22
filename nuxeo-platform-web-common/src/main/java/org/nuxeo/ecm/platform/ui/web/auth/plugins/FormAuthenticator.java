@@ -58,9 +58,9 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
                 String loginError = (String) httpRequest.getAttribute(NXAuthConstants.LOGIN_ERROR);
                 if (loginError != null) {
                     if (NXAuthConstants.ERROR_USERNAME_MISSING.equals(loginError)) {
-                        parameters.put(NXAuthConstants.ERROR_USERNAME_MISSING, "true");
+                        parameters.put(NXAuthConstants.LOGIN_MISSING, "true");
                     } else {
-                        parameters.put(NXAuthConstants.ERROR_AUTHENTICATION_FAILED, "true");
+                        parameters.put(NXAuthConstants.LOGIN_FAILED, "true");
                     }
                 }
             }
