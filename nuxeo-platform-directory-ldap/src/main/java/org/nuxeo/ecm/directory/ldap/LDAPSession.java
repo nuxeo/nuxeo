@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.SimpleTimeZone;
 
 import javax.naming.Context;
+import javax.naming.LimitExceededException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.SizeLimitExceededException;
@@ -499,7 +500,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
             }
 
             return entries;
-        } catch (SizeLimitExceededException e) {
+        } catch (LimitExceededException e) {
             throw new org.nuxeo.ecm.directory.SizeLimitExceededException(e);
         } catch (NamingException e) {
             throw new DirectoryException("executeQuery failed", e);
