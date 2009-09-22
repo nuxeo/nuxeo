@@ -258,7 +258,11 @@ public class SearchPageProvider implements PagedDocumentsProvider {
     }
 
     public int getNumberOfPages() {
-        return (int) (1 + (getResultsCount() - 1) / searchResults.getRange());
+        int range = searchResults.getRange();
+        if (range == 0) {
+            return 1;
+        }
+        return (int) (1 + (getResultsCount() - 1) / range);
     }
 
     protected void performRefresh() throws SearchException {
