@@ -67,6 +67,8 @@ public class UIThemeStyles extends UIOutput {
 
         params.put("themeName", ThemeManager.getThemeNameByUrl(themeUrl));
         params.put("path", externalContext.getRequestContextPath());
+        // FIXME: use configuration
+        params.put("basepath", "/nuxeo/site");
 
         Boolean virtualHosting = Utils.isVirtualHosting((HttpServletRequest) externalContext.getRequest());
         writer.write(ThemeStyles.render(params, Boolean.parseBoolean(cache),
