@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.platform.audit.api.job.JobHistoryHelper;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
@@ -78,6 +79,10 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected ImporterDocumentModelFactory factory;
 
+    protected String jobName;
+
+    protected JobHistoryHelper jobHelper;
+
     private static synchronized int getNextTaskId() {
         taskCounter += 1;
         return taskCounter;
@@ -106,6 +111,19 @@ public class GenericThreadedImportTask implements Runnable {
             throw new IllegalArgumentException("source node must be specified");
         }
 
+    }
+
+
+    public GenericThreadedImportTask(CoreSession session,
+            SourceNode rootSource, DocumentModel rootDoc,
+            ImporterLogger rsLogger, int batchSize,
+            ImporterDocumentModelFactory factory,
+            ImporterThreadingPolicy threadPolicy, String jobName)
+            throws Exception {
+        this(session, rootSource, rootDoc, rsLogger, batchSize, factory,
+                threadPolicy);
+        this.jobName = jobName;
+        this.jobHelper = new JobHistoryHelper(jobName);
     }
 
     protected CoreSession getCoreSession() throws Exception {
@@ -283,6 +301,13 @@ public class GenericThreadedImportTask implements Runnable {
             GenericMultiThreadedImporter.addCreatedDoc(taskId, uploadedFiles);
             txHelper.commitOrRollbackTransaction();
         } catch (Exception e) {
+            try {
+                if (jobHelper != null) {
+                    jobHelper.logJobFailed("Error during import");
+                }
+            } catch (Exception e1) {
+                log.error("Error during import", e1);
+            }
             log.error("Error during import", e);
         } finally {
             if (session != null) {

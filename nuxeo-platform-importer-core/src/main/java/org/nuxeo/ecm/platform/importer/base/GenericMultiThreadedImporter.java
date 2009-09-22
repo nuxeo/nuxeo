@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.platform.audit.api.job.JobHistoryHelper;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
@@ -77,6 +78,10 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
 
     protected String importWritePath;
 
+    protected String jobName;
+
+    protected JobHistoryHelper jobHelper;
+
     protected boolean enablePerfLogging = true;
 
     protected List<ImporterFilter> filters = new ArrayList<ImporterFilter>();
@@ -110,6 +115,15 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         this.batchSize = batchSize;
         this.nbThreads = nbThreads;
         this.log = log;
+    }
+
+    public GenericMultiThreadedImporter(SourceNode sourceNode,
+            String importWritePath, Integer batchSize, Integer nbThreads,
+            String jobName, ImporterLogger log) throws Exception {
+
+        this(sourceNode, importWritePath, batchSize, nbThreads, log);
+        this.jobName = jobName;
+        this.jobHelper = new JobHistoryHelper(jobName);
     }
 
     public void addFilter(ImporterFilter filter) {
@@ -168,11 +182,11 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     }
 
     protected GenericThreadedImportTask initRootTask(SourceNode importSource,
-            DocumentModel targetContainer, ImporterLogger log, Integer batchSize)
-            throws Exception {
+            DocumentModel targetContainer, ImporterLogger log,
+            Integer batchSize, String jobName) throws Exception {
         GenericThreadedImportTask rootImportTask = new GenericThreadedImportTask(
                 null, importSource, targetContainer, log, batchSize,
-                getFactory(), getThreadPolicy());
+                getFactory(), getThreadPolicy(), jobName);
         return rootImportTask;
     }
 
@@ -187,10 +201,13 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
                 TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100));
 
         GenericThreadedImportTask rootImportTask = initRootTask(importSource,
-                targetContainer, log, batchSize);
+                targetContainer, log, batchSize, jobName);
 
         rootImportTask.setRootTask();
         long t0 = System.currentTimeMillis();
+        if (jobHelper != null) {
+            jobHelper.logJobStarted();
+        }
         importTP.execute(rootImportTask);
         Thread.sleep(200);
         int activeTasks = importTP.getActiveCount();
@@ -238,6 +255,9 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         }
         log.info("All Threads terminated");
         perfLogger.release();
+        if (jobHelper != null) {
+            jobHelper.logJobEnded();
+        }
         long t1 = System.currentTimeMillis();
         long nbCreatedDocs = getCreatedDocsCounter();
         log.info(nbCreatedDocs + " docs created");
