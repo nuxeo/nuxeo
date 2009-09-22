@@ -7,7 +7,7 @@
     <artifactId>nuxeo-features-parent</artifactId-->
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
-    <version>5.2.1-SNAPSHOT</version>
+    <version>5.2.1-I20090923_0116</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.distribution</groupId>
