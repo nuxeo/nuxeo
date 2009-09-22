@@ -46,7 +46,7 @@ public class TestManager extends NXRuntimeTestCase {
     public void testGetProviderType() {
         ProviderType providerType = Manager.getProviderType("test");
         assertEquals("test", providerType.getName());
-        assertEquals("org.nuxeo.theme.webwidgets.test.TestProvider",
+        assertEquals("org.nuxeo.theme.webwidgets.providers.DefaultProvider",
                 providerType.getClassName());
     }
 
