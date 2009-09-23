@@ -42,7 +42,7 @@ public class ReverseXMapTest extends TestCase{
 
         // save the object
 
-        System.out.println(xmap.toXML(author));
+        // System.out.println(xmap.toXML(author));
         File file = File.createTempFile("xmap", "xml");
         file.deleteOnExit();
         xmap.toXML(author, file);
