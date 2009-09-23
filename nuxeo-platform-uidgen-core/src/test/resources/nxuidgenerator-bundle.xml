@@ -15,6 +15,10 @@
       class="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorDescriptor" />
   </extension-point>
 
+  <extension-point name="sequencerFactory">
+    <!-- no XObject, className is parsed using DOM calls -->
+  </extension-point>
+
    <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
     <documentation>
      </documentation>
