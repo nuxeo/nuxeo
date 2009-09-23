@@ -44,7 +44,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         ds.setUser("sa");
         ds.setPassword("");
         Context context = new InitialContext();
-        context.bind("java:/nxrelations-default-jena", ds);
+        context.rebind("java:/nxrelations-default-jena", ds);
         Framework.getProperties().setProperty(
                 "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
         Framework.getProperties().setProperty(
@@ -62,12 +62,10 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
                 "OSGI-INF/relations-default-jena-contrib.xml");
 
         deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
-        deployContrib("org.nuxeo.ecm.platform.publisher.core",
-                "OSGI-INF/publisher-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.publisher.core",
-                "OSGI-INF/publisher-contrib.xml");
+        deployBundle("org.nuxeo.ecm.platform.publisher.core");
 
         openSession();
+        fireFrameworkStarted();
     }
 
     protected void createInitialDocs() throws Exception {
@@ -119,15 +117,15 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         // check service config
         PublisherService service = Framework.getLocalService(PublisherService.class);
         List<String> treeNames = service.getAvailablePublicationTree();
-        assertTrue(treeNames.contains("DefaultSectionsTree"));
+        assertEquals(1, treeNames.size());
 
         // check publication tree
         PublicationTree tree = service.getPublicationTree(
-                "DefaultSectionsTree", session, null);
+                treeNames.get(0), session, null);
         assertNotNull(tree);
         assertEquals("label.publication.tree.local.sections", tree.getTreeTitle());
         assertEquals("RootSectionsPublicationTree", tree.getTreeType());
-        assertEquals("DefaultSectionsTree", tree.getConfigName());
+        assertTrue(tree.getConfigName().startsWith("DefaultSectionsTree"));
 
         Boolean isRemotable = false;
         if (tree instanceof ProxyTree) {
@@ -221,7 +219,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
 
         // get a local tree
         PublicationTree ltree = service.getPublicationTree(
-                "DefaultSectionsTree", session, null);
+                "DefaultSectionsTree-default-domain", session, null);
         assertEquals(1, PublisherServiceImpl.getLiveTreeCount());
 
         // get a remote tree
@@ -245,7 +243,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         PublisherService service = Framework.getLocalService(PublisherService.class);
 
         PublicationTree tree = service.getPublicationTree(
-                "DefaultSectionsTree", session, null);
+                service.getAvailablePublicationTree().get(0), session, null);
 
         DocumentModel ws1 = session.getDocument(new PathRef(
                 "default-domain/workspaces/ws1"));
@@ -285,7 +283,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         PublisherService service = Framework.getLocalService(PublisherService.class);
 
         PublicationTree tree = service.getPublicationTree(
-                "DefaultSectionsTree", session, null, doc2Publish);
+                service.getAvailablePublicationTree().get(0), session, null, doc2Publish);
         assertNotNull(tree);
 
         List<PublicationNode> nodes = tree.getChildrenNodes();

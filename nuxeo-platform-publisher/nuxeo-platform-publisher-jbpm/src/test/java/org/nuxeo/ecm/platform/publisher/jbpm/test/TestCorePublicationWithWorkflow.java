@@ -63,7 +63,7 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         ds.setUser("sa");
         ds.setPassword("");
         Context context = new InitialContext();
-        context.bind("java:/nxrelations-default-jena", ds);
+        context.rebind("java:/nxrelations-default-jena", ds);
         Framework.getProperties().setProperty(
                 "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
         Framework.getProperties().setProperty(
@@ -162,8 +162,9 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
 
     public void testRights() throws Exception {
         changeUser("myuser1");
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
         PublicationTree treeUser1 = publisherService.getPublicationTree(
-                "DefaultSectionsTree", session, null);
+                defaultTreeName, session, null);
         List<PublicationNode> nodes = treeUser1.getChildrenNodes();
         PublicationNode targetNode = nodes.get(0);
         PublishedDocument publishedDocument = treeUser1.publish(doc2Publish,
@@ -172,27 +173,28 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
 
         changeUser("myuser4");
         PublicationTree treeUser4 = publisherService.getPublicationTree(
-                "DefaultSectionsTree", session, null);
+                defaultTreeName, session, null);
         assertFalse(treeUser4.canUnpublish(publishedDocument));
         assertFalse(treeUser4.canManagePublishing(publishedDocument));
 
         changeUser("myuser3");
         PublicationTree treeUser3 = publisherService.getPublicationTree(
-                "DefaultSectionsTree", session, null);
+                defaultTreeName, session, null);
         assertFalse(treeUser3.canUnpublish(publishedDocument));
         assertFalse(treeUser4.canManagePublishing(publishedDocument));
 
         changeUser("myuser2");
         PublicationTree treeUser2 = publisherService.getPublicationTree(
-                "DefaultSectionsTree", session, null);
+                defaultTreeName, session, null);
         assertTrue(treeUser2.canUnpublish(publishedDocument));
         assertTrue(treeUser2.hasValidationTask(publishedDocument));
     }
 
     public void testApprovePublication() throws Exception {
         changeUser("myuser1");
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
         PublicationTree treeUser1 = publisherService.getPublicationTree(
-                "DefaultSectionsTree", session, null);
+                defaultTreeName, session, null);
 
         List<PublicationNode> nodes = treeUser1.getChildrenNodes();
         assertEquals(1, nodes.size());
@@ -212,14 +214,14 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         session.save(); // Save session to get modifications made by other
                         // sessions
         PublicationTree treeUser3 = publisherService.getPublicationTree(
-                "DefaultSectionsTree", session, null);
+                defaultTreeName, session, null);
         assertEquals(0, treeUser3.getExistingPublishedDocument(
                 new DocumentLocationImpl(doc2Publish)).size());
 
         // myuser2 can see it, it's the validator
         changeUser("myuser2");
         PublicationTree treeUser2 = publisherService.getPublicationTree(
-                "DefaultSectionsTree", session, null);
+                defaultTreeName, session, null);
         List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(
                 doc2Publish));
         assertEquals(1, publishedDocuments.size());
@@ -240,8 +242,9 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
 
     public void testRejectPublication() throws Exception {
         changeUser("myuser1");
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
         PublicationTree treeUser1 = publisherService.getPublicationTree(
-                "DefaultSectionsTree", session, null);
+                defaultTreeName, session, null);
 
         List<PublicationNode> nodes = treeUser1.getChildrenNodes();
         assertEquals(1, nodes.size());
@@ -260,14 +263,14 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         session.save(); // Save session to get modifications made by other
                         // sessions
         PublicationTree treeUser3 = publisherService.getPublicationTree(
-                "DefaultSectionsTree", session, null);
+                defaultTreeName, session, null);
         assertEquals(0, treeUser3.getExistingPublishedDocument(
                 new DocumentLocationImpl(doc2Publish)).size());
 
         // myuser2 can see it, it's the validator
         changeUser("myuser2");
         PublicationTree treeUser2 = publisherService.getPublicationTree(
-                "DefaultSectionsTree", session, null);
+                defaultTreeName, session, null);
         List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(
                 doc2Publish));
         assertEquals(1, publishedDocuments.size());

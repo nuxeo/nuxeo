@@ -38,6 +38,7 @@ public class TestRealRemoting extends SQLRepositoryTestCase {
                 "OSGI-INF/publisher-contrib.xml");
 
         openSession();
+        fireFrameworkStarted();
     }
 
     protected void createInitialDocs() throws Exception {
