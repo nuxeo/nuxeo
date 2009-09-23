@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Benoit Delbosc
  */
 
 package org.nuxeo.ecm.core.storage.sql.db.dialect;
@@ -280,9 +281,19 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public String getAcessAllowedCheckSql(String idColumnName) {
+    public String getReadAclsCheckSql(String idColumnName) {
         return String.format("%s IN (SELECT * FROM nx_get_read_acls_for(?))",
                 idColumnName);
+    }
+
+    @Override
+    public String getUpdateReadAclsSql() {
+        return "SELECT nx_update_read_acls();";
+    }
+
+    @Override
+    public String getRebuildReadAclsSql() {
+        return "SELECT nx_rebuild_read_acls();";
     }
 
     @Override
@@ -892,7 +903,7 @@ public class DialectPostgreSQL extends Dialect {
                         + "    END IF;\n" //
                         + "  END LOOP;\n" //
                         + "  -- Update hierarchy_read_acl acl_ids\n" //
-                        + "  UPDATE hierarchy_read_acl SET acl_id = md5(id) WHERE acl_id IS NULL;\n" //
+                        + "  UPDATE hierarchy_read_acl SET acl_id = md5(nx_get_read_acl(id)) WHERE acl_id IS NULL;\n" //
                         + "  GET DIAGNOSTICS update_count = ROW_COUNT;\n" //
                         + "  RAISE INFO 'nx_update_read_acls % hierarchy_read_acl UPDATED', update_count;\n" //
                         + "\n" //

@@ -2045,6 +2045,37 @@ public class Mapper {
     }
 
     /**
+     * ----- read acls methods -------------------------
+     */
+    public void updateReadAcls() throws SQLException {
+        if (!sqlInfo.dialect.supportsReadAcl()) {
+            return;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("updateReadAcls: updating ...");
+        }
+        Statement st = connection.createStatement();
+        st.execute(sqlInfo.dialect.getUpdateReadAclsSql());
+        if (log.isDebugEnabled()) {
+            log.debug("updateReadAcls: done.");
+        }
+    }
+
+    public void rebuildReadAcls() throws SQLException {
+        if (!sqlInfo.dialect.supportsReadAcl()) {
+            return;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("rebuildReadAcls: rebuilding ...");
+        }
+        Statement st = connection.createStatement();
+        st.execute(sqlInfo.dialect.getRebuildReadAclsSql());
+        if (log.isDebugEnabled()) {
+            log.debug("rebuildReadAcls: done.");
+        }
+    }
+
+    /**
      * ----- called by {@link TransactionalSession} -----
      */
 

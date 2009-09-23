@@ -364,4 +364,19 @@ public interface Session extends Connection {
     IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException;
 
+    /**
+     * Update the read acls, this is needed after document creation or acl
+     * change
+     *
+     * @throws StorageException
+     */
+    public void updateReadAcls() throws StorageException;
+
+    /**
+     * Rebuild the read acls for all documents
+     *
+     * @throws StorageException
+     */
+    public void rebuildReadAcls() throws StorageException;
+
 }
