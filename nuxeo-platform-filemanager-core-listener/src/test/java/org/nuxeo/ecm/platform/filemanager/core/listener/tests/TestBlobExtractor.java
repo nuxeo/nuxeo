@@ -28,22 +28,28 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.TypeService;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.filemanager.core.listener.BlobExtractor;
 import org.nuxeo.runtime.api.Framework;
 
-public class TestBlobExtractor extends RepositoryOSGITestCase {
+public class TestBlobExtractor extends SQLRepositoryTestCase {
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener.test");
-        openRepository();
+        deployContrib("org.nuxeo.ecm.platform.filemanager.core.listener.test",
+                "OSGI-INF/core-type-contrib.xml");
+        openSession();
         typeMgr = getTypeManager();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     public void testCaching() throws Exception {
@@ -77,13 +83,13 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener.test");
         BlobExtractor bec = new BlobExtractor();
 
-        DocumentModel noBlob = getCoreSession().createDocumentModel("/",
-                "testNoBlob", "NoBlobDocument");
+        DocumentModel noBlob = session.createDocumentModel("/", "testNoBlob",
+                "NoBlobDocument");
         noBlob.setProperty("dublincore", "title", "NoBlobDocument");
-        noBlob = getCoreSession().createDocument(noBlob);
-        getCoreSession().saveDocument(noBlob);
+        noBlob = session.createDocument(noBlob);
+        session.saveDocument(noBlob);
 
-        getCoreSession().save();
+        session.save();
 
         List<Property> blobProperties = bec.getBlobsProperties(noBlob);
         assertEquals(0, blobProperties.size());
@@ -94,15 +100,15 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener.test");
         BlobExtractor bec = new BlobExtractor();
 
-        DocumentModel simpleBlob = getCoreSession().createDocumentModel("/",
+        DocumentModel simpleBlob = session.createDocumentModel("/",
                 "testSimpleBlob", "SimpleBlobDocument");
         simpleBlob.setProperty("dublincore", "title", "SimpleBlobDocument");
         simpleBlob.setProperty("simpleblob", "blob", createTestBlob(false,
                 "test.pdf"));
 
-        simpleBlob = getCoreSession().createDocument(simpleBlob);
-        getCoreSession().saveDocument(simpleBlob);
-        getCoreSession().save();
+        simpleBlob = session.createDocument(simpleBlob);
+        session.saveDocument(simpleBlob);
+        session.save();
 
         // END INITIALIZATION
 
@@ -112,19 +118,20 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
         assertEquals("test.pdf", blob.getFilename());
     }
 
-    public void testGetBlobsFromDocumentModelSimpleBlobWithoutPrefix() throws Exception {
+    public void testGetBlobsFromDocumentModelSimpleBlobWithoutPrefix()
+            throws Exception {
         deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener.test");
         BlobExtractor bec = new BlobExtractor();
 
-        DocumentModel simpleBlob = getCoreSession().createDocumentModel("/",
+        DocumentModel simpleBlob = session.createDocumentModel("/",
                 "testSimpleBlob", "WithoutPrefixDocument");
         simpleBlob.setProperty("dublincore", "title", "WithoutPrefixDocument");
         simpleBlob.setProperty("wihtoutpref", "blob", createTestBlob(false,
                 "test.pdf"));
 
-        simpleBlob = getCoreSession().createDocument(simpleBlob);
-        getCoreSession().saveDocument(simpleBlob);
-        getCoreSession().save();
+        simpleBlob = session.createDocument(simpleBlob);
+        session.saveDocument(simpleBlob);
+        session.save();
 
         // END INITIALIZATION
 
@@ -139,11 +146,11 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener.test");
         BlobExtractor bec = new BlobExtractor();
 
-        DocumentModel blobInListEmpty = getCoreSession().createDocumentModel(
-                "/", "testBlobInListDocumentEmpty", "BlobInListDocument");
+        DocumentModel blobInListEmpty = session.createDocumentModel("/",
+                "testBlobInListDocumentEmpty", "BlobInListDocument");
 
-        DocumentModel blobInListWithBlobs = getCoreSession().createDocumentModel(
-                "/", "testBlobInListDocument1", "BlobInListDocument");
+        DocumentModel blobInListWithBlobs = session.createDocumentModel("/",
+                "testBlobInListDocument1", "BlobInListDocument");
         blobInListWithBlobs.setProperty("dublincore", "title",
                 "BlobInListDocument");
         Collection files = (Collection) blobInListWithBlobs.getProperty(
@@ -161,10 +168,9 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
         files.add(blob2Map);
         blobInListWithBlobs.setProperty("blobinlist", "files", files);
 
-        blobInListWithBlobs = getCoreSession().createDocument(
-                blobInListWithBlobs);
-        getCoreSession().saveDocument(blobInListWithBlobs);
-        getCoreSession().save();
+        blobInListWithBlobs = session.createDocument(blobInListWithBlobs);
+        session.saveDocument(blobInListWithBlobs);
+        session.save();
 
         // END INITIALIZATION
 

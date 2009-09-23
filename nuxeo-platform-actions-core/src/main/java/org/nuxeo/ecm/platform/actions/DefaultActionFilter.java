@@ -263,10 +263,12 @@ public class DefaultActionFilter implements ActionFilter {
                 }
                 ctx.put("SeamContext", context.get("SeamContext"));
 
-                boolean eval = (Boolean) exp.eval(ctx);
-                if (eval) {
-                    return true;
+                Object eval = exp.eval(ctx);
+                if (eval == null) {
+                    log.error("evaluation of condition " + condition
+                            + " failed: returning false");
                 }
+                return Boolean.TRUE.equals(eval);
             } catch (Exception e) {
                 log.error("evaluation of condition " + condition
                         + " failed: returning false", e);

@@ -24,27 +24,25 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 public class TestDigestComputerListener extends AbstractListenerTest {
 
-     @Override
-     public void setUp() throws Exception {
-         super.setUp();
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        deployBundle("org.nuxeo.ecm.platform.filemanager.api");
+        deployBundle("org.nuxeo.ecm.platform.filemanager.core");
+        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
+        deployContrib("org.nuxeo.ecm.platform.filemanager.core.listener.test",
+                "OSGI-INF/event-digestcomputer-contrib.xml");
+    }
 
-         deployBundle("org.nuxeo.ecm.platform.filemanager.api");
-         deployBundle("org.nuxeo.ecm.platform.filemanager.core");
-         deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener");
+    public void testDigest() throws Exception {
+        DocumentModel file = createFileDocument(true);
+        Blob blob = (Blob) file.getProperty("file", "content");
+        assertNotNull(blob);
 
-         deployContrib("org.nuxeo.ecm.platform.filemanager.core.listener",
-                 "OSGI-INF/nxfilemanager-core-listener.xml");
-     }
-
-     public void testDigest() throws Exception {
-         DocumentModel file = createFileDocument(true);
-         Blob blob = (Blob) file.getProperty("file", "content");
-         assertNotNull(blob);
-
-         String digest = blob.getDigest();
-         assertNotNull(digest);
-         assertFalse("".equals(digest));
-         assertEquals("CJz5xUykO51gRRCIQadZ9dL20NPDd/O0yVBEgP13Skg=", digest);
-     }
+        String digest = blob.getDigest();
+        assertNotNull(digest);
+        assertFalse("".equals(digest));
+        assertEquals("CJz5xUykO51gRRCIQadZ9dL20NPDd/O0yVBEgP13Skg=", digest);
+    }
 
 }
