@@ -165,6 +165,9 @@ public class PublisherServiceImpl extends DefaultComponent implements
             DocumentModel currentDocument) throws ClientException,
             PublicationTreeNotAvailable {
         PublicationTree tree = getOrBuildTree(treeName, coreSession, params);
+        if (tree == null) {
+            return null;
+        }
         if (currentDocument != null) {
             tree.setCurrentDocument(currentDocument);
         }

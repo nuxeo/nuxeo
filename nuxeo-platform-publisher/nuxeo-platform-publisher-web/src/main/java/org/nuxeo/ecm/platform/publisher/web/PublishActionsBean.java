@@ -68,6 +68,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collections;
 
 /**
  * This Seam bean manages the publishing tab.
@@ -151,8 +152,12 @@ public class PublishActionsBean extends AbstractPublishActions implements
 
     public String doPublish(PublicationNode publicationNode)
             throws ClientException {
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
         PublicationTree tree = getCurrentPublicationTreeForPublishing();
+        if (tree == null) {
+            return null;
+        }
+
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
         PublishedDocument publishedDocument = tree.publish(currentDocument,
                 publicationNode);
         FacesContext context = FacesContext.getCurrentInstance();
@@ -226,19 +231,26 @@ public class PublishActionsBean extends AbstractPublishActions implements
 
     public String getCurrentPublicationTreeIconExpanded()
             throws ClientException {
-        return getCurrentPublicationTreeForPublishing().getIconExpanded();
+        PublicationTree tree = getCurrentPublicationTreeForPublishing();
+        return tree != null ? tree.getIconExpanded() : "";
     }
 
     public String getCurrentPublicationTreeIconCollapsed()
             throws ClientException {
-        return getCurrentPublicationTreeForPublishing().getIconCollapsed();
+        PublicationTree tree = getCurrentPublicationTreeForPublishing();
+        return tree != null ? tree.getIconCollapsed() : "";
     }
 
     @Factory(value = "publishedDocuments", scope = ScopeType.EVENT)
     public List<PublishedDocument> getPublishedDocuments()
             throws ClientException {
+        PublicationTree tree = getCurrentPublicationTreeForPublishing();
+        if (tree == null) {
+            return Collections.emptyList();
+        }
+
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        return getCurrentPublicationTreeForPublishing().getExistingPublishedDocument(
+        return tree.getExistingPublishedDocument(
                 new DocumentLocationImpl(currentDocument));
     }
 
@@ -257,20 +269,25 @@ public class PublishActionsBean extends AbstractPublishActions implements
 
     public String unPublish(PublishedDocument publishedDocument)
             throws ClientException {
-        getCurrentPublicationTreeForPublishing().unpublish(publishedDocument);
+        PublicationTree tree = getCurrentPublicationTreeForPublishing();
+        if (tree != null) {
+            tree.unpublish(publishedDocument);
+        }
         return null;
     }
 
     public boolean canPublishTo(PublicationNode publicationNode)
             throws ClientException {
-        return getCurrentPublicationTreeForPublishing().canPublishTo(
-                publicationNode);
+        PublicationTree tree = getCurrentPublicationTreeForPublishing();
+        return tree != null ? tree.canPublishTo(
+                publicationNode) : false;
     }
 
     public boolean canUnpublish(PublishedDocument publishedDocument)
             throws ClientException {
-        return getCurrentPublicationTreeForPublishing().canUnpublish(
-                publishedDocument);
+        PublicationTree tree = getCurrentPublicationTreeForPublishing();
+        return tree != null ? tree.canUnpublish(
+                publishedDocument) : false;
     }
 
     public boolean isPublishedDocument() {
