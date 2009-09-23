@@ -54,7 +54,11 @@
     <dependency>
       <groupId>javax.ressource</groupId>
       <artifactId>jca-api</artifactId>
-      <version>1.5</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
