@@ -1150,8 +1150,8 @@
             <include>**/*Test*.java</include>
           </includes>
           <excludes>
-            <!-- Synthetic classes for switch() (surefire bug) -->
-            <exclude>**/*$1.java</exclude>
+            <!-- Inner classes -->
+            <exclude>**/*Test*$*.java</exclude>
           </excludes>
         </configuration>
       </plugin>
