@@ -5,9 +5,11 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.publisher.core;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateless
 Bundle-Version: 1.0.0
-Require-Bundle: org.nuxeo.ecm.platform.ui,
+Require-Bundle: org.nuxeo.ecm.core.event,
+ org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.webengine.core,
  org.nuxeo.ecm.relations.api
 Nuxeo-Component: OSGI-INF/publisher-framework.xml,
  OSGI-INF/publisher-contrib.xml,
- OSGI-INF/jaxrs-contrib.xml
+ OSGI-INF/jaxrs-contrib.xml,
+ OSGI-INF/publisher-listeners-contrib.xml

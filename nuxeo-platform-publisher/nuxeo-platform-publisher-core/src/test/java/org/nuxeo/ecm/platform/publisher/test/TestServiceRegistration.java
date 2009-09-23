@@ -2,18 +2,29 @@ package org.nuxeo.ecm.platform.publisher.test;
 
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 import java.util.List;
 
-public class TestServiceRegistration extends NXRuntimeTestCase {
+public class TestServiceRegistration extends SQLRepositoryTestCase {
+
+    public TestServiceRegistration(String name) {
+        super(name);
+    }
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.publisher.core",
-                "OSGI-INF/publisher-framework.xml");
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.platform.content.template");
+        deployBundle("org.nuxeo.ecm.platform.types.api");
+        deployBundle("org.nuxeo.ecm.platform.types.core");
+        deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
+        deployBundle("org.nuxeo.ecm.platform.publisher.core");
+
+        openSession();
+        fireFrameworkStarted();
     }
 
     public void testMainService() throws Exception {
@@ -31,9 +42,7 @@ public class TestServiceRegistration extends NXRuntimeTestCase {
                 "OSGI-INF/publisher-contrib.xml");
         PublisherService service = Framework.getLocalService(PublisherService.class);
         List<String> treeNames = service.getAvailablePublicationTree();
-
-        assertTrue(treeNames.contains("DefaultSectionsTree"));
-
+        assertEquals(1, treeNames.size());
     }
 
 }
