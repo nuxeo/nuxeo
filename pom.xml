@@ -54,6 +54,7 @@
     <module>nuxeo-platform-relations-api</module>
     <module>nuxeo-platform-relations-default-config</module>
     <module>nuxeo-platform-relations-core</module>
+    <module>nuxeo-platform-relations-core-listener</module>
     <module>nuxeo-platform-relations-jena-plugin</module>
     <module>nuxeo-platform-relations-web</module>
     <module>nuxeo-platform-relations-facade</module>
@@ -130,6 +131,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-storage-sql-test</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>

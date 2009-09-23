@@ -28,10 +28,14 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
@@ -41,7 +45,15 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Core Event listener to copy relations affecting the source document to the
- * proxy upon publication events.
+ * proxy upon publication events and the relations that were present on the
+ * replaced proxies if any.
+ * 
+ * If this core event listener is used in combination with another core event
+ * listener that cleans relation on deleted documents, it should be executed
+ * before the cleaning listener so as to be able to copy relations from the
+ * deleted proxies.
+ * 
+ * This core event listener cannot work in asynchronous or post commit mode.
  * 
  * @author ogrisel
  */
@@ -53,7 +65,10 @@ public class PublishRelationsListener implements EventListener {
 
     // Override to change the list of graphs to copy relations when a document
     // is published, set to null to copy relations from all graphs
-    protected List<String> graphNames = Arrays.asList(RelationConstants.GRAPH_NAME);
+
+    protected List<String> graphNamesForCopyFromWork = Arrays.asList(RelationConstants.GRAPH_NAME);
+
+    protected List<String> graphNamesForCopyFromReplacedProxy = Arrays.asList(RelationConstants.GRAPH_NAME, "documentComments");
 
     public RelationManager getRelationManager() throws ClientException {
         if (rmanager == null) {
@@ -66,11 +81,18 @@ public class PublishRelationsListener implements EventListener {
         return rmanager;
     }
 
-    public List<String> getGraphNames() throws ClientException {
-        if (graphNames == null) {
+    public List<String> getGraphNamesForCopyFromWork() throws ClientException {
+        if (graphNamesForCopyFromWork == null) {
             return getRelationManager().getGraphNames();
         }
-        return graphNames;
+        return graphNamesForCopyFromWork;
+    }
+    
+    public List<String> getGraphNamesForCopyFromReplacedProxy() throws ClientException {
+        if (graphNamesForCopyFromReplacedProxy == null) {
+            return getRelationManager().getGraphNames();
+        }
+        return graphNamesForCopyFromReplacedProxy;
     }
 
     public void handleEvent(Event event) throws ClientException {
@@ -102,42 +124,102 @@ public class PublishRelationsListener implements EventListener {
             Resource publishedResource = rmanager.getResource(
                     RelationConstants.DOCUMENT_NAMESPACE, publishedDoc, null);
 
-            Statement sourcePattern = new StatementImpl(sourceResource, null,
-                    null);
-            Statement targetPattern = new StatementImpl(null, null,
-                    sourceResource);
+            // copy the relations from the work version (the source document
+            // getting published)
+            copyRelationsFromWorkVersion(rmanager, sourceResource,
+                    publishedResource);
 
-            for (String graphName : getGraphNames()) {
+            List<String> replacedProxyIds = (List<String>) ctx.getProperties().get(
+                    CoreEventConstants.REPLACED_PROXY_IDS);
+            if (replacedProxyIds != null) {
+                for (String replacedProxyId : replacedProxyIds) {
+                    DocumentLocationImpl docLoc = new DocumentLocationImpl(
+                            ctx.getRepositoryName(),
+                            new IdRef(replacedProxyId), null);
+                    Resource replacedResource = rmanager.getResource(
+                            RelationConstants.DOCUMENT_NAMESPACE, docLoc, null);
+                    copyRelationsFromReplacedProxy(rmanager, replacedResource,
+                            publishedResource, sourceResource);
+                }
+            }
+        }
+    }
 
-                // collect existing relations to or from the source document
-                List<Statement> newStatements = new ArrayList<Statement>();
-                for (Statement stmt : rmanager.getStatements(graphName,
-                        sourcePattern)) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "copying statement (%s, %s, %s)",
-                                stmt.getSubject(), stmt.getPredicate(),
-                                stmt.getObject()));
-                    }
+    protected void copyRelationsFromReplacedProxy(RelationManager rmanager,
+            Resource replacedResource, Resource publishedResource,
+            Resource sourceResource) throws ClientException {
+
+        Statement sourcePattern = new StatementImpl(replacedResource, null,
+                null);
+        Statement targetPattern = new StatementImpl(null, null,
+                replacedResource);
+
+        for (String graphName : getGraphNamesForCopyFromReplacedProxy()) {
+
+            // collect existing relations to or from the source resource
+            List<Statement> newStatements = new ArrayList<Statement>();
+            for (Statement stmt : rmanager.getStatements(graphName,
+                    sourcePattern)) {
+                if (!isCopyFromSource(stmt, sourceResource)) {
+                    // do not copy previous relations that come from a source
+                    // copy
                     stmt.setSubject(publishedResource);
                     newStatements.add(stmt);
                 }
-                for (Statement stmt : rmanager.getStatements(graphName,
-                        targetPattern)) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "copying statement (%s, %s, %s)",
-                                stmt.getSubject(), stmt.getPredicate(),
-                                stmt.getObject()));
-                    }
+            }
+            for (Statement stmt : rmanager.getStatements(graphName,
+                    targetPattern)) {
+                if (!isCopyFromSource(stmt, sourceResource)) {
+                    // do not copy previous relations that come from a source
+                    // copy
                     stmt.setObject(publishedResource);
                     newStatements.add(stmt);
                 }
+            }
+            if (!newStatements.isEmpty()) {
+                // add the rewritten statements on the proxy
+                rmanager.add(graphName, newStatements);
+            }
+        }
+    }
 
-                if (!newStatements.isEmpty()) {
-                    // add the rewritten statements on the proxy
-                    rmanager.add(graphName, newStatements);
-                }
+    protected boolean isCopyFromSource(Statement stmt, Resource sourceResource) {
+        Node[] values = stmt.getProperties(RelationConstants.COPY_FROM_WORK_VERSION);
+        if (values == null) {
+            return false;
+        } else {
+            return Arrays.asList(values).contains(sourceResource);
+        }
+    }
+
+    protected void copyRelationsFromWorkVersion(RelationManager rmanager,
+            Resource sourceResource, Resource publishedResource)
+            throws ClientException {
+        Statement sourcePattern = new StatementImpl(sourceResource, null, null);
+        Statement targetPattern = new StatementImpl(null, null, sourceResource);
+
+        for (String graphName : getGraphNamesForCopyFromWork()) {
+
+            // collect existing relations to or from the source document
+            List<Statement> newStatements = new ArrayList<Statement>();
+            for (Statement stmt : rmanager.getStatements(graphName,
+                    sourcePattern)) {
+                stmt.setSubject(publishedResource);
+                stmt.addProperty(RelationConstants.COPY_FROM_WORK_VERSION,
+                        sourceResource);
+                newStatements.add(stmt);
+            }
+            for (Statement stmt : rmanager.getStatements(graphName,
+                    targetPattern)) {
+                stmt.setObject(publishedResource);
+                stmt.addProperty(RelationConstants.COPY_FROM_WORK_VERSION,
+                        sourceResource);
+                newStatements.add(stmt);
+            }
+
+            if (!newStatements.isEmpty()) {
+                // add the rewritten statements on the proxy
+                rmanager.add(graphName, newStatements);
             }
         }
     }

@@ -8,8 +8,8 @@
 
      <listener name="pusblishRelationsListener" async="false" postCommit="false"
        class="org.nuxeo.ecm.platform.relations.core.listener.PublishRelationsListener"
-       priority="50">
-      <event>documentPublished</event>
+       priority="-50">
+      <event>documentProxyPublished</event>
     </listener>
   </extension>
 </component>

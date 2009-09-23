@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Relations Core Listener
-Bundle-SymbolicName: org.nuxeo.ecm.platform.relations.core.listener;singleton:=true
+Bundle-SymbolicName: org.nuxeo.ecm.relations.core.listener;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateful
 Require-Bundle: org.nuxeo.ecm.core,
