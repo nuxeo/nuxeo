@@ -20,9 +20,9 @@
           </fulltext>
         </indexing>
         <xa-datasource>oracle.jdbc.xa.client.OracleXADataSource</xa-datasource>
-        <property name="URL">${nuxeo.test.oracle.url}</property>
-        <property name="User">${nuxeo.test.oracle.user}</property>
-        <property name="Password">${nuxeo.test.oracle.password}</property>
+        <property name="URL">${nuxeo.test.vcs.url}</property>
+        <property name="User">${nuxeo.test.vcs.user}</property>
+        <property name="Password">${nuxeo.test.vcs.password}</property>
       </repository>
     </repository>
   </extension>

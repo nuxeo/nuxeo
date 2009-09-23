@@ -19,12 +19,8 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Florent Guillaume
@@ -33,50 +29,29 @@ public class DatabaseMySQL extends DatabaseHelper {
 
     public static DatabaseHelper INSTANCE = new DatabaseMySQL();
 
-    private static final Log log = LogFactory.getLog(DatabaseMySQL.class);
+    private static final String DEF_URL = "jdbc:mysql://localhost:3306/nuxeojunittests";
 
-    // CREATE USER 'nuxeo' IDENTIFIED BY 'nuxeo';
-    private static final String MYSQL_HOST = "localhost";
+    private static final String DEF_USER = "nuxeo";
 
-    private static final String MYSQL_PORT = "3306";
-
-    private static final String MYSQL_SUPER_USER = "root";
-
-    private static final String MYSQL_SUPER_PASSWORD = "";
-
-    private static final String MYSQL_SUPER_DATABASE = "mysql";
-
-    /* Constants mentioned in the ...-mysql-contrib.xml file: */
-
-    private static final String MYSQL_DATABASE = "nuxeojunittests";
-
-    private static final String MYSQL_DATABASE_OWNER = "nuxeo";
-
-    private static final String MYSQL_DATABASE_PASSWORD = "nuxeo";
+    private static final String DEF_PASSWORD = "nuxeo";
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-mysql-contrib.xml";
+
+    private static void setProperties() {
+        setProperty(URL_PROPERTY, DEF_URL);
+        setProperty(USER_PROPERTY, DEF_USER);
+        setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
+    }
 
     @Override
     public void setUp() throws Exception {
         Class.forName("com.mysql.jdbc.Driver");
-        String url = String.format("jdbc:mysql://%s:%s/%s", MYSQL_HOST,
-                MYSQL_PORT, MYSQL_SUPER_DATABASE);
-        Connection connection = DriverManager.getConnection(url,
-                MYSQL_SUPER_USER, MYSQL_SUPER_PASSWORD);
-        Statement st = connection.createStatement();
-        String sql;
-        sql = String.format("DROP DATABASE IF EXISTS `%s`", MYSQL_DATABASE);
-        log.debug(sql);
-        st.execute(sql);
-        sql = String.format("CREATE DATABASE `%s`", MYSQL_DATABASE);
-        log.debug(sql);
-        st.execute(sql);
-        sql = String.format(
-                "GRANT ALL PRIVILEGES ON `%s`.* TO '%s'@'localhost' IDENTIFIED BY '%s'",
-                MYSQL_DATABASE, MYSQL_DATABASE_OWNER, MYSQL_DATABASE_PASSWORD);
-        log.debug(sql);
-        st.execute(sql);
-        st.close();
+        setProperties();
+        Connection connection = DriverManager.getConnection(
+                System.getProperty(URL_PROPERTY),
+                System.getProperty(USER_PROPERTY),
+                System.getProperty(PASSWORD_PROPERTY));
+        doOnAllTables(connection, null, null, "DROP TABLE `%s` CASCADE");
         connection.close();
     }
 
@@ -90,11 +65,9 @@ public class DatabaseMySQL extends DatabaseHelper {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource";
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("ServerName", MYSQL_HOST);
-        properties.put("PortNumber", MYSQL_PORT);
-        properties.put("DatabaseName", MYSQL_DATABASE);
-        properties.put("User", MYSQL_DATABASE_OWNER);
-        properties.put("Password", MYSQL_DATABASE_PASSWORD);
+        properties.put("URL", System.getProperty(URL_PROPERTY));
+        properties.put("User", System.getProperty(USER_PROPERTY));
+        properties.put("Password", System.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;
         return descriptor;
     }

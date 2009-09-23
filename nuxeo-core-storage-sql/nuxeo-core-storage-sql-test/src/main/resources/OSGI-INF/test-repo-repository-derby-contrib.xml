@@ -11,10 +11,9 @@
       <repository>
         <xa-datasource>org.apache.derby.jdbc.EmbeddedXADataSource</xa-datasource>
         <property name="createDatabase">create</property>
-        <!-- Directory name mentioned in SQLRepositoryTestCase -->
-        <property name="databaseName">target/test/derby</property>
-        <property name="user">sa</property>
-        <property name="password"></property>
+        <property name="databaseName">${nuxeo.test.vcs.database}</property>
+        <property name="user">${nuxeo.test.vcs.user}</property>
+        <property name="password">${nuxeo.test.vcs.password}</property>
       </repository>
     </repository>
   </extension>

@@ -18,17 +18,9 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Florent Guillaume
@@ -37,53 +29,40 @@ public class DatabaseSQLServer extends DatabaseHelper {
 
     public static DatabaseHelper INSTANCE = new DatabaseSQLServer();
 
-    private static final Log log = LogFactory.getLog(DatabaseSQLServer.class);
+    private static final String DEF_SERVER = "localhost";
 
-    /* Constants mentioned in the ...-mssql-contrib.xml file: */
+    private static final String DEF_PORT = "1433";
 
-    private static final String MSSQL_HOST_PROPERTY = "nuxeo.test.mssql.host";
+    private static final String DEF_DATABASE = "nuxeojunittests";
 
-    private static final String MSSQL_HOST = "192.168.133.128";
+    private static final String DEF_USER = "nuxeo";
 
-    private static final String MSSQL_PORT = "1433";
-
-    private static final String MSSQL_DATABASE = "nuxeojunittests";
-
-    private static final String MSSQL_DATABASE_OWNER = "nuxeo";
-
-    private static final String MSSQL_DATABASE_PASSWORD = "nuxeo";
+    private static final String DEF_PASSWORD = "nuxeo";
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-mssql-contrib.xml";
+
+    private static void setProperties() {
+        setProperty(SERVER_PROPERTY, DEF_SERVER);
+        setProperty(PORT_PROPERTY, DEF_PORT);
+        setProperty(DATABASE_PROPERTY, DEF_DATABASE);
+        setProperty(USER_PROPERTY, DEF_USER);
+        setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
+    }
 
     @Override
     public void setUp() throws Exception {
         Class.forName("net.sourceforge.jtds.jdbc.Driver");
+        setProperties();
         String url = String.format(
-                "jdbc:jtds:sqlserver://%s:%s/%s;user=%s;password=%s;",
-                MSSQL_HOST, MSSQL_PORT, MSSQL_DATABASE, MSSQL_DATABASE_OWNER,
-                MSSQL_DATABASE_PASSWORD);
+                "jdbc:jtds:sqlserver://%s:%s/%s;user=%s;password=%s",
+                System.getProperty(SERVER_PROPERTY),
+                System.getProperty(PORT_PROPERTY),
+                System.getProperty(DATABASE_PROPERTY),
+                System.getProperty(USER_PROPERTY),
+                System.getProperty(PASSWORD_PROPERTY));
         Connection connection = DriverManager.getConnection(url);
-        DatabaseMetaData metadata = connection.getMetaData();
-        List<String> tableNames = new LinkedList<String>();
-        ResultSet rs = metadata.getTables(null, null, "%",
-                new String[] { "TABLE" });
-        while (rs.next()) {
-            tableNames.add(rs.getString("TABLE_NAME"));
-        }
-        // remove hierarchy last because of foreign keys
-        if (tableNames.remove("hierarchy")) {
-            tableNames.add("hierarchy");
-        }
-        Statement st = connection.createStatement();
-        for (String tableName : tableNames) {
-            String sql = String.format("DROP TABLE [%s]", tableName);
-            log.debug(sql);
-            st.execute(sql);
-
-        }
-        st.close();
+        doOnAllTables(connection, null, null, "DROP TABLE [%s]"); // no CASCADE...
         connection.close();
-        System.setProperty(MSSQL_HOST_PROPERTY, MSSQL_HOST);
     }
 
     @Override
@@ -96,11 +75,11 @@ public class DatabaseSQLServer extends DatabaseHelper {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "net.sourceforge.jtds.jdbcx.JtdsDataSource";
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("ServerName", MSSQL_HOST);
-        properties.put("PortNumber", MSSQL_PORT);
-        properties.put("DatabaseName", MSSQL_DATABASE);
-        properties.put("User", MSSQL_DATABASE_OWNER);
-        properties.put("Password", MSSQL_DATABASE_PASSWORD);
+        properties.put("ServerName", System.getProperty(SERVER_PROPERTY));
+        properties.put("PortNumber", System.getProperty(PORT_PROPERTY));
+        properties.put("DatabaseName", System.getProperty(DATABASE_PROPERTY));
+        properties.put("User", System.getProperty(USER_PROPERTY));
+        properties.put("Password", System.getProperty(PASSWORD_PROPERTY));
         properties.put("UseCursors", "true");
         descriptor.properties = properties;
         descriptor.fulltextAnalyzer = "french";
@@ -116,4 +95,5 @@ public class DatabaseSQLServer extends DatabaseHelper {
         } catch (InterruptedException e) {
         }
     }
+
 }

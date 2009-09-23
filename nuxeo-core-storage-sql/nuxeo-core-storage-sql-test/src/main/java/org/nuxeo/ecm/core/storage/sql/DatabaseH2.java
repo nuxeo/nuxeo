@@ -37,48 +37,49 @@ public class DatabaseH2 extends DatabaseHelper {
 
     private static final Log log = LogFactory.getLog(DatabaseH2.class);
 
-    /** This property is mentioned in the ...-h2-contrib.xml file. */
-    private static final String H2_PATH_PROPERTY = "nuxeo.test.h2.path";
+    /** This directory will be deleted and recreated. */
+    private static final String DIRECTORY = "target/test/h2";
 
-    private static File h2TempDir;
+    private static final String DEF_USER = "sa";
+
+    private static final String DEF_PASSWORD = "";
+
+    private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-h2-contrib.xml";
 
     private static String h2Path;
 
-    private static final boolean H2_DELETE_ON_TEARDOWN = true;
+    private static String origUrl;
 
-    private static final String H2_DATABASE_USER = "sa";
-
-    private static final String H2_DATABASE_PASSWORD = "";
-
-    private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-h2-contrib.xml";
+    private static void setProperties() {
+        String url = String.format("jdbc:h2:%s", h2Path);
+        origUrl = setProperty(URL_PROPERTY, url);
+        setProperty(USER_PROPERTY, DEF_USER);
+        setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
+    }
 
     @Override
     public void setUp() throws Exception {
         Class.forName("org.h2.Driver");
-        h2TempDir = File.createTempFile("nxsqltests-h2-", null);
-        h2TempDir.delete();
-        h2TempDir.mkdir();
-        h2Path = new File(h2TempDir, "nuxeo").getAbsolutePath();
-        // this property is mentioned in the ...-h2-contrib.xml file
-        // it will be expanded by RepositoryImpl.getXADataSource
-        System.setProperty(H2_PATH_PROPERTY, h2Path);
+        File dir = new File(DIRECTORY);
+        FileUtils.deleteTree(dir);
+        dir.mkdirs();
+        h2Path = new File(dir, "nuxeo").getAbsolutePath();
+        setProperties();
     }
 
     @Override
     public void tearDown() throws Exception {
-        Connection connection = DriverManager.getConnection(String.format(
-                "jdbc:h2:%s", h2Path), H2_DATABASE_USER, H2_DATABASE_PASSWORD);
+        String url = System.getProperty(URL_PROPERTY);
+        System.setProperty(URL_PROPERTY, origUrl);
+        Connection connection = DriverManager.getConnection(url,
+                System.getProperty(USER_PROPERTY),
+                System.getProperty(PASSWORD_PROPERTY));
         Statement st = connection.createStatement();
         String sql = "SHUTDOWN";
         log.trace(sql);
         st.execute(sql);
         st.close();
         connection.close();
-        if (H2_DELETE_ON_TEARDOWN) {
-            FileUtils.deleteTree(h2TempDir);
-        }
-        h2TempDir = null;
-        h2Path = null;
     }
 
     @Override
@@ -91,9 +92,9 @@ public class DatabaseH2 extends DatabaseHelper {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "org.h2.jdbcx.JdbcDataSource";
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("URL", String.format("jdbc:h2:${%s}", H2_PATH_PROPERTY));
-        properties.put("User", H2_DATABASE_USER);
-        properties.put("Password", H2_DATABASE_PASSWORD);
+        properties.put("URL", System.getProperty(URL_PROPERTY));
+        properties.put("User", System.getProperty(USER_PROPERTY));
+        properties.put("Password", System.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;
         return descriptor;
     }
