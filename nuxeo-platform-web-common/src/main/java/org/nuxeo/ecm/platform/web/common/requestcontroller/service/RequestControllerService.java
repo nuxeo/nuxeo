@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -45,8 +45,8 @@ public class RequestControllerService extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(RequestControllerService.class);
 
-    protected static final Map<String, FilterConfigDescriptor> grantPatterns = new HashMap<String, FilterConfigDescriptor>();
-    protected static final Map<String, FilterConfigDescriptor> denyPatterns = new HashMap<String, FilterConfigDescriptor>();
+    protected static final Map<String, FilterConfigDescriptor> grantPatterns = new LinkedHashMap<String, FilterConfigDescriptor>();
+    protected static final Map<String, FilterConfigDescriptor> denyPatterns = new LinkedHashMap<String, FilterConfigDescriptor>();
 
     protected static final Map<String, RequestFilterConfig> configCache = new LRUCachingMap<String, RequestFilterConfig>(250);
     protected static final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
