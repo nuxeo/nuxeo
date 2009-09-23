@@ -349,6 +349,14 @@ public class NXQLQueryMaker implements QueryMaker {
                             model.MAIN_KEY).getFullQuotedName()));
         }
 
+        /*
+         * Add the read acl table if dialect support optimized security checks
+         */
+        if (dialect.supportsReadAcl() && queryFilter.getPrincipals() != null) {
+            joins.add(String.format("%s AS r ON %s = r.id",
+                    model.HIER_READ_ACL_TABLE_NAME, hierId));
+        }
+
         // the Query we'll return
         Query q = new Query();
         // clauses ANDed together
@@ -454,7 +462,6 @@ public class NXQLQueryMaker implements QueryMaker {
          */
 
         if (queryFilter.getPrincipals() != null) {
-            whereClauses.add(dialect.getSecurityCheckSql(hierId));
             Serializable principals;
             Serializable permissions;
             if (dialect.supportsArrays()) {
@@ -465,8 +472,15 @@ public class NXQLQueryMaker implements QueryMaker {
                 permissions = StringUtils.join(queryFilter.getPermissions(),
                         '|');
             }
-            q.selectParams.add(principals);
-            q.selectParams.add(permissions);
+            if (dialect.supportsReadAcl()) {
+                /* optimized read acl */
+                whereClauses.add(dialect.getReadAclsCheckSql("r.acl_id"));
+                q.selectParams.add(principals);
+            } else {
+                whereClauses.add(dialect.getSecurityCheckSql(hierId));
+                q.selectParams.add(principals);
+                q.selectParams.add(permissions);
+            }
         }
 
         /*
@@ -962,7 +976,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 visitExpressionStartsWith(node, name);
             } else if (NXQL.ECM_PATH.equals(name)) {
                 visitExpressionEcmPath(node);
-            }  else if (NXQL.ECM_ISPROXY.equals(name)) {
+            } else if (NXQL.ECM_ISPROXY.equals(name)) {
                 visitExpressionIsProxy(node);
             } else if (NXQL.ECM_ISVERSION.equals(name)) {
                 visitExpressionIsVersion(node);
@@ -1131,7 +1145,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 // tree
                 buf.append("0 = 1");
             } else {
-                buf.append(hierTable.getColumn(model.MAIN_KEY).getFullQuotedName() + " = ?");
+                buf.append(hierTable.getColumn(model.MAIN_KEY).getFullQuotedName()
+                        + " = ?");
                 whereParams.add(id);
             }
         }

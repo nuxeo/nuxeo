@@ -500,4 +500,40 @@ public abstract class Dialect {
         return null;
     }
 
+    /**
+     * Does the dialect support an optimized read security checks
+     *
+     */
+    public boolean supportsReadAcl() {
+        return false;
+    }
+
+    /**
+     * Gets the statement to update the read acls
+     *
+     */
+    public String getUpdateReadAclsSql() {
+        return null;
+    }
+
+    /**
+     * Gets the statement to rebuild the wall read acls
+     *
+     */
+    public String getRebuildReadAclsSql() {
+        return null;
+    }
+
+    /**
+     * Gets the expression to check if access is allowed using read acl the
+     * dialect must suppportsReadAcl
+     *
+     * @param idColumnName the quoted name of the read acl_id column to use
+     * @return an SQL expression with one parameter (principals) that is true if
+     *         access is allowed
+     */
+    public String getReadAclsCheckSql(String idColumnName) {
+        return null;
+    }
+
 }
