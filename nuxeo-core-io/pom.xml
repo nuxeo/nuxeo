@@ -45,6 +45,12 @@
       <artifactId>nuxeo-core-storage-sql-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <!-- needed by events -->
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>
