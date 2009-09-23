@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Iterator;
 
 /**
  * Pojo implementation of the publisher service Implements both
@@ -681,7 +682,12 @@ public class PublisherServiceImpl extends DefaultComponent implements
         for (PublicationTreeConfigDescriptor desc : pendingDescriptors.values()) {
             String treeName = desc.getName() + "-" + domain.getName();
             treeConfigDescriptors.remove(treeName);
-            liveTrees.remove(treeName);
+            for (Iterator<String> it = liveTrees.keySet().iterator(); it.hasNext(); ) {
+                String entry = it.next();
+                if (entry.startsWith(treeName)) {
+                    it.remove();
+                }
+            }
         }
     }
 

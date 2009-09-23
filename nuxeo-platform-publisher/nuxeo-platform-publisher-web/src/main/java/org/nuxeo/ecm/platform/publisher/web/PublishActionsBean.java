@@ -20,17 +20,6 @@
 
 package org.nuxeo.ecm.platform.publisher.web;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -39,7 +28,9 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -67,6 +58,16 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This Seam bean manages the publishing tab.
@@ -547,8 +548,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
         ctx.setComment(comment);
         ctx.setCategory(category);
 
-        EventProducer evtProducer = null;
-
+        EventProducer evtProducer;
         try {
             evtProducer = Framework.getService(EventProducer.class);
         } catch (Exception e) {
@@ -563,6 +563,13 @@ public class PublishActionsBean extends AbstractPublishActions implements
         } catch (Exception e) {
             log.error("Error while sending event", e);
         }
+    }
+
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
+    @BypassInterceptors
+    public void documentChanged() {
+        currentPublicationTreeNameForPublishing = null;
+        currentPublicationTree = null;
     }
 
 }
