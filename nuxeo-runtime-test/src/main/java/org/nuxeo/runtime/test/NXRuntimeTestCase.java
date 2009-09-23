@@ -42,6 +42,7 @@ import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.application.StandaloneBundleLoader;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.ServiceManager;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
 import org.osgi.framework.Bundle;
@@ -131,6 +132,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
         }
         readUris = null;
         bundles = null;
+        ServiceManager.getInstance().reset();
         super.tearDown();
     }
 
