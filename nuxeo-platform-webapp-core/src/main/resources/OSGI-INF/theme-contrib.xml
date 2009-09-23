@@ -16,10 +16,7 @@
     </perspective>
 
     <perspective name="multiple_domains">
-      <title>
-        Perspective conditioning appearance of fragments when there are
-        multiple domains
-      </title>
+      <title>Perspective for multiple domains</title>
     </perspective>
 
   </extension>

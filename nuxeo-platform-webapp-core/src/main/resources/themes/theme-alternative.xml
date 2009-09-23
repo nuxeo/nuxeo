@@ -19,9 +19,9 @@
       <section>
         <cell>
           <!-- tree view -->
-          <fragment perspectives="default" type="generic fragment"/>
+          <fragment perspectives="default,multiple_domains" type="generic fragment"/>
           <!-- clip board -->
-          <fragment perspectives="default" type="generic fragment"/>
+          <fragment perspectives="default,multiple_domains" type="generic fragment"/>
           <!-- calendar -->
           <fragment perspectives="view_calendar" type="generic fragment"/>
         </cell>
