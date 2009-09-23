@@ -1,21 +1,22 @@
 package org.nuxeo.ecm.core.utils;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.TypeService;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestBlobExtractor extends RepositoryOSGITestCase {
+public class TestBlobExtractor extends NXRuntimeTestCase {
 
     @Override
     public void setUp() throws Exception {
@@ -23,7 +24,6 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployContrib("org.nuxeo.ecm.core.api.tests",
         "OSGI-INF/test-propmodel-types-contrib.xml");
-        openRepository();
         typeMgr = getTypeManager();
     }
 
@@ -57,13 +57,9 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
     public void testGetBlobsFromDocumentModelNoBlob() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
-        DocumentModel noBlob = getCoreSession().createDocumentModel("/",
+        DocumentModel noBlob = new DocumentModelImpl("/",
                 "testNoBlob", "NoBlobDocument");
         noBlob.setProperty("dublincore", "title", "NoBlobDocument");
-        noBlob = getCoreSession().createDocument(noBlob);
-        getCoreSession().saveDocument(noBlob);
-
-        getCoreSession().save();
 
         List<Property> blobProperties = bec.getBlobsProperties(noBlob);
         assertEquals(0, blobProperties.size());
@@ -73,15 +69,12 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
     public void testGetBlobsFromDocumentModelSimpleBlob() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
-        DocumentModel simpleBlob = getCoreSession().createDocumentModel("/",
+        DocumentModel simpleBlob = new DocumentModelImpl("/",
                 "testSimpleBlob", "SimpleBlobDocument");
         simpleBlob.setProperty("dublincore", "title", "SimpleBlobDocument");
         simpleBlob.setProperty("simpleblob", "blob", createTestBlob(false,
                 "test.pdf"));
 
-        simpleBlob = getCoreSession().createDocument(simpleBlob);
-        getCoreSession().saveDocument(simpleBlob);
-        getCoreSession().save();
 
         // END INITIALIZATION
 
@@ -94,15 +87,11 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
     public void testGetBlobsFromDocumentModelSimpleBlobWithoutPrefix() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
-        DocumentModel simpleBlob = getCoreSession().createDocumentModel("/",
+        DocumentModel simpleBlob = new DocumentModelImpl("/",
                 "testSimpleBlob", "WithoutPrefixDocument");
         simpleBlob.setProperty("dublincore", "title", "WithoutPrefixDocument");
         simpleBlob.setProperty("wihtoutpref", "blob", createTestBlob(false,
                 "test.pdf"));
-
-        simpleBlob = getCoreSession().createDocument(simpleBlob);
-        getCoreSession().saveDocument(simpleBlob);
-        getCoreSession().save();
 
         // END INITIALIZATION
 
@@ -116,32 +105,26 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
     public void testGetBlobsFromBlobInListDocument() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
-        DocumentModel blobInListEmpty = getCoreSession().createDocumentModel(
+        DocumentModel blobInListEmpty = new DocumentModelImpl(
                 "/", "testBlobInListDocumentEmpty", "BlobInListDocument");
 
-        DocumentModel blobInListWithBlobs = getCoreSession().createDocumentModel(
+        DocumentModel blobInListWithBlobs = new DocumentModelImpl(
                 "/", "testBlobInListDocument1", "BlobInListDocument");
         blobInListWithBlobs.setProperty("dublincore", "title",
                 "BlobInListDocument");
-        Collection files = (Collection) blobInListWithBlobs.getProperty(
-                "blobinlist", "files");
+        List<Map<String, Object>> files = new ArrayList<Map<String, Object>>();
 
-        HashMap<String, Object> blob1Map = new HashMap<String, Object>(2);
+        Map<String, Object> blob1Map = new HashMap<String, Object>();
         blob1Map.put("file", createTestBlob(false, "test1.pdf"));
         blob1Map.put("filename", "test1.pdf");
 
-        HashMap<String, Object> blob2Map = new HashMap<String, Object>(2);
+        Map<String, Object> blob2Map = new HashMap<String, Object>();
         blob2Map.put("file", createTestBlob(false, "test2.pdf"));
         blob2Map.put("filename", "test2.pdf");
 
         files.add(blob1Map);
         files.add(blob2Map);
-        blobInListWithBlobs.setProperty("blobinlist", "files", files);
-
-        blobInListWithBlobs = getCoreSession().createDocument(
-                blobInListWithBlobs);
-        getCoreSession().saveDocument(blobInListWithBlobs);
-        getCoreSession().save();
+        blobInListWithBlobs.setPropertyValue("bil:files", (Serializable) files);
 
         // END INITIALIZATION
 
