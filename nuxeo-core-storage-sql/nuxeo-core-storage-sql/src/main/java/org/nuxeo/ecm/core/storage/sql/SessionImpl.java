@@ -116,15 +116,15 @@ public class SessionImpl implements Session {
         if (threadId == currentThreadId) {
             return;
         }
+        String currentThreadName = Thread.currentThread().getName();
         if (threadId == 0) {
             threadId = currentThreadId;
-            threadName = Thread.currentThread().getName();
+            threadName = currentThreadName;
         } else {
             String msg = String.format(
                     "Concurrency Error: Session was started in thread %s (%s)"
                             + " but is being used in thread %s (%s)", threadId,
-                    threadName, currentThreadId,
-                    Thread.currentThread().getName());
+                    threadName, currentThreadId, currentThreadName);
             log.error(msg, new Exception(msg));
         }
     }
