@@ -152,11 +152,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
     }
 
     public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException {
-        if (PublicationRelationHelper.isPublished(documentModel)) {
-            return factory.wrapDocumentModel(documentModel);
-        } else {
-            throw new ClientException("Document " + documentModel.getPathAsString() + " is not a published document.");
-        }
+        return factory.wrapDocumentModel(documentModel);
     }
 
     @Override

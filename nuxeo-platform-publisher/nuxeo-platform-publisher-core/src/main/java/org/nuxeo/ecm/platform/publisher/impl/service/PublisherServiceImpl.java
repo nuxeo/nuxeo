@@ -548,8 +548,22 @@ public class PublisherServiceImpl extends DefaultComponent implements
 
     public PublicationTree getPublicationTreeFor(DocumentModel doc,
             CoreSession coreSession) throws ClientException {
-        return PublicationRelationHelper.getPublicationTreeUsedForPublishing(
-                doc, coreSession);
+        PublicationTree tree = null;
+        try {
+            tree = PublicationRelationHelper.getPublicationTreeUsedForPublishing(
+                    doc, coreSession);
+        } catch (ClientException e) {
+            log.debug("Unable to get PublicationTree for "
+                    + doc.getPathAsString()
+                    + ". Fallback on first PublicationTree accepting this document.");
+            for (String treeName : treeConfigDescriptors.keySet()) {
+                tree = getPublicationTree(treeName, coreSession, null);
+                if (tree.isPublicationNode(doc)) {
+                    break;
+                }
+            }
+        }
+        return tree;
     }
 
     public boolean hasValidationTask(String sid,
@@ -642,9 +656,9 @@ public class PublisherServiceImpl extends DefaultComponent implements
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         String repositoryName = repositoryManager.getDefaultRepository().getName();
         List<DocumentModel> domains = new DomainsFinder(repositoryName).getDomains();
-            for (DocumentModel domain : domains) {
-                registerTreeConfigFor(domain);
-            }
+        for (DocumentModel domain : domains) {
+            registerTreeConfigFor(domain);
+        }
     }
 
     public void registerTreeConfigFor(DocumentModel domain)
