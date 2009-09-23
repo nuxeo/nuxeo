@@ -1116,10 +1116,43 @@
               <name>net.sourceforge.cobertura.datafile</name>
               <value>${project.build.directory}/cobertura/cobertura.ser</value>
             </property>
+            <!-- Used by org.nuxeo.ecm.core.storage.sql.DatabaseHelper -->
+            <property>
+              <name>nuxeo.test.vcs.db</name>
+              <value>${nuxeo.test.vcs.db}</value>
+            </property>
+            <property>
+              <name>nuxeo.test.vcs.url</name>
+              <value>${nuxeo.test.vcs.url}</value>
+            </property>
+            <property>
+              <name>nuxeo.test.vcs.server</name>
+              <value>${nuxeo.test.vcs.server}</value>
+            </property>
+            <property>
+              <name>nuxeo.test.vcs.port</name>
+              <value>${nuxeo.test.vcs.port}</value>
+            </property>
+            <property>
+              <name>nuxeo.test.vcs.database</name>
+              <value>${nuxeo.test.vcs.database}</value>
+            </property>
+            <property>
+              <name>nuxeo.test.vcs.user</name>
+              <value>${nuxeo.test.vcs.user}</value>
+            </property>
+            <property>
+              <name>nuxeo.test.vcs.password</name>
+              <value>${nuxeo.test.vcs.password}</value>
+            </property>
           </systemProperties>
           <includes>
             <include>**/*Test*.java</include>
           </includes>
+          <excludes>
+            <!-- Synthetic classes for switch() (surefire bug) -->
+            <exclude>**/*$1.java</exclude>
+          </excludes>
         </configuration>
       </plugin>
       <plugin>
