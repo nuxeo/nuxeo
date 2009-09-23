@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 
-public class AbstractListenerTest extends RepositoryOSGITestCase {
+public abstract class AbstractListenerTest extends RepositoryOSGITestCase {
 
      @Override
      public void setUp() throws Exception {
