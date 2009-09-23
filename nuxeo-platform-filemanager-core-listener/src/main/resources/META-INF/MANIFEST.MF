@@ -7,4 +7,6 @@ Bundle-Vendor: Nuxeo
 Require-Bundle: org.nuxeo.ecm.core,
  org.nuxeo.ecm.core.event,
  org.nuxeo.ecm.platform.filemanager.api
-Nuxeo-Component: OSGI-INF/nxfilemanager-core-listener.xml
+Nuxeo-Component: OSGI-INF/filemanager-digestcomputer-event-contrib.xml,
+ OSGI-INF/filemanager-iconupdater-event-contrib.xml,
+ OSGI-INF/filemanager-unicity-event-contrib.xml

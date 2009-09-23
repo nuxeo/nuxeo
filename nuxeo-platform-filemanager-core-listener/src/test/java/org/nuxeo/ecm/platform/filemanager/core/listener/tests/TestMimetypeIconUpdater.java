@@ -33,8 +33,8 @@ public class TestMimetypeIconUpdater extends AbstractListenerTest {
         deployBundle("org.nuxeo.ecm.platform.filemanager.core");
         deployBundle("org.nuxeo.ecm.platform.types.api");
         deployBundle("org.nuxeo.ecm.platform.types.core");
-        deployContrib("org.nuxeo.ecm.platform.filemanager.core.listener.test",
-                "OSGI-INF/event-iconupdater-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.filemanager.core.listener",
+                "OSGI-INF/filemanager-iconupdater-event-contrib.xml");
     }
 
     public void testMimeTypeUpdater() throws Exception {
