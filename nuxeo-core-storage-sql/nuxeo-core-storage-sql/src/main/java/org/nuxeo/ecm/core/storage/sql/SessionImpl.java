@@ -75,6 +75,8 @@ public class SessionImpl implements Session {
 
     private long threadId;
 
+    private String threadName;
+
     SessionImpl(RepositoryImpl repository, SchemaManager schemaManager,
             Mapper mapper, Credentials credentials) throws StorageException {
         this.repository = repository;
@@ -111,14 +113,19 @@ public class SessionImpl implements Session {
 
     protected void checkThread() {
         long currentThreadId = Thread.currentThread().getId();
+        if (threadId == currentThreadId) {
+            return;
+        }
         if (threadId == 0) {
             threadId = currentThreadId;
-        } else if (threadId != currentThreadId) {
-            log.error(
-                    String.format(
-                            "Session was started in thread %s but is now used in thread %s",
-                            threadId, currentThreadId), new Exception(
-                            "Concurrency Error"));
+            threadName = Thread.currentThread().getName();
+        } else {
+            String msg = String.format(
+                    "Concurrency Error: Session was started in thread %s (%s)"
+                            + " but is being used in thread %s (%s)", threadId,
+                    threadName, currentThreadId,
+                    Thread.currentThread().getName());
+            log.error(msg, new Exception(msg));
         }
     }
 
