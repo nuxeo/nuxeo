@@ -102,85 +102,81 @@ public class Service extends DefaultComponent {
         for (Object contrib : contribs) {
             final ProviderType providerType = (ProviderType) contrib;
             final String providerName = providerType.getName();
-            final Provider provider = createProvider(providerType);
-            provider.activate();
             providerTypes.put(providerName, providerType);
-            providers.put(providerName, provider);
-
+            if (createProvider(providerType) == null) {
+                createFactory(providerType);
+            }
         }
+    }
+
+    protected ProviderFactory createFactory(ProviderType type)
+            throws WidgetException {
+        String name = type.getName();
+        String factoryClassName = type.getFactoryClassName();
+        ProviderFactory factory;
+        try {
+            factory = (ProviderFactory) Class.forName(factoryClassName).newInstance();
+        } catch (InstantiationException e) {
+            throw new WidgetException("Provider factory class: "
+                    + factoryClassName + " for provider: " + name
+                    + " could not be instantiated.");
+        } catch (IllegalAccessException e) {
+            throw new WidgetException("Provider factory name : "
+                    + factoryClassName + " for provider: " + name
+                    + " could not be instantiated.");
+        } catch (ClassNotFoundException e) {
+            throw new WidgetException("Provider factory class : "
+                    + factoryClassName + " for provider: " + name
+                    + " not found.");
+        }
+        try {
+            factory.activate();
+        } catch (ProviderException e) {
+            throw new WidgetException("Cannot activate " + name);
+        }
+        providerFactories.put(name, factory);
+        return factory;
     }
 
     public Provider getProvider(String name) throws WidgetException {
-        if (!providers.containsKey(name)) {
-            throw new WidgetException("Provider unknown: " + name);
+        if (providers.containsKey(name)) {
+            return providers.get(name);
         }
-        return providers.get(name);
+        if (providerFactories.containsKey(name)) {
+            return providerFactories.get(name).getProvider();
+        }
+        throw new WidgetException("no providers for" + name);
     }
 
     private final Map<String, Provider> providers = new HashMap<String, Provider>();
+
     private final Map<String, ProviderFactory> providerFactories = new HashMap<String, ProviderFactory>();
 
-    protected Provider createProvider(ProviderType providerType) throws WidgetException {
+    protected Provider createProvider(ProviderType providerType)
+            throws WidgetException {
         String name = providerType.getName();
         String className = providerType.getClassName();
-
-        String factoryClassName = providerType.getFactoryClassName();
-        if (className == null && factoryClassName == null) {
-            throw new WidgetException(
-                    "Must specify a provider class or a provider factory class for provider: "
-                            + name);
+        if (className == null) {
+            return null;
         }
-
-        // If the class is specified, instantiate the provider directly.
-        if (className != null) {
-            Provider provider = providers.get(name);
-            if (provider == null) {
-                try {
-                    provider = (Provider) Class.forName(className).newInstance();
-                } catch (InstantiationException e) {
-                    throw new WidgetException("Provider class: " + className
-                            + " for provider: " + name
-                            + " could not be instantiated.");
-                } catch (IllegalAccessException e) {
-                    throw new WidgetException("Provider class: " + className
-                            + " for provider: " + name
-                            + " could not be instantiated.");
-                } catch (ClassNotFoundException e) {
-                    throw new WidgetException("Provider class : " + className
-                            + " for provider: " + name + " not found.");
-                }
-                providers.put(name, provider);
-                return provider;
-            }
+        Provider provider;
+        try {
+            provider = (Provider) Class.forName(className).newInstance();
+        } catch (InstantiationException e) {
+            throw new WidgetException("Provider class: " + className
+                    + " for provider: " + name + " could not be instantiated.");
+        } catch (IllegalAccessException e) {
+            throw new WidgetException("Provider class: " + className
+                    + " for provider: " + name + " could not be instantiated.");
+        } catch (ClassNotFoundException e) {
+            throw new WidgetException("Provider class : " + className
+                    + " for provider: " + name + " not found.");
         }
+        provider.activate();
+        providers.put(name, provider);
+        return provider;
 
-        // Otherwise use the provider factory.
-        else {
-            ProviderFactory factory = providerFactories.get(name);
-            if (factory == null) {
-                try {
-                    factory = (ProviderFactory) Class.forName(factoryClassName).newInstance();
-                } catch (InstantiationException e) {
-                    throw new WidgetException("Provider factory class: "
-                            + factoryClassName + " for provider: " + name
-                            + " could not be instantiated.");
-                } catch (IllegalAccessException e) {
-                    throw new WidgetException("Provider factory name : "
-                            + factoryClassName + " for provider: " + name
-                            + " could not be instantiated.");
-                } catch (ClassNotFoundException e) {
-                    throw new WidgetException("Provider factory class : "
-                            + factoryClassName + " for provider: " + name
-                            + " not found.");
-                }
-                providerFactories.put(name, factory);
-            }
-            return factory.getProvider();
-        }
-
-        throw new WidgetException("Cannot create provider " + name);
     }
-
 
     private void registerDecoration(Extension extension) {
         final Object[] contribs = extension.getContributions();
