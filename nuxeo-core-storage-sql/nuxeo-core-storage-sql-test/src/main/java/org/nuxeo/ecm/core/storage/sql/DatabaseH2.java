@@ -70,7 +70,11 @@ public class DatabaseH2 extends DatabaseHelper {
     @Override
     public void tearDown() throws Exception {
         String url = System.getProperty(URL_PROPERTY);
-        System.setProperty(URL_PROPERTY, origUrl);
+        if (origUrl == null) {
+            System.clearProperty(URL_PROPERTY);
+        } else {
+            System.setProperty(URL_PROPERTY, origUrl);
+        }
         Connection connection = DriverManager.getConnection(url,
                 System.getProperty(USER_PROPERTY),
                 System.getProperty(PASSWORD_PROPERTY));
