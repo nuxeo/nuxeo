@@ -33,8 +33,15 @@ public class ScheduleImpl implements Schedule {
     @XNode("@id")
     public String id;
 
-    @XNode("eventId")
+    @XNode("event")
     public String eventId;
+
+    // BBB compat with old descriptors. use <event> now for consistency with
+    // EventListenerDescriptor
+    @XNode("eventId")
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
+    }
 
     @XNode("eventCategory")
     public String eventCategory;

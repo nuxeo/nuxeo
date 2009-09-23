@@ -8,10 +8,10 @@
      @author <a href="mailto:fg@nuxeo.com">Florent Guillaume</a>
   </documentation>
 
-  
+
   <service>
     <provide interface="org.nuxeo.ecm.platform.scheduler.core.interfaces.SchedulerRegistry" />
-  </service>	
+  </service>
 
   <implementation class="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService" />
 
@@ -29,7 +29,7 @@
         <schedule id="mySchedule">
           <username>Administrator</username>
           <password>Administrator</password>
-          <eventId>myEvent</eventId>
+          <event>myEvent</event>
           <eventCategory>default</eventCategory>
           <!-- Every first of the month at 3am -->
           <cronExpression>0 0 3 1 * ?</cronExpression>
