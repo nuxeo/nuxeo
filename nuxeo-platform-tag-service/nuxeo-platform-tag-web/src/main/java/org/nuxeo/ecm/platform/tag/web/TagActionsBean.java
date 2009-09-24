@@ -53,7 +53,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  *
  */
 
-@Name("tagActionsBean")
+@Name("tagActions")
 @Scope(CONVERSATION)
 public class TagActionsBean implements Serializable {
 
@@ -92,13 +92,13 @@ public class TagActionsBean implements Serializable {
 
     @Create
     public void initialize() throws Exception {
-        log.debug("Initializing 'tagActionsBean' Seam component ...");
+        log.debug("Initializing 'tagActions' Seam component ...");
         taggingHelper = new TaggingHelper();
     }
 
     @Destroy
     public void destroy() {
-        log.debug("Removing 'tagActionsBean' Seam component...");
+        log.debug("Removing 'tagActions' Seam component...");
     }
 
     /**
@@ -108,7 +108,7 @@ public class TagActionsBean implements Serializable {
      * @return
      * @throws ClientException
      */
-    public List<Tag> listDocumentTags() throws ClientException {
+    public List<Tag> getDocumentTags() throws ClientException {
         return taggingHelper.listDocumentTags(documentManager,
                 navigationContext.getCurrentDocument());
     }

@@ -11,11 +11,11 @@
         <div class="tagCloud">
         
           <nxu:dataList id="tagCloudTable"
-            value="#{tagActionsBean.getPopularCloud()}" var="tag"
-            rendered="#{tagActionsBean.getPopularCloud().size() > 0}">
+            value="#{tagActions.popularCloud}" var="tag"
+            rendered="#{not empty tagActions.popularCloud}">
             
               <h:commandLink value="#{tag.tagLabel}"
-                action="#{tagActionsBean.listDocumentsForTag(tag.tagId)}" style="font-size: #{tag.weight}%"/>
+                action="#{tagActions.listDocumentsForTag(tag.tagId)}" style="font-size: #{tag.weight}%"/>
             
           </nxu:dataList>
         </div>  
