@@ -60,9 +60,9 @@
   </build>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution/nuxeo-distribution-jetty</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distribution/nuxeo-distribution-jetty</developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo/nuxeo-distribution/nuxeo-distribution-jetty/</url>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distribution</developerConnection>
+    <url>http://trac.nuxeo.org/nuxeo/browser/nuxeo_distribution/nuxeo-distribution-jetty-ep</url>
   </scm>
 
   <dependencies>

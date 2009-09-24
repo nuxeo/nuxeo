@@ -25,9 +25,15 @@
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
+      <properties>
+        <application.name>nuxeo-dm-jboss</application.name>
+      </properties>
     </profile>
     <profile>
       <id>nuxeo-ep-jboss</id>
+      <properties>
+        <application.name>nuxeo-ep-jboss</application.name>
+      </properties>
     </profile>
   </profiles>
 
