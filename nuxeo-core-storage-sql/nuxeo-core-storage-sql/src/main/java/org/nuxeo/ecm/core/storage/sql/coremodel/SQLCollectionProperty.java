@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
+import org.nuxeo.ecm.core.storage.sql.Model;
 
 /**
  * A {@link SQLCollectionProperty} gives access to a wrapped SQL-level
@@ -39,13 +40,16 @@ public class SQLCollectionProperty extends SQLBaseProperty {
 
     private final boolean isArray;
 
+    private final SQLSession session;
+
     /**
      * Creates a {@link SQLCollectionProperty} to wrap a
      * {@link CollectionProperty}.
      */
-    public SQLCollectionProperty(CollectionProperty property, ListType type,
-            boolean readonly) {
+    public SQLCollectionProperty(SQLSession session,
+            CollectionProperty property, ListType type, boolean readonly) {
         super(type, readonly);
+        this.session = session;
         this.property = property;
         this.isArray = type == null || type.isArray();
     }
@@ -74,16 +78,19 @@ public class SQLCollectionProperty extends SQLBaseProperty {
     @SuppressWarnings("unchecked")
     public void setValue(Object value) throws DocumentException {
         checkWritable();
+        if (Model.ACL_PROP.equals(property.getName())) {
+            session.requireReadAclsUpdate();
+        }
         if (value != null && !(value instanceof Object[])) {
             if (isArray) {
-                throw new DocumentException("Value is not Object[] but " +
-                        value.getClass().getName() + ": " + value);
+                throw new DocumentException("Value is not Object[] but "
+                        + value.getClass().getName() + ": " + value);
             }
             // accept also any List
             if (!(value instanceof Collection)) {
                 throw new DocumentException(
-                        "Value is not Object[] or Collection but " +
-                                value.getClass().getName() + ": " + value);
+                        "Value is not Object[] or Collection but "
+                                + value.getClass().getName() + ": " + value);
             }
             value = property.type.getArrayBaseType().collectionToArray(
                     (Collection<Serializable>) value);

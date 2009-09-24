@@ -88,7 +88,7 @@ public class SessionImpl implements Session {
         model = mapper.getModel();
         context = new PersistenceContext(mapper);
         live = true;
-        setReadAclsChanged(false);
+        readAclsChanged = false;
         transactionalSession = new TransactionalSession(this, mapper);
         computeRootNode();
     }
@@ -175,14 +175,6 @@ public class SessionImpl implements Session {
         return live;
     }
 
-    public void setReadAclsChanged(boolean readAclsChanged) {
-        this.readAclsChanged = readAclsChanged;
-    }
-
-    public boolean isReadAclsChanged() {
-        return readAclsChanged;
-    }
-
     public String getRepositoryName() {
         return repository.getName();
     }
@@ -221,7 +213,7 @@ public class SessionImpl implements Session {
         checkThread();
         context.updateFulltext(this);
         context.save();
-        if (isReadAclsChanged()) {
+        if (readAclsChanged) {
             updateReadAcls();
         }
     }
@@ -459,7 +451,7 @@ public class SessionImpl implements Session {
 
         FragmentGroup rowGroup = new FragmentGroup(mainRow, hierRow, fragments);
 
-        setReadAclsChanged(true);
+        requireReadAclsUpdate();
 
         return new Node(this, context, rowGroup);
     }
@@ -550,7 +542,7 @@ public class SessionImpl implements Session {
         checkLive();
         context.save();
         context.move(source, parent.getId(), name);
-        setReadAclsChanged(true);
+        requireReadAclsUpdate();
         return source;
     }
 
@@ -559,7 +551,7 @@ public class SessionImpl implements Session {
         checkLive();
         context.save();
         Serializable id = context.copy(source, parent.getId(), name);
-        setReadAclsChanged(true);
+        requireReadAclsUpdate();
         return getNodeById(id);
     }
 
@@ -574,21 +566,21 @@ public class SessionImpl implements Session {
         checkLive();
         context.save();
         Serializable id = context.checkIn(node, label, description);
-        setReadAclsChanged(true);
+        requireReadAclsUpdate();
         return getNodeById(id);
     }
 
     public void checkOut(Node node) throws StorageException {
         checkLive();
         context.checkOut(node);
-        setReadAclsChanged(true);
+        requireReadAclsUpdate();
     }
 
     public void restoreByLabel(Node node, String label) throws StorageException {
         checkLive();
         // save done inside method
         context.restoreByLabel(node, label);
-        setReadAclsChanged(true);
+        requireReadAclsUpdate();
     }
 
     public Node getVersionByLabel(Serializable versionableId, String label)
@@ -655,13 +647,17 @@ public class SessionImpl implements Session {
         }
     }
 
+    public void requireReadAclsUpdate() {
+        readAclsChanged = true;
+    }
+
     public void updateReadAcls() throws StorageException {
         try {
             mapper.updateReadAcls();
         } catch (SQLException e) {
             throw new StorageException("Failed to update read acls", e);
         }
-        setReadAclsChanged(false);
+        readAclsChanged = false;
     }
 
     public void rebuildReadAcls() throws StorageException {
@@ -670,7 +666,7 @@ public class SessionImpl implements Session {
         } catch (SQLException e) {
             throw new StorageException("Failed to rebuild read acls", e);
         }
-        setReadAclsChanged(false);
+        readAclsChanged = false;
     }
 
     // returns context or null if missing
@@ -701,7 +697,7 @@ public class SessionImpl implements Session {
 
     // TODO factor with addChildNode
     private Node addRootNode() throws StorageException {
-        setReadAclsChanged(true);
+        requireReadAclsUpdate();
         Serializable id = context.generateNewId(null);
 
         // main info
@@ -750,7 +746,7 @@ public class SessionImpl implements Session {
         aclrows[3] = new ACLRow(3, ACL.LOCAL_ACL, true,
                 SecurityConstants.VERSION, SecurityConstants.MEMBERS, null);
         rootNode.setCollectionProperty(Model.ACL_PROP, aclrows);
-        setReadAclsChanged(true);
+        requireReadAclsUpdate();
     }
 
     // public Node newNodeInstance() needed ?
