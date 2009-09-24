@@ -660,8 +660,7 @@ public class DialectPostgreSQL extends Dialect {
                 "SELECT 1 WHERE NOT EXISTS(SELECT 1 FROM pg_tables WHERE tablename='hierarchy_modified_acl');",
                 "CREATE TABLE hierarchy_modified_acl ("
                         + "  id character varying(36),"
-                        + "  is_new boolean,"
-                        + "  CONSTRAINT hierarchy_modified_acl_id_fk FOREIGN KEY (id) REFERENCES hierarchy(id) ON DELETE CASCADE"
+                        + "  is_new boolean"
                         + ");", //
                 "SELECT 1;"));
         statements.add(new ConditionalStatement(
@@ -848,6 +847,7 @@ public class DialectPostgreSQL extends Dialect {
                         + "    FROM (SELECT DISTINCT(nx_get_read_acl(id)) AS acl\n" //
                         + "        FROM  (SELECT DISTINCT(id) AS id\n" //
                         + "           FROM acls) AS uids) AS read_acls_input;\n" //
+                        + "  TRUNCATE TABLE hierarchy_modified_acl;\n" //
                         + "  RAISE INFO 'nx_rebuild_read_acls done';\n" //
                         + "  RETURN;\n" //
                         + "END $$\n" //
