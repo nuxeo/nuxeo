@@ -14,6 +14,8 @@
     <h:selectOneRadio id="#{widget.id}_field" value="#{field_0}" required="#{widget.properties['required']}">
       <f:selectItem itemValue="imap" itemLabel="IMAP" />
       <f:selectItem itemValue="pop3" itemLabel="POP3" />
+      <f:selectItem itemValue="imaps" itemLabel="IMAPS" />
+      <f:selectItem itemValue="pop3s" itemLabel="POP3S" />
     </h:selectOneRadio>
     <h:message for="#{widget.id}_field"/>
   </c:if>

@@ -22,7 +22,7 @@
     point="providers">
 
     <provider name="test">
-      <class>org.nuxeo.theme.webwidgets.test.TestProvider</class>
+      <class>org.nuxeo.theme.webwidgets.providers.DefaultProvider</class>
     </provider>
 
   </extension>

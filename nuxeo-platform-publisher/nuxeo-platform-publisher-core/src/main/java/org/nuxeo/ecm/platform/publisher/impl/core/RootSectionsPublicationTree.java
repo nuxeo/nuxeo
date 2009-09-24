@@ -51,7 +51,7 @@ public class RootSectionsPublicationTree extends SectionPublicationTree {
     public List<PublicationNode> getChildrenNodes() throws ClientException {
         if (currentDocument != null && useRootSections) {
             DocumentModelList rootSections = rootFinder.getAccessibleSectionRoots(currentDocument);
-            if (rootSections.size() == 1 && rootSections.get(0).getPathAsString().equals(treeRoot.getPathAsString())) {
+            if (rootSections.isEmpty()) {
                 useRootSections = false;
                 return super.getChildrenNodes();
             }
