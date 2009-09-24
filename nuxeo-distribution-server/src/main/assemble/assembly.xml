@@ -69,6 +69,7 @@
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-default-config"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-api"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-core"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-core-listener"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-jena-plugin"/>
 
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-usermanager-api"/>
