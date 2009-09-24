@@ -659,8 +659,8 @@ public class DialectPostgreSQL extends Dialect {
                 null, // perform a check
                 "SELECT 1 WHERE NOT EXISTS(SELECT 1 FROM pg_tables WHERE tablename='hierarchy_modified_acl');",
                 "CREATE TABLE hierarchy_modified_acl ("
-                        + "  id character varying(36),"
-                        + "  is_new boolean"
+                        + "  id character varying(36)," //
+                        + "  is_new boolean" //
                         + ");", //
                 "SELECT 1;"));
         statements.add(new ConditionalStatement(
@@ -678,10 +678,10 @@ public class DialectPostgreSQL extends Dialect {
                         + "  -- RAISE INFO 'call %', curid;\n" //
                         + "  FOR r in SELECT CASE\n" //
                         + "         WHEN (acls.grant AND\n" //
-                        + "             acls.permission IN ('Read', 'ReadWrite', 'Everything')) THEN\n" //
+                        + "             acls.permission IN ('Read', 'ReadWrite', 'Everything', 'Browse')) THEN\n" //
                         + "           acls.user\n" //
                         + "         WHEN (NOT acls.grant AND\n" //
-                        + "             acls.permission IN ('Read', 'ReadWrite', 'Everything')) THEN\n" //
+                        + "             acls.permission IN ('Read', 'ReadWrite', 'Everything', 'Browse')) THEN\n" //
                         + "           '-'|| acls.user\n" //
                         + "         ELSE NULL END AS op\n" //
                         + "       FROM acls WHERE acls.id = curid\n" //
@@ -875,7 +875,9 @@ public class DialectPostgreSQL extends Dialect {
                         + "  INSERT INTO hierarchy_read_acl\n" //
                         + "    SELECT id, md5(nx_get_read_acl(id))\n" //
                         + "    FROM (SELECT DISTINCT(id) AS id\n" //
-                        + "        FROM hierarchy_modified_acl WHERE is_new) AS uids;\n" //
+                        + "        FROM hierarchy_modified_acl \n" //
+                        + "        WHERE is_new AND\n" //
+                        + "            EXISTS (SELECT 1 FROM hierarchy WHERE hierarchy_modified_acl.id=hierarchy.id)) AS uids;\n" //
                         + "  GET DIAGNOSTICS update_count = ROW_COUNT;\n" //
                         + "  RAISE INFO 'nx_update_read_acls % hierarchy_read_acl ADDED', update_count;\n" //
                         + "  DELETE FROM hierarchy_modified_acl WHERE is_new;\n" //
