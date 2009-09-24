@@ -1,0 +1,27 @@
+<div class="tagCloudBlock"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core">
+  
+  <a4j:form id="tagCloudForm">
+    <a4j:region id="tagCloudRegion" renderRegionOnly="true">
+      <a4j:outputPanel id="tagCloudPanel">
+
+        <div class="tagCloud">
+        
+          <nxu:dataList id="tagCloudTable"
+            value="#{tagActionsBean.getPopularCloud()}" var="tag"
+            rendered="#{tagActionsBean.getPopularCloud().size() > 0}">
+            
+              <h:commandLink value="#{tag.tagLabel}"
+                action="#{tagActionsBean.listDocumentsForTag(tag.tagId)}" style="font-size: #{tag.weight}%"/>
+            
+          </nxu:dataList>
+        </div>  
+    
+      </a4j:outputPanel>
+    </a4j:region>
+  </a4j:form>    
+
+</div>

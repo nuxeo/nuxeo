@@ -1,0 +1,51 @@
+<div class="taggingBlock" id='taggingDetails'
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core">
+  
+  <a4j:form id="taggingForm">
+    <a4j:region id="taggingRegion" renderRegionOnly="true">
+      <a4j:outputPanel id="taggingPanel">
+
+        <div class="tagsList">
+        
+          <nxu:dataTable id="tagsTable"
+            value="#{tagActionsBean.listDocumentTags()}" var="tag"
+            rendered="#{tagActionsBean.listDocumentTags().size() > 0}">
+
+            <nxu:column>
+              <h:graphicImage id="tagIcon" url="/icons/tag_blue.png"/>
+              <h:outputText value="#{tag}" />
+              [<a4j:commandLink id="removeTag" action="#{tagActionsBean.removeTagging(tag.tagId)}" ajaxSingle="true"
+                reRender="taggingPanel" rendered="#{tagActionsBean.canModifyTag(tag)}">X
+              </a4j:commandLink>]
+            </nxu:column>
+          </nxu:dataTable>
+        </div>
+
+        <h:panelGrid columns="1">          
+          <a4j:commandLink id="addTagLink"
+            ajaxSingle="true" actionListener="#{tagActionsBean.showAddTag}"
+            reRender="taggingPanel">
+            <h:graphicImage id="toggle_plus" url="/icons/action_add.gif" />
+            <h:outputText value="#{messages['command.tag.add.new.tag']} "/>
+          </a4j:commandLink>
+          
+        
+          <h:panelGroup rendered="#{tagActionsBean.addTag}">
+            <h:inputText id="tagLabel" value="#{tagActionsBean.tagsLabel}"
+              styleClass="dataInputText">
+            </h:inputText>
+            
+            <h:commandButton type="button" value="#{messages['command.tag.add.new.tag']}"
+              action="#{tagActionsBean.addTagging}" class="button" />                    
+          </h:panelGroup>   
+      
+        </h:panelGrid>     
+    
+      </a4j:outputPanel>
+    </a4j:region>
+  </a4j:form>    
+
+</div>

@@ -25,12 +25,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
 import org.nuxeo.ecm.core.persistence.HibernateConfigurator;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
@@ -75,8 +75,8 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
         deactivatePersistenceProvider();
         super.deactivate(context);
     }
-    
-    
+
+
 
     @Override
     public void registerContribution(Object contribution,
@@ -89,7 +89,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
 
 
     protected TagConfig config = new TagConfig();
-    
+
     public void setConfig(TagConfig config) {
         this.config = config;
     }
@@ -138,7 +138,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
         return session.getDocument(new IdRef(runner.rootTagDocumentId));
     }
 
-    
+
     public void tagDocument(final CoreSession session, final DocumentModel document, final String tagId, final boolean privateFlag) throws ClientException {
         getOrCreatePersistenceProvider().run(true, new RunVoid() {
             public void runWith(EntityManager em) throws ClientException {
@@ -146,7 +146,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
             }
         });
     }
-    
+
     public void tagDocument(final DocumentModel document, final String tagId, final boolean privateFlag) throws ClientException {
         tagDocument(document.getCoreSession(), document, tagId, privateFlag);
     }
@@ -195,7 +195,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
     public DocumentModel getOrCreateTag(final DocumentModel parent, final String label, final boolean privateFlag) throws ClientException {
        return getOrCreateTag(parent.getCoreSession(), parent, label, privateFlag);
     }
-    
+
     public DocumentModel getOrCreateTag(final CoreSession session, final DocumentModel parent, final String label, final boolean privateFlag) throws ClientException {
         return getOrCreatePersistenceProvider().run(true, new RunCallback<DocumentModel>() {
             public DocumentModel runWith(EntityManager em) throws ClientException {
@@ -216,11 +216,10 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
         UnrestrictedSessionCreateTag runner = new UnrestrictedSessionCreateTag(
                 session, parent, label, privateFlag);
         runner.runUnrestricted();
-        if (runner.tagDocumentId == null) {
+        if (runner.tagDocument == null) {
             throw new ClientException("Error creating the tag document");
         }
-        return session.getDocument(
-                new IdRef(runner.tagDocumentId));
+        return runner.tagDocument;
     }
     public List<WeightedTag> getPopularCloud(final CoreSession session, final DocumentModel document) throws ClientException {
         return getOrCreatePersistenceProvider().run(false, new RunCallback<List<WeightedTag>>() {
@@ -229,12 +228,12 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
             }
         });
     }
-    
+
     public List<WeightedTag> getPopularCloud(final DocumentModel document) throws ClientException {
         return getPopularCloud(document.getCoreSession(), document);
     }
 
- 
+
 
     public List<WeightedTag> getPopularCloud(EntityManager em, CoreSession session, DocumentModel document)
             throws ClientException {
@@ -265,7 +264,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
             }
         });
     }
-    
+
     public WeightedTag getPopularTag(final DocumentModel document, final String tagId) throws ClientException {
        return getPopularTag(document.getCoreSession(), document, tagId);
     }
@@ -302,7 +301,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
             }
         });
     }
-    
+
     public List<WeightedTag> getVoteCloud(final DocumentModel document) throws ClientException {
         return getVoteCloud(document.getCoreSession(), document);
     }
@@ -318,7 +317,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
             }
         });
     }
-    
+
     public WeightedTag getVoteTag(final DocumentModel document, final String tagId) throws ClientException {
         return getVoteTag(document.getCoreSession(), document, tagId);
     }
@@ -354,7 +353,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
             }
         });
     }
-    
+
     public List<Tag> listTagsAppliedOnDocument(final DocumentModel document) throws ClientException {
         return listTagsAppliedOnDocument(document.getCoreSession(), document);
     }
@@ -379,7 +378,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
             }
         });
     }
-    
+
     public List<Tag> listTagsAppliedOnDocumentByUser(final DocumentModel document) throws ClientException {
         return listTagsAppliedOnDocument(document.getCoreSession(), document);
     }
@@ -404,7 +403,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
             }
         });
     }
-    
+
     public DocumentModelList listTagsInGroup(final DocumentModel tag) throws ClientException {
         return listTagsInGroup(tag.getCoreSession(), tag);
     }
@@ -434,7 +433,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
             }
         });
     }
-    
+
     public void untagDocument(final DocumentModel document, final String tagId) throws ClientException {
         untagDocument(document.getCoreSession(), document, tagId);
     }
@@ -557,7 +556,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
             UnrestrictedSessionRunner {
 
         // need to return somehow the result
-        public String tagDocumentId;
+        public DocumentModel tagDocument;
 
         // and to store the arguments
         private final DocumentModel parent;
@@ -572,7 +571,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
                 boolean privateFlag) throws ClientException {
             super(session);
             this.parent = parent;
-            tagDocumentId = null;
+            tagDocument = null;
             this.label = label;
             user = TagServiceImpl.getUserName(session);
             this.privateFlag = privateFlag;
@@ -621,7 +620,8 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
                 }
             }
             // and set ID for retrieval
-            tagDocumentId = relativeParent.getId();
+            tagDocument = relativeParent;
+            ((DocumentModelImpl)tagDocument).detach(true);
         }
     }
 
