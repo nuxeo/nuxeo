@@ -232,6 +232,12 @@ public class Model {
 
     public static final String FULLTEXT_BINARYTEXT_KEY = "binarytext";
 
+    public static final String HIER_READ_ACL_TABLE_NAME = "hierarchy_read_acl";
+
+    public static final String HIER_READ_ACL_ID = "id";
+
+    public static final String HIER_READ_ACL_ACL_ID = "acl_id";
+
     /** Specified in ext. point to use CLOBs. */
     public static final String FIELD_TYPE_LARGETEXT = "largetext";
 
@@ -1186,6 +1192,7 @@ public class Model {
         addPropertyInfo(null, ACL_PROP, PropertyType.COLL_ACL, fragmentName,
                 null, false, null, null);
     }
+
 
     /**
      * Creates the model for one schema or complex type.

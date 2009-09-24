@@ -272,4 +272,18 @@ public class ConnectionImpl implements Session {
         return getSession().queryAndFetch(query, queryType, queryFilter, params);
     }
 
+    public void requireReadAclsUpdate() {
+        if (session != null) {
+            session.requireReadAclsUpdate();
+        }
+    }
+
+    public void updateReadAcls() throws StorageException {
+        getSession().updateReadAcls();
+    }
+
+    public void rebuildReadAcls() throws StorageException {
+        getSession().rebuildReadAcls();
+    }
+
 }

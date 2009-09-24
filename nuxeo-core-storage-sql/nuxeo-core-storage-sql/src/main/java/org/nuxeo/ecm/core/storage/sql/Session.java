@@ -364,4 +364,28 @@ public interface Session extends Connection {
     IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException;
 
+    /**
+     * Read ACLs are optimized ACLs for the read permission, they need to be
+     * updated after document creation or ACL change.
+     * <p>
+     * This method flag the current session, the read ACLs update will be done
+     * automatically at save time.
+     *
+     */
+    public void requireReadAclsUpdate();
+
+    /**
+     * Update only the read ACLs that have changed.
+     *
+     * @throws StorageException
+     */
+    public void updateReadAcls() throws StorageException;
+
+    /**
+     * Rebuild the read ACLs for the wall repository.
+     *
+     * @throws StorageException
+     */
+    public void rebuildReadAcls() throws StorageException;
+
 }
