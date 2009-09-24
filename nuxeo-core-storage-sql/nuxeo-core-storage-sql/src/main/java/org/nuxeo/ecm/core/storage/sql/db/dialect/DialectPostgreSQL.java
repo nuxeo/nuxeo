@@ -912,6 +912,14 @@ public class DialectPostgreSQL extends Dialect {
                         + "  RETURN;\n" //
                         + "END $$\n" //
                         + "LANGUAGE plpgsql VOLATILE;"));
+        // build the read acls if empty, this takes care of the upgrade
+        statements.add(new ConditionalStatement(
+                false, // late
+                null, // perform a check
+                "SELECT 1 WHERE NOT EXISTS(SELECT 1 FROM read_acls LIMIT 1);",
+                "SELECT * FROM nx_rebuild_read_acls();", //
+                "SELECT 1;"));
+
         return statements;
     }
 
