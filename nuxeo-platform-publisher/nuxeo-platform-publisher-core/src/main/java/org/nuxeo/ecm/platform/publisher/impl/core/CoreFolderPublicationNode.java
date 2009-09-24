@@ -12,6 +12,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
@@ -38,8 +39,6 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
     private static final Log log = LogFactory.getLog(CoreFolderPublicationNode.class);
 
     private static final String DEFAULT_SORT_PROP_NAME = "dc:title";
-
-    private static final String DELETED_STATE_NAME = "deleted";
 
     protected DocumentModel folder;
 
@@ -99,8 +98,8 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
         FacetFilter facetFilter = new FacetFilter(null,
                 Arrays.asList(new String[] { FacetNames.FOLDERISH,
                         FacetNames.HIDDEN_IN_NAVIGATION }));
-        LifeCycleFilter lfFilter = new LifeCycleFilter(DELETED_STATE_NAME,
-                false);
+        LifeCycleFilter lfFilter = new LifeCycleFilter(
+                LifeCycleConstants.DELETED_STATE, false);
         DocumentModelList children = getCoreSession().getChildren(
                 folder.getRef(), null, null,
                 new CompoundFilter(facetFilter, lfFilter), sorter);
@@ -123,8 +122,8 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
         FacetFilter facetFilter = new FacetFilter(
                 Arrays.asList(new String[] { FacetNames.FOLDERISH }),
                 Arrays.asList(new String[] { FacetNames.HIDDEN_IN_NAVIGATION }));
-        LifeCycleFilter lfFilter = new LifeCycleFilter(DELETED_STATE_NAME,
-                false);
+        LifeCycleFilter lfFilter = new LifeCycleFilter(
+                LifeCycleConstants.DELETED_STATE, false);
         DocumentModelList children = getCoreSession().getChildren(
                 folder.getRef(), null, null,
                 new CompoundFilter(facetFilter, lfFilter), sorter);

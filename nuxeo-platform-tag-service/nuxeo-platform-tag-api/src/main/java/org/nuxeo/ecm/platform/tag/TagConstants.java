@@ -27,12 +27,6 @@ public class TagConstants {
     /** For the moment, the Root Tag is hidden. */
     public static final String HIDDEN_FOLDER_TYPE = "HiddenFolder";
 
-    /** Query the tags in a group */
-    public static final String TAGS_IN_DOMAIN_QUERY_TEMPLATE =
-        "SELECT * FROM Tag WHERE ecm:path STARTSWITH '%s' AND (tag:private = 0 or dc:creator = '%s')";
-    public static final String DOCUMENTS_IN_DOMAIN_QUERY_TEMPLATE =
-        "SELECT * FROM Document WHERE ecm:path STARTSWITH '%s'";
-
     /** The "is private" property of the tag schema */
     public static final String TAG_IS_PRIVATE_FIELD = "tag:private";
 

@@ -24,4 +24,5 @@ package org.nuxeo.theme.webwidgets;
  */
 public interface ProviderFactory {
     Provider getProvider();
+    void activate() throws ProviderException;
 }

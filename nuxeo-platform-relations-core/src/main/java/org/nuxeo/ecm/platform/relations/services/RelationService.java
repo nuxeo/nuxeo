@@ -190,9 +190,9 @@ public class RelationService extends DefaultComponent implements
                         className).newInstance();
             } catch (Exception e) {
                 String msg = String.format(
-                        "Caught error when instantiating graph with type %s ",
-                        graphType);
-                log.error(msg, e);
+                        "Cannot instantiate graph with type '%s': %s",
+                        graphType, e);
+                log.error(msg);
                 return null;
             }
         }
@@ -279,7 +279,8 @@ public class RelationService extends DefaultComponent implements
     private ResourceAdapter getResourceAdapterForNamespace(String namespace) {
         String adapterClassName = resourceAdapterRegistry.get(namespace);
         if (adapterClassName == null) {
-            log.error(String.format("Adapter %s not found for ", namespace));
+            log.error(String.format("Cannot find adapter for namespace: %s",
+                    namespace));
             return null;
         } else {
             try {
@@ -290,8 +291,8 @@ public class RelationService extends DefaultComponent implements
                 return adapter;
             } catch (Exception e) {
                 String msg = String.format(
-                        "Caught error when instanciating generator %s: %s",
-                        adapterClassName, e);
+                        "Cannot instantiate generator with namespace '%s': %s",
+                        namespace, e);
                 log.error(msg);
                 return null;
             }
@@ -347,7 +348,7 @@ public class RelationService extends DefaultComponent implements
             Map<String, Serializable> context) throws ClientException {
         ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
         if (adapter == null) {
-            log.error("Could not find adapter for namespace " + namespace);
+            log.error("Cannot find adapter for namespace: " + namespace);
             return null;
         } else {
             return adapter.getResource(object, context);
@@ -379,7 +380,7 @@ public class RelationService extends DefaultComponent implements
             throws ClientException {
         ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
         if (adapter == null) {
-            log.error("Could not find adapter for namespace " + namespace);
+            log.error("Cannot find adapter for namespace: " + namespace);
             return null;
         } else {
             return adapter.getResourceRepresentation(resource, context);
@@ -462,26 +463,24 @@ public class RelationService extends DefaultComponent implements
 
         if (event.getType() == FrameworkEvent.STARTED) {
 
-            ClassLoader jbossCL =  Thread.currentThread().getContextClassLoader();
+            ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
             ClassLoader nuxeoCL = RelationService.class.getClassLoader();
-            try
-            {
+            try {
                 Thread.currentThread().setContextClassLoader(nuxeoCL);
                 log.info("Relation Service initialization");
 
-                for (String graphName : graphDescriptionRegistry.keySet())
-                {
+                for (String graphName : graphDescriptionRegistry.keySet()) {
                     log.info("create RDF Graph " + graphName);
                     try {
                         Graph graph = this.getGraphByName(graphName);
                         graph.size();
                     } catch (Exception e) {
-                        log.error("Error while initializing graph " + graphName, e);
+                        log.error(
+                                "Error while initializing graph " + graphName,
+                                e);
                     }
                 }
-            }
-            finally
-            {
+            } finally {
                 Thread.currentThread().setContextClassLoader(jbossCL);
                 log.debug("JBoss ClassLoader restored");
             }
@@ -490,17 +489,18 @@ public class RelationService extends DefaultComponent implements
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        if (Boolean.parseBoolean(
-                Framework.getProperty("org.nuxeo.ecm.platform.relations.initOnStartup", "true"))) {
-            context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(this);
+        if (Boolean.parseBoolean(Framework.getProperty(
+                "org.nuxeo.ecm.platform.relations.initOnStartup", "true"))) {
+            context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
+                    this);
         }
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         // this is doing nothing if listener was not registered
-        context.getRuntimeContext().getBundle().getBundleContext().removeFrameworkListener(this);
+        context.getRuntimeContext().getBundle().getBundleContext().removeFrameworkListener(
+                this);
     }
-
 
 }

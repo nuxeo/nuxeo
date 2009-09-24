@@ -15,6 +15,7 @@
 package org.nuxeo.ecm.platform.tag.web;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,10 +24,12 @@ import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -34,6 +37,8 @@ import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TaggingHelper;
 import org.nuxeo.ecm.platform.tag.WeightedTag;
@@ -52,6 +57,8 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 @Scope(CONVERSATION)
 public class TagActionsBean implements Serializable {
 
+    public static final String TAG_SEARCH_RESULT_PAGE = "tag_search_results";
+
     private static final long serialVersionUID = -630033792577162398L;
 
     private static final Log log = LogFactory.getLog(TagActionsBean.class);
@@ -69,6 +76,8 @@ public class TagActionsBean implements Serializable {
     protected transient ResourcesAccessor resourcesAccessor;
 
     protected TaggingHelper taggingHelper;
+
+    protected String tagDocumentId;
 
     /**
      * Keeps the tagging information that will be performed on the current
@@ -111,11 +120,17 @@ public class TagActionsBean implements Serializable {
      * @throws ClientException
      */
     public String addTagging() throws ClientException {
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        taggingHelper.addTagging(documentManager, currentDocument, tagsLabel);
+        String messageKey = null;
+        if (StringUtils.isBlank(tagsLabel)) {
+            messageKey = "message.add.new.tagging.not.empty";
+        } else {
+            DocumentModel currentDocument = navigationContext.getCurrentDocument();
+            taggingHelper.addTagging(documentManager, currentDocument,
+                    tagsLabel);
+            messageKey = "message.add.new.tagging";
+        }
         facesMessages.add(FacesMessage.SEVERITY_INFO,
-                resourcesAccessor.getMessages().get("message.add.new.tagging"),
-                tagsLabel);
+                resourcesAccessor.getMessages().get(messageKey), tagsLabel);
         reset();
         return null;
     }
@@ -148,10 +163,43 @@ public class TagActionsBean implements Serializable {
     public List<WeightedTag> getPopularCloud() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         List<WeightedTag> tagCloud = new ArrayList<WeightedTag>();
+        int min, max;
+        min = max = 0;
         if (currentDocument.getType().equals("Workspace")) {
-            tagCloud = taggingHelper.getPopularCloud(currentDocument);
+            for (DocumentModel document : documentManager.getChildren(currentDocument.getRef())) {
+                for (WeightedTag weightedTag : taggingHelper.getPopularCloud(document)) {
+                    if (weightedTag.getWeight() > max) {
+                        max = weightedTag.getWeight();
+                    }
+                    if (weightedTag.getWeight() < min) {
+                        min = weightedTag.getWeight();
+                    }
+                    tagCloud.add(weightedTag);
+                }
+            }
+            for (WeightedTag tag : tagCloud) {
+                tag.setWeight((int) Math.round((150.0 * (1.0 + (1.5 * tag.getWeight() - min / 2)
+                        / max))) / 2);
+            }
+
         }
         return tagCloud;
+    }
+
+    public String listDocumentsForTag(String tagDocumentId)
+            throws ClientException {
+        this.tagDocumentId = tagDocumentId;
+        return TAG_SEARCH_RESULT_PAGE;
+    }
+
+    @Factory(value = "taggedDocuments", scope = EVENT)
+    public DocumentModelList getChildrenSelectModel() throws ClientException {
+        DocumentModelList taggedDocuments = new DocumentModelListImpl();
+        if (!StringUtils.isBlank(tagDocumentId)) {
+            taggedDocuments.addAll(taggingHelper.listDocumentsForTag(
+                    documentManager, tagDocumentId));
+        }
+        return taggedDocuments;
     }
 
     /**

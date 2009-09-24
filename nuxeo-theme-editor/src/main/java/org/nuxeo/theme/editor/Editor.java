@@ -185,8 +185,10 @@ public class Editor {
         }
         final String viewName = "*";
         org.nuxeo.theme.html.Utils.loadCss(style, cssSource, viewName);
-        final String themeName = ThemeManager.getThemeOfFormat(style).getName();
-        Manager.getThemeManager().stylesModified(themeName);
+        ThemeElement theme = ThemeManager.getThemeOfFormat(style);
+        if (theme != null) {
+            Manager.getThemeManager().stylesModified(theme.getName());
+        }
     }
 
     public static void updateElementWidth(Format layout, String width) {

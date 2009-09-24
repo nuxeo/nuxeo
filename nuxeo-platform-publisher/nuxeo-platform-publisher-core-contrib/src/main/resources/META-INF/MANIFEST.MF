@@ -9,5 +9,6 @@ Nuxeo-Component: OSGI-INF/publisher-relations-contrib.xml,
   OSGI-INF/publisher-audit-contrib.xml,
   OSGI-INF/publisher-permissions-contrib.xml
 Require-Bundle: org.nuxeo.ecm.relations,
-  org.nuxeo.ecm.platform.audit
+ org.nuxeo.ecm.relations.jena,
+ org.nuxeo.ecm.platform.audit
 Nuxeo-RequiredBy: org.nuxeo.ecm.platform.publisher.core

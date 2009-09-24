@@ -50,6 +50,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-usermanager-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+    </dependency>
 
     <!-- test -->
     <dependency>
@@ -93,6 +97,23 @@
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>antlr</groupId>
+      <artifactId>antlr</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
 </project>

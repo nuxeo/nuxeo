@@ -22,7 +22,10 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -138,6 +141,31 @@ public class TaggingHelper {
                     "Can not retrieve popular cloud on document null.");
         }
         return getTagService().getPopularCloud(document);
+    }
+
+    /**
+     * Returns the list with documents which are tagged with a particular tag
+     * that has the received <b>tagDocumentId</b> id.
+     *
+     * @param session - the nuxeo core session
+     * @param tagDocumentId - the id of the tag
+     * @return
+     * @throws ClientException
+     */
+    public DocumentModelList listDocumentsForTag(CoreSession session,
+            String tagDocumentId) throws ClientException {
+        if (StringUtils.isEmpty(tagDocumentId)) {
+            throw new ClientException(
+                    "Can not list documents for an empty tag .");
+        }
+        DocumentModelList documentsForTag = new DocumentModelListImpl();
+
+        List<String> docsForTag = tagService.listDocumentsForTag(tagDocumentId,
+                session.getPrincipal().getName());
+        for (String docForTagId : docsForTag) {
+            documentsForTag.add(session.getDocument(new IdRef(docForTagId)));
+        }
+        return documentsForTag;
     }
 
     /**

@@ -73,8 +73,6 @@ public final class MailCoreConstants {
 
     public static final String SENDER_KEY = "sender";
 
-    public static final String SENDER_EMAIL_KEY = "senderEmail";
-
     public static final String SENDING_DATE_KEY = "sendingDate";
 
     public static final String RECIPIENTS_KEY = "recipients";
@@ -88,6 +86,14 @@ public final class MailCoreConstants {
     public static final String IMAP = "imap";
 
     public static final String POP3 = "pop3";
+
+    public static final String IMAPS = "imaps";
+
+    public static final String POP3S = "pop3s";
+
+    public static final String PROTOCOL_TYPE_KEY = "protocolType";
+
+    public static final String LEAVE_ON_SERVER_KEY = "leaveOnServer";
 
     private MailCoreConstants() {
     }

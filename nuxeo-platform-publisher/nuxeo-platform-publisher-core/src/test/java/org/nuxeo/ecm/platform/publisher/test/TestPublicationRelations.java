@@ -59,7 +59,7 @@ public class TestPublicationRelations extends SQLRepositoryTestCase {
         ds.setUser("sa");
         ds.setPassword("");
         Context context = new InitialContext();
-        context.bind("java:/nxrelations-default-jena", ds);
+        context.rebind("java:/nxrelations-default-jena", ds);
         Framework.getProperties().setProperty(
                 "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
         Framework.getProperties().setProperty(
@@ -73,12 +73,14 @@ public class TestPublicationRelations extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.versioning");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
-        deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
         deployContrib("org.nuxeo.ecm.platform.publisher.test",
                 "OSGI-INF/relations-default-jena-contrib.xml");
+
+        deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
         deployBundle("org.nuxeo.ecm.platform.publisher.core");
 
         openSession();
+        fireFrameworkStarted();
     }
 
     protected void createInitialDocs() throws Exception {
@@ -128,7 +130,7 @@ public class TestPublicationRelations extends SQLRepositoryTestCase {
 
         PublisherService service = Framework.getLocalService(PublisherService.class);
         PublicationTree tree = service.getPublicationTree(
-                "DefaultSectionsTree", session, null);
+                service.getAvailablePublicationTree().get(0), session, null);
         assertNotNull(tree);
 
         List<PublicationNode> nodes = tree.getChildrenNodes();

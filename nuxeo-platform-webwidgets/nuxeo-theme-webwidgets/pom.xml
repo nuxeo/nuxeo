@@ -75,6 +75,32 @@
       <artifactId>jaxrs-api</artifactId>
       <scope>test</scope>
     </dependency>
+
+   <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
+      <version>2.1_3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>antlr</groupId>
+      <artifactId>antlr</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.nuxeo.ecm.core</groupId>
+    	<artifactId>nuxeo-core-persistence</artifactId>
+    </dependency>
     
   </dependencies>
 

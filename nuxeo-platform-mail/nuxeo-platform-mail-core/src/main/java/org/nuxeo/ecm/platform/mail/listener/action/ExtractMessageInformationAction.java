@@ -24,7 +24,6 @@ import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CC_RECIPIENTS_
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MIMETYPE_SERVICE_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.RECIPIENTS_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SENDER_KEY;
-import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SENDER_EMAIL_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SENDING_DATE_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SUBJECT_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.TEXT_KEY;
@@ -32,8 +31,8 @@ import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.TEXT_KEY;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 
 import javax.mail.Address;
 import javax.mail.Message;
@@ -44,7 +43,6 @@ import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeUtility;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
@@ -93,20 +91,16 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             // Sender
             Address[] from = message.getFrom();
             String sender = null;
-            String senderEmail = null;
             if (from != null) {
                 Address addr = from[0];
                 if (addr instanceof InternetAddress) {
                     InternetAddress iAddr = (InternetAddress) addr;
-                    senderEmail = iAddr.getAddress();
-                    sender = iAddr.getPersonal() + " " + senderEmail;
+                    sender = iAddr.getPersonal() + " <" + iAddr.getAddress() + ">";
                 } else {
-                    sender = addr.toString();
-                    senderEmail = sender;
+                    sender += addr.toString();
                 }
             }
             context.put(SENDER_KEY, sender);
-            context.put(SENDER_EMAIL_KEY, senderEmail);
 
             // Sending date
             context.put(SENDING_DATE_KEY, message.getSentDate());
@@ -118,8 +112,12 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
                 for (Address addr : to) {
                     if (addr instanceof InternetAddress) {
                         InternetAddress iAddr = (InternetAddress) addr;
-                        recipients.add(iAddr.getPersonal() + " "
-                                + iAddr.getAddress());
+                        if (iAddr.getPersonal() != null) {
+                        recipients.add(iAddr.getPersonal() + " <"
+                                + iAddr.getAddress() + ">");
+                        } else {
+                            recipients.add(iAddr.getAddress());
+                        }
                     } else {
                         recipients.add(addr.toString());
                     }
@@ -156,7 +154,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
 
             return true;
         } catch (Exception e) {
-            log.error(e);
+            log.error(e, e);
         }
         return false;
     }
@@ -272,11 +270,14 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             log.debug("Using replacing charset: " + charset);
         }
         String ret;
-        if (StringUtils.isBlank(charset)) {
-            ret = new String(FileUtils.readBytes(is));
-        } else {
-            ret = new String(FileUtils.readBytes(is), charset);
-        }
+        // FIXME new String(FileUtils.readBytes(is), charset) throws exceptions all the time,
+        //commented out for the moment.
+//        if (StringUtils.isBlank(charset)) {
+//            ret = new String(FileUtils.readBytes(is));
+//        } else {
+//            ret = new String(FileUtils.readBytes(is), charset);
+//        }
+        ret = new String(FileUtils.readBytes(is));
         return ret;
     }
 

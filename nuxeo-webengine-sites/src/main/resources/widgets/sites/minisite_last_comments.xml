@@ -4,7 +4,7 @@
   </#if>      
   <#list nxthemesInfo.model.items as item>
     <div class="commentBlock">
-      <div class="commentInfos">${item.day}  ${item.month} by ${item.author} sur <a href="${This.path}/${item.pagePath}"> ${item.pageTitle}</a></div>
+      <div class="commentInfos">${item.day} ${item.month} by ${item.author} on <a href="${This.path}/${item.pagePath}">${item.pageTitle}</a></div>
       <div class="commentContent">${item.content}</div>         
     </div>
   </#list>

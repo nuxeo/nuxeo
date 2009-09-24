@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -70,8 +71,6 @@ import com.sun.syndication.io.SyndFeedOutput;
 public class SyndicationActionsBean implements SyndicationActions {
 
     private static final Log log = LogFactory.getLog(SyndicationActionsBean.class);
-
-    private static final String DELETED_LIFECYCLE_STATE = "deleted";
 
     public static final String RSS_TYPE = "rss_2.0";
 
@@ -179,7 +178,7 @@ public class SyndicationActionsBean implements SyndicationActions {
         // TODO do standard folder children search to check permissions too
         DocumentModelList children = new DocumentModelListImpl();
         for (DocumentModel child : documentManager.getChildren(idRef)) {
-            if (DELETED_LIFECYCLE_STATE.equals(child.getCurrentLifeCycleState())) {
+            if (LifeCycleConstants.DELETED_STATE.equals(child.getCurrentLifeCycleState())) {
                 continue;
             }
             children.add(child);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.Collections;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -177,13 +178,8 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
             }
         }
 
-        if (unrestrictedDefaultSectionRoot == null
-                || unrestrictedDefaultSectionRoot.isEmpty()) {
-            DocumentModelList defaultSectionRoots = getDefaultSectionRoots(session);
-            unrestrictedDefaultSectionRoot = new ArrayList<String>();
-            for (DocumentModel root : defaultSectionRoots) {
-                unrestrictedDefaultSectionRoot.add(root.getPathAsString());
-            }
+        if (unrestrictedDefaultSectionRoot == null) {
+            unrestrictedDefaultSectionRoot = Collections.emptyList();
         }
     }
 

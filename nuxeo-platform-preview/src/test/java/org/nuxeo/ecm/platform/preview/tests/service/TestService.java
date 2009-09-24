@@ -31,6 +31,7 @@ public class TestService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.core.schema");
         deployContrib("org.nuxeo.ecm.platform.preview", "OSGI-INF/preview-adapter-framework.xml");
     }
 

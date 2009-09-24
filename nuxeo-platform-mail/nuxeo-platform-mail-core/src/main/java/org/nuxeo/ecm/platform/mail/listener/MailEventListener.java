@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -46,9 +47,10 @@ import org.nuxeo.runtime.api.Framework;
 public class MailEventListener implements EventListener {
 
     public static final String EVENT_NAME = "MailReceivedEvent";
+
     public static final String PIPE_NAME = "nxmail";
+
     public static final String INBOX = "INBOX";
-    public static final String DELETED_LIFECYCLE_STATE = "deleted";
 
     private static final Log log = LogFactory.getLog(MailEventListener.class);
 
@@ -70,7 +72,9 @@ public class MailEventListener implements EventListener {
 
             StringBuilder query = new StringBuilder();
             query.append("SELECT * FROM MailFolder ");
-            query.append(" WHERE ecm:currentLifeCycleState != 'deleted' ");
+            query.append(String.format(
+                    " WHERE ecm:currentLifeCycleState != '%s' ",
+                    LifeCycleConstants.DELETED_STATE));
             query.append(" AND ecm:isProxy = 0 ");
             DocumentModelList mailFolderList = coreSession.query(query.toString());
 

@@ -7,6 +7,14 @@
     </module>
   </extension>
   
+  <extension target="faces-config#NAVIGATION">
+    <navigation-case>
+      <from-outcome>tag_search_results</from-outcome>
+      <to-view-id>/search/tag_search_results.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+  </extension>      
+  
   <install>
     <!--  unzip the war template -->
     <unzip from="${bundle.fileName}" to="/">

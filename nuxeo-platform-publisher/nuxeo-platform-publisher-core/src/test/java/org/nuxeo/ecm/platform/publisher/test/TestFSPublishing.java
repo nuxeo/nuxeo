@@ -44,12 +44,10 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.versioning");
 
         deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
-        deployContrib("org.nuxeo.ecm.platform.publisher.core",
-                "OSGI-INF/publisher-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.publisher.core",
-                "OSGI-INF/publisher-contrib.xml");
+        deployBundle("org.nuxeo.ecm.platform.publisher.core");
 
         openSession();
+        fireFrameworkStarted();
     }
 
     protected void createInitialDocs() throws Exception {

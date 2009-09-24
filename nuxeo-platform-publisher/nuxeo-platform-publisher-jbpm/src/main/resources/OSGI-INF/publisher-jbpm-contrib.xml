@@ -20,7 +20,8 @@
                            factory="CoreProxyWithWorkflow"
                            title="label.publication.tree.local.sections">
       <parameters>
-        <parameter name="RootPath">/default-domain/sections</parameter>
+        <!-- <parameter name="RootPath">/default-domain/sections</parameter> -->
+        <parameter name="RelativeRootPath">/sections</parameter>
         <parameter name="enableSnapshot">true</parameter>
         <parameter name="iconExpanded">/icons/folder_open.gif</parameter>
         <parameter name="iconCollapsed">/icons/folder.gif</parameter>

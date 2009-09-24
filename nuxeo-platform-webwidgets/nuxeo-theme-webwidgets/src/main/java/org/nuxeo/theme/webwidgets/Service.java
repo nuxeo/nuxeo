@@ -15,6 +15,7 @@
 package org.nuxeo.theme.webwidgets;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -62,7 +63,7 @@ public class Service extends DefaultComponent {
     }
 
     @Override
-    public void registerExtension(Extension extension) {
+    public void registerExtension(Extension extension) throws WidgetException {
         final String xp = extension.getExtensionPoint();
         if (xp.equals("widgets")) {
             registerWidget(extension);
@@ -96,13 +97,85 @@ public class Service extends DefaultComponent {
         }
     }
 
-    private void registerProvider(Extension extension) {
+    private void registerProvider(Extension extension) throws WidgetException {
         final Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
-            ProviderType providerType = (ProviderType) contrib;
+            final ProviderType providerType = (ProviderType) contrib;
             final String providerName = providerType.getName();
             providerTypes.put(providerName, providerType);
+            if (createProvider(providerType) == null) {
+                createFactory(providerType);
+            }
         }
+    }
+
+    protected ProviderFactory createFactory(ProviderType type)
+            throws WidgetException {
+        String name = type.getName();
+        String factoryClassName = type.getFactoryClassName();
+        ProviderFactory factory;
+        try {
+            factory = (ProviderFactory) Class.forName(factoryClassName).newInstance();
+        } catch (InstantiationException e) {
+            throw new WidgetException("Provider factory class: "
+                    + factoryClassName + " for provider: " + name
+                    + " could not be instantiated.");
+        } catch (IllegalAccessException e) {
+            throw new WidgetException("Provider factory name : "
+                    + factoryClassName + " for provider: " + name
+                    + " could not be instantiated.");
+        } catch (ClassNotFoundException e) {
+            throw new WidgetException("Provider factory class : "
+                    + factoryClassName + " for provider: " + name
+                    + " not found.");
+        }
+        try {
+            factory.activate();
+        } catch (ProviderException e) {
+            throw new WidgetException("Cannot activate " + name);
+        }
+        providerFactories.put(name, factory);
+        return factory;
+    }
+
+    public Provider getProvider(String name) throws WidgetException {
+        if (providers.containsKey(name)) {
+            return providers.get(name);
+        }
+        if (providerFactories.containsKey(name)) {
+            return providerFactories.get(name).getProvider();
+        }
+        throw new WidgetException("no providers for" + name);
+    }
+
+    private final Map<String, Provider> providers = new HashMap<String, Provider>();
+
+    private final Map<String, ProviderFactory> providerFactories = new HashMap<String, ProviderFactory>();
+
+    protected Provider createProvider(ProviderType providerType)
+            throws WidgetException {
+        String name = providerType.getName();
+        String className = providerType.getClassName();
+        if (className == null) {
+            return null;
+        }
+        Provider provider;
+        try {
+            provider = (Provider) Class.forName(className).newInstance();
+        } catch (InstantiationException e) {
+            throw new WidgetException("Provider class: " + className
+                    + " for provider: " + name + " could not be instantiated.");
+        } catch (IllegalAccessException e) {
+            throw new WidgetException("Provider class: " + className
+                    + " for provider: " + name + " could not be instantiated.");
+        } catch (ClassNotFoundException e) {
+            throw new WidgetException("Provider class : " + className
+                    + " for provider: " + name + " not found.");
+        }
+        provider.activate();
+        providers.put(name, provider);
+        return provider;
+
     }
 
     private void registerDecoration(Extension extension) {

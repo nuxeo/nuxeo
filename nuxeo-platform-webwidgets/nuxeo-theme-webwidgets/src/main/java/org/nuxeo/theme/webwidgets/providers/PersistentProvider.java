@@ -21,13 +21,19 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.FlushModeType;
+import javax.persistence.LockModeType;
+import javax.persistence.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
+import org.nuxeo.ecm.core.persistence.HibernateConfigurator;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.webwidgets.Provider;
 import org.nuxeo.theme.webwidgets.ProviderException;
 import org.nuxeo.theme.webwidgets.Widget;
@@ -36,14 +42,112 @@ import org.nuxeo.theme.webwidgets.WidgetState;
 
 public class PersistentProvider implements Provider {
 
+    private static final class UnsupportedEntityManager implements EntityManager {
+        public void clear() {
+            throw new UnsupportedOperationException();
+        }
+
+        public void close() {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean contains(Object arg0) {
+            throw new UnsupportedOperationException();
+        }
+
+        public Query createNamedQuery(String arg0) {
+            throw new UnsupportedOperationException();
+        }
+
+        public Query createNativeQuery(String arg0) {
+            throw new UnsupportedOperationException();
+        }
+
+        public Query createNativeQuery(String arg0, Class arg1) {
+            throw new UnsupportedOperationException();
+        }
+
+        public Query createNativeQuery(String arg0, String arg1) {
+            throw new UnsupportedOperationException();
+        }
+
+        public Query createQuery(String arg0) {
+            throw new UnsupportedOperationException();
+        }
+
+        public <T> T find(Class<T> arg0, Object arg1) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void flush() {
+            throw new UnsupportedOperationException();
+        }
+
+        public Object getDelegate() {
+            throw new UnsupportedOperationException();
+        }
+
+        public FlushModeType getFlushMode() {
+            throw new UnsupportedOperationException();
+        }
+
+        public <T> T getReference(Class<T> arg0, Object arg1) {
+            throw new UnsupportedOperationException();
+        }
+
+        public EntityTransaction getTransaction() {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean isOpen() {
+            throw new UnsupportedOperationException();
+        }
+
+        public void joinTransaction() {
+            throw new UnsupportedOperationException();
+        }
+
+        public void lock(Object arg0, LockModeType arg1) {
+            throw new UnsupportedOperationException();
+        }
+
+        public <T> T merge(T arg0) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void persist(Object arg0) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void refresh(Object arg0) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void remove(Object arg0) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void setFlushMode(FlushModeType arg0) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
     private static final Log log = LogFactory.getLog(PersistentProvider.class);
 
-    protected EntityManager em;
+    protected EntityManager em = new UnsupportedEntityManager();
 
     protected EntityTransaction et;
 
-    public PersistentProvider() {
-        em = PersistenceConfigurator.getEntityManager();
+    public void activate() {
+        HibernateConfigurator configurator;
+        try {
+            configurator = Framework.getService(HibernateConfigurator.class);
+        } catch (Exception e) {
+            log.error("No hibernate configurator available, aborting", e);
+            return;
+        }
+        HibernateConfiguration config = configurator.getHibernateConfiguration("nxwebwidgets");
+        em = config.getFactory().createEntityManager();
     }
 
     public Principal getCurrentPrincipal() {
@@ -152,6 +256,13 @@ public class PersistentProvider implements Provider {
         reorderWidgets(widgets);
         begin();
         em.remove(widget);
+        commit();
+    }
+
+    public void removeWidgets() throws ProviderException {
+        begin();
+        Query query = em.createNamedQuery("Widget.removeAll");
+        query.executeUpdate();
         commit();
     }
 
