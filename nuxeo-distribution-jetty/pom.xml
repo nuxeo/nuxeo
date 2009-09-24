@@ -1,0 +1,136 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>5.2.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-distribution-jetty</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Jetty Distribution</name>
+  <description>Package Nuxeo EP or DM into Jetty</description>
+
+  <properties>
+    <application.version>${version}</application.version>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>nuxeo-dm-jetty</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <application.name>nuxeo-dm-jetty</application.name>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.distribution</groupId>
+          <artifactId>nuxeo-distribution-dm</artifactId>
+          <type>pom</type>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>nuxeo-ep-jetty</id>
+      <properties>
+        <application.name>nuxeo-ep-jetty</application.name>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.platform</groupId>
+          <artifactId>nuxeo-platform-ear</artifactId>
+          <type>pom</type>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-jetty-adapter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-deploy</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+<!--      <plugin>-->
+<!--        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>-->
+<!--        <artifactId>maven-antrun-extended-plugin</artifactId>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <phase>package</phase>-->
+<!--            <configuration>-->
+<!--              <tasks>-->
+<!--                <resolveArtifact groupId="org.jboss" artifactId="jboss-as"-->
+<!--                  type="zip" property="jboss" />-->
+<!--                <unzip src="${jboss}" dest="${project.build.directory}/jboss" />-->
+<!--                <ant antfile="build.xml" target="patch">-->
+<!--                  <property name="jboss.dir" value="${project.build.directory}/jboss" />-->
+<!--                </ant>-->
+<!--                <ant antfile="build.xml" target="copy-lib">-->
+<!--                  <property name="jboss.dir" value="${project.build.directory}/jboss" />-->
+<!--                </ant>-->
+<!--                <copy todir="${project.build.directory}/jboss" >-->
+<!--                  <fileset dir="${basedir}/src/main/resources/jboss/"/>-->
+<!--                </copy>-->
+<!--                <chmod dir="${project.build.directory}/jboss/bin" perm="750"-->
+<!--                  includes="*.sh" />-->
+<!--              </tasks>-->
+<!--            </configuration>-->
+<!--            <goals>-->
+<!--              <goal>run</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-nuxeo-plugin</artifactId>
+        <extensions>false</extensions>
+        <executions>
+          <execution>
+            <id>assemble-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>assembly</goal>
+            </goals>
+            <configuration>
+              <runPreprocessor>false</runPreprocessor>
+              <format>zip</format>
+              <zipRoot>${application.name}-${application.version}</zipRoot>
+              <outputDirectory>target</outputDirectory>
+              <targetFile>${application.name}-${application.version}</targetFile>
+              <descriptor>${basedir}/src/main/assemble/assembly.xml</descriptor>
+            </configuration>
+          </execution>
+          <execution>
+            <id>attach-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${project.build.directory}/${application.name}-${application.version}.zip</file>
+              <type>zip</type>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

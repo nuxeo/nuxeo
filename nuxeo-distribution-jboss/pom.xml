@@ -12,10 +12,9 @@
   <artifactId>nuxeo-distribution-jboss</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo JBoss Distribution</name>
-  <description>Packages Nuxeo EP or DM EAR with JBoss</description>
+  <description>Package Nuxeo EP or DM EAR with JBoss</description>
 
   <properties>
-    <application.name>nuxeo-ep</application.name>
     <application.version>${version}</application.version>
   </properties>
 
