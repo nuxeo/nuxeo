@@ -7,4 +7,4 @@ Bundle-Category: web,stateful
 Require-Bundle: org.nuxeo.ecm.core,
  org.nuxeo.ecm.core.event,
  org.nuxeo.ecm.relations
-Nuxeo-Component: OSGI-INF/relations-core-listener.xml
+Nuxeo-Component: OSGI-INF/relations-core-listener-contrib.xml
