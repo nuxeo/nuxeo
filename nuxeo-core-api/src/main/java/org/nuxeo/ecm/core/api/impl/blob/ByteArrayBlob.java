@@ -85,8 +85,7 @@ public class ByteArrayBlob extends DefaultBlob implements Serializable {
         if (content == null || content.length == 0) {
             return EMPTY_STRING;
         }
-        return encoding == null ? new String(content)
-                : new String(content, encoding);
+        return new String(content, encoding == null ? "UTF-8" : encoding);
     }
 
     public Reader getReader() throws IOException {

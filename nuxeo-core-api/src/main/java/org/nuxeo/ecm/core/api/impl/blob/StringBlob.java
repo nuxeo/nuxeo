@@ -64,16 +64,14 @@ public class StringBlob extends DefaultBlob implements Serializable {
         if (content == null || content.length() == 0) {
             return EMPTY_INPUT_STREAM;
         }
-        // FIXME this should use the encoding
-        return new ByteArrayInputStream(content.getBytes());
+        return new ByteArrayInputStream(getByteArray());
     }
 
     public byte[] getByteArray() throws IOException {
         if (content == null || content.length() == 0) {
             return EMPTY_BYTE_ARRAY;
         }
-        // FIXME this should use the encoding
-        return content.getBytes();
+        return content.getBytes(encoding == null ? "UTF-8" : encoding);
     }
 
     public String getString() throws IOException {

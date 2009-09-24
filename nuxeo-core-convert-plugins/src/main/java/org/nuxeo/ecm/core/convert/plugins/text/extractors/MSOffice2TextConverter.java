@@ -46,13 +46,13 @@ public class MSOffice2TextConverter implements Converter {
         try {
             POITextExtractor extractor = ExtractorFactory.createExtractor(blobHolder.getBlob().getStream());
 
-            byte[] bytes = extractor.getText().getBytes();
+            byte[] bytes = extractor.getText().getBytes("UTF-8");
             f = File.createTempFile("po-msoffice2text", ".txt");
             fas = new FileOutputStream(f);
             fas.write(bytes);
 
-            Blob blob = new FileBlob(new FileInputStream(f));
-            blob.setMimeType("text/plain");
+            Blob blob = new FileBlob(new FileInputStream(f), "text/plain",
+                    "UTF-8");
 
             return new SimpleCachableBlobHolder(blob);
         } catch (Exception e) {

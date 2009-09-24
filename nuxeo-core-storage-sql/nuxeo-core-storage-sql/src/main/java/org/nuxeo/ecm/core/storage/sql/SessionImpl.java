@@ -125,7 +125,7 @@ public class SessionImpl implements Session {
                     "Concurrency Error: Session was started in thread %s (%s)"
                             + " but is being used in thread %s (%s)", threadId,
                     threadName, currentThreadId, currentThreadName);
-            log.error(msg, new Exception(msg));
+            // log.error(msg, new Exception(msg));
         }
     }
 
