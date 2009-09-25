@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.relations.core.listener" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <documentation>
+      Copy relations from the source document to the newly published proxy.
+     </documentation>
+
+     <listener name="pusblishRelationsListener" async="false" postCommit="false"
+       class="org.nuxeo.ecm.platform.relations.core.listener.PublishRelationsListener"
+       priority="-50">
+      <event>documentProxyPublished</event>
+    </listener>
+  </extension>
+</component>

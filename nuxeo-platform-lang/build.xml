@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 
 <project name="Nuxeo EP Language Pack" default="lang" basedir=".">
+  <!-- build.xml not used in the real build. It was probably written just for testing -->
   <property file="build.properties"/>
 
   <target name="lang" depends="copy,concat" description="Update language files"/>

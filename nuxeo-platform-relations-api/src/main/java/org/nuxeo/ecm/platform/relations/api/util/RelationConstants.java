@@ -23,7 +23,7 @@ import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 
 /**
  * Constants for relations management.
- *
+ * 
  * @author Anahide Tchertchian
  * @author Eugen Ionica
  */
@@ -55,6 +55,9 @@ public class RelationConstants {
     // XXX AT: for BBB, use a different namespace for comment
     public static final Resource COMMENT = new ResourceImpl(
             "http://www.nuxeo.org/comment");
+
+    public static final Resource COPY_FROM_WORK_VERSION = new ResourceImpl(
+            METADATA_NAMESPACE + "copy-from-work-version");
 
     // Constant utility class
     private RelationConstants() {

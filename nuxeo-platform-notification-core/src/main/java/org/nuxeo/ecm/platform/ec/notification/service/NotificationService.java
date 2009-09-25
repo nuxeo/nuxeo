@@ -71,18 +71,18 @@ public class NotificationService extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(NotificationService.class);
 
-    private EmailHelper emailHelper= new EmailHelper();
+    protected EmailHelper emailHelper= new EmailHelper();
 
-    private static final String SUBSCRIPTION_NAME = "UserSubscription";
+    public static final String SUBSCRIPTION_NAME = "UserSubscription";
 
     // FIXME: performance issue when putting URLs in a Map.
-    private static final Map<String, URL> TEMPLATES_MAP = new HashMap<String, URL>();
+    protected static final Map<String, URL> TEMPLATES_MAP = new HashMap<String, URL>();
 
-    private GeneralSettingsDescriptor generalSettings;
+    protected GeneralSettingsDescriptor generalSettings;
 
-    private NotificationRegistry notificationRegistry;
+    protected NotificationRegistry notificationRegistry;
 
-    private DocumentViewCodecManager docLocator;
+    protected DocumentViewCodecManager docLocator;
 
     @Override
     @SuppressWarnings("unchecked")

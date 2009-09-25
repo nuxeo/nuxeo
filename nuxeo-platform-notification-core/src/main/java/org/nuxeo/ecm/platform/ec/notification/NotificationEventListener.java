@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -281,14 +280,6 @@ public class NotificationEventListener implements PostCommitEventListener {
         } catch (Exception e) {
             throw new ClientException("Failed to send notification email ", e);
         }
-    }
-
-    private DocumentModel getDocFromPath(CoreSession coreSession, String path)
-            throws ClientException {
-        if (path == null) {
-            return null;
-        }
-        return coreSession.getDocument(new PathRef(path));
     }
 
     /**

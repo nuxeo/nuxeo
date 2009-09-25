@@ -73,7 +73,7 @@
   <nxu:dataTable value="#{availablePublicationTrees}" var="tree"
                  styleClass="dataOutput">
     <nxu:column>
-      <h4><h:outputText value="#{messages[tree.title]}"/></h4>
+      <h4><h:outputText value="#{messages[tree.title]}#{publishActions.getDomainName(tree.name)}"/></h4>
       <nxu:methodResult name="publishedDocuments"
                         value="#{publishActions.getPublishedDocumentsFor(tree.name)}">
         <h:outputText

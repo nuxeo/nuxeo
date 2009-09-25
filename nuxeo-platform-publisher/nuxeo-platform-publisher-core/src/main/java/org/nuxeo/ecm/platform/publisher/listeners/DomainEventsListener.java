@@ -28,10 +28,10 @@ public class DomainEventsListener implements EventListener {
         if (ctx instanceof DocumentEventContext) {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
             DocumentModel doc = docCtx.getSourceDocument();
-            if (doc.getType().equals("Domain")) {
+            if (doc != null && "Domain".equals(doc.getType())) {
                 String eventName = event.getName();
                 if (DocumentEventTypes.DOCUMENT_CREATED.equals(eventName)) {
-                    registernewPublicationTrees(doc);
+                    registerNewPublicationTrees(doc);
                 } else if (DocumentEventTypes.DOCUMENT_REMOVED.equals(eventName)) {
                     unregisterPublicationTrees(doc);
                 } else if (LifeCycleConstants.TRANSITION_EVENT.equals(eventName)) {
@@ -41,7 +41,7 @@ public class DomainEventsListener implements EventListener {
         }
     }
 
-    protected void registernewPublicationTrees(DocumentModel doc)
+    protected void registerNewPublicationTrees(DocumentModel doc)
             throws ClientException {
         try {
             PublisherServiceImpl service = (PublisherServiceImpl) Framework.getService(PublisherService.class);
@@ -80,7 +80,7 @@ public class DomainEventsListener implements EventListener {
 
     protected void handleDomainGoesFromDeletedState(DocumentModel doc)
             throws ClientException {
-        registernewPublicationTrees(doc);
+        registerNewPublicationTrees(doc);
     }
 
 }

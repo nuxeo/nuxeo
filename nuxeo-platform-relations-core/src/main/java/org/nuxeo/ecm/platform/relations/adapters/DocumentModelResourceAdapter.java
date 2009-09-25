@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -39,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Resource adapter using the document model id.
- *
+ * 
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class DocumentModelResourceAdapter extends AbstractResourceAdapter
@@ -110,9 +111,19 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter
     @Override
     public Resource getResource(Serializable object,
             Map<String, Serializable> context) {
-        DocumentModel doc = (DocumentModel) object;
-        String localName = doc.getRepositoryName() + '/' + doc.getId();
-        return new QNameResourceImpl(namespace, localName);
+        if (object instanceof DocumentModel) {
+            DocumentModel doc = (DocumentModel) object;
+            String localName = doc.getRepositoryName() + '/' + doc.getId();
+            return new QNameResourceImpl(namespace, localName);
+        } else if (object instanceof DocumentLocation) {
+            DocumentLocation docLoc = (DocumentLocation) object;
+            String localName = docLoc.getServerName() + '/'
+                    + docLoc.getIdRef().toString();
+            return new QNameResourceImpl(namespace, localName);
+        } else {
+            throw new IllegalArgumentException(String.format(
+                    "cannot build resource for '%s'", object));
+        }
     }
 
     @Override
