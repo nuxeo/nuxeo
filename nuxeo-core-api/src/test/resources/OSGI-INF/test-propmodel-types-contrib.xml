@@ -5,7 +5,8 @@
     <schema name="test" src="schemas/TestSchema.xsd" prefix="book" />
     <schema name="noblob" prefix="nb" src="schemas/noblob.xsd" />
     <schema name="simpleblob" prefix="sb" src="schemas/simpleblob.xsd" />
-    <schema name="simpleblob2" prefix="sb2" src="schemas/simpleblob2.xsd" />
+      <schema name="simpleblob2" prefix="sb2" src="schemas/simpleblob2.xsd" />
+      <schema name="simpleblob3" prefix="sb3" src="schemas/simpleblob3.xsd" />
     <schema name="wihtoutpref" src="schemas/simpleblob.xsd" />
     <schema name="blobinlist" prefix="bil" src="schemas/blobinlist.xsd" />
   </extension>
@@ -31,6 +32,11 @@
         <schema name="simpleblob" />
         <schema name="simpleblob2" />
       </doctype>
+
+      <doctype name="BlobWithOneSchemaContainingTwoBlobs" extends="Document">
+        <schema name="simpleblob3" />
+      </doctype>
+
   </extension>
 
 </component>

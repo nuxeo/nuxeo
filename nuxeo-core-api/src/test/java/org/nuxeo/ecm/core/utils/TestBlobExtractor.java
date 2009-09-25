@@ -173,7 +173,38 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
         log.error("Waiting Values test2.pdf and test1.pdf");
         assertTrue(false);
     }
-    
+
+        @SuppressWarnings("unchecked")
+    public void testGetTwoBlobsFromOneSchema() throws Exception {
+        BlobsExtractor bec = new BlobsExtractor();
+
+        DocumentModel doc = new DocumentModelImpl(
+                "/", "testDoc", "BlobWithOneSchemaContainingTwoBlobs");
+
+        doc.setProperty("dublincore", "title",
+                "doc");
+        doc.setProperty("simpleblob3", "blob", createTestBlob(false,
+                "test1.pdf"));
+        doc.setProperty("simpleblob3", "blob2", createTestBlob(false,
+                "test2.pdf"));
+
+        List<Property> blobs = bec.getBlobsProperties(doc);
+        assertEquals(2, blobs.size());
+
+        Blob blob = (Blob) blobs.get(0).getValue();
+        Blob blob2 = (Blob) blobs.get(1).getValue();
+
+        if ("test1.pdf".equals(blob.getFilename()) && "test2.pdf".equals(blob2.getFilename())) {
+            return;
+        }
+        if ("test2.pdf".equals(blob.getFilename()) && "test1.pdf".equals(blob2.getFilename())) {
+            return;
+        }
+        log.error("Blob detected : \"" + blob.getFilename() + "\" and \"" + blob2.getFilename() + "\"");
+        log.error("Waiting Values test2.pdf and test1.pdf");
+        assertTrue(false);
+    }
+
     protected Blob createTestBlob(boolean setMimeType, String filename) {
         Blob blob = new StringBlob("SOMEDUMMYDATA");
         blob.setFilename(filename);

@@ -218,7 +218,7 @@ public class BlobsExtractor {
     protected void blobMatched(DocumentType docType, Schema schema,
             String path, Field field) {
         Map<String, List<String>> blobPathsForDocType = blobFieldPaths.get(docType.getName());
-        List<String> pathsList = blobPathsForDocType.get(schema.getSchemaName());
+        List<String> pathsList = blobPathsForDocType.get(schema.getName());
         if (pathsList == null) {
             pathsList = new ArrayList<String>();
             blobPathsForDocType.put(schema.getName(), pathsList);
