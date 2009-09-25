@@ -99,14 +99,14 @@ public class ProxySubscriptionPropagationListener implements EventListener {
         if (fromDocId != null) {
             paramMap.put("docId", fromDocId);
         }
-        PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
+        PlacefulService placefulService = NotificationServiceHelper.getPlacefulServiceBean();
 
-        List<Annotation> subscriptions = serviceBean.getAnnotationListByParamMap(
+        List<Annotation> subscriptions = placefulService.getAnnotationListByParamMap(
                 paramMap, shortClassName);
         for (Object obj : subscriptions) {
             UserSubscription subscription = (UserSubscription) obj;
             subscription.setDocId(toDocId);
-            serviceBean.setAnnotation(subscription);
+            placefulService.setAnnotation(subscription);
         }
     }
 }
