@@ -188,7 +188,7 @@ public class TestUtils extends NXRuntimeTestCase {
         style.setPropertiesFor("horizontal menu", "a", properties);
 
         assertEquals(
-                ".nxStyle1HorizontalMenu a {color:#f00 #dc0 #f00 #123;background:#f00 url(image.png) no-repeat;font:11px Verdana;}\n",
+                ".nxStyle1HorizontalMenu a {background:#f00 url(image.png) no-repeat;color:#f00 #dc0 #f00 #123;font:11px Verdana;}\n",
                 Utils.styleToCss(style, style.getSelectorViewNames(), true, // resolvePresets
                         false, // ignoreViewName
                         false, // ignoreClassName
