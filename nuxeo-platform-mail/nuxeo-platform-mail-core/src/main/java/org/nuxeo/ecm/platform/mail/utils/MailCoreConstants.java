@@ -73,6 +73,8 @@ public final class MailCoreConstants {
 
     public static final String SENDER_KEY = "sender";
 
+    public static final String SENDER_EMAIL_KEY = "senderEmail";
+
     public static final String SENDING_DATE_KEY = "sendingDate";
 
     public static final String RECIPIENTS_KEY = "recipients";
