@@ -898,6 +898,12 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertIdSet(dml, proxyId);
         dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND (dc:title = 'testfile1_Title' OR ecm:isProxy = 1)");
         assertEquals(1, dml.size());
+
+        // proxy query with order by
+        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4_Title' ORDER BY dc:title");
+        assertIdSet(dml, docId, proxyId, versionId);
+        dml = session.query("SELECT * FROM File WHERE dc:title = 'testfile4_Title' ORDER BY dc:description");
+        assertIdSet(dml, docId, proxyId, versionId);
     }
 
     // this is disabled for JCR
@@ -1222,6 +1228,12 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         DocumentModelList dml;
         DocumentModel file1 = session.getDocument(new PathRef(
                 "/testfolder1/testfile1"));
+        query = "SELECT * FROM File WHERE ecm:isProxy = 0 AND ecm:fulltext = 'restaurant'";
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId());
+        query = "SELECT * FROM File WHERE ecm:isProxy = 1 AND ecm:fulltext = 'restaurant'";
+        dml = session.query(query);
+        assertEquals(0, dml.size());
         query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant'";
         dml = session.query(query);
         assertIdSet(dml, file1.getId());

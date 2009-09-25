@@ -276,6 +276,11 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
+    public boolean needsAliasForDerivedTable() {
+        return true;
+    }
+
+    @Override
     public boolean supportsReadAcl() {
         return true;
     }
