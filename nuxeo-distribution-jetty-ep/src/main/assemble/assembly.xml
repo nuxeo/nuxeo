@@ -59,29 +59,29 @@
   <artifactSet id="third-party-libs">
     <artifacts>
       <!-- Synchro Added packages -->
-      <artifact group="javax.activation" name="activation" version="1.1"/>
-      <artifact group="apache-httpclient" name="commons-httpclient" version="3.1"/>
-      <artifact group="commons-codec" name="commons-codec" version="1.3"/>
-      <artifact group="metro.webservices" name="webservices-api" version="1.4"/>
-      <artifact group="metro.webservices" name="webservices-rt" version="1.4"/>
-      <artifact group="metro.webservices" name="webservices-tools" version="1.4"/>
+      <artifact group="javax.activation" name="activation" />
+      <artifact group="apache-httpclient" name="commons-httpclient" />
+      <artifact group="commons-codec" name="commons-codec" />
+      <artifact group="metro.webservices" name="webservices-api" />
+      <artifact group="metro.webservices" name="webservices-rt" />
+      <artifact group="metro.webservices" name="webservices-tools" />
       <!-- End Synchro Added packages -->
       
       <artifact group="javax.servlet" name="servlet-api" version="2.5"/>
-      <artifact group="org.mortbay.jetty" name="jetty" version="6.1H.7"/>
-      <artifact group="org.mortbay.jetty" name="jetty-plus" version="6.1H.7"/>
-      <artifact group="org.mortbay.jetty" name="jetty-naming" version="6.1H.7"/>
-      <artifact group="org.mortbay.jetty" name="jetty-annotations" version="6.1H.7"/>
-      <artifact group="org.mortbay.jetty" name="jetty-util" version="6.1H.7"/>
-      <artifact group="jotm" name="jotm" version="2.0.10"/>
-      <artifact group="javax.ejb" name="ejb-api" version="3.0" />
-      <artifact group="javax.transaction" name="jta" version="1.0.1B" />  
+      <artifact group="org.mortbay.jetty" name="jetty" />
+      <artifact group="org.mortbay.jetty" name="jetty-plus" />
+      <artifact group="org.mortbay.jetty" name="jetty-naming" />
+      <artifact group="org.mortbay.jetty" name="jetty-annotations" />
+      <artifact group="org.mortbay.jetty" name="jetty-util" />
+      <artifact group="jotm" name="jotm" />
+      <artifact group="javax.ejb" name="ejb-api" />
+      <artifact group="javax.transaction" name="jta" />  
 
-      <artifact group="ant" name="ant" version="1.6.5" />  
+      <artifact group="ant" name="ant" />  
       <artifact group="bsh" name="bsh" version="1.3.0" />  
-      <artifact group="commons-el" name="commons-el" version="1.0" />  
-      <artifact group="commons-digester" name="commons-digester" version="1.8" />  
-      <artifact group="org.jboss.el" name="jboss-el" version="2.0.1.GA" />  
+      <artifact group="commons-el" name="commons-el" />  
+      <artifact group="commons-digester" name="commons-digester" />  
+      <artifact group="org.jboss.el" name="jboss-el" />  
 
       <artifact group="org.jboss.seam" name="jboss-seam" version="2.0.3.CR1-NX2" />  
       <artifact group="org.jboss.seam" name="jboss-seam-debug" version="2.0.3.CR1" />  
