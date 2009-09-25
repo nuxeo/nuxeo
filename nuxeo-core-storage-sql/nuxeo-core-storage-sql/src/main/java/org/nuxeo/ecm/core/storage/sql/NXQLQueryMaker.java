@@ -455,15 +455,23 @@ public class NXQLQueryMaker implements QueryMaker {
              */
 
             if (queryFilter.getPrincipals() != null) {
-                whereClauses.add(dialect.getSecurityCheckSql(hierId));
                 Serializable principals = queryFilter.getPrincipals();
                 Serializable permissions = queryFilter.getPermissions();
                 if (!dialect.supportsArrays()) {
                     principals = StringUtils.join((String[]) principals, '|');
                     permissions = StringUtils.join((String[]) permissions, '|');
                 }
-                whereParams.add(principals);
-                whereParams.add(permissions);
+                if (dialect.supportsReadAcl()) {
+                    /* optimized read acl */
+                    whereClauses.add(dialect.getReadAclsCheckSql("r.acl_id"));
+                    whereParams.add(principals);
+                    joins.add(String.format("%s AS r ON %s = r.id",
+                            model.HIER_READ_ACL_TABLE_NAME, hierId));
+                } else {
+                    whereClauses.add(dialect.getSecurityCheckSql(hierId));
+                    whereParams.add(principals);
+                    whereParams.add(permissions);
+                }
             }
 
             /*
