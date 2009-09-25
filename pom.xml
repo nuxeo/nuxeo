@@ -30,6 +30,7 @@
     <module>nuxeo-platform-imaging-tiling</module>
     <module>nuxeo-platform-indexing-gateway</module>
     <module>nuxeo-platform-intuition</module>
+    <module>nuxeo-platform-lang-ext</module>
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-mail</module>
     <module>nuxeo-platform-metadataext</module>
