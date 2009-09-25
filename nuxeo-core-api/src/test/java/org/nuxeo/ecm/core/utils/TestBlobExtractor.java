@@ -13,8 +13,12 @@ import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.TypeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 public class TestBlobExtractor extends NXRuntimeTestCase {
+
+    Log log = LogFactory.getLog(TestBlobExtractor.class);
 
     @Override
     public void setUp() throws Exception {
@@ -138,6 +142,38 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
 
     }
 
+
+    @SuppressWarnings("unchecked")
+    public void testGetBlobsFromTwoSchemas() throws Exception {
+        BlobsExtractor bec = new BlobsExtractor();
+
+        DocumentModel doc = new DocumentModelImpl(
+                "/", "testDoc", "BlobWithTwoSchemasContainingBlob");
+
+        doc.setProperty("dublincore", "title",
+                "doc");
+        doc.setProperty("simpleblob", "blob", createTestBlob(false,
+                "test1.pdf"));
+        doc.setProperty("simpleblob2", "blob", createTestBlob(false,
+                "test2.pdf"));
+
+        List<Property> blobs = bec.getBlobsProperties(doc);
+        assertEquals(2, blobs.size());
+
+        Blob blob = (Blob) blobs.get(0).getValue();
+        Blob blob2 = (Blob) blobs.get(1).getValue();
+
+        if ("test1.pdf".equals(blob.getFilename()) && "test2.pdf".equals(blob2.getFilename())) {
+            return;
+        }
+        if ("test2.pdf".equals(blob.getFilename()) && "test1.pdf".equals(blob2.getFilename())) {
+            return;
+        }
+        log.error("Blob detected : \"" + blob.getFilename() + "\" and \"" + blob2.getFilename() + "\"");
+        log.error("Waiting Values test2.pdf and test1.pdf");
+        assertTrue(false);
+    }
+    
     protected Blob createTestBlob(boolean setMimeType, String filename) {
         Blob blob = new StringBlob("SOMEDUMMYDATA");
         blob.setFilename(filename);

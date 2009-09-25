@@ -85,7 +85,7 @@ public class BlobsExtractor {
                     throw new Exception("Path detected not wellformed: "
                             + pathsList);
                 }
-                Property prop = doc.getProperty(pathSplitted.get(0));
+                Property prop = doc.getProperty(schema + ":" + pathSplitted.get(0));
 
                 if (pathSplitted.size() >= 1) {
                     List<String> subPath = pathSplitted.subList(1,
@@ -209,7 +209,7 @@ public class BlobsExtractor {
 
     /**
      * Call during the parsing of the schema structure in
-     * {@link BlobsExtractor#findInteresting(Schema, ComplexType)} if field is a
+     * {@link BlobsExtractor#findInteresting} if field is a
      * Blob Type. This method stores the path to that Field.
      * 
      * @param schema The parent schema that contains the field
@@ -229,7 +229,7 @@ public class BlobsExtractor {
 
     /**
      * Call during the parsing of the schema structure in
-     * {@link BlobsExtractor#findInteresting(Schema, ComplexType)} if field
+     * {@link BlobsExtractor#findInteresting if field
      * contains a subfield of type Blob. This method do nothing.
      * 
      * @param schema The parent schema that contains the field
