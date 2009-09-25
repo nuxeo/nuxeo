@@ -221,9 +221,14 @@ public class DialectMySQL extends Dialect {
     @Override
     public String[] getFulltextMatch(String indexName, String fulltextQuery,
             Column mainColumn, Model model, Database database) {
-        // TODO multiple indexes
-        String whereExpr = "MATCH (`fulltext`.`simpletext`, `fulltext`.`binarytext`)"
-                + " AGAINST (? IN BOOLEAN MODE)";
+        String suffix = model.getFulltextIndexSuffix(indexName);
+        Column stColumn = database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
+                model.FULLTEXT_SIMPLETEXT_KEY + suffix);
+        Column btColumn = database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
+                model.FULLTEXT_BINARYTEXT_KEY + suffix);
+        String whereExpr = String.format(
+                "MATCH (%s, %s) AGAINST (? IN BOOLEAN MODE)",
+                stColumn.getFullQuotedName(), btColumn.getFullQuotedName());
         return new String[] { null, null, whereExpr, fulltextQuery };
     }
 
