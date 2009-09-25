@@ -30,6 +30,14 @@
 
   <profiles>
     <profile>
+      <id>shell</id>
+      <modules>
+        <module>nuxeo-embedded-launcher</module>
+        <module>nuxeo-distribution-base</module>
+        <module>nuxeo-distribution-shell</module>
+      </modules>
+    </profile>
+    <profile>
       <id>nuxeo-ep</id>
       <modules>
         <module>nuxeo-platform-ear</module>
@@ -61,26 +69,41 @@
       </modules>
     </profile>
     <profile>
-      <id>shell</id>
+      <id>nuxeo-ep-jetty</id>
       <modules>
+        <module>nuxeo-platform-ear</module>
         <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
-        <module>nuxeo-distribution-shell</module>
+        <module>nuxeo-distribution-server</module>
+        <module>nuxeo-distribution-jetty</module>
       </modules>
     </profile>
     <profile>
+      <id>nuxeo-dm-jetty</id>
+      <modules>
+        <module>nuxeo-platform-ear</module>
+        <module>nuxeo-distribution-dm</module>
+        <module>nuxeo-embedded-launcher</module>
+        <module>nuxeo-distribution-base</module>
+        <module>nuxeo-distribution-server</module>
+        <module>nuxeo-distribution-jetty</module>
+      </modules>
+    </profile>
+    <profile>
+      <!-- DEPRECATED, use profiles nuxeo-ep-jetty or nuxeo-dm-jetty -->
       <id>jetty</id>
       <modules>
         <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
-        <module>nuxeo-distribution-jetty</module>
+        <module>nuxeo-distribution-jetty-base</module>
         <module>nuxeo-distribution-jetty-ep</module>
       </modules>
     </profile>
     <profile>
       <id>gf3</id>
       <modules>
+        <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-gf3</module>
@@ -89,6 +112,7 @@
     <profile>
       <id>tomcat</id>
       <modules>
+        <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-tomcat</module>
@@ -97,6 +121,7 @@
     <profile>
       <id>core</id>
       <modules>
+        <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
       </modules>
@@ -105,14 +130,15 @@
     <profile>
       <id>all-distributions</id>
       <modules>
+        <module>nuxeo-embedded-launcher</module>
+        <module>nuxeo-distribution-base</module>
+        <module>nuxeo-distribution-shell</module>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
-        <module>nuxeo-distribution-base</module>
-        <module>nuxeo-distribution-shell</module>
         <module>nuxeo-distribution-server</module>
+        <module>nuxeo-distribution-jetty-base</module>
         <module>nuxeo-distribution-jetty</module>
-        <module>nuxeo-distribution-jetty-ep</module>
         <module>nuxeo-distribution-gf3</module>
         <module>nuxeo-distribution-tomcat</module>
       </modules>
@@ -120,6 +146,9 @@
     <profile>
       <id>installer-windows-nuxeo-dm</id>
       <modules>
+        <module>nuxeo-embedded-launcher</module>
+        <module>nuxeo-distribution-base</module>
+        <module>nuxeo-distribution-shell</module>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
@@ -183,6 +212,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>
@@ -595,9 +629,19 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-deploy</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-jboss-adapter</artifactId>
         <version>${nuxeo.runtime.version}</version>
         <type>jboss-sar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-jetty-adapter</artifactId>
+        <version>${nuxeo.runtime.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -897,6 +941,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-dm</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution-jboss</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
@@ -913,7 +963,7 @@
   <scm>
     <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution</connection>
     <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distribution</developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo/nuxeo-distribution/</url>
+    <url>http://trac.nuxeo.org/nuxeo/browser/nuxeo_distribution</url>
   </scm>
 
   <repositories>

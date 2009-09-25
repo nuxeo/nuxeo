@@ -20,12 +20,12 @@
     <Item>org.mortbay.jetty.webapp.TagLibConfiguration</Item>
   </Array>
 
-  
+
     <!-- =========================================================== -->
     <!-- Server Thread Pool                                          -->
     <!-- =========================================================== -->
     <Set name="ThreadPool">
-      <!-- Default bounded blocking threadpool 
+      <!-- Default bounded blocking threadpool
       -->
       <New class="org.mortbay.thread.BoundedThreadPool">
         <Set name="minThreads">10</Set>
@@ -33,7 +33,7 @@
         <Set name="lowThreads">25</Set>
       </New>
 
-      <!-- Optional Java 5 bounded threadpool with job queue 
+      <!-- Optional Java 5 bounded threadpool with job queue
       <New class="org.mortbay.thread.concurrent.ThreadPool">
         <Set name="corePoolSize">250</Set>
         <Set name="maximumPoolSize">250</Set>
@@ -51,7 +51,7 @@
 
     <!-- Use this connector for many frequently idle connections
          and for threadless continuations.
-    -->    
+    -->
     <Call name="addConnector">
       <Arg>
           <New class="org.mortbay.jetty.nio.SelectChannelConnector">
@@ -61,13 +61,13 @@
             <Set name="Acceptors">2</Set>
             <Set name="statsOn">false</Set>
             <Set name="confidentialPort">8443</Set>
-	    <Set name="lowResourcesConnections">5000</Set>
-	    <Set name="lowResourcesMaxIdleTime">5000</Set>
+        <Set name="lowResourcesConnections">5000</Set>
+        <Set name="lowResourcesMaxIdleTime">5000</Set>
           </New>
       </Arg>
     </Call>
 
-    <!-- Use this connector if NIO is not available. 
+    <!-- Use this connector if NIO is not available.
     <Call name="addConnector">
       <Arg>
           <New class="org.mortbay.jetty.bio.SocketConnector">
@@ -84,7 +84,7 @@
     <!-- see jetty-ssl.xml to add an ssl connector. use                  -->
     <!-- java -jar start.jar etc/jetty.xml etc/jetty-ssl.xml             -->
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    
+
     <!-- =========================================================== -->
     <!-- Set up global session ID manager                            -->
     <!-- =========================================================== -->
@@ -97,7 +97,7 @@
     -->
 
     <!-- =========================================================== -->
-    <!-- Set handler Collection Structure                            --> 
+    <!-- Set handler Collection Structure                            -->
     <!-- =========================================================== -->
     <Set name="handler">
       <New id="Handlers" class="org.mortbay.jetty.handler.HandlerCollection">
@@ -116,7 +116,7 @@
         </Set>
       </New>
     </Set>
-    
+
     <!-- =========================================================== -->
     <!-- Configure the context deployer                              -->
     <!-- A context deployer will deploy contexts described in        -->
@@ -156,9 +156,9 @@
         <New class="org.mortbay.jetty.deployer.WebAppDeployer">
           <Set name="contexts"><Ref id="Contexts"/></Set>
           <Set name="webAppDir"><SystemProperty name="jetty.home" default="."/>/webapps</Set>
-	  <Set name="parentLoaderPriority">false</Set>
-	  <Set name="extract">true</Set>
-	  <Set name="allowDuplicates">false</Set>
+      <Set name="parentLoaderPriority">false</Set>
+      <Set name="extract">true</Set>
+      <Set name="allowDuplicates">false</Set>
           <Set name="defaultsDescriptor"><SystemProperty name="jetty.home" default="."/>/etc/webdefault.xml</Set>
         </New>
       </Arg>
@@ -236,7 +236,7 @@
       </Arg>
     </New>
 
-    
+
     <!-- ======== Nuxeo Comments Data Source ========= -->
     <New id="nxcomments" class="org.mortbay.jetty.plus.naming.Resource">
       <Arg>jdbc/comment-relations</Arg>
@@ -247,8 +247,8 @@
         </New>
       </Arg>
     </New>
-    
-     <!-- ======== Nuxeo Audits Data Source ========= -->
+
+    <!-- ======== Nuxeo Audits Data Source ========= -->
     <New id="nxaudits" class="org.mortbay.jetty.plus.naming.Resource">
       <Arg>jdbc/nxaudit-logs</Arg>
       <Arg>
@@ -269,7 +269,7 @@
         </New>
       </Arg>
     </New>
-    
+
      <!-- ======== Nuxeo Placeful config Data Source ========= -->
     <New id="placeful_service_ds" class="org.mortbay.jetty.plus.naming.Resource">
       <Arg>jdbc/placeful_service_ds</Arg>
@@ -291,20 +291,21 @@
         </New>
       </Arg>
     </New>
- 
+
+
     <!-- =============================================================== -->
     <!-- Configuring Transactions and XA Datasources                     -->
     <!-- Uncomment EITHER the setup for Atomikos OR for Jotm             -->
     <!-- =============================================================== -->
-    
+
 <!-- Atomikos
-         
+
          <New id="tx" class="org.mortbay.jetty.plus.naming.Transaction">
            <Arg>
              <New class="com.atomikos.icatch.jta.UserTransactionImp"/>
            </Arg>
          </New>
-         
+
          <New id="mydatasource" class="org.mortbay.jetty.plus.naming.Resource">
            <Arg>jdbc/mydatasource</Arg>
            <Arg>
@@ -315,7 +316,7 @@
              </New>
            </Arg>
          </New>
-         
+
          <New id="mydatasource2" class="org.mortbay.jetty.plus.naming.Resource">
            <Arg>jdbc/mydatasource2</Arg>
            <Arg>
@@ -326,9 +327,8 @@
              </New>
            </Arg>
          </New>
-         END OF ATOMIKOS
--->
-         
+         END OF ATOMIKOS -->
+
 <!-- JOTM
               <New id="jotm" class="org.objectweb.jotm.Jotm">
                 <Arg type="boolean">True</Arg>
@@ -343,13 +343,13 @@
               <New class="org.mortbay.jetty.plus.naming.Resource">
                 <Arg>javax.transaction.TransactionManager</Arg>
                 <Arg><Ref id="ut"/></Arg>
-              </New>              
+              </New>
               <New id="tx" class="org.mortbay.jetty.plus.naming.Transaction">
                 <Arg>
                   <Ref id="ut"/>
                 </Arg>
               </New>
-              
+
               <New class="org.mortbay.jetty.plus.naming.Resource">
                 <Arg>myxadatasource</Arg>
                 <Arg>
@@ -364,7 +364,7 @@
                   </New>
                 </Arg>
               </New>
-              
+
               <New id="mydatasource" class="org.mortbay.jetty.plus.naming.Resource">
                 <Arg>jdbc/mydatasource</Arg>
                 <Arg>
@@ -374,7 +374,7 @@
                   </New>
                 </Arg>
               </New>
-              
+
               <New class="org.mortbay.jetty.plus.naming.Resource">
                 <Arg>myxadatasource2</Arg>
                 <Arg>
@@ -389,7 +389,7 @@
                   </New>
                 </Arg>
               </New>
-              
+
               <New id="mydatasource2" class="org.mortbay.jetty.plus.naming.Resource">
                 <Arg>jdbc/mydatasource2</Arg>
                 <Arg>
@@ -399,7 +399,7 @@
                 </Arg>
               </New>
 
-END OF JOTM
--->
+END OF JOTM -->
+
 
 </Configure>

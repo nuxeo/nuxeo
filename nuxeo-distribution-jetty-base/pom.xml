@@ -1,0 +1,101 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>5.2.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-distribution-jetty-base</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Jetty Template</name>
+  <description>Defines the skeleton of a jetty nuxeo application</description>
+
+  <properties>
+    <application.name>${project.artifactId}-${project.version}</application.name>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>embedded-standalone</id>
+      <properties>
+        <embedded.type>all</embedded.type>
+        <embedded.includeNestedJars>true</embedded.includeNestedJars>
+        <embedded.excludeLibs>false</embedded.excludeLibs>
+      </properties>
+    </profile>
+    <profile>
+      <id>embedded-osgi</id>
+      <properties>
+        <embedded.type>osgi</embedded.type>
+        <embedded.includeNestedJars>true</embedded.includeNestedJars>
+        <embedded.excludeLibs>false</embedded.excludeLibs>
+      </properties>
+    </profile>
+    <profile>
+      <id>embedded-minimal</id>
+      <properties>
+        <embedded.type>minmal</embedded.type>
+        <embedded.includeNestedJars>false</embedded.includeNestedJars>
+        <embedded.excludeLibs>true</embedded.excludeLibs>
+      </properties>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-nuxeo-plugin</artifactId>
+        <extensions>false</extensions>
+        <executions>
+          <execution>
+            <id>assemble-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>assembly</goal>
+            </goals>
+            <configuration>
+              <runPreprocessor>false</runPreprocessor>
+              <format>zip</format>
+              <zipRoot>${application.name}</zipRoot>
+              <outputDirectory>target</outputDirectory>
+              <targetFile>${application.name}</targetFile>
+              <descriptor>
+                ${basedir}/src/main/assemble/assembly.xml
+              </descriptor>
+            </configuration>
+          </execution>
+          <execution>
+            <id>attach-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${basedir}/target/${application.name}.zip</file>
+              <type>zip</type>
+            </configuration>
+          </execution>
+          <execution>
+            <id>all-in-one</id>
+            <!--phase>package</phase-->
+            <goals>
+              <goal>allinone</goal>
+            </goals>
+            <configuration>
+              <includeNestedJars>${embedded.includeNestedJars}</includeNestedJars>
+              <excludeLibs>${embedded.excludeLibs}</excludeLibs>
+              <src>${basedir}/target/${application.name}.zip</src>
+              <target>${basedir}/target/nuxeo-${embedded.type}-${project.version}.jar</target>
+              <launcher>org.nuxeo.ecm.distribution:nuxeo-embedded-launcher:${project.version}</launcher>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
