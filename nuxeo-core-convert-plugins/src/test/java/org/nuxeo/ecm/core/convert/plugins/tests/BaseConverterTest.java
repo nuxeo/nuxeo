@@ -68,7 +68,6 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
         String textContent = result.getBlob().getString();
         assertTrue(textContent.trim().startsWith("Hello"));
-        // System.out.println(textContent);
         return textContent;
     }
 
@@ -83,8 +82,6 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         BlobHolder result = cs.convert(converterName, hg, null);
         assertNotNull(result);
         assertTrue(result.getBlob().getString().trim().startsWith("Hello"));
-
-        // System.out.println(result.getBlob().getString());
     }
 
     protected void doTestArabicTextConverter(String srcMT, String converter,

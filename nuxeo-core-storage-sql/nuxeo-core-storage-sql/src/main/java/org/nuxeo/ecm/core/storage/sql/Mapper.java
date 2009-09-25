@@ -300,6 +300,16 @@ public class Mapper {
 
     // ---------- low-level JDBC methods ----------
 
+    protected static void closePreparedStatement(PreparedStatement ps)
+            throws SQLException {
+        try {
+            ps.close();
+        } catch (IllegalArgumentException e) {
+            // ignore
+            // http://bugs.mysql.com/35489 with JDBC 4 and driver <= 5.1.6
+        }
+    }
+
     /**
      * Creates the necessary structures in the database.
      */
@@ -519,7 +529,7 @@ public class Mapper {
         } finally {
             if (ps != null) {
                 try {
-                    ps.close();
+                    closePreparedStatement(ps);
                 } catch (SQLException e) {
                     log.error(e.getMessage());
                 }
@@ -649,8 +659,7 @@ public class Mapper {
                 }
                 return id;
             } finally {
-                // http://bugs.mysql.com/35489 with JDBC 4 and driver <= 5.1.6
-                ps.close();
+                closePreparedStatement(ps);
             }
         } catch (SQLException e) {
             throw new StorageException("Could not select: " + sql, e);
@@ -729,7 +738,7 @@ public class Mapper {
                 }
                 ps.execute();
             } finally {
-                ps.close();
+                closePreparedStatement(ps);
             }
         } catch (SQLException e) {
             throw new StorageException("Could not insert: " + sql, e);
@@ -779,7 +788,7 @@ public class Mapper {
         } finally {
             if (ps != null) {
                 try {
-                    ps.close();
+                    closePreparedStatement(ps);
                 } catch (SQLException e) {
                     log.error("Cannot close connection", e);
                 }
@@ -826,7 +835,7 @@ public class Mapper {
         } finally {
             if (ps != null) {
                 try {
-                    ps.close();
+                    closePreparedStatement(ps);
                 } catch (SQLException e) {
                     log.error("Cannot close connection", e);
                 }
@@ -1010,7 +1019,7 @@ public class Mapper {
         } finally {
             if (ps != null) {
                 try {
-                    ps.close();
+                    closePreparedStatement(ps);
                 } catch (SQLException e) {
                     log.error(e.getMessage());
                 }
@@ -1140,7 +1149,7 @@ public class Mapper {
                 }
                 return row;
             } finally {
-                ps.close();
+                closePreparedStatement(ps);
             }
         } catch (SQLException e) {
             throw new StorageException("Could not select: " + sql, e);
@@ -1208,7 +1217,7 @@ public class Mapper {
                 }
                 return array;
             } finally {
-                ps.close();
+                closePreparedStatement(ps);
             }
         } catch (SQLException e) {
             throw new StorageException("Could not select: " + sql, e);
@@ -1249,7 +1258,7 @@ public class Mapper {
                 int count = ps.executeUpdate();
                 logCount(count);
             } finally {
-                ps.close();
+                closePreparedStatement(ps);
             }
         } catch (SQLException e) {
             throw new StorageException("Could not update: " + update.sql, e);
@@ -1284,7 +1293,7 @@ public class Mapper {
                 int count = ps.executeUpdate();
                 logCount(count);
             } finally {
-                ps.close();
+                closePreparedStatement(ps);
             }
         } catch (SQLException e) {
             throw new StorageException("Could not update: " + sql, e);
@@ -1336,7 +1345,7 @@ public class Mapper {
             logCount(count);
             return count > 0;
         } finally {
-            ps.close();
+            closePreparedStatement(ps);
         }
     }
 
@@ -1522,7 +1531,7 @@ public class Mapper {
 
             idMap.put(id, newId);
         } finally {
-            ps.close();
+            closePreparedStatement(ps);
         }
         return newId;
     }
@@ -1569,7 +1578,7 @@ public class Mapper {
             }
             return childrenIds;
         } finally {
-            ps.close();
+            closePreparedStatement(ps);
         }
     }
 
@@ -1622,8 +1631,8 @@ public class Mapper {
             // 0 , 0 -> null
             return after ? Boolean.TRUE : (before ? Boolean.FALSE : null);
         } finally {
-            copyPs.close();
-            deletePs.close();
+            closePreparedStatement(copyPs);
+            closePreparedStatement(deletePs);
         }
     }
 
@@ -1859,7 +1868,7 @@ public class Mapper {
 
             return new PartialList<Serializable>(ids, totalSize);
         } finally {
-            ps.close();
+            closePreparedStatement(ps);
         }
     }
 
@@ -1950,7 +1959,7 @@ public class Mapper {
             if (rs != null) {
                 try {
                     rs.close();
-                    ps.close();
+                    closePreparedStatement(ps);
                 } catch (SQLException e) {
                     log.error("Error closing statement: " + e.getMessage(), e);
                 } finally {
@@ -2041,6 +2050,37 @@ public class Mapper {
 
         public void remove() {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    /**
+     * ----- read acls methods -------------------------
+     */
+    public void updateReadAcls() throws SQLException {
+        if (!sqlInfo.dialect.supportsReadAcl()) {
+            return;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("updateReadAcls: updating ...");
+        }
+        Statement st = connection.createStatement();
+        st.execute(sqlInfo.dialect.getUpdateReadAclsSql());
+        if (log.isDebugEnabled()) {
+            log.debug("updateReadAcls: done.");
+        }
+    }
+
+    public void rebuildReadAcls() throws SQLException {
+        if (!sqlInfo.dialect.supportsReadAcl()) {
+            return;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("rebuildReadAcls: rebuilding ...");
+        }
+        Statement st = connection.createStatement();
+        st.execute(sqlInfo.dialect.getRebuildReadAclsSql());
+        if (log.isDebugEnabled()) {
+            log.debug("rebuildReadAcls: done.");
         }
     }
 

@@ -32,25 +32,34 @@ public class DatabaseDerby extends DatabaseHelper {
 
     public static DatabaseHelper INSTANCE = new DatabaseDerby();
 
-    /* Constant mentioned in the ...-derby-contrib.xml file: */
-
     /** This directory will be deleted and recreated. */
-    private static final String DERBY_DIRECTORY = "target/test/derby";
+    private static final String DIRECTORY = "target/test/derby";
 
-    private static final String DERBY_LOG = "target/test/derby.log";
+    private static final String DEF_USER = "sa";
+
+    private static final String DEF_PASSWORD = "";
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-derby-contrib.xml";
 
+    private static final String LOG = "target/test/derby.log";
+
+    private static void setProperties() {
+        setProperty(DATABASE_PROPERTY, new File(DIRECTORY).getAbsolutePath());
+        setProperty(USER_PROPERTY, DEF_USER);
+        setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
+    }
+
     @Override
     public void setUp() {
-        File dbdir = new File(DERBY_DIRECTORY);
+        File dbdir = new File(DIRECTORY);
         File parent = dbdir.getParentFile();
         FileUtils.deleteTree(dbdir);
         parent.mkdirs();
         System.setProperty("derby.stream.error.file",
-                new File(DERBY_LOG).getAbsolutePath());
+                new File(LOG).getAbsolutePath());
         // the following noticeably improves performance
         System.setProperty("derby.system.durability", "test");
+        setProperties();
     }
 
     @Override
@@ -76,10 +85,9 @@ public class DatabaseDerby extends DatabaseHelper {
         descriptor.xaDataSourceName = "org.apache.derby.jdbc.EmbeddedXADataSource";
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("createDatabase", "create");
-        properties.put("databaseName",
-                new File(DERBY_DIRECTORY).getAbsolutePath());
-        properties.put("user", "sa");
-        properties.put("password", "");
+        properties.put("databaseName", System.getProperty(DATABASE_PROPERTY));
+        properties.put("user", System.getProperty(USER_PROPERTY));
+        properties.put("password", System.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;
         return descriptor;
     }

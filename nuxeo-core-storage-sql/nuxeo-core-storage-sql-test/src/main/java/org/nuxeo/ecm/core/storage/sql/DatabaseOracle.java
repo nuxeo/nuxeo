@@ -18,17 +18,9 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Florent Guillaume
@@ -37,57 +29,31 @@ public class DatabaseOracle extends DatabaseHelper {
 
     public static DatabaseHelper INSTANCE = new DatabaseOracle();
 
-    private static final Log log = LogFactory.getLog(DatabaseOracle.class);
+    private static final String DEF_URL = "jdbc:oracle:thin:@127.0.0.1:1521:XE";
 
-    // ----- change this to test on a different Oracle instance -----
+    private static final String DEF_USER = "NUXEO";
 
-    private static final String URL = "jdbc:oracle:thin:@192.168.133.137:1521:XE";
-
-    private static final String USER = "NUXEO";
-
-    private static final String PASSWORD = "NUXEO";
-
-    // -----
-
-    private static final String URL_PROPERTY = "nuxeo.test.oracle.url";
-
-    private static final String USER_PROPERTY = "nuxeo.test.oracle.user";
-
-    private static final String PASSWORD_PROPERTY = "nuxeo.test.oracle.password";
+    private static final String DEF_PASSWORD = "NUXEO";
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-oracle-contrib.xml";
+
+    private static void setProperties() {
+        setProperty(URL_PROPERTY, DEF_URL);
+        setProperty(USER_PROPERTY, DEF_USER);
+        setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
+    }
 
     @Override
     public void setUp() throws Exception {
         Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-        DatabaseMetaData metadata = connection.getMetaData();
-        List<String> tableNames = new LinkedList<String>();
-        ResultSet rs = metadata.getTables(null, USER, "%",
-                new String[] { "TABLE" });
-        while (rs.next()) {
-            String tableName = rs.getString("TABLE_NAME");
-            if (tableName.indexOf('$') != -1) {
-                // skip Oracle 10g flashback tables
-                continue;
-            }
-            tableNames.add(tableName);
-        }
-        // remove hierarchy last because of foreign keys
-        if (tableNames.remove("HIERARCHY")) {
-            tableNames.add("HIERARCHY");
-        }
-        Statement st = connection.createStatement();
-        for (String tableName : tableNames) {
-            String sql = String.format("DROP TABLE \"%s\"", tableName);
-            log.debug(sql);
-            st.execute(sql);
-        }
-        st.close();
+        setProperties();
+        Connection connection = DriverManager.getConnection(
+                System.getProperty(URL_PROPERTY),
+                System.getProperty(USER_PROPERTY),
+                System.getProperty(PASSWORD_PROPERTY));
+        doOnAllTables(connection, null, System.getProperty(USER_PROPERTY),
+                "DROP TABLE \"%s\" CASCADE CONSTRAINTS");
         connection.close();
-        System.setProperty(URL_PROPERTY, URL);
-        System.setProperty(USER_PROPERTY, USER);
-        System.setProperty(PASSWORD_PROPERTY, PASSWORD);
     }
 
     @Override
@@ -100,9 +66,9 @@ public class DatabaseOracle extends DatabaseHelper {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "oracle.jdbc.xa.client.OracleXADataSource";
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("URL", URL);
-        properties.put("User", USER);
-        properties.put("Password", PASSWORD);
+        properties.put("URL", System.getProperty(URL_PROPERTY));
+        properties.put("User", System.getProperty(USER_PROPERTY));
+        properties.put("Password", System.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;
         return descriptor;
     }

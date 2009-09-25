@@ -46,9 +46,9 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 
 /**
  *
- * Light weight {@link DocumentModel} implementation
- * Only holds {@link DocumentRef}, RepositoryName, name and path.
- * Used to reduce memory footprint of {@link Event} stacked in {@link EventBundle}
+ * Light weight {@link DocumentModel} implementation Only holds
+ * {@link DocumentRef}, RepositoryName, name and path. Used to reduce memory
+ * footprint of {@link Event} stacked in {@link EventBundle}
  *
  * @author Thierry Delprat
  *
@@ -57,22 +57,25 @@ public class ShallowDocumentModel implements DocumentModel {
 
     private static final long serialVersionUID = 1L;
 
-    private String id;
+    private final String id;
 
-    private String repoName;
+    private final String repoName;
 
-    private String name;
+    private final String name;
 
-    private Path path;
+    private final Path path;
 
-    private String type;
+    private final String type;
+
+    private final boolean isFolder;
 
     public ShallowDocumentModel(DocumentModel doc) {
-        this.id = doc.getId();
-        this.repoName = doc.getRepositoryName();
-        this.name = doc.getName();
-        this.path = doc.getPath();
-        this.type = doc.getType();
+        id = doc.getId();
+        repoName = doc.getRepositoryName();
+        name = doc.getName();
+        path = doc.getPath();
+        type = doc.getType();
+        isFolder = doc.isFolder();
     }
 
     public String getId() {
@@ -96,14 +99,14 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     public String getPathAsString() {
-        if (path!=null) {
+        if (path != null) {
             return path.toString();
         }
         return null;
     }
 
     public DocumentRef getParentRef() {
-        if (path!=null) {
+        if (path != null) {
             return new PathRef(path.removeLastSegments(1).toString());
         }
         return null;
@@ -111,6 +114,10 @@ public class ShallowDocumentModel implements DocumentModel {
 
     public String getType() {
         return type;
+    }
+
+    public boolean isFolder() {
+        return isFolder;
     }
 
     public void copyContent(DocumentModel sourceDoc) throws ClientException {
@@ -121,8 +128,7 @@ public class ShallowDocumentModel implements DocumentModel {
         throw new UnsupportedOperationException();
     }
 
-    public boolean followTransition(String transition)
-            throws ClientException {
+    public boolean followTransition(String transition) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -227,7 +233,7 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     public Serializable getPropertyValue(String xpath)
-    throws PropertyException, ClientException {
+            throws PropertyException, ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -248,7 +254,6 @@ public class ShallowDocumentModel implements DocumentModel {
         throw new UnsupportedOperationException();
     }
 
-
     public String getVersionLabel() {
         throw new UnsupportedOperationException();
     }
@@ -262,10 +267,6 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     public boolean isDownloadable() throws ClientException {
-        throw new UnsupportedOperationException();
-    }
-
-    public boolean isFolder() {
         throw new UnsupportedOperationException();
     }
 
@@ -305,8 +306,7 @@ public class ShallowDocumentModel implements DocumentModel {
         throw new UnsupportedOperationException();
     }
 
-    public void putContextData(ScopeType scope, String key,
-            Serializable value) {
+    public void putContextData(ScopeType scope, String key, Serializable value) {
         throw new UnsupportedOperationException();
     }
 

@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Benoit Delbosc
  */
 
 package org.nuxeo.ecm.core.storage.sql.db.dialect;
@@ -280,9 +281,19 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public String getAcessAllowedCheckSql(String idColumnName) {
+    public String getReadAclsCheckSql(String idColumnName) {
         return String.format("%s IN (SELECT * FROM nx_get_read_acls_for(?))",
                 idColumnName);
+    }
+
+    @Override
+    public String getUpdateReadAclsSql() {
+        return "SELECT nx_update_read_acls();";
+    }
+
+    @Override
+    public String getRebuildReadAclsSql() {
+        return "SELECT nx_rebuild_read_acls();";
     }
 
     @Override
@@ -462,6 +473,7 @@ public class DialectPostgreSQL extends Dialect {
                                 + "$$ " //
                                 + "LANGUAGE plpgsql " //
                                 + "STABLE " //
+                                + "COST 400 " //
                         , idType)));
 
         statements.add(new ConditionalStatement(
@@ -648,9 +660,8 @@ public class DialectPostgreSQL extends Dialect {
                 null, // perform a check
                 "SELECT 1 WHERE NOT EXISTS(SELECT 1 FROM pg_tables WHERE tablename='hierarchy_modified_acl');",
                 "CREATE TABLE hierarchy_modified_acl ("
-                        + "  id character varying(36),"
-                        + "  is_new boolean,"
-                        + "  CONSTRAINT hierarchy_modified_acl_id_fk FOREIGN KEY (id) REFERENCES hierarchy(id) ON DELETE CASCADE"
+                        + "  id character varying(36)," //
+                        + "  is_new boolean" //
                         + ");", //
                 "SELECT 1;"));
         statements.add(new ConditionalStatement(
@@ -668,10 +679,10 @@ public class DialectPostgreSQL extends Dialect {
                         + "  -- RAISE INFO 'call %', curid;\n" //
                         + "  FOR r in SELECT CASE\n" //
                         + "         WHEN (acls.grant AND\n" //
-                        + "             acls.permission IN ('Read', 'ReadWrite', 'Everything')) THEN\n" //
+                        + "             acls.permission IN ('Read', 'ReadWrite', 'Everything', 'Browse')) THEN\n" //
                         + "           acls.user\n" //
                         + "         WHEN (NOT acls.grant AND\n" //
-                        + "             acls.permission IN ('Read', 'ReadWrite', 'Everything')) THEN\n" //
+                        + "             acls.permission IN ('Read', 'ReadWrite', 'Everything', 'Browse')) THEN\n" //
                         + "           '-'|| acls.user\n" //
                         + "         ELSE NULL END AS op\n" //
                         + "       FROM acls WHERE acls.id = curid\n" //
@@ -837,6 +848,7 @@ public class DialectPostgreSQL extends Dialect {
                         + "    FROM (SELECT DISTINCT(nx_get_read_acl(id)) AS acl\n" //
                         + "        FROM  (SELECT DISTINCT(id) AS id\n" //
                         + "           FROM acls) AS uids) AS read_acls_input;\n" //
+                        + "  TRUNCATE TABLE hierarchy_modified_acl;\n" //
                         + "  RAISE INFO 'nx_rebuild_read_acls done';\n" //
                         + "  RETURN;\n" //
                         + "END $$\n" //
@@ -864,7 +876,9 @@ public class DialectPostgreSQL extends Dialect {
                         + "  INSERT INTO hierarchy_read_acl\n" //
                         + "    SELECT id, md5(nx_get_read_acl(id))\n" //
                         + "    FROM (SELECT DISTINCT(id) AS id\n" //
-                        + "        FROM hierarchy_modified_acl WHERE is_new) AS uids;\n" //
+                        + "        FROM hierarchy_modified_acl \n" //
+                        + "        WHERE is_new AND\n" //
+                        + "            EXISTS (SELECT 1 FROM hierarchy WHERE hierarchy_modified_acl.id=hierarchy.id)) AS uids;\n" //
                         + "  GET DIAGNOSTICS update_count = ROW_COUNT;\n" //
                         + "  RAISE INFO 'nx_update_read_acls % hierarchy_read_acl ADDED', update_count;\n" //
                         + "  DELETE FROM hierarchy_modified_acl WHERE is_new;\n" //
@@ -892,13 +906,21 @@ public class DialectPostgreSQL extends Dialect {
                         + "    END IF;\n" //
                         + "  END LOOP;\n" //
                         + "  -- Update hierarchy_read_acl acl_ids\n" //
-                        + "  UPDATE hierarchy_read_acl SET acl_id = md5(id) WHERE acl_id IS NULL;\n" //
+                        + "  UPDATE hierarchy_read_acl SET acl_id = md5(nx_get_read_acl(id)) WHERE acl_id IS NULL;\n" //
                         + "  GET DIAGNOSTICS update_count = ROW_COUNT;\n" //
                         + "  RAISE INFO 'nx_update_read_acls % hierarchy_read_acl UPDATED', update_count;\n" //
                         + "\n" //
                         + "  RETURN;\n" //
                         + "END $$\n" //
                         + "LANGUAGE plpgsql VOLATILE;"));
+        // build the read acls if empty, this takes care of the upgrade
+        statements.add(new ConditionalStatement(
+                false, // late
+                null, // perform a check
+                "SELECT 1 WHERE NOT EXISTS(SELECT 1 FROM read_acls LIMIT 1);",
+                "SELECT * FROM nx_rebuild_read_acls();", //
+                "SELECT 1;"));
+
         return statements;
     }
 

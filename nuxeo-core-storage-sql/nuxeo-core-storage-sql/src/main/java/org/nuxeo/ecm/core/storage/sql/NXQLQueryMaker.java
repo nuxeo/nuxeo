@@ -474,7 +474,7 @@ public class NXQLQueryMaker implements QueryMaker {
             }
             if (dialect.supportsReadAcl()) {
                 /* optimized read acl */
-                whereClauses.add(dialect.getAcessAllowedCheckSql("r.acl_id"));
+                whereClauses.add(dialect.getReadAclsCheckSql("r.acl_id"));
                 q.selectParams.add(principals);
             } else {
                 whereClauses.add(dialect.getSecurityCheckSql(hierId));

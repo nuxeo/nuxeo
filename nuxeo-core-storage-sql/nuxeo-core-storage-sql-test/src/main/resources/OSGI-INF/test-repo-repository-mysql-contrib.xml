@@ -10,10 +10,9 @@
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository>
         <xa-datasource>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource>
-        <property name="ServerName">localhost</property>
-        <property name="DatabaseName">nuxeojunittests</property>
-        <property name="User">nuxeo</property>
-        <property name="Password">nuxeo</property>
+        <property name="URL">${nuxeo.test.vcs.url}</property>
+        <property name="User">${nuxeo.test.vcs.user}</property>
+        <property name="Password">${nuxeo.test.vcs.password}</property>
       </repository>
     </repository>
   </extension>

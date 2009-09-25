@@ -19,12 +19,8 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Florent Guillaume
@@ -33,54 +29,38 @@ public class DatabasePostgreSQL extends DatabaseHelper {
 
     public static DatabaseHelper INSTANCE = new DatabasePostgreSQL();
 
-    private static final Log log = LogFactory.getLog(DatabasePostgreSQL.class);
+    private static final String DEF_SERVER = "localhost";
 
-    private static final String PG_HOST = "localhost";
+    private static final String DEF_PORT = "5432";
 
-    private static final String PG_PORT = "5432";
+    private static final String DEF_DATABASE = "nuxeojunittests";
 
-    /** Superuser that can create and drop databases. */
-    private static final String PG_SUPER_USER = "postgres";
+    private static final String DEF_USER = "nuxeo";
 
-    /** Superusers's password. */
-    private static final String PG_SUPER_PASSWORD = "postgres";
-
-    /** Database to connect to to issue CREATE DATABASE commands. */
-    private static final String PG_SUPER_DATABASE = "postgres";
-
-    /* Constants mentioned in the ...-postgresql-contrib.xml file: */
-
-    /** The name of the database where tests take place. */
-    private static final String PG_DATABASE = "nuxeojunittests";
-
-    // CREATE USER nuxeo WITH PASSWORD 'nuxeo'
-
-    /** The owner of the database where tests take place. */
-    private static final String PG_DATABASE_OWNER = "nuxeo";
-
-    /** The password of the {@link #PG_DATABASE_OWNER} user. */
-    private static final String PG_DATABASE_PASSWORD = "nuxeo";
+    private static final String DEF_PASSWORD = "nuxeo";
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-postgresql-contrib.xml";
+
+    private static void setProperties() {
+        setProperty(SERVER_PROPERTY, DEF_SERVER);
+        setProperty(PORT_PROPERTY, DEF_PORT);
+        setProperty(DATABASE_PROPERTY, DEF_DATABASE);
+        setProperty(USER_PROPERTY, DEF_USER);
+        setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
+    }
 
     @Override
     public void setUp() throws Exception {
         Class.forName("org.postgresql.Driver");
-        String url = String.format("jdbc:postgresql://%s:%s/%s", PG_HOST,
-                PG_PORT, PG_SUPER_DATABASE);
-        Connection connection = DriverManager.getConnection(url, PG_SUPER_USER,
-                PG_SUPER_PASSWORD);
-        Statement st = connection.createStatement();
-        String sql = String.format("DROP DATABASE IF EXISTS \"%s\"",
-                PG_DATABASE);
-        log.debug(sql);
-        st.execute(sql);
-        sql = String.format(
-                "CREATE DATABASE \"%s\" OWNER \"%s\" ENCODING = 'UTF8'",
-                PG_DATABASE, PG_DATABASE_OWNER);
-        log.debug(sql);
-        st.execute(sql);
-        st.close();
+        setProperties();
+        String url = String.format("jdbc:postgresql://%s:%s/%s",
+                System.getProperty(SERVER_PROPERTY),
+                System.getProperty(PORT_PROPERTY),
+                System.getProperty(DATABASE_PROPERTY));
+        Connection connection = DriverManager.getConnection(url,
+                System.getProperty(USER_PROPERTY),
+                System.getProperty(PASSWORD_PROPERTY));
+        doOnAllTables(connection, null, "public", "DROP TABLE \"%s\" CASCADE");
         connection.close();
     }
 
@@ -94,11 +74,11 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "org.postgresql.xa.PGXADataSource";
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("ServerName", PG_HOST);
-        properties.put("PortNumber", PG_PORT);
-        properties.put("DatabaseName", PG_DATABASE);
-        properties.put("User", PG_DATABASE_OWNER);
-        properties.put("Password", PG_DATABASE_PASSWORD);
+        properties.put("ServerName", System.getProperty(SERVER_PROPERTY));
+        properties.put("PortNumber", System.getProperty(PORT_PROPERTY));
+        properties.put("DatabaseName", System.getProperty(DATABASE_PROPERTY));
+        properties.put("User", System.getProperty(USER_PROPERTY));
+        properties.put("Password", System.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;
         descriptor.fulltextAnalyzer = "french";
         return descriptor;

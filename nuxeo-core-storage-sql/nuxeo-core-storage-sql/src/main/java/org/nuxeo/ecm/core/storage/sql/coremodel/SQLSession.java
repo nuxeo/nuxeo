@@ -754,7 +754,7 @@ public class SQLSession implements Session {
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
-        return new SQLCollectionProperty(property, null, false);
+        return new SQLCollectionProperty(this, property, null, false);
     }
 
     /** Make a property. */
@@ -812,7 +812,7 @@ public class SQLSession implements Session {
                 } catch (StorageException e) {
                     throw new DocumentException(e);
                 }
-                property = new SQLCollectionProperty(prop, listType, readonly);
+                property = new SQLCollectionProperty(this, prop, listType, readonly);
             } else {
                 property = new SQLComplexListProperty(node, listType, name,
                         this, readonly);
@@ -870,6 +870,15 @@ public class SQLSession implements Session {
             }
             return properties;
         }
+    }
+
+    /**
+     * This method flag the current session, the read ACLs update will be done
+     * automatically at save time.
+     *
+     */
+    public void requireReadAclsUpdate() {
+        session.requireReadAclsUpdate();
     }
 
 }

@@ -13,10 +13,11 @@
           <fulltext catalog="nuxeo" analyzer="french"/>
         </indexing>
         <xa-datasource>net.sourceforge.jtds.jdbcx.JtdsDataSource</xa-datasource>
-        <property name="ServerName">${nuxeo.test.mssql.host}</property>
-        <property name="DatabaseName">nuxeojunittests</property>
-        <property name="User">nuxeo</property>
-        <property name="Password">nuxeo</property>
+        <property name="ServerName">${nuxeo.test.vcs.server}</property>
+        <property name="PortNumber">${nuxeo.test.vcs.port}</property>
+        <property name="DatabaseName">${nuxeo.test.vcs.database}</property>
+        <property name="User">${nuxeo.test.vcs.user}</property>
+        <property name="Password">${nuxeo.test.vcs.password}</property>
         <property name="UseCursors">true</property>
       </repository>
     </repository>
