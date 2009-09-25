@@ -18,6 +18,7 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import java.io.File;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -33,9 +34,13 @@ import org.nuxeo.runtime.api.Framework;
 public class TestTagService extends SQLRepositoryTestCase {
 
     protected static final Log log = LogFactory.getLog(TestTagService.class);
+
     private TagService tagService;
+
     private DocumentModel tagRoot;
+
     private DocumentModel tag1;
+
     private DocumentModel file1;
 
     @Override
@@ -56,9 +61,25 @@ public class TestTagService extends SQLRepositoryTestCase {
         service.updateSchema();
     }
 
+    private static boolean deleteDirectory(File path) {
+        if (path.exists()) {
+            File[] files = path.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].isDirectory()) {
+                    deleteDirectory(files[i]);
+                } else {
+                    files[i].delete();
+                }
+            }
+        }
+        return (path.delete());
+    }
+
     @Override
     public void tearDown() throws Exception {
+        closeSession();
         super.tearDown();
+
     }
 
     public TagService getTagService() {
@@ -100,17 +121,17 @@ public class TestTagService extends SQLRepositoryTestCase {
         tagRoot = tagService.getRootTag(session);
         assertNotNull(tagRoot);
         tag1 = tagService.getOrCreateTag(tagRoot, "tag1", true);
-        file1 = session.createDocumentModel("/", "0006",
-        "File");
+        file1 = session.createDocumentModel("/", "0006", "File");
         file1.setPropertyValue("dc:title", "File1");
         file1 = session.createDocument(file1);
         file1 = session.saveDocument(file1);
         session.save();
         tagService.tagDocument(session, file1, tag1.getId(), false);
     }
+
     public void testDetachedDocumentFailure() throws ClientException {
         createAndTagDocument();
-        ((DocumentModelImpl)file1).detach(true);
+        ((DocumentModelImpl) file1).detach(true);
         try {
             tagService.listTagsAppliedOnDocument(file1);
         } catch (ClientException e) {
@@ -119,11 +140,11 @@ public class TestTagService extends SQLRepositoryTestCase {
         }
         fail("No exception throwed");
     }
-    
+
     public void testDetachedDocumentList() throws ClientException {
         createAndTagDocument();
-        ((DocumentModelImpl)file1).detach(true);
-        List<Tag> tags = tagService.listTagsAppliedOnDocument(session,file1);
+        ((DocumentModelImpl) file1).detach(true);
+        List<Tag> tags = tagService.listTagsAppliedOnDocument(session, file1);
         assertNotNull(tags);
         assertEquals(1, tags.size());
     }

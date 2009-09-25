@@ -49,7 +49,7 @@ public class TestSchemaUpdater extends SQLRepositoryTestCase {
         updater.connectionProperties.setProperty(Environment.DIALECT, H2WithNoSequencesSupportDialect.class.getCanonicalName());
         Map<String, String> repositoryProperties = database.getRepositoryDescriptor().properties;
         updater.connectionProperties.setProperty(Environment.DRIVER, "org.h2.Driver" );
-        String connectionURL = repositoryProperties.get("URL").replace("${nuxeo.test.h2.path}", System.getProperty("nuxeo.test.h2.path"));
+        String connectionURL = repositoryProperties.get("URL").replace("${nuxeo.test.vcs.url};AUTO_SERVER=true", System.getProperty("nuxeo.test.vcs.url")+";AUTO_SERVER=true");
         updater.connectionProperties.setProperty(Environment.URL, connectionURL);
         updater.connectionProperties.setProperty(Environment.USER, repositoryProperties.get("User"));
         updater.connectionProperties.setProperty(Environment.PASS, repositoryProperties.get("Password"));
