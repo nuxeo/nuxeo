@@ -23,7 +23,7 @@
               <nxu:selectItems value="#{availablePublicationTrees}"
                                var="tree"
                                itemValue="#{tree.name}"
-                               itemLabel="#{messages[tree.title]}"/>
+                               itemLabel="#{messages[tree.title]}#{publishActions.getDomainName(tree.name)}"/>
               <a4j:support event="onchange"
                            reRender="sectionTree,publishingInfoList"
                            ignoreDupResponses="true"/>

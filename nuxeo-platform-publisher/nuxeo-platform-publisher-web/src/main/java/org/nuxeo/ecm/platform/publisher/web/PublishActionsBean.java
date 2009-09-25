@@ -582,6 +582,13 @@ public class PublishActionsBean extends AbstractPublishActions implements
         }
     }
 
+    public String getDomainName(String treeName) throws ClientException {
+        PublicationTree tree = publisherService.getPublicationTree(treeName, documentManager, null);
+        Map<String, String> parameters = publisherService.getParametersFor(tree.getConfigName());
+        String domainName = parameters.get(PublisherService.DOMAIN_NAME_KEY);
+        return domainName != null ? " (" + domainName + ")" : "";
+    }   
+
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
     @BypassInterceptors
     public void documentChanged() {

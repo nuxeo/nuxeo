@@ -14,6 +14,8 @@ import java.util.Map;
  */
 public interface PublisherService {
 
+    final String DOMAIN_NAME_KEY = "DomainName";
+
     List<String> getAvailablePublicationTree();
 
     /**
@@ -44,5 +46,7 @@ public interface PublisherService {
     PublicationTree getPublicationTreeFor(DocumentModel doc, CoreSession coreSession) throws ClientException;
 
     PublicationNode wrapToPublicationNode(DocumentModel documentModel, CoreSession coreSession) throws ClientException, PublicationTreeNotAvailable;
+
+    Map<String, String> getParametersFor(String treeConfigName);
 
 }

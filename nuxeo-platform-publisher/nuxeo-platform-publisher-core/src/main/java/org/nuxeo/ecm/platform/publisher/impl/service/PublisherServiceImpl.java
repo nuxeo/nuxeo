@@ -70,8 +70,6 @@ public class PublisherServiceImpl extends DefaultComponent implements
 
     protected static final String RELATIVE_ROOT_PATH_KEY = "RelativeRootPath";
 
-    protected static final String DOMAIN_NAME_KEY = "DomainName";
-
     @Override
     public void activate(ComponentContext context) throws Exception {
         if (Boolean.parseBoolean(Framework.getProperty(
@@ -676,7 +674,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
             Map<String, String> parameters = newDesc.getParameters();
             newPath = newPath.append(parameters.remove(RELATIVE_ROOT_PATH_KEY));
             parameters.put(ROOT_PATH_KEY, newPath.toString());
-            parameters.put(DOMAIN_NAME_KEY, domain.getTitle());
+            parameters.put(PublisherService.DOMAIN_NAME_KEY, domain.getTitle());
             treeConfigDescriptors.put(newDesc.getName(), newDesc);
         }
     }
@@ -694,4 +692,12 @@ public class PublisherServiceImpl extends DefaultComponent implements
         }
     }
 
+    public Map<String, String> getParametersFor(String treeConfigName) {
+        PublicationTreeConfigDescriptor desc = treeConfigDescriptors.get(treeConfigName);
+        Map<String, String> parameters = new HashMap<String, String>();
+        if (desc != null) {
+            parameters.putAll(desc.getParameters());
+        }
+        return parameters;
+    }
 }
