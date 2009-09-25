@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.tag.web
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Require-Bundle: org.nuxeo.ecm.platform.tag.api,
- org.nuxeo.ecm.platform.tag 
+ org.nuxeo.ecm.platform.tag, 
+ org.nuxeo.ecm.platform.tag.ejb
 Export-Package: org.nuxeo.ecm.platform.tag.web
-Nuxeo-Component: OSGI-INF/theme-contrib.xml
 

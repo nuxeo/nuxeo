@@ -4,24 +4,15 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core">
   
-  <a4j:form id="tagCloudForm">
-    <a4j:region id="tagCloudRegion" renderRegionOnly="true">
-      <a4j:outputPanel id="tagCloudPanel">
-
-        <div class="tagCloud">
-        
-          <nxu:dataList id="tagCloudTable"
-            value="#{tagActions.popularCloud}" var="tag"
-            rendered="#{not empty tagActions.popularCloud}">
-            
-              <h:commandLink value="#{tag.tagLabel}"
-                action="#{tagActions.listDocumentsForTag(tag.tagId)}" style="font-size: #{tag.weight}%"/>
-            
-          </nxu:dataList>
-        </div>  
-    
-      </a4j:outputPanel>
-    </a4j:region>
-  </a4j:form>    
+  <h:form id="tagCloudForm">
+    <nxu:dataList id="tagCloudTable"
+      value="#{tagActions.popularCloud}" var="tag"
+      rendered="#{not empty tagActions.popularCloud}">
+      
+        <h:commandLink value="#{tag.tagLabel}"
+          action="#{tagActions.listDocumentsForTag(tag.tagId)}" style="font-size: #{tag.weight}%"/>
+      
+    </nxu:dataList>
+  </h:form>    
 
 </div>

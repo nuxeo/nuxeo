@@ -68,6 +68,9 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
                 updateSchema();
             }
         });
+
+        TagServiceInitializer tagServiceInitializer = new TagServiceInitializer();
+        tagServiceInitializer.install();
     }
 
     @Override
