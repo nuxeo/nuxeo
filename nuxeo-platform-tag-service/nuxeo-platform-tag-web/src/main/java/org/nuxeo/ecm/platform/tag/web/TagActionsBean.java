@@ -161,28 +161,26 @@ public class TagActionsBean implements Serializable {
      * @throws ClientException
      */
     public List<WeightedTag> getPopularCloud() throws ClientException {
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
         List<WeightedTag> tagCloud = new ArrayList<WeightedTag>();
         int min, max;
         min = max = 0;
-        if (currentDocument.getType().equals("Workspace")) {
-            for (DocumentModel document : documentManager.getChildren(currentDocument.getRef())) {
-                for (WeightedTag weightedTag : taggingHelper.getPopularCloud(document)) {
-                    if (weightedTag.getWeight() > max) {
-                        max = weightedTag.getWeight();
-                    }
-                    if (weightedTag.getWeight() < min) {
-                        min = weightedTag.getWeight();
-                    }
-                    tagCloud.add(weightedTag);
-                }
-            }
-            for (WeightedTag tag : tagCloud) {
-                tag.setWeight((int) Math.round((150.0 * (1.0 + (1.5 * tag.getWeight() - min / 2)
-                        / max))) / 2);
-            }
 
+        for (DocumentModel document : documentManager.getChildren(documentManager.getRootDocument().getRef())) {
+            for (WeightedTag weightedTag : taggingHelper.getPopularCloud(document)) {
+                if (weightedTag.getWeight() > max) {
+                    max = weightedTag.getWeight();
+                }
+                if (weightedTag.getWeight() < min) {
+                    min = weightedTag.getWeight();
+                }
+                tagCloud.add(weightedTag);
+            }
         }
+        for (WeightedTag tag : tagCloud) {
+            tag.setWeight((int) Math.round((150.0 * (1.0 + (1.5 * tag.getWeight() - min / 2)
+                    / max))) / 2);
+        }
+
         return tagCloud;
     }
 

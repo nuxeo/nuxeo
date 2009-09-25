@@ -58,6 +58,43 @@
             title="#{messages['permalink.newTab']}" />
         </nxd:restDocumentLink>
       </nxu:column>
+      
+      <!--  Modification date -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:panelGroup>
+            <h:outputText value="#{messages['label.content.header.modified']}"
+              rendered="#{!provider.sortable}" />
+          </h:panelGroup>
+        </f:facet>
+        <h:outputText value="#{doc.dublincore.modified}">
+          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+            timeZone="#{timeZone}" />
+        </h:outputText>
+      </nxu:column>
+
+      <!--  Author -->
+      <h:column>
+        <f:facet name="header">
+          <h:panelGroup>
+            <h:outputText value="#{messages['label.content.header.author']}"
+              rendered="#{!provider.sortable}" />
+          </h:panelGroup>
+        </f:facet>
+        <h:outputText value="#{nxu:userFullName(doc.dublincore.creator)}" />
+      </h:column>
+
+      <!--  Life cycle -->
+      <h:column>
+        <f:facet name="header">
+          <h:panelGroup>
+            <h:outputText value="#{messages['label.content.header.currentLifecycleState']}"
+              rendered="#{!provider.sortable}" />
+          </h:panelGroup>
+        </f:facet>
+
+        <h:outputText value="#{messages[doc.currentLifeCycleState]}" />
+      </h:column>
 
     </nxu:dataTable>
 

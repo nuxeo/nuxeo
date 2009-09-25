@@ -13,7 +13,13 @@
       <to-view-id>/search/tag_search_results.xhtml</to-view-id>
       <redirect />
     </navigation-case>
-  </extension>      
+  </extension>
+  
+  <extension target="pages#PAGES">
+    <page view-id="/search/tag_search_results.xhtml">
+      breadcrumb=title.tag.search.results
+    </page>
+  </extension>  
   
   <install>
     <!--  unzip the war template -->

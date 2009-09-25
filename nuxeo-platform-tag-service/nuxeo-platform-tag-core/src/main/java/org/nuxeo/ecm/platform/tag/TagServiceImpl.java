@@ -534,19 +534,6 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
                     }
                 }
             }
-            log.debug("Creating the RootTag holder");
-            DocumentModel rootTag = session.createDocumentModel(
-                    documentRoot.getPathAsString(),
-                    IdUtils.generateId(TagConstants.TAGS_DIRECTORY),
-                    TagConstants.HIDDEN_FOLDER_TYPE);
-            rootTag.setPropertyValue("dc:title", TagConstants.TAGS_DIRECTORY);
-            rootTag.setPropertyValue("dc:description", "");
-            rootTag.setPropertyValue("dc:created", Calendar.getInstance());
-            rootTag = session.createDocument(rootTag);
-            rootTag = session.saveDocument(rootTag);
-            session.save();
-            // and set ID for retrieval
-            rootTagDocumentId = rootTag.getId();
         }
     }
 
