@@ -26,6 +26,7 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -171,13 +172,27 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
-    public String getMessage(String key, String... args) {
+    public String getMessage(String key, Object... args) {
         Messages messages = module.getMessages();
         try {
             String msg = messages.getString(key, getLocale().getLanguage());
             if (args != null && args.length > 0) {
                 // format the string using given args
-                msg = MessageFormat.format(msg, (Object[]) args);
+                msg = MessageFormat.format(msg, args);
+            }
+            return msg;
+        } catch (MissingResourceException e) {
+            return '!' + key + '!';
+        }
+    }
+
+    public String getMessage(String key, List<Object> args) {
+        Messages messages = module.getMessages();
+        try {
+            String msg = messages.getString(key, getLocale().getLanguage());
+            if (args != null && args.size() > 0) {
+                // format the string using given args
+                msg = MessageFormat.format(msg, args.toArray());
             }
             return msg;
         } catch (MissingResourceException e) {
@@ -194,13 +209,27 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
-    public String getMessageL(String key, String locale, String... args) {
+    public String getMessageL(String key, String locale, Object... args) {
         Messages messages = module.getMessages();
         try {
             String msg = messages.getString(key, locale);
-            if (args != null && args.length > 0) { // format the string using
-                // given args
-                msg = MessageFormat.format(msg, (Object[]) args);
+            if (args != null && args.length > 0) {
+                // format the string using given args
+                msg = MessageFormat.format(msg, args);
+            }
+            return msg;
+        } catch (MissingResourceException e) {
+            return '!' + key + '!';
+        }
+    }
+
+    public String getMessageL(String key, String locale, List<Object> args) {
+        Messages messages = module.getMessages();
+        try {
+            String msg = messages.getString(key, locale);
+            if (args != null && args.size() > 0) {
+                // format the string using given args
+                msg = MessageFormat.format(msg, args.toArray());
             }
             return msg;
         } catch (MissingResourceException e) {
@@ -316,7 +345,8 @@ public abstract class AbstractWebContext implements WebContext {
         if (basePath == null) {
             String webenginePath = request.getHeader(WebContext.NUXEO_WEBENGINE_BASE_PATH);
             if (",".equals(webenginePath)) {
-                // when the parameter is empty, request.getHeader return ',' on apache server.
+                // when the parameter is empty, request.getHeader return ',' on
+                // apache server.
                 webenginePath = "";
             }
             basePath = webenginePath != null ? webenginePath
@@ -644,7 +674,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     private String getSkinPathPrefix() {
-        if(Framework.getProperty(WebEngine.SKIN_PATH_PREFIX_KEY) != null) {
+        if (Framework.getProperty(WebEngine.SKIN_PATH_PREFIX_KEY) != null) {
             return module.getSkinPathPrefix();
         }
         String webenginePath = request.getHeader(WebContext.NUXEO_WEBENGINE_BASE_PATH);
