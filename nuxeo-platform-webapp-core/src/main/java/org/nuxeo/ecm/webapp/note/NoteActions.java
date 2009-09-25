@@ -25,6 +25,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 
 import java.io.Serializable;
@@ -37,6 +39,34 @@ import java.util.regex.Matcher;
 @Scope(CONVERSATION)
 @Name("noteActions")
 public class NoteActions implements Serializable {
+
+    private static class LiveDocumentRefFinder extends UnrestrictedSessionRunner {
+
+        private String liveDocumentRef;
+
+        private final DocumentModel proxy;
+
+        public LiveDocumentRefFinder(DocumentModel proxy) {
+            super(proxy.getRepositoryName());
+            this.proxy = proxy;
+        }
+
+        public void run() throws ClientException {
+            liveDocumentRef = proxy.getRef().toString();
+            if (proxy.getSourceId() != null) {
+                liveDocumentRef = proxy.getSourceId();
+                DocumentModel version = session.getDocument(new IdRef(proxy.getSourceId()));
+                if (version.getSourceId() != null) {
+                    liveDocumentRef = version.getSourceId();
+                }
+            }
+        }
+
+        public String getLiveDocumentRef() {
+            return liveDocumentRef;
+        }
+
+    }
 
     private static final long serialVersionUID = 1L;
 
@@ -66,8 +96,7 @@ public class NoteActions implements Serializable {
         if (currentDocument.isVersion()) {
             docId = currentDocument.getSourceId();
         } else if (currentDocument.isProxy()) {
-            DocumentModel version = documentManager.getDocument(new IdRef(currentDocument.getSourceId()));
-            docId = version.getSourceId();
+            docId = new LiveDocumentRefFinder(currentDocument).getLiveDocumentRef();
         }
 
         String patternToReplace = String.format(PATTERN_TO_REPLACE, docId);
