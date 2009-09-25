@@ -30,11 +30,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.sun.xml</groupId>
       <artifactId>xsom</artifactId>
       <version>20060306</version>
@@ -46,5 +41,12 @@
       <version>1.0</version>
       <scope>test</scope>
     </dependency>
+        <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    
+    
   </dependencies>
 </project>
