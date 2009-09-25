@@ -55,6 +55,8 @@ public final class CoreEventConstants {
 
     public static final String REORDERED_CHILD = "reorderedChild";
 
+    public static final String REPLACED_PROXY_IDS = "replacedProxyRefs";
+
     // Constant utility class
     private CoreEventConstants() {
     }

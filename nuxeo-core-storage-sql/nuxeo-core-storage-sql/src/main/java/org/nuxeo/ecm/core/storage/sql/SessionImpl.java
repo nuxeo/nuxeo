@@ -75,6 +75,8 @@ public class SessionImpl implements Session {
 
     private long threadId;
 
+    private boolean readAclsChanged;
+
     private String threadName;
 
     SessionImpl(RepositoryImpl repository, SchemaManager schemaManager,
@@ -86,6 +88,7 @@ public class SessionImpl implements Session {
         model = mapper.getModel();
         context = new PersistenceContext(mapper);
         live = true;
+        readAclsChanged = false;
         transactionalSession = new TransactionalSession(this, mapper);
         computeRootNode();
     }
@@ -210,6 +213,9 @@ public class SessionImpl implements Session {
         checkThread();
         context.updateFulltext(this);
         context.save();
+        if (readAclsChanged) {
+            updateReadAcls();
+        }
     }
 
     /**
@@ -445,6 +451,8 @@ public class SessionImpl implements Session {
 
         FragmentGroup rowGroup = new FragmentGroup(mainRow, hierRow, fragments);
 
+        requireReadAclsUpdate();
+
         return new Node(this, context, rowGroup);
     }
 
@@ -534,6 +542,7 @@ public class SessionImpl implements Session {
         checkLive();
         context.save();
         context.move(source, parent.getId(), name);
+        requireReadAclsUpdate();
         return source;
     }
 
@@ -542,6 +551,7 @@ public class SessionImpl implements Session {
         checkLive();
         context.save();
         Serializable id = context.copy(source, parent.getId(), name);
+        requireReadAclsUpdate();
         return getNodeById(id);
     }
 
@@ -556,18 +566,21 @@ public class SessionImpl implements Session {
         checkLive();
         context.save();
         Serializable id = context.checkIn(node, label, description);
+        requireReadAclsUpdate();
         return getNodeById(id);
     }
 
     public void checkOut(Node node) throws StorageException {
         checkLive();
         context.checkOut(node);
+        requireReadAclsUpdate();
     }
 
     public void restoreByLabel(Node node, String label) throws StorageException {
         checkLive();
         // save done inside method
         context.restoreByLabel(node, label);
+        requireReadAclsUpdate();
     }
 
     public Node getVersionByLabel(Serializable versionableId, String label)
@@ -634,6 +647,28 @@ public class SessionImpl implements Session {
         }
     }
 
+    public void requireReadAclsUpdate() {
+        readAclsChanged = true;
+    }
+
+    public void updateReadAcls() throws StorageException {
+        try {
+            mapper.updateReadAcls();
+        } catch (SQLException e) {
+            throw new StorageException("Failed to update read acls", e);
+        }
+        readAclsChanged = false;
+    }
+
+    public void rebuildReadAcls() throws StorageException {
+        try {
+            mapper.rebuildReadAcls();
+        } catch (SQLException e) {
+            throw new StorageException("Failed to rebuild read acls", e);
+        }
+        readAclsChanged = false;
+    }
+
     // returns context or null if missing
     protected Context getContext(String tableName) {
         return context.getContextOrNull(tableName);
@@ -662,6 +697,7 @@ public class SessionImpl implements Session {
 
     // TODO factor with addChildNode
     private Node addRootNode() throws StorageException {
+        requireReadAclsUpdate();
         Serializable id = context.generateNewId(null);
 
         // main info
@@ -710,6 +746,7 @@ public class SessionImpl implements Session {
         aclrows[3] = new ACLRow(3, ACL.LOCAL_ACL, true,
                 SecurityConstants.VERSION, SecurityConstants.MEMBERS, null);
         rootNode.setCollectionProperty(Model.ACL_PROP, aclrows);
+        requireReadAclsUpdate();
     }
 
     // public Node newNodeInstance() needed ?

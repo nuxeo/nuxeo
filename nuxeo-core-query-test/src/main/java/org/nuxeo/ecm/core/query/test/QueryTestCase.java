@@ -1267,6 +1267,8 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         // copy
         DocumentModel copy = session.copy(file1.getRef(), folder1.getRef(),
                 "file1Copy");
+        // the save is needed to update the read acls
+        session.save();
         sleepForFulltext();
 
         dml = session.query(query);
