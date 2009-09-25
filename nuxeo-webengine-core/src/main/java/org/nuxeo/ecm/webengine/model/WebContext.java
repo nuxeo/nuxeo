@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine.model;
 import java.io.Writer;
 import java.security.Principal;
 import java.text.ParseException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -96,7 +97,16 @@ public interface WebContext extends Adaptable {
      * @param args
      * @return
      */
-    String getMessage(String key, String... args);
+    String getMessage(String key, Object... args);
+
+    /**
+     * The same as {@link #getMessage(String)} but with parameter support
+     *
+     * @param key
+     * @param args
+     * @return
+     */
+    String getMessage(String key, List<Object> args);
 
     /**
      * Same as {@link #getMessage(String)} but uses the given locale.
@@ -107,7 +117,25 @@ public interface WebContext extends Adaptable {
      */
     String getMessageL(String key, String locale);
 
-    String getMessageL(String key, String locale, String... args);
+    /**
+     * The same as {@link #getMessage(String)} but uses the given locale, with
+     * parameter support
+     *
+     * @param key
+     * @param args
+     * @return
+     */
+    String getMessageL(String key, String locale, Object... args);
+
+    /**
+     * The same as {@link #getMessage(String)} but uses the given locale, with
+     * parameter support
+     *
+     * @param key
+     * @param args
+     * @return
+     */
+    String getMessageL(String key, String locale, List<Object> args);
 
     /**
      * Get the context locale.
@@ -368,8 +396,8 @@ public interface WebContext extends Adaptable {
      * <p>
      * The path is resolved as following:
      * <ol>
-     * <li>if the path begin with a dot '.' then a local path is assumed and the
-     * path will be resolved relative to the current executed script if any.
+     * <li>if the path begin with a dot '.' then a local path is assumed and
+     * the path will be resolved relative to the current executed script if any.
      * Note that the directory stack will be consulted as well. If there is no
      * current executed script then the path will be transformed into an
      * absolute path and next step is entered.
