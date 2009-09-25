@@ -384,7 +384,7 @@ public class DialectOracle extends Dialect {
                 "CREATE OR REPLACE TYPE NX_ARRAY AS VARRAY(99) OF VARCHAR2(100);"));
 
         statements.add(new ConditionalStatement(
-                true, // early
+                false, // late
                 Boolean.FALSE, // no drop needed
                 null, //
                 null, //
@@ -408,7 +408,7 @@ public class DialectOracle extends Dialect {
                         , idType, declaredType)));
 
         statements.add(new ConditionalStatement(
-                true, // early
+                false, // late
                 Boolean.FALSE, // no drop needed
                 null, //
                 null, //

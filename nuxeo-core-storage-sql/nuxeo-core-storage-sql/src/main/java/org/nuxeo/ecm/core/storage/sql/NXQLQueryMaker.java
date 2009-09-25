@@ -68,46 +68,61 @@ import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
  * Transformer of NXQL queries into underlying SQL queries to the actual
  * database.
  * <p>
- * This needs to transform statements like:
+ * The examples below are based on the NXQL statement:
  *
  * <pre>
  * SELECT * FROM File
- *   WHERE
- *         dc:title = 'abc' AND uid:uid = '123'
- *     AND dc:contributors = 'bob' -- multi-valued
+ * WHERE
+ *   dc:title = 'abc'
+ *   AND uid:uid = '123'
+ *   AND dc:contributors = 'bob'    -- multi-valued
  * </pre>
  *
- * into:
+ * If there are no proxies (ecm:isProxy = 0) we get:
  *
  * <pre>
- * SELECT DISTINCT hierarchy.id
+ * SELECT hierarchy.id
  *   FROM hierarchy
- *     LEFT JOIN dublincore ON dublincore.id = hierarchy.id
- *     LEFT JOIN uid ON uid.id = hierarchy.id
- *     LEFT JOIN dc_contributors ON dc_contributors.id = hierarchy.id
- *   WHERE
- *         hierarchy.primarytype IN ('File', 'SubFile')
- *     AND (dublincore.title = 'abc' AND uid.uid = '123' AND dc_contributors.item = 'bob')
- *     AND NX_ACCESS_ALLOWED(hierarchy.id, 'user1|user2', 'perm1|perm2')
+ *   LEFT JOIN dublincore ON hierarchy.id = dublincore.id
+ *   LEFT JOIN uid ON hierarchy.id = uid.id
+ * WHERE
+ *   hierarchy.primarytype IN ('File', 'SubFile')
+ *   AND dublincore.title = 'abc'
+ *   AND uid.uid = '123'
+ *   AND EXISTS (SELECT 1 FROM dc_contributors WHERE hierarchy.id = dc_contributors.id
+ *               AND dc_contributors.item = 'bob')
+ *   AND NX_ACCESS_ALLOWED(hierarchy.id, 'user1|user2', 'perm1|perm2')
  * </pre>
  *
- * when proxies are potential matches, we must do two additional joins and
- * differentiate between the uses of "hierarchy" as the hierarchy table or the
- * main table.
+ * The data tables (dublincore, uid) are joined using a LEFT JOIN, as the schema
+ * may not be present on all documents but this shouldn't prevent the WHERE
+ * clause from being evaluated.
+ *
+ * Complex properties are matched using an EXISTS and a subselect.
+ *
+ * When proxies are matched (ecm:isProxy = 1) there are two additional FULL
+ * JOINs. Security checks, id, name, parents and path use the base hierarchy
+ * (_H), but all other data use the joined hierarchy.
  *
  * <pre>
- * SELECT DISTINCT _nxhier.id
- *   FROM hierarchy _nxhier
- *     LEFT JOIN proxies ON proxies.id = _nxhier.id
- *     JOIN hierarchy ON (hierarchy.id = _nxhier.id OR hierarchy.id = proxies.targetid)
- *     LEFT JOIN dublincore ON dublincore.id = hierarchy.id
- *     LEFT JOIN uid ON uid.id = hierarchy.id
- *     LEFT JOIN dc_contributors ON dc_contributors.id = hierarchy.id
- *   WHERE
- *         hierarchy.primarytype IN ('File', 'SubFile')
- *     AND (dublincore.title = 'abc' AND uid.uid = '123' AND dc_contributors.item = 'bob')
- *     AND NX_ACCESS_ALLOWED(_nxhier.id, 'user1|user2', 'perm1|perm2')
+ * SELECT _H.id
+ *   FROM hierarchy _H
+ *   JOIN proxies ON _H.id = proxies.id                     -- proxy full join
+ *   JOIN hierarchy ON hierarchy.id = proxies.targetid      -- proxy full join
+ *   LEFT JOIN dublincore ON hierarchy.id = dublincore.id
+ *   LEFT JOIN uid ON hierarchy.id = uid.id
+ * WHERE
+ *   hierarchy.primarytype IN ('File', 'SubFile')
+ *   AND dublincore.title = 'abc'
+ *   AND uid.uid = '123'
+ *   AND EXISTS (SELECT 1 FROM dc_contributors WHERE hierarchy.id = dc_contributors.id
+ *               AND dc_contributors.item = 'bob')
+ *   AND NX_ACCESS_ALLOWED(_H.id, 'user1|user2', 'perm1|perm2') -- uses _H
  * </pre>
+ *
+ * When both normal documents and proxies are matched, we UNION ALL the two
+ * queries. If an ORDER BY is requested, then columns from the inner SELECTs
+ * have to be aliased so that an outer ORDER BY can user their names.
  *
  * @author Florent Guillaume
  */
@@ -118,6 +133,12 @@ public class NXQLQueryMaker implements QueryMaker {
      * instantiating a proxy or a version.
      */
     public static final String FACET_IMMUTABLE = "Immutable";
+
+    protected static final String TABLE_HIER_ALIAS = "_H";
+
+    protected static final String COL_ORDER_ALIAS_PREFIX = "_C";
+
+    private static final String JOIN_ON = "%s ON %s = %s";
 
     /*
      * Fields used by the search service.
@@ -132,29 +153,6 @@ public class NXQLQueryMaker implements QueryMaker {
     protected Model model;
 
     protected Session session;
-
-    /** true if the proxies table is used (not excluded by toplevel clause). */
-    protected boolean considerProxies;
-
-    /**
-     * The hierarchy table, which may be an alias table.
-     */
-    protected Table hierTable;
-
-    /**
-     * Quoted id in the hierarchy. This is the id returned by the query.
-     */
-    protected String hierId;
-
-    /**
-     * The hierarchy table of the data.
-     */
-    protected Table joinedHierTable;
-
-    /**
-     * Quoted id attached to the data that matches.
-     */
-    protected String joinedHierId;
 
     private static class QueryMakerException extends RuntimeException {
         private static final long serialVersionUID = 1L;
@@ -179,6 +177,10 @@ public class NXQLQueryMaker implements QueryMaker {
     public boolean accepts(String queryString) {
         return queryString.equals("NXQL")
                 || queryString.toLowerCase().trim().startsWith("select ");
+    }
+
+    private enum DocKind {
+        DIRECT, PROXY;
     }
 
     public Query buildQuery(SQLInfo sqlInfo, Model model, Session session,
@@ -281,300 +283,253 @@ public class NXQLQueryMaker implements QueryMaker {
         }
         fragmentNames.remove(model.hierTableName);
 
-        /*
-         * Deal with proxies / immutable conditions.
-         */
-
-        if (info.proxyClause == Boolean.TRUE) {
-            if (info.immutableClause == Boolean.FALSE) {
-                // conflicting proxy requirements, query cannot match
-                return null;
-            }
-            info.immutableClause = null; // shortcut
-        }
-
-        // Do we have to join with the proxies table?
-        considerProxies = info.proxyClause != Boolean.FALSE
-                && info.immutableClause != Boolean.FALSE;
-
         // Do we need to add the versions table too?
         if (info.needsVersionsTable || info.immutableClause != null) {
             fragmentNames.add(model.VERSION_TABLE_NAME);
         }
 
         /*
-         * Build the FROM / JOIN criteria.
+         * Build the FROM / JOIN criteria for each select.
          */
 
-        List<String> joins = new LinkedList<String>();
+        DocKind[] docKinds;
+        if (info.proxyClause == Boolean.TRUE) {
+            if (info.immutableClause == Boolean.FALSE) {
+                // proxy but not immutable: query cannot match
+                return null;
+            }
+            docKinds = new DocKind[] { DocKind.PROXY };
+        } else if (info.proxyClause == Boolean.FALSE
+                || info.immutableClause == Boolean.FALSE) {
+            docKinds = new DocKind[] { DocKind.DIRECT };
+        } else {
+            docKinds = new DocKind[] { DocKind.DIRECT, DocKind.PROXY };
+        }
+
         Table hier = database.getTable(model.hierTableName);
-        if (considerProxies) {
-            // complex case where we have to add a left joins to link to the
-            // proxies table and another join to select both proxies targets and
-            // direct documents
-            // hier
-            String alias = dialect.storesUpperCaseIdentifiers() ? "_NXHIER"
-                    : "_nxhier";
-            hierTable = new TableAlias(hier, alias);
-            String hierfrom = hier.getQuotedName() + " "
-                    + hierTable.getQuotedName(); // TODO dialect
-            hierId = hierTable.getColumn(model.MAIN_KEY).getFullQuotedName();
-            // joined (data)
-            joinedHierTable = hier;
-            joinedHierId = hier.getColumn(model.MAIN_KEY).getFullQuotedName();
-            // proxies
-            Table proxies = database.getTable(model.PROXY_TABLE_NAME);
-            String proxiesid = proxies.getColumn(model.MAIN_KEY).getFullQuotedName();
-            String proxiestargetid = proxies.getColumn(model.PROXY_TARGET_KEY).getFullQuotedName();
-            // join all that
-            joins.add(String.format(
-                    "%s LEFT JOIN %s ON %s = %s JOIN %s ON (%s = %s OR %s = %s)",
-                    hierfrom, proxies.getQuotedName(), proxiesid, hierId,
-                    joinedHierTable.getQuotedName(), joinedHierId, hierId,
-                    joinedHierId, proxiestargetid));
-        } else {
-            // simple case where we directly refer to the hierarchy table
-            hierTable = hier;
-            hierId = hierTable.getColumn(model.MAIN_KEY).getFullQuotedName();
-            joinedHierTable = hierTable;
-            joinedHierId = hierId;
-            joins.add(hierTable.getQuotedName());
-        }
-        for (String fragmentName : fragmentNames) {
-            Table table = database.getTable(fragmentName);
-            // the versions table joins on the real hier table
-            boolean useHier = model.VERSION_TABLE_NAME.equals(fragmentName);
-            joins.add(String.format("%s ON %s = %s", table.getQuotedName(),
-                    useHier ? hierId : joinedHierId, table.getColumn(
-                            model.MAIN_KEY).getFullQuotedName()));
-        }
 
-        // the Query we'll return
-        Query q = new Query();
-        // clauses ANDed together
-        List<String> whereClauses = new LinkedList<String>();
+        boolean aliasColumns = docKinds.length > 1;
+        Select select = null;
+        String orderBy = null;
+        List<String> statements = new ArrayList<String>(2);
+        List<Serializable> selectParams = new LinkedList<Serializable>();
+        for (DocKind docKind : docKinds) {
 
-        /*
-         * Filter on facets and mixin types, and create the structural WHERE
-         * clauses for the type.
-         */
+            // The hierarchy table, which may be an alias table.
+            Table hierTable;
+            // Quoted id in the hierarchy. This is the id returned by the query.
+            String hierId;
+            // The hierarchy table of the data.
+            Table dataHierTable;
+            // Quoted id attached to the data that matches.
+            String dataHierId;
 
-        List<String> typeStrings = new ArrayList<String>(types.size());
-        NEXT_TYPE: for (String type : types) {
-            Set<String> facets = model.getDocumentTypeFacets(type);
-            for (String facet : info.mixinsExcluded) {
-                if (facets.contains(facet)) {
-                    continue NEXT_TYPE;
-                }
+            List<String> joins = new LinkedList<String>();
+            List<Serializable> joinsParams = new LinkedList<Serializable>();
+            LinkedList<String> leftJoins = new LinkedList<String>();
+            List<Serializable> leftJoinsParams = new LinkedList<Serializable>();
+            List<String> whereClauses = new LinkedList<String>();
+            List<Serializable> whereParams = new LinkedList<Serializable>();
+
+            switch (docKind) {
+            case DIRECT:
+                hierTable = hier;
+                hierId = hierTable.getColumn(model.MAIN_KEY).getFullQuotedName();
+                dataHierTable = hierTable;
+                dataHierId = hierId;
+                joins.add(hierTable.getQuotedName());
+                break;
+            case PROXY:
+                hierTable = new TableAlias(hier, TABLE_HIER_ALIAS);
+                String hierFrom = hier.getQuotedName() + " "
+                        + hierTable.getQuotedName(); // TODO use dialect
+                hierId = hierTable.getColumn(model.MAIN_KEY).getFullQuotedName();
+                // joined (data)
+                dataHierTable = hier;
+                dataHierId = hier.getColumn(model.MAIN_KEY).getFullQuotedName();
+                // proxies
+                Table proxies = database.getTable(model.PROXY_TABLE_NAME);
+                String proxiesid = proxies.getColumn(model.MAIN_KEY).getFullQuotedName();
+                String proxiestargetid = proxies.getColumn(
+                        model.PROXY_TARGET_KEY).getFullQuotedName();
+                // join all that
+                joins.add(hierFrom);
+                joins.add(String.format(JOIN_ON, proxies.getQuotedName(),
+                        hierId, proxiesid));
+                joins.add(String.format(JOIN_ON, dataHierTable.getQuotedName(),
+                        dataHierId, proxiestargetid));
+                break;
+            default:
+                throw new AssertionError(docKind);
             }
-            for (String facet : info.mixinsAllRequired) {
-                if (!facets.contains(facet)) {
-                    continue NEXT_TYPE;
-                }
+
+            // main data joins
+            for (String fragmentName : fragmentNames) {
+                Table table = database.getTable(fragmentName);
+                // the versions table joins on the real hier table
+                boolean useHier = model.VERSION_TABLE_NAME.equals(fragmentName);
+                leftJoins.add(String.format(JOIN_ON, table.getQuotedName(),
+                        useHier ? hierId : dataHierId, table.getColumn(
+                                model.MAIN_KEY).getFullQuotedName()));
             }
-            if (!info.mixinsAnyRequired.isEmpty()) {
-                Set<String> intersection = new HashSet<String>(
-                        info.mixinsAnyRequired);
-                intersection.retainAll(facets);
-                if (intersection.isEmpty()) {
-                    continue NEXT_TYPE;
+
+            /*
+             * Filter on facets and mixin types, and create the structural WHERE
+             * clauses for the type.
+             */
+
+            List<String> typeStrings = new ArrayList<String>(types.size());
+            NEXT_TYPE: for (String type : types) {
+                Set<String> facets = model.getDocumentTypeFacets(type);
+                for (String facet : info.mixinsExcluded) {
+                    if (facets.contains(facet)) {
+                        continue NEXT_TYPE;
+                    }
                 }
-            }
-            // this type is good
-            typeStrings.add("?");
-            q.selectParams.add(type);
-        }
-        if (typeStrings.isEmpty()) {
-            return null; // mixins excluded all types, no match possible
-        }
-        whereClauses.add(String.format("%s IN (%s)", joinedHierTable.getColumn(
-                model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
-                StringUtils.join(typeStrings, ", ")));
-
-        /*
-         * Add clauses for proxy / version matches.
-         */
-
-        if (info.proxyClause == Boolean.TRUE
-                && info.immutableClause != Boolean.FALSE) {
-            whereClauses.add(String.format("%s IS NOT NULL",
-                    database.getTable(model.PROXY_TABLE_NAME).getColumn(
-                            model.MAIN_KEY).getFullQuotedName()));
-        }
-
-        if (info.immutableClause != null) {
-            boolean immutable = info.immutableClause.booleanValue();
-            String version = String.format("%s IS %s",
-                    database.getTable(model.VERSION_TABLE_NAME).getColumn(
-                            model.MAIN_KEY).getFullQuotedName(),
-                    immutable ? "NOT NULL" : "NULL");
-            if (info.proxyClause == null) {
-                if (immutable) {
-                    // OR with the proxy check
-                    String proxy = String.format(
-                            "%s IS NOT NULL",
-                            database.getTable(model.PROXY_TABLE_NAME).getColumn(
-                                    model.MAIN_KEY).getFullQuotedName());
-                    whereClauses.add(String.format("(%s OR %s)", version, proxy));
-                } else {
-                    whereClauses.add(version);
-                    // proxy is null because no join was done
+                for (String facet : info.mixinsAllRequired) {
+                    if (!facets.contains(facet)) {
+                        continue NEXT_TYPE;
+                    }
                 }
-            } else {
-                whereClauses.add(version);
+                if (!info.mixinsAnyRequired.isEmpty()) {
+                    Set<String> intersection = new HashSet<String>(
+                            info.mixinsAnyRequired);
+                    intersection.retainAll(facets);
+                    if (intersection.isEmpty()) {
+                        continue NEXT_TYPE;
+                    }
+                }
+                // this type is good
+                typeStrings.add("?");
+                whereParams.add(type);
             }
-        }
+            if (typeStrings.isEmpty()) {
+                return null; // mixins excluded all types, no match possible
+            }
+            whereClauses.add(String.format(
+                    "%s IN (%s)",
+                    dataHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
+                    StringUtils.join(typeStrings, ", ")));
 
-        /*
-         * Parse the WHERE clause from the original query, and deduce from it
-         * actual WHERE clauses and potential JOINs.
-         */
+            /*
+             * Add clause for immutable match.
+             */
 
-        WhereBuilder whereBuilder;
-        try {
-            whereBuilder = new WhereBuilder();
-        } catch (QueryMakerException e) {
-            throw new StorageException(e.getMessage(), e);
-        }
-        if (info.wherePredicate != null) {
-            info.wherePredicate.accept(whereBuilder);
-            // JOINs added by fulltext queries
-            joins.addAll(whereBuilder.joins);
-            q.selectParams.addAll(0, whereBuilder.joinParams);
-            // WHERE clause
-            String where = whereBuilder.buf.toString();
-            if (where.length() != 0) {
+            if (docKind == DocKind.DIRECT && info.immutableClause != null) {
+                String where = String.format("%s IS %s",
+                        database.getTable(model.VERSION_TABLE_NAME).getColumn(
+                                model.MAIN_KEY).getFullQuotedName(),
+                        info.immutableClause.booleanValue() ? "NOT NULL"
+                                : "NULL");
                 whereClauses.add(where);
-                q.selectParams.addAll(whereBuilder.whereParams);
             }
-        }
 
-        /*
-         * Security check.
-         */
+            /*
+             * Parse the WHERE clause from the original query, and deduce from
+             * it actual WHERE clauses and potential JOINs.
+             */
 
-        if (queryFilter.getPrincipals() != null) {
-            whereClauses.add(dialect.getSecurityCheckSql(hierId));
-            Serializable principals;
-            Serializable permissions;
-            if (dialect.supportsArrays()) {
-                principals = queryFilter.getPrincipals();
-                permissions = queryFilter.getPermissions();
-            } else {
-                principals = StringUtils.join(queryFilter.getPrincipals(), '|');
-                permissions = StringUtils.join(queryFilter.getPermissions(),
-                        '|');
+            WhereBuilder whereBuilder;
+            try {
+                whereBuilder = new WhereBuilder(database, session, hierTable,
+                        hierId, dataHierTable, dataHierId,
+                        docKind == DocKind.PROXY, aliasColumns);
+            } catch (QueryMakerException e) {
+                throw new StorageException(e.getMessage(), e);
             }
-            q.selectParams.add(principals);
-            q.selectParams.add(permissions);
-        }
-
-        /*
-         * Order by.
-         */
-
-        String orderBy;
-        if (sqlQuery.orderBy == null) {
-            orderBy = null;
-        } else {
-            whereBuilder.buf.setLength(0);
-            sqlQuery.orderBy.accept(whereBuilder);
-            orderBy = whereBuilder.buf.toString();
-        }
-
-        /*
-         * Check if we need a DISTINCT.
-         */
-
-        String what = hierId;
-        if (considerProxies) {
-            // For proxies we do a LEFT JOIN with a non equi-join
-            // condition that can return two rows.
-            what = "DISTINCT " + what;
-            // Some dialects need any ORDER BY expressions to appear in the
-            // SELECT list when using DISTINCT.
-            if (dialect.needsOrderByKeysAfterDistinct()) {
-                for (String key : info.orderKeys) {
-                    Column column = findColumn(key, false, true);
-                    String qname = column.getFullQuotedName();
-                    what += ", " + qname;
+            if (info.wherePredicate != null) {
+                info.wherePredicate.accept(whereBuilder);
+                // JOINs added by fulltext queries
+                joins.addAll(whereBuilder.joins);
+                joinsParams.addAll(whereBuilder.joinsParams);
+                // WHERE clause
+                String where = whereBuilder.buf.toString();
+                if (where.length() != 0) {
+                    whereClauses.add(where);
+                    whereParams.addAll(whereBuilder.whereParams);
                 }
             }
+
+            /*
+             * Security check.
+             */
+
+            if (queryFilter.getPrincipals() != null) {
+                whereClauses.add(dialect.getSecurityCheckSql(hierId));
+                Serializable principals = queryFilter.getPrincipals();
+                Serializable permissions = queryFilter.getPermissions();
+                if (!dialect.supportsArrays()) {
+                    principals = StringUtils.join((String[]) principals, '|');
+                    permissions = StringUtils.join((String[]) permissions, '|');
+                }
+                whereParams.add(principals);
+                whereParams.add(permissions);
+            }
+
+            /*
+             * Columns on which to do ordering.
+             */
+
+            String selectWhat = hierId;
+            if (aliasColumns) {
+                // UNION, so we need all orderable columns, aliased
+                int n = 0;
+                for (String key : info.orderKeys) {
+                    Column column = whereBuilder.findColumn(key, false, true);
+                    String qname = column.getFullQuotedName();
+                    selectWhat += ", " + qname + " AS " + dialect.openQuote()
+                            + COL_ORDER_ALIAS_PREFIX + ++n
+                            + dialect.closeQuote();
+                }
+            }
+
+            /*
+             * Order by. Compute it just once. May use just aliases.
+             */
+
+            if (orderBy == null && sqlQuery.orderBy != null) {
+                whereBuilder.buf.setLength(0);
+                sqlQuery.orderBy.accept(whereBuilder);
+                orderBy = whereBuilder.buf.toString();
+            }
+
+            /*
+             * Resulting select.
+             */
+
+            select = new Select(null);
+            select.setWhat(selectWhat);
+            leftJoins.addFirst(StringUtils.join(joins, " JOIN "));
+            select.setFrom(StringUtils.join(leftJoins, " LEFT JOIN "));
+            select.setWhere(StringUtils.join(whereClauses, " AND "));
+            selectParams.addAll(joinsParams);
+            selectParams.addAll(leftJoinsParams);
+            selectParams.addAll(whereParams);
+
+            statements.add(select.getStatement());
         }
-        // else no DISTINCT needed as all impacted tables have unique keys
 
         /*
          * Create the whole select.
          */
-        Select select = new Select(null);
-        select.setWhat(what);
-        select.setFrom(StringUtils.join(joins, " LEFT JOIN "));
-        select.setWhere(StringUtils.join(whereClauses, " AND "));
+
+        if (statements.size() > 1) {
+            select = new Select(null);
+            select.setWhat(hier.getColumn(model.MAIN_KEY).getQuotedName());
+            String from = '(' + StringUtils.join(statements, " UNION ALL ") + ')';
+            if (dialect.needsAliasForDerivedTable()) {
+                from += " AS _T";
+            }
+            select.setFrom(from);
+        }
         select.setOrderBy(orderBy);
 
-        List<Column> whatColumns = Collections.singletonList(hierTable.getColumn(model.MAIN_KEY));
+        List<Column> whatColumns = Collections.singletonList(hier.getColumn(model.MAIN_KEY));
+        Query q = new Query();
         q.selectInfo = new SQLInfoSelect(select.getStatement(), whatColumns,
                 null, null);
+        q.selectParams = selectParams;
         return q;
-    }
-
-    protected Column findColumn(String name, boolean allowArray,
-            boolean inOrderBy) {
-        Column column;
-        if (name.startsWith(NXQL.ECM_PREFIX)) {
-            column = getSpecialColumn(name);
-        } else {
-            PropertyInfo propertyInfo = model.getPropertyInfo(name);
-            if (propertyInfo == null) {
-                throw new QueryMakerException("Unknown field: " + name);
-            }
-            Table table = database.getTable(propertyInfo.fragmentName);
-            if (propertyInfo.propertyType.isArray()) {
-                if (!allowArray) {
-                    String msg = inOrderBy ? "Cannot use collection %s in ORDER BY clause"
-                            : "Can only use collection %s with =, <>, IN or NOT IN clause";
-                    throw new QueryMakerException(String.format(msg, name));
-                }
-                // arrays are allowed when in a EXISTS subselect
-                column = table.getColumn(model.COLL_TABLE_VALUE_KEY);
-            } else {
-                column = table.getColumn(propertyInfo.fragmentKey);
-            }
-        }
-        return column;
-    }
-
-    protected Column getSpecialColumn(String name) {
-        if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
-            return joinedHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
-        }
-        if (NXQL.ECM_MIXINTYPE.equals(name)) {
-            // toplevel ones have been extracted by the analyzer
-            throw new QueryMakerException("Cannot use non-toplevel " + name
-                    + " in query");
-        }
-        if (NXQL.ECM_UUID.equals(name)) {
-            return hierTable.getColumn(model.MAIN_KEY);
-        }
-        if (NXQL.ECM_NAME.equals(name)) {
-            return hierTable.getColumn(model.HIER_CHILD_NAME_KEY);
-        }
-        if (NXQL.ECM_PARENTID.equals(name)) {
-            return hierTable.getColumn(model.HIER_PARENT_KEY);
-        }
-        if (NXQL.ECM_LIFECYCLESTATE.equals(name)) {
-            return database.getTable(model.MISC_TABLE_NAME).getColumn(
-                    model.MISC_LIFECYCLE_STATE_KEY);
-        }
-        if (name.startsWith(NXQL.ECM_FULLTEXT)) {
-            throw new QueryMakerException(NXQL.ECM_FULLTEXT
-                    + " must be used as left-hand operand");
-        }
-        if (NXQL.ECM_VERSIONLABEL.equals(name)) {
-            return database.getTable(model.VERSION_TABLE_NAME).getColumn(
-                    model.VERSION_LABEL_KEY);
-        }
-        throw new QueryMakerException("Unknown field: " + name);
     }
 
     /**
@@ -617,6 +572,8 @@ public class NXQLQueryMaker implements QueryMaker {
         protected Boolean immutableClause;
 
         protected Boolean proxyClause;
+
+        // TODO protected Boolean versionClause;
 
         protected MultiExpression wherePredicate;
 
@@ -913,7 +870,7 @@ public class NXQLQueryMaker implements QueryMaker {
     /**
      * Builds the database-level WHERE query from the AST.
      */
-    public class WhereBuilder extends DefaultQueryVisitor {
+    public static class WhereBuilder extends DefaultQueryVisitor {
 
         private static final long serialVersionUID = 1L;
 
@@ -923,15 +880,117 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public final List<String> joins = new LinkedList<String>();
 
-        public final List<String> joinParams = new LinkedList<String>();
+        public final List<String> joinsParams = new LinkedList<String>();
 
         public final List<Serializable> whereParams = new LinkedList<Serializable>();
 
-        public boolean allowArray;
+        private final Session session;
+
+        private final Model model;
+
+        private final Dialect dialect;
+
+        private final Database database;
+
+        private final Table hierTable;
+
+        private final String hierId;
+
+        private final Table dataHierTable;
+
+        private final String dataHierId;
+
+        private boolean isProxies;
+
+        private boolean aliasColumns;
+
+        // internal fields
+
+        private boolean allowArray;
 
         private boolean inOrderBy;
 
+        private int orderByCount;
+
         private int ftJoinNumber;
+
+        public WhereBuilder(Database database, Session session,
+                Table hierTable, String hierId, Table dataHierTable,
+                String dataHierId, boolean isProxies, boolean aliasColumns) {
+            try {
+                this.session = session;
+                this.model = session.getModel();
+                this.dialect = model.getDialect();
+                this.database = database;
+                this.hierTable = hierTable;
+                this.hierId = hierId;
+                this.dataHierTable = dataHierTable;
+                this.dataHierId = dataHierId;
+                this.isProxies = isProxies;
+                this.aliasColumns = aliasColumns;
+            } catch (StorageException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        public Column findColumn(String name, boolean allowArray,
+                boolean inOrderBy) {
+            Column column;
+            if (name.startsWith(NXQL.ECM_PREFIX)) {
+                column = getSpecialColumn(name);
+            } else {
+                PropertyInfo propertyInfo = model.getPropertyInfo(name);
+                if (propertyInfo == null) {
+                    throw new QueryMakerException("Unknown field: " + name);
+                }
+                Table table = database.getTable(propertyInfo.fragmentName);
+                if (propertyInfo.propertyType.isArray()) {
+                    if (!allowArray) {
+                        String msg = inOrderBy ? "Cannot use collection %s in ORDER BY clause"
+                                : "Can only use collection %s with =, <>, IN or NOT IN clause";
+                        throw new QueryMakerException(String.format(msg, name));
+                    }
+                    // arrays are allowed when in a EXISTS subselect
+                    column = table.getColumn(model.COLL_TABLE_VALUE_KEY);
+                } else {
+                    column = table.getColumn(propertyInfo.fragmentKey);
+                }
+            }
+            return column;
+        }
+
+        protected Column getSpecialColumn(String name) {
+            if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
+                return dataHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
+            }
+            if (NXQL.ECM_MIXINTYPE.equals(name)) {
+                // toplevel ones have been extracted by the analyzer
+                throw new QueryMakerException("Cannot use non-toplevel " + name
+                        + " in query");
+            }
+            if (NXQL.ECM_UUID.equals(name)) {
+                return hierTable.getColumn(model.MAIN_KEY);
+            }
+            if (NXQL.ECM_NAME.equals(name)) {
+                return hierTable.getColumn(model.HIER_CHILD_NAME_KEY);
+            }
+            if (NXQL.ECM_PARENTID.equals(name)) {
+                return hierTable.getColumn(model.HIER_PARENT_KEY);
+            }
+            if (NXQL.ECM_LIFECYCLESTATE.equals(name)) {
+                return database.getTable(model.MISC_TABLE_NAME).getColumn(
+                        model.MISC_LIFECYCLE_STATE_KEY);
+            }
+            if (name.startsWith(NXQL.ECM_FULLTEXT)) {
+                throw new QueryMakerException(NXQL.ECM_FULLTEXT
+                        + " must be used as left-hand operand");
+            }
+            if (NXQL.ECM_VERSIONLABEL.equals(name)) {
+                return database.getTable(model.VERSION_TABLE_NAME).getColumn(
+                        model.VERSION_LABEL_KEY);
+            }
+            throw new QueryMakerException("Unknown field: " + name);
+        }
 
         @Override
         public void visitQuery(SQLQuery node) {
@@ -962,7 +1021,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 visitExpressionStartsWith(node, name);
             } else if (NXQL.ECM_PATH.equals(name)) {
                 visitExpressionEcmPath(node);
-            }  else if (NXQL.ECM_ISPROXY.equals(name)) {
+            } else if (NXQL.ECM_ISPROXY.equals(name)) {
                 visitExpressionIsProxy(node);
             } else if (NXQL.ECM_ISVERSION.equals(name)) {
                 visitExpressionIsVersion(node);
@@ -990,8 +1049,8 @@ public class NXQLQueryMaker implements QueryMaker {
                     }
                     buf.append(String.format(
                             "EXISTS (SELECT 1 FROM %s WHERE %s = %s AND (",
-                            table.getQuotedName(), joinedHierId,
-                            table.getColumn(model.MAIN_KEY).getFullQuotedName()));
+                            table.getQuotedName(), dataHierId, table.getColumn(
+                                    model.MAIN_KEY).getFullQuotedName()));
                     allowArray = true;
                     node.lvalue.accept(this);
                     allowArray = false;
@@ -1066,7 +1125,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 // no such path, always return a false
                 // TODO remove the expression more intelligently from the parse
                 // tree
-                buf.append("0 = 1");
+                buf.append("0=1");
             } else {
                 buf.append(dialect.getInTreeSql(hierId));
                 whereParams.add(id);
@@ -1085,7 +1144,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 Table table = database.getTable(propertyInfo.fragmentName);
                 buf.append(String.format(
                         "EXISTS (SELECT 1 FROM %s WHERE %s = %s AND ",
-                        table.getQuotedName(), joinedHierId, table.getColumn(
+                        table.getQuotedName(), dataHierId, table.getColumn(
                                 model.MAIN_KEY).getFullQuotedName()));
             }
             buf.append('(');
@@ -1129,9 +1188,10 @@ public class NXQLQueryMaker implements QueryMaker {
                 // no such path, always return a false
                 // TODO remove the expression more intelligently from the parse
                 // tree
-                buf.append("0 = 1");
+                buf.append("0=1");
             } else {
-                buf.append(hierTable.getColumn(model.MAIN_KEY).getFullQuotedName() + " = ?");
+                buf.append(hierTable.getColumn(model.MAIN_KEY).getFullQuotedName()
+                        + " = ?");
                 whereParams.add(id);
             }
         }
@@ -1151,14 +1211,7 @@ public class NXQLQueryMaker implements QueryMaker {
                         + " requires literal 0 or 1 as right argument");
             }
             boolean bool = node.operator == Operator.EQ ^ v == 0;
-            if (considerProxies) {
-                buf.append(database.getTable(model.PROXY_TABLE_NAME).getColumn(
-                        model.MAIN_KEY).getFullQuotedName());
-                buf.append(bool ? " IS NOT NULL" : " IS NULL");
-            } else {
-                // toplevel clauses excludes proxies
-                buf.append(bool ? "0 = 1" : " 1 = 1");
-            }
+            buf.append(isProxies == bool ? "1=1" : "0=1");
         }
 
         protected void visitExpressionIsVersion(Expression node) {
@@ -1202,7 +1255,7 @@ public class NXQLQueryMaker implements QueryMaker {
             }
             String fulltextQuery = ((StringLiteral) node.rvalue).value;
             fulltextQuery = dialect.getDialectFulltextQuery(fulltextQuery);
-            Column mainColumn = joinedHierTable.getColumn(model.MAIN_KEY);
+            Column mainColumn = dataHierTable.getColumn(model.MAIN_KEY);
             String[] info = dialect.getFulltextMatch(name, fulltextQuery,
                     mainColumn, model, database);
             String joinExpr = info[0];
@@ -1214,7 +1267,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 // specific join table (H2)
                 joins.add(String.format(joinExpr, joinAlias));
                 if (joinParam != null) {
-                    joinParams.add(joinParam);
+                    joinsParams.add(joinParam);
                 }
             }
             if (whereExpr != null) {
@@ -1303,6 +1356,7 @@ public class NXQLQueryMaker implements QueryMaker {
         @Override
         public void visitOrderByList(OrderByList node) {
             inOrderBy = true;
+            orderByCount = 0;
             for (Iterator<OrderByExpr> it = node.iterator(); it.hasNext();) {
                 it.next().accept(this);
                 if (it.hasNext()) {
@@ -1314,7 +1368,14 @@ public class NXQLQueryMaker implements QueryMaker {
 
         @Override
         public void visitOrderByExpr(OrderByExpr node) {
-            node.reference.accept(this);
+            if (aliasColumns) {
+                buf.append(dialect.openQuote());
+                buf.append(COL_ORDER_ALIAS_PREFIX);
+                buf.append(++orderByCount);
+                buf.append(dialect.closeQuote());
+            } else {
+                node.reference.accept(this);
+            }
             if (node.isDescending) {
                 buf.append(" DESC");
             }

@@ -223,11 +223,10 @@ public class DialectH2 extends Dialect {
             Column mainColumn, Model model, Database database) {
         String phftname = database.getTable(model.FULLTEXT_TABLE_NAME).getName(); // physical
         String fullIndexName = "PUBLIC_" + phftname + "_" + indexName;
-        String queryTable = String.format("NXFT_SEARCH('%s', ?)", fullIndexName);
-        String whereExpr = String.format("%%s.KEY = %s",
+        String queryTable = String.format(
+                "NXFT_SEARCH('%s', ?) %%s ON %s = %%<s.KEY", fullIndexName,
                 mainColumn.getFullQuotedName());
-        return new String[] { (queryTable + " %s"), fulltextQuery, whereExpr,
-                null };
+        return new String[] { queryTable, fulltextQuery, null, null };
     }
 
     @Override
