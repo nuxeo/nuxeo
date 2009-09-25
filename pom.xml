@@ -72,6 +72,9 @@
       <id>nuxeo-ep-jetty</id>
       <modules>
         <module>nuxeo-platform-ear</module>
+        <module>nuxeo-embedded-launcher</module>
+        <module>nuxeo-distribution-base</module>
+        <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-jetty</module>
       </modules>
     </profile>
@@ -80,6 +83,9 @@
       <modules>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
+        <module>nuxeo-embedded-launcher</module>
+        <module>nuxeo-distribution-base</module>
+        <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-jetty</module>
       </modules>
     </profile>
@@ -97,6 +103,7 @@
     <profile>
       <id>gf3</id>
       <modules>
+        <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-gf3</module>
@@ -105,6 +112,7 @@
     <profile>
       <id>tomcat</id>
       <modules>
+        <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-tomcat</module>
@@ -113,6 +121,7 @@
     <profile>
       <id>core</id>
       <modules>
+        <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
       </modules>

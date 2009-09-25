@@ -269,6 +269,7 @@
         </New>
       </Arg>
     </New>
+    
      <!-- ======== Nuxeo Placeful config Data Source ========= -->
     <New id="placeful_service_ds" class="org.mortbay.jetty.plus.naming.Resource">
       <Arg>jdbc/placeful_service_ds</Arg>
@@ -290,8 +291,7 @@
         </New>
       </Arg>
     </New>
-    
-    
+ 
     <!-- =============================================================== -->
     <!-- Configuring Transactions and XA Datasources                     -->
     <!-- Uncomment EITHER the setup for Atomikos OR for Jotm             -->
@@ -326,7 +326,8 @@
              </New>
            </Arg>
          </New>
-         END OF ATOMIKOS -->
+         END OF ATOMIKOS
+-->
          
 <!-- JOTM
               <New id="jotm" class="org.objectweb.jotm.Jotm">
@@ -398,7 +399,7 @@
                 </Arg>
               </New>
 
-END OF JOTM -->
+END OF JOTM
+-->
 
-    
 </Configure>

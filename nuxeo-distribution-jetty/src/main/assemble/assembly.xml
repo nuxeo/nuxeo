@@ -12,19 +12,46 @@
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
-      <artifact group="org.nuxeo.*" category="runtime"
-        includeDependsOnCategory="false" />
-      <artifact group="org.nuxeo.*" />
+      <artifact group="org.nuxeo*" />
       <!-- add here nuxeo-addons -->
     </includes>
     <excludes>
       <artifact group="!org.nuxeo*" />
       <artifact group="org.nuxeo.common" />
 
-      <artifact name="nuxeo-platform-ear" />
-      <artifact name="nuxeo-distribution-dm" />
+      <artifact name="nuxeo-core-storage-sql-ra" />
       <artifact name="nuxeo-apt-extensions" />
-      <artifact name="*facade" />
+      <artifact name="nuxeo-webengine-apt" />
+      
+      <!-- exclude jbpm -->
+      <artifact name="nuxeo-platform-jbpm-core" />
+      <artifact name="nuxeo-platform-jbpm-web" />
+      <artifact name="nuxeo-platform-publisher-jbpm" />
+      
+      <!-- exclude webservices -->
+      <artifact name="nuxeo-platform-ws" />
+      
+      <!-- exclude facades -->
+      <artifact name="nuxeo-platform-audit-facade" />
+      <artifact name="nuxeo-core-facade" />
+      <artifact name="nuxeo-platform-directory-facade" />
+      <artifact name="nuxeo-platform-filemanager-facade" />
+      <artifact name="nuxeo-platform-io-facade" />
+      <artifact name="nuxeo-platform-jbpm-facade" />
+      <artifact name="nuxeo-platform-mimetype-facade" />
+      <artifact name="nuxeo-platform-notification-facade" />
+      <artifact name="nuxeo-platform-placeful-facade" />
+      <artifact name="nuxeo-platform-relations-facade" />
+      <artifact name="nuxeo-platform-search-facade" />
+      <artifact name="nuxeo-platform-types-facade" />
+      <artifact name="nuxeo-platform-url-facade" />
+      <artifact name="nuxeo-platform-usermanager-facade" />
+      <artifact name="nuxeo-platform-tag-facade" />
+      
+      <!-- exclude jboss dependencies -->
+      <artifact name="nuxeo-runtime-jboss-adapter" />
+      <artifact name="nuxeo-platform-auth-web-jboss" />
+      <artifact name="nuxeo-platform-login-jboss" />
     </excludes>
   </artifactSet>
 
@@ -85,9 +112,6 @@
       <artifact group="org.mortbay.jetty" name="jsp-api-2.1" />  
       <artifact group="org.mortbay.jetty" name="jsp-2.1" />  
 
-      <!--<artifact group="javax.servlet.jsp" name="jsp-api" />  
-      <artifact group="org.glassfish.web" name="jsp-impl" />  -->
-
       <artifact group="jboss" name="javassist" />  
 
       <artifact group="com.h2database" name="h2" />  
@@ -116,7 +140,6 @@
       <artifact group="org.apache" name="xmlbeans" />
       <artifact group="oro" name="oro" />
       <artifact group="opensymphony" name="quartz-all" />
-<!--      M2_REPO/opensymphony/quartz-all/1.5.2/quartz-all-1.5.2.jar - /Users/julien/.m2/repository/opensymphony/quartz-all/1.5.2/quartz-all-1.5.2.jar-->
     </artifacts>
   </artifactSet>
 
@@ -134,6 +157,13 @@
   <assemble>
     <set>bundles</set>
     <outputFile>bundles</outputFile>
+  </assemble>
+  
+  <assemble>
+    <delete>true</delete>
+    <outputFile>bundles</outputFile>
+    <file>nuxeo-platform-ear-${project.version}.pom</file>
+    <file>nuxeo-distribution-dm-${project.version}.pom</file>
   </assemble>
 
   <assemble>  

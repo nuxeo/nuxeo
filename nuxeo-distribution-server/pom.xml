@@ -105,9 +105,9 @@
   </build>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution/nuxeo-distribution-server</connection>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution/</connection>
     <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distribution/nuxeo-distribution-server</developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo/nuxeo-distribution/nuxeo-distribution-server/</url>
+    <url>http://trac.nuxeo.org/nuxeo/browser/nuxeo_distribution/nuxeo-distribution-server</url>
   </scm>
 
   <repositories>
@@ -128,6 +128,7 @@
         <enabled>false</enabled>
       </releases>
       <snapshots>
+        <updatePolicy>always</updatePolicy>
         <enabled>true</enabled>
       </snapshots>
     </repository>
@@ -153,6 +154,7 @@
         <enabled>false</enabled>
       </releases>
       <snapshots>
+        <updatePolicy>always</updatePolicy>
         <enabled>true</enabled>
       </snapshots>
     </pluginRepository>
