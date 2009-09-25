@@ -104,7 +104,7 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testGetBlobsFromBlobInListDocument() throws Exception {
+    public void testGetBlobsFromBlobInList() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
         DocumentModel blobInListEmpty = new DocumentModelImpl(
