@@ -29,7 +29,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
@@ -38,7 +37,6 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
-import org.nuxeo.theme.models.InfoPool;
 import org.nuxeo.theme.negotiation.NegotiationException;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
@@ -46,7 +44,6 @@ import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.webengine.negotiation.WebNegotiator;
 
 import freemarker.core.Environment;
-import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.SimpleScalar;
 import freemarker.template.Template;
 import freemarker.template.TemplateDirectiveBody;
@@ -159,7 +156,8 @@ public class ThemeDirective implements TemplateDirectiveModel {
         }
 
         final ApplicationType application = (ApplicationType) Manager.getTypeRegistry().lookup(
-                TypeFamily.APPLICATION, context.getModulePath(), context.getModule().getName());
+                TypeFamily.APPLICATION, context.getModulePath(),
+                context.getModule().getName());
 
         if (application == null) {
             log.error(getErrorMessage("Application not set for: ", context));
@@ -183,7 +181,8 @@ public class ThemeDirective implements TemplateDirectiveModel {
         }
 
         if (strategy == null) {
-            log.error(getErrorMessage("Negotiation strategy not set for: ", context));
+            log.error(getErrorMessage("Negotiation strategy not set for: ",
+                    context));
             return null;
         }
 
@@ -191,7 +190,8 @@ public class ThemeDirective implements TemplateDirectiveModel {
             final String spec = new WebNegotiator(strategy, context).getSpec();
             themeUrl = new URL(spec);
         } catch (NegotiationException e) {
-            log.error(getErrorMessage("Could not get negotiation information for: ", context));
+            log.error(getErrorMessage(
+                    "Could not get negotiation information for: ", context));
             return null;
         }
 
