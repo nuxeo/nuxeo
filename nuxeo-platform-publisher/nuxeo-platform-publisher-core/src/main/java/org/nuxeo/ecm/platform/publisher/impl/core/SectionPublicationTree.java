@@ -1,23 +1,24 @@
 package org.nuxeo.ecm.platform.publisher.impl.core;
 
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.publisher.api.*;
+import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublicationTree;
+import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
+import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
+import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
+import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.helper.PublicationRelationHelper;
-import org.nuxeo.ecm.platform.relations.api.util.RelationHelper;
-import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
-import org.nuxeo.ecm.platform.relations.api.Resource;
-import org.nuxeo.ecm.platform.relations.api.QNameResource;
-import org.nuxeo.ecm.platform.relations.api.Statement;
-import org.nuxeo.ecm.platform.relations.api.RelationManager;
-import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
-import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
-import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Collections;
 
 /**
  * Simple implementation of a {@link PublicationTree} using the Core Sections.
@@ -51,44 +52,35 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
 
     public List<PublishedDocument> getExistingPublishedDocument(
             DocumentLocation docLoc) throws ClientException {
-        DocumentModel livedoc = getCoreSession().getDocument(docLoc.getDocRef());
-        if (livedoc.isProxy()) {
-            livedoc = getCoreSession().getDocument(new IdRef(livedoc.getSourceId()));
-        }
-
-        List<DocumentModel> possibleDocsToCheck = new ArrayList<DocumentModel>();
-        if (!livedoc.isVersion()) {
-            possibleDocsToCheck = getCoreSession().getVersions(
-                    docLoc.getDocRef());
-        } else {
-            possibleDocsToCheck.add(livedoc);
-        }
-
         List<PublishedDocument> publishedDocs = new ArrayList<PublishedDocument>();
-        for (DocumentModel doc : possibleDocsToCheck) {
-            DocumentModelList proxies = getCoreSession().getProxies(
-                    doc.getRef(), null);
-            for (DocumentModel proxy : proxies) {
-                if (proxy.getPathAsString().startsWith(
-                        treeRoot.getPathAsString())) {
-                    publishedDocs.add(factory.wrapDocumentModel(proxy));
-                }
+        DocumentModelList proxies = getCoreSession().getProxies(
+                docLoc.getDocRef(), null);
+        for (DocumentModel proxy : proxies) {
+            if (proxy.getPathAsString().startsWith(treeRoot.getPathAsString())) {
+                publishedDocs.add(factory.wrapDocumentModel(proxy));
             }
         }
         return publishedDocs;
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
-        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.publish(doc, targetNode);
-        PublicationRelationHelper.addPublicationRelation(publishedDocument.getProxy(), this);
+    public PublishedDocument publish(DocumentModel doc,
+            PublicationNode targetNode) throws ClientException {
+        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.publish(
+                doc, targetNode);
+        PublicationRelationHelper.addPublicationRelation(
+                publishedDocument.getProxy(), this);
         return publishedDocument;
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params) throws ClientException {
-        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.publish(doc, targetNode, params);
-        PublicationRelationHelper.addPublicationRelation(publishedDocument.getProxy(), this);
+    public PublishedDocument publish(DocumentModel doc,
+            PublicationNode targetNode, Map<String, String> params)
+            throws ClientException {
+        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.publish(
+                doc, targetNode, params);
+        PublicationRelationHelper.addPublicationRelation(
+                publishedDocument.getProxy(), this);
         return publishedDocument;
     }
 
@@ -133,7 +125,8 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
     }
 
     @Override
-    public boolean canPublishTo(PublicationNode publicationNode) throws ClientException {
+    public boolean canPublishTo(PublicationNode publicationNode)
+            throws ClientException {
         if (publicationNode == null || publicationNode.getParent() == null) {
             // we can't publish in the root node
             return false;
@@ -143,7 +136,8 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
     }
 
     @Override
-    public boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException {
+    public boolean canUnpublish(PublishedDocument publishedDocument)
+            throws ClientException {
         if (!accept(publishedDocument)) {
             return false;
         }
@@ -151,19 +145,24 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
         return coreSession.hasPermission(docRef, SecurityConstants.WRITE);
     }
 
-    public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException {
+    public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel)
+            throws ClientException {
         return factory.wrapDocumentModel(documentModel);
     }
 
     @Override
-    public boolean isPublicationNode(DocumentModel documentModel) throws ClientException {
+    public boolean isPublicationNode(DocumentModel documentModel)
+            throws ClientException {
         return documentModel.getPathAsString().startsWith(rootPath);
     }
 
     @Override
-    public PublicationNode wrapToPublicationNode(DocumentModel documentModel) throws ClientException {
+    public PublicationNode wrapToPublicationNode(DocumentModel documentModel)
+            throws ClientException {
         if (!isPublicationNode(documentModel)) {
-            throw new ClientException("Document " + documentModel.getPathAsString() + " is not a valid publication node.");
+            throw new ClientException("Document "
+                    + documentModel.getPathAsString()
+                    + " is not a valid publication node.");
         }
         return new CoreFolderPublicationNode(documentModel, getConfigName(),
                 sid, factory);
