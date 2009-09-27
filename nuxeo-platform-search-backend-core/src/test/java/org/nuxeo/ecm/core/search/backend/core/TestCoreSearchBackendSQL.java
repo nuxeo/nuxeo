@@ -17,63 +17,22 @@
 
 package org.nuxeo.ecm.core.search.backend.core;
 
-import java.io.File;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
-import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 
 /*
  * @author Florent Guillaume
  */
 public class TestCoreSearchBackendSQL extends CoreSearchBackendTestCase {
 
-    /*
-     * ----- Derby configuration -----
-     */
-
-    /** This directory will be deleted and recreated. */
-    protected static final String DERBY_DIRECTORY = "target/test/derby";
-
-    protected static final String DERBY_LOG = "target/test/derby.log";
-
     @Override
-    protected void deployRepository() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.storage.sql");
-        setUpRepositoryDerby();
-        deployContrib("org.nuxeo.ecm.platform.search.backend.core.tests",
-                "OSGI-INF/repository-sql-contrib.xml");
+    public void deployRepository() throws Exception {
+        DatabaseHelper.DATABASE.setUp();
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test",
+                DatabaseHelper.DATABASE.getDeploymentContrib());
     }
 
     @Override
-    protected void undeployRepository() throws Exception {
-        tearDownRepositoryDerby();
+    public void undeployRepository() throws Exception {
+        DatabaseHelper.DATABASE.tearDown();
     }
-
-    /*
-     * ----- Derby -----
-     */
-
-    protected static void setUpRepositoryDerby() {
-        File dbdir = new File(DERBY_DIRECTORY);
-        File parent = dbdir.getParentFile();
-        FileUtils.deleteTree(dbdir);
-        parent.mkdirs();
-        System.setProperty("derby.stream.error.file",
-                new File(DERBY_LOG).getAbsolutePath());
-        // the following noticeably improves performance
-        System.setProperty("derby.system.durability", "test");
-    }
-
-    protected static void tearDownRepositoryDerby() {
-        try {
-            DriverManager.getConnection("jdbc:derby:;shutdown=true");
-        } catch (SQLException e) {
-            if ("Derby system shutdown.".equals(e.getMessage())) {
-                return;
-            }
-        }
-        throw new RuntimeException("Expected Derby shutdown exception");
-    }
-
 }
