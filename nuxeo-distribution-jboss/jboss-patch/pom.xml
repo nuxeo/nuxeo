@@ -381,9 +381,9 @@
                   <artifactId>webservices-tools</artifactId>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>hibernate</groupId>
-                  <artifactId>hibernate3</artifactId>
-                  <version>3.2.1.ga-NXP-3881</version>
+                  <groupId>org.hibernate</groupId>
+                  <artifactId>hibernate</artifactId>
+                  <version>3.2.4.SP1_CP01-brew_NXP-3881</version>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${jboss.lib}</outputDirectory>
