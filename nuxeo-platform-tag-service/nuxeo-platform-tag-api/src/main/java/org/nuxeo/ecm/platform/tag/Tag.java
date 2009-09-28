@@ -45,4 +45,24 @@ public class Tag implements Serializable {
     public Tag() {
     }
 
+    public String getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(String tagId) {
+        this.tagId = tagId;
+    }
+
+    public String getTagLabel() {
+        return tagLabel;
+    }
+
+    public void setTagLabel(String tagLabel) {
+        this.tagLabel = tagLabel;
+    }
+
+    public String toString() {
+        return tagLabel;
+    }
+
 }

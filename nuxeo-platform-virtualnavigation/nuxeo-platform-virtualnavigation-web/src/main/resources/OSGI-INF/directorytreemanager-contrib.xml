@@ -22,6 +22,9 @@
       <directory>country</directory>
     </directoryTree>
 
+    <directoryTree name="TAG_CLOUD">
+    </directoryTree>
+
   </extension>
 
 </component>
