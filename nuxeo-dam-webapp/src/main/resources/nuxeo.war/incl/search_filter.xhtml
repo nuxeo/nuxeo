@@ -17,7 +17,7 @@
   <a4j:form id="filterForm">
     <h:inputText class="searchInput"
       value="#{filterActions.filterDocument.filter_query.ecm_fulltext}" />
-    <a4j:commandButton  styleClass="button"
+    <a4j:commandButton  styleClass="button" type="submit"
       value="#{messages['label.action.filter.doFulltextSearch']}"
       action="#{filterActions.invalidateProvider}"
       reRender="filterResultTable" />
