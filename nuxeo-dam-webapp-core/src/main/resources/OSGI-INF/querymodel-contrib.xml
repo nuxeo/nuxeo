@@ -11,12 +11,16 @@
 
       <whereClause>
 
+        <predicate parameter="ecm:fulltext" operator="LIKE">
+          <field schema="filter_query" name="ecm_fulltext" />
+        </predicate>
+
         <predicate parameter="ecm:primaryType" operator="=">
           <field schema="filter_query" name="ecm_primaryType" />
         </predicate>
 
         <fixedPart>
-        ecm:mixinType != 'HiddenInNavigation' AND ecm:primaryType IN ('Picture', 'File')
+          ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:primaryType IN ('Picture', 'File')
         </fixedPart>
 
       </whereClause>
