@@ -100,6 +100,7 @@ public class TestTagService extends SQLRepositoryTestCase {
         DocumentModel tagRoot = tagService.getRootTag(session);
         assertNotNull(tagRoot);
         tagService.getOrCreateTag(tagRoot, "tag1", true);
+        session.save();
         DocumentModel tag = null;
         for (DocumentModel tagChild : session.getChildren(tagRoot.getRef())) {
             if (tagChild.getProperty("tag", "label").toString().equals("tag1")) {
