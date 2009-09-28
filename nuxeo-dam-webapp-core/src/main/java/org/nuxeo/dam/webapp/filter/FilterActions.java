@@ -19,23 +19,113 @@
 
 package org.nuxeo.dam.webapp.filter;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+
+import java.io.Serializable;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
+import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
-import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
+import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService;
+import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
+import org.nuxeo.ecm.platform.ui.web.api.SortNotSupportedException;
+import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
+import org.nuxeo.runtime.api.Framework;
 
-public interface FilterActions extends ResultsProviderFarm {
+@Scope(CONVERSATION)
+@Name("filterActions")
+public class FilterActions implements Serializable {
 
-    DocumentModel getFilterDocument() throws ClientException;
+    private static final long serialVersionUID = 8713355502550622010L;
 
-    void setFilterDocument(DocumentModel filterDocument);
+    @SuppressWarnings("unused")
+    private static final Log log = LogFactory.getLog(FilterActions.class);
 
-    /**
-     * Observer on Seam event to perform some necessary invalidations
-     *
-     * @param qm the query model that's been changed
-     * @throws ClientException
-     */
-    void queryModelChanged(QueryModel qm);
+    protected static final String QUERY_MODEL_NAME = "FILTERED_DOCUMENTS";
+
+    @In(create = true, required = false)
+    transient CoreSession documentManager;
+
+    @In(create = true, required = false)
+    transient ResultsProvidersCache resultsProvidersCache;
+
+    protected transient QueryModelService queryModelService;
+
+    protected DocumentModel filterDocument;
+
+    public DocumentModel getFilterDocument() throws ClientException {
+        if (filterDocument == null) {
+            QueryModelDescriptor descriptor;
+            try {
+                descriptor = getQueryModelDescriptor(QUERY_MODEL_NAME);
+            } catch (Exception e) {
+                throw new ClientException("Failed to get query model: " + QUERY_MODEL_NAME, e);
+            }
+            filterDocument = documentManager.createDocumentModel(descriptor.getDocType());
+        }
+        return filterDocument;
+    }
+
+    public void setFilterDocument(DocumentModel filterDocument) {
+        this.filterDocument = filterDocument;
+    }
+
+    public PagedDocumentsProvider getResultsProvider(String queryModelName)
+            throws ClientException, ResultsProviderFarmUserException {
+        try {
+            return getResultsProvider(queryModelName, null);
+        } catch (SortNotSupportedException e) {
+            throw new ClientException("unexpected exception", e);
+        }
+    }
+
+    public PagedDocumentsProvider getResultsProvider(String queryModelName,
+            SortInfo sortInfo) throws ClientException,
+            ResultsProviderFarmUserException {
+        if (!QUERY_MODEL_NAME.equals(queryModelName)) {
+            return null;
+        }
+
+        QueryModelDescriptor descriptor;
+        try {
+            descriptor = getQueryModelDescriptor(queryModelName);
+        } catch (Exception e) {
+            throw new ClientException("Failed to get query model: " + queryModelName, e);
+        }
+
+        QueryModel model = new QueryModel(descriptor, getFilterDocument());
+
+        if (!descriptor.isSortable() && sortInfo != null) {
+            throw new SortNotSupportedException();
+        }
+
+        PagedDocumentsProvider provider = model.getResultsProvider(
+                documentManager, null, sortInfo);
+        provider.setName(queryModelName);
+        return provider;
+    }
+
+    @Observer(EventNames.QUERY_MODEL_CHANGED)
+    public void queryModelChanged(QueryModel qm) {
+        resultsProvidersCache.invalidate(qm.getDescriptor().getName());
+    }
+
+    protected QueryModelDescriptor getQueryModelDescriptor(String descriptorName) throws Exception {
+        if (queryModelService == null) {
+            queryModelService = (QueryModelService) Framework.getService(QueryModelService.class);
+        }
+        return queryModelService.getQueryModelDescriptor(descriptorName);
+    }
 
 }
