@@ -17,7 +17,7 @@
           itemStyleClass="#{nxu:test(multiNavTreeManager.selectedNavigationTree == tree.treeId, 'selected', '')}">
           <a4j:commandLink
             action="#{multiNavTreeManager.setSelectedNavigationTree(tree.treeId)}"
-            reRender="MultiTreeView">
+            reRender="MultiTreeView, documentViewPanel">
             <nxu:graphicImage value="img/#{tree.treeId}.png" title="#{messages[docList.title]}" />
           </a4j:commandLink>
          </nxu:dataList>
