@@ -29,7 +29,6 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
 
-import org.hibernate.exception.SQLExceptionConverter;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -60,8 +59,6 @@ public abstract class Dialect {
     public JDBCInfo jdbcInfo(String string, int jdbcType) {
         return new JDBCInfo(string, jdbcType);
     }
-
-    protected final org.hibernate.dialect.Dialect dialect;
 
     protected final boolean storesUpperCaseIdentifiers;
 
@@ -102,9 +99,7 @@ public abstract class Dialect {
         throw new StorageException("Unsupported database: " + databaseName);
     }
 
-    public Dialect(org.hibernate.dialect.Dialect dialect,
-            DatabaseMetaData metadata) throws StorageException {
-        this.dialect = dialect;
+    public Dialect(DatabaseMetaData metadata) throws StorageException {
         try {
             storesUpperCaseIdentifiers = metadata.storesUpperCaseIdentifiers();
         } catch (SQLException e) {
@@ -137,19 +132,15 @@ public abstract class Dialect {
     }
 
     public char openQuote() {
-        return dialect.openQuote();
+        return '"';
     }
 
     public char closeQuote() {
-        return dialect.closeQuote();
-    }
-
-    public SQLExceptionConverter buildSQLExceptionConverter() {
-        return dialect.buildSQLExceptionConverter();
+        return '"';
     }
 
     public String toBooleanValueString(boolean bool) {
-        return dialect.toBooleanValueString(bool);
+        return bool ? "1" : "0";
     }
 
     protected int getMaxNameSize() {
@@ -305,42 +296,48 @@ public abstract class Dialect {
     }
 
     public String getNoColumnsInsertString() {
-        return dialect.getNoColumnsInsertString();
+        return "VALUES ( )";
     }
 
     public String getNullColumnString() {
-        return dialect.getNullColumnString();
+        return "";
     }
 
     public String getTableTypeString(Table table) {
-        return dialect.getTableTypeString();
+        return "";
     }
 
     public String getAddPrimaryKeyConstraintString(String constraintName) {
-        return dialect.getAddPrimaryKeyConstraintString(constraintName);
+        return " ADD CONSTRAINT" + constraintName + " PRIMARY KEY ";
     }
 
     public String getAddForeignKeyConstraintString(String constraintName,
             String[] foreignKeys, String referencedTable, String[] primaryKeys,
             boolean referencesPrimaryKey) {
-        return dialect.getAddForeignKeyConstraintString(constraintName,
-                foreignKeys, referencedTable, primaryKeys, referencesPrimaryKey);
+        String sql = String.format(
+                " ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s",
+                constraintName, StringUtils.join(foreignKeys, ", "),
+                referencedTable);
+        if (!referencesPrimaryKey) {
+            sql += " (" + StringUtils.join(primaryKeys, ", ") + ')';
+        }
+        return sql;
     }
 
     public boolean qualifyIndexName() {
-        return dialect.qualifyIndexName();
+        return true;
     }
 
     public boolean supportsIfExistsBeforeTableName() {
-        return dialect.supportsIfExistsBeforeTableName();
+        return false;
     }
 
     public boolean supportsIfExistsAfterTableName() {
-        return dialect.supportsIfExistsAfterTableName();
+        return false;
     }
 
     public String getCascadeDropConstraintsString() {
-        return dialect.getCascadeConstraintsString();
+        return "";
     }
 
     public boolean supportsCircularCascadeDeleteConstraints() {
@@ -349,8 +346,7 @@ public abstract class Dialect {
     }
 
     public String getAddColumnString() {
-        // "ADD COLUMN" or "ADD"
-        return dialect.getAddColumnString().toUpperCase();
+        return "ADD COLUMN";
     }
 
     /**

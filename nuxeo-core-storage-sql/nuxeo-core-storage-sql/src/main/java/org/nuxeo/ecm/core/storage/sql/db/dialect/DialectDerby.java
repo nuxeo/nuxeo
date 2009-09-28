@@ -30,7 +30,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.hibernate.dialect.DerbyDialect;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -49,7 +48,7 @@ public class DialectDerby extends Dialect {
 
     public DialectDerby(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(new DerbyDialect(), metadata);
+        super(metadata);
     }
 
     @Override

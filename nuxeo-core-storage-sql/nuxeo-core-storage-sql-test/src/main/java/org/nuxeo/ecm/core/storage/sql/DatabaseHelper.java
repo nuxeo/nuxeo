@@ -158,4 +158,8 @@ public abstract class DatabaseHelper {
         return false;
     }
 
+    public boolean supportsMultipleFulltextIndexes() {
+        return true;
+    }
+
 }

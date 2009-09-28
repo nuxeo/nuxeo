@@ -96,4 +96,9 @@ public class DatabaseSQLServer extends DatabaseHelper {
         }
     }
 
+    @Override
+    public boolean supportsMultipleFulltextIndexes() {
+        return false;
+    }
+
 }
