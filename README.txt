@@ -45,6 +45,12 @@ deploy" each time you change the source code.
 
 6. You're done.
 
+Alternative distributions
+-------------------------
+
+To target other application servers (Jetty, Glassfish) or other DB backends
+(PostgreSQL, MySQL, Oracle, ...) see nuxeo-distribution/README.txt
+
 Long story
 ----------
 
