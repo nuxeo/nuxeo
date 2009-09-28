@@ -129,6 +129,7 @@
       <artifact group="oro" name="oro" />
       <artifact group="org.apache.poi" name="poi" />
       <artifact group="org.apache.poi" name="poi-scratchpad" />
+      <artifact group="org.apache.poi" name="poi-ooxml" />
       <artifact group="com.sun.xml" name="relaxngDatatype" />
       <artifact group="com.sun.xml" name="xsom" />
       <!--
