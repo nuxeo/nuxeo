@@ -16,13 +16,13 @@
  */
 package org.nuxeo.ecm.platform.tag;
 
+import java.util.Calendar;
+
+import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
-import org.nuxeo.ecm.core.persistence.HibernateConfigurator;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
-import org.nuxeo.ecm.platform.tag.persistence.TagSchemaUpdater;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.com>"
@@ -31,11 +31,18 @@ import org.nuxeo.runtime.api.Framework;
 public class TagServiceInitializer extends RepositoryInitializationHandler {
 
     @Override
-    public void doInitializeRepository(CoreSession session) throws ClientException {
-        HibernateConfigurator configurator = Framework.getLocalService(HibernateConfigurator.class);
-        HibernateConfiguration configuration = configurator.getHibernateConfiguration("nxtags");
-        TagSchemaUpdater updater = new TagSchemaUpdater(configuration.hibernateProperties);
-        updater.update();
+    public void doInitializeRepository(CoreSession session)
+            throws ClientException {
+        DocumentModel rootTag = session.createDocumentModel(
+                session.getRootDocument().getPathAsString(),
+                IdUtils.generateId(TagConstants.TAGS_DIRECTORY),
+                TagConstants.HIDDEN_FOLDER_TYPE);
+        rootTag.setPropertyValue("dc:title", TagConstants.TAGS_DIRECTORY);
+        rootTag.setPropertyValue("dc:description", "");
+        rootTag.setPropertyValue("dc:created", Calendar.getInstance());
+        rootTag = session.createDocument(rootTag);
+        rootTag = session.saveDocument(rootTag);
+        session.save();
     }
 
 }

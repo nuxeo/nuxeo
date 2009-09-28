@@ -1,0 +1,51 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core">
+  
+  <a4j:outputPanel id="taggingPanel">
+    <ui:include src="/incl/message_banner.xhtml"/>
+    <nxu:dataTable id="tagsTable"
+      value="#{tagActions.documentTags}" var="tag"
+      rendered="#{not empty tagActions.documentTags}">
+
+      <nxu:column>
+        <h:graphicImage id="tagIcon" url="/icons/tag_blue.png"/>
+      </nxu:column>
+      
+      <nxu:column>
+        <h:outputText value="#{tag}" />
+      </nxu:column>
+      
+      <nxu:column>
+        <a4j:commandLink id="removeTag" action="#{tagActions.removeTagging(tag.tagId)}" immediate="true"
+          reRender="documentViewPanel, MultiTreeView" rendered="#{tagActions.canModifyTag(tag)}">
+          <h:graphicImage value="/icons/action_delete_mini.gif" />
+        </a4j:commandLink>
+      </nxu:column>
+    </nxu:dataTable>
+
+    <h:panelGrid columns="1">          
+      <a4j:commandLink id="addTagLink"
+        ajaxSingle="true" actionListener="#{tagActions.showAddTag}"
+        reRender="documentViewPanel, MultiTreeView">
+        <h:graphicImage id="toggle_plus" url="/icons/action_add.gif" />
+        <h:outputText value="#{messages['command.tag.add.new.tag']} "/>
+      </a4j:commandLink>
+      
+    
+      <h:panelGroup rendered="#{tagActions.addTag}">
+        <h:inputText id="tagLabel" value="#{tagActions.tagsLabel}"
+          styleClass="dataInputText">
+        </h:inputText>
+        
+        <a4j:commandButton value="#{messages['command.tag.add.new.tag']}"
+          action="#{tagActions.addTagging}" styleClass="button" 
+          reRender="documentViewPanel, MultiTreeView" />
+      </h:panelGroup>   
+    </h:panelGrid>     
+
+  </a4j:outputPanel>
+
+</div>
