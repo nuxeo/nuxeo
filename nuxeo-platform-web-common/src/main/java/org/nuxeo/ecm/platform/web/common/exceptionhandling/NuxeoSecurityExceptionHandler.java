@@ -37,18 +37,19 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author ldoguin
- * 
+ *
  */
 public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
 
     protected static final Log log = LogFactory.getLog(NuxeoSecurityExceptionHandler.class);
-    
+
     private PluggableAuthenticationService service;
 
     public NuxeoSecurityExceptionHandler() throws Exception {
-      //  initAuthentificationService();
+        // initAuthentificationService();
     }
 
+    @Override
     public void handleException(HttpServletRequest request,
             HttpServletResponse response, Throwable t) throws IOException,
             ServletException {
@@ -72,10 +73,12 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
                         NuxeoAuthenticationFilter.getRequestedUrl(request));
                 // Redirect to login with urlParameters
                 if (!response.isCommitted()) {
-                    String baseURL = initAuthentificationService().getBaseURL(request)
+                    String baseURL = initAuthentificationService().getBaseURL(
+                            request)
                             + NXAuthConstants.LOGOUT_PAGE;
                     request.setAttribute(
-                            NuxeoAuthenticationFilter.URLPolicyService_DISABLE_REDIRECT_REQUEST_KEY, true);
+                            NuxeoAuthenticationFilter.URLPolicyService_DISABLE_REDIRECT_REQUEST_KEY,
+                            true);
                     baseURL = URIUtils.addParametersToURIQuery(baseURL,
                             urlParameters);
                     response.sendRedirect(baseURL);
@@ -88,9 +91,10 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
         super.handleException(request, response, t);
     }
 
-    private PluggableAuthenticationService initAuthentificationService() throws ServletException {
+    private PluggableAuthenticationService initAuthentificationService()
+            throws ServletException {
         service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-            PluggableAuthenticationService.NAME);
+                PluggableAuthenticationService.NAME);
         if (service == null) {
             log.error("Unable to get Service "
                     + PluggableAuthenticationService.NAME);

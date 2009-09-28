@@ -40,24 +40,20 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandl
 public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
 
     protected static final Log log = LogFactory.getLog(DefaultNuxeoExceptionHandler.class);
-    
+
     protected NuxeoExceptionHandlerParameters parameters = null;
-    
+
     public DefaultNuxeoExceptionHandler() throws Exception {
     }
-    
+
     public void setParameters(NuxeoExceptionHandlerParameters parameters) {
         this.parameters = parameters;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionHandler#handleException(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Throwable)
-     */
     public void handleException(HttpServletRequest request,
             HttpServletResponse response, Throwable t) throws IOException,
             ServletException {
-        request.setAttribute(
-                NuxeoExceptionFilter.EXCEPTION_FILTER_ATTRIBUTE,
+        request.setAttribute(NuxeoExceptionFilter.EXCEPTION_FILTER_ATTRIBUTE,
                 true);
         ErrorHandler handler = getHandler(t);
         parameters.getListener().startHandling(t, request, response);
@@ -68,8 +64,8 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
         String stackTrace = swriter.getBuffer().toString();
         log.error(stackTrace);
         parameters.getLogger().error(stackTrace);
-        parameters.getListener().beforeSetErrorPageAttribute(unwrappedException, request,
-                response);
+        parameters.getListener().beforeSetErrorPageAttribute(
+                unwrappedException, request, response);
         request.setAttribute("exception_message",
                 unwrappedException.getLocalizedMessage());
         request.setAttribute("user_message", getUserMessage(
@@ -80,15 +76,18 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
         String dumpedRequest = parameters.getRequestDumper().getDump(request);
         parameters.getLogger().error(dumpedRequest);
         request.setAttribute("request_dump", dumpedRequest);
-        parameters.getListener().beforeForwardToErrorPage(unwrappedException, request, response);
+        parameters.getListener().beforeForwardToErrorPage(unwrappedException,
+                request, response);
         Integer error = handler.getCode();
         if (error != null) {
             response.setStatus(error);
         }
         String errorPage = handler.getPage();
-        errorPage = (errorPage == null) ? parameters.getDefaultErrorPage() : errorPage;
+        errorPage = (errorPage == null) ? parameters.getDefaultErrorPage()
+                : errorPage;
         request.getRequestDispatcher(errorPage).forward(request, response);
-        parameters.getListener().afterDispatch(unwrappedException, request, response);
+        parameters.getListener().afterDispatch(unwrappedException, request,
+                response);
     }
 
     protected ErrorHandler getHandler(Throwable t) {
@@ -110,7 +109,8 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
     }
 
     protected Object getUserMessage(String messageKey, Locale locale) {
-        return I18NUtils.getMessageString(parameters.getBundleName(), messageKey, null, locale);
+        return I18NUtils.getMessageString(parameters.getBundleName(),
+                messageKey, null, locale);
     }
 
     public static Throwable unwrapException(Throwable t) {
@@ -130,6 +130,5 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
             return unwrapException(cause);
         }
     }
-
 
 }

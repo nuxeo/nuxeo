@@ -126,13 +126,11 @@ public class NuxeoAuthenticationFilter implements Filter {
                 return false;
             }
 
-            EventProducer evtProducer=null;
+            EventProducer evtProducer = null;
             try {
                 evtProducer = Framework.getService(EventProducer.class);
-            }
-            catch (Exception e) {
-                log.error("Unable to get Event producer: "
-                        + e.getMessage());
+            } catch (Exception e) {
+                log.error("Unable to get Event producer: " + e.getMessage());
                 return false;
             }
 
@@ -397,7 +395,8 @@ public class NuxeoAuthenticationFilter implements Filter {
                     }
                 } else {
                     // restore saved Starting page
-                    targetPageURL = getSavedRequestedURL(httpRequest, httpResponse);
+                    targetPageURL = getSavedRequestedURL(httpRequest,
+                            httpResponse);
                 }
 
                 if (userIdent != null && userIdent.containsValidIdentity()) {
@@ -413,10 +412,10 @@ public class NuxeoAuthenticationFilter implements Filter {
                         // LoginResponseHandler
                         NuxeoAuthenticationPlugin plugin = getAuthenticator(cachableUserIdent);
                         if (plugin instanceof LoginResponseHandler) { // call
-                                                                        // the
-                                                                        // extended
-                                                                        // error
-                                                                        // handler
+                            // the
+                            // extended
+                            // error
+                            // handler
                             if (((LoginResponseHandler) plugin).onSuccess(
                                     (HttpServletRequest) request,
                                     (HttpServletResponse) response)) {
@@ -428,10 +427,10 @@ public class NuxeoAuthenticationFilter implements Filter {
                         // LoginResponseHandler
                         NuxeoAuthenticationPlugin plugin = getAuthenticator(cachableUserIdent);
                         if (plugin instanceof LoginResponseHandler) { // call
-                                                                        // the
-                                                                        // extended
-                                                                        // error
-                                                                        // handler
+                            // the
+                            // extended
+                            // error
+                            // handler
                             if (((LoginResponseHandler) plugin).onError(
                                     (HttpServletRequest) request,
                                     (HttpServletResponse) response)) {
@@ -494,7 +493,6 @@ public class NuxeoAuthenticationFilter implements Filter {
         log.debug("Exit Nuxeo Authentication filter");
     }
 
-
     public NuxeoAuthenticationPlugin getAuthenticator(
             CachableUserIdentificationInfo ci) {
         String key = ci.getUserInfo().getAuthPluginName();
@@ -532,7 +530,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
         return anonymous;
     }
-    
+
     public void init(FilterConfig config) throws ServletException {
         String val = config.getInitParameter("byPassAuthenticationLog");
         if (val != null && Boolean.parseBoolean(val)) {
@@ -606,7 +604,8 @@ public class NuxeoAuthenticationFilter implements Filter {
         return requestPage;
     }
 
-    protected static String getSavedRequestedURL(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    protected static String getSavedRequestedURL(
+            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
         String requestedPage = null;
 
@@ -653,7 +652,8 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     protected boolean handleLogout(ServletRequest request,
             ServletResponse response,
-            CachableUserIdentificationInfo cachedUserInfo) throws ServletException {
+            CachableUserIdentificationInfo cachedUserInfo)
+            throws ServletException {
         logLogout(cachedUserInfo.getUserInfo());
 
         // invalidate Session !
@@ -675,7 +675,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
         // Reset JSESSIONID Cookie
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        Cookie cookie= new Cookie("JSESSIONID", null);
+        Cookie cookie = new Cookie("JSESSIONID", null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
         httpResponse.addCookie(cookie);
