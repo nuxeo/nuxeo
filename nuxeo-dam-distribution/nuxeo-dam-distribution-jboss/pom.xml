@@ -17,7 +17,7 @@
   <properties>
     <application.name>nuxeo-dam-jboss</application.name>
     <application.version>${version}</application.version>
-    <nuxeo.ep.jboss>nuxeo-dm-${nuxeo.distribution.version}</nuxeo.ep.jboss>
+    <nuxeo.ep.jboss>nuxeo-dm-jboss-${nuxeo.distribution.version}</nuxeo.ep.jboss>
   </properties>
 
   <profiles>
