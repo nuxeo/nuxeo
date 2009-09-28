@@ -36,6 +36,13 @@ import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * This exception handler adds security error flag in the URL parameters
+ * to ensure the anonymous user will get appropriate error message when being redirected
+ * to login page.
+ *
+ * If it isn't a security exception, or if the user is not anonymous, this handler
+ * ends up using DefaultNuxeoExceptionHandler.
+ *
  * @author ldoguin
  *
  */
