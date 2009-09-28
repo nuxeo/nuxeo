@@ -56,7 +56,7 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
 
     protected String file4id;
 
-    // needed to change the repo config
+    // needed to change the repo config to add CMISQLQueryMaker
     @Override
     public void deployContrib(String bundle, String contrib) throws Exception {
         if (bundle.equals("org.nuxeo.ecm.core.storage.sql.test")
