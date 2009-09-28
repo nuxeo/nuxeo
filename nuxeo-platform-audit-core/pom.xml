@@ -54,6 +54,7 @@
       <groupId>javax.persistence</groupId>
       <artifactId>persistence</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
@@ -86,6 +87,26 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>antlr</groupId>
+      <artifactId>antlr</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-usermanager-core</artifactId>
       <scope>test</scope>
@@ -95,11 +116,6 @@
       <artifactId>nuxeo-platform-management</artifactId>
       <scope>test</scope>
     </dependency>
-
-    <!-- libraries -->
-
-    <!--  tests -->
-
   </dependencies>
 
 </project>
