@@ -135,22 +135,11 @@ public class Service extends DefaultComponent {
         }
 
         providerFactories.put(name, factory);
-        // activate factory at Framework init time, when all datasources are
-        // registered in the JNDI context
-        context.getBundle().getBundleContext().addFrameworkListener(
-                new FrameworkListener() {
-                    public void frameworkEvent(FrameworkEvent event) {
-                        if (event.getType() != FrameworkEvent.STARTED) {
-                            return;
-                        }
-                        try {
-                            factory.activate();
-                        } catch (ProviderException e) {
-                            log.error(e, e);
-                        }
-                    }
-
-                });
+        try {
+            factory.activate();
+        } catch (ProviderException e) {
+            throw new WidgetException(e);
+        }
         return factory;
     }
 
@@ -189,18 +178,7 @@ public class Service extends DefaultComponent {
                     + " for provider: " + name + " not found.");
         }
         providers.put(name, provider);
-        // activate factory at Framework init time, when all datasources are
-        // registered in the JNDI context
-        context.getBundle().getBundleContext().addFrameworkListener(
-                new FrameworkListener() {
-                    public void frameworkEvent(FrameworkEvent event) {
-                        if (event.getType() != FrameworkEvent.STARTED) {
-                            return;
-                        }
-                        provider.activate();
-                    }
-
-                });
+        provider.activate();
         return provider;
 
     }
