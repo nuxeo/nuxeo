@@ -289,9 +289,9 @@ nxthemes css is not used in login.jsp */
       </form>
       </td>
       <td class="news_container" align="right" valign="center">
-<!-- NXP-3991: disable in the mean time
-      <iframe class="block_container" style="display:none" onload="javascript:this.style.display='block';" src="http://www.nuxeo.com/nuxeoep_login/news/"></iframe>
--->
+        <iframe class="block_container" style="display:none"
+          onload="javascript:this.style.display='block';"
+          src="http://www.nuxeo.com/nuxeoep_login/news/"></iframe>
       </td>
     </tr>
       <tr class="footer">
