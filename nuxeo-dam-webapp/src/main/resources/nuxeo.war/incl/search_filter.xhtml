@@ -6,13 +6,24 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
-  
-  <h3><h:outputText value="#{messages['label.filterset.title.search']}"/></h3>
 
-  <div class="filterContent">
-  <h:form>
-    <h:inputText class="searchInput" value="#{filterActions.filterDocument.filter_query.ecm_fulltext}" />
-  </h:form>
-  </div>
-  
+<h3><h:outputText
+	value="#{messages['label.filterset.title.search']}" /></h3>
+
+<div class="filterContent">
+  <a4j:region>
+  <a4j:outputPanel id="filterFormPanel">
+
+  <a4j:form id="filterForm">
+    <h:inputText class="searchInput"
+      value="#{filterActions.filterDocument.filter_query.ecm_fulltext}" />
+    <a4j:commandButton  styleClass="button"
+      value="#{messages['label.action.filter.doFulltextSearch']}"
+      action="#{filterActions.invalidateProvider}"
+      reRender="filterResultTable" />
+  </a4j:form>
+  </a4j:outputPanel>
+  </a4j:region>
+</div>
+
 </div>

@@ -121,8 +121,13 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
     public void queryModelChanged(QueryModel qm) {
         resultsProvidersCache.invalidate(qm.getDescriptor().getName());
     }
+    
+    public void invalidateProvider() {
+        resultsProvidersCache.invalidate(QUERY_MODEL_NAME);
+    }
 
-    protected QueryModelDescriptor getQueryModelDescriptor(String descriptorName) throws Exception {
+    protected QueryModelDescriptor getQueryModelDescriptor(String descriptorName)
+            throws Exception {
         if (queryModelService == null) {
             queryModelService = (QueryModelService) Framework.getService(QueryModelService.class);
         }
