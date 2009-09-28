@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
+import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 import org.nuxeo.ecm.platform.ui.web.api.SortNotSupportedException;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -45,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
 
 @Scope(CONVERSATION)
 @Name("filterActions")
-public class FilterActions implements Serializable {
+public class FilterActions implements Serializable, ResultsProviderFarm {
 
     private static final long serialVersionUID = 8713355502550622010L;
 
