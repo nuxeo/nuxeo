@@ -28,6 +28,9 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
+import org.nuxeo.runtime.model.RuntimeContext;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 public class Service extends DefaultComponent {
 
@@ -99,21 +102,22 @@ public class Service extends DefaultComponent {
 
     private void registerProvider(Extension extension) throws WidgetException {
         final Object[] contribs = extension.getContributions();
+        RuntimeContext context = extension.getContext();
         for (Object contrib : contribs) {
             final ProviderType providerType = (ProviderType) contrib;
             final String providerName = providerType.getName();
             providerTypes.put(providerName, providerType);
-            if (createProvider(providerType) == null) {
-                createFactory(providerType);
+            if (createProvider(providerType, context) == null) {
+                createFactory(providerType, context);
             }
         }
     }
 
-    protected ProviderFactory createFactory(ProviderType type)
-            throws WidgetException {
+    protected ProviderFactory createFactory(ProviderType type,
+            RuntimeContext context) throws WidgetException {
         String name = type.getName();
         String factoryClassName = type.getFactoryClassName();
-        ProviderFactory factory;
+        final ProviderFactory factory;
         try {
             factory = (ProviderFactory) Class.forName(factoryClassName).newInstance();
         } catch (InstantiationException e) {
@@ -129,12 +133,24 @@ public class Service extends DefaultComponent {
                     + factoryClassName + " for provider: " + name
                     + " not found.");
         }
-        try {
-            factory.activate();
-        } catch (ProviderException e) {
-            throw new WidgetException("Cannot activate " + name);
-        }
+
         providerFactories.put(name, factory);
+        // activate factory at Framework init time, when all datasources are
+        // registered in the JNDI context
+        context.getBundle().getBundleContext().addFrameworkListener(
+                new FrameworkListener() {
+                    public void frameworkEvent(FrameworkEvent event) {
+                        if (event.getType() != FrameworkEvent.STARTED) {
+                            return;
+                        }
+                        try {
+                            factory.activate();
+                        } catch (ProviderException e) {
+                            log.error(e, e);
+                        }
+                    }
+
+                });
         return factory;
     }
 
@@ -152,14 +168,14 @@ public class Service extends DefaultComponent {
 
     private final Map<String, ProviderFactory> providerFactories = new HashMap<String, ProviderFactory>();
 
-    protected Provider createProvider(ProviderType providerType)
-            throws WidgetException {
+    protected Provider createProvider(ProviderType providerType,
+            RuntimeContext context) throws WidgetException {
         String name = providerType.getName();
         String className = providerType.getClassName();
         if (className == null) {
             return null;
         }
-        Provider provider;
+        final Provider provider;
         try {
             provider = (Provider) Class.forName(className).newInstance();
         } catch (InstantiationException e) {
@@ -172,8 +188,19 @@ public class Service extends DefaultComponent {
             throw new WidgetException("Provider class : " + className
                     + " for provider: " + name + " not found.");
         }
-        provider.activate();
         providers.put(name, provider);
+        // activate factory at Framework init time, when all datasources are
+        // registered in the JNDI context
+        context.getBundle().getBundleContext().addFrameworkListener(
+                new FrameworkListener() {
+                    public void frameworkEvent(FrameworkEvent event) {
+                        if (event.getType() != FrameworkEvent.STARTED) {
+                            return;
+                        }
+                        provider.activate();
+                    }
+
+                });
         return provider;
 
     }
