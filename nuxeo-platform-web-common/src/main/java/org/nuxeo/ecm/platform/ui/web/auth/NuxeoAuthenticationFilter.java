@@ -577,7 +577,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             requestPage = getRequestedUrl(httpRequest);
         }
         // avoid redirect if not usefull
-        if (requestPage.equals(DEFAULT_START_PAGE)) {
+        if (requestPage.startsWith(DEFAULT_START_PAGE)) {
             return true;
         }
 
