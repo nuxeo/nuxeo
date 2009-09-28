@@ -31,28 +31,6 @@
     <unzip from="${bundle.fileName}" to="/">
       <include>nuxeo.war/**</include>
     </unzip>
-    <!--  create a temp dir -->
-    <!--  be sure no directory with that name exists -->
-    <delete path="nxmailweb.tmp"/>
-    <mkdir path="nxmailweb.tmp"/>
-
-    <unzip from="${bundle.fileName}" to="nxmailweb.tmp">
-      <include>OSGI-INF/l10n/**</include>
-    </unzip>
-
-    <append from="nxmailweb.tmp/OSGI-INF/l10n/messages.properties"
-        to="nuxeo.war/WEB-INF/classes/messages.properties"
-        addNewLine="true"/>
-    <append
-        from="nxmailweb.tmp/OSGI-INF/l10n/messages_en.properties"
-        to="nuxeo.war/WEB-INF/classes/messages_en.properties"
-        addNewLine="true"/>
-    <append
-        from="nxmailweb.tmp/OSGI-INF/l10n/messages_fr.properties"
-        to="nuxeo.war/WEB-INF/classes/messages_fr.properties"
-        addNewLine="true"/>
-
-    <delete path="nxmailweb.tmp"/>
   </install>
     
 </fragment>

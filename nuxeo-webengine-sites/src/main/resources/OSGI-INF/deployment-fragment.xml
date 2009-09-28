@@ -26,22 +26,6 @@
         <include>nuxeo.war/**</include>
       </unzip>
 
-      <!--  Create a temp dir -->
-      <mkdir path="sites.tmp" />
-
-      <unzip from="${bundle.fileName}" to="sites.tmp" />
-
-      <append from="sites.tmp/OSGI-INF/l10n/messages.properties"
-        to="nuxeo.war/WEB-INF/classes/messages.properties" addNewLine="true" />
-
-      <append from="sites.tmp/OSGI-INF/l10n/messages_fr.properties"
-        to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
-
-      <append from="sites.tmp/OSGI-INF/l10n/messages_en.properties"
-        to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
-
-      <delete path="sites.tmp" />
-
     </install>
 
     <extension target="faces-config#NAVIGATION">

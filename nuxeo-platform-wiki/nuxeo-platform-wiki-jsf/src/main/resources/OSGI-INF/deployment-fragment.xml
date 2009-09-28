@@ -15,25 +15,6 @@
         <include>nuxeo.war/**</include>
       </unzip>
 
-      <!--  Create a temp dir -->
-      <mkdir path="wiki-jsf.tmp"/>
-
-      <unzip from="${bundle.fileName}" to="wiki-jsf.tmp"/>
-
-      <append from="wiki-jsf.tmp/OSGI-INF/l10n/messages.properties"
-        to="nuxeo.war/WEB-INF/classes/messages.properties"
-        addNewLine="true"/>
-
-      <append from="wiki-jsf.tmp/OSGI-INF/l10n/messages_fr.properties"
-        to="nuxeo.war/WEB-INF/classes/messages_fr.properties"
-        addNewLine="true"/>
-
-      <append from="wiki-jsf.tmp/OSGI-INF/l10n/messages_en.properties"
-        to="nuxeo.war/WEB-INF/classes/messages_fr.properties"
-        addNewLine="true"/>
-
-      <delete path="wiki-jsf.tmp"/>
-
     </install>
 
 
