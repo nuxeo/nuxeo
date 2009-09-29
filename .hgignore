@@ -1,3 +1,4 @@
+syntax:glob
 .classpath
 .project
 .settings
