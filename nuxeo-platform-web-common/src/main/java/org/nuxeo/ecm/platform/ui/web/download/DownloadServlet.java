@@ -28,6 +28,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jboss.remoting.transport.coyote.ClientAbortException;
 import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -52,6 +55,8 @@ public class DownloadServlet extends HttpServlet {
     protected static final int BUFFER_SIZE = 1024 * 512;
 
     private static final long serialVersionUID = 986876871L;
+
+    public static final Log log = LogFactory.getLog(DownloadServlet.class);
 
     private static CoreSession getCoreSession(String repoName) throws Exception {
         RepositoryManager rm = Framework.getService(RepositoryManager.class);
@@ -133,6 +138,11 @@ public class DownloadServlet extends HttpServlet {
             }
             resp.setContentType(blob.getMimeType());
 
+            long fileSize = blob.getLength();
+            if (fileSize>0) {
+                resp.setContentLength((int)fileSize);
+            }
+
             OutputStream out = resp.getOutputStream();
             in = blob.getStream();
             byte[] buffer = new byte[BUFFER_SIZE];
@@ -141,11 +151,20 @@ public class DownloadServlet extends HttpServlet {
                 out.write(buffer, 0, read);
                 out.flush();
             }
-        } catch (Exception e) {
+        }
+        catch (ClientAbortException cae) {
+            log.warn("Download aborted by client");
+        }
+        catch (Exception e) {
             throw new ServletException(e);
         } finally {
             if (resp != null) {
-                resp.flushBuffer();
+                try {
+                    resp.flushBuffer();
+                }
+                catch (ClientAbortException cae) {
+                    log.warn("Download aborted by client");
+                }
             }
             if (session != null) {
                 CoreInstance.getInstance().close(session);
