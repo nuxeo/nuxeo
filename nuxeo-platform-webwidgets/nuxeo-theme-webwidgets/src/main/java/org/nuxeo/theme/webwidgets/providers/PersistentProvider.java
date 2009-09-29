@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.persistence.HibernateConfigurator;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.TransactionTypeHelper;
 import org.nuxeo.theme.webwidgets.Provider;
 import org.nuxeo.theme.webwidgets.ProviderException;
 import org.nuxeo.theme.webwidgets.Widget;
@@ -147,7 +148,7 @@ public class PersistentProvider implements Provider {
             return;
         }
         HibernateConfiguration config = configurator.getHibernateConfiguration("nxwebwidgets");
-        em = config.getFactory().createEntityManager();
+        em = config.getFactory(TransactionTypeHelper.RESOURCE_LOCAL).createEntityManager();
     }
 
     public Principal getCurrentPrincipal() {
