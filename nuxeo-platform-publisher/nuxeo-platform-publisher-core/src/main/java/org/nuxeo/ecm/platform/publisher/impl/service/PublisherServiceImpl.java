@@ -31,9 +31,9 @@ import org.osgi.framework.FrameworkListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Iterator;
 
 /**
  * Pojo implementation of the publisher service Implements both
@@ -72,12 +72,8 @@ public class PublisherServiceImpl extends DefaultComponent implements
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        if (Boolean.parseBoolean(Framework.getProperty(
-                "org.nuxeo.ecm.platform.publisher.initOnStartup", "true"))) {
-            context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
-                    this);
-        }
-
+        context.getRuntimeContext().getBundle().getBundleContext()
+                .addFrameworkListener(this);
         liveTrees = new HashMap<String, PublicationTree>();
         treeDescriptors = new HashMap<String, PublicationTreeDescriptor>();
         factoryDescriptors = new HashMap<String, PublishedDocumentFactoryDescriptor>();
@@ -683,7 +679,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         for (PublicationTreeConfigDescriptor desc : pendingDescriptors.values()) {
             String treeName = desc.getName() + "-" + domain.getName();
             treeConfigDescriptors.remove(treeName);
-            for (Iterator<String> it = liveTrees.keySet().iterator(); it.hasNext(); ) {
+            for (Iterator<String> it = liveTrees.keySet().iterator(); it.hasNext();) {
                 String entry = it.next();
                 if (entry.startsWith(treeName)) {
                     it.remove();

@@ -36,18 +36,31 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
 
     protected DocumentModel treeRoot;
 
+    protected String sessionId;
+
     @Override
     public void initTree(String sid, CoreSession coreSession,
             Map<String, String> parameters, PublishedDocumentFactory factory,
             String configName, String title) throws ClientException {
         super.initTree(sid, coreSession, parameters, factory, configName, title);
-        treeRoot = coreSession.getDocument(new PathRef(rootPath));
-        rootNode = new CoreFolderPublicationNode(treeRoot, getConfigName(),
-                sid, factory);
+
+        DocumentRef ref = new PathRef(rootPath);
+        if (coreSession.hasPermission(ref, SecurityConstants.READ)) {
+            treeRoot = coreSession.getDocument(new PathRef(rootPath));
+            rootNode = new CoreFolderPublicationNode(treeRoot, getConfigName(),
+                    sid, factory);
+        } else {
+            rootNode = new VirtualCoreFolderPublicationNode(
+                    coreSession.getSessionId(), rootPath, getConfigName(), sid,
+                    factory);
+            sessionId = coreSession.getSessionId();
+        }
     }
 
     protected CoreSession getCoreSession() {
-        return CoreInstance.getInstance().getSession(treeRoot.getSessionId());
+        String coreSessionId = treeRoot == null ? sessionId
+                : treeRoot.getSessionId();
+        return CoreInstance.getInstance().getSession(coreSessionId);
     }
 
     public List<PublishedDocument> getExistingPublishedDocument(
@@ -56,7 +69,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
         DocumentModelList proxies = getCoreSession().getProxies(
                 docLoc.getDocRef(), null);
         for (DocumentModel proxy : proxies) {
-            if (proxy.getPathAsString().startsWith(treeRoot.getPathAsString())) {
+            if (proxy.getPathAsString().startsWith(rootPath)) {
                 publishedDocs.add(factory.wrapDocumentModel(proxy));
             }
         }
@@ -105,9 +118,17 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
     }
 
     public PublicationNode getNodeByPath(String path) throws ClientException {
-        return new CoreFolderPublicationNode(
-                coreSession.getDocument(new PathRef(path)), getConfigName(),
-                getSessionId(), factory);
+        DocumentRef docRef = new PathRef(path);
+        if (coreSession.hasPermission(docRef, SecurityConstants.READ)) {
+            return new CoreFolderPublicationNode(
+                    coreSession.getDocument(new PathRef(path)),
+                    getConfigName(), getSessionId(), factory);
+        } else {
+            return new VirtualCoreFolderPublicationNode(
+                    coreSession.getSessionId(), path, getConfigName(), sid,
+                    factory);
+        }
+
     }
 
     public void release() {

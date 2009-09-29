@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.publisher.impl.core;
 
 import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionsFinder;
@@ -41,9 +42,6 @@ public class RootSectionsPublicationTree extends SectionPublicationTree {
     @Override
     public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters, PublishedDocumentFactory factory, String configName, String title) throws ClientException {
         super.initTree(sid, coreSession, parameters, factory, configName, title);
-        treeRoot = coreSession.getDocument(new PathRef(rootPath));
-        rootNode = new CoreFolderPublicationNode(treeRoot, getConfigName(),
-                sid, factory);
         rootFinder = RootSectionsFinderHelper.getRootSectionsFinder(coreSession);
     }
 
@@ -79,7 +77,7 @@ public class RootSectionsPublicationTree extends SectionPublicationTree {
         }
         // if we ask for the root path of this tree, returns this because
         // of the custom implementations of some methods (getChildrenNodes)
-        if (path.equals(treeRoot.getPathAsString())) {
+        if (path.equals(rootPath)) {
             return this;
         } else {
             // if we ask for a section root, returns a correct PublicationNode

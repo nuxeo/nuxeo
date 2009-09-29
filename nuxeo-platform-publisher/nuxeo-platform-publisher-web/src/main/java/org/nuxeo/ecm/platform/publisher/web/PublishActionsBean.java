@@ -63,12 +63,12 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collections;
 
 /**
  * This Seam bean manages the publishing tab.
@@ -250,8 +250,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
         }
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        return tree.getExistingPublishedDocument(
-                new DocumentLocationImpl(currentDocument));
+        return tree.getExistingPublishedDocument(new DocumentLocationImpl(
+                currentDocument));
     }
 
     public List<PublishedDocument> getPublishedDocumentsFor(String treeName)
@@ -279,15 +279,13 @@ public class PublishActionsBean extends AbstractPublishActions implements
     public boolean canPublishTo(PublicationNode publicationNode)
             throws ClientException {
         PublicationTree tree = getCurrentPublicationTreeForPublishing();
-        return tree != null ? tree.canPublishTo(
-                publicationNode) : false;
+        return tree != null ? tree.canPublishTo(publicationNode) : false;
     }
 
     public boolean canUnpublish(PublishedDocument publishedDocument)
             throws ClientException {
         PublicationTree tree = getCurrentPublicationTreeForPublishing();
-        return tree != null ? tree.canUnpublish(
-                publishedDocument) : false;
+        return tree != null ? tree.canUnpublish(publishedDocument) : false;
     }
 
     public boolean isPublishedDocument() {
@@ -583,10 +581,15 @@ public class PublishActionsBean extends AbstractPublishActions implements
     }
 
     public String getDomainName(String treeName) throws ClientException {
-        PublicationTree tree = publisherService.getPublicationTree(treeName, documentManager, null);
-        Map<String, String> parameters = publisherService.getParametersFor(tree.getConfigName());
-        String domainName = parameters.get(PublisherService.DOMAIN_NAME_KEY);
-        return domainName != null ? " (" + domainName + ")" : "";
+        try {
+            PublicationTree tree = publisherService.getPublicationTree(
+                    treeName, documentManager, null);
+            Map<String, String> parameters = publisherService.getParametersFor(tree.getConfigName());
+            String domainName = parameters.get(PublisherService.DOMAIN_NAME_KEY);
+            return domainName != null ? " (" + domainName + ")" : "";
+        } catch (PublicationTreeNotAvailable e) {
+            return "";
+        }
     }   
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)

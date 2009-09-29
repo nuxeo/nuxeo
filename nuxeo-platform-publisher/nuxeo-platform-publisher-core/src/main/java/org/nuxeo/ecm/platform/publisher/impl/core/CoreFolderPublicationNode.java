@@ -1,9 +1,5 @@
 package org.nuxeo.ecm.platform.publisher.impl.core;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -16,6 +12,7 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.tree.DefaultDocumentTreeSorter;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.publisher.api.AbstractPublicationNode;
@@ -23,6 +20,10 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -42,7 +43,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
 
     protected DocumentModel folder;
 
-    protected CoreFolderPublicationNode parent;
+    protected PublicationNode parent;
 
     protected String treeConfigName;
 
@@ -59,7 +60,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
     }
 
     public CoreFolderPublicationNode(DocumentModel doc, PublicationTree tree,
-            CoreFolderPublicationNode parent, PublishedDocumentFactory factory)
+            PublicationNode parent, PublishedDocumentFactory factory)
             throws ClientException {
         this.folder = doc;
         this.treeConfigName = tree.getConfigName();
@@ -69,8 +70,8 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
     }
 
     public CoreFolderPublicationNode(DocumentModel doc, String treeConfigName,
-            String sid, CoreFolderPublicationNode parent,
-            PublishedDocumentFactory factory) throws ClientException {
+            String sid, PublicationNode parent, PublishedDocumentFactory factory)
+            throws ClientException {
         this.folder = doc;
         this.treeConfigName = treeConfigName;
         this.parent = parent;
@@ -95,9 +96,8 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
             throws ClientException {
         DefaultDocumentTreeSorter sorter = new DefaultDocumentTreeSorter();
         sorter.setSortPropertyPath(DEFAULT_SORT_PROP_NAME);
-        FacetFilter facetFilter = new FacetFilter(null,
-                Arrays.asList(new String[] { FacetNames.FOLDERISH,
-                        FacetNames.HIDDEN_IN_NAVIGATION }));
+        FacetFilter facetFilter = new FacetFilter(null, Arrays.asList(
+                FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION));
         LifeCycleFilter lfFilter = new LifeCycleFilter(
                 LifeCycleConstants.DELETED_STATE, false);
         DocumentModelList children = getCoreSession().getChildren(
@@ -120,8 +120,8 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
         DefaultDocumentTreeSorter sorter = new DefaultDocumentTreeSorter();
         sorter.setSortPropertyPath(DEFAULT_SORT_PROP_NAME);
         FacetFilter facetFilter = new FacetFilter(
-                Arrays.asList(new String[] { FacetNames.FOLDERISH }),
-                Arrays.asList(new String[] { FacetNames.HIDDEN_IN_NAVIGATION }));
+                Arrays.asList(FacetNames.FOLDERISH),
+                Arrays.asList(FacetNames.HIDDEN_IN_NAVIGATION));
         LifeCycleFilter lfFilter = new LifeCycleFilter(
                 LifeCycleConstants.DELETED_STATE, false);
         DocumentModelList children = getCoreSession().getChildren(
@@ -147,12 +147,20 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
 
     public PublicationNode getParent() {
         if (parent == null) {
+            DocumentRef docRef = folder.getParentRef();
             try {
-                parent = new CoreFolderPublicationNode(
-                        getCoreSession().getDocument(folder.getParentRef()),
-                        treeConfigName, sid, factory);
+                if (getCoreSession().hasPermission(docRef,
+                        SecurityConstants.READ)) {
+                    parent = new CoreFolderPublicationNode(
+                            getCoreSession().getDocument(folder.getParentRef()),
+                            treeConfigName, sid, factory);
+                } else {
+                    parent = new VirtualCoreFolderPublicationNode(
+                            getCoreSession().getSessionId(), docRef.toString(),
+                            treeConfigName, sid, factory);
+                }
             } catch (Exception e) {
-                // XXX
+                log.error("Error while retrieving parent: ", e);
             }
         }
         return parent;
