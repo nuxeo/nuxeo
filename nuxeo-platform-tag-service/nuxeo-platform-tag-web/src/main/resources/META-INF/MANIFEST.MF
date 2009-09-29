@@ -6,7 +6,6 @@ Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateless
 Require-Bundle: org.nuxeo.ecm.platform.tag.api,
- org.nuxeo.ecm.platform.tag.ejb,
  org.nuxeo.ecm.webapp.ui
 Export-Package: org.nuxeo.ecm.platform.tag.web
 
