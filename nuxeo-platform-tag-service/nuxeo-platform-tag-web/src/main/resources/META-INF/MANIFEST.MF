@@ -4,8 +4,8 @@ Bundle-Name: Nuxeo ECM Tag Web
 Bundle-SymbolicName: org.nuxeo.ecm.platform.tag.web
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
 Require-Bundle: org.nuxeo.ecm.platform.tag.api,
- org.nuxeo.ecm.platform.tag, 
  org.nuxeo.ecm.platform.tag.ejb
 Export-Package: org.nuxeo.ecm.platform.tag.web
 

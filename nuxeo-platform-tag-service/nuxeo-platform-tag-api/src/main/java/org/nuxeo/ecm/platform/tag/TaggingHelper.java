@@ -16,7 +16,6 @@ package org.nuxeo.ecm.platform.tag;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -41,6 +40,14 @@ public class TaggingHelper {
 
     private TagService tagService;
 
+    public static boolean isStringBlank(String string) {
+        if  (string == null || string.trim().length() == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Tags the received <b>document</b> parameter.
      *
@@ -52,7 +59,7 @@ public class TaggingHelper {
     public void addTagging(CoreSession session, DocumentModel document,
             String tagLabel) throws ClientException {
 
-        if (StringUtils.isEmpty(tagLabel)) {
+        if (isStringBlank(tagLabel)) {
             log.debug("The information provided about the new tag(s) cannot be empty ...");
             return;
         }
@@ -91,7 +98,7 @@ public class TaggingHelper {
     public void removeTagging(CoreSession session, DocumentModel document,
             String taggingId) throws ClientException {
 
-        if (StringUtils.isEmpty(taggingId)) {
+        if (isStringBlank(taggingId)) {
             log.debug("The taggingId cannot be empty ...");
             return;
         }
@@ -154,7 +161,7 @@ public class TaggingHelper {
      */
     public DocumentModelList listDocumentsForTag(CoreSession session,
             String tagDocumentId) throws ClientException {
-        if (StringUtils.isEmpty(tagDocumentId)) {
+        if (isStringBlank(tagDocumentId)) {
             throw new ClientException(
                     "Can not list documents for an empty tag .");
         }
