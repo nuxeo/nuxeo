@@ -34,7 +34,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.hibernate.dialect.Oracle9Dialect;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
@@ -57,9 +56,19 @@ public class DialectOracle extends Dialect {
 
     public DialectOracle(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(new Oracle9Dialect(), metadata);
+        super(metadata);
         fulltextParameters = repositoryDescriptor.fulltextAnalyzer == null ? ""
                 : repositoryDescriptor.fulltextAnalyzer;
+    }
+
+    @Override
+    public String getCascadeDropConstraintsString() {
+        return " CASCADE CONSTRAINTS";
+    }
+
+    @Override
+    public String getAddColumnString() {
+        return "ADD";
     }
 
     @Override
@@ -384,7 +393,7 @@ public class DialectOracle extends Dialect {
                 "CREATE OR REPLACE TYPE NX_ARRAY AS VARRAY(99) OF VARCHAR2(100);"));
 
         statements.add(new ConditionalStatement(
-                true, // early
+                false, // late
                 Boolean.FALSE, // no drop needed
                 null, //
                 null, //
@@ -408,7 +417,7 @@ public class DialectOracle extends Dialect {
                         , idType, declaredType)));
 
         statements.add(new ConditionalStatement(
-                true, // early
+                false, // late
                 Boolean.FALSE, // no drop needed
                 null, //
                 null, //

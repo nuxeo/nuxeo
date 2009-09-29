@@ -30,7 +30,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.hibernate.dialect.H2Dialect;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
@@ -53,7 +52,12 @@ public class DialectH2 extends Dialect {
 
     public DialectH2(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(new H2Dialect(), metadata);
+        super(metadata);
+    }
+
+    @Override
+    public boolean supportsIfExistsAfterTableName() {
+        return true;
     }
 
     @Override
@@ -223,11 +227,10 @@ public class DialectH2 extends Dialect {
             Column mainColumn, Model model, Database database) {
         String phftname = database.getTable(model.FULLTEXT_TABLE_NAME).getName(); // physical
         String fullIndexName = "PUBLIC_" + phftname + "_" + indexName;
-        String queryTable = String.format("NXFT_SEARCH('%s', ?)", fullIndexName);
-        String whereExpr = String.format("%%s.KEY = %s",
+        String queryTable = String.format(
+                "NXFT_SEARCH('%s', ?) %%s ON %s = %%<s.KEY", fullIndexName,
                 mainColumn.getFullQuotedName());
-        return new String[] { (queryTable + " %s"), fulltextQuery, whereExpr,
-                null };
+        return new String[] { queryTable, fulltextQuery, null, null };
     }
 
     @Override

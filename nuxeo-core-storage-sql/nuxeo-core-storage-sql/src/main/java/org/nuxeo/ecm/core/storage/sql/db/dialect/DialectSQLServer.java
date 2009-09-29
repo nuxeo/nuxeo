@@ -31,7 +31,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.hibernate.dialect.SQLServerDialect;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
@@ -58,12 +57,42 @@ public class DialectSQLServer extends Dialect {
 
     public DialectSQLServer(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(new SQLServerDialect(), metadata);
+        super(metadata);
         fulltextAnalyzer = repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
                 : repositoryDescriptor.fulltextAnalyzer;
         fulltextCatalog = repositoryDescriptor.fulltextCatalog == null ? DEFAULT_FULLTEXT_CATALOG
                 : repositoryDescriptor.fulltextCatalog;
 
+    }
+
+    @Override
+    public char openQuote() {
+        return '[';
+    }
+
+    @Override
+    public char closeQuote() {
+        return ']';
+    }
+
+    @Override
+    public String getNoColumnsInsertString() {
+        return "DEFAULT VALUES";
+    }
+
+    @Override
+    public String getNullColumnString() {
+        return " NULL";
+    }
+
+    @Override
+    public boolean qualifyIndexName() {
+        return false;
+    }
+
+    @Override
+    public String getAddColumnString() {
+        return "ADD";
     }
 
     @Override
@@ -278,6 +307,11 @@ public class DialectSQLServer extends Dialect {
 
     @Override
     public boolean doesUpdateFromRepeatSelf() {
+        return true;
+    }
+
+    @Override
+    public boolean needsAliasForDerivedTable() {
         return true;
     }
 

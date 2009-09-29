@@ -499,12 +499,54 @@ public class DocumentManagerBean extends AbstractSession implements
     }
 
     @Override
-    public void importDocuments(List<DocumentModel> docModels) throws ClientException {
+    public void importDocuments(List<DocumentModel> docModels)
+            throws ClientException {
         try {
             super.importDocuments(docModels);
         } catch (Throwable t) {
             throw new RollbackClientException("Error during document import", t);
         }
     }
+
+    @Override
+    public DocumentModel getSourceDocument(DocumentRef docRef)
+            throws ClientException {
+        try {
+            return super.getSourceDocument(docRef);
+        } catch (Throwable t) {
+            throw new RollbackClientException(t);
+        }
+    }
+
+    @Override
+    public List<VersionModel> getVersionsForDocument(DocumentRef docRef)
+            throws ClientException {
+        try {
+            return super.getVersionsForDocument(docRef);
+        } catch (Throwable t) {
+            throw new RollbackClientException(t);
+        }
+    }
+
+    @Override
+    public DocumentModel getLastDocumentVersion(DocumentRef docRef)
+            throws ClientException {
+        try {
+            return super.getLastDocumentVersion(docRef);
+        } catch (Throwable t) {
+            throw new RollbackClientException(t);
+        }
+    }
+
+    @Override
+    public List<DocumentModel> getVersions(DocumentRef docRef)
+            throws ClientException {
+        try {
+            return super.getVersions(docRef);
+        } catch (Throwable t) {
+            throw new RollbackClientException(t);
+        }
+    }
+
 
 }
