@@ -77,11 +77,16 @@
 
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
-      <artifact name="nuxeo-platform-ear" />
-      <artifact name="nuxeo-distribution-dm" />
       <artifact name="nuxeo-apt-extensions" />
     </excludes>
   </artifactSet>
+
+  <assemble>
+    <delete>true</delete>
+    <outputFile>system</outputFile>
+    <file>nuxeo-platform-ear-${project.version}.pom</file>
+    <file>nuxeo-distribution-dm-${project.version}.pom</file>
+  </assemble>
 
   <assemble>
     <outputFile>system</outputFile>

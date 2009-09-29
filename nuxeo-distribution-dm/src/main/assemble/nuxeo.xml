@@ -111,11 +111,16 @@
 
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
-      <artifact name="nuxeo-platform-ear" />
-      <artifact name="nuxeo-distribution-dm" />
       <artifact name="nuxeo-apt-extensions" />
     </excludes>
   </artifactSet>
+
+  <assemble>
+    <delete>true</delete>
+    <outputFile>system</outputFile>
+    <file>nuxeo-platform-ear-${project.version}.pom</file>
+    <file>nuxeo-distribution-dm-${project.version}.pom</file>
+  </assemble>
 
   <assemble>
     <outputFile>system</outputFile>
@@ -218,16 +223,6 @@
       <artifact group="org.apache.httpcomponents" name="httpclient" />
     </artifacts>
   </artifactSet>
-
-  <!-- third party libraries based on dependencies -->
-  <!--
-    <assemble> <outputFile>lib2</outputFile>
-    <set>nuxeo-libs-via-dependency-tree</set> </assemble> <artifactSet
-    id="nuxeo-libs-via-dependency-tree"> <import>**</import>
-    <includeDependencies>true</includeDependencies> <includes> <artifact
-    scope="compile" /> </includes> <excludes> <artifact group="org.nuxeo.*" />
-    </excludes> </artifactSet>
-  -->
 
   <!-- CUSTOM RESOURCES -->
   <!--

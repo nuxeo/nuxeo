@@ -111,11 +111,16 @@
 
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
-      <artifact name="nuxeo-platform-ear" />
-      <artifact name="nuxeo-distribution-dm" />
       <artifact name="nuxeo-apt-extensions" />
     </excludes>
   </artifactSet>
+
+  <assemble>
+    <delete>true</delete>
+    <outputFile>system</outputFile>
+    <file>nuxeo-platform-ear-${project.version}.pom</file>
+    <file>nuxeo-distribution-dm-${project.version}.pom</file>
+  </assemble>
 
   <assemble>
     <outputFile>system</outputFile>
@@ -129,69 +134,6 @@
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
     </includes>
-  </artifactSet>
-
-  <!--   third party libraries embedded in the ear -->
-  <assemble>
-    <outputFile>lib</outputFile>
-    <set>nuxeo-fixed-libs</set>
-  </assemble>
-  <artifactSet id="nuxeo-fixed-libs">
-    <artifacts>
-      <artifact group="org.freemarker" name="freemarker" />
-      <artifact group="org.osgi" name="osgi-core" />
-      <artifact group="commons-lang" name="commons-lang" />
-      <artifact group="commons-beanutils" name="commons-beanutils" />
-      <artifact group="cssparser" name="cssparser" />
-      <artifact group="net.sf.ezmorph" name="ezmorph" />
-      <artifact group="jboss" name="jboss-cache-jdk50" />
-      <artifact group="org.jboss.seam" name="jboss-seam" />
-      <artifact group="org.jboss.seam" name="jboss-seam-remoting" />
-      <artifact group="org.jboss.seam" name="jboss-seam-ui" />
-      <artifact group="org.jboss.seam" name="jboss-seam-mail" />
-      <artifact group="org.jboss.seam" name="jboss-seam-debug" />
-      <artifact group="javax.el" name="el-ri" />
-      <artifact group="org.jboss.el" name="jboss-el" />
-      <artifact group="jboss" name="jgroups" />
-      <artifact group="bouncycastle" name="bcmail-jdk14" />
-      <artifact group="bouncycastle" name="bcprov-jdk14" />
-      <!--
-        version required because maven-nuxeo-plugin don't manage classifier here
-      -->
-      <artifact group="net.sf.json-lib" name="json-lib" classifier="jdk15"
-        version="2.2.1" />
-      <artifact group="net.sf.opencsv" name="opencsv" />
-      <artifact group="org.slf4j" name="slf4j-api" />
-      <artifact group="org.slf4j" name="slf4j-log4j12" />
-      <artifact group="org.richfaces.framework" name="richfaces-api" />
-      <artifact group="org.richfaces.framework" name="richfaces-impl" />
-      <artifact group="org.richfaces.ui" name="richfaces-ui" />
-      <artifact group="org.apache.directory.server" name="apacheds-protocol-shared" />
-      <artifact group="org.apache.directory.shared" name="shared-ldap" />
-      <artifact group="com.sun.facelets" name="jsf-facelets" />
-
-      <!-- required by Nuxeo-WebEngine -->
-      <artifact group="org.codehaus.groovy" name="groovy-all" />
-      <artifact group="org.jboss.resteasy" name="resteasy-jaxrs" />
-      <artifact group="org.jboss.resteasy" name="jaxrs-api" />
-
-      <!-- JOD / OOo libs and other converters deps-->
-      <artifact group="com.artofsolving" name="jodconverter" />
-      <artifact group="org.openoffice" name="ridl" />
-      <artifact group="org.openoffice" name="juh" />
-      <artifact group="org.openoffice" name="unoil" />
-      <artifact group="org.openoffice" name="jurt" />
-      <artifact group="com.thoughtworks.xstream" name="xstream" />
-
-      <artifact group="org.restlet" name="org.restlet" />
-      <artifact group="org.wikimodel" name="wem" />
-      <artifact group="jmimemagic" name="jmimemagic" />
-      <artifact group="rome" name="rome" />
-      <artifact group="commons-jexl" name="commons-jexl" />
-
-      <!-- Remote publication lib -->
-      <artifact group="org.apache.httpcomponents" name="httpclient" />
-    </artifacts>
   </artifactSet>
 
   <!-- third party libraries based on dependencies -->
