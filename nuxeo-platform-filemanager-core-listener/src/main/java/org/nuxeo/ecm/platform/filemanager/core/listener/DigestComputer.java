@@ -134,12 +134,11 @@ public class DigestComputer implements EventListener {
             if (ctx instanceof DocumentEventContext) {
                 DocumentEventContext docCtx = (DocumentEventContext) ctx;
                     DocumentModel doc = docCtx.getSourceDocument();
-                    if (doc.isProxy()) {
+                    if (doc==null || (doc.isProxy())) {
                         return;
                     }
                     addDigestToDocument(doc);
             }
-
         }
     }
 
