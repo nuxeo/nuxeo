@@ -498,6 +498,7 @@ public class SQLInfo {
         maker.table.addIndex(model.HIER_PARENT_KEY);
         maker.table.addIndex(model.HIER_PARENT_KEY, model.HIER_CHILD_NAME_KEY);
         // don't index parent+name+isprop, a simple isprop scan will suffice
+        maker.table.addIndex(model.MAIN_PRIMARY_TYPE_KEY);
     }
 
     /**
@@ -597,7 +598,7 @@ public class SQLInfo {
             // TODO find a way to put these exceptions in model
             if (tableName.equals(model.VERSION_TABLE_NAME)
                     && key.equals(model.VERSION_VERSIONABLE_KEY)) {
-                newMainKeyReference(key, true);
+                newMainKey(key); // not a foreign key
                 return;
             }
             if (tableName.equals(model.mainTableName)) {

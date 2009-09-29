@@ -285,6 +285,7 @@ public class DialectPostgreSQL extends Dialect {
                                 + "$$ " //
                                 + "LANGUAGE plpgsql " //
                                 + "STABLE " //
+                                + "COST 400 " //
                         , idType)));
 
         statements.add(new ConditionalStatement(
@@ -321,6 +322,7 @@ public class DialectPostgreSQL extends Dialect {
                                 + "$$ " //
                                 + "LANGUAGE plpgsql " //
                                 + "STABLE " //
+                                + "COST 500 " //
                         , idType)));
 
         statements.add(new ConditionalStatement( //
