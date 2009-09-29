@@ -36,11 +36,14 @@ import javax.faces.application.FacesMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.Component;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.Path;
@@ -119,10 +122,6 @@ public class DeleteActionsBean extends InputController implements
 
     @In(create = true)
     private transient SearchActions searchActions;
-
-    // Imported from Navigation context - used to get the deleted sub-documents
-    @In(create = true)
-    private transient ResultsProvidersCache resultsProvidersCache;
 
     @Out(required = false)
     @Deprecated
@@ -667,7 +666,7 @@ public class DeleteActionsBean extends InputController implements
         }
 
         try {
-            resultsProvidersCache.invalidate(DELETED_CHILDREN_BY_COREAPI);
+            ResultsProvidersCache resultsProvidersCache = (ResultsProvidersCache) Component.getInstance("resultsProvidersCache");
             resultsProvider = resultsProvidersCache.get(DELETED_CHILDREN_BY_COREAPI);
             currentDocumentChildren = resultsProvider.getCurrentPage();
         } catch (Throwable t) {
@@ -817,6 +816,13 @@ public class DeleteActionsBean extends InputController implements
             log.warn("Null currentDocument in navigationContext");
             return false;
         }
+    }
+
+    @Observer(value = { EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED })
+    @BypassInterceptors
+    public void resetProviderCache() {
+        ResultsProvidersCache resultsProvidersCache = (ResultsProvidersCache) Component.getInstance("resultsProvidersCache");
+        resultsProvidersCache.invalidate(DELETED_CHILDREN_BY_COREAPI);
     }
 
 }
