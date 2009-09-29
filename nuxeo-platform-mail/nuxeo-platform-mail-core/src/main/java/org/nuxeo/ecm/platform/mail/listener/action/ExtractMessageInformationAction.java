@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CC_RECIPIENTS_
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MIMETYPE_SERVICE_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.RECIPIENTS_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SENDER_KEY;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SENDER_EMAIL_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SENDING_DATE_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SUBJECT_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.TEXT_KEY;
@@ -55,6 +56,7 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
  * Puts on the pipe execution context the values retrieved from the new messages
  * found in the INBOX. These values are used later when new MailMessage
  * documents are created based on them.
+ *
  *
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
  *
@@ -91,16 +93,20 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             // Sender
             Address[] from = message.getFrom();
             String sender = null;
+            String senderEmail = null;
             if (from != null) {
                 Address addr = from[0];
                 if (addr instanceof InternetAddress) {
                     InternetAddress iAddr = (InternetAddress) addr;
-                    sender = iAddr.getPersonal() + " <" + iAddr.getAddress() + ">";
+                    senderEmail = iAddr.getAddress();
+                    sender = iAddr.getPersonal() + " <" + senderEmail + ">";
                 } else {
                     sender += addr.toString();
+                    senderEmail = sender;
                 }
             }
             context.put(SENDER_KEY, sender);
+            context.put(SENDER_EMAIL_KEY, senderEmail);
 
             // Sending date
             context.put(SENDING_DATE_KEY, message.getSentDate());
