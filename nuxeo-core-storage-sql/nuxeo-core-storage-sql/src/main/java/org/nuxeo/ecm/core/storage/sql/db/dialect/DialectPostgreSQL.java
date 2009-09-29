@@ -35,7 +35,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.dialect.PostgreSQLDialect;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
@@ -60,9 +59,24 @@ public class DialectPostgreSQL extends Dialect {
 
     public DialectPostgreSQL(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(new PostgreSQLDialect(), metadata);
+        super(metadata);
         fulltextAnalyzer = repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
                 : repositoryDescriptor.fulltextAnalyzer;
+    }
+
+    @Override
+    public String toBooleanValueString(boolean bool) {
+        return bool ? "true" : "false";
+    }
+
+    @Override
+    public String getNoColumnsInsertString() {
+        return "DEFAULT VALUES";
+    }
+
+    @Override
+    public String getCascadeDropConstraintsString() {
+        return "CASCADE";
     }
 
     @Override
@@ -322,7 +336,15 @@ public class DialectPostgreSQL extends Dialect {
         if (elements == null || elements.length == 0) {
             return null;
         }
-        String typeName = dialect.getTypeName(type);
+        String typeName;
+        switch (type) {
+        case Types.VARCHAR:
+            typeName = "varchar";
+            break;
+        default:
+            // TODO others not used yet
+            throw new AssertionError(type);
+        }
         return new PostgreSQLArray(type, typeName, elements);
     }
 

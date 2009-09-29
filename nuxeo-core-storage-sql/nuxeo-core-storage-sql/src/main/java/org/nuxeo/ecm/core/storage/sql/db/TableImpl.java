@@ -213,11 +213,7 @@ public class TableImpl implements Table {
                         + dialect.closeQuote();
                 buf.append("ALTER TABLE ");
                 buf.append(getQuotedName());
-                String s = dialect.getAddPrimaryKeyConstraintString(constraintName);
-                // cosmetic
-                s = s.replace(" add constraint ", " ADD CONSTRAINT ");
-                s = s.replace(" primary key ", " PRIMARY KEY ");
-                buf.append(s);
+                buf.append(dialect.getAddPrimaryKeyConstraintString(constraintName));
                 buf.append('(');
                 buf.append(column.getQuotedName());
                 buf.append(')');
@@ -233,16 +229,11 @@ public class TableImpl implements Table {
                 StringBuilder buf = new StringBuilder();
                 buf.append("ALTER TABLE ");
                 buf.append(getQuotedName());
-                String s = dialect.getAddForeignKeyConstraintString(
+                buf.append(dialect.getAddForeignKeyConstraintString(
                         constraintName,
                         new String[] { column.getQuotedName() },
                         ft.getQuotedName(),
-                        new String[] { fc.getQuotedName() }, true);
-                // cosmetic
-                s = s.replace(" add constraint ", " ADD CONSTRAINT ");
-                s = s.replace(" foreign key ", " FOREIGN KEY ");
-                s = s.replace(" references ", " REFERENCES ");
-                buf.append(s);
+                        new String[] { fc.getQuotedName() }, true));
                 if (dialect.supportsCircularCascadeDeleteConstraints()
                         || (Model.MAIN_KEY.equals(fc.getPhysicalName()) && Model.MAIN_KEY.equals(column.getPhysicalName()))) {
                     // MS SQL Server can't have circular ON DELETE CASCADE.

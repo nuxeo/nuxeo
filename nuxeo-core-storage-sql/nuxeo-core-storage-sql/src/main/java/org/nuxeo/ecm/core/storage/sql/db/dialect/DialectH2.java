@@ -30,7 +30,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.hibernate.dialect.H2Dialect;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
@@ -53,7 +52,12 @@ public class DialectH2 extends Dialect {
 
     public DialectH2(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(new H2Dialect(), metadata);
+        super(metadata);
+    }
+
+    @Override
+    public boolean supportsIfExistsAfterTableName() {
+        return true;
     }
 
     @Override

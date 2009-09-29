@@ -586,7 +586,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     public void testClustering() throws Exception {
         if (!DatabaseHelper.DATABASE.supportsClustering()) {
-            System.err.println("Skipping clustering test for unsupported database");
+            System.out.println("Skipping clustering test for unsupported database: "
+                    + DatabaseHelper.DATABASE.getClass().getName());
             return;
         }
 

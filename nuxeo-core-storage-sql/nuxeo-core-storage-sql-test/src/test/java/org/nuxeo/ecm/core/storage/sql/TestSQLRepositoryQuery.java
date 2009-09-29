@@ -58,6 +58,16 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
         super.testFulltextBlob();
     }
 
+    @Override
+    public void testFulltextSecondary() throws Exception {
+        if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
+            System.out.println("Skipping multi-fulltext test for unsupported database: "
+                    + DatabaseHelper.DATABASE.getClass().getName());
+            return;
+        }
+        super.testFulltextSecondary();
+    }
+
     public void testQueryIterable() throws Exception {
         createDocs();
 

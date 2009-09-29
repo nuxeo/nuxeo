@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Stephane Lacoin
  */
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
@@ -49,6 +50,7 @@ import org.nuxeo.runtime.api.Framework;
  * have been recorded in the bundle's events.
  *
  * @author Florent Guillaume
+ * @author Stephane Lacoin
  */
 public class BinaryTextListener implements PostCommitEventListener {
 
@@ -71,8 +73,6 @@ public class BinaryTextListener implements PostCommitEventListener {
         }
     }
 
- 
-    
     public void handleEvent(EventBundle eventBundle) throws ClientException {
         if (!(eventBundle instanceof ReconnectedEventBundle)) {
             log.error("Incorrect event bundle type: " + eventBundle);
@@ -110,8 +110,9 @@ public class BinaryTextListener implements PostCommitEventListener {
         final DocumentRef rootRef = session.getRootDocument().getRef();
         for (Serializable id : ids) {
             IdRef docRef = new IdRef(((String) id));
-            // Check hierarchy for documents gone http://jira.nuxeo.org/browse/NXP-4022
-            if (!NXP4022HierachyChecker.exists(session, rootRef, docRef)) {
+            // Check hierarchy for documents gone
+            // http://jira.nuxeo.org/browse/NXP-4022
+            if (!existsWithItsHierarchy(session, rootRef, docRef)) {
                 continue;
             }
             DocumentModel doc = session.getDocument(docRef);
@@ -145,7 +146,7 @@ public class BinaryTextListener implements PostCommitEventListener {
             EventContext eventContext) {
         return (FulltextInfo) eventContext.getArguments()[1];
     }
-    
+
     protected String blobsToText(List<Blob> blobs) {
         List<String> strings = new LinkedList<String>();
         for (Blob blob : blobs) {
@@ -173,4 +174,28 @@ public class BinaryTextListener implements PostCommitEventListener {
         }
         return StringUtils.join(strings, " ");
     }
+
+    /*
+     * This code exists because VCS doesn't completely invalidate its caches of
+     * the children when a folder object is removed. In the future it won't be
+     * needed.
+     */
+    public static boolean existsWithItsHierarchy(CoreSession session,
+            DocumentRef rootRef, DocumentRef docRef) throws ClientException {
+        boolean first = true;
+        DocumentRef currentRef = docRef;
+        while (true) {
+            if (rootRef.equals(currentRef)) {
+                return true;
+            }
+            if (!session.exists(currentRef)) {
+                log.error("document " + docRef + " is "
+                        + (first ? "gone" : "an orphan"));
+                return false;
+            }
+            currentRef = session.getDocument(currentRef).getParentRef();
+            first = false;
+        }
+    }
+
 }

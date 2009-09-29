@@ -30,7 +30,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.hibernate.dialect.MySQL5InnoDBDialect;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
@@ -50,7 +49,39 @@ public class DialectMySQL extends Dialect {
 
     public DialectMySQL(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(new MySQL5InnoDBDialect(), metadata);
+        super(metadata);
+    }
+
+    @Override
+    public char openQuote() {
+        return '`';
+    }
+
+    @Override
+    public char closeQuote() {
+        return '`';
+    }
+
+    @Override
+    public String getAddForeignKeyConstraintString(String constraintName,
+            String[] foreignKeys, String referencedTable, String[] primaryKeys,
+            boolean referencesPrimaryKey) {
+        String cols = StringUtils.join(foreignKeys, ", ");
+        String sql = String.format(
+                " ADD INDEX %s (%s), ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s)",
+                constraintName, cols, constraintName, cols, referencedTable,
+                StringUtils.join(primaryKeys, ", "));
+        return sql;
+    }
+
+    @Override
+    public boolean qualifyIndexName() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsIfExistsBeforeTableName() {
+        return true;
     }
 
     @Override
