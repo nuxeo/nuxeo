@@ -31,25 +31,25 @@ public class TransactionTypeHelper {
     public static final String RESOURCE_LOCAL = "RESOURCE_LOCAL";
     public static final String JTA = "JTA";
 
-	protected static final String PROPERTY_NAME = "org.nuxeo.runtime.txType";
+    protected static final String PROPERTY_NAME = "org.nuxeo.runtime.txType";
 
     protected static String txType;
 
 
     public static void autodetect() {
-    	J2EEContainerDescriptor selectedContainer = J2EEContainerDescriptor.getSelected();
-    	if (selectedContainer == null) {
-    		txType = null;
-    	} else {
-    		txType = selectedContainer.txFactory;
-    	}
+        J2EEContainerDescriptor selectedContainer = J2EEContainerDescriptor.getSelected();
+        if (selectedContainer == null) {
+            txType = null;
+        } else {
+            txType = selectedContainer.txFactory;
+        }
     }
 
     /**
      * Sets the prefix to be used (mainly for tests).
      */
     public static void setTxType(String txType) {
-    	TransactionTypeHelper.txType = txType;
+        TransactionTypeHelper.txType = txType;
     }
 
     /**
@@ -60,13 +60,15 @@ public class TransactionTypeHelper {
             if (Framework.isInitialized()) {
                 String configuredPrefix = Framework.getProperty(PROPERTY_NAME);
                 if (configuredPrefix != null) {
-                	txType = Framework.getProperty(PROPERTY_NAME);
+                    txType = Framework.getProperty(PROPERTY_NAME);
                 }
                 if (txType == null) {
                     autodetect();
                 }
             }
-            txType = RESOURCE_LOCAL;
+            if (txType==null) { // manage default
+                txType = RESOURCE_LOCAL;
+            }
         }
         return txType;
     }
