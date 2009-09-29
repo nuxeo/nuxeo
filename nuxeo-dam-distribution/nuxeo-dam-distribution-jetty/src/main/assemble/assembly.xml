@@ -36,8 +36,6 @@
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-placeful-core"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-placeful-theme"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-preview"/>
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-io"/>
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-web"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-search-api"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-search-backend-core"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-search-core"/>

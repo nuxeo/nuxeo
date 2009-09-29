@@ -42,19 +42,18 @@
       <artifact group="org.nuxeo.common" />
       <artifact name="nuxeo-runtime-jboss-extensions" />
 
-      <artifact name="nuxeo-platform-imaging-web" />
-
       <artifact name="nuxeo-platform-webapp" />
       <artifact name="nuxeo-platform-webapp-core" />
 
-      <!-- Dependencies on nuxeo-platform-ui-web-* -->
+      <artifact name="nuxeo-platform-imaging-web" />
       <artifact name="nuxeo-platform-annotation*" />
       <artifact name="nuxeo-platform-virtualnavigation-web" />
-      <artifact name="nuxeo-platform-forum" />
+      <artifact name="nuxeo-platform-forum*" />
       <artifact name="nuxeo-platform-syndication" />
-      <artifact name="nuxeo-platform-syndication" />
-      <artifact name="nuxeo-platform-publishing-web" />
-      <!-- End dependencies on nuxeo-platform-ui-web-* -->
+      <artifact name="nuxeo-platform-publish*" />
+      <artifact name="nuxeo-platform-comment*" />
+      <artifact name="nuxeo-platform-relation*" />
+      <artifact name="nuxeo-platform-workflow*" />
 
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
@@ -184,5 +183,13 @@
     <directory>src/main/resources_dam_dev
     </directory>
   </fileSet>
+
+  <assemble>
+    <delete>true</delete>
+    <outputFile>config</outputFile>
+    <file>commentService-config-bundle.xml</file>
+    <file>nxrelations-default-jena-bundle.xml</file>
+    <file>nxmail-scheduler-config.xml</file>
+  </assemble>
 
 </assembly>
