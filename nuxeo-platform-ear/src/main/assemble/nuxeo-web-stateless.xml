@@ -45,12 +45,17 @@
 
       <artifact name="nuxeo-platform-webapp" />
       <artifact name="nuxeo-platform-webapp-core" />
-      <artifact name="nuxeo-platform-ear" />
       <artifact name="nuxeo-apt-extensions" />
       <!-- excluding nuxeo-theme-webwidgets not ready for two parts deployment -->
       <artifact name="nuxeo-theme-webwidgets*" />
     </excludes>
   </artifactSet>
+
+  <assemble>
+    <delete>true</delete>
+    <outputFile>system</outputFile>
+    <file>nuxeo-platform-ear-${project.version}.pom</file>
+  </assemble>
 
   <!-- third party libraries embedded in the ear -->
   <assemble>
