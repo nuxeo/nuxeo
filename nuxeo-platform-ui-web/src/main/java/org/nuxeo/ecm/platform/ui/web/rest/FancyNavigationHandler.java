@@ -62,7 +62,7 @@ public class FancyNavigationHandler extends NavigationHandler {
             URLPolicyService pservice = Framework.getService(URLPolicyService.class);
             pservice.appendParametersToRequest(context);
         } catch (Exception e) {
-            log.error("error occured while appending params to request");
+            log.error("error occured while appending params to request: ", e);
         }
         baseNavigationHandler.handleNavigation(context, fromAction, outcome);
         // XXX AT: force redirect if outcome is null so that url can be
