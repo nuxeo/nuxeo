@@ -19,5 +19,6 @@ Require-Bundle: org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.webapp.base,
  org.nuxeo.ecm.core,
  org.nuxeo.ecm.platform.types.api,
- org.nuxeo.dam.core
+ org.nuxeo.dam.core,
+ org.nuxeo.theme.fragments
 Nuxeo-RequiredBy: org.nuxeo.ecm.platform.placeful.theme

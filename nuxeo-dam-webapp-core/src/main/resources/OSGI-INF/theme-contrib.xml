@@ -3,6 +3,7 @@
 <component name="org.nuxeo.dam.theme.default">
 
   <require>org.nuxeo.theme.jsf</require>
+  <require>org.nuxeo.theme.fragments</require>
 
   <!--  themes -->
   <extension target="org.nuxeo.theme.services.ThemeService"
