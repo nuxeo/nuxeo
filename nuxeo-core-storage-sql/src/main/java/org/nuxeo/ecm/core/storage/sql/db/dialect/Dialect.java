@@ -317,6 +317,13 @@ public abstract class Dialect {
     }
 
     /**
+     * Whether a derived table (subselect in a FROM statement) needs an alias.
+     */
+    public boolean needsAliasForDerivedTable() {
+        return false;
+    }
+
+    /**
      * When using a CLOB field in an expression, is some casting required and
      * with what pattern?
      * <p>

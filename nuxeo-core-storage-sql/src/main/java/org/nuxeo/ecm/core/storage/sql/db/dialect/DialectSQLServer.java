@@ -125,6 +125,11 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
+    public boolean needsAliasForDerivedTable() {
+        return true;
+    }
+
+    @Override
     public String getSecurityCheckSql(String idColumnName) {
         return String.format("dbo.NX_ACCESS_ALLOWED(%s, ?, ?) = 1",
                 idColumnName);
