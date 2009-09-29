@@ -16,7 +16,11 @@
 
   <a4j:form id="filterForm">
     <h:inputText class="searchInput"
-      value="#{filterActions.filterDocument.filter_query.ecm_fulltext}" />
+      value="#{filterActions.filterDocument.filter_query.ecm_fulltext}">
+      <a4j:support event="onkeyup" reRender="filterResultTable"
+        requestDelay="1000" action="#{filterActions.invalidateProvider}"
+        ignoreDupResponces="true" eventsQueue="fulltextSearchQueue"/>
+    </h:inputText>
     <a4j:commandButton  id="filterFormSubmit" type="submit"
       styleClass="button" style="visibility: hidden"
       value="#{messages['label.action.filter.doFulltextSearch']}"
