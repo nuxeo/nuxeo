@@ -22,4 +22,6 @@ public interface EntityManagerFactoryProvider {
 
     EntityManagerFactory getFactory();
 
+    EntityManagerFactory getFactory(String txType);
+
 }

@@ -100,16 +100,22 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         return cfg;
     }
 
-    public EntityManagerFactory getFactory() {
+    public EntityManagerFactory getFactory(String txType) {
         if (cfg == null) {
             setupConfiguration();
         }
         Map<String,String> properties = new HashMap<String,String>();
-        String txType = TransactionTypeHelper.getTxType();
+        if (txType==null) {
+            txType = TransactionTypeHelper.getTxType();
+        }
         if (txType != null) {
-        	properties.put(HibernatePersistence.TRANSACTION_TYPE, txType);
+            properties.put(HibernatePersistence.TRANSACTION_TYPE, txType);
         }
         return cfg.createEntityManagerFactory(properties);
+    }
+
+    public EntityManagerFactory getFactory() {
+        return getFactory(null);
     }
 
     public static HibernateConfiguration load(URL location) {
