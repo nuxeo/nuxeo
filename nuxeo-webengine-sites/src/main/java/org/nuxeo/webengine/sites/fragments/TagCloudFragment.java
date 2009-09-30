@@ -59,7 +59,8 @@ public class TagCloudFragment extends AbstractFragment {
                 DocumentModel siteDocument = SiteUtils.getFirstWebSiteParent(
                         session, documentModel);
                 TagCloudModel tagCloudModel = null;
-                List<WeightedTag>tagCloud = tagService.getPopularCloud(siteDocument);
+                List<WeightedTag> tagCloud = tagService.getPopularCloud(
+                        session, siteDocument);
                 if (tagCloud != null && !tagCloud.isEmpty()) {
                     for (WeightedTag weightedTag : tagCloud) {
                         tagCloudModel = new TagCloudModel(

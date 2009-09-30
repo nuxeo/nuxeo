@@ -68,11 +68,13 @@ public interface TagService {
      * goes recursively and collects all tags underneath. To list all tags in a repository
      * use as parent {@link #getRootTag(String)} or simply the root domain.
      *
+     * @param session the user session
      * @param tag group targeted
      * @return
      * @throws ClientException
      */
-    DocumentModelList listTagsInGroup(DocumentModel tag) throws ClientException;
+    DocumentModelList listTagsInGroup(CoreSession session, DocumentModel tag)
+            throws ClientException;
 
     /**
      * Lists tags applied on a document.
@@ -80,30 +82,34 @@ public interface TagService {
      * The private tags or tagging are not
      * selected, but the ones owned by the current principal.
      *
+     * @param session the user session
      * @param document
      * @return
      * @throws ClientException
      */
-    List<Tag> listTagsAppliedOnDocument(DocumentModel document) throws ClientException;
     List<Tag> listTagsAppliedOnDocument(CoreSession session, DocumentModel document) throws ClientException;
 
     /**
+     * Returns author of a tagging based on docId and the tagLabel.
+     *
+     * @param session the user session
      * @param docId
      * @param tagLabel
      * @param author
      * @return
      * @throws ClientException
      */
-    String getTaggingId(String docId, String tagLabel, String author) throws ClientException;
+    String getTaggingId(CoreSession session, String docId, String tagLabel,
+            String author) throws ClientException;
 
     /**
      * Lists tags applied on a document by the current principal.
      *
+     * @param session the user session
      * @param document
      * @return
      * @throws ClientException
      */
-    List<Tag> listTagsAppliedOnDocumentByUser(DocumentModel document) throws ClientException;
     List<Tag> listTagsAppliedOnDocumentByUser(CoreSession session, DocumentModel document) throws ClientException;
 
     /**
@@ -111,13 +117,13 @@ public interface TagService {
      *
      * Interprets label as sequence of labels '/' separated.
      *
+     * @param session the user session
      * @param parent      must not be null
      * @param label       the tag label. It will also be the title.
      * @param privateFlag
      * @return
      * @throws ClientException
      */
-    DocumentModel getOrCreateTag(DocumentModel parent, String label, boolean privateFlag) throws ClientException;
     DocumentModel getOrCreateTag(CoreSession session, DocumentModel parent, String label, boolean privateFlag) throws ClientException;
 
     /**
@@ -125,13 +131,13 @@ public interface TagService {
      *
      * More about Vote Tag Cloud {@link WeightedTag}.
      * The private taggings are not selected, but the ones owned by the current principal.
-     * 
+     *
+     * @param session the user session
      * @param document the tagged document
      * @param tagId
      * @return
      * @throws ClientException
      */
-    WeightedTag getVoteTag(DocumentModel document, String tagId) throws ClientException;
     WeightedTag getVoteTag(CoreSession session, DocumentModel document, String tagId) throws ClientException;
 
     /**
@@ -140,12 +146,12 @@ public interface TagService {
      * More about Vote Tag Cloud {@link WeightedTag}. The private tagging are not selected, but the
      * ones owned by the current principal.
      *
+     * @param session the user session
      * @param document the domain
      * @param tagId
      * @return
      * @throws ClientException
      */
-    WeightedTag getPopularTag(DocumentModel document, String tagId) throws ClientException;
     WeightedTag getPopularTag(CoreSession session, DocumentModel document, String tagId) throws ClientException;
 
     /**
@@ -153,11 +159,11 @@ public interface TagService {
      * {@link WeightedTag}. The private tags or tagging are not selected, but the
      * ones owned by the current principal.
      *
+     * @param session the user session
      * @param document tagged document
      * @return
      * @throws ClientException
      */
-    List<WeightedTag> getVoteCloud(DocumentModel document) throws ClientException;
     List<WeightedTag> getVoteCloud(CoreSession session, DocumentModel document) throws ClientException;
 
     /**
@@ -167,11 +173,11 @@ public interface TagService {
      * The private tags or tagging are not selected, but the
      * ones owned by the current principal.
      *
+     * @param session the user session
      * @param document
      * @return
      * @throws ClientException
      */
-    List<WeightedTag> getPopularCloud(DocumentModel document) throws ClientException;
     List<WeightedTag> getPopularCloud(CoreSession session, DocumentModel document) throws ClientException;
 
     /**
@@ -181,40 +187,46 @@ public interface TagService {
      * tagging exists for the set document / tag / current principal. Otherwise silently
      * ignore.
      *
+     * @param session the user session
      * @param document document to tag
      * @param tagId    tag to be applied
      * @throws ClientException
      */
-    void tagDocument(DocumentModel document, String tagId, boolean privateFlag) throws ClientException;
     void tagDocument(CoreSession session, DocumentModel document, String tagId, boolean privateFlag) throws ClientException;
-    
+
     /**
      * Removes a tagging from a document.
      *
+     * @param session the user session
      * @param document
      * @param tagId
      * @throws ClientException
      */
-    void untagDocument(DocumentModel document, String tagId) throws ClientException;
+    void untagDocument(CoreSession session, DocumentModel document, String tagId)
+            throws ClientException;
 
     /**
      * Removes all taggings from a document.
      *
+     * @param session the user session
      * @param document
      * @param tagId
      * @throws ClientException
      */
-    void completeUntagDocument(DocumentModel document, String tagId) throws ClientException;
+    void completeUntagDocument(CoreSession session, DocumentModel document,
+            String tagId) throws ClientException;
 
     /**
      * Retrieves the list of documents tagged with a particular tag visible by
      * the current principal.
      *
+     * @param session the user session
      * @param tagId
      * @param user
      * @return the list of document id
      * @throws ClientException
      */
-    List<String> listDocumentsForTag(String tagId, String user) throws ClientException;
+    List<String> listDocumentsForTag(CoreSession session, String tagId,
+            String user) throws ClientException;
 
 }

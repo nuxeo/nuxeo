@@ -108,7 +108,8 @@ public class SearchResultsFragment extends AbstractFragment {
                 if (StringUtils.isEmpty(searchParam)
                         && StringUtils.isNotEmpty(tagDocumentId)) {
                     List<String> docsForTag = tagService.listDocumentsForTag(
-                            tagDocumentId, session.getPrincipal().getName());
+                            session, tagDocumentId,
+                            session.getPrincipal().getName());
                     for (String docForTagId : docsForTag) {
                         DocumentModel document = session.getDocument(new IdRef(
                                 docForTagId));

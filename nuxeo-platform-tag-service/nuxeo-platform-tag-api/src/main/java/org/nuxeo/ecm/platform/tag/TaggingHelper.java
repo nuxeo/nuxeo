@@ -109,9 +109,9 @@ public class TaggingHelper {
         }
 
         if (((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
-            getTagService().completeUntagDocument(document, taggingId);
+            getTagService().completeUntagDocument(session, document, taggingId);
         } else {
-            getTagService().untagDocument(document, taggingId);
+            getTagService().untagDocument(session, document, taggingId);
         }
 
     }
@@ -137,17 +137,18 @@ public class TaggingHelper {
      * Returns the details about the tag cloud that have been created under a
      * document.
      *
+     * @param session - the Nuxeo core session
      * @param document
      * @return
      * @throws ClientException
      */
-    public List<WeightedTag> getPopularCloud(DocumentModel document)
-            throws ClientException {
+    public List<WeightedTag> getPopularCloud(CoreSession session,
+            DocumentModel document) throws ClientException {
         if (null == document) {
             throw new ClientException(
                     "Can not retrieve popular cloud on document null.");
         }
-        return getTagService().getPopularCloud(document);
+        return getTagService().getPopularCloud(session, document);
     }
 
     /**
@@ -167,8 +168,8 @@ public class TaggingHelper {
         }
         DocumentModelList documentsForTag = new DocumentModelListImpl();
 
-        List<String> docsForTag = tagService.listDocumentsForTag(tagDocumentId,
-                session.getPrincipal().getName());
+        List<String> docsForTag = tagService.listDocumentsForTag(session,
+                tagDocumentId, session.getPrincipal().getName());
         for (String docForTagId : docsForTag) {
             documentsForTag.add(session.getDocument(new IdRef(docForTagId)));
         }
@@ -194,7 +195,7 @@ public class TaggingHelper {
         if (!session.hasPermission(document.getRef(), "Write")) {
             return false;
         }
-        return tagService.getTaggingId(tag.tagId, tag.tagLabel,
+        return tagService.getTaggingId(session, tag.tagId, tag.tagLabel,
                 principal.getName()) != null;
     }
 

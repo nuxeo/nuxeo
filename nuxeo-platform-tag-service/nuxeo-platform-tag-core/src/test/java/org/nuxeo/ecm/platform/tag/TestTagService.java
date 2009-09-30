@@ -99,7 +99,7 @@ public class TestTagService extends SQLRepositoryTestCase {
         TagService tagService = getTagService();
         DocumentModel tagRoot = tagService.getRootTag(session);
         assertNotNull(tagRoot);
-        tagService.getOrCreateTag(tagRoot, "tag1", true);
+        tagService.getOrCreateTag(session, tagRoot, "tag1", true);
         session.save();
         DocumentModel tag = null;
         for (DocumentModel tagChild : session.getChildren(tagRoot.getRef())) {
@@ -121,25 +121,13 @@ public class TestTagService extends SQLRepositoryTestCase {
         tagService = getTagService();
         tagRoot = tagService.getRootTag(session);
         assertNotNull(tagRoot);
-        tag1 = tagService.getOrCreateTag(tagRoot, "tag1", true);
+        tag1 = tagService.getOrCreateTag(session, tagRoot, "tag1", true);
         file1 = session.createDocumentModel("/", "0006", "File");
         file1.setPropertyValue("dc:title", "File1");
         file1 = session.createDocument(file1);
         file1 = session.saveDocument(file1);
         session.save();
         tagService.tagDocument(session, file1, tag1.getId(), false);
-    }
-
-    public void testDetachedDocumentFailure() throws ClientException {
-        createAndTagDocument();
-        ((DocumentModelImpl) file1).detach(true);
-        try {
-            tagService.listTagsAppliedOnDocument(file1);
-        } catch (ClientException e) {
-            assertEquals("No session available", e.getMessage());
-            return;
-        }
-        fail("No exception throwed");
     }
 
     public void testDetachedDocumentList() throws ClientException {

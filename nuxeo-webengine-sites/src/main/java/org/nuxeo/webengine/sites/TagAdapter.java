@@ -87,9 +87,10 @@ public class TagAdapter extends DefaultAdapter {
                     String currentTagLabel = tagLabelArray[i].trim();
                     if (currentTagLabel.length() > 0) {
                         DocumentModel tagDocument = tagService.getOrCreateTag(
-                                tagService.getRootTag(session),
+                                session, tagService.getRootTag(session),
                                 currentTagLabel, false);
-                        tagService.tagDocument(doc, tagDocument.getId(), false);
+                        tagService.tagDocument(session, doc,
+                                tagDocument.getId(), false);
                     }
                 }
             }
@@ -119,9 +120,9 @@ public class TagAdapter extends DefaultAdapter {
             TagService tagService = Framework.getService(TagService.class);
 
             if (((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
-                tagService.completeUntagDocument(doc, taggingId);
+                tagService.completeUntagDocument(session, doc, taggingId);
             } else {
-                tagService.untagDocument(doc, taggingId);
+                tagService.untagDocument(session, doc, taggingId);
             }
 
             String path = SiteUtils.getPagePath(

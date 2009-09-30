@@ -166,7 +166,8 @@ public class TagActionsBean implements Serializable {
         min = max = 0;
 
         for (DocumentModel document : documentManager.getChildren(documentManager.getRootDocument().getRef())) {
-            for (WeightedTag weightedTag : taggingHelper.getPopularCloud(document)) {
+            for (WeightedTag weightedTag : taggingHelper.getPopularCloud(
+                    documentManager, document)) {
                 if (weightedTag.getWeight() > max) {
                     max = weightedTag.getWeight();
                 }

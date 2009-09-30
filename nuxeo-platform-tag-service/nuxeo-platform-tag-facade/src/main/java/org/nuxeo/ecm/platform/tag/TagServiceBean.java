@@ -69,75 +69,34 @@ public class TagServiceBean implements TagService {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public DocumentModel getOrCreateTag(DocumentModel parent, String label,
-            boolean privateFlag) throws ClientException {
-        return getOrCreateTag(parent.getCoreSession(), parent, label, privateFlag);
-    }
-
-    public List<WeightedTag> getPopularCloud(DocumentModel document)
-            throws ClientException {
-        return getLocalTagService().getPopularCloud(em,document.getCoreSession(),document);
-    }
-
-    public WeightedTag getPopularTag(DocumentModel document, String tagId)
-            throws ClientException {
-        return getLocalTagService().getPopularTag(em,document.getCoreSession(), document, tagId);
-    }
-
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public DocumentModel getRootTag(CoreSession session) throws ClientException {
         return getLocalTagService().getRootTag(em,session);
     }
 
-    public List<WeightedTag> getVoteCloud(DocumentModel document)
-            throws ClientException {
-        return getLocalTagService().getVoteCloud(em,document.getCoreSession(),document);
+    public DocumentModelList listTagsInGroup(CoreSession session,
+            DocumentModel tag) throws ClientException {
+        return getLocalTagService().listTagsInGroup(em, session, tag);
     }
 
-    public WeightedTag getVoteTag(DocumentModel document, String tagId)
-            throws ClientException {
-        return getLocalTagService().getVoteTag(em,document.getCoreSession(),document, tagId);
+    public void untagDocument(CoreSession session, DocumentModel document,
+            String tagId) throws ClientException {
+        getLocalTagService().untagDocument(em, session, document, tagId);
     }
 
-    public List<Tag> listTagsAppliedOnDocument(DocumentModel document)
-            throws ClientException {
-        return getLocalTagService().listTagsAppliedOnDocument(em,document.getCoreSession(),document);
+    public List<String> listDocumentsForTag(CoreSession session, String tagId,
+            String user) throws ClientException {
+        return getLocalTagService().listDocumentsForTag(em, session, tagId, user);
     }
 
-    public List<Tag> listTagsAppliedOnDocumentByUser(DocumentModel document)
-            throws ClientException {
-        return getLocalTagService().listTagsAppliedOnDocumentByUser(em,document.getCoreSession(),document);
+    public String getTaggingId(CoreSession session, String docId,
+            String tagLabel, String author) throws ClientException {
+        return getLocalTagService().getTaggingId(em, session, docId, tagLabel,
+                author);
     }
 
-    public DocumentModelList listTagsInGroup(DocumentModel tag)
-            throws ClientException {
-        return getLocalTagService().listTagsInGroup(em,tag.getCoreSession(),tag);
-    }
-
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void tagDocument(DocumentModel document, String tagId,
-            boolean privateFlag) throws ClientException {
-        getLocalTagService().tagDocument(em,document.getCoreSession(),document, tagId, privateFlag);
-    }
-
-    public void untagDocument(DocumentModel document, String tagId)
-            throws ClientException {
-        getLocalTagService().untagDocument(em,document.getCoreSession(),document, tagId);
-    }
-
-    public List<String> listDocumentsForTag(String tagId, String user)
-            throws ClientException {
-        return getLocalTagService().listDocumentsForTag(em,tagId, user);
-    }
-
-    public String getTaggingId(String docId, String tagLabel, String author)
-            throws ClientException {
-        return getLocalTagService().getTaggingId(em,docId, tagLabel, author);
-    }
-
-    public void completeUntagDocument(DocumentModel document, String tagId)
-            throws ClientException {
-        getLocalTagService().completeUntagDocument(em,document, tagId);
+    public void completeUntagDocument(CoreSession session,
+            DocumentModel document, String tagId) throws ClientException {
+        getLocalTagService().completeUntagDocument(em, session, document, tagId);
     }
 
     public List<WeightedTag> getPopularCloud(CoreSession session,

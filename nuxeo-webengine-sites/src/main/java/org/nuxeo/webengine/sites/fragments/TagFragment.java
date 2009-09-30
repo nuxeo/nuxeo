@@ -60,7 +60,8 @@ public class TagFragment extends AbstractFragment {
                 TagModel tagModel = null;
                 String label = null;
                 Boolean isPrivate = null;
-                List<Tag> tags = tagService.listTagsAppliedOnDocument(documentModel);
+                List<Tag> tags = tagService.listTagsAppliedOnDocument(session,
+                        documentModel);
                 if (tags != null && !tags.isEmpty()) {
                     for (Tag tag : tags) {
                         DocumentModel document = session.getDocument(new IdRef(
@@ -71,9 +72,8 @@ public class TagFragment extends AbstractFragment {
                             isPrivate = SiteUtils.getBoolean(document,
                                     "tag:private");
 
-                            String taggingId = null;
                             boolean canModify = canModify(documentModel, label,
-                                    tagService, taggingId);
+                                    tagService, session);
 
                             tagModel = new TagModel(label, isPrivate, canModify);
                             tagModel.setId(tag.tagId);
@@ -89,14 +89,13 @@ public class TagFragment extends AbstractFragment {
     }
 
     private static boolean canModify(DocumentModel doc, String label,
-            TagService tagService, String taggingId) throws ClientException {
+            TagService tagService, CoreSession session) throws ClientException {
         NuxeoPrincipal principal = (NuxeoPrincipal) doc.getCoreSession().getPrincipal();
-        taggingId = tagService.getTaggingId(doc.getId(), label,
-                principal.getName());
-
         if (principal.isAdministrator()) {
             return true;
         }
+        String taggingId = tagService.getTaggingId(session, doc.getId(), label,
+                principal.getName());
         return taggingId != null;
     }
 
