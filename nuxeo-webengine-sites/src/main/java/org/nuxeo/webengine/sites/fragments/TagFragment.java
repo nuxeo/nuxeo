@@ -36,8 +36,8 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Action fragment for initializing the fragment related to the list with the
- * details about the <b>Tag</b>-s that have been created under a web page, in the
- * fragment initialization mechanism.
+ * details about the <b>Tag</b>-s that have been created under a web page, in
+ * the fragment initialization mechanism.
  *
  * @author rux
  */

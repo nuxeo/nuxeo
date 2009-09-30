@@ -23,17 +23,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * The Tag Service interface. It gathers the entire service API.
- * The available capabilities are:
- * <li> list the tags, either related or not to a document
- * <li> create tags and taggings
- * <li> obtain tag cloud
- * <p>As general rule, the flag private / public is always applied. It could be
- * ignored in the future: just simplify the queries.
- * The service is using super user, allowing anyone see / creates tags.
- * The service retrieve the user name from the attached document session.
- * If you're using a detached document, you should provide the core session yourself
- * providing it as parameter.
+ * The Tag Service interface. It gathers the entire service API. The available
+ * capabilities are: <li>list the tags, either related or not to a document <li>
+ * create tags and taggings <li>obtain tag cloud
+ * <p>
+ * As general rule, the flag private / public is always applied. It could be
+ * ignored in the future: just simplify the queries. The service is using super
+ * user, allowing anyone see / creates tags. The service retrieve the user name
+ * from the attached document session. If you're using a detached document, you
+ * should provide the core session yourself providing it as parameter.
  *
  * @author rux
  */
@@ -59,14 +57,15 @@ public interface TagService {
     /**
      * Lists all tags in the specified tag group.
      *
-     * Tags are saved in a tree structure, any
-     * tag can actually contains other tags. This way it is possible to have for instance
-     * categories of tags, or any other organization the user would want (e.g a tag "car"
-     * could contain other tags like "family", "sport", "classic" which obvious would have
-     * the meaning related to automobiles and not the more usual meanings).
-     * The private tags are not selected, but the ones owned by the current principal. It
-     * goes recursively and collects all tags underneath. To list all tags in a repository
-     * use as parent {@link #getRootTag(String)} or simply the root domain.
+     * Tags are saved in a tree structure, any tag can actually contains other
+     * tags. This way it is possible to have for instance categories of tags, or
+     * any other organization the user would want (e.g a tag "car" could contain
+     * other tags like "family", "sport", "classic" which obvious would have the
+     * meaning related to automobiles and not the more usual meanings). The
+     * private tags are not selected, but the ones owned by the current
+     * principal. It goes recursively and collects all tags underneath. To list
+     * all tags in a repository use as parent {@link #getRootTag(String)} or
+     * simply the root domain.
      *
      * @param session the user session
      * @param tag group targeted
@@ -79,15 +78,16 @@ public interface TagService {
     /**
      * Lists tags applied on a document.
      *
-     * The private tags or tagging are not
-     * selected, but the ones owned by the current principal.
+     * The private tags or tagging are not selected, but the ones owned by the
+     * current principal.
      *
      * @param session the user session
      * @param document
      * @return
      * @throws ClientException
      */
-    List<Tag> listTagsAppliedOnDocument(CoreSession session, DocumentModel document) throws ClientException;
+    List<Tag> listTagsAppliedOnDocument(CoreSession session,
+            DocumentModel document) throws ClientException;
 
     /**
      * Returns author of a tagging based on docId and the tagLabel.
@@ -110,27 +110,30 @@ public interface TagService {
      * @return
      * @throws ClientException
      */
-    List<Tag> listTagsAppliedOnDocumentByUser(CoreSession session, DocumentModel document) throws ClientException;
+    List<Tag> listTagsAppliedOnDocumentByUser(CoreSession session,
+            DocumentModel document) throws ClientException;
 
     /**
-     * Gets and creates if needed a tag in the provided tag group (or in tag root).
+     * Gets and creates if needed a tag in the provided tag group (or in tag
+     * root).
      *
      * Interprets label as sequence of labels '/' separated.
      *
      * @param session the user session
-     * @param parent      must not be null
-     * @param label       the tag label. It will also be the title.
+     * @param parent must not be null
+     * @param label the tag label. It will also be the title.
      * @param privateFlag
      * @return
      * @throws ClientException
      */
-    DocumentModel getOrCreateTag(CoreSession session, DocumentModel parent, String label, boolean privateFlag) throws ClientException;
+    DocumentModel getOrCreateTag(CoreSession session, DocumentModel parent,
+            String label, boolean privateFlag) throws ClientException;
 
     /**
      * Retrieves the "vote" weight of tag.
      *
-     * More about Vote Tag Cloud {@link WeightedTag}.
-     * The private taggings are not selected, but the ones owned by the current principal.
+     * More about Vote Tag Cloud {@link WeightedTag}. The private taggings are
+     * not selected, but the ones owned by the current principal.
      *
      * @param session the user session
      * @param document the tagged document
@@ -138,13 +141,14 @@ public interface TagService {
      * @return
      * @throws ClientException
      */
-    WeightedTag getVoteTag(CoreSession session, DocumentModel document, String tagId) throws ClientException;
+    WeightedTag getVoteTag(CoreSession session, DocumentModel document,
+            String tagId) throws ClientException;
 
     /**
      * Retrieves the "popular" weight of tag.
      *
-     * More about Vote Tag Cloud {@link WeightedTag}. The private tagging are not selected, but the
-     * ones owned by the current principal.
+     * More about Vote Tag Cloud {@link WeightedTag}. The private tagging are
+     * not selected, but the ones owned by the current principal.
      *
      * @param session the user session
      * @param document the domain
@@ -152,47 +156,49 @@ public interface TagService {
      * @return
      * @throws ClientException
      */
-    WeightedTag getPopularTag(CoreSession session, DocumentModel document, String tagId) throws ClientException;
+    WeightedTag getPopularTag(CoreSession session, DocumentModel document,
+            String tagId) throws ClientException;
 
     /**
      * Retrieves the "vote" tag cloud. More about Vote Tag Cloud
-     * {@link WeightedTag}. The private tags or tagging are not selected, but the
-     * ones owned by the current principal.
+     * {@link WeightedTag}. The private tags or tagging are not selected, but
+     * the ones owned by the current principal.
      *
      * @param session the user session
      * @param document tagged document
      * @return
      * @throws ClientException
      */
-    List<WeightedTag> getVoteCloud(CoreSession session, DocumentModel document) throws ClientException;
+    List<WeightedTag> getVoteCloud(CoreSession session, DocumentModel document)
+            throws ClientException;
 
     /**
      * Retrieves the "popular" tag cloud.
      *
-     * More about Popular Tag Cloud {@link WeightedTag}.
-     * The private tags or tagging are not selected, but the
-     * ones owned by the current principal.
+     * More about Popular Tag Cloud {@link WeightedTag}. The private tags or
+     * tagging are not selected, but the ones owned by the current principal.
      *
      * @param session the user session
      * @param document
      * @return
      * @throws ClientException
      */
-    List<WeightedTag> getPopularCloud(CoreSession session, DocumentModel document) throws ClientException;
+    List<WeightedTag> getPopularCloud(CoreSession session,
+            DocumentModel document) throws ClientException;
 
     /**
      * Tags a document.
      *
-     * It only creates the tagging entry, if not already a
-     * tagging exists for the set document / tag / current principal. Otherwise silently
-     * ignore.
+     * It only creates the tagging entry, if not already a tagging exists for
+     * the set document / tag / current principal. Otherwise silently ignore.
      *
      * @param session the user session
      * @param document document to tag
-     * @param tagId    tag to be applied
+     * @param tagId tag to be applied
      * @throws ClientException
      */
-    void tagDocument(CoreSession session, DocumentModel document, String tagId, boolean privateFlag) throws ClientException;
+    void tagDocument(CoreSession session, DocumentModel document, String tagId,
+            boolean privateFlag) throws ClientException;
 
     /**
      * Removes a tagging from a document.

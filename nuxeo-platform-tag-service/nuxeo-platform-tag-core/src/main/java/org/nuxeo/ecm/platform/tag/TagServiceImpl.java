@@ -54,20 +54,22 @@ import org.osgi.framework.FrameworkListener;
  *
  * @author rux
  */
-public class TagServiceImpl extends DefaultComponent implements TagService, TagConfigurator {
+public class TagServiceImpl extends DefaultComponent implements TagService,
+        TagConfigurator {
 
     private static final Log log = LogFactory.getLog(TagServiceImpl.class);
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(new FrameworkListener() {
-            public void frameworkEvent(FrameworkEvent event) {
-                if(event.getType() != FrameworkEvent.STARTED) {
-                    return;
-                }
-                updateSchema();
-            }
-        });
+        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
+                new FrameworkListener() {
+                    public void frameworkEvent(FrameworkEvent event) {
+                        if (event.getType() != FrameworkEvent.STARTED) {
+                            return;
+                        }
+                        updateSchema();
+                    }
+                });
 
         TagServiceInitializer tagServiceInitializer = new TagServiceInitializer();
         tagServiceInitializer.install();
@@ -79,8 +81,6 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
         super.deactivate(context);
     }
 
-
-
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
@@ -89,7 +89,6 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
             setConfig((TagConfig) contribution);
         }
     }
-
 
     protected TagConfig config = new TagConfig();
 
@@ -120,14 +119,19 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
         persistenceProvider = null;
     }
 
-    public DocumentModel getRootTag(final CoreSession session) throws ClientException {
-        return getOrCreatePersistenceProvider().run(true, new RunCallback<DocumentModel>() {
-            public DocumentModel runWith(EntityManager em) throws ClientException {
-                return getRootTag(em,  session);
-            }});
+    public DocumentModel getRootTag(final CoreSession session)
+            throws ClientException {
+        return getOrCreatePersistenceProvider().run(true,
+                new RunCallback<DocumentModel>() {
+                    public DocumentModel runWith(EntityManager em)
+                            throws ClientException {
+                        return getRootTag(em, session);
+                    }
+                });
     }
 
-    public DocumentModel getRootTag(EntityManager em, CoreSession session) throws ClientException {
+    public DocumentModel getRootTag(EntityManager em, CoreSession session)
+            throws ClientException {
         if (log.isDebugEnabled()) {
             log.debug("Going to look for root tag");
         }
@@ -141,8 +145,9 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
         return session.getDocument(new IdRef(runner.rootTagDocumentId));
     }
 
-
-    public void tagDocument(final CoreSession session, final DocumentModel document, final String tagId, final boolean privateFlag) throws ClientException {
+    public void tagDocument(final CoreSession session,
+            final DocumentModel document, final String tagId,
+            final boolean privateFlag) throws ClientException {
         getOrCreatePersistenceProvider().run(true, new RunVoid() {
             public void runWith(EntityManager em) throws ClientException {
                 tagDocument(em, session, document, tagId, privateFlag);
@@ -150,8 +155,9 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
         });
     }
 
-    public void tagDocument(EntityManager em, CoreSession session, DocumentModel document, String tagId,
-            boolean privateFlag) throws ClientException {
+    public void tagDocument(EntityManager em, CoreSession session,
+            DocumentModel document, String tagId, boolean privateFlag)
+            throws ClientException {
         if (null == document) {
             throw new ClientException("Can't tag document null.");
         }
@@ -183,23 +189,30 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
         TaggingProvider.createProvider(em).addTagging(taggingEntry);
     }
 
-    protected static String getUserName(CoreSession session) throws ClientException {
+    protected static String getUserName(CoreSession session)
+            throws ClientException {
         if (session == null) {
             throw new ClientException("No session available");
         }
         return session.getPrincipal().getName();
     }
 
-    public DocumentModel getOrCreateTag(final CoreSession session, final DocumentModel parent, final String label, final boolean privateFlag) throws ClientException {
-        return getOrCreatePersistenceProvider().run(true, new RunCallback<DocumentModel>() {
-            public DocumentModel runWith(EntityManager em) throws ClientException {
-                return getOrCreateTag(em, session, parent, label, privateFlag);
-            }
-        });
+    public DocumentModel getOrCreateTag(final CoreSession session,
+            final DocumentModel parent, final String label,
+            final boolean privateFlag) throws ClientException {
+        return getOrCreatePersistenceProvider().run(true,
+                new RunCallback<DocumentModel>() {
+                    public DocumentModel runWith(EntityManager em)
+                            throws ClientException {
+                        return getOrCreateTag(em, session, parent, label,
+                                privateFlag);
+                    }
+                });
     }
 
-    public DocumentModel getOrCreateTag(EntityManager em, CoreSession session, DocumentModel parent, String label,
-            boolean privateFlag) throws ClientException {
+    public DocumentModel getOrCreateTag(EntityManager em, CoreSession session,
+            DocumentModel parent, String label, boolean privateFlag)
+            throws ClientException {
         if (parent == null) {
             log.warn("Can't create tag in null parent");
             throw new ClientException("Need a parent to create a tag");
@@ -216,16 +229,19 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
         return runner.tagDocument;
     }
 
-    public List<WeightedTag> getPopularCloud(final CoreSession session, final DocumentModel document) throws ClientException {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<WeightedTag>>() {
-            public List<WeightedTag> runWith(EntityManager em) throws ClientException {
-                return getPopularCloud(em, session, document);
-            }
-        });
+    public List<WeightedTag> getPopularCloud(final CoreSession session,
+            final DocumentModel document) throws ClientException {
+        return getOrCreatePersistenceProvider().run(false,
+                new RunCallback<List<WeightedTag>>() {
+                    public List<WeightedTag> runWith(EntityManager em)
+                            throws ClientException {
+                        return getPopularCloud(em, session, document);
+                    }
+                });
     }
 
-    public List<WeightedTag> getPopularCloud(EntityManager em, CoreSession session, DocumentModel document)
-            throws ClientException {
+    public List<WeightedTag> getPopularCloud(EntityManager em,
+            CoreSession session, DocumentModel document) throws ClientException {
         // the NXSQL queries can't be used together with the native queries, for
         // moment the queries are performed sequentially
         if (null == document) {
@@ -235,27 +251,31 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
             log.debug("Going for popular cloud for " + document.getTitle());
         }
         String query = String.format(
-                    "SELECT * FROM Document WHERE ecm:path STARTSWITH '%s' AND ecm:isProxy = %d",
+                "SELECT * FROM Document WHERE ecm:path STARTSWITH '%s' AND ecm:isProxy = %d",
                 document.getPathAsString(), config.isQueryingForProxy() ? 1 : 0);
         UnrestrictedSessionRunQuery runner = new UnrestrictedSessionRunQuery(
                 session, query);
         runner.runUnrestricted();
         // add the current doc also
         runner.result.add(document);
-        return TaggingProvider.createProvider(em).getPopularCloud(runner.result,
-                getUserName(session));
+        return TaggingProvider.createProvider(em).getPopularCloud(
+                runner.result, getUserName(session));
     }
 
-    public WeightedTag getPopularTag(final CoreSession session, final DocumentModel document, final String tagId) throws ClientException {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<WeightedTag>() {
-            public WeightedTag runWith(EntityManager em) throws ClientException {
-                return getPopularTag(em, session, document, tagId);
-            }
-        });
-    }
-
-    public WeightedTag getPopularTag(EntityManager em, CoreSession session, DocumentModel document, String tagId)
+    public WeightedTag getPopularTag(final CoreSession session,
+            final DocumentModel document, final String tagId)
             throws ClientException {
+        return getOrCreatePersistenceProvider().run(false,
+                new RunCallback<WeightedTag>() {
+                    public WeightedTag runWith(EntityManager em)
+                            throws ClientException {
+                        return getPopularTag(em, session, document, tagId);
+                    }
+                });
+    }
+
+    public WeightedTag getPopularTag(EntityManager em, CoreSession session,
+            DocumentModel document, String tagId) throws ClientException {
         if (null == document || null == tagId) {
             throw new ClientException(
                     "Can't get popular for document or tag null.");
@@ -277,30 +297,36 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
                 (String) tag.getPropertyValue(TagConstants.TAG_LABEL_FIELD), 0);
     }
 
-
     public List<WeightedTag> getVoteCloud(final CoreSession session,
             final DocumentModel document) throws ClientException {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<WeightedTag>>() {
-            public List<WeightedTag> runWith(EntityManager em) throws ClientException {
-                return getVoteCloud(em, session, document);
-            }
-        });
+        return getOrCreatePersistenceProvider().run(false,
+                new RunCallback<List<WeightedTag>>() {
+                    public List<WeightedTag> runWith(EntityManager em)
+                            throws ClientException {
+                        return getVoteCloud(em, session, document);
+                    }
+                });
     }
 
-    public List<WeightedTag> getVoteCloud(EntityManager em, CoreSession session, DocumentModel document) throws ClientException {
+    public List<WeightedTag> getVoteCloud(EntityManager em,
+            CoreSession session, DocumentModel document) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
-    public WeightedTag getVoteTag(final CoreSession session, final DocumentModel document, final String tagId) throws ClientException {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<WeightedTag>() {
-            public WeightedTag runWith(EntityManager em) throws ClientException {
-                return getVoteTag(em, session, document, tagId);
-            }
-        });
+    public WeightedTag getVoteTag(final CoreSession session,
+            final DocumentModel document, final String tagId)
+            throws ClientException {
+        return getOrCreatePersistenceProvider().run(false,
+                new RunCallback<WeightedTag>() {
+                    public WeightedTag runWith(EntityManager em)
+                            throws ClientException {
+                        return getVoteTag(em, session, document, tagId);
+                    }
+                });
     }
 
-    public WeightedTag getVoteTag(EntityManager em, CoreSession session, DocumentModel document, String tagId)
-            throws ClientException {
+    public WeightedTag getVoteTag(EntityManager em, CoreSession session,
+            DocumentModel document, String tagId) throws ClientException {
         if (null == document) {
             throw new ClientException(
                     "Can't get list of documents from domain null.");
@@ -323,16 +349,19 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
                 result.intValue());
     }
 
-    public List<Tag> listTagsAppliedOnDocument(final CoreSession session, final DocumentModel document) throws ClientException {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<Tag>>() {
-            public List<Tag> runWith(EntityManager em) throws ClientException {
-                return listTagsAppliedOnDocument(em, session, document);
-            }
-        });
+    public List<Tag> listTagsAppliedOnDocument(final CoreSession session,
+            final DocumentModel document) throws ClientException {
+        return getOrCreatePersistenceProvider().run(false,
+                new RunCallback<List<Tag>>() {
+                    public List<Tag> runWith(EntityManager em)
+                            throws ClientException {
+                        return listTagsAppliedOnDocument(em, session, document);
+                    }
+                });
     }
 
-    public List<Tag> listTagsAppliedOnDocument(EntityManager em, CoreSession session, DocumentModel document)
-            throws ClientException {
+    public List<Tag> listTagsAppliedOnDocument(EntityManager em,
+            CoreSession session, DocumentModel document) throws ClientException {
         if (null == document) {
             throw new ClientException("Can't get list of tags from group null.");
         }
@@ -340,20 +369,24 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
             log.debug("Going to look for tags applied on "
                     + document.getTitle());
         }
-        return TaggingProvider.createProvider(em).listTagsForDocument(document.getId(),
-                getUserName(session));
+        return TaggingProvider.createProvider(em).listTagsForDocument(
+                document.getId(), getUserName(session));
     }
 
-    public List<Tag> listTagsAppliedOnDocumentByUser(final CoreSession session, final DocumentModel document) throws ClientException {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<Tag>>() {
-            public List<Tag> runWith(EntityManager em) throws ClientException {
-                return listTagsAppliedOnDocumentByUser(em, session, document);
-            }
-        });
+    public List<Tag> listTagsAppliedOnDocumentByUser(final CoreSession session,
+            final DocumentModel document) throws ClientException {
+        return getOrCreatePersistenceProvider().run(false,
+                new RunCallback<List<Tag>>() {
+                    public List<Tag> runWith(EntityManager em)
+                            throws ClientException {
+                        return listTagsAppliedOnDocumentByUser(em, session,
+                                document);
+                    }
+                });
     }
 
-    public List<Tag> listTagsAppliedOnDocumentByUser(EntityManager em, CoreSession session, DocumentModel document)
-            throws ClientException {
+    public List<Tag> listTagsAppliedOnDocumentByUser(EntityManager em,
+            CoreSession session, DocumentModel document) throws ClientException {
         if (null == document) {
             throw new ClientException("Can't get list of tags from group null.");
         }
@@ -365,20 +398,24 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
                 document.getId(), getUserName(session));
     }
 
-    public DocumentModelList listTagsInGroup(final CoreSession session, final DocumentModel tag) throws ClientException {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<DocumentModelList>() {
-            public DocumentModelList runWith(EntityManager em) throws ClientException {
-                return listTagsInGroup(em, session, tag);
-            }
-        });
+    public DocumentModelList listTagsInGroup(final CoreSession session,
+            final DocumentModel tag) throws ClientException {
+        return getOrCreatePersistenceProvider().run(false,
+                new RunCallback<DocumentModelList>() {
+                    public DocumentModelList runWith(EntityManager em)
+                            throws ClientException {
+                        return listTagsInGroup(em, session, tag);
+                    }
+                });
     }
 
-    public DocumentModelList listTagsInGroup(final DocumentModel tag) throws ClientException {
+    public DocumentModelList listTagsInGroup(final DocumentModel tag)
+            throws ClientException {
         return listTagsInGroup(tag.getCoreSession(), tag);
     }
 
-    public DocumentModelList listTagsInGroup(EntityManager em, CoreSession session, DocumentModel tag)
-            throws ClientException {
+    public DocumentModelList listTagsInGroup(EntityManager em,
+            CoreSession session, DocumentModel tag) throws ClientException {
         if (null == tag) {
             throw new ClientException("Can't get list of tags from group null.");
         }
@@ -388,14 +425,17 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
         String user = getUserName(session);
         String query = String.format(
                 "SELECT * FROM Tag WHERE ecm:path STARTSWITH '%s' AND (tag:private = 0 or dc:creator = '%s') AND ecm:isProxy = %d",
-               tag.getPathAsString(), user, config.isQueryingForProxy() ? 1 : 0);
+                tag.getPathAsString(), user, config.isQueryingForProxy() ? 1
+                        : 0);
         UnrestrictedSessionRunQuery runner = new UnrestrictedSessionRunQuery(
                 session, query);
         runner.runUnrestricted();
         return runner.result;
     }
 
-    public void untagDocument(final CoreSession session, final DocumentModel document, final String tagId) throws ClientException {
+    public void untagDocument(final CoreSession session,
+            final DocumentModel document, final String tagId)
+            throws ClientException {
         getOrCreatePersistenceProvider().run(true, new RunVoid() {
             public void runWith(EntityManager em) throws ClientException {
                 untagDocument(em, session, document, tagId);
@@ -403,16 +443,16 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
         });
     }
 
-    public void untagDocument(EntityManager em, CoreSession session, DocumentModel document, String tagId)
-            throws ClientException {
+    public void untagDocument(EntityManager em, CoreSession session,
+            DocumentModel document, String tagId) throws ClientException {
         if (null == document || tagId == null) {
             throw new ClientException("Can't untag document or tag null.");
         }
         if (log.isDebugEnabled()) {
             log.debug("Going to untag " + tagId + " for " + document.getTitle());
         }
-        TaggingProvider.createProvider(em).removeTagging(document.getId(), tagId,
-               getUserName(session));
+        TaggingProvider.createProvider(em).removeTagging(document.getId(),
+                tagId, getUserName(session));
     }
 
     public void completeUntagDocument(final CoreSession session,
@@ -433,16 +473,19 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
         if (log.isDebugEnabled()) {
             log.debug("Going to untag " + tagId + " for " + document.getTitle());
         }
-        TaggingProvider.createProvider(em).removeAllTagging(document.getId(), tagId);
+        TaggingProvider.createProvider(em).removeAllTagging(document.getId(),
+                tagId);
     }
 
     public List<String> listDocumentsForTag(final CoreSession session,
             final String tagId, final String user) throws ClientException {
-        return getOrCreatePersistenceProvider().run(true, new RunCallback<List<String>>() {
-            public List<String> runWith(EntityManager em) throws ClientException {
-                return listDocumentsForTag(em, session, tagId, user);
-            }
-        });
+        return getOrCreatePersistenceProvider().run(true,
+                new RunCallback<List<String>>() {
+                    public List<String> runWith(EntityManager em)
+                            throws ClientException {
+                        return listDocumentsForTag(em, session, tagId, user);
+                    }
+                });
     }
 
     public List<String> listDocumentsForTag(EntityManager em,
@@ -452,7 +495,8 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
             throw new ClientException(
                     "Can't get list of documents for tag null.");
         }
-        return TaggingProvider.createProvider(em).getDocumentsForTag(tagId, user);
+        return TaggingProvider.createProvider(em).getDocumentsForTag(tagId,
+                user);
     }
 
     /**
@@ -523,8 +567,9 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
 
         private final boolean privateFlag;
 
-        public UnrestrictedSessionCreateTag(CoreSession session, DocumentModel parent, String label,
-                boolean privateFlag) throws ClientException {
+        public UnrestrictedSessionCreateTag(CoreSession session,
+                DocumentModel parent, String label, boolean privateFlag)
+                throws ClientException {
             super(session);
             this.parent = parent;
             tagDocument = null;
@@ -543,7 +588,8 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
                 // create it
                 String query = String.format(
                         "SELECT * FROM Tag WHERE ecm:parentId = '%s' AND tag:label = '%s' AND ecm:isProxy = %d",
-                        relativeParent.getId(), atomicLabel, config.queryProxy ? 1 : 0);
+                        relativeParent.getId(), atomicLabel,
+                        config.queryProxy ? 1 : 0);
                 DocumentModelList tags = session.query(query);
 
                 DocumentModel foundTag = null;
@@ -577,7 +623,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
             }
             // and set ID for retrieval
             tagDocument = relativeParent;
-            ((DocumentModelImpl)tagDocument).detach(true);
+            ((DocumentModelImpl) tagDocument).detach(true);
         }
     }
 
@@ -628,25 +674,28 @@ public class TagServiceImpl extends DefaultComponent implements TagService, TagC
 
     public String getTaggingId(final CoreSession session, final String docId,
             final String tagLabel, final String author) throws ClientException {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<String>() {
-            public String runWith(EntityManager em) throws ClientException {
-                return getTaggingId(em, session, docId, tagLabel, author);
-            }
-        });
+        return getOrCreatePersistenceProvider().run(false,
+                new RunCallback<String>() {
+                    public String runWith(EntityManager em)
+                            throws ClientException {
+                        return getTaggingId(em, session, docId, tagLabel,
+                                author);
+                    }
+                });
     }
 
     public String getTaggingId(EntityManager em, CoreSession session,
             String docId, String tagLabel, String author) {
-        return TaggingProvider.createProvider(em).getTaggingId(docId, tagLabel, author);
+        return TaggingProvider.createProvider(em).getTaggingId(docId, tagLabel,
+                author);
     }
 
     public void updateSchema() {
         HibernateConfigurator configurator = Framework.getLocalService(HibernateConfigurator.class);
         HibernateConfiguration configuration = configurator.getHibernateConfiguration("nxtags");
-        TagSchemaUpdater updater = new TagSchemaUpdater(configuration.hibernateProperties);
+        TagSchemaUpdater updater = new TagSchemaUpdater(
+                configuration.hibernateProperties);
         updater.update();
     }
-
-
 
 }
