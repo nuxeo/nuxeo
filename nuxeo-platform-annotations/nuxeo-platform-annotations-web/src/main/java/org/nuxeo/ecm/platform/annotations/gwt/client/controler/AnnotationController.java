@@ -207,7 +207,7 @@ public class AnnotationController {
     }
 
     public void createNewAnnotation(String pointer) {
-        String href = getParentWindowUrl();
+        String href = getTopWindowUrl();
         String xpointerURI = href.substring(0, href.lastIndexOf("/") + 1)
                 + pointer;
         Annotation newAnnotation = new Annotation(
@@ -233,11 +233,23 @@ public class AnnotationController {
                 annotatedDocument.preDecorateDocument();
             }
         }
-        annoteaClient.getAnnotationList(getParentWindowUrl());
+        annoteaClient.getAnnotationList(getTopWindowUrl());
     }
 
-    public native String getParentWindowUrl() /*-{
+    public String getTopWindowUrl() {
+        if (onFrame) {
+            return getParentWindowUrl();
+        } else {
+            return getCurrentWindowUrl();
+        }
+    };
+
+    protected native String getParentWindowUrl() /*-{
         return $wnd.parent.location.href;
+    }-*/;
+
+    protected native String getCurrentWindowUrl() /*-{
+        return $wnd.location.href;
     }-*/;
 
     public void decorateDocument() {

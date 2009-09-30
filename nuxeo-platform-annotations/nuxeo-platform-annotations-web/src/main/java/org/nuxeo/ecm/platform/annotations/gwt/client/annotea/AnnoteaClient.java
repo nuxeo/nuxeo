@@ -69,7 +69,7 @@ public class AnnoteaClient {
                 public void onResponseReceived(Request request,
                         Response response) {
                     responseManager.processSubmitAnnotationResponse(response.getText());
-                    getAnnotationList(controller.getParentWindowUrl());
+                    getAnnotationList(controller.getTopWindowUrl());
                     controller.reloadAnnotations();
                 }
             });
