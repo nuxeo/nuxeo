@@ -31,13 +31,12 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 
 import org.hsqldb.jdbc.jdbcDataSource;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
@@ -50,7 +49,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author Alexandre Russel
  *
  */
-public abstract class AbstractRepositoryTestCase extends RepositoryOSGITestCase {
+public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
     protected final AnnotationManager manager = new AnnotationManager();
 
     protected URI uri;
@@ -75,6 +74,7 @@ public abstract class AbstractRepositoryTestCase extends RepositoryOSGITestCase 
         Framework.getProperties().setProperty(
                 "org.nuxeo.ecm.sql.jena.databaseTransactionEnabled", "false");
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.annotations.contrib");
         deployBundle("org.nuxeo.ecm.annotations");
@@ -93,12 +93,11 @@ public abstract class AbstractRepositoryTestCase extends RepositoryOSGITestCase 
                 "/annotea-spec-post.xml");
         assertNotNull(is);
         annotation = manager.getAnnotation(is);
-        openRepository();
+        openSession();
     }
 
     protected void setUpRepository() throws Exception {
         // create structure
-        CoreSession session = getCoreSession();
         assertNotNull(session);
         DocumentModel root = session.getRootDocument();
         assertNotNull(root);
@@ -127,20 +126,20 @@ public abstract class AbstractRepositoryTestCase extends RepositoryOSGITestCase 
         // create version
         VersionModel versionModel1 = new VersionModelImpl();
         versionModel1.setLabel("v1");
-        coreSession.checkIn(doc.getRef(), versionModel1);
-        coreSession.checkOut(doc.getRef());
+        session.checkIn(doc.getRef(), versionModel1);
+        session.checkOut(doc.getRef());
         session.saveDocument(doc);
         session.save();
         VersionModel versionModel2 = new VersionModelImpl();
         versionModel2.setLabel("v2");
-        coreSession.checkIn(doc.getRef(), versionModel2);
-        coreSession.checkOut(doc.getRef());
+        session.checkIn(doc.getRef(), versionModel2);
+        session.checkOut(doc.getRef());
         session.saveDocument(doc);
         session.save();
         VersionModel versionModel3 = new VersionModelImpl();
         versionModel3.setLabel("v3");
-        coreSession.checkIn(doc.getRef(), versionModel3);
-        coreSession.checkOut(doc.getRef());
+        session.checkIn(doc.getRef(), versionModel3);
+        session.checkOut(doc.getRef());
         session.saveDocument(doc);
         session.save();
         List<DocumentModel> l = session.getVersions(doc.getRef());

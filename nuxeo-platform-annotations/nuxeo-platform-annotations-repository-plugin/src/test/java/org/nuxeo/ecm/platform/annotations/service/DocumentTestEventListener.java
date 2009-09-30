@@ -74,4 +74,8 @@ public class DocumentTestEventListener implements
     public static int getTest() {
         return test;
     }
+
+    public static void resetTest() {
+        test = 0;
+    }
 }

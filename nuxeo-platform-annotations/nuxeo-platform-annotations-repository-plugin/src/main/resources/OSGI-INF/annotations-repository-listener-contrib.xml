@@ -3,11 +3,10 @@
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
 
-    <listener name="annotationsVersionEventListener" async="true"
+    <listener name="annotationsVersionEventListener" async="false"
       postCommit="true"
       class="org.nuxeo.ecm.platform.annotations.repository.service.VersionEventListener">
     </listener>
 
   </extension>
 </component>
-    

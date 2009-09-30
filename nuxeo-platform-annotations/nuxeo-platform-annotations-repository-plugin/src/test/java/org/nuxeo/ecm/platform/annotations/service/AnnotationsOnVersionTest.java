@@ -44,7 +44,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
     public void testAnnotationsOnVersion() throws Exception {
         DocumentModel docModel = createDocument(
-                coreSession.getRootDocument().getPathAsString(),
+                session.getRootDocument().getPathAsString(),
                 "fileAnnotationsOnVersion");
 
         String url = viewCodecManager.getUrlFromDocumentView(
@@ -65,7 +65,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         assertEquals(1, annotations.size());
 
         // 1 annotation on the version
-        DocumentModel versionModel = coreSession.getDocumentWithVersion(
+        DocumentModel versionModel = session.getDocumentWithVersion(
                 docModel.getRef(), version);
         URI uriVersion = translator.getNuxeoUrn(versionModel.getRepositoryName(), versionModel.getId());
         annotations = service.queryAnnotations(uriVersion, null, user);
@@ -83,7 +83,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
     public void testAnnotationsOnRestore() throws Exception {
         DocumentModel docModel = createDocument(
-                coreSession.getRootDocument().getPathAsString(),
+                session.getRootDocument().getPathAsString(),
                 "fileAnnotationsOnRestore");
         String url = viewCodecManager.getUrlFromDocumentView(
                 new DocumentViewImpl(docModel), true, SERVER);
@@ -96,7 +96,6 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
                 null, user);
         assertEquals(1, annotations.size());
 
-        coreSession.checkOut(docModel.getRef());
         VersionModel version = checkIn(docModel.getRef(), "1");
 
         // still 1 annotation on current document
@@ -104,7 +103,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         assertEquals(1, annotations.size());
 
         // 1 annotation on the version
-        DocumentModel versionModel = coreSession.getDocumentWithVersion(
+        DocumentModel versionModel = session.getDocumentWithVersion(
                 docModel.getRef(), version);
         URI uriVersion = translator.getNuxeoUrn(versionModel.getRepositoryName(), versionModel.getId());
         annotations = service.queryAnnotations(uriVersion, null, user);
@@ -128,7 +127,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
     public void testAnnotationsOnRestoreWithMultipleVersions() throws Exception {
         DocumentModel docModel = createDocument(
-                coreSession.getRootDocument().getPathAsString(),
+                session.getRootDocument().getPathAsString(),
                 "fileAnnotationsOnRestoreWithMultipleVersions");
         String url = viewCodecManager.getUrlFromDocumentView(
                 new DocumentViewImpl(docModel), true, SERVER);
@@ -142,11 +141,10 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         assertEquals(3, annotations.size());
 
         VersionModel version1 = checkIn(docModel.getRef(), "1");
-        coreSession.checkOut(docModel.getRef());
-        List<DocumentModel> versions = coreSession.getVersions(docModel.getRef());
+        List<DocumentModel> versions = session.getVersions(docModel.getRef());
         assertEquals(1, versions.size());
 
-        DocumentModel versionModel1 = coreSession.getDocumentWithVersion(
+        DocumentModel versionModel1 = session.getDocumentWithVersion(
                 docModel.getRef(), version1);
         URI uriVersion1 = translator.getNuxeoUrn(versionModel1.getRepositoryName(), versionModel1.getId());
         annotations = service.queryAnnotations(uriVersion1, null, user);
@@ -157,11 +155,10 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         assertEquals(6, annotations.size());
 
         VersionModel version2 = checkIn(docModel.getRef(), "2");
-        coreSession.checkOut(docModel.getRef());
-        versions = coreSession.getVersions(docModel.getRef());
+        versions = session.getVersions(docModel.getRef());
         assertEquals(2, versions.size());
 
-        DocumentModel versionModel2 = coreSession.getDocumentWithVersion(
+        DocumentModel versionModel2 = session.getDocumentWithVersion(
                 docModel.getRef(), version2);
         URI uriVersion2 = translator.getNuxeoUrn(versionModel2.getRepositoryName(), versionModel2.getId());
 
@@ -192,7 +189,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
     public void testDeleteAnnotationsOnVersions() throws Exception {
         DocumentModel docModel = createDocument(
-                coreSession.getRootDocument().getPathAsString(),
+                session.getRootDocument().getPathAsString(),
                 "fileDeleteAnnotationsOnVersions");
         String url = viewCodecManager.getUrlFromDocumentView(
                 new DocumentViewImpl(docModel), true, SERVER);
@@ -206,11 +203,10 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         assertEquals(3, annotations.size());
 
         VersionModel version1 = checkIn(docModel.getRef(), "1");
-        coreSession.checkOut(docModel.getRef());
-        List<DocumentModel> versions = coreSession.getVersions(docModel.getRef());
+        List<DocumentModel> versions = session.getVersions(docModel.getRef());
         assertEquals(1, versions.size());
 
-        DocumentModel versionModel1 = coreSession.getDocumentWithVersion(
+        DocumentModel versionModel1 = session.getDocumentWithVersion(
                 docModel.getRef(), version1);
         URI uriVersion1 = translator.getNuxeoUrn(versionModel1.getRepositoryName(), versionModel1.getId());
         annotations = service.queryAnnotations(uriVersion1, null, user);
@@ -221,11 +217,10 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         assertEquals(6, annotations.size());
 
         VersionModel version2 = checkIn(docModel.getRef(), "2");
-        coreSession.checkOut(docModel.getRef());
-        versions = coreSession.getVersions(docModel.getRef());
+        versions = session.getVersions(docModel.getRef());
         assertEquals(2, versions.size());
 
-        DocumentModel versionModel2 = coreSession.getDocumentWithVersion(
+        DocumentModel versionModel2 = session.getDocumentWithVersion(
                 docModel.getRef(), version2);
         URI uriVersion2 = translator.getNuxeoUrn(versionModel2.getRepositoryName(), versionModel2.getId());
         annotations = service.queryAnnotations(uriVersion2, null, user);
@@ -267,10 +262,10 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
     protected DocumentModel createDocument(String parentPath, String id)
             throws Exception {
-        DocumentModel docModel = coreSession.createDocumentModel(parentPath,
+        DocumentModel docModel = session.createDocumentModel(parentPath,
                 id, "File");
-        docModel = coreSession.createDocument(docModel);
-        coreSession.save();
+        docModel = session.createDocument(docModel);
+        session.save();
         return docModel;
     }
 
@@ -287,20 +282,21 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
     protected VersionModel checkIn(DocumentRef ref, String versionLabel)
             throws Exception {
+        session.save();
         VersionModel version = new VersionModelImpl();
         version.setLabel(versionLabel);
-        coreSession.checkIn(ref, version);
-        coreSession.save();
-        waitForAsyncExec();
+        session.checkIn(ref, version);
+        session.checkOut(ref);
+        session.save();
+
         return version;
     }
 
     protected DocumentModel restoreToVersion(DocumentRef docRef,
             VersionModel version) throws Exception {
-        coreSession.save();
-        DocumentModel docModel = coreSession.restoreToVersion(docRef, version);
-        coreSession.save();
-        waitForAsyncExec();
+        session.save();
+        DocumentModel docModel = session.restoreToVersion(docRef, version);
+        session.save();
         return docModel;
     }
 

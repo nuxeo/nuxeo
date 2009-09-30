@@ -60,7 +60,6 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
     }
 
     public void testTest() throws Exception {
-        CoreSession session = getCoreSession();
         assertNotNull(session);
         DocumentModel myfileModel = session.createDocumentModel(
                 session.getRootDocument().getPathAsString(), "999", "File");
@@ -120,11 +119,11 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
     }
 
     private void createSection() throws ClientException {
-        DocumentModel sectionModel = getCoreSession().createDocumentModel(
-                getCoreSession().getRootDocument().getPathAsString(), "2",
+        DocumentModel sectionModel = session.createDocumentModel(
+                session.getRootDocument().getPathAsString(), "2",
                 "Section");
         assertNotNull(sectionModel);
-        section = getCoreSession().createDocument(sectionModel);
+        section = session.createDocument(sectionModel);
     }
 
     private void sameDocumentFrom2Servers(String u1, String u2)

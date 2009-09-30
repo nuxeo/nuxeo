@@ -19,14 +19,14 @@
 
 package org.nuxeo.ecm.platform.annotations.repository.service;
 
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Alexandre Russel
  *
  */
-public class AnnotationsRepositoryServiceTest extends RepositoryOSGITestCase {
+public class AnnotationsRepositoryServiceTest extends SQLRepositoryTestCase {
 
     @Override
     public void setUp() throws Exception {

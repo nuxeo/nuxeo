@@ -38,6 +38,7 @@ public class AnnotatedEventTestListener extends AbstractRepositoryTestCase {
     private static final String HTTP_LOCALHOST_8080_NUXEO = "http://localhost:8080/nuxeo";
 
     public void testTest() throws AnnotationException {
+        DocumentTestEventListener.resetTest();
         assertNotNull(annotation);
         NuxeoPrincipal user = new FakeNuxeoPrincipal("bob");
         Annotation createdAnnotation = service.addAnnotation(annotation, user,
