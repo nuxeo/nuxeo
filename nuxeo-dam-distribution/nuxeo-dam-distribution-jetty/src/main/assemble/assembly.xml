@@ -99,10 +99,9 @@
       <artifact group="com.thoughtworks.xstream" name="xstream" version="1.2" />
       <artifact group="pdfbox" name="pdfbox" version="0.7.3" />
 
-      <artifact group="org.richfaces.framework" name="richfaces-api" version="3.2.1.GA" />
-      <artifact group="org.richfaces.framework" name="richfaces-impl" version="3.2.1.GA-NX2" />
-      <artifact group="org.richfaces.ui" name="richfaces-ui" version="3.2.1.GA" />
-      <artifact group="org.richfaces.framework" name="richfaces-api" version="3.2.1.GA" />
+      <artifact group="org.richfaces.framework" name="richfaces-api" version="3.3.1.GA" />
+      <artifact group="org.richfaces.framework" name="richfaces-impl" version="3.3.1.GA-NX" />
+      <artifact group="org.richfaces.ui" name="richfaces-ui" version="3.3.1.GA-NX" />
       <artifact group="javax.script" name="script-api" version="1.0" />
       <artifact group="org.apache.lucene" name="lucene-analyzers" version="2.3.2" />
 
