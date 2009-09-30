@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -39,6 +40,7 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
+import org.nuxeo.ecm.core.storage.sql.db.Table;
 
 /**
  * Microsoft SQL Server-specific dialect.
@@ -240,13 +242,15 @@ public class DialectSQLServer extends Dialect {
 
     @Override
     public String getCreateFulltextIndexSql(String indexName,
-            String quotedIndexName, String tableName, List<String> columnNames) {
+            String quotedIndexName, Table table, List<Column> columns,
+            Model model) {
         StringBuilder buf = new StringBuilder();
-        buf.append(String.format("CREATE FULLTEXT INDEX ON %s (", tableName));
-        Iterator<String> it = columnNames.iterator();
+        buf.append(String.format("CREATE FULLTEXT INDEX ON %s (",
+                table.getQuotedName()));
+        Iterator<Column> it = columns.iterator();
         while (it.hasNext()) {
-            buf.append(String.format("%s LANGUAGE %s", it.next(),
-                    getQuotedFulltextAnalyzer()));
+            buf.append(String.format("%s LANGUAGE %s",
+                    it.next().getQuotedName(), getQuotedFulltextAnalyzer()));
             if (it.hasNext()) {
                 buf.append(", ");
             }

@@ -244,12 +244,13 @@ public class DialectOracle extends Dialect {
 
     @Override
     public String getCreateFulltextIndexSql(String indexName,
-            String quotedIndexName, String tableName, List<String> columnNames) {
+            String quotedIndexName, Table table, List<Column> columns,
+            Model model) {
         return String.format(
                 "CREATE INDEX %s ON %s(%s) INDEXTYPE IS CTXSYS.CONTEXT "
                         + "PARAMETERS('%s SYNC (ON COMMIT) TRANSACTIONAL')",
-                quotedIndexName, tableName, columnNames.get(0),
-                fulltextParameters);
+                quotedIndexName, table.getQuotedName(),
+                columns.get(0).getQuotedName(), fulltextParameters);
     }
 
     @Override
