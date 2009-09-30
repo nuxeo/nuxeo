@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.storage.sql.db.dialect;
 
 import java.io.Serializable;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -154,35 +155,24 @@ public abstract class Dialect {
     protected String makeName(String prefix, String string, String suffix,
             int maxNameSize) {
         int length = prefix.length() + string.length() + suffix.length();
-
-        try {
-
-            StringBuilder sb = new StringBuilder(length);
-
-            if (length > maxNameSize) {
-
-                MessageDigest digest = MessageDigest.getInstance("MD5");
-
-                byte[] bytes = (prefix + string).getBytes();
-                digest.update(bytes, 0, bytes.length);
-
-                sb.append(prefix.substring(0, 4));
-                sb.append('_');
-                sb.append(toHexString(digest.digest()).substring(0, 8));
+        StringBuilder buf = new StringBuilder(length);
+        if (length > maxNameSize) {
+            MessageDigest digest;
+            try {
+                digest = MessageDigest.getInstance("MD5");
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e.toString(), e);
             }
-
-            else {
-                sb.append(prefix).append(string);
-            }
-
-            sb.append(storesUpperCaseIdentifiers() ? suffix
-                    : suffix.toLowerCase());
-            return sb.toString();
+            byte[] bytes = (prefix + string).getBytes();
+            digest.update(bytes, 0, bytes.length);
+            buf.append(prefix.substring(0, 4));
+            buf.append('_');
+            buf.append(toHexString(digest.digest()).substring(0, 8));
+        } else {
+            buf.append(prefix).append(string);
         }
-
-        catch (Exception e) {
-            throw new RuntimeException("Error", e);
-        }
+        buf.append(storesUpperCaseIdentifiers() ? suffix : suffix.toLowerCase());
+        return buf.toString();
     }
 
     protected static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
