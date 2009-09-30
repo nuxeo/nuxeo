@@ -28,7 +28,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.ranges.DocumentRange;
 import org.w3c.dom.ranges.Range;
 
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import org.apache.xml.serialize.OutputFormat;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

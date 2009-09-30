@@ -30,6 +30,10 @@
   </distributionManagement>
 
   <dependencies>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+    </dependency>
   </dependencies>
 
 </project>
