@@ -209,7 +209,7 @@ public abstract class AbstractSession implements CoreSession,
                         } catch (ClientException e) {
                             // shouldn't remove the root? ... to restart with an
                             // empty repository
-                            log.error("Failed to initialize repository content , e");
+                            log.error("Failed to initialize repository content", e);
                         } catch (DocumentException e) {
                             log.error("Unable to save session after repository init : "
                                     + e.getMessage());
