@@ -195,9 +195,12 @@ public class OSGiAdapter {
     }
 
     public void fireFrameworkEvent(FrameworkEvent event) {
+        log.debug("Firing FrameworkEvent on " + frameworkListeners.size() + " listeners");
         Object[] listeners = frameworkListeners.getListeners();
         for (Object listener : listeners) {
+            log.debug("Start execution of " + listener.getClass() + " listener");
             ((FrameworkListener) listener).frameworkEvent(event);
+            log.debug("End execution of " + listener.getClass() + " listener");
         }
     }
 
