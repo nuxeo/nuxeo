@@ -15,7 +15,7 @@
   <a4j:outputPanel id="filterFormPanel">
 
   <a4j:form id="filterForm">
-    <h:inputText class="searchInput"
+    <h:inputText id="fulltextFilter" class="searchInput"
       value="#{filterActions.filterDocument.filter_query.ecm_fulltext}">
       <a4j:support event="onkeyup" reRender="filterResultTable"
         requestDelay="1000" action="#{filterActions.invalidateProvider}"
