@@ -91,14 +91,14 @@ public class MailEventListener implements EventListener {
         } catch (Exception e) {
             log.error("MailEventListener error...", e);
         } finally {
+            if (coreSession != null) {
+                CoreInstance.getInstance().close(coreSession);
+            }
             if (loginContext != null) {
                 try {
                     loginContext.logout();
                 } catch (LoginException e) {
                 }
-            }
-            if (coreSession != null) {
-                CoreInstance.getInstance().close(coreSession);
             }
         }
     }
