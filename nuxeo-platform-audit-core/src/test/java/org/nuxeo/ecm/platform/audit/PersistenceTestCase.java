@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,15 +12,10 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Stephane Lacoin
  */
 
-package org.nuxeo.ecm.core.persistence;
-
-
-
+package org.nuxeo.ecm.platform.audit;
 
 import java.net.URL;
 
@@ -30,6 +25,8 @@ import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 
 /**
  * Base class for persistence
@@ -44,12 +41,10 @@ public abstract class PersistenceTestCase extends TestCase {
 
     protected EntityManager entityManager;
 
-
-    protected  void handleBeforeSetup(HibernateConfiguration config) {
-
+    protected void handleBeforeSetup(HibernateConfiguration config) {
     }
-    protected void handleAfterSetup(EntityManager entityManager) {
 
+    protected void handleAfterSetup(EntityManager entityManager) {
     }
 
     @Override
@@ -68,6 +63,5 @@ public abstract class PersistenceTestCase extends TestCase {
     public void tearDown() {
         persistenceProvider.releaseEntityManagerWithRollback(entityManager);
     }
-
 
 }
