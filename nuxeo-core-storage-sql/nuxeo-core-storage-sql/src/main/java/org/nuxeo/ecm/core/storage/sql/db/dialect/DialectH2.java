@@ -204,6 +204,9 @@ public class DialectH2 extends Dialect {
         String fullIndexName = String.format("PUBLIC_%s_%s", table.getName(),
                 indexName);
         String analyzer = model.getFulltextInfo().indexAnalyzer.get(indexName);
+        if (analyzer == null) {
+            analyzer = DEFAULT_FULLTEXT_ANALYZER;
+        }
         return String.format(
                 "CALL NXFT_CREATE_INDEX('%s', 'PUBLIC', '%s', (%s), '%s')",
                 fullIndexName, table.getName(), StringUtils.join(columnNames,
