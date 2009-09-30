@@ -374,11 +374,13 @@ public class H2Functions extends EmbeddedFunctions {
                 PreparedStatement ps = null;
                 try {
                     ps = conn.prepareStatement("INSERT INTO hierarchy_modified_acl VALUES(?, ?);");
-                    ps.setString(1, newRow[idIndex].toString());
+                    ps.setString(2, "f");
                     if (oldRow != null) {
-                        ps.setString(2, "f"); // Update
+                        // update or delete
+                        ps.setString(1, oldRow[idIndex].toString());
                     } else {
-                        ps.setString(2, "t"); // Insert
+                        // insert
+                        ps.setString(1, newRow[idIndex].toString());
                     }
                     ps.executeUpdate();
                 } finally {
@@ -505,8 +507,57 @@ public class H2Functions extends EmbeddedFunctions {
     }
 
     public static ResultSet updateReadAcls(Connection conn) throws SQLException {
-        // TODO: implement fast update like in PostgreSQL
-        return rebuildReadAcls(conn);
-    }
+        SimpleResultSet result = new SimpleResultSet();
+        PreparedStatement ps = null;
+        int rowCount = 0;
+        try {
+            ps = conn.prepareStatement("TRUNCATE TABLE read_acls;");
+            ps.executeUpdate();
+            // TODO: use md5 of the acl as key
+            ps = conn.prepareStatement("INSERT INTO read_acls" //
+                    + " SELECT acl, acl" //
+                    + " FROM (SELECT DISTINCT(nx_get_read_acl(id)) AS acl" //
+                    + "       FROM  (SELECT DISTINCT(id) AS id" //
+                    + "              FROM acls) AS uids) AS read_acls_input;");
+            ps.executeUpdate();
 
+            // New hierarchy_read_acl entry
+            ps = conn.prepareStatement("INSERT INTO hierarchy_read_acl" //
+                    + " SELECT id, nx_get_read_acl(id)" //
+                    + " FROM (SELECT DISTINCT(id) AS id" //
+                    + "   FROM hierarchy_modified_acl" //
+                    + "   WHERE is_new AND" //
+                    + "     EXISTS (SELECT 1 FROM hierarchy WHERE hierarchy_modified_acl.id=hierarchy.id)) AS uids;");
+            rowCount = ps.executeUpdate();
+            ps = conn.prepareStatement("DELETE FROM hierarchy_modified_acl WHERE is_new;");
+            ps.executeUpdate();
+            // Update hierarchy_read_acl entry
+            // Mark acl that need to be updated (set to NULL)
+            ps = conn.prepareStatement("UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (" //
+                    + " SELECT DISTINCT(id) AS id FROM hierarchy_modified_acl WHERE NOT is_new);");
+            rowCount = ps.executeUpdate();
+            ps = conn.prepareStatement("DELETE FROM hierarchy_modified_acl WHERE NOT is_new;");
+            ps.executeUpdate();
+            ps = conn.prepareStatement("UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (" //
+                    + " SELECT h.id" //
+                    + " FROM hierarchy AS h" //
+                    + " LEFT JOIN hierarchy_read_acl AS r ON h.id = r.id" //
+                    + " WHERE r.acl_id IS NOT NULL" //
+                    + " AND h.parentid IN (SELECT id FROM hierarchy_read_acl WHERE acl_id IS NULL));");
+            // Mark all childrens
+            do {
+                rowCount = ps.executeUpdate();
+            } while (rowCount > 0);
+            // Update hierarchy_read_acl acl_ids
+            // TODO use the md5 for acl_id
+            ps = conn.prepareStatement("UPDATE hierarchy_read_acl SET acl_id = nx_get_read_acl(id) WHERE acl_id IS NULL;");
+            ps.executeUpdate();
+        } finally {
+            if (ps != null) {
+                ps.close();
+            }
+        }
+
+        return result;
+    }
 }

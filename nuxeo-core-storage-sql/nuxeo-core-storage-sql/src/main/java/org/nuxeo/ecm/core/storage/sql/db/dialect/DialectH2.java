@@ -429,7 +429,7 @@ public class DialectH2 extends Dialect {
                 null, //
                 "DROP TRIGGER IF EXISTS nx_trig_hierarchy_modified;",
                 "CREATE TRIGGER nx_trig_hierarchy_modified\n" //
-                        + "  AFTER INSERT, UPDATE, DELETE ON hierarchy\n" //
+                        + "  AFTER INSERT, UPDATE ON hierarchy\n" //
                         + "  FOR EACH ROW CALL \""+ h2Functions +"$LogHierarchyModified\";"));
         // build the read acls if empty, this takes care of the upgrade
         statements.add(new ConditionalStatement(
