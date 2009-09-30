@@ -405,6 +405,12 @@
         <version>2.6.2</version>
       </dependency>
       <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xercesImpl</artifactId>
+        <scope>provided</scope>
+        <version>2.9.1</version>
+      </dependency>
+      <dependency>
         <groupId>xml-apis</groupId>
         <artifactId>xml-apis</artifactId>
         <scope>provided</scope>
@@ -924,12 +930,6 @@
         <artifactId>xml-apis</artifactId>
         <scope>provided</scope>
         <version>1.0.b2</version>
-      </dependency>
-      <dependency>
-        <groupId>xerces</groupId>
-        <artifactId>xmlParserAPIs</artifactId>
-        <scope>provided</scope>
-        <version>2.6.2</version>
       </dependency>
       <dependency>
         <groupId>jsr170</groupId>
