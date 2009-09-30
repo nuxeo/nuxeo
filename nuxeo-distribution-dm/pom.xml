@@ -129,6 +129,10 @@
       <artifactId>nuxeo-webengine-sites-core-contrib</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-blogs</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-userworkspace-api</artifactId>
     </dependency>

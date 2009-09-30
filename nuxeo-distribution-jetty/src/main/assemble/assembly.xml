@@ -24,9 +24,9 @@
       <artifact name="nuxeo-webengine-apt" />
       
       <!-- exclude jbpm -->
-<!--      <artifact name="nuxeo-platform-jbpm-core" />-->
-<!--      <artifact name="nuxeo-platform-jbpm-web" />-->
-<!--      <artifact name="nuxeo-platform-publisher-jbpm" />-->
+      <artifact name="nuxeo-platform-jbpm-core" />
+      <artifact name="nuxeo-platform-jbpm-web" />
+      <artifact name="nuxeo-platform-publisher-jbpm" />
       
       <!-- exclude webservices -->
       <artifact name="nuxeo-platform-ws" />
