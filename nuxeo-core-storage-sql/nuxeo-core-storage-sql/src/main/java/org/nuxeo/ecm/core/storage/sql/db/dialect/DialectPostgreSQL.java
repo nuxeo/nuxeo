@@ -549,7 +549,7 @@ public class DialectPostgreSQL extends Dialect {
                         "CREATE OR REPLACE FUNCTION NX_TO_TSVECTOR(string VARCHAR) " //
                                 + "RETURNS TSVECTOR " //
                                 + "AS $$" //
-                                + "  SELECT TO_TSVECTOR('%s', $1) " //
+                                + "  SELECT TO_TSVECTOR('%s', SUBSTR($1, 1, 250000)) " //
                                 + "$$ " //
                                 + "LANGUAGE sql " //
                                 + "STABLE " //
