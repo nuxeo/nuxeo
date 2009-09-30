@@ -223,7 +223,8 @@ public abstract class Dialect {
      * Gets a CREATE INDEX statement for a fulltext index.
      */
     public abstract String getCreateFulltextIndexSql(String indexName,
-            String quotedIndexName, String tableName, List<String> columnNames);
+            String quotedIndexName, Table table, List<Column> columns,
+            Model model);
 
     /**
      * Get the dialect-specific version of a fulltext query.

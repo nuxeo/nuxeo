@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -222,9 +223,15 @@ public class DialectMySQL extends Dialect {
 
     @Override
     public String getCreateFulltextIndexSql(String indexName,
-            String quotedIndexName, String tableName, List<String> columnNames) {
+            String quotedIndexName, Table table, List<Column> columns,
+            Model model) {
+        List<String> columnNames = new ArrayList<String>(columns.size());
+        for (Column col : columns) {
+            columnNames.add(col.getQuotedName());
+        }
         return String.format("CREATE FULLTEXT INDEX %s ON %s (%s)",
-                quotedIndexName, tableName, StringUtils.join(columnNames, ", "));
+                quotedIndexName, table.getQuotedName(), StringUtils.join(
+                        columnNames, ", "));
     }
 
     @Override
