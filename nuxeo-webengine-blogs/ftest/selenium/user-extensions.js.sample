@@ -1,0 +1,101 @@
+// set absolute path to current folder here, used in tests with file upload
+Selenium.prototype.doRetrieveTestFolderPath = function() {
+  storedVars['testfolderpath'] = "/path/to/project-ear/ftest/selenium";
+};
+
+// ajax4jsf testing helper inspired from
+// http://codelevy.com/articles/2007/11/05/selenium-and-ajax-requests
+/**
+ * Registers with the a4j library to record when an Ajax request
+ * finishes.
+ *
+ * Call this after the most recent page load but before any Ajax requests.
+ *
+ * Once you've called this for a page, you should call waitForA4jRequest at
+ * every opportunity, to make sure the A4jRequestFinished flag is consumed.
+ */
+Selenium.prototype.doWatchA4jRequests = function() {
+  var testWindow = selenium.browserbot.getCurrentWindow();
+  // workaround for Selenium IDE 1b2 bug, see
+  // http://clearspace.openqa.org/message/46135
+  if (testWindow.wrappedJSObject) {
+      testWindow = testWindow.wrappedJSObject;
+  }
+  testWindow.A4J.AJAX.AddListener({
+    onafterajax: function() {Selenium.A4jRequestFinished = true}
+  });
+}
+
+
+/**
+ * Return the JQueryWindow (needed as it differ in Selenium IDE and using run.sh
+ **/
+Selenium.prototype.getJQueryWindow = function() {
+    var testWindowJQuery = selenium.browserbot.getCurrentWindow();
+    if (testWindowJQuery.wrappedJSObject) {
+        testWindowJQuery = testWindowJQuery.wrappedJSObject;
+    }
+    return testWindowJQuery;
+}
+
+/**
+ * If you've set up with watchA4jRequests, this routine will wait until
+ * an Ajax request has finished and then return.
+ */
+Selenium.prototype.doWaitForA4jRequest = function(timeout) {
+  return Selenium.decorateFunctionWithTimeout(function() {
+    if (Selenium.A4jRequestFinished) {
+      Selenium.A4jRequestFinished = false;
+      //Selenium.prototype.doPause(2000);
+      return true;
+    }
+    return false;
+  }, timeout);
+}
+
+Selenium.A4jRequestFinished = false;
+
+/*
+ * Wait until JQuery calls are finished.
+ *
+ */
+Selenium.prototype.doWaitForJQuery = function(timeout) {
+  return Selenium.decorateFunctionWithTimeout(function() {
+  	var testWindowJQuery = selenium.browserbot.getCurrentWindow();
+    if (testWindowJQuery.wrappedJSObject) {
+        testWindowJQuery = testWindowJQuery.wrappedJSObject;
+    }
+    if (testWindowJQuery.jQuery.active == 0) {
+      return true;
+    }
+    return false;
+  }, timeout);
+}
+
+
+/*
+ * Wait until Prototype Ajax calls are finished.
+ *
+ */
+Selenium.prototype.doWaitForAjax = function(timeout) {
+  return Selenium.decorateFunctionWithTimeout(function() {
+  	var testWindowJQuery = selenium.browserbot.getCurrentWindow();
+    if (testWindowJQuery.wrappedJSObject) {
+        testWindowJQuery = testWindowJQuery.wrappedJSObject;
+    }
+    if (testWindowJQuery.Ajax.activeRequestCount==0) {
+      return true;
+    }
+    return false;
+  }, timeout);
+}
+
+// helper method to store current year/month/day
+Selenium.prototype.doRetrieveCurrentDateInfo = function() {
+  var date = new Date();
+  storedVars['currentYear'] = date.getFullYear();
+  var m = date.getMonth() + 1;
+  storedVars['currentMonth'] = (m < 10) ? '0' + m : m;
+  var d = date.getDate();
+  storedVars['currentDay'] = (d < 10) ? '0' + d : d;
+};

@@ -77,6 +77,7 @@
     <module>nuxeo-webengine-sites</module>
     <module>nuxeo-webengine-sites-core-contrib</module>
     <module>nuxeo-webengine-admin</module>
+    <module>nuxeo-webengine-blogs</module>
     <module>nuxeo-theme-editor</module>
     <module>nuxeo-platform-webwidgets</module>
     <module>nuxeo-platform-userworkspace</module>
@@ -941,8 +942,6 @@
         <version>${nuxeo.features.version}</version>
       </dependency>
 
-
-
       <!-- I/O feature -->
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
@@ -1012,6 +1011,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-admin</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-blogs</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
 
