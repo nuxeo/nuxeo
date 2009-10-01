@@ -171,7 +171,6 @@ public class H2Fulltext {
         ps.execute();
         ps.close();
         createTrigger(conn, schema, table);
-        indexExistingRows(conn, schema, table);
     }
 
     /**

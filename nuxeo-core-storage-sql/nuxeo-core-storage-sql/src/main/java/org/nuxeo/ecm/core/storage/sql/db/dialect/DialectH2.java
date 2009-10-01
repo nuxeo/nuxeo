@@ -24,8 +24,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +38,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
-import org.nuxeo.ecm.core.storage.sql.Model.FulltextInfo;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
@@ -195,8 +198,22 @@ public class DialectH2 extends Dialect {
 
     @Override
     public String getCreateFulltextIndexSql(String indexName,
-            String quotedIndexName, String tableName, List<String> columnNames) {
-        return null; // no SQL index for H2
+            String quotedIndexName, Table table, List<Column> columns,
+            Model model) {
+        List<String> columnNames = new ArrayList<String>(columns.size());
+        for (Column col : columns) {
+            columnNames.add("'" + col.getPhysicalName() + "'");
+        }
+        String fullIndexName = String.format("PUBLIC_%s_%s", table.getName(),
+                indexName);
+        String analyzer = model.getFulltextInfo().indexAnalyzer.get(indexName);
+        if (analyzer == null) {
+            analyzer = DEFAULT_FULLTEXT_ANALYZER;
+        }
+        return String.format(
+                "CALL NXFT_CREATE_INDEX('%s', 'PUBLIC', '%s', (%s), '%s')",
+                fullIndexName, table.getName(), StringUtils.join(columnNames,
+                        ", "), analyzer);
     }
 
     @Override
@@ -240,7 +257,7 @@ public class DialectH2 extends Dialect {
 
     @Override
     public int getFulltextIndexedColumns() {
-        return 0;
+        return 2;
     }
 
     @Override
@@ -288,8 +305,16 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
+    public boolean supportsDescendantsTable() {
+        return true;
+    }
+
+    @Override
     public String getInTreeSql(String idColumnName) {
-        return String.format("NX_IN_TREE(%s, ?)", idColumnName);
+        return String.format(
+                "EXISTS(SELECT 1 FROM DESCENDANTS WHERE ID = ? AND DESCENDANTID = %s)",
+                idColumnName);
+        // return String.format("NX_IN_TREE(%s, ?)", idColumnName);
     }
 
     @Override
@@ -306,38 +331,33 @@ public class DialectH2 extends Dialect {
 
     private static final String h2Fulltext = "org.nuxeo.ecm.core.storage.sql.db.H2Fulltext";
 
+    private static final String h2TrigDesc = "org.nuxeo.ecm.core.storage.sql.db.H2TriggerDescendants";
+
     @Override
     public Collection<ConditionalStatement> getConditionalStatements(
             Model model, Database database) {
-        String methodSuffix;
-        switch (model.idGenPolicy) {
-        case APP_UUID:
-            methodSuffix = "String";
-            break;
-        case DB_IDENTITY:
-            methodSuffix = "Long";
-            break;
-        default:
-            throw new AssertionError(model.idGenPolicy);
-        }
-        Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+        assert model.idGenPolicy == IdGenPolicy.APP_UUID;
+        Table ht = database.getTable(model.hierTableName);
 
         List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
 
         statements.add(makeFunction("NX_IN_TREE", //
-                "isInTree" + methodSuffix));
+                "isInTreeString"));
 
         statements.add(makeFunction("NX_ACCESS_ALLOWED", //
-                "isAccessAllowed" + methodSuffix));
+                "isAccessAllowedString"));
 
         statements.add(makeFunction("NX_CLUSTER_INVAL", //
-                "clusterInvalidate" + methodSuffix));
+                "clusterInvalidateString"));
 
         statements.add(makeFunction("NX_CLUSTER_GET_INVALS", //
-                "getClusterInvalidations" + methodSuffix));
+                "getClusterInvalidationsString"));
+
+        statements.add(makeFunction("NX_INIT_DESCENDANTS", //
+                "initDescendants"));
 
         statements.add(new ConditionalStatement( //
-                false, // late
+                true, // early
                 Boolean.FALSE, // no drop
                 null, //
                 null, //
@@ -345,29 +365,8 @@ public class DialectH2 extends Dialect {
                         "CREATE ALIAS IF NOT EXISTS NXFT_INIT FOR \"%s.init\"; "
                                 + "CALL NXFT_INIT()", h2Fulltext)));
 
-        FulltextInfo fti = model.getFulltextInfo();
-        for (String indexName : fti.indexNames) {
-            String analyzer = fti.indexAnalyzer.get(indexName);
-            if (analyzer == null) {
-                analyzer = DEFAULT_FULLTEXT_ANALYZER;
-            }
-            String fullIndexName = String.format("PUBLIC_%s_%s", ft.getName(),
-                    indexName);
-            String suffix = indexName.equals(Model.FULLTEXT_DEFAULT_INDEX) ? ""
-                    : '_' + indexName;
-            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY + suffix);
-            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY + suffix);
-            statements.add(new ConditionalStatement(
-                    false, // late
-                    Boolean.FALSE, // no drop
-                    null, //
-                    null, //
-                    String.format(
-                            "CALL NXFT_CREATE_INDEX('%s', 'PUBLIC', '%s', ('%s', '%s'), '%s')",
-                            fullIndexName, ft.getName(),
-                            ftst.getPhysicalName(), ftbt.getPhysicalName(),
-                            analyzer)));
-        }
+        statements.add(makeTrigger("NX_TRIG_DESC", ht.getQuotedName(),
+                h2TrigDesc));
 
         // read acls ----------------------------------------------------------
         // table to store canonical read acls
@@ -442,6 +441,14 @@ public class DialectH2 extends Dialect {
         return statements;
     }
 
+    @Override
+    public List<String> getPostCreateSqls(Table table) {
+        if (table.getName().equals(Model.DESCENDANTS_TABLE_NAME.toUpperCase())) {
+            return Arrays.asList("CALL NX_INIT_DESCENDANTS()");
+        }
+        return Collections.emptyList();
+    }
+
     private ConditionalStatement makeFunction(String functionName,
             String methodName) {
         return new ConditionalStatement( //
@@ -451,6 +458,19 @@ public class DialectH2 extends Dialect {
                 String.format("DROP ALIAS IF EXISTS %s", functionName), //
                 String.format("CREATE ALIAS %s FOR \"%s.%s\"", functionName,
                         h2Functions, methodName));
+    }
+
+    private ConditionalStatement makeTrigger(String triggerName,
+            String tableName, String className) {
+        return new ConditionalStatement(
+                false, // late
+                Boolean.TRUE, // always drop
+                null, //
+                String.format("DROP TRIGGER IF EXISTS %s", triggerName),
+                String.format("CREATE TRIGGER %s "
+                        + "AFTER INSERT, UPDATE, DELETE ON %s "
+                        + "FOR EACH ROW CALL \"%s\"", triggerName, tableName,
+                        className));
     }
 
     @Override

@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.storage.sql.db;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -204,7 +205,9 @@ public class TableImpl implements Table {
      */
     public List<String> getPostCreateSqls() {
         List<String> sqls = new LinkedList<String>();
+        Model model = null;
         for (Column column : columns.values()) {
+            model = column.getModel();
             if (column.isPrimary()) {
                 StringBuilder buf = new StringBuilder();
                 String constraintName = dialect.openQuote()
@@ -248,10 +251,12 @@ public class TableImpl implements Table {
             }
         }
         for (String[] columnNames : indexedColumns) {
-            List<String> qcols = new LinkedList<String>();
-            List<String> pcols = new LinkedList<String>();
+            List<Column> cols = new ArrayList<Column>(columnNames.length);
+            List<String> qcols = new ArrayList<String>(columnNames.length);
+            List<String> pcols = new ArrayList<String>(columnNames.length);
             for (String name : columnNames) {
                 Column col = getColumn(name);
+                cols.add(col);
                 qcols.add(col.getQuotedName());
                 pcols.add(col.getPhysicalName());
             }
@@ -261,7 +266,7 @@ public class TableImpl implements Table {
             String indexName = fulltextIndexedColumns.get(columnNames);
             if (indexName != null) {
                 createIndexSql = dialect.getCreateFulltextIndexSql(indexName,
-                        quotedIndexName, getQuotedName(), qcols);
+                        quotedIndexName, this, cols, model);
             } else {
                 createIndexSql = dialect.getCreateIndexSql(quotedIndexName,
                         getQuotedName(), qcols);

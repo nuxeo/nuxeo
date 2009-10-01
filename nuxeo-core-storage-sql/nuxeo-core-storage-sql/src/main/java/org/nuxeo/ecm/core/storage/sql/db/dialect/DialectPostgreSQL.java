@@ -229,9 +229,11 @@ public class DialectPostgreSQL extends Dialect {
 
     @Override
     public String getCreateFulltextIndexSql(String indexName,
-            String quotedIndexName, String tableName, List<String> columnNames) {
+            String quotedIndexName, Table table, List<Column> columns,
+            Model model) {
         return String.format("CREATE INDEX %s ON %s USING GIN(%s)",
-                quotedIndexName.toLowerCase(), tableName, columnNames.get(0));
+                quotedIndexName.toLowerCase(), table.getQuotedName(),
+                columns.get(0).getQuotedName());
     }
 
     @Override
@@ -540,7 +542,7 @@ public class DialectPostgreSQL extends Dialect {
                                 + "COST 500 " //
                         , idType)));
 
-        statements.add(new ConditionalStatement( //
+        statements.add(new ConditionalStatement(
                 true, // early
                 Boolean.FALSE, // no drop needed
                 null, //

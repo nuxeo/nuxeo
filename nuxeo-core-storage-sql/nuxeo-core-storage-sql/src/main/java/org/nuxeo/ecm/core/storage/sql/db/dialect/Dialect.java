@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.common.utils.StringUtils;
@@ -223,7 +224,8 @@ public abstract class Dialect {
      * Gets a CREATE INDEX statement for a fulltext index.
      */
     public abstract String getCreateFulltextIndexSql(String indexName,
-            String quotedIndexName, String tableName, List<String> columnNames);
+            String quotedIndexName, Table table, List<Column> columns,
+            Model model);
 
     /**
      * Get the dialect-specific version of a fulltext query.
@@ -390,6 +392,13 @@ public abstract class Dialect {
     public abstract String getSecurityCheckSql(String idColumnName);
 
     /**
+     * Checks if the dialect supports a descendants table.
+     */
+    public boolean supportsDescendantsTable() {
+        return false;
+    }
+
+    /**
      * Gets the expression to use to check tree membership.
      *
      * @param idColumnName the quoted name of the id column to use
@@ -527,6 +536,15 @@ public abstract class Dialect {
      */
     public String getReadAclsCheckSql(String idColumnName) {
         return null;
+    }
+
+    /**
+     * Gets the sql statements to call after a table has been created.
+     * <p>
+     * Used for migrations/upgrades.
+     */
+    public List<String> getPostCreateSqls(Table table) {
+        return Collections.emptyList();
     }
 
 }

@@ -138,6 +138,10 @@ public class Model {
 
     public static final String HIER_CHILD_ISPROPERTY_KEY = "isproperty";
 
+    public static final String DESCENDANTS_TABLE_NAME = "descendants";
+
+    public static final String DESCENDANTS_DESCENDANT_KEY = "descendantid";
+
     public static final String COLL_TABLE_POS_KEY = "pos";
 
     public static final String COLL_TABLE_VALUE_KEY = "item";

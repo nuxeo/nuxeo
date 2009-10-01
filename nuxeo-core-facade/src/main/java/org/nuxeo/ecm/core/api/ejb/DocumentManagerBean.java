@@ -263,7 +263,7 @@ public class DocumentManagerBean extends AbstractSession implements
 
         try {
             return super.createDocument(docModel);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -274,7 +274,7 @@ public class DocumentManagerBean extends AbstractSession implements
 
         try {
             return super.createDocument(docModels);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -283,7 +283,7 @@ public class DocumentManagerBean extends AbstractSession implements
     public void save() throws ClientException {
         try {
             super.save();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -293,7 +293,7 @@ public class DocumentManagerBean extends AbstractSession implements
             throws ClientException {
         try {
             return super.saveDocument(docModel);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -302,7 +302,7 @@ public class DocumentManagerBean extends AbstractSession implements
     public void saveDocuments(DocumentModel[] docModels) throws ClientException {
         try {
             super.saveDocuments(docModels);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -311,7 +311,7 @@ public class DocumentManagerBean extends AbstractSession implements
     protected void removeDocument(Document doc) throws ClientException {
         try {
             super.removeDocument(doc);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -320,7 +320,7 @@ public class DocumentManagerBean extends AbstractSession implements
     public void removeDocuments(DocumentRef[] docRefs) throws ClientException {
         try {
             super.removeDocuments(docRefs);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -329,7 +329,7 @@ public class DocumentManagerBean extends AbstractSession implements
     public void removeChildren(DocumentRef docRef) throws ClientException {
         try {
             super.removeChildren(docRef);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -339,7 +339,7 @@ public class DocumentManagerBean extends AbstractSession implements
             throws ClientException {
         try {
             return super.copy(src, dst, name);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -349,7 +349,7 @@ public class DocumentManagerBean extends AbstractSession implements
             throws ClientException {
         try {
             return super.copy(src, dst);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -359,7 +359,7 @@ public class DocumentManagerBean extends AbstractSession implements
             String name) throws ClientException {
         try {
             return super.copyProxyAsDocument(src, dst, name);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -369,7 +369,7 @@ public class DocumentManagerBean extends AbstractSession implements
             DocumentRef dst) throws ClientException {
         try {
             return super.copyProxyAsDocument(src, dst);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -379,7 +379,7 @@ public class DocumentManagerBean extends AbstractSession implements
             throws ClientException {
         try {
             return super.move(src, dst, name);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
 
@@ -390,7 +390,7 @@ public class DocumentManagerBean extends AbstractSession implements
             throws ClientException {
         try {
             super.move(src, dst);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -400,7 +400,7 @@ public class DocumentManagerBean extends AbstractSession implements
             throws ClientException {
         try {
             super.setACP(docRef, newAcp, overwrite);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -410,7 +410,7 @@ public class DocumentManagerBean extends AbstractSession implements
             VersionModel version) throws ClientException {
         try {
             return super.restoreToVersion(docRef, version);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -419,7 +419,7 @@ public class DocumentManagerBean extends AbstractSession implements
     public void checkOut(DocumentRef docRef) throws ClientException {
         try {
             super.checkOut(docRef);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -429,7 +429,7 @@ public class DocumentManagerBean extends AbstractSession implements
             throws ClientException {
         try {
             super.checkIn(docRef, version);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -441,7 +441,7 @@ public class DocumentManagerBean extends AbstractSession implements
         try {
             return super.createProxy(parentRef, docRef, version,
                     overwriteExistingProxy);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -451,7 +451,7 @@ public class DocumentManagerBean extends AbstractSession implements
             throws ClientException {
         try {
             return super.followTransition(docRef, transition);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
 
@@ -461,7 +461,7 @@ public class DocumentManagerBean extends AbstractSession implements
     public void setLock(DocumentRef docRef, String key) throws ClientException {
         try {
             super.setLock(docRef, key);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -470,7 +470,7 @@ public class DocumentManagerBean extends AbstractSession implements
     public String unlock(DocumentRef docRef) throws ClientException {
         try {
             return super.unlock(docRef);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -480,7 +480,7 @@ public class DocumentManagerBean extends AbstractSession implements
             DocumentModel section) throws ClientException {
         try {
             return super.publishDocument(docToPublish, section);
-        } catch (ClientException e) {
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
@@ -492,8 +492,7 @@ public class DocumentManagerBean extends AbstractSession implements
         try {
             return super.publishDocument(docToPublish, section,
                     overwriteExistingProxy);
-        } catch (ClientException e) {
-
+        } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
     }
