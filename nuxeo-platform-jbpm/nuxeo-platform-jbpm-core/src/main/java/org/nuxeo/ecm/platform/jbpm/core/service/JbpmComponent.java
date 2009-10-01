@@ -48,12 +48,18 @@ import org.osgi.framework.FrameworkListener;
 public class JbpmComponent extends DefaultComponent implements
         FrameworkListener {
 
+    public enum ConfigurationName {
+        jboss, jetty, glassfish, tomcatTransactionnal, tomcatNontransactionnal
+    }
+
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.jbpm.core.JbpmService");
 
     public enum ExtensionPoint {
         deployer, processDefinition, activeConfiguration, configurationPath, securityPolicy, typeFilter
     }
+
+    public final static String RUNTIME_CONFIGURATION = "runtime";
 
     private JbpmConfiguration jbpmConfiguration;
 
@@ -65,15 +71,14 @@ public class JbpmComponent extends DefaultComponent implements
 
     private boolean lazyInitialized;
 
+    private final RuntimeConfigurationSelector selector = new RuntimeConfigurationSelector();
     private final JbpmServiceImpl service = new JbpmServiceImpl();
 
     private static final Log log = LogFactory.getLog(JbpmComponent.class);
 
-    private final HashMap<String, ProcessDefinitionDeployer> deployerDesc
-            = new HashMap<String, ProcessDefinitionDeployer>();
+    private final HashMap<String, ProcessDefinitionDeployer> deployerDesc = new HashMap<String, ProcessDefinitionDeployer>();
 
-    private final HashMap<ProcessDefinitionDescriptor, ComponentInstance> pdDesc
-            = new HashMap<ProcessDefinitionDescriptor, ComponentInstance>();
+    private final HashMap<ProcessDefinitionDescriptor, ComponentInstance> pdDesc = new HashMap<ProcessDefinitionDescriptor, ComponentInstance>();
 
     @Override
     public void registerContribution(Object contribution,
@@ -99,6 +104,9 @@ public class JbpmComponent extends DefaultComponent implements
             if (url == null) {
                 throw new RuntimeException("Config not found: " + path);
             }
+            if (RUNTIME_CONFIGURATION.equals(configPath.getName())) {
+                log.error("'runtime' is a reserved word for configuration. You should use another name for your configuration name");
+            }
             paths.put(configPath.getName(), url);
             break;
         case securityPolicy:
@@ -108,8 +116,7 @@ public class JbpmComponent extends DefaultComponent implements
             break;
         case typeFilter:
             TypeFilterDescriptor tfd = (TypeFilterDescriptor) contribution;
-            typeFiltersContrib.put(tfd.getType(),
-                    tfd.getPDs());
+            typeFiltersContrib.put(tfd.getType(), tfd.getPDs());
             break;
         }
     }
@@ -158,7 +165,13 @@ public class JbpmComponent extends DefaultComponent implements
 
     private JbpmConfiguration getConfiguration() {
         if (jbpmConfiguration == null) {
-            URL url = paths.get(activeConfigurationName);
+            URL url = null;
+            if (RUNTIME_CONFIGURATION.equals(activeConfigurationName)) {
+                String configurationName = selector.getConfigurationName();
+                url = paths.get(configurationName);
+            } else {
+                url = paths.get(activeConfigurationName);
+            }
             InputStream is;
             try {
                 is = url.openStream();

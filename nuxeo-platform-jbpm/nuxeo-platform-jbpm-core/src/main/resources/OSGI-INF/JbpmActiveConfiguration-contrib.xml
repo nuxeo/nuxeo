@@ -2,6 +2,6 @@
 <component name="org.nuxeo.ecm.platform.jbpm.core.ActiveConfiguration">
   <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
     point="activeConfiguration">
-    <configuration name="prod" />
+    <configuration name="runtime" />
   </extension>
 </component>

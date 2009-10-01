@@ -16,8 +16,8 @@
   <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
     point="configurationPath">
 
-    <configuration name="prod" path="config/jbpm.cfg.xml" />
-
+    <configuration name="jboss" path="config/jboss-jbpm.cfg.xml" />
+    <configuration name="jetty" path="config/jetty-jbpm.cfg.xml" />
   </extension>
 
 </component>
