@@ -49,6 +49,7 @@ import org.hibernate.ejb.packaging.PersistenceXmlLoader;
 import org.hibernate.impl.SessionImpl;
 import org.nuxeo.ecm.platform.tag.sql.Column;
 import org.nuxeo.ecm.platform.tag.sql.Table;
+import org.nuxeo.runtime.api.DataSourceHelper;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.com>"
@@ -140,6 +141,9 @@ public class TagSchemaUpdater {
     }
 
     public void update() {
+        String dataSource = connectionProperties.getProperty("hibernate.connection.datasource");
+        // change JNDI name prefix if needed
+        dataSource = DataSourceHelper.getDataSourceJNDIName(dataSource);
         configuration.setProperties(connectionProperties);
         Settings settings = configuration.buildSettings();
         Table table = new Table(TAGGING_TABLE_NAME);
