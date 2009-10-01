@@ -36,12 +36,12 @@ import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This exception handler adds security error flag in the URL parameters
- * to ensure the anonymous user will get appropriate error message when being redirected
- * to login page.
+ * This exception handler adds security error flag in the URL parameters to
+ * ensure the anonymous user will get appropriate error message when being
+ * redirected to login page.
  *
- * If it isn't a security exception, or if the user is not anonymous, this handler
- * ends up using DefaultNuxeoExceptionHandler.
+ * If it isn't a security exception, or if the user is not anonymous, this
+ * handler ends up using DefaultNuxeoExceptionHandler.
  *
  * @author ldoguin
  *
@@ -89,7 +89,14 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
                     baseURL = URIUtils.addParametersToURIQuery(baseURL,
                             urlParameters);
                     response.sendRedirect(baseURL);
-                    FacesContext.getCurrentInstance().responseComplete();
+                    FacesContext fContext = FacesContext.getCurrentInstance();
+                    if (fContext == null) {
+                        fContext.responseComplete();
+                    } else {
+                        log.error("Cannot set response complete: faces context is null");
+                    }
+                } else {
+                    log.error("Cannot redirect to login page: response is already commited");
                 }
                 return;
             }

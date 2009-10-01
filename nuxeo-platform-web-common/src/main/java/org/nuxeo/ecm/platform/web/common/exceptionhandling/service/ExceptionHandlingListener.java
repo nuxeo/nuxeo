@@ -23,15 +23,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author arussel
+ * Listener performing operations when dealing with an error. Order of methods
+ * called:
  *
+ * <ul>
+ * <li>1. startHandling</li>
+ * <li>2. beforeSetErrorPageAttribute</li>
+ * <li>3. beforeForwardToErrorPage</li>
+ * <li>4. afterDispatch</li>
+ * </ul>
+ *
+ * @author arussel
  */
 public interface ExceptionHandlingListener {
 
+    /**
+     * Error has happened, things to do before error is dealt with.
+     */
     void startHandling(Throwable t, HttpServletRequest request,
-            HttpServletResponse response) throws IOException, ServletException;
-
-    void beforeGetErrorMessageKey(Throwable t, HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException;
 
     void beforeSetErrorPageAttribute(Throwable t, HttpServletRequest request,

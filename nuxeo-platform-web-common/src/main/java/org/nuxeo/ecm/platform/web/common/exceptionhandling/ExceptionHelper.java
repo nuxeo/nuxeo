@@ -19,8 +19,10 @@
 
 package org.nuxeo.ecm.platform.web.common.exceptionhandling;
 
-import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import java.net.SocketException;
 
+import org.jboss.remoting.transport.coyote.ClientAbortException;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 
 public class ExceptionHelper {
 
@@ -30,14 +32,23 @@ public class ExceptionHelper {
     public static Boolean isSecurityError(Throwable t) {
         if (t instanceof DocumentSecurityException) {
             return true;
-        }
-        else if (t.getCause() instanceof DocumentSecurityException) {
+        } else if (t.getCause() instanceof DocumentSecurityException) {
             return true;
-        }
-        else if (t.getCause() instanceof SecurityException) {
+        } else if (t.getCause() instanceof SecurityException) {
             return true;
         } else if (t.getMessage() != null
                 && t.getMessage().contains("java.lang.SecurityException")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static Boolean isClientAbortError(Throwable t) {
+        if (t instanceof ClientAbortException || t instanceof SocketException) {
+            return true;
+        } else if (t.getCause() instanceof ClientAbortException
+                || t.getCause() instanceof SocketException) {
             return true;
         }
 

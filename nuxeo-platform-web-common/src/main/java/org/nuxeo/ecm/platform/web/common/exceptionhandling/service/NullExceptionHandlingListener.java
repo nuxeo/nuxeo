@@ -23,17 +23,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * Listener doing nothing
+ *
  * @author arussel
  *
  */
 public class NullExceptionHandlingListener implements ExceptionHandlingListener {
 
     public void beforeForwardToErrorPage(Throwable t,
-            HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
-    }
-
-    public void beforeGetErrorMessageKey(Throwable t,
             HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
     }

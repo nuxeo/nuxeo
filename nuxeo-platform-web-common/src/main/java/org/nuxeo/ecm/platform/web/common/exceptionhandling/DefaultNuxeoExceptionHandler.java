@@ -57,6 +57,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                 true);
         ErrorHandler handler = getHandler(t);
         parameters.getListener().startHandling(t, request, response);
+
         Throwable unwrappedException = unwrapException(t);
         StringWriter swriter = new StringWriter();
         PrintWriter pwriter = new PrintWriter(swriter);
@@ -64,6 +65,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
         String stackTrace = swriter.getBuffer().toString();
         log.error(stackTrace);
         parameters.getLogger().error(stackTrace);
+
         parameters.getListener().beforeSetErrorPageAttribute(
                 unwrappedException, request, response);
         request.setAttribute("exception_message",
@@ -76,18 +78,24 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
         String dumpedRequest = parameters.getRequestDumper().getDump(request);
         parameters.getLogger().error(dumpedRequest);
         request.setAttribute("request_dump", dumpedRequest);
+
         parameters.getListener().beforeForwardToErrorPage(unwrappedException,
                 request, response);
-        Integer error = handler.getCode();
-        if (error != null) {
-            response.setStatus(error);
+        if (!response.isCommitted()) {
+            Integer error = handler.getCode();
+            if (error != null) {
+                response.setStatus(error);
+            }
+            String errorPage = handler.getPage();
+            errorPage = (errorPage == null) ? parameters.getDefaultErrorPage()
+                    : errorPage;
+            request.getRequestDispatcher(errorPage).forward(request, response);
+            parameters.getListener().afterDispatch(unwrappedException, request,
+                    response);
+        } else {
+            log.error("Cannot forward to error page: "
+                    + "response is already commited");
         }
-        String errorPage = handler.getPage();
-        errorPage = (errorPage == null) ? parameters.getDefaultErrorPage()
-                : errorPage;
-        request.getRequestDispatcher(errorPage).forward(request, response);
-        parameters.getListener().afterDispatch(unwrappedException, request,
-                response);
     }
 
     protected ErrorHandler getHandler(Throwable t) {
