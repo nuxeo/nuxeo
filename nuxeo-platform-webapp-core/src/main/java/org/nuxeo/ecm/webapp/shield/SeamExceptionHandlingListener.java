@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.SystemException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Seam;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.contexts.FacesLifecycle;
@@ -35,13 +37,19 @@ import org.jboss.seam.mock.MockApplication;
 import org.jboss.seam.mock.MockExternalContext;
 import org.jboss.seam.mock.MockFacesContext;
 import org.jboss.seam.transaction.Transaction;
+import org.jboss.seam.transaction.UserTransaction;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.NullExceptionHandlingListener;
 
 /**
+ * Plays with conversations, trying to rollback transation.
+ *
  * @author arussel
  *
  */
-public class SeamExceptionHandlingListener extends NullExceptionHandlingListener {
+public class SeamExceptionHandlingListener extends
+        NullExceptionHandlingListener {
+
+    private static final Log log = LogFactory.getLog(SeamExceptionHandlingListener.class);
 
     @Override
     public void beforeSetErrorPageAttribute(Throwable t,
@@ -49,18 +57,29 @@ public class SeamExceptionHandlingListener extends NullExceptionHandlingListener
             throws IOException, ServletException {
         // cut/paste from seam Exception filter.
         // we recreate the seam context to be able to use the messages.
-        MockFacesContext facesContext = createFacesContext(request, response);
-        facesContext.setCurrent();
+
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext == null) {
+            // the FacesContext is gone - create a fake one for Redirect and
+            // HttpError to call
+            MockFacesContext mockContext = createFacesContext(request, response);
+            mockContext.setCurrent();
+            facesContext = mockContext;
+            log.debug("Created mock faces context for exception handling");
+        } else {
+            log.debug("Using existing faces context for exception handling");
+        }
 
         // if the event context was cleaned up, fish the conversation id
         // directly out of the ServletRequest attributes, else get it from
         // the event context
-        Manager manager = Contexts.isEventContextActive()
-                ? (Manager) Contexts.getEventContext().get(Manager.class)
+        Manager manager = Contexts.isEventContextActive() ? (Manager) Contexts.getEventContext().get(
+                Manager.class)
                 : (Manager) request.getAttribute(Seam.getComponentName(Manager.class));
         String conversationId = manager == null ? null
                 : manager.getCurrentConversationId();
         FacesLifecycle.beginExceptionRecovery(facesContext.getExternalContext());
+
         // If there is an existing long-running conversation on
         // the failed request, propagate it
         if (conversationId == null) {
@@ -69,6 +88,7 @@ public class SeamExceptionHandlingListener extends NullExceptionHandlingListener
             ConversationPropagation.instance().setConversationId(conversationId);
             Manager.instance().restoreConversation();
         }
+
         // we get the message from the seam attribute as the EL won't work in
         // xhtml
         FacesLifecycle.beginExceptionRecovery(facesContext.getExternalContext());
@@ -82,6 +102,9 @@ public class SeamExceptionHandlingListener extends NullExceptionHandlingListener
         context.release();
     }
 
+    /**
+     * Rollbacks transaction if necessary
+     */
     @Override
     public void startHandling(Throwable t, HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
@@ -99,7 +122,18 @@ public class SeamExceptionHandlingListener extends NullExceptionHandlingListener
             IllegalStateException, SecurityException, SystemException {
         if (Contexts.isEventContextActive()) {
             if (Transaction.instance().isActiveOrMarkedRollback()) {
-                Transaction.instance().rollback();
+                try {
+                    UserTransaction transaction = Transaction.instance();
+                    if (transaction.isActiveOrMarkedRollback()
+                            || transaction.isRolledBack()) {
+                        log.debug("Rollback transaction");
+                        // mark it as rollback instead? see if SeamPhaseListener
+                        // will do the job properly
+                        transaction.rollback();
+                    }
+                } catch (Exception e) {
+                    log.error("Could not roll back transaction", e);
+                }
             }
         }
         if (FacesLifecycle.getPhaseId() == PhaseId.RENDER_RESPONSE) {
@@ -115,11 +149,11 @@ public class SeamExceptionHandlingListener extends NullExceptionHandlingListener
 
     private MockFacesContext createFacesContext(HttpServletRequest request,
             HttpServletResponse response) {
+
         MockFacesContext mockFacesContext = new MockFacesContext(
                 new MockExternalContext(
                         request.getSession().getServletContext(), request,
-                        response),
-                new MockApplication());
+                        response), new MockApplication());
         mockFacesContext.setViewRoot(new UIViewRoot());
         return mockFacesContext;
     }
