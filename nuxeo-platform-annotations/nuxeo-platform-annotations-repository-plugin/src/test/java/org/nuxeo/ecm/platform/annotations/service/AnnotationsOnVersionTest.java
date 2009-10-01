@@ -288,7 +288,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         session.checkIn(ref, version);
         session.checkOut(ref);
         session.save();
-
+        waitForAsyncExec();
         return version;
     }
 
@@ -297,6 +297,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         session.save();
         DocumentModel docModel = session.restoreToVersion(docRef, version);
         session.save();
+        waitForAsyncExec();
         return docModel;
     }
 
