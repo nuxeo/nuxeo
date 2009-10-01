@@ -24,13 +24,14 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.NCSARequestLog;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.handler.RequestLogHandler;
-//import org.mortbay.jetty.servlet.NuxeoServletHandler;
+import org.mortbay.jetty.webapp.Configuration;
 import org.mortbay.jetty.webapp.WebAppContext;
+import org.mortbay.jetty.webapp.WebInfConfiguration;
+import org.mortbay.jetty.webapp.WebXmlConfiguration;
 import org.mortbay.xml.XmlConfiguration;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.server.WebApplication;
@@ -42,6 +43,13 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
+ * Contexts are registered like this:
+ * If there is a jetty.config the contexts defined there are registered first.
+ * If there is no jetty.config a log context will be create programatically and registered first
+ * Second an empty collection context is registered. Here will be registered all regular war contexts.
+ * Third a the root collection is registered. This way all requests not handled by regular wars are directed to the root war
+ * which usually is the webengine war in a nxserver application.  
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -52,7 +60,11 @@ public class JettyComponent extends DefaultComponent {
     public static final String XP_DATA_SOURCE = "datasource";
 
     protected Server server;
-    protected ContextHandlerCollection contexts = new ContextHandlerCollection();
+    // here we are putting all regular war contexts
+    // the root context will be appended after this context collection to be sure the regular contexts are checked first
+    // This is because the root context is bound to / so if it is checked first it will consume 
+    // all requests even if there is a context that is the target of the request  
+    protected ContextHandlerCollection warContexts;
     protected File config;
     protected File log;
 
@@ -83,7 +95,9 @@ public class JettyComponent extends DefaultComponent {
                 cfg = file.toURI().toURL();
             }
         }
+        boolean hasConfigFile = false;
         if (cfg != null) {
+            hasConfigFile = true;
             XmlConfiguration configuration = new XmlConfiguration(cfg);
             server = (Server)configuration.configure();
         } else {
@@ -98,12 +112,9 @@ public class JettyComponent extends DefaultComponent {
             }
             server = new Server(p);
         }
-        Handler[] handlers = server.getHandlers();
-        if (handlers != null && handlers.length > 0 && handlers[0] instanceof ContextHandlerCollection) {
-            contexts = (ContextHandlerCollection)handlers[0];
-        } else if (handlers == null || handlers.length == 0) {
-            // dynamic configuration
-            contexts = new ContextHandlerCollection();
+        
+        // if a jetty.xml is present we don't configure logging - this should be done in that file.
+        if (!hasConfigFile) {
             RequestLogHandler requestLogHandler = new RequestLogHandler();
             File logDir = Environment.getDefault().getLog();
             logDir.mkdirs();
@@ -111,18 +122,42 @@ public class JettyComponent extends DefaultComponent {
             NCSARequestLog requestLog = new NCSARequestLog(logFile.getAbsolutePath());
             requestLogHandler.setRequestLog(requestLog);
             //handlers = new Handler[] {contexts, new DefaultHandler(), requestLogHandler};
-            handlers = new Handler[] {contexts, requestLogHandler};
-            server.setHandlers(handlers);
+            server.addHandler(requestLogHandler);
             server.setSendServerVersion(true);
-            server.setStopAtShutdown(true);
-        } else { // add only the contexts handler
-            contexts = new ContextHandlerCollection();
-            Handler[] newHandlers = new Handler[handlers.length+1];
-            newHandlers[0] = contexts;
-            System.arraycopy(handlers, 0, newHandlers, 0, handlers.length);
-            server.setHandlers(newHandlers);
+            server.setStopAtShutdown(true);            
         }
+        // create the war context
+        warContexts = new ContextHandlerCollection();
+        server.addHandler(warContexts);
+        
+        // scan for WAR files        
+        // deploy any war found in web directory
+        File web = Environment.getDefault().getWeb();
+        File[] roots = web.listFiles();
+        if (roots != null) {
+            for (File root : roots) {
+                String name = root.getName();                
+                if (name.endsWith(".war")) {
+                    name = name.substring(0, name.length()-4);
+                    boolean isRoot = "root".equals(name);
+                    String ctxPath = isRoot ? "/" : "/"+name;
+                    WebAppContext ctx = new WebAppContext(root.getAbsolutePath(), ctxPath);
+//                    File defWebXml = new File(Environment.getDefault().getConfig(), "default-web.xml");
+//                    if (defWebXml.isFile()) {
+//                      ctx.setDefaultsDescriptor(defWebXml.getAbsolutePath());
+//                    }
+                    ctx.setConfigurations(new Configuration[] {new WebInfConfiguration(), new WebXmlConfiguration()});
+                    if (isRoot) {
+                        server.addHandler(ctx);
+                    } else {
+                        warContexts.addHandler(ctx);
+                    }
+                }
+            }
+        }
+        // start the server
         server.start();
+        
     }
 
     @Override
@@ -163,8 +198,11 @@ public class JettyComponent extends DefaultComponent {
             if (defWebXml.isFile()) {
               ctx.setDefaultsDescriptor(defWebXml.getAbsolutePath());
             }
-
-            contexts.addHandler(ctx);
+            if ("/".equals(app.getContextPath())) { // the root context must be put at the end               
+                server.addHandler(ctx);
+            } else {
+                warContexts.addHandler(ctx);
+            }
             org.mortbay.log.Log.setLog(new Log4JLogger(logger));
             ctx.start();
             //HandlerWrapper wrapper = (HandlerWrapper)ctx.getHandler();
