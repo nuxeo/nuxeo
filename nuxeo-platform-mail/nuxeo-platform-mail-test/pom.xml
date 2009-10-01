@@ -13,7 +13,10 @@
   <artifactId>nuxeo-platform-mail-test</artifactId>
   <packaging>jar</packaging>
   <name>Test Mail Module</name>
-  <description>Nuxeo Platform Mail Test module is the test module of the mail plugin for Nuxeo.</description>
+  <description>
+    Nuxeo Platform Mail Test module is the test module of the mail plugin for
+    Nuxeo.
+  </description>
 
   <dependencies>
     <dependency>
@@ -28,6 +31,13 @@
       <groupId>dnsjava</groupId>
       <artifactId>dnsjava</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
 </project>
