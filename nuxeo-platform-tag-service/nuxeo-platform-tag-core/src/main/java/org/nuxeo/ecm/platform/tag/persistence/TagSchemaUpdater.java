@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
@@ -165,11 +166,18 @@ public class TagSchemaUpdater {
         if (dialect instanceof PostgreSQLDialect) {
             dialect = new CustomPostgreSQLDialect();
         }
+
         String script = table.getCreateSql(dialect);
         try {
             Connection connection = settings.getConnectionProvider().getConnection();
-            Statement statement = connection.createStatement();
-            statement.execute(script);
+            ResultSet result = connection.getMetaData().getTables(null, null, table.getName(), null);
+            if (!result.next()) {
+                log.debug("creating TagService tables");
+                Statement statement = connection.createStatement();
+                statement.execute(script);
+            }else {
+                log.debug("TagService tables already exist");
+            }
         } catch (SQLException e) {
             throw new Error("Cannot update schema", e);
         }
