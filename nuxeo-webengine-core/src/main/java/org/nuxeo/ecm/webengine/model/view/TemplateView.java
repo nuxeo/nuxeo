@@ -60,8 +60,13 @@ public class TemplateView {
         bindings.put("This", target);
         bindings.put("Context", ctx);
         bindings.put("Engine", ctx.getEngine());
+        bindings.put("basePath", ctx.getBasePath());
     }
 
+    public WebContext getContext() {
+        return ctx;
+    }
+    
     public TemplateView arg(String key, Object value) {
         bindings.put(key, value);
         return this;

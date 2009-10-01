@@ -97,7 +97,8 @@ public class WebEngineComponent extends DefaultComponent { // implements
         if (registry == null) {
             throw new Error("Could not find a server implementation");
         }
-        engine = new WebEngine(registry, root);
+        // use root.war as war directory
+        engine = new WebEngine(registry, new File(root, "root.war"));
 
         // start deploying web bundles
         final RuntimeContext ctx = context.getRuntimeContext();

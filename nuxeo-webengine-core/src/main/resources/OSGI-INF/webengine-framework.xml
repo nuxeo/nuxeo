@@ -66,10 +66,10 @@
     <rendering-extension name="API" class="org.nuxeo.ecm.webengine.rendering.APIHelper"/>
   </extension>
 
-  <extension target="org.nuxeo.runtime.server" point="webapp">
+  <!-- extension target="org.nuxeo.runtime.server" point="webapp">
     <webapp name="nuxeo" path="/">
-      <root>web</root>
+      <root>web/root.war</root>
     </webapp>
-  </extension> 
+  </extension--> 
    
 </component>
