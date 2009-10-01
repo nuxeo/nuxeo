@@ -395,7 +395,7 @@ public class NuxeoApp {
 
         // deploy webengine modules
 
-        File modules = new File(Environment.getDefault().getWeb(), "modules");
+        File modules = new File(Environment.getDefault().getWeb(), "root.war/modules");
         File[] files = modules.listFiles();
         if (files != null) {
             WebEngine we = Framework.getLocalService(WebEngine.class);
