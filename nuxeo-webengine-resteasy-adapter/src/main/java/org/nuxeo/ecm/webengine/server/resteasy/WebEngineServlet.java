@@ -31,6 +31,8 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.plugins.providers.ByteArrayProvider;
@@ -48,7 +50,10 @@ import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.DefaultNuxeoExceptionHandler;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
@@ -67,6 +72,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class WebEngineServlet extends HttpServlet {
+
+    private static final Log log = LogFactory.getLog(WebEngineServlet.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -94,7 +101,7 @@ public class WebEngineServlet extends HttpServlet {
             providerFactory.addMessageBodyWriter(new FormUrlEncodedProvider());
             providerFactory.addMessageBodyWriter(new StreamingOutputProvider());
         } catch (Throwable t) {
-            t.printStackTrace();
+            log.error(t);
         }
     }
 
@@ -131,8 +138,8 @@ public class WebEngineServlet extends HttpServlet {
         httpServletResponse.addHeader("Cache-Control", "must-revalidate");
         httpServletResponse.addHeader("Expires", "0");
         httpServletResponse.setDateHeader("Expires", 0); // prevents caching
-                                                            // at the proxy
-                                                            // server
+        // at the proxy
+        // server
 
         if (enableJsp) {
             WebEngine engine = Framework.getLocalService(WebEngine.class);
@@ -162,7 +169,7 @@ public class WebEngineServlet extends HttpServlet {
             ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
             if (defaultInstance instanceof ThreadLocalResteasyProviderFactory) {
                 ThreadLocalResteasyProviderFactory.push(dispatcher.getProviderFactory()); // BS
-                                                                                            // modif
+                // modif
             }
             HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
             UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request,
@@ -192,8 +199,20 @@ public class WebEngineServlet extends HttpServlet {
                 ResteasyProviderFactory.clearContextData();
             }
         } catch (Throwable t) {
-            t.printStackTrace();
-            response.sendError(500);
+            Throwable unwrappedException = DefaultNuxeoExceptionHandler.unwrapException(t);
+            if (ExceptionHelper.isClientAbortError(unwrappedException)) {
+                log.warn("Client disconnected: " + unwrappedException.getMessage());
+            } else {
+                if (response.isCommitted()) {
+                    log.error("Cannot display error page: "
+                            + "response is already commited", t);
+                } else {
+                    log.error("Failed to render resource", t);
+                    WebException exception = WebException.wrap(
+                            "Failed to render resource", t);
+                    response.sendError(500, exception.getStackTraceString());
+                }
+            }
         } finally {
             ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
             if (defaultInstance instanceof ThreadLocalResteasyProviderFactory) {
@@ -216,8 +235,7 @@ public class WebEngineServlet extends HttpServlet {
             HttpServletRequest request, HttpHeaders headers, UriInfo uriInfo,
             HttpResponse theResponse) {
         return new HttpServletInputMessage(request, theResponse, headers,
-                uriInfo, httpMethod.toUpperCase(),
-                dispatcher);
+                uriInfo, httpMethod.toUpperCase(), dispatcher);
     }
 
     protected HttpResponse createServletResponse(HttpServletResponse response) {

@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine.model;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
@@ -27,8 +26,6 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
@@ -37,7 +34,6 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
  *
  */
 public class Template {
-    private static Log log = LogFactory.getLog(Template.class);
 
     protected final Resource resource;
 
@@ -107,7 +103,7 @@ public class Template {
         return script;
     }
 
-    public void render(OutputStream out) {
+    public void render(OutputStream out) throws WebException {
         Writer w;
         try {
             w = new OutputStreamWriter(out, "UTF-8");
@@ -117,8 +113,8 @@ public class Template {
         }
         try {
             w.flush();
-        } catch (IOException io) {
-            log.error("Error while flushing writer.", io);
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to flush response", e);
         }
     }
 
@@ -126,9 +122,13 @@ public class Template {
         StringWriter w = new StringWriter();
         try {
             ctx.render(script(), args, w);
-            w.flush();
         } catch (Exception e) {
             throw WebException.wrap("Failed to write response", e);
+        }
+        try {
+            w.flush();
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to flush response", e);
         }
         return w.getBuffer().toString();
     }
