@@ -32,6 +32,7 @@
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>net.sf.opencsv</groupId>
