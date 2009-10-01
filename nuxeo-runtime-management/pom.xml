@@ -31,18 +31,23 @@
       <artifactId>commons-collections</artifactId>
     </dependency>
     <dependency>
-    	<groupId>commons-lang</groupId>
-    	<artifactId>commons-lang</artifactId>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-    	<groupId>org.osgi</groupId>
-    	<artifactId>osgi-core</artifactId>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
     </dependency>
     <dependency>
-    	<groupId>org.nuxeo.runtime</groupId>
-    	<artifactId>nuxeo-runtime-osgi</artifactId>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
 </project>
-   
+
