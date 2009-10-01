@@ -16,3 +16,4 @@ nuxeo-platform-jbpm/nuxeo-platform-jbpm-web/src/main/resources/nuxeo.war/linkXht
 *.gpd.*
 *cpJar*
 build.properties
+nuxeo-theme-editor/bin-groovy
