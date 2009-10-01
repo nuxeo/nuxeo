@@ -14,10 +14,14 @@
 
 package org.nuxeo.theme.jsf.facelets;
 
+import java.io.IOException;
+
 import javax.faces.FacesException;
 import javax.faces.application.ViewHandler;
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.facelets.FaceletFactory;
@@ -28,11 +32,11 @@ import com.sun.facelets.impl.ResourceResolver;
 
 public class NXThemesFaceletViewHandler extends FaceletViewHandler {
 
+    private static final Log log = LogFactory.getLog(NXThemesFaceletViewHandler.class);
+
     // Seam
 
-
     private static final String SEAM_EXPRESSION_FACTORY = "org.jboss.seam.el.SeamExpressionFactoryImpl";
-
 
     // Facelets
     @SuppressWarnings("hiding")
@@ -85,5 +89,13 @@ public class NXThemesFaceletViewHandler extends FaceletViewHandler {
         }
 
         return new NXThemesFaceletFactory(c, resolver, refreshPeriod);
+    }
+
+    @Override
+    protected void handleFaceletNotFound(FacesContext context, String viewId)
+            throws FacesException, IOException {
+        log.error(String.format("Some included facelet is not found, "
+                + "check the template '%s' ", viewId));
+        super.handleFaceletNotFound(context, viewId);
     }
 }
