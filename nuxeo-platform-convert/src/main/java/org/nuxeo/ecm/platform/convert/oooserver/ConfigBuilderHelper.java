@@ -26,9 +26,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.anwrt.ooserver.daemon.Config;
 
 public class ConfigBuilderHelper {
+
+    private static final Log log = LogFactory.getLog(ConfigBuilderHelper.class);
 
     private static String UNIX_OO_EXE = "soffice";
     private static String WIN_OO_EXE = "soffice.exe";
@@ -44,6 +49,9 @@ public class ConfigBuilderHelper {
     protected String ooCommandPath;
 
     private Config ooServerConfig;
+
+    protected static String fileSep = System.getProperty("file.separator");
+
 
     public ConfigBuilderHelper(OOoServerDescriptor desc) {
         this.desc = desc;
@@ -67,7 +75,7 @@ public class ConfigBuilderHelper {
         }
         if (ooCommandPath == null) {
             ooCommandPath = desc.getOooInstallationPath();
-            File oo = new File(ooCommandPath + "/" + exeName);
+            File oo = new File(ooCommandPath + fileSep + exeName);
             if (!oo.exists()) {
                 ooCommandPath = null;
             }
@@ -83,7 +91,7 @@ public class ConfigBuilderHelper {
             paths.addAll(getSystemPaths());
 
             for (String path : paths) {
-                File oo = new File(path + "/" + exeName);
+                File oo = new File(path + fileSep + exeName);
                 if (oo.exists()) {
                     ooCommandPath = path;
                     break;
@@ -97,8 +105,16 @@ public class ConfigBuilderHelper {
         ArrayList<String> userDirs = new ArrayList<String>();
 
         for (int i = 0; i < desc.getOooWorkers(); i++) {
-            userDirs.add("file://" + System.getProperty("java.io.tmpdir")
-                    + "/nxooserver" + i);
+
+            StringBuffer userDir = new StringBuffer();
+            userDir.append("file://");
+            userDir.append(System.getProperty("java.io.tmpdir"));
+            if (!userDir.toString().endsWith(fileSep)) {
+                userDir.append(fileSep);
+            }
+            userDir.append("nxoosrv");
+            userDir.append(i);
+            userDirs.add(userDir.toString());
         }
         return userDirs;
     }
@@ -141,6 +157,7 @@ public class ConfigBuilderHelper {
             if (getOOServerPath() == null) {
                 return null;
             }
+
             ooServerConfig = new Config();
             ooServerConfig.officeProgramDirectoryPath = getOOServerPath();
             ooServerConfig.acceptor = "socket,host=" + desc.getOooListenerIP()
@@ -149,6 +166,8 @@ public class ConfigBuilderHelper {
                     + ",port=" + desc.getOooDaemonListenerPort();
             ooServerConfig.maxUsageCountPerInstance = desc.getOooRecycleInterval();
             ooServerConfig.userInstallation = getUserDirs();
+
+            log.debug("OOo config : " + ooServerConfig.toString());
 
             try {
                 String ld_path = getLibPath();
