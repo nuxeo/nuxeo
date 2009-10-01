@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-opensocial-gadgets-core-test
+Bundle-SymbolicName: org.nuxeo.opensocial.gadgets.core.test;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Leroy Merlin
+Nuxeo-Component: OSGI-INF/gadget-test-contrib.xml

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<component name="webengine.spaces.theme">
+  <documentation> @author loic lelostec</documentation>
+  <require>org.nuxeo.theme.webengine</require>
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="applications">
+
+    <!-- Jetty server -->
+    <application root="/spaces" template-engine="freemarker">
+      <negotiation>
+        <strategy>web-spaces</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>default/default</default-theme>
+        <default-perspective>default</default-perspective>
+      </negotiation>
+    </application>
+  </extension>
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="negotiations">
+    <negotiation object="theme" strategy="web-spaces">
+      <scheme> org.nuxeo.theme.webengine.negotiation.theme.RequestParameter
+      </scheme>
+      <scheme> org.nuxeo.theme.webengine.negotiation.theme.CookieValue
+      </scheme>
+      <scheme> org.nuxeo.theme.webengine.negotiation.theme.ViewId</scheme>
+      <scheme> org.nuxeo.theme.webengine.negotiation.theme.DefaultTheme
+      </scheme>
+    </negotiation>
+  </extension>
+
+
+
+  <!-- For testing: to move to the web application -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="themes">
+    <theme>
+       <src>themes/theme-default.xml</src>
+      <!--<src>file:///C:/Dev/lm-portal-jaxrs/lm-portal/nuxeo-opensocial/nuxeo-webengine-spaces/src/main/resources/themes/theme-default.xml</src>-->
+    </theme>
+  </extension>
+</component>

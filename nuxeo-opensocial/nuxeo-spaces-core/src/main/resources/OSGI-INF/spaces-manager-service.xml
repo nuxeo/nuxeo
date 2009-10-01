@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.spaces.core.spacemanager.service"
+  version="1.0">
+  <implementation class="org.nuxeo.ecm.spaces.core.impl.SpaceManagerImpl" />
+  <service>
+    <provide interface="org.nuxeo.ecm.spaces.api.SpaceManager" />
+  </service>
+
+   <extension-point name="universContrib">
+    <documentation>
+      Univers provider contribution
+      <universContrib name="someName">
+        <order>index of univers insertion ( java convention  so 0 for first , must be combined with 'require' component mecanism ) </order>
+        <className>class name of the contribution - must implements
+          UniversProvider</className>
+      </universContrib>
+    </documentation>
+    <object class="org.nuxeo.ecm.spaces.core.impl.UniversContribDescriptor" />
+  </extension-point>
+
+   <extension-point name="spaceContrib">
+    <documentation>
+      Space provider contribution
+      <spaceContrib name="someName">
+        <restrictToUniverse>pattern</restrictToUniverse>
+        <order>index of space insertion( java convention  so 0 for first , must be combined with 'require' component mecanism )</order>
+        <className>class name of the contribution - must implements
+          SpaceProvider</className>
+      </spaceContrib>
+    </documentation>
+    <object class="org.nuxeo.ecm.spaces.core.impl.SpaceContribDescriptor" />
+  </extension-point>
+
+
+  <extension-point name="gadgetContrib">
+    <documentation>
+      Gadget provider contribution
+      <gadgetContrib name="someName">
+        <order>index of gadget insertion( java convention  so 0 for first , must be combined with 'require' component mecanism )</order>
+        <className>class name of the contribution - must implements
+          GadgetProvider</className>
+      </gadgetContrib>
+    </documentation>
+    <object class="org.nuxeo.ecm.spaces.core.impl.GadgetContribDescriptor" />
+  </extension-point>
+
+
+</component>

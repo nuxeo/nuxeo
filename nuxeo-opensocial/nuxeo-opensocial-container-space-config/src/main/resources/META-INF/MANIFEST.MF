@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-opensocial-container-space-config
+Bundle-SymbolicName: org.nuxeo.opensocial.container.space.config
+Bundle-Version: 1.0.0
+Bundle-Vendor: Leroy Merlin
+Provide-Package: org.nuxeo.opensocial.container.space.config
+Nuxeo-Component:  OSGI-INF/opensocial-factory-space-contrib.xml
+
+

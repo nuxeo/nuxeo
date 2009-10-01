@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.gadget.test" version="1.0">
+
+  <extension target="org.nuxeo.opensocial.gadgets.service"
+    point="gadget">
+
+    <internalGadget name="hello2">
+      <mountPoint>/hello2/hello2</mountPoint>
+      <directory>hello2-gadget</directory>
+      <category>testCategory</category>
+      <icon>hello2.png</icon>
+    </internalGadget>
+
+    <internalGadget name="hello">
+      <mountPoint>/hello/hello</mountPoint>
+      <directory>hello-gadget</directory>
+      <category>testCategory</category>
+      <icon>hello.png</icon>
+    </internalGadget>
+
+  </extension>
+</component>

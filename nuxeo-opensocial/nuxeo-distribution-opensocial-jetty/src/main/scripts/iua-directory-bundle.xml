@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+
+<component name="org.lm.directory.iua.storage">
+
+  <implementation class="org.lm.nuxeo.directory.iua.IUADirectoryDescriptor" />
+
+  <require>org.lm.nuxeo.directory.iua.IUADirectoryFactory</require>
+
+  <!-- the groups SQL directories are required to make this bundle work -->
+  <require>org.nuxeo.ecm.directory.sql.storage</require>
+
+  <extension target="org.lm.nuxeo.directory.iua.IUADirectoryFactory"
+    point="servers">
+    <server name="integration">
+      <address>http://aldap1.fr.corp.leroymerlin.com/WSiua/servlet/rpcrouter</address>
+    </server>
+  </extension>
+
+  <extension target="org.lm.nuxeo.directory.iua.IUADirectoryFactory"
+    point="servers">
+    <server name="production">
+      <address>http://yldap.fr.corp.leroymerlin.com/WSiua/servlet/rpcrouter</address>
+    </server>
+  </extension>
+
+  <extension target="org.lm.nuxeo.directory.iua.IUADirectoryFactory"
+    point="directories">
+
+    <directory name="userDirectory">
+
+      <server>production</server>
+      <schema>userlm</schema>
+
+      <idField>username</idField>
+
+      <searchBaseDn>o=corp.leroymerlin.com</searchBaseDn>
+      <searchClass>privPerson</searchClass>
+      <searchFilter></searchFilter>
+
+      <!-- To additionally restricte entries you can add an
+        arbitrary search filter such as the following:
+
+        <searchFilter>(&amp;(sn=toto*)(myCustomAttribute=somevalue))</searchFilter>
+
+        Beware that "&" writes "&amp;" in XML.
+      -->
+
+      <minimumSearchSize>4</minimumSearchSize>
+
+
+      <rdnAttribute>uid</rdnAttribute>
+
+      <fieldMapping name="username">uid</fieldMapping>
+      <fieldMapping name="password">userPassword</fieldMapping>
+      <fieldMapping name="firstName">givenName</fieldMapping>
+      <fieldMapping name="lastName">sn</fieldMapping>
+      <fieldMapping name="company">privDefaultDepartment</fieldMapping>
+      <fieldMapping name="email">mail</fieldMapping>
+  <fieldMapping name="codeMagasin">privBusinessCategoryCode</fieldMapping>
+<fieldMapping name="region">privBusinessAreaCode</fieldMapping>
+  <fieldMapping name="libelleMagasin">businessCategory</fieldMapping>
+<fieldMapping name="listeLibellesRayons">departmentNumber</fieldMapping>
+<fieldMapping name="listeCodesRayons">privDepartmentCode</fieldMapping>
+<fieldMapping name="mailUser">privMirapointMailUser</fieldMapping>
+<fieldMapping name="mailHost">mailHost</fieldMapping>
+
+      <references>
+        <inverseReference field="groups" directory="groupDirectory"
+          dualReferenceField="members"/>
+      </references>
+    </directory>
+
+  </extension>
+
+  <require>org.nuxeo.ecm.platform.usermanager.UserManagerImpl</require>
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService" point="userManager">
+    <userManager class="org.nuxeo.ecm.platform.usermanager.UserManagerImpl">
+      <defaultAdministratorId>10034849</defaultAdministratorId>
+      <defaultGroup>members</defaultGroup>
+      <userSortField>lastName</userSortField>
+
+      <users>
+        <anonymousUser id="Guest">
+          <property name="firstName">Anonymous</property>
+          <property name="lastName">User</property>
+        </anonymousUser>
+        <virtualUser id="Administrator" searchable="false">
+          <password>Administrator</password>
+          <property name="firstName">My Custom</property>
+          <property name="lastName">Administrator</property>
+          <group>administrators</group>
+        </virtualUser>
+      </users>
+    </userManager>
+  </extension>
+</component>

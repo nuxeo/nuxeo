@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform OAuth service
+Bundle-SymbolicName: org.nuxeo.ecm.platform.oauth;singleton=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Leroy Merlin
+Provide-Package: org.nuxeo.ecm.platform.oauth
+Require-Bundle: org.nuxeo.runtime
+Nuxeo-Component: OSGI-INF/oauth-service.xml
+ 

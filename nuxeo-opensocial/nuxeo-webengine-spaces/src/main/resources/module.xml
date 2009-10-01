@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<module name="spaces" root-type="spaces" path="/spaces" extends="base">
+  <links>
+
+
+    <link id="edit" path="/@views/edit_page">
+      <category>GADGET_ACTIONS</category>
+      <category>UNIVERS_ACTIONS</category>
+      <category>SPACE_ACTIONS</category>
+    </link>
+
+    <link id="delete" path="/@delete" >
+      <category>GADGET_ACTIONS</category>
+      <category>UNIVERS_ACTIONS</category>
+      <category>SPACE_ACTIONS</category>
+       <!-- <guard>Write</guard>-->
+    </link>
+
+    <!-- creation action is placed on parent element -->
+    <link id="create" path="/@views/create" >
+      <category>PORTAIL_ACTIONS</category>
+      <category>UNIVERS_ACTIONS</category>
+      <category>SPACE_ACTIONS</category>
+      <!-- <guard>Write</guard>-->
+    </link>
+
+    <link id="print" path="/@views/print">
+      <category>PORTAIL_ACTIONS</category>
+    </link>
+
+  </links>
+</module>

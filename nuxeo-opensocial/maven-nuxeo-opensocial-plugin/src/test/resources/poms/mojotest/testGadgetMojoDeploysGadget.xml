@@ -1,0 +1,19 @@
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.nuxeo.opensocial</groupId>
+				<artifactId>maven-nuxeo-opensocial-plugin</artifactId>
+				<configuration>
+					<run>
+						org.nuxeo.opensocial.maven.GadgetRegistryDetector
+					</run>
+					<gadgetBasedir>
+						${basedir}/src/test/resources/thegadget
+					</gadgetBasedir>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

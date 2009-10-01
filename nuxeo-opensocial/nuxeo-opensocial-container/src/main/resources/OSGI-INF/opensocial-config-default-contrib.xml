@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component
+  name="org.nuxeo.opensocial.container.config.defaultcontrib">
+
+
+  <extension target="org.nuxeo.opensocial.container.config"
+    point="portalConfig">
+    <portalConfig>
+      <domain>localhost</domain>
+      <containerName>default</containerName>
+      <key>fnQdpl5HYOFQsGNsSjPEDhQLAlZiZCu91RGLN93w7LU=</key>
+    </portalConfig>
+  </extension>
+</component>

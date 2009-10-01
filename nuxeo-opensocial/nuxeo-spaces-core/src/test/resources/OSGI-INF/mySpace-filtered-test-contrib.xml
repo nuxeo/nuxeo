@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.spaces.core.spacemanager.service.userspace.test.filtered.contrib"
+  version="1.0">
+
+
+    <extension target="org.nuxeo.ecm.spaces.core.spacemanager.service" point="spaceContrib">
+
+      <spaceContrib name="myPage">
+        <restrictToUniverse>nimportequoi</restrictToUniverse>
+        <position>0</position>
+        <className>org.nuxeo.ecm.spaces.core.dummy.MySpaceSupplier</className>
+      </spaceContrib>
+
+  </extension>
+
+
+
+
+</component>

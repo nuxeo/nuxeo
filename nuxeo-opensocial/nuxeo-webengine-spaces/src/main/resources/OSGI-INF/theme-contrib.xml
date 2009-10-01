@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<component name="webengine.spaces.fragments">
+
+  <require>org.nuxeo.theme.webengine</require>
+
+
+  <!-- resources -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+    <resource name="jquery-1.3.2.min.js">
+      <path>js/jquery/jquery-1.3.2.min.js</path>
+    </resource>
+    <resource name="thickbox.js">
+      <path>js/jquery/thickbox.js</path>
+    </resource>
+    <resource name="jquery.cookie.js">
+      <path>js/jquery/jquery.cookie.js</path>
+    </resource>
+     <resource name="jquery.menu.js">
+      <path>js/jquery/jquery.menu.js</path>
+    </resource>
+     <resource name="initmenu.js">
+      <path>js/initMenu.js</path>
+    </resource>
+    <resource name="layoutManager.js">
+      <path>js/layoutManager.js</path>
+    </resource>
+    <resource name="gadgetManager.js">
+      <path>js/gadgetManager.js</path>
+    </resource>
+  </extension>
+
+
+  <!-- Views -->
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="views">
+    <view name="module onglets" template-engine="freemarker">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <template>widgets/navTabs.ftl</template>
+      <resource>jquery-1.3.2.min.js</resource>
+      <resource>jquery.menu.js</resource>
+      <resource>initmenu.js</resource>
+      <resource>thickbox.js</resource>
+      <model-type>navTabs</model-type>
+    </view>
+  </extension>
+
+   <extension target="org.nuxeo.theme.services.ThemeService"
+    point="views">
+    <view name="contenu principal" template-engine="freemarker">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <template>widgets/mainContent.ftl</template>
+      <model-type>mainContent</model-type>
+    </view>
+  </extension>
+
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="views">
+    <view name="module layout manager" template-engine="freemarker">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <resource>layoutManager.js</resource>
+      <resource>jquery-1.3.2.min.js</resource>
+      <template>widgets/layoutManager.ftl</template>
+      <model-type>layoutManager</model-type>
+    </view>
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="views">
+    <view name="module gadget manager" template-engine="freemarker">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <resource>gadgetManager.js</resource>
+      <resource>jquery-1.3.2.min.js</resource>
+      <template>widgets/gadgetManager.ftl</template>
+      <model-type>gadgetManager</model-type>
+    </view>
+  </extension>
+
+
+  <!-- Models -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+  point="models">
+
+    <model name="navTabs">
+      <class>org.nuxeo.opensocial.theme.model.NavTabsModel</class>
+    </model>
+
+    <model name="mainContent">
+      <class>org.nuxeo.opensocial.theme.model.MainContentModel</class>
+    </model>
+
+     <model name="layoutManager">
+      <class>org.nuxeo.opensocial.theme.model.LayoutManagerModel</class>
+    </model>
+    <model name="gadgetManager">
+      <class>org.nuxeo.opensocial.theme.model.GadgetManagerModel</class>
+    </model>
+
+  </extension>
+
+
+  <!-- Fragments -->
+
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+  point="fragments">
+    <fragment name="nav tabs">
+      <class>org.nuxeo.opensocial.theme.fragment.NavTabsFragment</class>
+      <model-type>navTabs</model-type>
+      <dynamic>true</dynamic>
+    </fragment>
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+  point="fragments">
+    <fragment name="main content">
+      <class>org.nuxeo.opensocial.theme.fragment.MainContentFragment</class>
+      <model-type>mainContent</model-type>
+      <dynamic>true</dynamic>
+    </fragment>
+  </extension>
+
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+  point="fragments">
+    <fragment name="layoutManager">
+      <class>org.nuxeo.opensocial.theme.fragment.LayoutManagerFragment</class>
+      <model-type>layoutManager</model-type>
+      <dynamic>true</dynamic>
+    </fragment>
+  </extension>
+
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+  point="fragments">
+    <fragment name="gadgetManager">
+      <class>org.nuxeo.opensocial.theme.fragment.GadgetManagerFragment</class>
+      <model-type>gadgetManager</model-type>
+      <dynamic>true</dynamic>
+    </fragment>
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="presets">
+    <palette name="intralm background" src="presets/background.properties" category="background" />
+  </extension>
+
+
+</component>
