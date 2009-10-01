@@ -23,7 +23,7 @@
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-html</artifactId>
-    </dependency>
+    </dependency>    
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
@@ -32,7 +32,7 @@
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
-    </dependency>
+    </dependency>  
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
@@ -62,10 +62,6 @@
       <artifactId>osgi-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-persistence</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
     </dependency>
@@ -73,14 +69,14 @@
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
     </dependency>
-
+    
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
       <scope>test</scope>
     </dependency>
 
-    <dependency>
+   <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
       <scope>test</scope>
@@ -107,9 +103,8 @@
         <scope>test</scope>
       </dependency>
     <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <scope>test</scope>
+    	<groupId>org.nuxeo.ecm.core</groupId>
+    	<artifactId>nuxeo-core-persistence</artifactId>
     </dependency>
     
   </dependencies>
@@ -121,7 +116,9 @@
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
-            <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+            <manifestFile>
+              src/main/resources/META-INF/MANIFEST.MF
+            </manifestFile>
           </archive>
         </configuration>
       </plugin>
