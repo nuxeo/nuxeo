@@ -736,7 +736,7 @@ public final class ThemeManager implements Registrable {
     }
 
     public void stylesModified(String themeName) {
-        setCachedStyles(themeName, null, null);
+        resetCachedStyles(themeName);
     }
 
     // Registration
@@ -1146,6 +1146,14 @@ public final class ThemeManager implements Registrable {
         cachedStyles.put(key, css);
     }
 
+    private synchronized void resetCachedStyles(String themeName) {
+        for(String key : cachedStyles.keySet()) {
+            if(key.startsWith(themeName)) {
+                cachedStyles.put(key, null);
+            }
+        }
+    }
+
     public String getResource(String name) {
         return cachedResources.get(name);
     }
@@ -1329,7 +1337,7 @@ public final class ThemeManager implements Registrable {
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         return (ThemeSet) typeRegistry.lookup(TypeFamily.THEMESET, name);
     }
-    
+
     // Previews
     public static String getPreviewCategoryForProperty(String name) {
         for (Type type : Manager.getTypeRegistry().getTypes(TypeFamily.PREVIEW)) {
@@ -1340,9 +1348,9 @@ public final class ThemeManager implements Registrable {
         }
         return null;
     }
-    
+
     public static List<String> getPreviewCategories() {
         return Manager.getTypeRegistry().getTypeNames(TypeFamily.PREVIEW);
     }
-    
+
 }

@@ -78,7 +78,7 @@ public final class Styles extends HttpServlet implements Serializable {
         }
 
         final String basePath = request.getParameter("basepath");
-        
+
         final ThemeManager themeManager = Manager.getThemeManager();
         String rendered = themeManager.getCachedStyles(themeName, basePath);
 
