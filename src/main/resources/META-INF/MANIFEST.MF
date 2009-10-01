@@ -13,5 +13,7 @@ Provide-Package: org.nuxeo.common,
  org.nuxeo.common.xmap,
  org.nuxeo.common.xmap.annotation,
  org.nuxeo.runtime.util
-Require-Bundle: system.bundle;reprovide=true,
+Nuxeo-Require: system.bundle;reprovide=true,
  org.nuxeo.logging;optional=true;reprovide=true
+Require-Bundle: org.apache.xerces;visibility:=reexport,
+ org.nuxeo.logging;visibility:=reexport
