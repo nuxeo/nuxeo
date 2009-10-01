@@ -104,7 +104,11 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
             DocumentModel parentWebSite = getParentWebSite(ctx.getCoreSession());
             resp = SiteUtils.getLogoResponse(parentWebSite);
         } catch (Exception e) {
-            log.error("Problems retriveing the log for" + doc.getName(), e);
+            if (doc==null) {
+                log.error("Problems retriveing the logo", e);
+            } else {
+                log.error("Problems retriveing the logo for" + doc.getName(), e);
+            }
         }
         // return a default image, maybe you want to change this in future
         if (resp == null) {
