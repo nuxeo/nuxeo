@@ -376,6 +376,10 @@ public class Mapper {
                     log(s);
                     st.execute(s);
                 }
+                for (String s : sqlInfo.dialect.getPostCreateSqls(table)) {
+                    log(s);
+                    st.execute(s);
+                }
             }
 
             /*

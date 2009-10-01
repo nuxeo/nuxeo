@@ -427,6 +427,7 @@ public class SQLInfo {
         }
         initHierarchySQL();
         initRepositorySQL();
+        initDescendantsSQL();
 
         for (String tableName : model.getFragmentNames()) {
             if (tableName.equals(model.HIER_TABLE_NAME)) {
@@ -545,6 +546,19 @@ public class SQLInfo {
         maker.table.addIndex(model.HIER_PARENT_KEY, model.HIER_CHILD_NAME_KEY);
         // don't index parent+name+isprop, a simple isprop scan will suffice
         maker.table.addIndex(model.MAIN_PRIMARY_TYPE_KEY);
+    }
+
+    /**
+     * Creates the SQL for the table holding descendants information.
+     * <p>
+     * This table holds trigger-updated information extracted from the recursive
+     * parent-child relationship in the hierarchy table.
+     */
+    protected void initDescendantsSQL() {
+        TableMaker maker = new TableMaker(model.DESCENDANTS_TABLE_NAME);
+        maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFKMUL);
+        maker.newColumn(model.DESCENDANTS_DESCENDANT_KEY, ColumnType.NODEIDFKMUL);
+        maker.table.addIndex(model.MAIN_KEY, model.DESCENDANTS_DESCENDANT_KEY);
     }
 
     /**

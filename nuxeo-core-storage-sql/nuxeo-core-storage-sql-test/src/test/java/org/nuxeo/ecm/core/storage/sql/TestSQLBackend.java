@@ -22,10 +22,20 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
@@ -208,8 +218,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 nodea.getSimpleProperty("tst:title").getString());
         assertEquals(Double.valueOf(1.5),
                 nodea.getSimpleProperty("tst:rate").getValue());
-        assertEquals(Long.valueOf(123456789),
-                nodea.getSimpleProperty("tst:count").getValue());
+        assertEquals(Long.valueOf(123456789), nodea.getSimpleProperty(
+                "tst:count").getValue());
         assertNotNull(nodea.getSimpleProperty("tst:created").getValue());
         String[] subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         String[] tags = nodea.getCollectionProperty("tst:tags").getStrings();
@@ -246,8 +256,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 nodea.getSimpleProperty("tst:title").getString());
         assertEquals(Double.valueOf(3.14),
                 nodea.getSimpleProperty("tst:rate").getValue());
-        assertEquals(Long.valueOf(1234567891234L),
-                nodea.getSimpleProperty("tst:count").getValue());
+        assertEquals(Long.valueOf(1234567891234L), nodea.getSimpleProperty(
+                "tst:count").getValue());
         subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         tags = nodea.getCollectionProperty("tst:tags").getStrings();
         assertEquals(Arrays.asList("z", "c"), Arrays.asList(subjects));
@@ -279,7 +289,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         String bigtext = buf.toString();
         assertEquals(5000, bigtext.length());
         nodea.setSingleProperty("tst:bignote", bigtext);
-        assertEquals(bigtext, nodea.getSimpleProperty("tst:bignote").getString());
+        assertEquals(bigtext,
+                nodea.getSimpleProperty("tst:bignote").getString());
         session.save();
 
         // now read from another session
@@ -779,6 +790,161 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
     }
 
+    /*
+     * Test that lots of moves don't break internal datastructures.
+     */
+    public void testMoveMany() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        ArrayList<Node> nodes = new ArrayList<Node>();
+        nodes.add(root);
+        Random rnd = new Random(123456);
+        List<String[]> graph = new ArrayList<String[]>();
+        for (int i = 0; i < 200; i++) {
+            // create a node under a random node
+            Node parent = nodes.get((int) Math.floor(rnd.nextFloat()
+                    * nodes.size()));
+            Node child = session.addChildNode(parent, "child" + i, null,
+                    "TestDoc", false);
+            nodes.add(child);
+            // update graph
+            addEdge(graph, parent.getId().toString(), child.getId().toString());
+            if ((i % 5) == 0) {
+                // move a random node under a random parent
+                int ip, ic;
+                Node p, c;
+                String pid, cid;
+                do {
+                    ip = (int) Math.floor(rnd.nextFloat() * nodes.size());
+                    ic = (int) Math.floor(rnd.nextFloat() * nodes.size());
+                    p = nodes.get(ip);
+                    c = nodes.get(ic);
+                    pid = p.getId().toString();
+                    cid = c.getId().toString();
+                    if (isUnder(graph, cid, pid)) {
+                        // check we have an error for this move
+                        try {
+                            session.move(c, p, c.getName());
+                            fail("shouldn't be able to move");
+                        } catch (Exception e) {
+                            // ok
+                        }
+                        ic = 0; // try again
+                    }
+                } while (ic == 0 || ip == ic);
+                try {
+                    String oldpid = c.getParentId().toString();
+                    session.move(c, p, c.getName());
+                    removeEdge(graph, oldpid, cid);
+                    addEdge(graph, pid, cid);
+                } catch (StorageException e) {
+                    throw e;
+                }
+            }
+        }
+        session.save();
+
+        // dumpGraph(graph);
+        // dumpDescendants(buildDescendants(graph, root.getId().toString()));
+    }
+
+    private static void addEdge(List<String[]> graph, String p, String c) {
+        graph.add(new String[] { p, c });
+    }
+
+    private static void removeEdge(List<String[]> graph, String p, String c) {
+        for (String[] edge : graph) {
+            if (edge[0].equals(p) && edge[1].equals(c)) {
+                graph.remove(edge);
+                return;
+            }
+        }
+        throw new IllegalArgumentException(String.format("No edge %s -> %s", p,
+                c));
+    }
+
+    private static boolean isUnder(List<String[]> graph, String p, String c) {
+        if (p.equals(c)) {
+            return true;
+        }
+        Set<String> under = new HashSet<String>();
+        under.add(p);
+        int oldSize = 0;
+        // inefficient algorithm but for tests it's ok
+        while (under.size() != oldSize) {
+            oldSize = under.size();
+            Set<String> add = new HashSet<String>();
+            for (String n : under) {
+                for (String[] edge : graph) {
+                    if (edge[0].equals(n)) {
+                        String cc = edge[1];
+                        if (c.equals(cc)) {
+                            return true;
+                        }
+                        add.add(cc);
+                    }
+                }
+            }
+            under.addAll(add);
+        }
+        return false;
+    }
+
+    private static Map<String, Set<String>> buildDescendants(
+            List<String[]> graph, String root) {
+        Map<String, Set<String>> ancestors = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> descendants = new HashMap<String, Set<String>>();
+        // create all sets, for clearer code later
+        for (String[] edge : graph) {
+            for (String n : edge) {
+                if (!ancestors.containsKey(n)) {
+                    ancestors.put(n, new HashSet<String>());
+                }
+                if (!descendants.containsKey(n)) {
+                    descendants.put(n, new HashSet<String>());
+                }
+            }
+        }
+        // traverse from root
+        LinkedList<String> todo = new LinkedList<String>();
+        todo.add(root);
+        do {
+            String p = todo.removeFirst();
+            for (String[] edge : graph) {
+                if (edge[0].equals(p)) {
+                    // found a child
+                    String c = edge[1];
+                    todo.add(c);
+                    // child's ancestors
+                    Set<String> cans = ancestors.get(c);
+                    cans.addAll(ancestors.get(p));
+                    cans.add(p);
+                    // all ancestors have it as descendant
+                    for (String pp : cans) {
+                        descendants.get(pp).add(c);
+                    }
+                }
+            }
+        } while (!todo.isEmpty());
+        return descendants;
+    }
+
+    // dump in dot format, for graphviz
+    private static void dumpGraph(List<String[]> graph) {
+        for (String[] edge : graph) {
+            System.out.println("\t" + edge[0] + " -> " + edge[1] + ";");
+        }
+    }
+
+    private static void dumpDescendants(Map<String, Set<String>> descendants) {
+        for (Entry<String, Set<String>> e : descendants.entrySet()) {
+            String p = e.getKey();
+            for (String c : e.getValue()) {
+                System.out.println(String.format("%s %s", p, c));
+            }
+        }
+    }
+
     public void testCopy() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1032,6 +1198,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("beeep",
                 nodea.getSimpleProperty("ecm:wfIncOption").getValue());
     }
+
 }
 
 class DummyXid implements Xid {

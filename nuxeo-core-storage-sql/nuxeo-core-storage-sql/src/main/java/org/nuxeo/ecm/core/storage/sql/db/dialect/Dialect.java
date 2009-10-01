@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.common.utils.StringUtils;
@@ -528,6 +529,15 @@ public abstract class Dialect {
      */
     public String getReadAclsCheckSql(String idColumnName) {
         return null;
+    }
+
+    /**
+     * Gets the sql statements to call after a table has been created.
+     * <p>
+     * Used for migrations/upgrades.
+     */
+    public List<String> getPostCreateSqls(Table table) {
+        return Collections.emptyList();
     }
 
 }
