@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
@@ -35,29 +36,14 @@
       <artifactId>nuxeo-core-persistence</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-comment-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-storage-sql-test</artifactId>
-      <version>${nuxeo.core.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-    </dependency>    
-
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
     </dependency>
-    
+
     <!-- Persistence -->
     <dependency>
       <groupId>javax.persistence</groupId>
@@ -73,12 +59,24 @@
       <artifactId>h2</artifactId>
     </dependency>
     <dependency>
+      <!-- FIXME: version should be in dependency management -->
       <groupId>c3p0</groupId>
       <artifactId>c3p0</artifactId>
       <version>0.9.1</version>
     </dependency>
 
     <!-- Testing -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-comment-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-test</artifactId>
+      <version>${nuxeo.core.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -94,9 +92,7 @@
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>
     </dependency>
-
-
-   <dependency>
+    <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
       <scope>test</scope>
@@ -116,38 +112,33 @@
       <artifactId>antlr</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
-    	<groupId>org.nuxeo.ecm.core</groupId>
-    	<artifactId>nuxeo-core-persistence</artifactId>
-    </dependency>
-    <dependency>
-    	<groupId>postgresql</groupId>
-    	<artifactId>postgresql</artifactId>
-    	<scope>test</scope>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>
- 
+
   <profiles>
-   <profile>
-     <id>skiptests</id>
-     <activation>
-      <activeByDefault>false</activeByDefault>
-     </activation>
-     <build>
-      <plugins>
-       <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>**</exclude>
-          </excludes>
-        </configuration>
-       </plugin>
-      </plugins>
-    </build>
-   </profile>
+    <profile>
+      <id>skiptests</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <excludes>
+                <exclude>**</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
 

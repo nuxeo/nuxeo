@@ -4,8 +4,7 @@ Bundle-Name: Nuxeo ECM Tag Core
 Bundle-SymbolicName: org.nuxeo.ecm.platform.tag;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Category: core,stateful
-Require-Bundle: org.nuxeo.ecm.core, 
-  org.nuxeo.ecm.platform.types.core, 
+Require-Bundle: org.nuxeo.ecm.core,
   org.nuxeo.ecm.platform.content.template
 Export-Package: org.nuxeo.ecm.platform.tag
 Eclipse-LazyStart: false
