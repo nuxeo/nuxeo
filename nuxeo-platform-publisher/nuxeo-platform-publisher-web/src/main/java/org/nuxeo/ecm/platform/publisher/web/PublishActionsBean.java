@@ -150,9 +150,13 @@ public class PublishActionsBean extends AbstractPublishActions implements
         return treesInformation;
     }
 
-    public String doPublish(PublicationNode publicationNode)
-            throws ClientException {
+    public String doPublish(PublicationNode publicationNode) throws ClientException {
         PublicationTree tree = getCurrentPublicationTreeForPublishing();
+        return doPublish(tree, publicationNode);
+    }
+
+    public String doPublish(PublicationTree tree, PublicationNode publicationNode)
+            throws ClientException {
         if (tree == null) {
             return null;
         }
@@ -590,7 +594,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
         } catch (PublicationTreeNotAvailable e) {
             return "";
         }
-    }   
+    }
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
     @BypassInterceptors
