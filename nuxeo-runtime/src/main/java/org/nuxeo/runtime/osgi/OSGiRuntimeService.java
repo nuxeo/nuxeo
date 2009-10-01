@@ -45,6 +45,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.ComponentPersistence;
+import org.nuxeo.runtime.model.impl.RegistrationInfoImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -59,6 +60,8 @@ import org.osgi.framework.FrameworkListener;
  */
 public class OSGiRuntimeService extends AbstractRuntimeService implements
         FrameworkListener {
+    
+    public static ComponentName FRAMEWORK_STARTED_COMP = new ComponentName("org.nuxeo.runtime.started");
 
     /** Can be used to change the runtime home directory */
     public static final String PROP_HOME_DIR = "org.nuxeo.runtime.home";
@@ -389,6 +392,11 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             } catch (Exception e) {
                 log.error("Failed to load persisted components", e);
             }
+            // deploy a fake component that is marking the end of startup
+            // XML components that needs to be deployed at the end need to put a requirement 
+            // on this marker component
+            deployFrameworkStartedComponent();
+            // print the startup message
             printStatusMessage();
         }
     }
@@ -425,6 +433,13 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         } else {
             log.error(msg);
         }
+    }
+    
+    protected void deployFrameworkStartedComponent() {
+        RegistrationInfoImpl ri = new RegistrationInfoImpl(FRAMEWORK_STARTED_COMP);
+        ri.setContext(context);
+        // this will register any pending components that waits for the framework to be started
+        manager.register(ri); 
     }
 
     public Bundle findHostBundle(Bundle bundle) {
