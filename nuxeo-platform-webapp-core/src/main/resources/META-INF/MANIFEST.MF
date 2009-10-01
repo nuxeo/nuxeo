@@ -31,5 +31,6 @@ Require-Bundle: org.nuxeo.ecm.platform.types.api,
  org.nuxeo.ecm.platform.search.api,
  org.nuxeo.ecm.directory.api,
  org.nuxeo.ecm.platform.forms.layout.client,
- org.nuxeo.ecm.platform.jbpm.api
+ org.nuxeo.ecm.platform.jbpm.api,
+ org.nuxeo.theme.webwidgets.ui;
 Nuxeo-RequiredBy: org.nuxeo.ecm.platform.placeful.theme
