@@ -44,6 +44,7 @@
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
+      <scope>compile</scope>
     </dependency>
 
     <!-- scope test -->
