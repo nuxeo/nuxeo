@@ -284,6 +284,11 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
+    public boolean supportsDescendantsTable() {
+        return true;
+    }
+
+    @Override
     public String getInTreeSql(String idColumnName) {
         return String.format(
                 "EXISTS(SELECT 1 FROM DESCENDANTS WHERE ID = ? AND DESCENDANTID = %s)",

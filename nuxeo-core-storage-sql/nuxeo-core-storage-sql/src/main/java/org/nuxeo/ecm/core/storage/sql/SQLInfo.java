@@ -427,7 +427,9 @@ public class SQLInfo {
         }
         initHierarchySQL();
         initRepositorySQL();
-        initDescendantsSQL();
+        if (dialect.supportsDescendantsTable()) {
+            initDescendantsSQL();
+        }
 
         for (String tableName : model.getFragmentNames()) {
             if (tableName.equals(model.HIER_TABLE_NAME)) {

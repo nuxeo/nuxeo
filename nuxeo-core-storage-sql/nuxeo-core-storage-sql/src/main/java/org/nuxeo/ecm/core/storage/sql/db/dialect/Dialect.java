@@ -392,6 +392,13 @@ public abstract class Dialect {
     public abstract String getSecurityCheckSql(String idColumnName);
 
     /**
+     * Checks if the dialect supports a descendants table.
+     */
+    public boolean supportsDescendantsTable() {
+        return false;
+    }
+
+    /**
      * Gets the expression to use to check tree membership.
      *
      * @param idColumnName the quoted name of the id column to use
