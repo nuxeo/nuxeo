@@ -17,17 +17,18 @@
 
 package org.nuxeo.ecm.platform.publisher.web;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.jboss.seam.annotations.In;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.util.List;
-import java.util.ArrayList;
+import org.jboss.seam.annotations.In;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -74,13 +75,10 @@ public abstract class AbstractPublishActions {
         }
 
         DocumentModel parentDocument;
-        try {
+        if (documentManager.hasPermission(documentModel.getParentRef(),
+                SecurityConstants.READ)) {
             parentDocument = documentManager.getDocument(documentModel.getParentRef());
-        } catch (Exception e) {
-            log.error("Error building path", e);
-            return;
+            getPathFragments(parentDocument, pathFragments);
         }
-        getPathFragments(parentDocument, pathFragments);
     }
-
 }
