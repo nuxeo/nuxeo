@@ -86,6 +86,8 @@ public final class DocumentEventTypes {
 
     public static final String DOCUMENT_PROXY_PUBLISHED = "documentProxyPublished";
 
+    public static final String DOCUMENT_PROXY_UPDATED = "documentProxyUpdated";
+
     public static final String SECTION_CONTENT_PUBLISHED = "sectionContentPublished";
 
     public static final String BEFORE_DOC_RESTORE = "beforeRestoringDocument";

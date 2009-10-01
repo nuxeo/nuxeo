@@ -2125,28 +2125,41 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(doc, READ);
             checkPermission(section, ADD_CHILDREN);
 
-            List<String> removedProxyIds = Collections.emptyList();
+            DocumentModel proxyModel = null;
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
+
             if (overwriteExistingProxy) {
-                removedProxyIds = removeExistingProxies(doc, section);
+                proxyModel = updateExistingProxies(doc, section, version);
+                // proxyModel is null is update fails
+                if (proxyModel != null){
+                    // notify for proxy updates
+                    notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED, proxyModel,
+                            options, null, null, true, false);
+                } else {
+                    List<String> removedProxyIds = Collections.emptyList();
+                    removedProxyIds = removeExistingProxies(doc, section);
+                    options.put(CoreEventConstants.REPLACED_PROXY_IDS,
+                            (Serializable) removedProxyIds);
+                }
             }
 
-            // create the new proxy
-            String vlabel = version.getLabel();
-            Document proxy = getSession().createProxyForVersion(section, doc,
-                    vlabel);
-            log.debug("Created proxy for version " + vlabel
-                    + " of the document " + doc.getPath());
+            if (proxyModel == null) {
+                // create the new proxy
+                String vlabel = version.getLabel();
+                Document proxy = getSession().createProxyForVersion(section,
+                        doc, vlabel);
+                log.debug("Created proxy for version " + vlabel
+                        + " of the document " + doc.getPath());
+                // notify for reindexing
+                proxyModel = readModel(proxy, null);
 
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
-            options.put(CoreEventConstants.REPLACED_PROXY_IDS, (Serializable) removedProxyIds);
-            // notify for reindexing
-            DocumentModel proxyModel = readModel(proxy, null);
+                // notify for document creation (proxy)
+                notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, proxyModel,
+                        options, null, null, true, false);
+            }
+
             notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
                     proxyModel, options, null, null, true, false);
-
-            // notify for document creation (proxy)
-            notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, proxyModel,
-                    options, null, null, true, false);
 
             DocumentModel sectionModel = readModel(section, null);
             notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
@@ -2173,6 +2186,27 @@ public abstract class AbstractSession implements CoreSession,
             removeNotifyOneDoc(otherProxy);
         }
         return removedProxyIds;
+    }
+
+    /**
+     * Update the proxy while republishing.
+     */
+    protected DocumentModel updateExistingProxies(Document doc, Document folder, VersionModel version)
+            throws DocumentException, ClientException {
+        Collection<Document> proxies = getSession().getProxies(doc, folder);
+        try {
+            if (proxies.size() == 1) {
+                for (Document proxy : proxies) {
+                    if (proxy instanceof DocumentVersionProxy) {
+                        ((DocumentVersionProxy) proxy).setTargetDocument(doc, version.getLabel());
+                        return readModel(proxy, null);
+                    }
+                }
+            }
+        } catch (UnsupportedOperationException e) {
+            log.error("Cannot update proxy, try to remove");
+        }
+        return null;
     }
 
     public DocumentModelList getProxies(DocumentRef docRef,

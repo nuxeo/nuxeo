@@ -455,4 +455,8 @@ public class JCRDocumentProxy extends JCRDocument implements
         return new ArrayList<String>();
     }
 
+    public void setTargetDocument(Document document, String label) {
+        throw new UnsupportedOperationException();
+    }
+
 }

@@ -48,7 +48,7 @@ public class SQLComplexProperty extends SQLBaseProperty implements
 
     private static final Log log = LogFactory.getLog(SQLComplexProperty.class);
 
-    private final Node node;
+    private Node node;
 
     protected final SQLSession session;
 
@@ -76,6 +76,10 @@ public class SQLComplexProperty extends SQLBaseProperty implements
      */
     protected Node getHierarchyNode() {
         return node;
+    }
+
+    protected void setHierarchyNode(Node node) {
+        this.node = node;
     }
 
     /*

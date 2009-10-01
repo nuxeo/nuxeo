@@ -24,6 +24,8 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentVersionProxy;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
 
@@ -37,7 +39,7 @@ public class SQLDocumentProxy extends SQLDocumentVersion implements
 
     private final Node proxyNode;
 
-    private final SQLDocumentVersion version;
+    private SQLDocumentVersion version;
 
     protected SQLDocumentProxy(Node proxyNode, Node versionNode,
             ComplexType type, SQLSession session, boolean readonly)
@@ -53,6 +55,22 @@ public class SQLDocumentProxy extends SQLDocumentVersion implements
 
     public Document getTargetDocument() {
         return version;
+    }
+
+    public void setTargetDocument(Document document, String label) {
+        try {
+            Node node = ((SQLDocument) document).getHierarchyNode();
+            Document versionDocument = session.getVersionByLabel(node, label);
+            Node versionNode = ((SQLDocument) versionDocument).getHierarchyNode();
+            super.setHierarchyNode(versionNode);
+            version = new SQLDocumentVersion(versionNode, version.getType(), session, true);
+            proxyNode.setSingleProperty(Model.PROXY_TARGET_PROP, versionNode.getId());
+            proxyNode.setSingleProperty(Model.PROXY_VERSIONABLE_PROP, node.getId());
+        } catch (DocumentException e) {
+            throw new UnsupportedOperationException();
+        } catch (StorageException e) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     public DocumentVersion getTargetVersion() {

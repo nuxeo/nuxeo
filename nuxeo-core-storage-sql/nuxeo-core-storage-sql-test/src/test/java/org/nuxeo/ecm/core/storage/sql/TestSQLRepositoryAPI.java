@@ -2867,6 +2867,38 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
     }
 
+    public void testUpdatePublishedDocument() throws Exception {
+        DocumentModel root = session.getRootDocument();
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
+                "proxy_test", "File");
+
+        doc = session.createDocument(doc);
+        doc.setProperty("dublincore", "title", "the title");
+        doc = session.saveDocument(doc);
+
+        // create folder to hold proxies
+        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
+                "folder", "Folder");
+        folder = session.createDocument(folder);
+        session.save();
+        folder = session.getDocument(folder.getRef());
+
+        // publishDocument API
+        DocumentModel proxy = session.publishDocument(doc, folder);
+        session.save();
+        assertEquals(1, session.getChildrenRefs(folder.getRef(), null).size());
+        assertEquals("the title", proxy.getProperty("dublincore", "title"));
+        assertEquals("the title", doc.getProperty("dublincore", "title"));
+        assertTrue(proxy.isProxy());
+
+        // republish a proxy
+        DocumentModel proxy2 = session.publishDocument(doc, folder);
+        session.save();
+        assertTrue(proxy2.isProxy());
+        assertEquals(1, session.getChildrenRefs(folder.getRef(), null).size());
+        assertEquals(proxy.getId(), proxy2.getId());
+    }
+
     public void testImport() throws Exception {
         DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
         folder.setProperty("dublincore", "title", "the title");

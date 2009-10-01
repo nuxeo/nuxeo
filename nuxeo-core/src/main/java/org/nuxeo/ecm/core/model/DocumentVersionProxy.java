@@ -38,6 +38,11 @@ public interface DocumentVersionProxy extends Document {
     Document getTargetDocument() throws DocumentException;
 
     /**
+     * Sets the source document (not the version) to which this proxy points.
+     */
+    void setTargetDocument(Document doc, String label);
+
+    /**
      * Updates this proxy to point to the base version.
      * <p>
      * If the node is already pointing to the base version does nothing.
