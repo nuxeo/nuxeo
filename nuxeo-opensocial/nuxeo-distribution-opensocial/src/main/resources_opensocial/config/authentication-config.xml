@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.opensocial.auth.config">
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="chain">
+
+    <authenticationChain>
+      <plugins>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>FORM_AUTH</plugin>
+        <plugin>WEBENGINE_FORM_AUTH</plugin>
+        <plugin>ANONYMOUS_AUTH</plugin>
+        <plugin>WEBSERVICES_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
+    point="userManager">
+
+    <userManager class="org.nuxeo.ecm.platform.usermanager.UserManagerImpl">
+
+
+      <defaultGroup>members</defaultGroup>
+      <users>
+        <anonymousUser id="Invité">
+          <property name="firstName">Utilisateur</property>
+          <property name="lastName">Anonyme</property>
+        </anonymousUser>
+      </users>
+    </userManager>
+
+  </extension>
+</component>
+

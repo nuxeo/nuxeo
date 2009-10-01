@@ -1,0 +1,97 @@
+<component name="org.nuxeo.opensocial.service.contrib.test">
+
+
+
+
+
+  <extension target="org.nuxeo.opensocial.service" point="modules">
+
+    <!-- This replaces the shindig.properties -->
+    <propModule name="properties">
+
+      <!-- Location of feature manifests (comma separated) -->
+      <property name="shindig.features.default">res://features/features.txt
+      </property>
+
+      <!--  Location of container configurations (comma separated) -->
+      <property name="shindig.containers.default">res://containers/default/container.js
+      </property>
+
+      <!-- A file containing blacklisted gadgets. -->
+      <property name="shindig.blacklist.file" />
+
+      <!--  OAuth confiugration  -->
+      <property name="shindig.oauth.state-key" />
+      <property name="shindig.signing.key-name">lm-shindig</property>
+      <property name="shindig.signing.key-file">
+        res://openssl_key_pk8.pem</property>
+
+      <!--
+        If enabled here, configuration values can be found in container
+        configuration files.
+      -->
+      <property name="shindig.locked-domain.enabled">false</property>
+
+      <!-- TODO: This needs to be moved to container configuration. -->
+      <property name="shindig.content-rewrite.include-urls">.*</property>
+      <property name="shindig.content-rewrite.exclude-urls" />
+      <property name="shindig.content-rewrite.include-tags">link,script,embed,img,style
+      </property>
+      <property name="shindig.content-rewrite.expires">86400</property>
+      <property name="shindig.content-rewrite.proxy-url">http://localhost:8080/gadgets/proxy?url=
+      </property>
+      <property name="shindig.content-rewrite.concat-url">http://localhost:8080/gadgets/concat?
+      </property>
+
+      <!--
+        These values provide default TTLs for HTTP responses that don't use
+        caching headers.
+      -->
+      <property name="shindig.cache.http.defaultTtl">3600000</property>
+      <property name="shindig.cache.http.negativeCacheTtl">60000</property>
+
+      <!--
+        A default refresh interval for XML files, since there is no natural
+        way for developers to specify this value, and most HTTP responses
+        don't include good cache control headers.
+      -->
+      <property name="shindig.cache.xml.refreshInterval">300000</property>
+
+      <!--
+        Add entries in the form shindig.cache.lru.<name>.capacity to specify
+        capacities for different caches when using the LruCacheProvider. It
+        is highly recommended that the EhCache implementation be used
+        instead of the LRU cache.
+      -->
+      <property name="shindig.cache.lru.default.capacity">1000</property>
+      <property name="shindig.cache.lru.gadgetSpecs.capacity">1000</property>
+      <property name="shindig.cache.lru.messageBundles.capacity">1000</property>
+      <property name="shindig.cache.lru.httpResponses.capacity">10000</property>
+
+
+      <property name="shindig.cache.ehcache.config">
+        res://org/apache/shindig/common/cache/ehcache/ehcacheConfig.xml
+      </property>
+      <property name="shindig.allowUnauthenticated">false</property>
+      <property name="shindig.cache.ehcache.jmx.enabled">true</property>
+      <property name="shindig.cache.ehcache.jmx.stats">true</property>
+    </propModule>
+
+    <module name="defaultGuice"
+      class="org.apache.shindig.gadgets.DefaultGuiceModule" />
+
+    <module name="LMGadgetFactoryModule"
+      class="org.nuxeo.opensocial.shindig.gadgets.NXGadgetSpecFactoryModule" />
+
+    <module name="authModule"
+      class="org.apache.shindig.gadgets.servlet.AuthenticationModule" />
+    <module name="OAuthModule"
+      class="org.apache.shindig.gadgets.oauth.OAuthModule" />
+    <module name="EhCacheModule"
+      class="org.apache.shindig.common.cache.ehcache.EhCacheModule" />
+
+
+
+  </extension>
+
+</component>

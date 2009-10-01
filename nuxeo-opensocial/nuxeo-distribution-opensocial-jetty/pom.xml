@@ -1,0 +1,361 @@
+<?xml version="1.0"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.leroymerlin.corp.fr.nuxeo.portal
+	</groupId>
+	<artifactId>nuxeo-distribution-opensocial-jetty
+	</artifactId>
+	<packaging>pom</packaging>
+	<name>Nuxeo Opensocial Distribution :: Packaging for Jetty</name>
+	<version>2.0-SNAPSHOT</version>
+
+
+	<properties>
+		<nuxeo.common.version>1.5.1-SNAPSHOT
+		</nuxeo.common.version>
+		<nuxeo.runtime.version>1.5.1-SNAPSHOT
+		</nuxeo.runtime.version>
+		<nuxeo.core.version>1.5.1-SNAPSHOT</nuxeo.core.version>
+		<nuxeo.platform.version>5.2.1-SNAPSHOT
+		</nuxeo.platform.version>
+		<nuxeo.webengine.version>5.2.1-SNAPSHOT
+		</nuxeo.webengine.version>
+		<nuxeo.theme.version>5.2.1-SNAPSHOT
+		</nuxeo.theme.version>
+		<shindig.version>1.0-incubating</shindig.version>
+
+    <nuxeo.opensocial.version>1.0-SNAPSHOT</nuxeo.opensocial.version>
+    <lm-projects-version>2.0-SNAPSHOT</lm-projects-version>
+  </properties>
+
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.nuxeo.ecm.platform</groupId>
+				<artifactId>nuxeo-server-template</artifactId>
+				<version>${nuxeo.webengine.version}
+				</version>
+				<type>zip</type>
+			</dependency>
+
+			<dependency>
+				<groupId>com.thoughtworks.xstream</groupId>
+				<artifactId>xstream</artifactId>
+				<version>1.3.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cssparser</groupId>
+				<artifactId>cssparser</artifactId>
+				<version>0.9.4-fix</version>
+			</dependency>
+
+			<dependency>
+				<groupId>net.sf.ehcache</groupId>
+				<artifactId>ehcache</artifactId>
+				<version>1.4.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.shindig</groupId>
+				<artifactId>shindig-common</artifactId>
+				<version>${shindig.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+
+
+	<dependencies>
+		<dependency>
+			<groupId>org.nuxeo.opensocial</groupId>
+			<artifactId>nuxeo-spaces-api</artifactId>
+			<version>${nuxeo.opensocial.version}
+			</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.nuxeo.opensocial</groupId>
+			<artifactId>nuxeo-spaces-core</artifactId>
+			<version>${nuxeo.opensocial.version}
+			</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.nuxeo.opensocial</groupId>
+			<artifactId>nuxeo-webengine-spaces</artifactId>
+			<version>${nuxeo.opensocial.version}
+			</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.nuxeo.opensocial</groupId>
+			<artifactId>nuxeo-spaces-web</artifactId>
+			<version>${nuxeo.opensocial.version}
+			</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.nuxeo.opensocial</groupId>
+			<artifactId>nuxeo-webengine-gadgets
+			</artifactId>
+			<version>${nuxeo.opensocial.version}
+			</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.nuxeo.opensocial</groupId>
+			<artifactId>nuxeo-opensocial-gadgets-core
+			</artifactId>
+			<version>${nuxeo.opensocial.version}
+			</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.nuxeo.opensocial</groupId>
+			<artifactId>nuxeo-opensocial-container
+			</artifactId>
+			<version>${nuxeo.opensocial.version}
+			</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.nuxeo.opensocial</groupId>
+			<artifactId>nuxeo-opensocial-container-space-config
+			</artifactId>
+			<version>${nuxeo.opensocial.version}
+			</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.nuxeo.opensocial</groupId>
+			<artifactId>nuxeo-opensocial-server
+			</artifactId>
+			<version>${nuxeo.opensocial.version}
+			</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.nuxeo.opensocial</groupId>
+			<artifactId>nuxeo-opensocial-features
+			</artifactId>
+			<version>${nuxeo.opensocial.version}
+			</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.nuxeo.ecm.platform</groupId>
+			<artifactId>nuxeo-platform-directory-ldap
+			</artifactId>
+			<version>${nuxeo.platform.version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.nuxeo.opensocial</groupId>
+			<artifactId>nuxeo-opensocial-gadgets
+			</artifactId>
+			<version>${nuxeo.opensocial.version}
+			</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.nuxeo.opensocial</groupId>
+			<artifactId>nuxeo-webengine-dashboard
+			</artifactId>
+			<version>${nuxeo.platform.version}</version>
+		</dependency>
+
+	</dependencies>
+	<build>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-nuxeo-plugin</artifactId>
+				<version>1.0.10</version>
+				<extensions>true</extensions>
+				<executions>
+					<execution>
+						<id>assemble-app</id>
+						<phase>package</phase>
+						<goals>
+							<goal>assembly</goal>
+						</goals>
+						<configuration>
+							<runPreprocessor>false</runPreprocessor>
+							<format>directory,zip</format>
+							<zipRoot>lm-portal</zipRoot>
+							<outputDirectory>target</outputDirectory>
+							<descriptor>${basedir}/src/main/assemble/assembly.xml
+							</descriptor>
+							<targetFile>${project.artifactId}-${project.version}
+							</targetFile>
+						</configuration>
+					</execution>
+					<execution>
+						<id>attach-app</id>
+						<phase>package</phase>
+						<goals>
+							<goal>attach</goal>
+						</goals>
+						<configuration>
+							<file>
+								${build.directory}/${project.artifactId}-${project.version}.zip
+							</file>
+							<type>zip</type>
+							<targetFile>${project.artifactId}
+							</targetFile>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+
+	<profiles>
+		<profile>
+			<id>rpm</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+				<file>
+					<exists>/usr/bin/rpmbuild</exists>
+				</file>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>rpm-maven-plugin</artifactId>
+						<version>2.0-beta-2</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>attached-rpm</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<copyright>2009, Leroy Merlin</copyright>
+							<distribution>Leroy Merlin 2009</distribution>
+							<group>Application/Portal</group>
+							<packager>Damien METZLER</packager>
+							<prefix>/opt</prefix>
+							<mappings>
+								<mapping>
+									<directory>/opt/lm-portal</directory>
+									<filemode>755</filemode>
+									<username>root</username>
+									<groupname>root</groupname>
+
+									<sources>
+										<source>
+											<location>target/${project.artifactId}-${project.version}
+											</location>
+										</source>
+									</sources>
+								</mapping>
+								<mapping>
+									<directory>/etc/sysconfig</directory>
+									<directoryIncluded>false</directoryIncluded>
+									<filemode>755</filemode>
+									<username>root</username>
+									<groupname>root</groupname>
+									<sources>
+										<source>
+											<location>src/main/scripts/nxportal
+											</location>
+										</source>
+									</sources>
+								</mapping>
+								<mapping>
+									<directory>/etc/init.d</directory>
+									<directoryIncluded>false</directoryIncluded>
+									<filemode>755</filemode>
+									<username>root</username>
+									<groupname>root</groupname>
+									<sources>
+										<source>
+											<location>src/main/scripts/lmportal
+											</location>
+										</source>
+									</sources>
+								</mapping>
+							</mappings>
+							<postinstallScript>src/main/scripts/postinstall
+							</postinstallScript>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+
+		<profile>
+			<id>deploy-rpm</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>installrpm</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>bash</executable>
+									<arguments>
+										<argument>${basedir}/src/main/scripts/deploy.sh
+										</argument>
+										<!-- directory where to find RPM artifact -->
+										<argument>${basedir}/target/rpm/RPMS/noarch/
+										</argument>
+										<!-- the host to deploy to. maybe localhost -->
+										<argument>${lmportal.deploy.host}
+										</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+				</plugins>
+			</build>
+		</profile>
+
+	</profiles>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>public</id>
+			<url>http://maven.nuxeo.org/public</url>
+			<name>Nuxeo virtual release repository</name>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>public-snapshot</id>
+			<url>http://maven.nuxeo.org/public-snapshot
+			</url>
+			<name>Nuxeo virtual snapshot repository</name>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+</project>

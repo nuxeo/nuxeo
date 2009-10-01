@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.opensocial.container.config">
+
+  <implementation class="org.nuxeo.opensocial.container.component.PortalComponent" />
+
+  <extension-point name="portalConfig">
+    <documentation>
+    </documentation>
+    <object class="org.nuxeo.opensocial.container.component.PortalConfig"/>
+  </extension-point>
+</component>

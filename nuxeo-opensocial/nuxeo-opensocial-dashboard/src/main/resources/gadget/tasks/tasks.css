@@ -1,0 +1,28 @@
+.nxcategory-title {
+	font-size: 100%;
+	display: block;
+	color: navy;
+}
+
+.nxcategory-wrapper {
+    border: 1px solid #000000;
+    font-family: Arial,Verdana, sans-serif;
+    display: block;
+    margin-bottom: 3px;
+}
+
+.nxcategory {
+    display: block;
+}
+
+.nxcategory-item{
+    font-size:80%;
+}
+
+a.nxcategory-toggle {
+    background-repeat:no-repeat;
+    width:16px;
+    height:16px;
+    background-image:url(small-right.gif);
+    border-style: none;
+}

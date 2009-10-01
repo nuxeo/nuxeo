@@ -1,0 +1,201 @@
+<?xml version="1.0"?>
+<project>
+  <parent>
+    <groupId>org.nuxeo.opensocial</groupId>
+    <artifactId>nuxeo-opensocial-parent
+    </artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.nuxeo.opensocial</groupId>
+  <artifactId>nuxeo-opensocial-container
+  </artifactId>
+  <name>Nuxeo OpenSocial :: Container</name>
+  <description>Container de gadget GWT</description>
+  <version>1.0-SNAPSHOT</version>
+  <!--  include pluginRepository and repository for GWT-Maven -->
+  <pluginRepositories>
+    <pluginRepository>
+      <id>gwt-maven-plugins</id>
+      <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/
+      </url>
+    </pluginRepository>
+  </pluginRepositories>
+  <repositories>
+    <repository>
+      <id>gwt-maven</id>
+      <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/
+      </url>
+    </repository>
+    <repository>
+      <id>gwt-google-apis</id>
+      <url>http://repo1.maven.org/maven2/
+      </url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <!--  GWT deps (from central repo) -->
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-servlet</artifactId>
+      <version>${gwtVersion}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt.google-apis
+      </groupId>
+      <artifactId>gwt-gadgets</artifactId>
+      <version>1.0.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>${gwtVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-dev</artifactId>
+      <version>${gwtVersion}</version>
+      <classifier>${platform}</classifier>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-web-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.shindig</groupId>
+      <artifactId>shindig-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.shindig</groupId>
+      <artifactId>shindig-gadgets</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.gwtext</groupId>
+      <artifactId>gwtext</artifactId>
+      <version>2.0.5</version>
+    </dependency>
+
+
+    <!--  test -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.nuxeo</groupId>
+      <artifactId>nuxeo-test-util</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}/
+              </outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/.gwt-tmp/**</exclude>
+          </excludes>
+          <includes>
+            <include>**/**/</include>
+          </includes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/GwtTest*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+
+    </plugins>
+  </build>
+
+  <!--  profiles (with activation per platform) -->
+  <profiles>
+    <profile>
+      <id>gwt-dev-windows</id>
+      <properties>
+        <platform>windows</platform>
+      </properties>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+        <os>
+          <family>Windows</family>
+        </os>
+      </activation>
+    </profile>
+    <profile>
+      <id>gwt-dev-mac</id>
+      <properties>
+        <platform>mac</platform>
+      </properties>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+    </profile>
+    <profile>
+      <id>gwt-dev-linux</id>
+      <properties>
+        <platform>linux</platform>
+      </properties>
+      <activation>
+        <os>
+          <name>Linux</name>
+        </os>
+      </activation>
+    </profile>
+  </profiles>
+</project>

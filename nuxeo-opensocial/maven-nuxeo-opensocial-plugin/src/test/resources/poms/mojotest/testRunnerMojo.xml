@@ -1,0 +1,19 @@
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.nuxeo.opensocial</groupId>
+				<artifactId>maven-nuxeo-opensocial-plugin</artifactId>
+				<configuration>
+					<bundles>
+						<bundle>
+							org.nuxeo.opensocial.test.bundle
+						</bundle>
+					</bundles>
+				</configuration>
+
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

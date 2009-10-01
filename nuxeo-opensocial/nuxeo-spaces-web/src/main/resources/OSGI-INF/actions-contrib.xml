@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.spaces.document.actions"
+  version="1.0">
+
+  <require>org.nuxeo.ecm.platform.actions.ActionService
+  </require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="TAB_DASH" link="/incl/tabs/spacecontainer.xhtml"
+      enabled="true" order="10" label="label.document.space.dashboard"
+      icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <category>tabs</category>
+      <filter id="view_dashboard">
+        <rule grant="true">
+          <type>Space</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="TAB_CONTENT">
+      <filter id="dontview_contentofdashboard">
+        <rule grant="false">
+          <type>Space</type>
+        </rule>
+      </filter>
+    </action>
+
+  </extension>
+</component>
