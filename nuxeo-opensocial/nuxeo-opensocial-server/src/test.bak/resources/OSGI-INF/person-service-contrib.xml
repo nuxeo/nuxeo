@@ -1,6 +1,0 @@
-<component name="org.nuxeo.opensocial.person.service.customisation">
-  <extension target="org.nuxeo.opensocial.service.person" point="principalConverter">
-
-    <principalConverter class="org.nuxeo.opensocial.service.test.TestPersonConverter"/>
-  </extension>
-</component>

@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo Platform OAuth service tests
-Bundle-SymbolicName: org.nuxeo.ecm.platform.oauth.test;singleton=true
-Bundle-Version: 1.0.0
-Bundle-Vendor: Leroy Merlin

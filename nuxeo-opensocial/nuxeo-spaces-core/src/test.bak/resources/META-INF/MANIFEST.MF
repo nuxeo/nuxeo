@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: lm-portal-publication
-Bundle-SymbolicName: com.leroymerlin.corp.fr.nuxeo.portal.spaces.core.test;singleton:=true
-Bundle-Version: 1.0.0
-Bundle-Vendor: Leroy Merlin
-Provide-Package: com.leroymerlin.corp.fr.nuxeo.portal.spaces.core.test
-Require-Bundle: org.nuxeo.ecm.core

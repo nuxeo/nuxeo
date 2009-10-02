@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: opensocial-container
-Bundle-SymbolicName: org.nuxeo.opensocial.container.test
