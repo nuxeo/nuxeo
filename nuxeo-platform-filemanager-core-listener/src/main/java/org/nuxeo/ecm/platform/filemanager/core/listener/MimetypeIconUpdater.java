@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.Type;
@@ -67,7 +68,7 @@ public class MimetypeIconUpdater implements EventListener {
 
     protected static final String OCTET_STREAM_MT = "application/octet-stream";
 
-    public final BlobExtractor blobExtractor = new BlobExtractor();
+    public final BlobsExtractor blobExtractor = new BlobsExtractor();
 
     MimetypeRegistry mimetypeService = null;
 
@@ -114,7 +115,7 @@ public class MimetypeIconUpdater implements EventListener {
      * Recursively call updateBlobProperty on every dirty blob embedded as
      * direct children or contained in one of the container children.
      *
-     * @deprecated now we use {@link BlobExtractor} that cache path fields.
+     * @deprecated now we use {@link BlobsExtractor} that cache path fields.
      */
     @Deprecated
     public void recursivelyUpdateBlobs(DocumentModel doc,

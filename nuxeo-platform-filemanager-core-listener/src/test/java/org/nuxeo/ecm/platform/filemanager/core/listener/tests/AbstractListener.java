@@ -23,24 +23,18 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 
-public abstract class AbstractListenerTest extends SQLRepositoryTestCase {
+public class AbstractListener extends RepositoryOSGITestCase {
 
      @Override
      public void setUp() throws Exception {
          super.setUp();
-         openSession();
-     }
-
-     @Override
-     public void tearDown() throws Exception {
-         closeSession();
-         super.tearDown();
+         openRepository();
      }
 
      protected DocumentModel createFileDocument(boolean setMimeType) throws ClientException {
-         DocumentModel fileDoc = session.createDocumentModel("/", "testFile", "File");
+         DocumentModel fileDoc = getCoreSession().createDocumentModel("/", "testFile", "File");
          fileDoc.setProperty("dublincore", "title", "TestFile");
 
          Blob blob = new StringBlob("SOMEDUMMYDATA");
@@ -50,10 +44,10 @@ public abstract class AbstractListenerTest extends SQLRepositoryTestCase {
          }
          fileDoc.setProperty("file", "content", blob);
 
-         fileDoc = session.createDocument(fileDoc);
+         fileDoc = getCoreSession().createDocument(fileDoc);
 
-         session.saveDocument(fileDoc);
-         session.save();
+         getCoreSession().saveDocument(fileDoc);
+         getCoreSession().save();
 
          return fileDoc;
      }

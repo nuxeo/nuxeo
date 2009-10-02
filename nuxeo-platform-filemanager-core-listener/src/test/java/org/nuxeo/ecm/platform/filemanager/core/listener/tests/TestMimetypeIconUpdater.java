@@ -22,7 +22,7 @@ package org.nuxeo.ecm.platform.filemanager.core.listener.tests;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
-public class TestMimetypeIconUpdater extends AbstractListenerTest {
+public class TestMimetypeIconUpdater extends AbstractListener {
 
     @Override
     public void setUp() throws Exception {
