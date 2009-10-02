@@ -282,9 +282,7 @@
 
   <scm>
     <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-dm</connection>
-    <developerConnection>
-      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-dm
-    </developerConnection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-dm</developerConnection>
     <url>http://hg.nuxeo.org/nuxeo/nuxeo-dm</url>
   </scm>
 
