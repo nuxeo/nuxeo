@@ -32,6 +32,8 @@ import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.db.GraphSession;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
+import org.jbpm.persistence.db.DbPersistenceServiceFactory;
+import org.jbpm.svc.Services;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -75,24 +77,43 @@ public class JbpmServiceImpl implements JbpmService {
     public Serializable executeJbpmOperation(JbpmOperation operation)
             throws NuxeoJbpmException {
         JbpmContext context = getContext();
-        return operation.run(context);
+        Serializable result = null;
+        try {
+            result = operation.run(context);
+        } finally {
+            if (isTransactionEnabled(context)) {
+                context.close();
+            }
+        }
+        return result;
     }
 
-    // we open the first call in the thread
-    // and close it on the session complete of hibernate.
+    // 2 situations:
+    // - first, you have an outside transaction (then isTransactionEnable is false), you open the context
+    //   on first call of the thread and close it when the transaction is commited.
+    // - second, you don't have an outside transaction, jbpm uses a jdbctransaction and isTransactionEnable is true.
+    //   we open and close the context for each call.
     protected JbpmContext getContext() {
         JbpmContext context = contexts.get();
         if (context == null || !context.getSession().isConnected()) {
             context = configuration.createJbpmContext();
-            contexts.set(context);
-            context.getSession().getTransaction().registerSynchronization(
-                    new JbpmSynchronization(context));
+            if (!isTransactionEnabled(context)) {
+                contexts.set(context);
+                // context will be closed by the jbpm synchronization
+                context.getSession().getTransaction().registerSynchronization(
+                        new JbpmSynchronization(context));
+            }
         }
         return context;
     }
 
     public JbpmConfiguration getConfiguration() {
         return configuration;
+    }
+
+    public boolean isTransactionEnabled(JbpmContext context) {
+        DbPersistenceServiceFactory factory = ((DbPersistenceServiceFactory) context.getServiceFactory(Services.SERVICENAME_PERSISTENCE));
+        return factory.isTransactionEnabled();
     }
 
     protected void setConfiguration(JbpmConfiguration configuration) {
@@ -351,6 +372,7 @@ public class JbpmServiceImpl implements JbpmService {
                 for (ProcessInstance pi : list) {
                     if (getPermission(pi, JbpmSecurityPolicy.Action.read, dm,
                             user)) {
+                        pi.getProcessDefinition();
                         result.add(pi);
                         pi.getContextInstance().getVariables().size();
                     }
@@ -358,9 +380,21 @@ public class JbpmServiceImpl implements JbpmService {
                 if (jbpmListFilter != null) {
                     result = jbpmListFilter.filter(context, dm, result, user);
                 }
+                eagerLoadProcessInstances(result);
                 return result;
             }
+
         });
+    }
+
+    private void eagerLoadProcessInstances(
+            ArrayList<ProcessInstance> pis) {
+        for(ProcessInstance pi : pis) {
+            pi.getProcessDefinition().getName();
+            for(Object ti : pi.getTaskMgmtInstance().getTaskInstances()) {
+                ((TaskInstance)ti).getName();
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
