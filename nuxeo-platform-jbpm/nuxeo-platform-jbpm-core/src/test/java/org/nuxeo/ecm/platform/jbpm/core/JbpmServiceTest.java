@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jbpm.JbpmContext;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
@@ -32,7 +33,9 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.platform.jbpm.JbpmOperation;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
+import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 import org.nuxeo.ecm.platform.jbpm.core.service.JbpmServiceImpl;
 import org.nuxeo.ecm.platform.jbpm.test.JbpmTestConstants;
@@ -143,8 +146,15 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         tasks2 = service.getCurrentTaskInstances(administratorList, null);
         assertEquals(tasks.size(), tasks.size());
         assertEquals(1, tasks.size());
-
-        tasks.get(0).cancel();
+        final long cancelledTi = tasks.get(0).getId();
+        service.executeJbpmOperation(new JbpmOperation() {
+            public Serializable run(JbpmContext context) throws NuxeoJbpmException {
+                TaskInstance ti = context.getTaskInstance(cancelledTi);
+                ti.cancel();
+                return null;
+            }
+        });
+        //tasks.get(0).cancel();
         tasks = service.getCurrentTaskInstances(administrator, null);
         assertEquals(0, tasks.size());
 
@@ -180,7 +190,8 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
                         (Serializable) participants), null);
         List<TaskInstance> tasks = service.getTaskInstances(dm, administrator,
                 null);
-        tasks.get(0).end();
+        service.endTask(tasks.get(0).getId(), null, null, null, null, null);
+        //tasks.get(0).end();
         tasks = service.getTaskInstances(dm, administrator, null);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
