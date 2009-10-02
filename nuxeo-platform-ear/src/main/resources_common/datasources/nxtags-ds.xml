@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <datasources>
-  <local-tx-datasource>
+  <xa-datasource>
     <jndi-name>nxtags</jndi-name>
-    <connection-url>
-      jdbc:h2:${jboss.server.data.dir}/h2/nuxeo;AUTO_SERVER=true;create=true
-    </connection-url>
-    <driver-class>org.h2.Driver</driver-class>
-    <user-name>sa</user-name>
-    <password></password>
-  </local-tx-datasource>
+    <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
+    <xa-datasource-property name="URL">jdbc:h2:${jboss.server.data.dir}/h2/nuxeo;AUTO_SERVER=true;create=true</xa-datasource-property>
+    <xa-datasource-property name="User">sa</xa-datasource-property>
+    <xa-datasource-property name="Password"></xa-datasource-property>
+    <track-connection-by-tx/>
+  </xa-datasource>
 </datasources>
