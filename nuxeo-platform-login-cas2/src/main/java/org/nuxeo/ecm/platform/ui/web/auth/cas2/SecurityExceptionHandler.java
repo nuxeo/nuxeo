@@ -20,24 +20,24 @@ import org.nuxeo.runtime.api.Framework;
 public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
 
     public static final String CAS_REDIRECTION_URL = "/cas2.jsp";
-    
+
     public static final String COOKIE_NAME_LOGOUT_URL = "cookie.name.logout.url";
 
     Cas2Authenticator cas2Authenticator = null;
-    
+
     public SecurityExceptionHandler() throws Exception {
         super();
     }
-    
+
+    @Override
     public void handleException(HttpServletRequest request,
             HttpServletResponse response, Throwable t) throws IOException,
             ServletException {
-            
-        
+
         Throwable unwrappedException = unwrapException(t);
-        
-        if ((! ExceptionHelper.isSecurityError(unwrappedException))
-                && (! response.containsHeader(NuxeoAuthenticationFilter.SSO_INITIAL_URL_REQUEST))) {
+
+        if ((!ExceptionHelper.isSecurityError(unwrappedException))
+                && (!response.containsHeader(NuxeoAuthenticationFilter.SSO_INITIAL_URL_REQUEST))) {
             super.handleException(request, response, t);
             return;
         }
@@ -45,68 +45,68 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
         response.resetBuffer();
 
         String urlToReach = getURLToReach(request);
-        Cookie cookieUrlToReach = new Cookie(NuxeoAuthenticationFilter.SSO_INITIAL_URL_REQUEST, urlToReach);
+        Cookie cookieUrlToReach = new Cookie(
+                NuxeoAuthenticationFilter.SSO_INITIAL_URL_REQUEST, urlToReach);
         cookieUrlToReach.setPath("/");
         cookieUrlToReach.setMaxAge(60);
         response.addCookie(cookieUrlToReach);
-        
+
         if (!response.isCommitted()) {
-            request.getRequestDispatcher(CAS_REDIRECTION_URL).forward(request, response);
+            request.getRequestDispatcher(CAS_REDIRECTION_URL).forward(request,
+                    response);
         }
         FacesContext.getCurrentInstance().responseComplete();
-        
+
     }
-    
+
     protected Cas2Authenticator getCasAuthenticator() throws ClientException {
-        
+
         if (cas2Authenticator == null) {
-            
+
             PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
                     PluggableAuthenticationService.NAME);
-            
+
             if (service == null) {
                 throw new ClientException(
                         "Can't initialize Nuxeo Pluggable Authentication Service");
             }
-            
+
             cas2Authenticator = (Cas2Authenticator) service.getPlugin("CAS2_AUTH");
-            
+
             if (cas2Authenticator == null) {
-                throw new ClientException(
-                        "Can't get CAS authenticator");
+                throw new ClientException("Can't get CAS authenticator");
             }
-            
-            
+
         }
         return cas2Authenticator;
     }
-    
+
     protected String getURLToReach(HttpServletRequest request) {
         DocumentView docView = (DocumentView) request.getAttribute(URLPolicyService.DOCUMENT_VIEW_REQUEST_KEY);
-        
+
         if (docView != null) {
-            String urlToReach = getURLPolicyService().getUrlFromDocumentView(docView, "");
+            String urlToReach = getURLPolicyService().getUrlFromDocumentView(
+                    docView, "");
 
             if (urlToReach != null) {
                 return urlToReach;
             }
         }
-        return request.getRequestURL().toString() + "?" + request.getQueryString();
+        return request.getRequestURL().toString() + "?"
+                + request.getQueryString();
     }
-    
-    
+
     protected URLPolicyService urlService = null;
-    
+
     protected URLPolicyService getURLPolicyService() {
-        if (urlService==null) {
+        if (urlService == null) {
             try {
                 urlService = Framework.getService(URLPolicyService.class);
             } catch (Exception e) {
-                log.error("Could not retrieve the URLPolicyService",e);
+                log.error("Could not retrieve the URLPolicyService", e);
             }
         }
         return urlService;
     }
-
 
 }

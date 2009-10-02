@@ -35,20 +35,21 @@ import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Anonymous authenticator that redirect logout to CAS server authentication
- * to connect to nuxeo.
- * 
+ * Anonymous authenticator that redirect logout to CAS server authentication to
+ * connect to nuxeo.
+ *
  * @author Benjamin JALON
  */
 public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
-    
+
     protected Log log = LogFactory.getLog(AnonymousAuthenticatorForCAS2.class);
 
+    @Override
     public Boolean handleLogout(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
-        
+
         boolean isRedirectionToCas = false;
-        
+
         Cookie[] cookies = httpRequest.getCookies();
         for (Cookie cookie : cookies) {
             if (NuxeoAuthenticationFilter.SSO_INITIAL_URL_REQUEST.equals(cookie.getName())) {
@@ -59,7 +60,8 @@ public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
 
         if (isRedirectionToCas) {
 
-            String authURL = getCas2Authenticator().getServiceURL(httpRequest, Cas2Authenticator.LOGIN_ACTION);
+            String authURL = getCas2Authenticator().getServiceURL(httpRequest,
+                    Cas2Authenticator.LOGIN_ACTION);
             String appURL = getCas2Authenticator().getAppURL(httpRequest);
             String urlToReach = authURL + "?service=" + appURL;
 
@@ -71,14 +73,14 @@ public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
                 return false;
             }
         }
-        
+
         return super.handleLogout(httpRequest, httpResponse);
     }
 
     protected Cas2Authenticator casAuthenticator = null;
-    
+
     public Cas2Authenticator getCas2Authenticator() {
-        
+
         if (casAuthenticator == null) {
             PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
                     PluggableAuthenticationService.NAME);
@@ -94,9 +96,8 @@ public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
             }
             casAuthenticator = (Cas2Authenticator) plugin;
         }
-        
+
         return casAuthenticator;
     }
-
 
 }
