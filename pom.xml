@@ -96,6 +96,7 @@
     <jackrabbit.jcr-commons.version>1.5.3</jackrabbit.jcr-commons.version>
     <jackrabbit.core.version>1.5.4</jackrabbit.core.version>
     <jetty.mortbay.version>6.1H.7</jetty.mortbay.version>
+    <shindig.version>1.0-incubating</shindig.version>
   </properties>
 
   <dependencyManagement>
@@ -219,11 +220,11 @@
         <scope>provided</scope>
       </dependency>
       <!-- was used nuxeo-platform-ui-web -->
-<!--      <dependency>-->
-<!--        <groupId>commons-fileupload</groupId>-->
-<!--        <artifactId>commons-fileupload</artifactId>-->
-<!--        <version>1.2</version>-->
-<!--      </dependency>-->
+      <!--      <dependency>-->
+      <!--        <groupId>commons-fileupload</groupId>-->
+      <!--        <artifactId>commons-fileupload</artifactId>-->
+      <!--        <version>1.2</version>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
@@ -233,7 +234,7 @@
       <dependency>
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
-        <version>2.2</version>
+        <version>2.3</version>
         <scope>provided</scope>
       </dependency>
       <!-- used in jboss patch -->
@@ -779,7 +780,8 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>3.8.2</version>
+        <!--        <version>3.8.2</version>-->
+        <version>4.5</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -1014,6 +1016,18 @@
         <classifier>linux</classifier>
       </dependency>
       <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-servlet</artifactId>
+        <version>${gwt.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.gwt.google-apis</groupId>
+        <artifactId>gwt-gadgets</artifactId>
+        <version>1.0.3</version>
+      </dependency>
+
+      <dependency>
         <groupId>commons-httpclient</groupId>
         <artifactId>commons-httpclient</artifactId>
         <version>3.1</version>
@@ -1168,6 +1182,97 @@
         <groupId>org.eclipse.jdt</groupId>
         <artifactId>core</artifactId>
         <version>3.1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>backport-util-concurrent</groupId>
+        <artifactId>backport-util-concurrent</artifactId>
+        <version>3.1</version>
+      </dependency>
+      <dependency>
+        <groupId>rhino</groupId>
+        <artifactId>js</artifactId>
+        <version>1.7R1</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sourceforge.htmlunit</groupId>
+        <artifactId>htmlunit</artifactId>
+        <version>2.4</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sourceforge.htmlunit</groupId>
+        <artifactId>htmlunit-core-js</artifactId>
+        <version>2.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.shindig</groupId>
+        <artifactId>shindig-gadgets</artifactId>
+        <version>${shindig.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.shindig</groupId>
+        <artifactId>shindig-common</artifactId>
+        <version>${shindig.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.shindig</groupId>
+        <artifactId>shindig-social-api</artifactId>
+        <version>${shindig.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.shindig</groupId>
+        <artifactId>shindig-features</artifactId>
+        <version>${shindig.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.guice</groupId>
+        <artifactId>guice</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.gwtext</groupId>
+        <artifactId>gwtext</artifactId>
+        <version>2.0.5</version>
+      </dependency>
+      <dependency>
+        <groupId>org.openqa.selenium.webdriver</groupId>
+        <artifactId>webdriver-htmlunit</artifactId>
+        <version>0.5.609</version>
+      </dependency>
+      <dependency>
+        <groupId>org.openqa.selenium.webdriver</groupId>
+        <artifactId>webdriver-ie</artifactId>
+        <version>0.5.609</version>
+      </dependency>
+      <dependency>
+        <groupId>org.openqa.selenium.webdriver</groupId>
+        <artifactId>webdriver-firefox</artifactId>
+        <version>0.5.609</version>
+      </dependency>
+      <dependency>
+        <groupId>net.oauth</groupId>
+        <artifactId>oauth-core</artifactId>
+        <version>20090121</version>
+      </dependency>
+
+      <!--  Test Scope -->
+      <dependency>
+        <groupId>org.apache.shindig</groupId>
+        <artifactId>shindig-gadgets</artifactId>
+        <version>${shindig.version}</version>
+        <classifier>tests</classifier>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.easymock</groupId>
+        <artifactId>easymockclassextension</artifactId>
+        <version>2.2.2</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>1.6</version>
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -1633,36 +1738,18 @@
             <artifactId>maven-surefire-report-plugin</artifactId>
           </plugin>
           <!--
-          <plugin>
+            <plugin> <groupId>org.codehaus.mojo</groupId>
+            <artifactId>taglist-maven-plugin</artifactId> <configuration> <tags>
+            <tag>@fixme</tag> <tag>FIXME</tag> <tag>@todo</tag> <tag>TODO</tag>
+            <tag>XXX</tag> <tag>REVIEW</tag> </tags> </configuration> </plugin>
+            <plugin> <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId> <configuration>
+            <configLocation>checkstyle.xml</configLocation> </configuration>
+            </plugin> <plugin> <groupId>org.codehaus.mojo</groupId>
+            <artifactId>cobertura-maven-plugin</artifactId> </plugin> <plugin>
             <groupId>org.codehaus.mojo</groupId>
-            <artifactId>taglist-maven-plugin</artifactId>
-            <configuration>
-              <tags>
-                <tag>@fixme</tag>
-                <tag>FIXME</tag>
-                <tag>@todo</tag>
-                <tag>TODO</tag>
-                <tag>XXX</tag>
-                <tag>REVIEW</tag>
-              </tags>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-checkstyle-plugin</artifactId>
-            <configuration>
-              <configLocation>checkstyle.xml</configLocation>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>cobertura-maven-plugin</artifactId>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>jdepend-maven-plugin</artifactId>
-          </plugin>
-           -->
+            <artifactId>jdepend-maven-plugin</artifactId> </plugin>
+          -->
         </plugins>
       </reporting>
     </profile>
