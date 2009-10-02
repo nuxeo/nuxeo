@@ -450,10 +450,14 @@ public class PublishActionsBean extends AbstractPublishActions implements
     public DocumentModel getDocumentModelFor(String path)
             throws ClientException {
         DocumentRef docRef = new PathRef(path);
-        if (documentManager.exists(docRef)) {
+        if (documentManager.exists(docRef) && hasReadRight(path)) {
             return documentManager.getDocument(docRef);
         }
         return null;
+    }
+
+    public boolean hasReadRight(String documentPath) throws ClientException {
+        return documentManager.hasPermission(new PathRef(documentPath), SecurityConstants.READ);
     }
 
     public String getFormattedPath(String path) throws ClientException {
