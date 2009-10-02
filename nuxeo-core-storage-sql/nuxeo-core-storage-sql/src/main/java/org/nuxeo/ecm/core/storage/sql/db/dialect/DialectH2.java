@@ -351,7 +351,8 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
-    public List<String> getPostCreateSqls(Table table) {
+    public List<String> getPostCreateTableSqls(Table table, Model model,
+            Database database) {
         if (table.getName().equals(Model.DESCENDANTS_TABLE_NAME.toUpperCase())) {
             return Arrays.asList("CALL NX_INIT_DESCENDANTS()");
         }

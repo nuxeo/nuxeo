@@ -25,16 +25,21 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
@@ -52,6 +57,8 @@ import org.nuxeo.ecm.core.storage.sql.db.Table;
  * @author Florent Guillaume
  */
 public class DialectPostgreSQL extends Dialect {
+
+    private static final Log log = LogFactory.getLog(DialectPostgreSQL.class);
 
     private static final String DEFAULT_FULLTEXT_ANALYZER = "english";
 
@@ -323,6 +330,11 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
+    public boolean supportsDescendantsTable() {
+        return true;
+    }
+
+    @Override
     public String getInTreeSql(String idColumnName) {
         return String.format("NX_IN_TREE(%s, ?)", idColumnName);
     }
@@ -471,6 +483,7 @@ public class DialectPostgreSQL extends Dialect {
         default:
             throw new AssertionError(model.idGenPolicy);
         }
+        Table ht = database.getTable(model.hierTableName);
         Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
 
         List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
@@ -654,6 +667,157 @@ public class DialectPostgreSQL extends Dialect {
                         + "BEFORE INSERT OR UPDATE ON %s "
                         + "FOR EACH ROW EXECUTE PROCEDURE NX_UPDATE_FULLTEXT()" //
                 , ft.getQuotedName())));
+
+        statements.add(new ConditionalStatement(
+                true, // early
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                "CREATE OR REPLACE FUNCTION NX_DESCENDANTS_CREATE_TRIGGERS() " //
+                        + "RETURNS void " //
+                        + "AS $$ " //
+                        + "  DROP TRIGGER IF EXISTS NX_TRIG_DESC_INSERT ON hierarchy;" //
+                        + "  CREATE TRIGGER NX_TRIG_DESC_INSERT" //
+                        + "    AFTER INSERT ON hierarchy" //
+                        + "    FOR EACH ROW EXECUTE PROCEDURE NX_DESCENDANTS_INSERT();" //
+                        + "  DROP TRIGGER IF EXISTS NX_TRIG_DESC_UPDATE ON hierarchy;" //
+                        + "  CREATE TRIGGER NX_TRIG_DESC_UPDATE" //
+                        + "    AFTER UPDATE ON hierarchy" //
+                        + "    FOR EACH ROW EXECUTE PROCEDURE NX_DESCENDANTS_UPDATE(); " //
+                        + "$$ " //
+                        + "LANGUAGE sql " //
+                        + "VOLATILE " //
+        ));
+
+        statements.add(new ConditionalStatement(
+                true, // early
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                "CREATE OR REPLACE FUNCTION NX_INIT_DESCENDANTS() " //
+                        + "RETURNS void " //
+                        + "AS $$ " //
+                        + "DECLARE" //
+                        + "  curid varchar(36); " //
+                        + "  curparentid varchar(36); " //
+                        + "BEGIN " //
+                        + "  PERFORM NX_DESCENDANTS_CREATE_TRIGGERS(); " //
+                        + "  CREATE TEMP TABLE nxtodo (id varchar(36), parentid varchar(36)) ON COMMIT DROP; " //
+                        + "  CREATE INDEX nxtodo_idx ON nxtodo (id);" //
+                        + "  INSERT INTO nxtodo SELECT id, NULL FROM repositories;" //
+                        + "  TRUNCATE TABLE descendants;" //
+                        + "  LOOP" //
+                        + "    -- get next node in queue\n" //
+                        + "    SELECT id, parentid INTO curid, curparentid FROM nxtodo LIMIT 1;" //
+                        + "    IF NOT FOUND THEN" //
+                        + "      EXIT;" //
+                        + "    END IF;" //
+                        + "    DELETE FROM nxtodo WHERE id = curid;" //
+                        + "    -- add children to queue\n" //
+                        + "    INSERT INTO nxtodo SELECT id, curid FROM hierarchy" //
+                        + "      WHERE parentid = curid and NOT isproperty;" //
+                        + "    IF curparentid IS NULL THEN" //
+                        + "      CONTINUE;" //
+                        + "    END IF;" //
+                        + "    -- process the node\n" //
+                        + "    INSERT INTO descendants (id, descendantid)" //
+                        + "      SELECT id, curid FROM descendants WHERE descendantid = curparentid;" //
+                        + "    INSERT INTO descendants (id, descendantid) VALUES (curparentid, curid);" //
+                        + "  END LOOP;" //
+                        + "END " //
+                        + "$$ " //
+                        + "LANGUAGE plpgsql " //
+                        + "VOLATILE " //
+        ));
+
+        statements.add(new ConditionalStatement(
+                //
+                false, // late
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                "CREATE OR REPLACE FUNCTION NX_DESCENDANTS_INSERT() " //
+                        + "RETURNS trigger " //
+                        + "AS $$ " //
+                        + "BEGIN " //
+                        + "  IF NEW.isproperty THEN" //
+                        + "    RETURN NULL; " //
+                        + "  END IF;" //
+                        + "  IF NEW.parentid IS NULL THEN" //
+                        + "    RETURN NULL; " //
+                        + "  END IF;" //
+                        + "  IF NEW.id IS NULL THEN" //
+                        + "    RAISE EXCEPTION 'Cannot have NULL id'; " //
+                        + "  END IF;" //
+                        + "  INSERT INTO descendants (id, descendantid)" //
+                        + "    SELECT id, NEW.id FROM descendants WHERE descendantid = NEW.parentid;" //
+                        + "  INSERT INTO descendants (id, descendantid) VALUES (NEW.parentid, NEW.id);" //
+                        + "  RETURN NULL; " //
+                        + "END " //
+                        + "$$ " //
+                        + "LANGUAGE plpgsql " //
+                        + "VOLATILE " //
+        ));
+
+        statements.add(new ConditionalStatement(
+                //
+                false, // late
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                "CREATE OR REPLACE FUNCTION NX_DESCENDANTS_UPDATE() " //
+                        + "RETURNS trigger " //
+                        + "AS $$ " //
+                        + "BEGIN " //
+                        + "  IF NEW.isproperty THEN" //
+                        + "    RETURN NULL; " //
+                        + "  END IF;" //
+                        + "  IF OLD.id IS DISTINCT FROM NEW.id THEN" //
+                        + "    RAISE EXCEPTION 'Cannot change id'; " //
+                        + "  END IF;" //
+                        + "  IF OLD.parentid IS NOT DISTINCT FROM NEW.parentid THEN" //
+                        + "    RETURN NULL; " //
+                        + "  END IF;" //
+                        + "  IF NEW.id IS NULL THEN" //
+                        + "    RAISE EXCEPTION 'Cannot have NULL id'; " //
+                        + "  END IF;" //
+                        + "  IF OLD.parentid IS NOT NULL THEN" //
+                        + "    IF NEW.parentid IS NOT NULL THEN" //
+                        + "      IF NEW.parentid = NEW.id THEN" //
+                        + "        RAISE EXCEPTION 'Cannot move a node under itself'; " //
+                        + "      END IF;" //
+                        + "      IF EXISTS(SELECT 1 FROM descendants WHERE id = NEW.id AND descendantid = NEW.parentid) THEN" //
+                        + "        RAISE EXCEPTION 'Cannot move a node under one of its descendants'; " //
+                        + "      END IF;" //
+                        + "    END IF;" //
+                        + "    -- the old parent and its ancestors lose some descendants\n" //
+                        + "    DELETE FROM descendants" //
+                        + "      WHERE id IN (SELECT id FROM descendants WHERE descendantid = NEW.id)" //
+                        + "      AND descendantid IN (SELECT descendantid FROM descendants WHERE id = NEW.id" //
+                        + "                           UNION ALL SELECT NEW.id);" //
+                        + "  END IF;" //
+                        + "  IF NEW.parentid IS NOT NULL THEN" //
+                        + "    -- the new parent's ancestors gain as descendants\n" //
+                        + "    -- the descendants of the moved node (cross join)\n" //
+                        + "    INSERT INTO descendants (id, descendantid)" //
+                        + "      (SELECT A.id, B.descendantid FROM descendants A CROSS JOIN descendants B" //
+                        + "       WHERE A.descendantid = NEW.parentid AND B.id = NEW.id);" //
+                        + "    -- the new parent's ancestors gain as descendant the moved node\n" //
+                        + "    INSERT INTO descendants (id, descendantid)" //
+                        + "      SELECT id, NEW.id FROM descendants WHERE descendantid = NEW.parentid;" //
+                        + "    -- the new parent gains as descendants the descendants of the moved node\n" //
+                        + "    INSERT INTO descendants (id, descendantid)" //
+                        + "      SELECT NEW.parentid, descendantid FROM descendants WHERE id = NEW.id;" //
+                        + "    -- the new parent gains as descendant the moved node\n" //
+                        + "    INSERT INTO descendants (id, descendantid)" //
+                        + "      VALUES (NEW.parentid, NEW.id);" //
+                        + "  END IF;" //
+                        + "  RETURN NULL; " //
+                        + "END " //
+                        + "$$ " //
+                        + "LANGUAGE plpgsql " //
+                        + "VOLATILE " //
+        ));
 
         // read acls ----------------------------------------------------------
         // table to store canonical read acls
@@ -951,6 +1115,79 @@ public class DialectPostgreSQL extends Dialect {
                 "SELECT 1;"));
 
         return statements;
+    }
+
+    protected boolean hierarchyCreated;
+
+    protected boolean skipInitDescendants;
+
+    @Override
+    public boolean preCreateTable(Connection connection, Table table,
+            Model model, Database database) throws SQLException {
+        if (table.getName().equals(model.hierTableName.toLowerCase())) {
+            hierarchyCreated = true;
+            return true;
+        }
+        if (table.getName().equals(Model.DESCENDANTS_TABLE_NAME.toLowerCase())) {
+            if (hierarchyCreated) {
+                // database initialization
+                return true;
+            }
+            // upgrade of an existing database
+            // check hierarchy size
+            String sql = "SELECT COUNT(*) FROM hierarchy WHERE NOT isproperty";
+            Statement s = connection.createStatement();
+            ResultSet rs = s.executeQuery(sql);
+            rs.next();
+            long count = rs.getLong(1);
+            rs.close();
+            s.close();
+            if (count > 1000) {
+                // if the hierarchy table is too big, tell the admin to do the
+                // init by hand
+                skipInitDescendants = true;
+            }
+            return true;
+        }
+        return true;
+    }
+
+    @Override
+    public List<String> getPostCreateTableSqls(Table table, Model model,
+            Database database) {
+        if (table.getName().equals(Model.DESCENDANTS_TABLE_NAME.toLowerCase())) {
+            List<String> sqls = new ArrayList<String>();
+            if (skipInitDescendants) {
+                log.error("Table DESCENDANTS empty, must be upgraded by hand by calling: "
+                        + "SELECT NX_INIT_DESCENDANTS()");
+            } else {
+                sqls.add("SELECT NX_INIT_DESCENDANTS()");
+            }
+            return sqls;
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void existingTableDetected(Connection connection, Table table,
+            Model model, Database database) throws SQLException {
+        if (table.getName().equals(Model.DESCENDANTS_TABLE_NAME.toLowerCase())) {
+            // check if we want to initialize the descendants table now, or log
+            // a warning if the hierachy table is too big
+            String sql = "SELECT COUNT(*) FROM descendants";
+            Statement s = connection.createStatement();
+            ResultSet rs = s.executeQuery(sql);
+            rs.next();
+            long count = rs.getLong(1);
+            rs.close();
+            s.close();
+            if (count != 0) {
+                // already initialized
+                return;
+            }
+            log.error("Table DESCENDANTS empty, must be upgraded by hand by calling: "
+                    + "SELECT NX_INIT_DESCENDANTS()");
+        }
     }
 
     @Override

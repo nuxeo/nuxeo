@@ -364,11 +364,21 @@ public class Mapper {
 
             String tableName = getTableName(table.getName());
 
-            if (!tableNames.contains(tableName)
-                    && !tableNames.contains(tableName.toUpperCase())) {
+            if (tableNames.contains(tableName)
+                    || tableNames.contains(tableName.toUpperCase())) {
+                sqlInfo.dialect.existingTableDetected(connection, table, model,
+                        sqlInfo.database);
+            } else {
                 /*
                  * Create missing table.
                  */
+                boolean create = sqlInfo.dialect.preCreateTable(connection,
+                        table, model, sqlInfo.database);
+                if (!create) {
+                    log.warn("Creation skipped for table: " + table.getName());
+                    continue;
+                }
+
                 String sql = table.getCreateSql();
                 log(sql);
                 st.execute(sql);
@@ -376,7 +386,8 @@ public class Mapper {
                     log(s);
                     st.execute(s);
                 }
-                for (String s : sqlInfo.dialect.getPostCreateSqls(table)) {
+                for (String s : sqlInfo.dialect.getPostCreateTableSqls(table,
+                        model, sqlInfo.database)) {
                     log(s);
                     st.execute(s);
                 }

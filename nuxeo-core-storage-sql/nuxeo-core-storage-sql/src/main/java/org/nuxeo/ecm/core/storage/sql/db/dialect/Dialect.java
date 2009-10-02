@@ -539,12 +539,33 @@ public abstract class Dialect {
     }
 
     /**
+     * Called before a table is created, when it's been determined that it
+     * doesn't exist yet.
+     *
+     * @return {@code false} if the table must actually not be created
+     */
+    public boolean preCreateTable(Connection connection, Table table,
+            Model model, Database database) throws SQLException {
+        return true;
+    }
+
+    /**
      * Gets the sql statements to call after a table has been created.
      * <p>
      * Used for migrations/upgrades.
      */
-    public List<String> getPostCreateSqls(Table table) {
+    public List<String> getPostCreateTableSqls(Table table, Model model,
+            Database database) {
         return Collections.emptyList();
+    }
+
+    /**
+     * Called after an existing table has been detected in the database.
+     * <p>
+     * Used for migrations/upgrades.
+     */
+    public void existingTableDetected(Connection connection, Table table,
+            Model model, Database database) throws SQLException {
     }
 
 }
