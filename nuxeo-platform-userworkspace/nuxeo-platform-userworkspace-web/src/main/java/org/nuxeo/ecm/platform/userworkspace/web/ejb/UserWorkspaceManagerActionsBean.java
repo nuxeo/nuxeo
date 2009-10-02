@@ -150,6 +150,7 @@ public class UserWorkspaceManagerActionsBean implements
         } else if (navigationContext.getCurrentDomain() != null) {
             navigationContext.setCurrentDocument(navigationContext.getCurrentDomain());
         } else {
+            navigationContext.setCurrentDocument(null);
             returnView = DASHBOARD_VIEW;
         }
         showingPersonalWorkspace = false;

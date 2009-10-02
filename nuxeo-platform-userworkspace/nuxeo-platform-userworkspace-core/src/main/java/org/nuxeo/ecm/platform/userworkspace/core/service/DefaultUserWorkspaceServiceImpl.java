@@ -27,6 +27,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -37,6 +39,8 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.platform.userworkspace.constants.UserWorkspaceConstants;
+
+import sun.rmi.runtime.GetThreadPoolAction;
 
 /**
  *
@@ -55,15 +59,22 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
      */
     private static final long serialVersionUID = 1L;
 
+    protected String targetDomainName = null;
 
-    // define target Domain Name
-    protected String getDomainName(DocumentModel currentDocument) {
-        if (currentDocument!=null) {
-            return currentDocument.getPath().segment(0);
+    // try to use configured domain
+    // use first domain available otherwise
+    protected String getDomainName(CoreSession userCoreSession, DocumentModel currentDocument) {
+        if (targetDomainName==null) {
+            RootDomainFinder finder = new RootDomainFinder(userCoreSession);
+            try {
+                finder.runUnrestricted();
+            } catch (ClientException e) {
+                log.error("Unable to find root domain for UserWorkspace", e);
+                return null;
+            }
+            targetDomainName = finder.domaineName;
         }
-        else {
-            return UserWorkspaceServiceImplComponent.getTargetDomainName();
-        }
+        return targetDomainName;
     }
 
     // get the name of the UserWorkspace given the user name
@@ -72,17 +83,20 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
     }
 
     // compute the path of the Root of all userWorspaces
-    protected String computePathUserWorkspaceRoot(DocumentModel currentDocument) {
-        String domainName = getDomainName(currentDocument);
+    protected String computePathUserWorkspaceRoot(CoreSession userCoreSession, DocumentModel currentDocument) throws ClientException {
+        String domainName = getDomainName(userCoreSession, currentDocument);
+        if (domainName==null) {
+            throw new ClientException("Unable to find root domain for UserWorkspace");
+        }
         Path path = new Path("/" + domainName);
         path=path.append(UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT);
         return path.toString();
     }
 
     // compute the path of the userWorspace
-    protected String computePathForUserWorkspace(String userName,
-            DocumentModel currentDocument) {
-        String rootPath = computePathUserWorkspaceRoot(currentDocument);
+    protected String computePathForUserWorkspace(CoreSession userCoreSession, String userName,
+            DocumentModel currentDocument) throws ClientException {
+        String rootPath = computePathUserWorkspaceRoot(userCoreSession,currentDocument);
         Path path = new Path(rootPath);
         path=path.append(getUserWorkspaceNameForUser(userName));
         return path.toString();
@@ -105,14 +119,14 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
 
     protected DocumentModel getCurrentUserPersonalWorkspace(String userName, CoreSession userCoreSession, DocumentModel context) throws ClientException {
 
-        PathRef uwsDocRef = new PathRef(computePathForUserWorkspace(
+        PathRef uwsDocRef = new PathRef(computePathForUserWorkspace(userCoreSession,
                 userName, context));
 
         if (!userCoreSession.exists(uwsDocRef)) {
             // do the creation
             PathRef rootRef = new PathRef(
-                    computePathUserWorkspaceRoot(context));
-            createUserWorkspace(rootRef, uwsDocRef, userCoreSession, userName);
+                    computePathUserWorkspaceRoot(userCoreSession, context));
+            uwsDocRef =  createUserWorkspace(rootRef, uwsDocRef, userCoreSession, userName);
         }
 
         // force Session synchro to process invalidation (in non JCA cases)
@@ -123,11 +137,38 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
         return userCoreSession.getDocument(uwsDocRef);
     }
 
-    protected synchronized void createUserWorkspace(PathRef rootRef,
+    protected synchronized PathRef createUserWorkspace(PathRef rootRef,
             PathRef userWSRef, CoreSession userCoreSession, String userName)
             throws ClientException {
-        new UnrestrictedUWSCreator(rootRef, userWSRef, userCoreSession, userName)
-                .runUnrestricted();
+
+        UnrestrictedUWSCreator creator =new UnrestrictedUWSCreator(rootRef, userWSRef, userCoreSession, userName);
+        creator.runUnrestricted();
+        userWSRef = creator.userWSRef;
+        rootRef = creator.rootRef;
+        return userWSRef;
+    }
+
+    protected class RootDomainFinder extends UnrestrictedSessionRunner {
+
+        public RootDomainFinder(CoreSession userCoreSession) {
+            super(userCoreSession);
+        }
+        protected String domaineName;
+
+        @Override
+        public void run() throws ClientException {
+            PathRef ref = new PathRef("/" + UserWorkspaceServiceImplComponent.getTargetDomainName());
+            if (session.exists(ref)) {
+                domaineName =  UserWorkspaceServiceImplComponent.getTargetDomainName();
+                return;
+            }
+            // configured domain does not exist !!!
+            DocumentModelList domains = session.query("select * from Domain order by dc:created");
+
+            if (domains.size()>0) {
+                domaineName = domains.get(0).getName();
+            }
+        }
     }
 
     protected class UnrestrictedUWSCreator extends UnrestrictedSessionRunner {
@@ -149,7 +190,17 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
 
             // create root if needed
             if (!session.exists(rootRef)) {
-                DocumentModel root = createUserWorkspacesRoot(session, rootRef);
+                DocumentModel root = null;
+                try {
+                    root = createUserWorkspacesRoot(session, rootRef);
+                }
+                catch (Exception e) {
+                    // domain may have been removed !
+                    targetDomainName = null;
+                    rootRef = new PathRef(computePathUserWorkspaceRoot(session, null));
+                    root = createUserWorkspacesRoot(session, rootRef);
+                    userWSRef = new PathRef(computePathForUserWorkspace(session, userName, null));
+                }
                 assert(root.getPathAsString().equals(rootRef.toString()));
             }
 

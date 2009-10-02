@@ -43,7 +43,7 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
 
     private static UserWorkspaceDescriptor descriptor;
 
-    private UserWorkspaceService userWorkspaceService;
+    private static UserWorkspaceService userWorkspaceService;
 
     @Override
     public void activate(ComponentContext context) {
@@ -110,4 +110,7 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
         return descriptor.getTargetDomainName();
     }
 
+    public static void reset() {
+        userWorkspaceService = null;
+    }
 }
