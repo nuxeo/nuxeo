@@ -1,11 +1,5 @@
 package org.nuxeo.ecm.platform.publisher.helper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.Collections;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -18,6 +12,12 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -71,21 +71,56 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
     }
 
     public DocumentModelList getSectionRootsForWorkspace(
-            DocumentModel currentDoc) throws ClientException {
+            DocumentModel currentDoc, boolean addDefaultSectionRoots)
+            throws ClientException {
         if ((currentDocument == null)
                 || (!currentDocument.getRef().equals(currentDoc.getRef()))) {
             computeUserSectionRoots(currentDoc);
         }
+
+        if (unrestrictedDefaultSectionRoot.isEmpty() && addDefaultSectionRoots) {
+            if (unrestrictedDefaultSectionRoot == null
+                    || unrestrictedDefaultSectionRoot.isEmpty()) {
+                DocumentModelList defaultSectionRoots = getDefaultSectionRoots(session);
+                unrestrictedDefaultSectionRoot = new ArrayList<String>();
+                for (DocumentModel root : defaultSectionRoots) {
+                    unrestrictedDefaultSectionRoot.add(root.getPathAsString());
+                }
+            }
+        }
+
         return getFiltredSectionRoots(
                 unrestrictedSectionRootFromWorkspaceConfig, true);
     }
 
-    public DocumentModelList getDefaultSectionRoots(boolean onlyHeads)
-            throws ClientException {
+    public DocumentModelList getSectionRootsForWorkspace(
+            DocumentModel currentDoc) throws ClientException {
+        return getSectionRootsForWorkspace(currentDoc, false);
+    }
+
+    public DocumentModelList getDefaultSectionRoots(boolean onlyHeads,
+            boolean addDefaultSectionRoots) throws ClientException {
         if (unrestrictedDefaultSectionRoot == null) {
             computeUserSectionRoots(null);
         }
+
+        if (unrestrictedDefaultSectionRoot.isEmpty() && addDefaultSectionRoots) {
+            if (unrestrictedDefaultSectionRoot == null
+                    || unrestrictedDefaultSectionRoot.isEmpty()) {
+                DocumentModelList defaultSectionRoots = getDefaultSectionRoots(session);
+                unrestrictedDefaultSectionRoot = new ArrayList<String>();
+                for (DocumentModel root : defaultSectionRoots) {
+                    unrestrictedDefaultSectionRoot.add(root.getPathAsString());
+                }
+            }
+        }
+
         return getFiltredSectionRoots(unrestrictedDefaultSectionRoot, onlyHeads);
+    }
+
+    public DocumentModelList getDefaultSectionRoots(boolean onlyHeads)
+            throws ClientException {
+        return getDefaultSectionRoots(onlyHeads, false);
     }
 
     protected void computeUserSectionRoots(DocumentModel currentDoc)
@@ -114,12 +149,10 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
             if (userSession.hasPermission(rootRef, SecurityConstants.READ)) {
                 filtredDocRef.add(rootRef);
             } else {
-                DocumentModelList accessibleSections = userSession
-                        .query(buildQuery(rootPath));
+                DocumentModelList accessibleSections = userSession.query(buildQuery(rootPath));
                 for (DocumentModel section : accessibleSections) {
                     if (onlyHeads
-                            && ((filtredDocRef.contains(section.getParentRef())) || (trashedDocRef
-                                    .contains(section.getParentRef())))) {
+                            && ((filtredDocRef.contains(section.getParentRef())) || (trashedDocRef.contains(section.getParentRef())))) {
                         trashedDocRef.add(section.getRef());
                     } else {
                         filtredDocRef.add(section.getRef());
@@ -127,8 +160,7 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
                 }
             }
         }
-        return userSession.getDocuments(filtredDocRef
-                .toArray(new DocumentRef[filtredDocRef.size()]));
+        return userSession.getDocuments(filtredDocRef.toArray(new DocumentRef[filtredDocRef.size()]));
     }
 
     protected String buildQuery(String path) {
@@ -165,16 +197,14 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
                 if ("Root".equals(parentDocumentModel.getType())) {
                     break;
                 }
-                parentDocumentModel = session.getDocument(parentDocumentModel
-                        .getParentRef());
+                parentDocumentModel = session.getDocument(parentDocumentModel.getParentRef());
             }
 
             DocumentModelList sectionRootsFromWorkspaceConfig = getSectionRootsFromWorkspaceConfig(
                     parentDocumentModel, session);
             unrestrictedSectionRootFromWorkspaceConfig = new ArrayList<String>();
             for (DocumentModel root : sectionRootsFromWorkspaceConfig) {
-                unrestrictedSectionRootFromWorkspaceConfig.add(root
-                        .getPathAsString());
+                unrestrictedSectionRootFromWorkspaceConfig.add(root.getPathAsString());
             }
         }
 
@@ -186,12 +216,12 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
     protected DocumentModelList getDefaultSectionRoots(CoreSession session)
             throws ClientException {
         DocumentModelList sectionRoots = new DocumentModelListImpl();
-        DocumentModelList domains = session.getChildren(session
-                .getRootDocument().getRef(), "Domain");
+        DocumentModelList domains = session.getChildren(
+                session.getRootDocument().getRef(), "Domain");
         for (DocumentModel domain : domains) {
             for (String sectionRootNameType : sectionRootTypes) {
-                DocumentModelList children = session.getChildren(domain
-                        .getRef(), sectionRootNameType);
+                DocumentModelList children = session.getChildren(
+                        domain.getRef(), sectionRootNameType);
                 sectionRoots.addAll(children);
             }
         }
@@ -205,8 +235,7 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
         DocumentModelList selectedSections = new DocumentModelListImpl();
 
         if (workspace.hasSchema(SCHEMA_PUBLISHING)) {
-            String[] sectionIdsArray = (String[]) workspace
-                    .getPropertyValue(SECTIONS_PROPERTY_NAME);
+            String[] sectionIdsArray = (String[]) workspace.getPropertyValue(SECTIONS_PROPERTY_NAME);
 
             List<String> sectionIdsList = new ArrayList<String>();
 
@@ -217,8 +246,8 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
             if (sectionIdsList != null) {
                 for (String currentSectionId : sectionIdsList) {
                     try {
-                        DocumentModel sectionToAdd = session
-                                .getDocument(new IdRef(currentSectionId));
+                        DocumentModel sectionToAdd = session.getDocument(new IdRef(
+                                currentSectionId));
                         selectedSections.add(sectionToAdd);
                     } catch (ClientException e) {
                         log.warn("Section with ID=" + currentSectionId

@@ -67,7 +67,7 @@ public class AdministrationPublishActions extends AbstractPublishActions impleme
 
     @Factory(value = "defaultPublishingRoots", scope = ScopeType.EVENT)
     public DocumentModelList getSectionRoots() throws ClientException {
-        return getRootFinder().getDefaultSectionRoots(true);
+        return getRootFinder().getDefaultSectionRoots(true, true);
     }
 
     protected RootSectionsFinder getRootFinder() {
@@ -150,15 +150,15 @@ public class AdministrationPublishActions extends AbstractPublishActions impleme
         return null;
     }
 
-    @Factory(value = "workspaceConfiguredPublishingRoots", scope = ScopeType.EVENT)
     public DocumentModelList getSelectedSections() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        return getRootFinder().getSectionRootsForWorkspace(currentDocument);
+        return getRootFinder().getSectionRootsForWorkspace(currentDocument, true);
     }
 
     public String removeSection(String sectionId) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         rootSectionsManager.removeSection(sectionId, currentDocument);
+        getRootFinder().reset();
         return null;
     }
 
