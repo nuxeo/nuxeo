@@ -88,7 +88,8 @@ xmlns:artifact="urn:nuxeo-artifact" xmlns:nx="urn:nuxeo-build">
         <artifact:file key="org.nuxeo.ecm.platform:nuxeo-theme-webwidgets-ui" />
       </copy>
       <copy todir="${stagedir}/lib">
-        <artifact:file key="cssparser:cssparser" />
+        <artifact:file key="org.w3c:sac" />
+        <artifact:file key="net.sourceforge.cssparser:cssparser" />
         <artifact:file key="org.dojotoolkit:custom_rhino" />
       </copy>
     </nx:profile>

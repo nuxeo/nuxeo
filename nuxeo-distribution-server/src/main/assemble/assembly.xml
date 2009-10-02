@@ -189,7 +189,8 @@
 
   <artifactSet id="third-party-theme-libs" profile="theme">
     <artifacts>
-      <artifact group="cssparser" name="cssparser" />
+      <artifact group="net.sourceforge.cssparser" name="cssparser" />
+      <artifact group="org.w3c" name="sac" />
       <artifact group="org.dojotoolkit" name="custom_rhino" />
     </artifacts>
   </artifactSet>
