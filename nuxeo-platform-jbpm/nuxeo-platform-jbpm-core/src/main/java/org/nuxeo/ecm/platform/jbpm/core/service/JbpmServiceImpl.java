@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.jbpm.core.service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -89,10 +90,13 @@ public class JbpmServiceImpl implements JbpmService {
     }
 
     // 2 situations:
-    // - first, you have an outside transaction (then isTransactionEnable is false), you open the context
-    //   on first call of the thread and close it when the transaction is commited.
-    // - second, you don't have an outside transaction, jbpm uses a jdbctransaction and isTransactionEnable is true.
-    //   we open and close the context for each call.
+    // - first, you have an outside transaction (then isTransactionEnable is
+    // false), you open the context
+    // on first call of the thread and close it when the transaction is
+    // commited.
+    // - second, you don't have an outside transaction, jbpm uses a
+    // jdbctransaction and isTransactionEnable is true.
+    // we open and close the context for each call.
     protected JbpmContext getContext() {
         JbpmContext context = contexts.get();
         if (context == null || !context.getSession().isConnected()) {
@@ -129,21 +133,28 @@ public class JbpmServiceImpl implements JbpmService {
 
             public ArrayList<TaskInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
-                if (currentUser == null) {
-                    throw new IllegalStateException("Null current user");
-                }
-                context.setActorId(NuxeoPrincipal.PREFIX
-                        + currentUser.getName());
-                List<String> groups = getActorsAndGroup(currentUser);
-                ArrayList<TaskInstance> tis = getPooledAndActorTaskInstances(
-                        context, groups);
-                // filter
-                if (filter != null) {
-                    tis = filter.filter(context, null, tis, currentUser);
-                }
-                return tis;
+                return getCurrentTaskInstancesInternal(currentUser, filter,
+                        context);
             }
+
         });
+    }
+
+    private ArrayList<TaskInstance> getCurrentTaskInstancesInternal(
+            final NuxeoPrincipal currentUser, final JbpmListFilter filter,
+            JbpmContext context) {
+        if (currentUser == null) {
+            throw new IllegalStateException("Null current user");
+        }
+        context.setActorId(NuxeoPrincipal.PREFIX + currentUser.getName());
+        List<String> groups = getActorsAndGroup(currentUser);
+        ArrayList<TaskInstance> tis = getPooledAndActorTaskInstances(context,
+                groups);
+        // filter
+        if (filter != null) {
+            tis = filter.filter(context, null, tis, currentUser);
+        }
+        return tis;
     }
 
     @SuppressWarnings("unchecked")
@@ -387,12 +398,15 @@ public class JbpmServiceImpl implements JbpmService {
         });
     }
 
-    private void eagerLoadProcessInstances(
-            ArrayList<ProcessInstance> pis) {
-        for(ProcessInstance pi : pis) {
+    private void eagerLoadProcessInstances(Collection<ProcessInstance> pis) {
+        for (ProcessInstance pi : pis) {
+            if(pi == null) {
+                continue;
+            }
             pi.getProcessDefinition().getName();
-            for(Object ti : pi.getTaskMgmtInstance().getTaskInstances()) {
-                ((TaskInstance)ti).getName();
+            pi.getContextInstance().getVariables();
+            for (Object ti : pi.getTaskMgmtInstance().getTaskInstances()) {
+                ((TaskInstance) ti).getName();
             }
         }
     }
@@ -409,7 +423,8 @@ public class JbpmServiceImpl implements JbpmService {
                     throws NuxeoJbpmException {
                 Set<TaskInstance> tisSet = new HashSet<TaskInstance>();
                 if (user != null) {
-                    List<TaskInstance> tis = getCurrentTaskInstances(user, null);
+                    List<TaskInstance> tis = getCurrentTaskInstancesInternal(
+                            user, null, context);
                     tisSet.addAll(tis);
                 } else {
                     List<TaskInstance> tis = context.getSession().createQuery(
@@ -603,7 +618,10 @@ public class JbpmServiceImpl implements JbpmService {
 
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
-                return context.getProcessInstance(processInstanceId);
+                ProcessInstance pi = context.getProcessInstance(processInstanceId);
+                ;
+                eagerLoadProcessInstances(Collections.singletonList(pi));
+                return pi;
             }
         });
     }
@@ -824,16 +842,22 @@ public class JbpmServiceImpl implements JbpmService {
 
             public ArrayList<TaskInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
-                ArrayList<TaskInstance> tis = getPooledAndActorTaskInstances(
-                        context, actors);
-                // filter
-                if (filter != null) {
-                    tis = filter.filter(context, null, tis, actors);
-                }
-                return tis;
+                return getCurrentTaskInstancesInternal(actors, filter, context);
             }
 
         });
+    }
+
+    private ArrayList<TaskInstance> getCurrentTaskInstancesInternal(
+            final List<String> actors, final JbpmActorsListFilter filter,
+            JbpmContext context) {
+        ArrayList<TaskInstance> tis = getPooledAndActorTaskInstances(context,
+                actors);
+        // filter
+        if (filter != null) {
+            tis = filter.filter(context, null, tis, actors);
+        }
+        return tis;
     }
 
     @SuppressWarnings("unchecked")
@@ -847,7 +871,7 @@ public class JbpmServiceImpl implements JbpmService {
             public ArrayList<TaskInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
                 Set<TaskInstance> tisSet = new HashSet<TaskInstance>();
-                List<TaskInstance> tis = getCurrentTaskInstances(actors, null);
+                List<TaskInstance> tis = getCurrentTaskInstancesInternal(actors, null, context);
                 tisSet.addAll(tis);
                 ArrayList<TaskInstance> result = getTaskInstancesForDocument(
                         dm, tisSet);
