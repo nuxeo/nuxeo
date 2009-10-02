@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -39,8 +38,6 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.platform.userworkspace.constants.UserWorkspaceConstants;
-
-import sun.rmi.runtime.GetThreadPoolAction;
 
 /**
  *
@@ -173,9 +170,9 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
 
     protected class UnrestrictedUWSCreator extends UnrestrictedSessionRunner {
 
-        private PathRef rootRef;
-        private PathRef userWSRef;
-        private String userName;
+        PathRef rootRef;
+        PathRef userWSRef;
+        String userName;
 
         public UnrestrictedUWSCreator(PathRef rootRef,
                 PathRef userWSRef, CoreSession userCoreSession, String userName) {
