@@ -2015,11 +2015,15 @@ public abstract class AbstractSession implements CoreSession,
 
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, versionModel,
                     options, null, null, true, false);
+
             // FIXME: the fields are hardcoded. should be moved in versioning component
-            final Long majorVer = doc.getLong("major_version");
-            final Long minorVer = doc.getLong("minor_version");
-            String versionComment = majorVer + "." + minorVer;
-            options.put("comment", versionComment);
+            if (doc.getType().hasSchema("uid")) {
+                final Long majorVer = doc.getLong("major_version");
+                final Long minorVer = doc.getLong("minor_version");
+                String versionComment = majorVer + "." + minorVer;
+                options.put("comment", versionComment);
+            }
+
             notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDIN, docModel,
                     options, null, null, true, false);
             writeModel(versionDocument, versionModel);
