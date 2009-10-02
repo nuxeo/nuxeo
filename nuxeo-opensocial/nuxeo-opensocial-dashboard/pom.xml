@@ -99,11 +99,5 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
-
-    <!-- scope test -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-opensocial-test-util</artifactId>
-    </dependency>
   </dependencies>
 </project>

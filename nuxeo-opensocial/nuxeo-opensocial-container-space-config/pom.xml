@@ -51,9 +51,20 @@
       <artifactId>nuxeo-webengine-gadgets</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-opensocial-test-util</artifactId>
-    </dependency>
   </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/ContainerManagerImplTest*.java</exclude>
+            <exclude>**/GadgetManagerTest*.java</exclude>
+            <exclude>**/CoreSessionHelperTest*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

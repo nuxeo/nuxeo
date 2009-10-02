@@ -45,15 +45,6 @@
       <artifactId>nuxeo-platform-actions-core</artifactId>
       <scope>test</scope>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.nuxeo.ecm.platform</groupId>-->
-<!--      <artifactId>nuxeo-platform-webapp-core</artifactId>-->
-<!--      <scope>test</scope>-->
-<!--    </dependency>-->
-    <dependency>
-      <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-opensocial-test-util</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>commons-jexl</groupId>
@@ -62,4 +53,16 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/SpacesTypesTest*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

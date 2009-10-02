@@ -18,12 +18,19 @@
       <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-opensocial-gadgets-core</artifactId>
     </dependency>
-
-    <!-- test scope -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-opensocial-test-util</artifactId>
-    </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/NuxeoGadgetsTest*.java</exclude>
+            <exclude>**/GadgetServiceTest*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

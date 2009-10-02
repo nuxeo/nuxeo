@@ -29,6 +29,15 @@
         </executions>
       </plugin>
       <!-- end APT plugin -->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/SpacesHomePage*.java</exclude>
+            <exclude>**/SpaceTest*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -65,12 +74,6 @@
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
-    </dependency>
-
-    <!-- test scope -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-opensocial-test-util</artifactId>
     </dependency>
   </dependencies>
 </project>

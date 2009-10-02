@@ -11,7 +11,7 @@
 
   <groupId>org.nuxeo.ecm.opensocial</groupId>
   <artifactId>nuxeo-opensocial-parent</artifactId>
-  <name>Nuxeo Opensocial - Parent</name>
+  <name>Nuxeo Opensocial :: Parent</name>
   <description>Nuxeo OpenSocial is the integration of the Shindig (Opensocial) into Nuxeo</description>
   <packaging>pom</packaging>
 
@@ -29,7 +29,6 @@
     <module>nuxeo-opensocial-container</module>
     <module>nuxeo-opensocial-container-space-config</module>
     <module>nuxeo-opensocial-dashboard</module>
-    <module>nuxeo-opensocial-test-util</module>
   </modules>
 
   <developers>
@@ -160,14 +159,6 @@
         <groupId>org.nuxeo.ecm.opensocial</groupId>
         <artifactId>nuxeo-webengine-gadgets</artifactId>
         <version>${nuxeo.features.version}</version>
-      </dependency>
-
-      <!-- Test scope -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-test-util</artifactId>
-        <version>${nuxeo.features.version}</version>
-        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

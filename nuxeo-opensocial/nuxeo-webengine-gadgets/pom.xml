@@ -29,6 +29,14 @@
         </executions>
       </plugin>
       <!-- end APT plugin -->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/GadgetAppTest*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -63,11 +71,6 @@
       <artifactId>jaxrs-api</artifactId>
     </dependency>
 
-    <!-- test scope -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-opensocial-test-util</artifactId>
-    </dependency>
   </dependencies>
 
 </project>
