@@ -46,9 +46,8 @@
 			</dependency>
 
 			<dependency>
-				<groupId>cssparser</groupId>
+				<groupId>net.sourceforge.cssparser</groupId>
 				<artifactId>cssparser</artifactId>
-				<version>0.9.4-fix</version>
 			</dependency>
 
 			<dependency>
