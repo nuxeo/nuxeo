@@ -76,6 +76,10 @@ public class DublinCoreListener implements EventListener {
         }
 
         DocumentModel doc = docCtx.getSourceDocument();
+        if (doc.isVersion()) {
+            log.info("No DublinCore update on versions");
+            return;
+        }
         Date eventDate = new Date(event.getTime());
         Calendar cEventDate = Calendar.getInstance();
         cEventDate.setTime(eventDate);

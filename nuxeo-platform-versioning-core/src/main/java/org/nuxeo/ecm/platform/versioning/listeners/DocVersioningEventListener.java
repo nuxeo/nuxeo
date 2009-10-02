@@ -84,7 +84,7 @@ public class DocVersioningEventListener implements EventListener {
 
         VersionChangeRequest req;
 
-        if (eventId.equals(DocumentEventTypes.DOCUMENT_CREATED)
+        if (eventId.equals(DocumentEventTypes.DOCUMENT_CREATED) && !doc.isVersion()
                 && !doc.isProxy()) {
             // set version to 1.0
             try {
