@@ -248,7 +248,8 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
     public void setPropertyValue(String name, Object value)
             throws DocumentException {
         if (readonly) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException(String.format(
+                    "Cannot set property on a version: %s = %s", name, value));
         } else {
             // import
             super.setPropertyValue(name, value);
