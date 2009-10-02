@@ -14,6 +14,21 @@
   <name>Nuxeo Runtime Tests</name>
 
   <description>Nuxeo Runtime: Nuxeo Runtime Tests.</description>
+  <build>
+  <plugins>
+  <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/ContributionTest*.java</exclude>
+            <exclude>**/MyTestComponent.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+  </plugins>
+  </build>
 
   <dependencies>
     <dependency>
