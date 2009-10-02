@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.event.EventServiceComponent" version="1.0">
   <documentation>
-    Event service
+    Mock Event service
 
     @author Bogdan Stefanescu (bs@nuxeo.com)
   </documentation>
