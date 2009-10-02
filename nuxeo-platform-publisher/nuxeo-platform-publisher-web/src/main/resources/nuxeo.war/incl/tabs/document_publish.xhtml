@@ -97,7 +97,8 @@
             </h:panelGroup>
 
             <h:panelGroup
-                    rendered="#{publishActions.isLocalPublishedDocument(publishedDocument)}">
+                    rendered="#{publishActions.isLocalPublishedDocument(publishedDocument)
+                      and publishActions.hasReadRight(publishedDocument.parentPath)}">
               <nxd:restDocumentLink
                       document="#{publishActions.getDocumentModelFor(publishedDocument.parentPath)}">
                 <h:outputText

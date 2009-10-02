@@ -55,8 +55,10 @@ public class RootSectionsPublicationTree extends SectionPublicationTree {
             }
             List<PublicationNode> publicationNodes = new ArrayList<PublicationNode>();
             for (DocumentModel rootSection : rootSections) {
-                publicationNodes.add(new CoreFolderPublicationNode(rootSection,
-                        getConfigName(), sid, (CoreFolderPublicationNode) rootNode, factory));
+                if (isPublicationNode(rootSection)) {
+                    publicationNodes.add(new CoreFolderPublicationNode(rootSection,
+                            getConfigName(), sid, (CoreFolderPublicationNode) rootNode, factory));
+                }
             }
             return publicationNodes;
         }

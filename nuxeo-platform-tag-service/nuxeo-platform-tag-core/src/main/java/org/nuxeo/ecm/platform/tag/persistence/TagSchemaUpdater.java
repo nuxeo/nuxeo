@@ -44,6 +44,7 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.cfg.Settings;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.DialectFactory;
+import org.hibernate.dialect.Oracle10gDialect;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.ejb.packaging.PersistenceMetadata;
 import org.hibernate.ejb.packaging.PersistenceXmlLoader;
@@ -133,14 +134,6 @@ public class TagSchemaUpdater {
         }
     }
 
-    public static class CustomPostgreSQLDialect extends org.hibernate.dialect.PostgreSQLDialect {
-        public CustomPostgreSQLDialect() {
-            super();
-            registerColumnType(Types.BOOLEAN, "boolean");
-            registerHibernateType(Types.BOOLEAN, "boolean");
-        }
-    }
-
     public void update() {
         String dataSource = connectionProperties.getProperty("hibernate.connection.datasource");
         // change JNDI name prefix if needed
@@ -152,21 +145,17 @@ public class TagSchemaUpdater {
         column.setPrimary(true);
         column.setNullable(false);
         table.addColumn(column);
-        column = new Column(TAGGING_TABLE_COLUMN_TAG_ID, Types.CLOB);
+        column = new Column(TAGGING_TABLE_COLUMN_TAG_ID, Types.VARCHAR);
         table.addColumn(column);
         column = new Column(TAGGING_TABLE_COLUMN_AUTHOR, Types.VARCHAR);
         table.addColumn(column);
-        column = new Column(TAGGING_TABLE_COLUMN_DOCUMENT_ID, Types.CLOB);
+        column = new Column(TAGGING_TABLE_COLUMN_DOCUMENT_ID, Types.VARCHAR);
         table.addColumn(column);
         column = new Column(TAGGING_TABLE_COLUMN_CREATION_DATE, Types.DATE);
         table.addColumn(column);
-        column = new Column(TAGGING_TABLE_COLUMN_IS_PRIVATE, Types.BOOLEAN);
+        column = new Column(TAGGING_TABLE_COLUMN_IS_PRIVATE, Types.INTEGER);
         table.addColumn(column);
         Dialect dialect = settings.getDialect();
-        if (dialect instanceof PostgreSQLDialect) {
-            dialect = new CustomPostgreSQLDialect();
-        }
-
         String script = table.getCreateSql(dialect);
         try {
             Connection connection = settings.getConnectionProvider().getConnection();

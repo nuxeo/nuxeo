@@ -22,6 +22,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.tag.Tag;
+import org.nuxeo.ecm.platform.tag.TagConstants;
 import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -68,9 +69,9 @@ public class TagFragment extends AbstractFragment {
                                 tag.tagId));
                         if (!document.getCurrentLifeCycleState().equals(
                                 SiteConstants.DELETED)) {
-                            label = SiteUtils.getString(document, "tag:label");
-                            isPrivate = SiteUtils.getBoolean(document,
-                                    "tag:private");
+                            label = SiteUtils.getString(document, TagConstants.TAG_LABEL_FIELD, "");
+                            isPrivate = SiteUtils.getNumber(document,
+                                    TagConstants.TAG_IS_PRIVATE_FIELD) != 0;
 
                             boolean canModify = canModify(documentModel, label,
                                     tagService, session);

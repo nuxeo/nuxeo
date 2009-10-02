@@ -31,8 +31,8 @@ public class TagEntity implements Serializable {
     @Column(name = "ID", nullable = false)
     private String id;
 
-    @Column(name = "PRIVATE")
-    private boolean private1;
+    @Column(name = "PRIVATE", columnDefinition = "integer")
+    private int private1;
 
     @Lob
     @Column(name = "LABEL")
@@ -60,11 +60,11 @@ public class TagEntity implements Serializable {
         this.id = id;
     }
 
-    public boolean getPrivate1() {
+    public int getPrivate1() {
         return private1;
     }
 
-    public void setPrivate1(boolean private1) {
+    public void setPrivate1(int private1) {
         this.private1 = private1;
     }
 

@@ -104,7 +104,7 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
             DocumentModel parentWebSite = getParentWebSite(ctx.getCoreSession());
             resp = SiteUtils.getLogoResponse(parentWebSite);
         } catch (Exception e) {
-            if (doc==null) {
+            if (doc == null) {
                 log.error("Problems retriveing the logo", e);
             } else {
                 log.error("Problems retriveing the logo for" + doc.getName(), e);
@@ -259,11 +259,11 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
         DocumentModel parentWebSite = getParentWebSite(getCoreSession());
 
         root.put(PAGE_NAME, SiteUtils.getString(parentWebSite,
-                WEBCONTAINER_NAME, null));
+                WEBCONTAINER_NAME, ""));
         root.put(SITE_DESCRIPTION, SiteUtils.getString(parentWebSite,
-                WEBCONTAINER_BASELINE, null));
+                WEBCONTAINER_BASELINE, ""));
         root.put(EMAIL, "mailto:"
-                + parentWebSite.getPropertyValue(WEBCONTAINER_EMAIL).toString());
+                + SiteUtils.getString(parentWebSite, WEBCONTAINER_EMAIL, ""));
         // specific only for Page web object
         MimetypeRegistry mimetypeService = Framework.getService(MimetypeRegistry.class);
         root.put("mimetypeService", mimetypeService);

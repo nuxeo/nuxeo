@@ -263,7 +263,6 @@
                 <artifactItem>
                   <groupId>net.sourceforge.cssparser</groupId>
                   <artifactId>cssparser</artifactId>
-                  <version>0.9.5</version>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/classes/lib</outputDirectory>

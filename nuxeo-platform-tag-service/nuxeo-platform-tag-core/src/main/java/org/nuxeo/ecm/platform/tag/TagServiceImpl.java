@@ -185,7 +185,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
         taggingEntry.setTargetDocument(dc);
         taggingEntry.setCreationDate(new Date());
         taggingEntry.setAuthor(user);
-        taggingEntry.setIsPrivate(Boolean.valueOf(privateFlag));
+        taggingEntry.setIsPrivate(privateFlag ? 1 : 0);
         TaggingProvider.createProvider(em).addTagging(taggingEntry);
     }
 
@@ -500,7 +500,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
     }
 
     /**
-     * Checks if the tag is allowed to be used be the user.
+     * Checks if the tag is allowed to be used by the user.
      */
     protected static boolean isTagAllowed(DocumentModel tag, String user)
             throws ClientException {
@@ -508,8 +508,8 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
             throw new ClientException(
                     "Can't get list of documents from tag null.");
         }
-        Boolean isPrivate = (Boolean) tag.getPropertyValue(TagConstants.TAG_IS_PRIVATE_FIELD);
-        if (isPrivate == null || !isPrivate) {
+        Long isPrivate = (Long) tag.getPropertyValue(TagConstants.TAG_IS_PRIVATE_FIELD);
+        if (isPrivate == null || isPrivate == 0) {
             return true;
         }
         String owner = (String) tag.getPropertyValue("dc:creator");
@@ -595,12 +595,11 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
                 DocumentModel foundTag = null;
                 if (tags != null && tags.size() > 0) {
                     // it should be only one, but it is possible to have more
-                    // than one tag
-                    // with the specified label in a group. Need to check the
-                    // flag / user
+                    // than one tag with the specified label in a group. Need to
+                    // check the flag / user
                     for (DocumentModel aTag : tags) {
-                        Boolean isPrivate = (Boolean) aTag.getPropertyValue(TagConstants.TAG_IS_PRIVATE_FIELD);
-                        if (isPrivate != null && !isPrivate) {
+                        Long isPrivate = (Long) aTag.getPropertyValue(TagConstants.TAG_IS_PRIVATE_FIELD);
+                        if (isPrivate == null || isPrivate == 0) {
                             // public tag, should be ok
                             foundTag = aTag;
                             break;
@@ -666,7 +665,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
         tagDocument.setPropertyValue("dc:creator", user);
         tagDocument.setPropertyValue(TagConstants.TAG_LABEL_FIELD, label);
         tagDocument.setPropertyValue(TagConstants.TAG_IS_PRIVATE_FIELD,
-                privateFlag);
+                privateFlag?1:0);
         tagDocument = session.saveDocument(tagDocument);
         session.save();
         return tagDocument;
