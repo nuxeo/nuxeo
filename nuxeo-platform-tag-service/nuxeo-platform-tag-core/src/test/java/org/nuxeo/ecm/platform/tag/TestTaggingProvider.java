@@ -83,7 +83,7 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         taggingEntry.setTag(tag);
         taggingEntry.setAuthor(author);
         taggingEntry.setCreationDate(new Date());
-        taggingEntry.setIsPrivate(isPrivate);
+        taggingEntry.setIsPrivate(isPrivate?1:0);
         return taggingEntry;
     }
 

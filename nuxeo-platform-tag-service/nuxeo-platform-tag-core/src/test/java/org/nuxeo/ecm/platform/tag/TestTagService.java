@@ -112,7 +112,7 @@ public class TestTagService extends SQLRepositoryTestCase {
                 "Unable to find created tag. Probably service failing on creation.",
                 tag);
         assertTrue("Private flag is not correctly set.",
-                ((Boolean) tag.getProperty("tag", "private")).booleanValue());
+                ((Long) tag.getProperty("tag", "private")) != 0);
         assertEquals(tag.getProperty("dublincore", "creator"),
                 session.getPrincipal().getName());
     }

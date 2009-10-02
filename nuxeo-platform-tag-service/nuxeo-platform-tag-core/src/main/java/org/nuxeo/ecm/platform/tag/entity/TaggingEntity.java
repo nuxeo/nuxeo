@@ -101,8 +101,8 @@ public class TaggingEntity implements Serializable{
      * @return true the tagging is available for everyone, false if only for
      *         creator and administrators
      */
-    @Column(name = "IS_PRIVATE")
-    private Boolean isPrivate = false;
+    @Column(name = "IS_PRIVATE", columnDefinition = "integer", precision = 1)
+    private int isPrivate = 0;
 
     public String getId() {
         return id;
@@ -129,11 +129,11 @@ public class TaggingEntity implements Serializable{
         this.creationDate = creationDate;
     }
 
-    public Boolean getIsPrivate() {
+    public int getIsPrivate() {
         return isPrivate;
     }
 
-    public void setIsPrivate(Boolean isPrivate) {
+    public void setIsPrivate(int isPrivate) {
         this.isPrivate = isPrivate;
     }
 

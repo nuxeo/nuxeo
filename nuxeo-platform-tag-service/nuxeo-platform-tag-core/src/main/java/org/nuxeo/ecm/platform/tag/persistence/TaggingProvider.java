@@ -293,12 +293,12 @@ public class TaggingProvider {
             sb.append('?').append(count).append(count < documents.size() ? ',' : "");
             count++;
         }
-        sb.append(") AND (tg.isPrivate=false OR tg.author=");
+        sb.append(") AND (tg.isPrivate=0 OR tg.author=");
         sb.append('?');
         sb.append(count);
         count++;
         sb.append(") AND ");
-        sb.append("(tg.tag.private1 = false OR dc.creator = ");
+        sb.append("(tg.tag.private1 = 0 OR dc.creator = ");
         sb.append('?');
         sb.append(count);
         count++;

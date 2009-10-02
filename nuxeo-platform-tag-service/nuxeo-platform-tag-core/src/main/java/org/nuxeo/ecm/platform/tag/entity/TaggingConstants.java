@@ -41,14 +41,14 @@ public class TaggingConstants {
 
     public static final String LIST_TAGS_FOR_DOCUMENT_QUERY = "SELECT DISTINCT tag.id, tag.label FROM Tagging tagging "
             + "JOIN tagging.tag tag JOIN tag.hierarchy h JOIN h.dublincore dc "
-            + "WHERE (tagging.isPrivate=false OR tagging.author=:userName) AND "
-            + "(tag.private1 = false OR dc.creator = :userName) AND "
+            + "WHERE (tagging.isPrivate=0 OR tagging.author=:userName) AND "
+            + "(tag.private1 = 0 OR dc.creator = :userName) AND "
             + "tagging.targetDocument.id = :targetId";
 
     public static final String LIST_DOCUMENTS_FOR_TAG = "listDocumentsForTag";
 
     public static final String LIST_DOCUMENTS_FOR_TAG_QUERY = "SELECT DISTINCT tagging.targetDocument.id FROM Tagging tagging "
-            + "WHERE (tagging.isPrivate=false OR tagging.author=:userName) AND "
+            + "WHERE (tagging.isPrivate=0 OR tagging.author=:userName) AND "
             + "tagging.tag.id = :tagId";
 
     public static final String LIST_TAGS_FOR_DOCUMENT_AND_USER = "listTagsForDocumentAndUser";
@@ -56,7 +56,7 @@ public class TaggingConstants {
     public static final String LIST_TAGS_FOR_DOCUMENT_AND_USER_QUERY = "SELECT DISTINCT tagging.id, tag.label FROM Tagging tagging "
             + "JOIN tagging.tag tag JOIN tag.hierarchy h JOIN h.dublincore dc "
             + "WHERE tagging.author=:userName AND "
-            + "(tag.private1 = false OR dc.creator = :userName) AND "
+            + "(tag.private1 = 0 OR dc.creator = :userName) AND "
             + "tagging.targetDocument.id = :targetId";
 
     public static final String GET_TAGGING = "getTagging";
@@ -69,13 +69,13 @@ public class TaggingConstants {
 
     public static final String GET_VOTE_TAG_QUERY = "SELECT COUNT(tagging) FROM Tagging tagging "
             + "WHERE tagging.targetDocument.id=:targetId AND tagging.tag.id=:tagId AND "
-            + "(tagging.isPrivate=false OR tagging.author=:userName) ";
+            + "(tagging.isPrivate=0 OR tagging.author=:userName) ";
 
     public static final String GET_POPULAR_TAG = "getPopularTag";
 
     public static final String GET_POPULAR_TAG_QUERY = "SELECT COUNT(tg.id) FROM Tagging tg "
             + "WHERE tg.tag.id=:tagId AND tg.targetDocument.id IN (:listOfIds) AND "
-            + "(tg.isPrivate=false OR tg.author=:userName) ";
+            + "(tg.isPrivate=0 OR tg.author=:userName) ";
 
     public static final String REMOVE_TAGGING = "removeTagging";
 
@@ -87,8 +87,8 @@ public class TaggingConstants {
     public static final String GET_VOTE_CLOUD_QUERY = "SELECT tag.id, tag.label, COUNT(tag.id) FROM Tagging tg "
             + "JOIN tg.tag tag JOIN tag.hierarchy h JOIN h.dublincore dc "
             + "WHERE tg.targetDocument.id IN (:listOfIds) AND "
-            + "(tg.isPrivate=false OR tg.author=:userName) AND "
-            + "(tg.tag.private1 = false OR dc.creator = :userName) GROUP BY tag.id , tag.label";
+            + "(tg.isPrivate=0 OR tg.author=:userName) AND "
+            + "(tg.tag.private1 = 0 OR dc.creator = :userName) GROUP BY tag.id , tag.label";
 
     /*Not used anymore, remains as informative chunk*/
     public static final String GET_POPULAR_CLOUD = "getPopularCloud";
@@ -97,8 +97,8 @@ public class TaggingConstants {
     public static final String GET_POPULAR_CLOUD_QUERY = "SELECT tag.id, tag.label, COUNT(DISTINCT tg.targetDocument.id) FROM Tagging tg "
             + "JOIN tg.tag tag JOIN tag.hierarchy h JOIN h.dublincore dc "
             + "WHERE tg.targetDocument.id IN (:listOfIds) AND "
-            + "(tg.isPrivate=false OR tg.author=:userName) AND "
-            + "(tg.tag.private1 = false OR dc.creator = :userName) GROUP BY tag.id , tag.label";
+            + "(tg.isPrivate=0 OR tg.author=:userName) AND "
+            + "(tg.tag.private1 = 0 OR dc.creator = :userName) GROUP BY tag.id , tag.label";
 
     private TaggingConstants() {
     }

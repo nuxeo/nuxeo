@@ -238,7 +238,8 @@ public class SiteUtils {
         // particular document, ergo Moderation permission granted
         // Rux: I leave the code just in case
         // Set<String> moderatePermissions = new HashSet<String>();
-        // moderatePermissions.addAll(Arrays.asList(session.getPermissionsToCheck(
+        //moderatePermissions.addAll(Arrays.asList(session.getPermissionsToCheck
+        // (
         // WebCommentsConstants.PERMISSION_MODERATE)));
         // if (getUsersWithPermission(session, doc, moderatePermissions).size()
         // <= 0) {
@@ -352,6 +353,26 @@ public class SiteUtils {
             }
         }
         return null;
+    }
+
+    public static Long getNumber(DocumentModel d, String xpath) throws ClientException {
+        Property p = d.getProperty(xpath);
+        if (p != null) {
+            Serializable v = p.getValue();
+            if (v != null && v instanceof Long) {
+                return (Long) v;
+            }
+        }
+        return new Long(0);
+    }
+
+    public static Long getNumber(DocumentModel d, String xpath,
+            Long defaultValue) {
+        try {
+            return getNumber(d, xpath);
+        } catch (ClientException ce) {
+            return defaultValue;
+        }
     }
 
     public static Blob getBlob(DocumentModel d, String xpath)
