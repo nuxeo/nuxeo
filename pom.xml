@@ -80,6 +80,7 @@
     <module>nuxeo-features</module>
     <module>nuxeo-webengine</module>
     <module>nuxeo-dm</module>
+    <module>nuxeo-gwt</module>
     <module>nuxeo-distribution</module>
   </modules>
 
