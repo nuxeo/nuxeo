@@ -2011,8 +2011,17 @@ public abstract class AbstractSession implements CoreSession,
 
             Document versionDocument = doc.getVersion(version.getLabel());
             DocumentModel versionModel = readModel(versionDocument, null);
-            notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDIN, versionModel,
-                    null, null, null, true, false);
+            Map<String, Serializable> options = getContextMapEventInfo(docModel);
+
+            notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, versionModel,
+                    options, null, null, true, false);
+            // FIXME: the fields are hardcoded. should be moved in versioning component
+            final Long majorVer = doc.getLong("major_version");
+            final Long minorVer = doc.getLong("minor_version");
+            String versionComment = majorVer + "." + minorVer;
+            options.put("comment", versionComment);
+            notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDIN, docModel,
+                    options, null, null, true, false);
             writeModel(versionDocument, versionModel);
         } catch (DocumentException e) {
             throw new ClientException("Failed to check in document " + docRef,
