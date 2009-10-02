@@ -90,7 +90,7 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
                             urlParameters);
                     response.sendRedirect(baseURL);
                     FacesContext fContext = FacesContext.getCurrentInstance();
-                    if (fContext == null) {
+                    if (fContext != null) {
                         fContext.responseComplete();
                     } else {
                         log.error("Cannot set response complete: faces context is null");
