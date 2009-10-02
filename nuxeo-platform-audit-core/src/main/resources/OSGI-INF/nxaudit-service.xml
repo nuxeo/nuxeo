@@ -67,13 +67,13 @@
   </extension-point>
 
   <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
-		point="hibernate">
-		<hibernateConfiguration name="nxaudit-logs">
-			<datasource>nxaudit-logs</datasource>
-			<properties>
-	                  <property name="hibernate.hbm2ddl.auto">update</property>
-			</properties>
-		</hibernateConfiguration>
+        point="hibernate">
+        <hibernateConfiguration name="nxaudit-logs">
+            <datasource>nxaudit-logs</datasource>
+            <properties>
+                      <property name="hibernate.hbm2ddl.auto">update</property>
+            </properties>
+        </hibernateConfiguration>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
@@ -98,6 +98,7 @@
     <event name="loginSuccess" />
     <event name="loginFailed" />
     <event name="logout" />
+    <event name="documentCheckedIn"/>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
