@@ -1,37 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.nuxeo</groupId>
-    <artifactId>nuxeo-features</artifactId>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-features-parent</artifactId>
     <version>5.2.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-  <groupId>org.nuxeo.opensocial</groupId>
+
+  <groupId>org.nuxeo.ecm.opensocial</groupId>
   <artifactId>nuxeo-opensocial-parent</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>Nuxeo Opensocial :: Parent</name>
+  <name>Nuxeo Opensocial - Parent</name>
+  <description>Nuxeo OpenSocial is the integration of the Shindig (Opensocial) into Nuxeo</description>
   <packaging>pom</packaging>
-
-
-  <description>Nuxeo OpenSocial is the integration of the shindig
-    opensocial server as a Nuxeo Component 
-  </description>
-
-
-  <properties>
-<!--
-    <nuxeo.common.version>1.5.0</nuxeo.common.version>
-    <nuxeo.core.version>1.5.0</nuxeo.core.version>
-    <nuxeo.platform.version>5.2.0</nuxeo.platform.version>
-    <nuxeo.theme.version>5.2.0</nuxeo.theme.version>
--->
-    <nuxeo.runtime.version>1.5.1-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.webengine.version>5.2.1-SNAPSHOT</nuxeo.webengine.version>
-    <shindig.version>1.0-incubating</shindig.version>
-	<nuxeo.opensocial.container>1.0-SNAPSHOT</nuxeo.opensocial.container>
-	<gwtVersion>1.5.3</gwtVersion>
-  </properties>
 
   <modules>
     <module>nuxeo-opensocial-server</module>
@@ -46,29 +28,10 @@
     <module>nuxeo-webengine-gadgets</module>
     <module>nuxeo-opensocial-container</module>
     <module>nuxeo-opensocial-container-space-config</module>
- <!--   <module>nuxeo-webengine-dashboard</module>  -->
     <module>nuxeo-opensocial-dashboard</module>
-    <module>nuxeo-test-util</module>
+    <module>nuxeo-opensocial-test-util</module>
   </modules>
-  
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.5</version>
-        <configuration>
-          <aggregate>true</aggregate>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
 
-  
-  <organization>
-    <name>Leroy Merlin</name>
-    <url>http://www.leroymerlin.fr/</url>
-  </organization>
   <developers>
     <developer>
       <id>dmetzler</id>
@@ -105,13 +68,13 @@
       <timezone>+1</timezone>
     </developer>
   </developers>
-  
-<!--
+
+<!-- 
   <repositories>
-
     <repository>
-      <id>public</id>
-      <url>http://maven.nuxeo.org/public</url>
+      <id>openqa-releases</id>
+      <name>OpenQA Releases</name>
+      <url>http://nexus.openqa.org/content/repositories/releases</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -120,516 +83,93 @@
       </snapshots>
     </repository>
     <repository>
-      <id>public-snapshot</id>
-      <url>http://maven.nuxeo.org/public-snapshot</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
+      <id>openqa-releases</id>
+      <url>http://archiva.openqa.org/repository/releases</url>
     </repository>
-    <repository>
-                <id>openqa-releases</id>
-                <name>OpenQA Releases</name>
-                <url>http://nexus.openqa.org/content/repositories/releases</url>
-                <releases>
-                    <enabled>true</enabled>
-                </releases>
-                <snapshots>
-                    <enabled>false</enabled>
-                </snapshots>
-            </repository>
-<repository>
-
-    <id>openqa-releases</id> <url>http://archiva.openqa.org/repository/releases</url> 
-
-</repository> 
-
-<repository>
-<id>oauth</id>
-<url>http://oauth.googlecode.com/svn/code/maven/</url>
-</repository>
-<repository>
-<id>caja</id>
-<url>http://google-caja.googlecode.com/svn/maven/</url>
-</repository>
   </repositories>
--->
-<!--
   <pluginRepositories>
     <pluginRepository>
-      <id>public</id>
-      <url>http://maven.nuxeo.org/public</url>
-      <name>Nuxeo virtual release repository</name>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-    <pluginRepository>
-      <id>public-snapshot</id>
-      <url>http://maven.nuxeo.org/public-snapshot</url>
-      <name>Nuxeo virtual snapshot repository</name>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
+      <id>gwt-maven-plugins</id>
+      <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/</url>
     </pluginRepository>
   </pluginRepositories>
+  <repositories>
+    <repository>
+      <id>gwt-maven</id>
+      <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/</url>
+    </repository>
+    <repository>
+      <id>gwt-google-apis</id>
+      <url>http://repo1.maven.org/maven2/</url>
+    </repository>
+  </repositories>
 -->
-
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime</artifactId>
-        <version>${nuxeo.runtime.version}</version> 
-      </dependency>
-	
-      <!--
-        WARNING this are not Nuxeo versions ! TODO : seems Nuxeo can run
-        with those version
-      -->
-      
-      <dependency>
-        <groupId>com.thoughtworks.xstream</groupId>
-        <artifactId>xstream</artifactId>
-        <version>1.3.1</version>
-      </dependency>
-      <!--
-      <dependency>
-        <groupId>net.sf.ehcache</groupId>
-        <artifactId>ehcache</artifactId>
-        <version>1.4.1</version>
-      </dependency>
-      -->
-  <!--  End of specific versions -->
-      
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-core</artifactId>
-        <version>${nuxeo.webengine.version}</version> 
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-base</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-ui</artifactId>
-        <version>${nuxeo.webengine.version}</version> 
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-core</artifactId>
-        <version>${nuxeo.webengine.version}</version> 
-      </dependency>
-      
-      <dependency>
-        <groupId>backport-util-concurrent</groupId>
-        <artifactId>backport-util-concurrent</artifactId>
-        <version>3.1</version>
-      </dependency>
-      
-      <dependency>
-        <groupId>org.nuxeo.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-test-util</artifactId>
-        <version>${nuxeo.opensocial.container}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.opensocial</groupId>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
         <artifactId>nuxeo-opensocial-gadgets</artifactId>
-        <version>${nuxeo.opensocial.container}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.opensocial</groupId>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
         <artifactId>nuxeo-opensocial-server</artifactId>
-        <version>${nuxeo.opensocial.container}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
-	  <dependency>
-        <groupId>org.nuxeo.opensocial</groupId>
+      <dependency>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
         <artifactId>nuxeo-opensocial-features</artifactId>
-        <version>${nuxeo.opensocial.container}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.opensocial</groupId>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
         <artifactId>nuxeo-platform-login-oauth</artifactId>
-        <version>${nuxeo.opensocial.container}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.opensocial</groupId>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
         <artifactId>nuxeo-opensocial-gadgets-core</artifactId>
-        <version>${nuxeo.opensocial.container}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-test</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-osgi</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-usermanager-api
-        </artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-api </artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-usermanager-core
-        </artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-directory-sql
-        </artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-directory-ldap
-        </artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate</artifactId>
-        <version>3.2.0.ga</version>
-      </dependency>
-      <dependency>
-        <groupId>hsqldb</groupId>
-        <artifactId>hsqldb</artifactId>
-        <version>1.8.0.1</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>2.4</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-jetty-adapter
-        </artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>osgi-core</artifactId>
-        <version>4.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.shindig</groupId>
-        <artifactId>shindig-gadgets</artifactId>
-        <version>${shindig.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.shindig</groupId>
-        <artifactId>shindig-common</artifactId>
-        <version>${shindig.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.shindig</groupId>
-        <artifactId>shindig-social-api</artifactId>
-        <version>${shindig.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.shindig</groupId>
-        <artifactId>shindig-features</artifactId>
-        <version>${shindig.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging</artifactId>
-        <version>1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
-        <version>2.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-event</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.common</groupId>
-        <artifactId>nuxeo-common</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-osgi</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-api</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-query</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-scripting
-        </artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-schema</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-ui-web
-        </artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>rhino</groupId>
-        <artifactId>js</artifactId>
-        <version>1.7R1</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sourceforge.htmlunit</groupId>
-        <artifactId>htmlunit</artifactId>
-        <version>2.4</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sourceforge.htmlunit</groupId>
-        <artifactId>htmlunit-core-js</artifactId>
-        <version>2.4</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-jcr-connector
-        </artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-api-test
-        </artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-jcr-connector-test
-        </artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-storage-sql-test</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-storage-sql</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-
-   <!--  Test Scope -->
-      <dependency>
-        <groupId>org.apache.shindig</groupId>
-        <artifactId>shindig-gadgets</artifactId>
-        <version>${shindig.version}</version>
-        <classifier>tests</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.easymock</groupId>
-        <artifactId>easymockclassextension</artifactId>
-        <version>2.2.2</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-all</artifactId>
-        <version>1.6</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.5</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-plus</artifactId>
-        <version>6.1H.7</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-naming</artifactId>
-        <version>6.1H.7</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-annotations</artifactId>
-        <version>6.1H.7</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-util</artifactId>
-        <version>6.1H.7</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty</artifactId>
-        <version>6.1H.7</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.opencsv</groupId>
-        <artifactId>opencsv</artifactId>
-        <version>1.7</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>commons-jexl</groupId>
-        <artifactId>commons-jexl</artifactId>
-        <version>1.1</version>
-        <scope>provided</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-web-common
-        </artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-	  <dependency>
-        <groupId>org.nuxeo.opensocial</groupId>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
         <artifactId>nuxeo-opensocial-container</artifactId>
-        <version>${nuxeo.opensocial.container}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
-	   <dependency>
-        <groupId>org.nuxeo.opensocial</groupId>
+      <dependency>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
         <artifactId>nuxeo-opensocial-container-space-config</artifactId>
-        <version>${nuxeo.opensocial.container}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.opensocial</groupId>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
         <artifactId>nuxeo-spaces-api</artifactId>
-        <version>${nuxeo.opensocial.container}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
-    <dependency>
-        <groupId>org.nuxeo.opensocial</groupId>
+      <dependency>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
         <artifactId>nuxeo-spaces-core</artifactId>
-        <version>${nuxeo.opensocial.container}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.opensocial</groupId>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
         <artifactId>nuxeo-spaces-web</artifactId>
-        <version>${nuxeo.opensocial.container}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.5</version>
-        <type>jar</type>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
+        <artifactId>nuxeo-webengine-gadgets</artifactId>
+        <version>${nuxeo.features.version}</version>
       </dependency>
+
+      <!-- Test scope -->
       <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-types-api</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-types-core</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-webapp-core</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-actions-core</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo</groupId>
-        <artifactId>nuxeo-test-util</artifactId>
-        <version>5.2-SNAPSHOT</version>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
+        <artifactId>nuxeo-opensocial-test-util</artifactId>
+        <version>${nuxeo.features.version}</version>
         <scope>test</scope>
       </dependency>
-    <dependency>
-      <groupId>com.google.code.guice</groupId>
-      <artifactId>guice</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-admin</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-login</artifactId>
-      <version>${nuxeo.webengine.version}</version>
-    </dependency>
-
-    <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-resteasy-adapter</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-
-<dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-core</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-fragments</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-theme-webengine</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-
-<dependency>
-<groupId>postgresql</groupId>
-<artifactId>postgresql</artifactId>
-<version>8.2-507.jdbc3</version>
-</dependency>
     </dependencies>
-</dependencyManagement>
+  </dependencyManagement>
+
 </project>

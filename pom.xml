@@ -83,7 +83,7 @@
     <module>nuxeo-platform-userworkspace</module>
     <module>nuxeo-platform-virtualnavigation</module>
     <module>nuxeo-platform-tag-service</module>
-
+    <module>nuxeo-opensocial</module>
   </modules>
 
   <dependencyManagement>
@@ -712,6 +712,11 @@
         <artifactId>nuxeo-platform-webapp-types</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+<!--      <dependency>-->
+<!--        <groupId>org.nuxeo.ecm.platform</groupId>-->
+<!--        <artifactId>nuxeo-platform-webapp-core</artifactId>-->
+<!--        <version>${nuxeo.features.version}</version>-->
+<!--      </dependency>-->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-imaging-api</artifactId>
@@ -784,6 +789,11 @@
         <version>${nuxeo.runtime.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-jetty-adapter</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-core</artifactId>
         <version>${nuxeo.theme.version}</version>
@@ -799,9 +809,9 @@
         <version>${nuxeo.theme.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.theme</groupId>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-theme-webengine</artifactId>
-        <version>${nuxeo.theme.version}</version>
+        <version>${nuxeo.webengine.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -1017,6 +1027,11 @@
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-blogs</artifactId>
         <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-resteasy-adapter</artifactId>
+        <version>${nuxeo.webengine.version}</version>
       </dependency>
 
       <dependency>

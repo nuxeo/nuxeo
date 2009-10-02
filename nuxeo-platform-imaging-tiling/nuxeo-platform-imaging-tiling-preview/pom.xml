@@ -13,7 +13,7 @@
   <name>Nuxeo Picture Tiling Preview</name>
 
   <properties>
-    <gwtVersion>1.5.3</gwtVersion>
+    <gwt.version>1.5.3</gwt.version>
   </properties>
 
   <dependencies>
@@ -36,19 +36,19 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
-      <version>${gwtVersion}</version>
+      <version>${gwt.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>${gwtVersion}</version>
+      <version>${gwt.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
-      <version>${gwtVersion}</version>
+      <version>${gwt.version}</version>
       <classifier>${platform}-libs</classifier>
       <type>zip</type>
       <scope>provided</scope>
@@ -56,7 +56,7 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
-      <version>${gwtVersion}</version>
+      <version>${gwt.version}</version>
       <scope>provided</scope>
       <classifier>${platform}</classifier>
     </dependency>

@@ -1,87 +1,23 @@
-<?xml version="1.0"?>
-<project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
-    <groupId>org.nuxeo.opensocial</groupId>
+    <groupId>org.nuxeo.ecm.opensocial</groupId>
     <artifactId>nuxeo-opensocial-parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>5.2.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.nuxeo.opensocial</groupId>
   <artifactId>nuxeo-spaces-api</artifactId>
   <name>Nuxeo Opensocial :: Spaces API</name>
-  <version>1.0-SNAPSHOT</version>
-  <description>
-    Introduit le concept d' Univers,d'espace (Space) et de
-    gadgets (Gadgets)
-    Un Univers contient des espaces et un espace contient
-    des gadgets.
-    Le service définit comment acceder a un univers , quels
-    sont les espaces
-    de cet univers et quels sont les gadgets
-    pour un espace
-    donné :
-    usage : SpaceManager service =
-    Framework.getService(SpaceManager.class).
-  </description>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-resources-plugin
-        </artifactId>
-        <configuration>
-          <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.2</version>
-        <configuration>
-          <archive>
-            <manifestFile>
-              ${project.build.outputDirectory}/META-INF/MANIFEST.MF
-            </manifestFile>
-          </archive>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>org.nuxeo</groupId>
-            <artifactId>build-tools</artifactId>
-            <version>1.0</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-    </plugins>
-  </build>
-  <dependencies>
+  <description>Introduce concepts of Universe, Space and Gadgets. A Universe contains Spaces and a
+  Space contains Gadgets. The service defines how to reach a Universe, what are the Spaces and what
+  are their Gadgets.
+  Usage: SpaceManager spaceManagerService=Framework.getService(SpaceManager.class)</description>
 
+
+  <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
@@ -90,96 +26,6 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-
-
-
-
   </dependencies>
-
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <configLocation>config/checkstyle.xml
-          </configLocation>
-          <headerLocation>config/LICENSE.txt
-          </headerLocation>
-        </configuration>
-      </plugin>
-
-
-
-
-
-
-        <!-- <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
-                    <docletArtifact>
-                <groupId>org.umlgraph</groupId>
-                <artifactId>doclet</artifactId>
-                <version>5.1</version>
-              </docletArtifact>
-                    <additionalparam>-views</additionalparam>
-                </configuration>
-            </plugin>
--->
-
-<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
-                    <docletPath>C:\_\new\UmlGraph.jar</docletPath>
-                    <additionalparam>-views</additionalparam>
-                </configuration>
-            </plugin>
-
-
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-report-plugin
-        </artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <version>2.3</version>
-        <configuration>
-          <linkXref>true</linkXref>
-          <sourceEncoding>utf-8</sourceEncoding>
-          <minimumTokens>100</minimumTokens>
-          <targetJdk>1.5</targetJdk>
-        </configuration>
-      </plugin>
-
-
-    </plugins>
-
-
-
-  </reporting>
 
 </project>

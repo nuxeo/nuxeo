@@ -1,98 +1,22 @@
-<?xml version="1.0"?>
-<project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
-    <groupId>org.nuxeo.opensocial</groupId>
-    <artifactId>nuxeo-opensocial-parent
-    </artifactId>
-    <!-- Select the nuxeo 5 ecm version -->
-    <version>1.0-SNAPSHOT</version>
+    <groupId>org.nuxeo.ecm.opensocial</groupId>
+    <artifactId>nuxeo-opensocial-parent</artifactId>
+    <version>5.2.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.nuxeo.opensocial</groupId>
   <artifactId>nuxeo-spaces-web</artifactId>
   <name>Nuxeo Opensocial :: Spaces Web (JSF) contribution</name>
   <description>Contribution to the JSF app to exposes spaces
     document types</description>
-  <version>1.0-SNAPSHOT</version>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.0.2</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.2</version>
-        <configuration>
-          <archive>
-            <manifestFile>
-              src/main/resources/META-INF/MANIFEST.MF
-            </manifestFile>
-          </archive>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
   <dependencies>
-
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-types-api
-      </artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-types-core
-      </artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-actions-core
-      </artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-webapp-core
-      </artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-jexl</groupId>
-      <artifactId>commons-jexl</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-
-    <dependency>
-      <groupId>org.nuxeo.opensocial</groupId>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-spaces-core</artifactId>
     </dependency>
     <dependency>
@@ -101,19 +25,40 @@
     </dependency>
 
     <dependency>
-      <groupId>org.nuxeo</groupId>
-      <artifactId>nuxeo-test-util</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
     </dependency>
 
+    <!-- test scope -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-types-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-types-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-actions-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.nuxeo.ecm.platform</groupId>-->
+<!--      <artifactId>nuxeo-platform-webapp-core</artifactId>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
+    <dependency>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-opensocial-test-util</artifactId>
+    </dependency>
 
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>commons-jexl</groupId>
+      <artifactId>commons-jexl</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

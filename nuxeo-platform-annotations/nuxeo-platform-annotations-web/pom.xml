@@ -10,13 +10,13 @@
   <artifactId>nuxeo-platform-annotations-web</artifactId>
   <name> Nuxeo Platform Annotation Service Client </name>
   <properties>
-    <gwtVersion>1.5.3</gwtVersion>
+    <gwt.version>1.5.3</gwt.version>
   </properties>
   <dependencies>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
-      <version>${gwtVersion}</version>
+      <version>${gwt.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>

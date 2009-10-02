@@ -1,66 +1,35 @@
-<?xml version="1.0"?>
-<project>
-  <parent>
-    <groupId>org.nuxeo.opensocial</groupId>
-    <artifactId>nuxeo-opensocial-parent
-    </artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.nuxeo.opensocial</groupId>
-  <artifactId>nuxeo-opensocial-container
-  </artifactId>
-  <name>Nuxeo OpenSocial :: Container</name>
-  <description>Container de gadget GWT</description>
-  <version>1.0-SNAPSHOT</version>
-  <!--  include pluginRepository and repository for GWT-Maven -->
-  <pluginRepositories>
-    <pluginRepository>
-      <id>gwt-maven-plugins</id>
-      <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/
-      </url>
-    </pluginRepository>
-  </pluginRepositories>
-  <repositories>
-    <repository>
-      <id>gwt-maven</id>
-      <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/
-      </url>
-    </repository>
-    <repository>
-      <id>gwt-google-apis</id>
-      <url>http://repo1.maven.org/maven2/
-      </url>
-    </repository>
-  </repositories>
+  <parent>
+    <groupId>org.nuxeo.ecm.opensocial</groupId>
+    <artifactId>nuxeo-opensocial-parent</artifactId>
+    <version>5.2.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-opensocial-container</artifactId>
+  <name>Nuxeo Opensocial :: Container</name>
+  <description>GWT gadgets container</description>
 
   <dependencies>
-    <!--  GWT deps (from central repo) -->
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
-      <version>${gwtVersion}</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>com.google.gwt.google-apis
-      </groupId>
+      <groupId>com.google.gwt.google-apis</groupId>
       <artifactId>gwt-gadgets</artifactId>
-      <version>1.0.3</version>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>${gwtVersion}</version>
-      <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
-      <version>${gwtVersion}</version>
       <classifier>${platform}</classifier>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -86,43 +55,25 @@
     <dependency>
       <groupId>com.gwtext</groupId>
       <artifactId>gwtext</artifactId>
-      <version>2.0.5</version>
     </dependency>
-
 
     <!--  test -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
       <scope>test</scope>
     </dependency>
-
-
     <dependency>
-      <groupId>org.nuxeo</groupId>
-      <artifactId>nuxeo-test-util</artifactId>
-      <scope>test</scope>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-opensocial-test-util</artifactId>
     </dependency>
-
   </dependencies>
 
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-    </resources>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.0</version>
         <executions>
           <execution>
             <goals>
@@ -130,8 +81,7 @@
               <goal>test</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.outputDirectory}/
-              </outputDirectory>
+              <outputDirectory>${project.build.outputDirectory}/</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -156,8 +106,6 @@
           </excludes>
         </configuration>
       </plugin>
-
-
     </plugins>
   </build>
 

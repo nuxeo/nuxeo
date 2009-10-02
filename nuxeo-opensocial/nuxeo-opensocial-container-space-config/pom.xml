@@ -1,129 +1,59 @@
-<?xml version="1.0"?>
-<project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.nuxeo.opensocial</groupId>
-    <artifactId>nuxeo-opensocial-parent
-    </artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>org.nuxeo.ecm.opensocial</groupId>
+    <artifactId>nuxeo-opensocial-parent</artifactId>
+    <version>5.2.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>nuxeo-opensocial-container-space-config
-  </artifactId>
-  <name>Nuxeo Opensocial :: Container Configuration for Space API
-  </name>
-  <description>Permet de configurer la gestion du container GWT
-  </description>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-resources-plugin
-        </artifactId>
-        <configuration>
-          <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.2</version>
-        <configuration>
-          <archive>
-            <manifestFile>
-              ${project.build.outputDirectory}/META-INF/MANIFEST.MF
-            </manifestFile>
-          </archive>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+  <artifactId>nuxeo-opensocial-container-space-config</artifactId>
+  <name>Nuxeo Opensocial :: Container Configuration for Space API</name>
+  <description>GWT container management configuration</description>
+
   <dependencies>
-
     <dependency>
-      <groupId>org.nuxeo.opensocial</groupId>
-      <artifactId>nuxeo-opensocial-container
-      </artifactId>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-opensocial-container</artifactId>
     </dependency>
-
-      <dependency>
-        <groupId>com.thoughtworks.xstream</groupId>
-        <artifactId>xstream</artifactId>
-      </dependency>
-
     <dependency>
-      <groupId>org.nuxeo.opensocial</groupId>
-      <artifactId>nuxeo-opensocial-gadgets-core
-      </artifactId>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-opensocial-gadgets-core</artifactId>
     </dependency>
-
     <dependency>
-      <groupId>org.nuxeo.opensocial</groupId>
-      <artifactId>nuxeo-opensocial-server
-      </artifactId>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-opensocial-server</artifactId>
     </dependency>
-
-
     <dependency>
-      <groupId>org.nuxeo.opensocial</groupId>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-spaces-api</artifactId>
     </dependency>
-
-
-    <dependency>
-      <groupId>org.nuxeo.opensocial</groupId>
-      <artifactId>nuxeo-spaces-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-	
-	<dependency>
-      <groupId>org.nuxeo.opensocial</groupId>
-      <artifactId>nuxeo-webengine-gadgets</artifactId>
-	  <version>1.0-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
-
-    <!--dependency>
-      <groupId>org.nuxeo.opensocial</groupId>
-      <artifactId>nuxeo-webengine-gadgets
-      </artifactId>
-      <version>1.0-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency-->
-
-
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.nuxeo</groupId>
-      <artifactId>nuxeo-test-util</artifactId>
+      <groupId>com.thoughtworks.xstream</groupId>
+      <artifactId>xstream</artifactId>
     </dependency>
 
-
+    <!-- Scope test -->
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-spaces-core</artifactId>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-webengine-gadgets</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-opensocial-test-util</artifactId>
+    </dependency>
   </dependencies>
 </project>

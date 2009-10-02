@@ -17,3 +17,9 @@ nuxeo-platform-jbpm/nuxeo-platform-jbpm-web/src/main/resources/nuxeo.war/linkXht
 *cpJar*
 build.properties
 nuxeo-theme-editor/bin-groovy
+.svn
+.svn2hg_currev
+.svn2hg_curlog
+shindig
+derby.log
+*.launch

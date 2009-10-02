@@ -17,10 +17,9 @@
   <property name="build.dir" value="${basedir}/target" />
   <property name="deploy.dir" value="${jboss.dir}/server/default/deploy" />
   <property name="nuxeo.ear" value="nuxeo.ear" />
-   <property name="mvn.opts" value="" />
+  <property name="mvn.opts" value="" />
   <property name="lm.portal.dir.web.module" value="${lm.portal.dir}/web/modules/org.nuxeo.opensocial.spaces" />
   <property name="webeng.dir" value="${jboss.dir}/server/default/deploy" />
-
 
   <condition property="osfamily-unix">
     <os family="unix" />
@@ -76,9 +75,9 @@
   </target>
 
   <target name="web" description="Copy resources to module">
-      <copy todir="${lm.portal.dir.web.module}" overwrite="true">
-        <fileset dir="${build.dir}/classes" />
-      </copy>
-    </target>
+    <copy todir="${lm.portal.dir.web.module}" overwrite="true">
+      <fileset dir="${build.dir}/classes" />
+    </copy>
+  </target>
 
 </project>
