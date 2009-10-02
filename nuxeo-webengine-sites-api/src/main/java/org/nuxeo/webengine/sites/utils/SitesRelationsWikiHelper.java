@@ -20,8 +20,6 @@
 package org.nuxeo.webengine.sites.utils;
 
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE_CONTENT;
-import static org.nuxeo.webengine.sites.wiki.rendering.WikiSitesPageLinkResolver.PAGE_LINK_PATTERN;
-
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +38,6 @@ import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.ecm.platform.relations.api.util.RelationHelper;
-import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.model.WebContext;
 import org.wikimodel.wem.WikiParserException;
 import org.wikimodel.wem.common.CommonWikiParser;
 
@@ -73,18 +69,16 @@ public class SitesRelationsWikiHelper {
         }
 
         QNameResource docResource = RelationHelper.getDocumentResource(doc);
-        WebContext ctx = WebEngine.getActiveContext();
-        String basePath = ctx.getModulePath();
-        org.nuxeo.ecm.webengine.model.Resource resource = ctx.getTargetObject();
+        String basePath = (String) doc.getContextData("basePath");
+        String siteName = (String) doc.getContextData("siteName");
+        String targetBasePath = (String) doc.getContextData("targetObjectPath");
+
         for (String word : list) {
             if (word.startsWith(".")) {
-                org.nuxeo.ecm.webengine.model.Resource parentResource = resource.getPrevious();
-                while (!parentResource.isInstanceOf("site")) {
-                    parentResource = parentResource.getPrevious();
-                }
-                word = basePath + "/" + parentResource.getName() + word.replace(".", "/");
+
+                word = basePath + "/" + siteName + word.replace(".", "/");
             } else {
-                word = resource.getPath() + "/" + word;
+                word = targetBasePath + "/" + word;
             }
             Statement stmt = new StatementImpl(docResource,
                     HAS_LINK_TO, new LiteralImpl(word));
@@ -124,7 +118,7 @@ public class SitesRelationsWikiHelper {
 
     public static List<String> getWordLinks(String text) {
         List<String> wordLinks = new ArrayList<String>();
-        Matcher matcher = PAGE_LINK_PATTERN.matcher(text);
+        Matcher matcher = SiteConstants.PAGE_LINK_PATTERN.matcher(text);
         while (matcher.find()) {
             String s = matcher.group(0);
             if (!wordLinks.contains(s)) {

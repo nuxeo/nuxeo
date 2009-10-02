@@ -50,6 +50,14 @@
   </build>
 
   <dependencies>
+
+
+    <dependency>
+    <groupId>org.nuxeo.ecm.webengine</groupId>
+    <artifactId>nuxeo-webengine-sites-api</artifactId>
+    </dependency>
+
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
@@ -88,8 +96,8 @@
       <artifactId>nuxeo-platform-tag-api</artifactId>
       <version>${version}</version>
     </dependency>
-    
-    
+
+
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
@@ -120,12 +128,12 @@
     <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb-api</artifactId>
     </dependency>
-    
+
     <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -176,8 +184,13 @@
       <artifactId>nuxeo-webengine-sites-core-contrib</artifactId>
       <scope>test</scope>
     </dependency>
-    
-    
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+
   </dependencies>
 
 </project>

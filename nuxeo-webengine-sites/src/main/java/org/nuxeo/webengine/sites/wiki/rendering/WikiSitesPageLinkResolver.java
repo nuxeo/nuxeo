@@ -26,20 +26,16 @@ import org.nuxeo.ecm.platform.rendering.wiki.WikiFilter;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.webengine.sites.utils.SiteConstants;
 
 /**
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
  *
  */
 public class WikiSitesPageLinkResolver implements WikiFilter {
-    public static final String PATTERN = "(\\.)?([A-Z]+[a-z]+[A-Z][A-Za-z]*\\.)*([A-Z]+[a-z]+[A-Z][A-Za-z]*)";
-
-    public static final Pattern PAGE_LINK_PATTERN = Pattern.compile(PATTERN);
-
-    static final String LINK_TEMPLATE = "<a href=\"%s\">%s</a>";
 
     public String apply(String content) {
-        Matcher m = PAGE_LINK_PATTERN.matcher(content);
+        Matcher m = SiteConstants.PAGE_LINK_PATTERN.matcher(content);
         StringBuffer sb = new StringBuffer();
         if (!m.find()) {
             return content;
@@ -94,7 +90,7 @@ public class WikiSitesPageLinkResolver implements WikiFilter {
 
     protected String buildLink(String basePath, StringBuffer relativePath,
             String str) {
-        return String.format(LINK_TEMPLATE, basePath + relativePath, str);
+        return String.format(SiteConstants.LINK_TEMPLATE, basePath + relativePath, str);
     }
 
 }

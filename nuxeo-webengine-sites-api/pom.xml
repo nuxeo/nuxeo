@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-features-parent</artifactId>
+    <version>5.2.1-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.webengine</groupId>
+  <artifactId>nuxeo-webengine-sites-api</artifactId>
+  <name>Nuxeo WebEngine Sites Module API</name>
+  <description>Sites Module to handle webcontainers API </description>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestFile>
+              src/main/resources/META-INF/MANIFEST.MF
+            </manifestFile>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+        </configuration>
+      </plugin>
+      <!-- APT plugin for annotation preprocessing -->
+      <plugin>
+        <groupId>org.apache.myfaces.tobago</groupId>
+        <artifactId>maven-apt-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-bindings</id>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- end APT plugin -->
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-relations-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-mimetype-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.wikimodel</groupId>
+      <artifactId>wem</artifactId>
+    </dependency>
+    
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-tag-api</artifactId>
+      <version>${version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <classifier>jdk15</classifier>
+    </dependency>
+    
+    <!-- test scope -->
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+    </dependency>
+    
+  </dependencies>
+
+</project>

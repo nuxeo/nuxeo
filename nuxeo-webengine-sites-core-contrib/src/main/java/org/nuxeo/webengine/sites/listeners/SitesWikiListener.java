@@ -34,9 +34,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.model.Resource;
-import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.webengine.sites.utils.SitesRelationsWikiHelper;
 
 /**
@@ -86,9 +83,14 @@ public class SitesWikiListener implements EventListener {
                     || ABOUT_TO_CREATE.equals(event.getName())) {
                 String wikiContent = (String) webPage.getPropertyValue(WEBPAGE_CONTENT);
                 String[] wikiLinks = getLinks(wikiContent);
-                WebContext ctx = WebEngine.getActiveContext();
+
+                String basePath = (String) webPage.getContextData("basePath");
+                String targetObjectPath = (String) webPage.getContextData("targetObjectPath");
+
+                /*WebContext ctx = WebEngine.getActiveContext();
                 Resource resource = ctx.getTargetObject();
                 String basePath = ctx.getModulePath();
+                */
 
                 for (int i = 0; i < wikiLinks.length; i++) {
                     String[] splitWikiLinks = StringUtils.split(wikiLinks[i]);
@@ -105,7 +107,7 @@ public class SitesWikiListener implements EventListener {
                         } else {
                             // Relative path
                             newLinkString = linkString.replace(".", "/");
-                            newLinkString = resource.getPath() + "/"
+                            newLinkString = targetObjectPath + "/"
                                     + newLinkString;
                         }
                         relationLinks.add(newLinkString);

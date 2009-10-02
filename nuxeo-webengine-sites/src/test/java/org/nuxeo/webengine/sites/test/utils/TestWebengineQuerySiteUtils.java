@@ -80,10 +80,12 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         deployContrib(bundleFile, "OSGI-INF/comment-jena-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.comment",
                 "OSGI-INF/CommentService.xml");
-        deployBundle("org.nuxeo.ecm.platform.webengine.sites.core.contrib");
-        deployContrib(bundleFile, "OSGI-INF/RepositoryService.xml");
-        deployContrib(bundleFile, "OSGI-INF/RepositoryManager.xml");
-        deployContrib(bundleFile, "OSGI-INF/ecm-types-contrib.xml");
+        deployBundle("org.nuxeo.ecm.platform.webengine.sites.api");
+        deployContrib("org.nuxeo.ecm.platform.webengine.sites.core.contrib", "OSGI-INF/core-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.webengine.sites.core.contrib", "OSGI-INF/permissions-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.webengine.sites.core.contrib", "OSGI-INF/webengine-nxsearch-contrib.xml");
+
+        //deployBundle("org.nuxeo.ecm.platform.webengine.sites.core.contrib");
 
         openSession();
         initializeTestData();
@@ -106,7 +108,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         workspaceSite.setPropertyValue("webcontainer:isWebContainer",
                 new Boolean(true));
         workspaceSite = session.createDocument(workspaceSite);
-        workspaceSite = session.saveDocument(workspaceSite);
+        //workspaceSite = session.saveDocument(workspaceSite);
         session.save();
         // re-read the document model
         workspaceSite = session.getDocument(workspaceSite.getRef());
@@ -119,7 +121,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         webSite.setPropertyValue("webcontainer:isWebContainer", new Boolean(
                 true));
         webSite = session.createDocument(webSite);
-        webSite = session.saveDocument(webSite);
+        //webSite = session.saveDocument(webSite);
         session.save();
         // re-read the document model
         webSite = session.getDocument(webSite.getRef());
@@ -143,7 +145,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
                         + System.currentTimeMillis()), SiteConstants.WEBPAGE);
         assertNotNull(webPageForWebSite);
         webPageForWebSite = session.createDocument(webPageForWebSite);
-        webPageForWebSite = session.saveDocument(webPageForWebSite);
+        //webPageForWebSite = session.saveDocument(webPageForWebSite);
         session.save();
         // re-read the document model
         webPageForWebSite = session.getDocument(webPageForWebSite.getRef());

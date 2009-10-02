@@ -16,6 +16,8 @@
  */
 package org.nuxeo.webengine.sites.utils;
 
+import java.util.regex.Pattern;
+
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 
 /**
@@ -122,5 +124,15 @@ public final class SiteConstants {
      * MimeType
      * */
     public static final String MIME_TYPE_RSS_FEED = "application/rss+xml";
+
+
+    /**
+     *
+     * Wiki pages
+     *
+     */
+    public static final String PATTERN = "(\\.)?([A-Z]+[a-z]+[A-Z][A-Za-z]*\\.)*([A-Z]+[a-z]+[A-Z][A-Za-z]*)";
+    public static final Pattern PAGE_LINK_PATTERN = Pattern.compile(PATTERN);
+    public static final String LINK_TEMPLATE = "<a href=\"%s\">%s</a>";
 
 }

@@ -49,7 +49,10 @@ public class SiteQueriesColection {
                 + "ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 "
                 + "AND ecm:currentLifeCycleState != 'deleted' "
                 + "AND webc:isWebContainer = 1", documentType, url);
-        return session.query(queryString);
+
+        DocumentModelList list =session.query(queryString);
+
+        return list;
     }
 
     /**

@@ -1,0 +1,2 @@
+# Which JBoss server config to use
+jboss.config=default

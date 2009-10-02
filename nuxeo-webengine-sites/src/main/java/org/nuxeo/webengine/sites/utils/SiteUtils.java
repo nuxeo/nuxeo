@@ -199,8 +199,9 @@ public class SiteUtils {
         documentModel.setPropertyValue(SiteConstants.WEBPAGE_PUSHTOMENU,
                 Boolean.valueOf(pushToMenu));
 
+        ContextTransmitterHelper.feedContext(documentModel);
         documentModel = session.createDocument(documentModel);
-        documentModel = session.saveDocument(documentModel);
+        //documentModel = session.saveDocument(documentModel);
         session.save();
 
         return documentModel;

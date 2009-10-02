@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: WebEngine Blogs Module API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.webengine.blogs.api;singleton=true
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.core.api
+

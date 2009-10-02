@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: WebEngine Sites Module API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.webengine.sites.api
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.core.api

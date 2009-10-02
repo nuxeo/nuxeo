@@ -15,6 +15,19 @@
   <description>Sites Module to handle webcontainers</description>
 
   <dependencies>
-  </dependencies>
+    <dependency>
+     <groupId>org.nuxeo.ecm.webengine</groupId>
+     <artifactId>nuxeo-webengine-sites-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.wikimodel</groupId>
+      <artifactId>wem</artifactId>    
+    </dependency>
+    <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+    </dependency>
+
+    </dependencies>
 
 </project>
