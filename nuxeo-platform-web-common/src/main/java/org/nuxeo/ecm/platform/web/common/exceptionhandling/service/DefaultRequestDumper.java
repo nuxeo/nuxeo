@@ -22,13 +22,18 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * @author arussel
  *
  */
 public class DefaultRequestDumper implements RequestDumper {
 
-    private List<String> attributes = new ArrayList<String>();
+    private static final Log log = LogFactory.getLog(DefaultRequestDumper.class);
+
+    protected List<String> attributes = new ArrayList<String>();
 
     @SuppressWarnings("unchecked")
     public String getDump(HttpServletRequest request) {
@@ -40,10 +45,17 @@ public class DefaultRequestDumper implements RequestDumper {
             if (attributes.contains(name)) {
                 continue;
             }
-            Object obj = request.getAttribute(name);
             builder.append(name);
             builder.append(" : ");
-            builder.append(obj.toString());
+            try {
+                Object obj = request.getAttribute(name);
+                builder.append(obj.toString());
+            } catch (Exception error) {
+                // avoid errors when printing the error dump
+                log.error("ERROR TRYING TO GET THIS REQUEST ATTRIBUTE VALUE: "
+                        + name);
+                builder.append("ERROR TRYING TO GET THIS REQUEST ATTRIBUTE VALUE");
+            }
             builder.append("\n");
         }
         return builder.toString();
