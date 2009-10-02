@@ -272,9 +272,9 @@ public final class Utils {
             for (String path : style.getPathsForView(viewName)) {
                 final Properties styleProperties = style.getPropertiesFor(
                         viewName, path);
-                if (styleProperties.isEmpty()) {
-                    continue;
-                }
+//                if (styleProperties.isEmpty()) {
+//                    continue;
+//                }
 
                 final String[] splitPaths = path.split(",");
                 final int len = splitPaths.length;
@@ -345,7 +345,7 @@ public final class Utils {
         final InputSource is = new InputSource(new StringReader(cssSource));
         CSSStyleSheet css = null;
         try {
-            css = parser.parseStyleSheet(is);
+            css = parser.parseStyleSheet(is, null, null);
         } catch (NumberFormatException e) {
             log.error("Error while converting CSS value: \n" + cssSource);
         } catch (CSSException e) {
@@ -372,6 +372,9 @@ public final class Utils {
                     final String propertyName = s.item(j);
                     final CSSValue value = s.getPropertyCSSValue(propertyName);
                     properties.setProperty(propertyName, value.toString());
+                }
+                if (s.getLength() == 0) {
+                    properties.setProperty("", "");
                 }
                 String selector = sr.getSelectorText();
                 if (selector.equals(EMPTY_CSS_SELECTOR)) {
