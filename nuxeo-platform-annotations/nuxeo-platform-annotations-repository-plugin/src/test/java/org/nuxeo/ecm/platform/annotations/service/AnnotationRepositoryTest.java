@@ -113,7 +113,6 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         versionModel.setLabel(version);
         session.checkIn(myfile.getRef(), versionModel);
         session.checkOut(myfile.getRef());
-        session.saveDocument(myfile);
         session.save();
         waitForAsyncExec();
     }

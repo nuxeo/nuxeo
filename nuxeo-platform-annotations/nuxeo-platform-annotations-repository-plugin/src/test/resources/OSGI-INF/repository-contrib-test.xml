@@ -5,10 +5,10 @@
     target="org.nuxeo.ecm.platform.annotations.AnnotationsRepositoryService"
     point="documentEventListener">
     <listener  name="testAnnotatedDocumentListener"
-      class="org.nuxeo.ecm.platform.annotations.service.DocumentTestEventListener" />
+      class="org.nuxeo.ecm.platform.annotations.service.DummyDocumentEventListener" />
       <!-- Override the default listener -->
     <listener  name="defaultAnnotatedDocumentListener"
-      class="org.nuxeo.ecm.platform.annotations.service.DocumentTestEventListener" />
+      class="org.nuxeo.ecm.platform.annotations.service.DummyDocumentEventListener" />
   </extension>
 
 </component>

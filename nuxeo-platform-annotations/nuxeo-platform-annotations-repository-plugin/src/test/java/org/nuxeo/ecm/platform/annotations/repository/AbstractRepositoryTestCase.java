@@ -160,6 +160,7 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
                 new DocumentViewImpl(doc), true, "http://localhost/nuxeo/");
         assertNotNull(url);
         uri = new URI(url.toString());
+        waitForAsyncExec();
     }
 
     protected Annotation getAnnotation(String url, int x) throws IOException,
@@ -182,19 +183,7 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
 
     protected void waitForAsyncExec() {
         EventServiceImpl evtService = (EventServiceImpl) Framework.getLocalService(EventService.class);
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        while ((evtService.getActiveAsyncTaskCount()) > 0) {
-            try {
-                Thread.sleep(100);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        evtService.waitForAsyncCompletion();
     }
 
 }

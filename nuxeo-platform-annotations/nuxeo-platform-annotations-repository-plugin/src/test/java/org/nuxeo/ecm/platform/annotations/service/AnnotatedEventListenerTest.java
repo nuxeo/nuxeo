@@ -33,18 +33,18 @@ import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 /**
  * @author Alexandre Russel
  */
-public class AnnotatedEventTestListener extends AbstractRepositoryTestCase {
+public class AnnotatedEventListenerTest extends AbstractRepositoryTestCase {
 
     private static final String HTTP_LOCALHOST_8080_NUXEO = "http://localhost:8080/nuxeo";
 
     public void testTest() throws AnnotationException {
-        DocumentTestEventListener.resetTest();
+        DummyDocumentEventListener.resetTest();
         assertNotNull(annotation);
         NuxeoPrincipal user = new FakeNuxeoPrincipal("bob");
         Annotation createdAnnotation = service.addAnnotation(annotation, user,
                 HTTP_LOCALHOST_8080_NUXEO);
         assertNotNull(createdAnnotation);
-        int result = DocumentTestEventListener.getTest();
+        int result = DummyDocumentEventListener.getTest();
         assertEquals(Integer.parseInt("11", 2), result);
         Statement statement = new StatementImpl(createdAnnotation.getSubject(),
                 new ResourceImpl(AnnotationsConstants.A_BODY), new LiteralImpl(
@@ -52,14 +52,14 @@ public class AnnotatedEventTestListener extends AbstractRepositoryTestCase {
         createdAnnotation.setBody(statement);
         service.updateAnnotation(createdAnnotation, user,
                 HTTP_LOCALHOST_8080_NUXEO);
-        result = DocumentTestEventListener.getTest();
+        result = DummyDocumentEventListener.getTest();
         assertEquals(Integer.parseInt("110011", 2), result);
         createdAnnotation = service.getAnnotation(createdAnnotation.getId(),
                 user, HTTP_LOCALHOST_8080_NUXEO);
-        result = DocumentTestEventListener.getTest();
+        result = DummyDocumentEventListener.getTest();
         assertEquals(Integer.parseInt("111111", 2), result);
         service.deleteAnnotation(createdAnnotation, user);
-        result = DocumentTestEventListener.getTest();
+        result = DummyDocumentEventListener.getTest();
         assertEquals(Integer.parseInt("11111111", 2), result);
     }
 

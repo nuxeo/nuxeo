@@ -27,7 +27,7 @@ import org.nuxeo.ecm.platform.annotations.repository.service.AnnotatedDocumentEv
  * @author Alexandre Russel
  *
  */
-public class DocumentTestEventListener implements
+public class DummyDocumentEventListener implements
         AnnotatedDocumentEventListener {
     private static int test;
 
