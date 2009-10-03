@@ -35,13 +35,13 @@ public class TestExtensionPoint extends NXRuntimeTestCase {
     public void testOverride() {
         ComponentWithXPoint co = (ComponentWithXPoint) Framework.getRuntime().getComponent(
                 ComponentWithXPoint.NAME);
-        ContributionTest[] contribs = co.getContributions();
+        DummyContribution[] contribs = co.getContributions();
         assertEquals(2, contribs.length);
-        assertSame(contribs[0].getClass(), ContributionTest.class);
-        assertSame(contribs[1].getClass(), ContributionTestOverrided.class);
+        assertSame(contribs[0].getClass(), DummyContribution.class);
+        assertSame(contribs[1].getClass(), DummyContributionOverriden.class);
         assertEquals("XP contrib", contribs[0].message);
         assertEquals("OverXP contrib", contribs[1].message);
-        assertEquals("My duty is to override", ((ContributionTestOverrided) contribs[1]).name);
+        assertEquals("My duty is to override", ((DummyContributionOverriden) contribs[1]).name);
     }
 
 }

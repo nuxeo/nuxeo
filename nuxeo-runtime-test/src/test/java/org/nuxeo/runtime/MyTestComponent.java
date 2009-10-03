@@ -47,14 +47,14 @@ public class MyTestComponent implements Component {
     public void registerExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
-            log.debug("Registering: " + ((ContributionTest) contrib).message);
+            log.debug("Registering: " + ((DummyContribution) contrib).message);
         }
     }
 
     public void unregisterExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
-            log.debug("Un-Registering: " + ((ContributionTest) contrib).message);
+            log.debug("Un-Registering: " + ((DummyContribution) contrib).message);
         }
     }
 

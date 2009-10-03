@@ -9,7 +9,7 @@
   <implementation class="org.nuxeo.runtime.ComponentWithXPoint"/>
 
   <extension-point name="xp">
-    <object class="org.nuxeo.runtime.ContributionTest"/>
+    <object class="org.nuxeo.runtime.DummyContribution"/>
   </extension-point>
 
 </component>
