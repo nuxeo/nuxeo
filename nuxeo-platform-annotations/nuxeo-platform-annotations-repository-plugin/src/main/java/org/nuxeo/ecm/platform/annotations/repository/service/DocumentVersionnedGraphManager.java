@@ -64,9 +64,11 @@ public class DocumentVersionnedGraphManager implements
         String docId = docModel.getId();
         String repo = docModel.getRepositoryName();
 
-        if (DocumentEventTypes.DOCUMENT_CHECKEDIN.equals(event.getName())) {
-            String sourceId = docModel.getSourceId();
-            copyGraphFor(repo, sourceId, docId, user);
+        if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())) {
+            if (docModel.isVersion()) {
+                String sourceId = docModel.getSourceId();
+                copyGraphFor(repo, sourceId, docId, user);
+            }
         } else if (DocumentEventTypes.DOCUMENT_REMOVED.equals(event.getName())
                 || DocumentEventTypes.VERSION_REMOVED.equals(event.getName())) {
             removeGraphFor(repo, docId, user);

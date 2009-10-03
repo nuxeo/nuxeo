@@ -5,7 +5,7 @@
     <documentAnnotability class="org.nuxeo.ecm.platform.annotations.repository.service.DefaultDocumentAnnotability"/>
   </extension>
   <extension target="org.nuxeo.ecm.platform.annotations.AnnotationsRepositoryService" point="jcrLifecycleEventId">
-    <eventId>documentCheckedIn</eventId>
+    <eventId>documentCreated</eventId>
     <eventId>documentRemoved</eventId>
     <eventId>versionRemoved</eventId>
     <eventId>documentRestored</eventId>
