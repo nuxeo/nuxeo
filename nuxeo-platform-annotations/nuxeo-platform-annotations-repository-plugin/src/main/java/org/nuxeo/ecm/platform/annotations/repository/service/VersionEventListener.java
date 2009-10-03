@@ -59,6 +59,7 @@ public class VersionEventListener implements PostCommitEventListener {
         if (processEvents) {
             for (Event event : events) {
                 if (eventNames.contains(event.getName())) {
+                    log.debug("Handling " + event.getName() + " event");
                     manager.manage(event);
                 }
             }

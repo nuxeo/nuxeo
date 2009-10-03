@@ -29,12 +29,16 @@ import org.nuxeo.ecm.platform.annotations.repository.AbstractRepositoryTestCase;
 import org.nuxeo.ecm.platform.annotations.repository.FakeNuxeoPrincipal;
 import org.nuxeo.ecm.platform.annotations.repository.URNDocumentViewTranslator;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  *
  */
 public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
+
+        private static final Log log = LogFactory.getLog(AnnotationsOnVersionTest.class);
 
     private static final String SERVER = "http://server.com/nuxeo/";
 
@@ -63,22 +67,26 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         // still 1 annotation on current document
         annotations = service.queryAnnotations(uri, null, user);
         assertEquals(1, annotations.size());
-
+        log.debug(annotations.size() + " annotations for: " + uri);
         // 1 annotation on the version
         DocumentModel versionModel = session.getDocumentWithVersion(
                 docModel.getRef(), version);
         URI uriVersion = translator.getNuxeoUrn(versionModel.getRepositoryName(), versionModel.getId());
         annotations = service.queryAnnotations(uriVersion, null, user);
+        log.debug(annotations.size() + " annotations for: " + uriVersion);
         assertEquals(1, annotations.size());
 
         addAnnotationOn(url);
         // 2 annotations on the current document
         annotations = service.queryAnnotations(uri, null, user);
+        log.debug(annotations.size() + " annotations for: " + uri);
         assertEquals(2, annotations.size());
 
         // but still 1 on the version
         annotations = service.queryAnnotations(uriVersion, null, user);
+        log.debug(annotations.size() + " annotations for: " + uriVersion);
         assertEquals(1, annotations.size());
+
     }
 
     public void testAnnotationsOnRestore() throws Exception {
@@ -282,6 +290,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
     protected VersionModel checkIn(DocumentRef ref, String versionLabel)
             throws Exception {
+        log.debug("Creating version for: " + ref + " with label: " + versionLabel);
         session.save();
         VersionModel version = new VersionModelImpl();
         version.setLabel(versionLabel);
@@ -294,6 +303,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
     protected DocumentModel restoreToVersion(DocumentRef docRef,
             VersionModel version) throws Exception {
+        log.debug("Restoring version for: " + docRef + " with label: " + version.getLabel());
         session.save();
         DocumentModel docModel = session.restoreToVersion(docRef, version);
         session.save();

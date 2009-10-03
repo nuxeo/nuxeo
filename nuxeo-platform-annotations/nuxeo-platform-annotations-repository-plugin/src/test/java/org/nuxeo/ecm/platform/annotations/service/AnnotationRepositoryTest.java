@@ -35,11 +35,15 @@ import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.repository.AbstractRepositoryTestCase;
 import org.nuxeo.ecm.platform.annotations.repository.FakeNuxeoPrincipal;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  */
 public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
+
+    private static final Log log = LogFactory.getLog(AnnotationRepositoryTest.class);
 
     private static final String SERVER1 = "http://server1.com/nuxeo/";
     private static final String SERVER2 = "http://server2.com/nuxeo/";
@@ -96,6 +100,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
             URISyntaxException, ClientException {
         List<Annotation> annotations = service.queryAnnotations(new URI(u1),
                 null, user);
+        log.debug(annotations.size() + " annotations for: " + u1);
         assertEquals(1, annotations.size());
         List<DocumentModel> versions = session.getVersions(myfile.getRef());
         assertEquals(1, versions.size());
@@ -104,11 +109,13 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
                 new DocumentViewImpl(version1), true, SERVER1);
         assertNotNull(versionUrl);
         annotations = service.queryAnnotations(new URI(versionUrl), null, user);
+        log.debug(annotations.size() + " annotations for: " + versionUrl);
         assertEquals(1, annotations.size());
     }
 
     private void createVersion(CoreSession session, DocumentModel myfile,
             String version) throws ClientException {
+        log.debug("Creating version for: " + myfile.getId() + " with label: " + version);
         versionModel = new VersionModelImpl();
         versionModel.setLabel(version);
         session.checkIn(myfile.getRef(), versionModel);

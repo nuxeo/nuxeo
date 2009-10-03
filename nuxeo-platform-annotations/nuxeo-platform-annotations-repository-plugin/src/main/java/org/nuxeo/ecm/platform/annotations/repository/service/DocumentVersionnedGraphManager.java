@@ -19,10 +19,6 @@
 
 package org.nuxeo.ecm.platform.annotations.repository.service;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -41,6 +37,10 @@ import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.runtime.api.Framework;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
@@ -86,12 +86,14 @@ public class DocumentVersionnedGraphManager implements
         }
     }
 
-    private static void copyGraphFor(URI current, URI copied, NuxeoPrincipal user)
-            throws Exception {
+    private static void copyGraphFor(URI current, URI copied,
+            NuxeoPrincipal user) throws Exception {
         List<Statement> newStatements = new ArrayList<Statement>();
         AnnotationsService service = Framework.getService(AnnotationsService.class);
         List<Annotation> annotations = service.queryAnnotations(current, null,
                 user);
+        log.debug("Copying annotations graph from " + current + " to " + copied
+                + " for " + annotations.size() + " annotations.");
         for (Annotation annotation : annotations) {
             List<Statement> statements = annotation.getStatements();
             for (Statement statement : statements) {
@@ -99,7 +101,8 @@ public class DocumentVersionnedGraphManager implements
                         AnnotationsConstants.a_annotates)) {
                     Resource resource = (Resource) statement.getObject();
                     if (current.toString().equals(resource.getUri())) {
-                        // copy only the statements associated to the current URI
+                        // copy only the statements associated to the current
+                        // URI
                         Statement newStatement = new StatementImpl(
                                 statement.getSubject(),
                                 statement.getPredicate(), new ResourceImpl(
@@ -123,7 +126,9 @@ public class DocumentVersionnedGraphManager implements
         }
     }
 
-    private static void removeGraphFor(URI uri, NuxeoPrincipal user) throws Exception {
+    private static void removeGraphFor(URI uri, NuxeoPrincipal user)
+            throws Exception {
+        log.debug("Removing annotations graph for " + uri);
         AnnotationsService service = Framework.getService(AnnotationsService.class);
         List<Annotation> annotations = service.queryAnnotations(uri, null, user);
         for (Annotation annotation : annotations) {
@@ -133,6 +138,8 @@ public class DocumentVersionnedGraphManager implements
 
     private void restoreGraphFor(String repositoryName, String versionId,
             String docId, NuxeoPrincipal principal) {
+        log.debug("Restoring annotations graph for docId:" + docId
+                + " and versionId:" + versionId);
         try {
             removeGraphFor(translator.getNuxeoUrn(repositoryName, docId),
                     principal);
