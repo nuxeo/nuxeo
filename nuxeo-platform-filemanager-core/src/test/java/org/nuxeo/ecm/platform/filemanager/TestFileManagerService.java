@@ -41,17 +41,17 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployBundle(TestConstants.TYPESERVICE_BUNDLE);
-        deployContrib(TestConstants.FILEMANAGER_TEST_BUNDLE,
+        deployBundle(FileManagerTestConstants.TYPESERVICE_BUNDLE);
+        deployContrib(FileManagerTestConstants.FILEMANAGER_TEST_BUNDLE,
                 "ecm-types-test-contrib.xml");
-        deployBundle(TestConstants.MIMETYPE_BUNDLE);
+        deployBundle(FileManagerTestConstants.MIMETYPE_BUNDLE);
 
-        deployContrib(TestConstants.FILEMANAGER_BUNDLE,
+        deployContrib(FileManagerTestConstants.FILEMANAGER_BUNDLE,
                 "OSGI-INF/nxfilemanager-service.xml");
-        deployContrib(TestConstants.FILEMANAGER_BUNDLE,
+        deployContrib(FileManagerTestConstants.FILEMANAGER_BUNDLE,
                 "OSGI-INF/nxfilemanager-plugins-contrib.xml");
 
-        deployContrib(TestConstants.FILEMANAGER_TEST_BUNDLE,
+        deployContrib(FileManagerTestConstants.FILEMANAGER_TEST_BUNDLE,
                 "nxfilemanager-test-contribs.xml");
 
         openRepository();
@@ -64,15 +64,15 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         service = null;
         root = null;
 
-        undeployContrib(TestConstants.FILEMANAGER_TEST_BUNDLE,
+        undeployContrib(FileManagerTestConstants.FILEMANAGER_TEST_BUNDLE,
                 "nxfilemanager-test-contribs.xml");
 
-        undeployContrib(TestConstants.FILEMANAGER_BUNDLE,
+        undeployContrib(FileManagerTestConstants.FILEMANAGER_BUNDLE,
                 "OSGI-INF/nxfilemanager-plugins-contrib.xml");
-        undeployContrib(TestConstants.FILEMANAGER_BUNDLE,
+        undeployContrib(FileManagerTestConstants.FILEMANAGER_BUNDLE,
                 "OSGI-INF/nxfilemanager-service.xml");
         // undeployBundle(TestConstants.MIMETYPE_BUNDLE);
-        undeployContrib(TestConstants.FILEMANAGER_TEST_BUNDLE,
+        undeployContrib(FileManagerTestConstants.FILEMANAGER_TEST_BUNDLE,
                 "ecm-types-test-contrib.xml");
         // undeployBundle(TestConstants.TYPESERVICE_BUNDLE);
 

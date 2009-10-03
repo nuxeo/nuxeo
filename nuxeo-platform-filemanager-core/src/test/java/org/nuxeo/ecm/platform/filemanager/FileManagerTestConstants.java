@@ -22,7 +22,7 @@ package org.nuxeo.ecm.platform.filemanager;
 /**
  * @author Anahide Tchertchian
  */
-public class TestConstants {
+public class FileManagerTestConstants {
 
     public static final String FILEMANAGER_BUNDLE = "org.nuxeo.ecm.platform.filemanager.core";
     public static final String FILEMANAGER_TEST_BUNDLE = "org.nuxeo.ecm.platform.filemanager.core.tests";

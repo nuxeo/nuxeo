@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 
-public class TestEventListener implements EventListener {
+public class DummyEventListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(EventListener.class);
 
