@@ -1341,7 +1341,8 @@
             </property>
           </systemProperties>
           <includes>
-            <include>**/*Test*.java</include>
+            <include>**/Test*.java</include>
+            <include>**/*Test.java</include>
           </includes>
           <excludes>
             <!-- Inner classes -->
