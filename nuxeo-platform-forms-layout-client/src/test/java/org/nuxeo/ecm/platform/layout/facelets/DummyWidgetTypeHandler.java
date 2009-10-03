@@ -41,7 +41,7 @@ import com.sun.facelets.tag.jsf.ComponentHandler;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class TestWidgetTypeHandler extends AbstractWidgetTypeHandler {
+public class DummyWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
     private static final long serialVersionUID = 1495841177711755669L;
 

@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
-import org.nuxeo.ecm.platform.layout.facelets.TestWidgetTypeHandler;
+import org.nuxeo.ecm.platform.layout.facelets.DummyWidgetTypeHandler;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -172,7 +172,7 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertEquals("test", type.getName());
         WidgetTypeHandler handler = service.getWidgetTypeHandler("test");
         assertNotNull(handler);
-        assertEquals(TestWidgetTypeHandler.class.getName(),
+        assertEquals(DummyWidgetTypeHandler.class.getName(),
                 handler.getClass().getName());
         assertEquals("bar1", handler.getProperty("foo1"));
         assertEquals("bar2", handler.getProperty("foo2"));

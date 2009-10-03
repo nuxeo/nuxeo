@@ -8,7 +8,7 @@
 
     <widgetType name="test">
       <handler-class>
-        org.nuxeo.ecm.platform.layout.facelets.TestWidgetTypeHandler
+        org.nuxeo.ecm.platform.layout.facelets.DummyWidgetTypeHandler
       </handler-class>
       <property name="foo1">bar1</property>
       <property name="foo2">bar2</property>
