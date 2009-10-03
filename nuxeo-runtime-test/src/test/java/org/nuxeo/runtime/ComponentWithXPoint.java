@@ -36,7 +36,7 @@ public class ComponentWithXPoint implements Component {
 
     public static final ComponentName NAME = new ComponentName("BaseXPoint");
 
-    final List<ContributionTest> contribs = new ArrayList<ContributionTest>();
+    final List<DummyContribution> contribs = new ArrayList<DummyContribution>();
 
     public void activate(ComponentContext context) {
     }
@@ -47,21 +47,21 @@ public class ComponentWithXPoint implements Component {
     public void registerExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
-            log.debug("Registering: " + ((ContributionTest) contrib).message);
-            this.contribs.add((ContributionTest) contrib);
+            log.debug("Registering: " + ((DummyContribution) contrib).message);
+            this.contribs.add((DummyContribution) contrib);
         }
     }
 
     public void unregisterExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
-            log.debug("Un-Registering: " + ((ContributionTest) contrib).message);
-            this.contribs.add((ContributionTest) contrib);
+            log.debug("Un-Registering: " + ((DummyContribution) contrib).message);
+            this.contribs.add((DummyContribution) contrib);
         }
     }
 
-    public ContributionTest[] getContributions() {
-        return contribs.toArray(new ContributionTest[contribs.size()]);
+    public DummyContribution[] getContributions() {
+        return contribs.toArray(new DummyContribution[contribs.size()]);
     }
 
 }

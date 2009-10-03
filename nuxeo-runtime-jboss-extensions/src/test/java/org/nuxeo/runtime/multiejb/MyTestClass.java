@@ -29,7 +29,7 @@ import javax.naming.NamingException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class MyTest implements MyTestMBean {
+public class MyTestClass implements MyTestMBean {
 
     public Context getRemoteContext(String ip) throws NamingException {
         Properties env = new Properties();

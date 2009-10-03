@@ -114,6 +114,16 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     // the managed component
     transient ComponentInstance component;
 
+    public RegistrationInfoImpl() {}
+    
+    /**
+     * Useful when dynamically registering components
+     * @param name the component name
+     */
+    public RegistrationInfoImpl(ComponentName name) {
+        this.name = name;
+    }
+    
     public void setContext(RuntimeContext rc) {
         this.context = rc;
     }

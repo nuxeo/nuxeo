@@ -37,8 +37,6 @@ public class DataSourceHelper {
     private static final Log log = LogFactory.getLog(DataSourceHelper.class);
 
     private static final String JBOSS_PREFIX = "java:";
-    private static final String JETTY_PREFIX = "jdbc";
-    private static final String GLASSFISH_PREFIX = "jdbc";
 
     private static final String DEFAULT_PREFIX = JBOSS_PREFIX;
 
@@ -53,42 +51,19 @@ public class DataSourceHelper {
     }
 
     public static void autodetectPrefix() {
-
-        try {
-            Class.forName("org.jboss.tm.usertx.server.UserTransactionSessionImpl");
-            log.info("Detected JBoss host");
-            prefix = JBOSS_PREFIX;
-            return;
-        }
-        catch (Exception e) {
-            log.debug("Autodetect : not a JBoss host");
-        }
-
-        try {
-            Class.forName("org.mortbay.jetty.webapp.WebAppContext");
-            log.info("Detected Jetty host");
-            prefix = JETTY_PREFIX;
-            return;
-        }
-        catch (Exception e) {
-            log.debug("Autodetect : not a jetty host");
-        }
-
-        try {
-                Class.forName("com.sun.enterprise.glassfish.bootstrap.AbstractMain");
-                log.info("Detected GlassFish host");
-                prefix = GLASSFISH_PREFIX;
-                return;
-        } catch (Exception e) {
-                log.debug("Autodetect : not a glassfish host");
-        }
+    	J2EEContainerDescriptor selectedContainer = J2EEContainerDescriptor.getSelected();
+    	if (selectedContainer == null) {
+    		prefix = null;
+    	} else {
+    		prefix = selectedContainer.datasourcePrefix;
+    	}
     }
 
     /**
      * Sets the prefix to be used (mainly for tests).
      */
     public static void setDataSourceJNDIPrefix(String prefix) {
-        DataSourceHelper.prefix = prefix;
+    	DataSourceHelper.prefix = prefix;
     }
 
     /**

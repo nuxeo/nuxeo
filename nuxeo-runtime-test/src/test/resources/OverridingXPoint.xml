@@ -8,7 +8,7 @@
 
   <!-- overload the extension point from BaseXPoint component -->
   <extension-point name="xp" target="BaseXPoint">
-    <object class="org.nuxeo.runtime.ContributionTestOverrided"/>
+    <object class="org.nuxeo.runtime.DummyContributionOverriden"/>
   </extension-point>
 
   <extension target="BaseXPoint" point="xp">

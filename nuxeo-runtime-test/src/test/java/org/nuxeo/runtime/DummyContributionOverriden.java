@@ -27,9 +27,14 @@ import org.nuxeo.common.xmap.annotation.XObject;
  *
  */
 @XObject("printer")
-public class ContributionTest {
+public class DummyContributionOverriden extends DummyContribution {
 
     @XNode("message")
-    public String message;
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    @XNode("name")
+    public String name;
 
 }

@@ -3,7 +3,7 @@
 
   <implementation class="org.nuxeo.runtime.MyTestComponent"/>
   <extension-point name="xp1">
-    <object class="org.nuxeo.runtime.ContributionTest"/>
+    <object class="org.nuxeo.runtime.DummyContribution"/>
   </extension-point>
 
   <property name="myString" value="value"/>
