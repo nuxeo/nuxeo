@@ -36,10 +36,10 @@ public class TestCore extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployBundle(CoreTestConstants.SCHEMA_BUNDLE);
-        deployContrib(CoreTestConstants.CORE_BUNDLE, "OSGI-INF/CoreService.xml");
-        deployContrib(CoreTestConstants.CORE_BUNDLE, "OSGI-INF/RepositoryService.xml");
-        deployContrib(CoreTestConstants.CORE_BUNDLE, "OSGI-INF/CoreExtensions.xml");
+        deployBundle(CoreUTConstants.SCHEMA_BUNDLE);
+        deployContrib(CoreUTConstants.CORE_BUNDLE, "OSGI-INF/CoreService.xml");
+        deployContrib(CoreUTConstants.CORE_BUNDLE, "OSGI-INF/RepositoryService.xml");
+        deployContrib(CoreUTConstants.CORE_BUNDLE, "OSGI-INF/CoreExtensions.xml");
         typeManager = NXSchema.getSchemaManager();
     }
 

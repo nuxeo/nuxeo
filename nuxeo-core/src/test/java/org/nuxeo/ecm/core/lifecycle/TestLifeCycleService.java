@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.CoreTestConstants;
+import org.nuxeo.ecm.core.CoreUTConstants;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -42,9 +42,9 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib(CoreTestConstants.CORE_BUNDLE,
+        deployContrib(CoreUTConstants.CORE_BUNDLE,
                 "OSGI-INF/LifeCycleService.xml");
-        deployContrib(CoreTestConstants.CORE_TESTS_BUNDLE,
+        deployContrib(CoreUTConstants.CORE_TESTS_BUNDLE,
                 "LifeCycleManagerTestExtensions.xml");
 
         lifeCycleService = NXCore.getLifeCycleService();
@@ -204,7 +204,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
 
     public void testLifeCycleReverse() throws Exception {
 
-        deployContrib(CoreTestConstants.CORE_TESTS_BUNDLE,
+        deployContrib(CoreUTConstants.CORE_TESTS_BUNDLE,
                 "LifeCycleManagerReverseTestExtensions.xml");
 
         LifeCycle lifeCycle = lifeCycleService.getLifeCycleByName("defaultReverse");
