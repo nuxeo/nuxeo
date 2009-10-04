@@ -1534,4 +1534,23 @@ public interface CoreSession {
      */
     String[] getPermissionsToCheck(String permission);
 
+
+    /**
+     * Indicates if implementation of the given repositoryName supports Tags feature
+     *
+     * @param repositoryName the name of the repository to test
+     * @return
+     * @throws ClientException
+     */
+     boolean supportsTags(String repositoryName) throws ClientException;
+
+    /**
+     * Indicates if current repository implementation supports Tags feature
+     *
+     * @param repositoryName
+     * @return
+     * @throws ClientException
+     */
+     boolean supportsTags() throws ClientException;
+
 }

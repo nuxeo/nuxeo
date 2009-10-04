@@ -296,4 +296,8 @@ public class ConnectionFactoryImpl implements Repository,
     public void processClusterInvalidationsNext() {
         managedConnectionFactory.processClusterInvalidationsNext();
     }
+
+    public boolean supportsTags() {
+        return true;
+    }
 }

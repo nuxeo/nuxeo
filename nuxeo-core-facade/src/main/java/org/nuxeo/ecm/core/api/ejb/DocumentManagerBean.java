@@ -84,6 +84,8 @@ public class DocumentManagerBean extends AbstractSession implements
 
     private static final String CONTEXT_PRINCIPAL_KEY = "principal";
 
+    private Boolean supportsTags = null;
+
     // also need to be transient (not annot only) - see error with
     // org.jaxon.VariableContext
     @Transient
@@ -202,10 +204,27 @@ public class DocumentManagerBean extends AbstractSession implements
         return session;
     }
 
+    public boolean supportsTags(String repositoryName) throws ClientException {
+        try {
+            Repository repo = NXCore.getRepository(repositoryName);
+            return repo.supportsTags();
+        } catch (Exception e) {
+            throw new ClientException("Failed to load repository " + repositoryName, e);
+        }
+    }
+
+    public boolean supportsTags() throws ClientException {
+         if (supportsTags!=null) {
+             return supportsTags.booleanValue();
+         }
+         throw new ClientException("Can not query on a closed repository");
+    }
+
     protected Session createSession(String repoName, String ws,
             Map<String, Serializable> context) throws DocumentException,
             NoSuchRepositoryException {
         Repository repo = NXCore.getRepository(repoName);
+        supportsTags = repo.supportsTags();
         return repo.getSession(context);
     }
 

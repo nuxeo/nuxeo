@@ -210,6 +210,10 @@ public class JCRRepository extends RepositoryImpl implements Repository {
         return sessions.size();
     }
 
+    public boolean supportsTags() {
+        return false;
+    }
+
 
     // These lines are only for debug JCA (transactions)
     // uncomment them to change the jackrabbit XASessionImpl

@@ -58,6 +58,9 @@ public class Repository implements Serializable {
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     private Map<String, String> properties;
 
+    @XNode("@supportsTags")
+    protected Boolean supportsTags=null;
+
     public Repository() {
     }
 
@@ -112,7 +115,7 @@ public class Repository implements Serializable {
         return open(new HashMap<String, Serializable>());
     }
 
-    public CoreSession open(Map<String, Serializable> context) throws Exception {
+    protected CoreSession lookupSession() throws Exception {
         CoreSession session;
         if (group != null) {
             ServiceManager mgr = Framework.getLocalService(ServiceManager.class);
@@ -125,6 +128,21 @@ public class Repository implements Serializable {
         } else {
             session = Framework.getService(CoreSession.class, name);
         }
+        return session;
+    }
+
+    public boolean supportsTags() throws Exception {
+        if (supportsTags==null) {
+            CoreSession unconnectedSession =lookupSession();
+            supportsTags =  unconnectedSession.supportsTags(name);
+            // avoid leaking DocumentManagerBean
+            unconnectedSession.destroy();
+        }
+        return supportsTags;
+    }
+
+    public CoreSession open(Map<String, Serializable> context) throws Exception {
+        CoreSession session = lookupSession();
         if (repositoryUri == null) {
             repositoryUri = name;
         }

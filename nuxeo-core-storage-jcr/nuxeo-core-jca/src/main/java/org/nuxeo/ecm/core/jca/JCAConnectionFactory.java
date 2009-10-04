@@ -135,4 +135,8 @@ public final class JCAConnectionFactory
         this.reference = reference;
     }
 
+    public boolean supportsTags() {
+        return false;
+    }
+
 }

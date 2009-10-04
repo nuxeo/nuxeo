@@ -158,6 +158,10 @@ public class SQLRepository implements Repository {
         return 0;
     }
 
+    public boolean supportsTags() {
+        return true;
+    }
+
     /*
      * ----- -----
      */

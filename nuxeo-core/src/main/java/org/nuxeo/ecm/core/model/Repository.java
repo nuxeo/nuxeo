@@ -56,4 +56,6 @@ public interface Repository {
 
     int getActiveSessionsCount();
 
+    boolean supportsTags();
+
 }

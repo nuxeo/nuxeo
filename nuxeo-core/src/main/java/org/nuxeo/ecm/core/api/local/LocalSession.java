@@ -46,6 +46,8 @@ public class LocalSession extends AbstractSession {
 
     private Session session;
 
+    private Boolean supportsTags = null;
+
     // Locally we don't yet support NXCore.getRepository()
     protected Session createSession(String repoName) throws ClientException {
         try {
@@ -82,10 +84,27 @@ public class LocalSession extends AbstractSession {
             sessionContext.put("principal", principal);
 
             Repository repo = lookupRepository(repoName);
+            supportsTags = repo.supportsTags();
             return repo.getSession(sessionContext);
         } catch (Exception e) {
             throw new ClientException("Failed to load repository " + repoName, e);
         }
+    }
+
+    public boolean supportsTags(String repositoryName) throws ClientException {
+        try {
+            Repository repo = lookupRepository(repositoryName);
+            return repo.supportsTags();
+        } catch (Exception e) {
+            throw new ClientException("Failed to load repository " + repositoryName, e);
+        }
+    }
+
+    public boolean supportsTags() throws ClientException {
+        if (supportsTags!=null) {
+            return supportsTags.booleanValue();
+        }
+        throw new ClientException("Can not query on a closed repository");
     }
 
     protected Repository lookupRepository(String name) throws Exception {
