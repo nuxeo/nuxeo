@@ -214,6 +214,7 @@
                   </includes>
                   <stylesheet>src/main/xsl/jbossjta-properties.xsl</stylesheet>
                 </transformationSet>
+                <!-- can not activate because of validation of DTD ... pfff
                 <transformationSet>
                    <validating>false</validating>
                    <dir>${jboss.server}</dir>
@@ -222,6 +223,7 @@
                    </includes>
                    <stylesheet>src/main/xsl/root-web.xsl</stylesheet>
                  </transformationSet>
+                -->
               </transformationSets>
             </configuration>
           </execution>
