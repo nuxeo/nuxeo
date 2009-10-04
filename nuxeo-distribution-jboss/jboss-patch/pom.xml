@@ -48,7 +48,6 @@
                 </goals>
                 <configuration>
                   <transformationSets>
-
                     <transformationSet>
                       <dir>${jboss.server}</dir>
                       <includes>
@@ -215,6 +214,14 @@
                   </includes>
                   <stylesheet>src/main/xsl/jbossjta-properties.xsl</stylesheet>
                 </transformationSet>
+                <transformationSet>
+                   <validating>false</validating>
+                   <dir>${jboss.server}</dir>
+                   <includes>
+                      <include>deploy/jboss-web.deployer/ROOT.war/WEB-INF/web.xml</include>
+                   </includes>
+                   <stylesheet>src/main/xsl/root-web.xsl</stylesheet>
+                 </transformationSet>
               </transformationSets>
             </configuration>
           </execution>
