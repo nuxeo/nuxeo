@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.nuxeo.common.utils.FileUtils;
 
-public class ImagingTestRessources {
+public class ImagingRessourcesHelper {
 
     public static final String TEST_DATA_FOLDER = "test-data/";
 

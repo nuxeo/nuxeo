@@ -65,10 +65,10 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-        for (String filename : ImagingTestRessources.TEST_IMAGE_FILENAMES) {
-            String path = ImagingTestRessources.TEST_DATA_FOLDER + filename;
+        for (String filename : ImagingRessourcesHelper.TEST_IMAGE_FILENAMES) {
+            String path = ImagingRessourcesHelper.TEST_DATA_FOLDER + filename;
             BlobHolder bh = new SimpleBlobHolder(new FileBlob(
-                    ImagingTestRessources.getFileFromPath(path)));
+                    ImagingRessourcesHelper.getFileFromPath(path)));
 
             BlobHolder result = cs.convert(converter, bh, options);
             assertNotNull(result);
@@ -89,10 +89,10 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-        for (String filename : ImagingTestRessources.TEST_IMAGE_FILENAMES) {
-            String path = ImagingTestRessources.TEST_DATA_FOLDER + filename;
+        for (String filename : ImagingRessourcesHelper.TEST_IMAGE_FILENAMES) {
+            String path = ImagingRessourcesHelper.TEST_DATA_FOLDER + filename;
             BlobHolder bh = new SimpleBlobHolder(new FileBlob(
-                    ImagingTestRessources.getFileFromPath(path)));
+                    ImagingRessourcesHelper.getFileFromPath(path)));
 
             BlobHolder result = cs.convert(converter, bh, options);
             assertNotNull(result);
@@ -126,10 +126,10 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-        for (String filename : ImagingTestRessources.TEST_IMAGE_FILENAMES) {
-            String path = ImagingTestRessources.TEST_DATA_FOLDER + filename;
+        for (String filename : ImagingRessourcesHelper.TEST_IMAGE_FILENAMES) {
+            String path = ImagingRessourcesHelper.TEST_DATA_FOLDER + filename;
             BlobHolder bh = new SimpleBlobHolder(new FileBlob(
-                    ImagingTestRessources.getFileFromPath(path)));
+                    ImagingRessourcesHelper.getFileFromPath(path)));
 
             BlobHolder result = cs.convert(converter, bh, options);
             assertNotNull(result);

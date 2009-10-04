@@ -78,9 +78,9 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
         PictureResourceAdapter adapter = child.getAdapter(PictureResourceAdapter.class);
         assertNotNull(adapter);
 
-        for (String filename : ImagingTestRessources.TEST_IMAGE_FILENAMES) {
-            String path = ImagingTestRessources.TEST_DATA_FOLDER + filename;
-            Blob blob = new FileBlob(ImagingTestRessources.getFileFromPath(path));
+        for (String filename : ImagingRessourcesHelper.TEST_IMAGE_FILENAMES) {
+            String path = ImagingRessourcesHelper.TEST_DATA_FOLDER + filename;
+            Blob blob = new FileBlob(ImagingRessourcesHelper.getFileFromPath(path));
             assertNotNull(blob);
             boolean ret = adapter.createPicture(blob, filename, "sample",
                     pictureTemplates);
