@@ -42,7 +42,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
 
-    protected static final LdapTestServer SERVER = new LdapTestServer();
+    protected static final MockLdapServer SERVER = new MockLdapServer();
 
     // change this flag to use an external LDAP directory instead of the
     // non networked default ApacheDS implementation

@@ -4,7 +4,7 @@
 
   <extension target="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService"
     point="sequencerFactory">
-    <className>org.nuxeo.ecm.platform.uidgen.SequencerTestFactory</className>
+    <className>org.nuxeo.ecm.platform.uidgen.SequencerDummyFactory</className>
   </extension>
 
 

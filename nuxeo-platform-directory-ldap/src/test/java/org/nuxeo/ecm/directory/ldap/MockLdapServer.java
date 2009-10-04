@@ -53,10 +53,10 @@ import org.apache.directory.server.core.partition.PartitionNexus;
  * @version $Id: LdapTestServer.java 1496 2006-05-23 13:38:33Z benalex $
  */
 @SuppressWarnings({"ALL"})
-public class LdapTestServer implements ContextProvider {
+public class MockLdapServer implements ContextProvider {
     // ~ Instance fields
     // ================================================================================================
-    private static final Log log = LogFactory.getLog(LdapTestServer.class);
+    private static final Log log = LogFactory.getLog(MockLdapServer.class);
 
     private DirContext serverContext;
 
@@ -71,7 +71,7 @@ public class LdapTestServer implements ContextProvider {
     /**
      * Starts up and configures ApacheDS.
      */
-    public LdapTestServer() {
+    public MockLdapServer() {
         try {
             workingDir=File.createTempFile("apacheds-work-", ".tmp", new File(System.getProperty("java.io.tmpdir")));
             workingDir.delete();

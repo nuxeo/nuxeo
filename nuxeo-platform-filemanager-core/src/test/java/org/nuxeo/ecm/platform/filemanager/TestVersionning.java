@@ -41,7 +41,7 @@ public class TestVersionning extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.types.api");
         deployBundle("org.nuxeo.ecm.platform.types.core");
 
-        deployContrib(FileManagerTestConstants.FILEMANAGER_TEST_BUNDLE,
+        deployContrib(FileManagerUTConstants.FILEMANAGER_TEST_BUNDLE,
                 "ecm-types-test-contrib.xml");
 
         deployBundle("org.nuxeo.ecm.platform.mimetype.api");

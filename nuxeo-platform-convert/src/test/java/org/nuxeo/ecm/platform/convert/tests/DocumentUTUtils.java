@@ -24,7 +24,7 @@ import java.io.StringWriter;
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.util.PDFTextStripper;
 
-public final class DocumentTestUtils {
+public final class DocumentUTUtils {
 
     private static final int BYTE_ORDER_MARK_CHAR = 0xFEFF;
 

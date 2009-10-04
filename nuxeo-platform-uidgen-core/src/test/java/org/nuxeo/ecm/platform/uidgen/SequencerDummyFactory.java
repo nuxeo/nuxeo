@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.platform.uidgen;
 
-public class SequencerTestFactory implements UIDSequencerFactory {
+public class SequencerDummyFactory implements UIDSequencerFactory {
 
     public UIDSequencer createUIDSequencer() {
         return new DummySequencer();
