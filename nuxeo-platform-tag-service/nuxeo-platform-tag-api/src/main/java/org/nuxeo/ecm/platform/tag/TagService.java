@@ -235,4 +235,11 @@ public interface TagService {
     List<String> listDocumentsForTag(CoreSession session, String tagId,
             String user) throws ClientException;
 
+
+    /**
+     * Defines if tag service is enable.
+     * Returns true is the underlying repository supports tag feature.
+     * @return
+     */
+    boolean isEnabled() throws ClientException;
 }

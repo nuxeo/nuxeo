@@ -27,6 +27,7 @@ import javax.faces.event.ActionEvent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
@@ -99,6 +100,12 @@ public class TagActionsBean implements Serializable {
     @Destroy
     public void destroy() {
         log.debug("Removing 'tagActions' Seam component...");
+    }
+
+
+    @Factory(value = "tagServiceEnabled", scope = ScopeType.APPLICATION)
+    public boolean isTagServiceEnabled() throws ClientException {
+        return taggingHelper.isTagServiceEnabled();
     }
 
     /**
@@ -190,6 +197,7 @@ public class TagActionsBean implements Serializable {
         this.tagDocumentId = tagDocumentId;
         return TAG_SEARCH_RESULT_PAGE;
     }
+
 
     @Factory(value = "taggedDocuments", scope = EVENT)
     public DocumentModelList getChildrenSelectModel() throws ClientException {

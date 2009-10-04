@@ -77,4 +77,8 @@ public class FakeRepository implements Repository {
     public void shutdown() {
     }
 
+    public boolean supportsTags() {
+        return false;
+    }
+
 }

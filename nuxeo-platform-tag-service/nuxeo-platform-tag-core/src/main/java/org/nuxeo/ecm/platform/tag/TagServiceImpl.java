@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
 import org.nuxeo.ecm.core.persistence.HibernateConfigurator;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
@@ -59,20 +62,63 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
 
     private static final Log log = LogFactory.getLog(TagServiceImpl.class);
 
+    private static Boolean enabled = null;
+
     @Override
     public void activate(ComponentContext context) throws Exception {
+        enabled = null;
         context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
                 new FrameworkListener() {
                     public void frameworkEvent(FrameworkEvent event) {
                         if (event.getType() != FrameworkEvent.STARTED) {
                             return;
                         }
-                        updateSchema();
+
+                        ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
+                        ClassLoader nuxeoCL = TagServiceImpl.class.getClassLoader();
+                        try {
+                            // needs to be in Nuxeo ClassLoader to do a Login !
+                            Thread.currentThread().setContextClassLoader(nuxeoCL);
+                            if (isEnabled()) {
+                                updateSchema();
+                            }
+                        }
+                        finally {
+                            Thread.currentThread().setContextClassLoader(jbossCL);
+                            log.debug("JBoss ClassLoader restored");
+                        }
                     }
                 });
 
         TagServiceInitializer tagServiceInitializer = new TagServiceInitializer();
         tagServiceInitializer.install();
+    }
+
+    protected void checkEnable() {
+        LoginContext lc = null;
+        try {
+            lc = Framework.login();
+            RepositoryManager rm = Framework.getService(RepositoryManager.class);
+            if (rm.getDefaultRepository().supportsTags()) {
+                log.info("Activating tag service");
+                enabled = true;
+            } else {
+                enabled = false;
+                log.info("Default repository does not support Tag feature : Tag service won't be available.");
+            }
+        } catch (Exception e) {
+            enabled = false;
+            log.error("Unable to test repository for Tag feature.", e);
+        } finally {
+            if (lc!=null) {
+                try {
+                    lc.logout();
+                } catch (LoginException e) {
+                    log.error("Error durint Framework.logout", e);
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
@@ -695,6 +741,13 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
         TagSchemaUpdater updater = new TagSchemaUpdater(
                 configuration.hibernateProperties);
         updater.update();
+    }
+
+    public boolean isEnabled() {
+        if (enabled==null) {
+            checkEnable();
+        }
+        return enabled;
     }
 
 }

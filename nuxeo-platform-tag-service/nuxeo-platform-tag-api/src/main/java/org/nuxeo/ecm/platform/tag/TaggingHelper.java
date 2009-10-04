@@ -48,6 +48,10 @@ public class TaggingHelper {
         }
     }
 
+    public boolean isTagServiceEnabled() throws ClientException {
+        return getTagService().isEnabled();
+    }
+
     /**
      * Tags the received <b>document</b> parameter.
      *

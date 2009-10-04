@@ -39,6 +39,7 @@ import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.runtime.api.Framework;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +59,14 @@ public class DocumentVersionnedGraphManager implements
             translator = new URNDocumentViewTranslator();
         }
         EventContext context = event.getContext();
-        NuxeoPrincipal user = (NuxeoPrincipal) context.getPrincipal();
+        NuxeoPrincipal user = null;
+        Principal principal = context.getPrincipal();
+        if (principal instanceof NuxeoPrincipal) {
+             user= (NuxeoPrincipal) principal;
+        } else {
+            log.debug("Discading event on a non NuxeoPrincipal user");
+            return;
+        }
 
         DocumentModel docModel = (DocumentModel) context.getArguments()[0];
         String docId = docModel.getId();

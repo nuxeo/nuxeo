@@ -142,4 +142,8 @@ public class TagServiceBean implements TagService {
         return getLocalTagService().getOrCreateTag(em, session, parent, label, privateFlag);
     }
 
+    public boolean isEnabled() throws ClientException {
+        return getLocalTagService().isEnabled();
+    }
+
 }

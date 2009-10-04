@@ -61,6 +61,7 @@ public class TestTagService extends SQLRepositoryTestCase {
         service.updateSchema();
     }
 
+
     private static boolean deleteDirectory(File path) {
         if (path.exists()) {
             File[] files = path.listFiles();
@@ -136,5 +137,10 @@ public class TestTagService extends SQLRepositoryTestCase {
         List<Tag> tags = tagService.listTagsAppliedOnDocument(session, file1);
         assertNotNull(tags);
         assertEquals(1, tags.size());
+    }
+
+    public void testEnabled() throws ClientException {
+        TagService tagService = getTagService();
+        assertTrue(tagService.isEnabled());
     }
 }
