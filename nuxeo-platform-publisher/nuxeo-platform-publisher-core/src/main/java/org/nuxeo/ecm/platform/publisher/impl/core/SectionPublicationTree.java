@@ -1,5 +1,9 @@
 package org.nuxeo.ecm.platform.publisher.impl.core;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -15,10 +19,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.helper.PublicationRelationHelper;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Simple implementation of a {@link PublicationTree} using the Core Sections.
@@ -115,6 +115,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         PublicationRelationHelper.removePublicationRelation(proxy);
         getCoreSession().removeDocument(proxy.getRef());
+        getCoreSession().save();
     }
 
     public PublicationNode getNodeByPath(String path) throws ClientException {
@@ -166,6 +167,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
         return coreSession.hasPermission(docRef, SecurityConstants.WRITE);
     }
 
+    @Override
     public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel)
             throws ClientException {
         return factory.wrapDocumentModel(documentModel);
@@ -189,6 +191,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
                 sid, factory);
     }
 
+    @Override
     protected boolean accept(PublishedDocument publishedDocument) {
         return publishedDocument instanceof SimpleCorePublishedDocument;
     }
