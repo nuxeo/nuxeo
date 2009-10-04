@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.wss.RequestControllerService.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="filterConfig">
+
+    <filterConfig name="WSSFilter" transactional="true" synchonize="false">
+      <pattern>/nuxeo/_vti_bin/.*</pattern>
+    </filterConfig>
+    <filterConfig name="WSSFilterRessources" transactional="true" synchonize="false" grant="false">
+      <pattern>/nuxeo/_vti_bin/resources/.*</pattern>
+    </filterConfig>
+
+
+  </extension>
+
+</component>

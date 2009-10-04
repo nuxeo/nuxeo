@@ -1,0 +1,7 @@
+HEAD /_vti_bin/owssvr.dll?location=&dialogview=FileOpen HTTP/1.1
+User-Agent: Test for Web Form Existence
+Host: 10.0.2.2:8080
+Content-Length: 0
+Connection: Keep-Alive
+Cookie: WSS_KeepSessionAuthenticated=80
+

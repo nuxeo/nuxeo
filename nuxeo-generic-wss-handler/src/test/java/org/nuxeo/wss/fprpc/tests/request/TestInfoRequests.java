@@ -1,0 +1,97 @@
+package org.nuxeo.wss.fprpc.tests.request;
+
+import javax.servlet.Filter;
+
+import junit.framework.TestCase;
+
+import org.nuxeo.wss.fprpc.tests.fake.FakeRequest;
+import org.nuxeo.wss.fprpc.tests.fake.FakeRequestBuilder;
+import org.nuxeo.wss.fprpc.tests.fake.FakeResponse;
+import org.nuxeo.wss.servlet.WSSFilter;
+
+public class TestInfoRequests extends TestCase {
+
+    protected Filter filter;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        filter=new WSSFilter();
+        filter.init(null);
+    }
+
+    public void testVTIInfo() throws Exception {
+
+        FakeRequest request = FakeRequestBuilder.buildFromResource("VTI-INFO.dump");
+        FakeResponse response = new FakeResponse();
+
+        filter.doFilter(request, response, null);
+
+        String result= response.getOutput();
+
+        System.out.println(result);
+
+        String[] lines = result.split("\n");
+        assertEquals("FPVersion=\"12.0.0.000\"", lines[1]);
+        assertEquals("FPShtmlScriptUrl=\"_vti_bin/shtml.dll/_vti_rpc\"", lines[2]);
+        assertEquals("FPAuthorScriptUrl=\"_vti_bin/_vti_aut/author.dll\"", lines[3]);
+        assertEquals("FPAdminScriptUrl=\"_vti_bin/_vti_adm/admin.dll\"", lines[4]);
+        assertEquals("TPScriptUrl=\"_vti_bin/owssvr.dll\"", lines[5]);
+
+    }
+
+
+    public void testServerVersion() throws Exception {
+
+        FakeRequest request = FakeRequestBuilder.buildFromResource("ServerVersion.dump");
+        FakeResponse response = new FakeResponse();
+
+        filter.doFilter(request, response, null);
+
+        String result= response.getOutput();
+
+        System.out.println(result);
+
+        String[] lines = result.split("\n");
+
+        assertEquals("<p>method=server version:6.0.2.5523", lines[2]);
+        assertEquals("<li>ver incr=6421", lines[8]);
+
+    }
+
+    public void testOpenService() throws Exception {
+
+        FakeRequest request = FakeRequestBuilder.buildFromResource("OpenService.dump");
+        FakeResponse response = new FakeResponse();
+
+        filter.doFilter(request, response, null);
+
+        String result= response.getOutput();
+
+        System.out.println(result);
+
+        String[] lines = result.split("\n");
+
+        assertEquals("<p>method=open service:6.0.2.5523", lines[2]);
+        assertEquals("<li>SX|http://localhost/_layouts/toolpane.aspx", lines[17]);
+
+    }
+
+
+    public void testHead() throws Exception {
+
+        FakeRequest request = FakeRequestBuilder.buildFromResource("HeadOwsSrv.dump");
+        FakeResponse response = new FakeResponse();
+
+        filter.doFilter(request, response, null);
+
+        String result= response.getOutput();
+
+        System.out.println(result);
+
+    }
+
+
+
+
+}

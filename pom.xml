@@ -87,6 +87,10 @@
     <module>nuxeo-platform-virtualnavigation</module>
     <module>nuxeo-platform-tag-service</module>
     <module>nuxeo-opensocial</module>
+    <!-- wss -->
+    <module>nuxeo-generic-wss-handler</module>
+    <module>nuxeo-platform-wss-backend</module>
+
   </modules>
 
   <dependencyManagement>
@@ -1056,6 +1060,16 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-rendering</artifactId>
         <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-generic-wss-handler</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-wss-backend</artifactId>
+        <version>${nuxeo.features.version}</version>
       </dependency>
 
       <!-- scope test -->

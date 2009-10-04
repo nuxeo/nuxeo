@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- from http://msdn.microsoft.com/en-us/library/ms463030(printer).aspx -->
+<ows:Batch OnError="Return">
+  <Method ID="0,NewList">
+    <SetVar Name="Cmd">NewList</SetVar>
+    <SetVar Name="ListTemplate">100</SetVar>
+    <SetVar Name="Title">Meeting Topics</SetVar>
+  </Method>
+  <Method ID="1,NewList">
+    <SetVar Name="Cmd">NewList</SetVar>
+    <SetVar Name="ListTemplate">100</SetVar>
+    <SetVar Name="Title">Volunteers</SetVar>
+  </Method>
+</ows:Batch>

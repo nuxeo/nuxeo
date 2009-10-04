@@ -1,0 +1,68 @@
+package org.nuxeo.wss.fprpc.tests.fake;
+
+import java.io.InputStream;
+import java.util.List;
+
+import org.nuxeo.wss.spi.WSSListItem;
+import org.nuxeo.wss.spi.dummy.DummyMemoryTree;
+
+import junit.framework.TestCase;
+
+public class TestDummySpiTree extends TestCase {
+
+    public void testTree() throws Exception{
+
+        List<WSSListItem> items;
+
+        items = DummyMemoryTree.instance().listItems("/");
+        assertNotNull(items);
+        assertEquals(5, items.size());
+
+        items = DummyMemoryTree.instance().listItems("DocLib0");
+        assertNotNull(items);
+        assertEquals(11, items.size());
+
+        items = DummyMemoryTree.instance().listItems("/DocLib0");
+        assertNotNull(items);
+        assertEquals(11, items.size());
+
+        items = DummyMemoryTree.instance().listItems("DoesNotExist");
+        assertNull(items);
+
+        items = DummyMemoryTree.instance().listItems("/DocLib0/Workspace-1-1");
+        assertNotNull(items);
+        assertEquals(11, items.size());
+
+        WSSListItem item = DummyMemoryTree.instance().getItem("/");
+        assertNotNull(item);
+        assertEquals("Root node", item.getDescription());
+
+        item = DummyMemoryTree.instance().getItem("/DocLib0");
+        assertNotNull(item);
+        assertEquals("This is Dummy Document Libray 0", item.getDescription());
+
+        item = DummyMemoryTree.instance().getItem("DocLib0");
+        assertNotNull(item);
+        assertEquals("This is Dummy Document Libray 0", item.getDescription());
+
+        item = DummyMemoryTree.instance().getItem("/DocLib0/Workspace-1-1");
+        assertNotNull(item);
+        assertTrue(item.isFolderish());
+        assertEquals("This is Dummy Workspace 1", item.getDescription());
+
+        item = DummyMemoryTree.instance().getItem("/DocLib0/Workspace-1-1/Document-2-1.doc");
+        assertNotNull(item);
+        assertFalse(item.isFolderish());
+        assertEquals("This is Dummy File 1", item.getDescription());
+        InputStream is = item.getStream();
+        assertNotNull(is);
+        byte[] buffer = new byte[1024 * 10];
+        int read = is.read(buffer);
+        assertTrue(read>0);
+        assertEquals(7680, read);
+
+        item = DummyMemoryTree.instance().getItem("/DocLib0/Workspace-1-1/toto.doc");
+        assertNull(item);
+
+    }
+}
