@@ -51,8 +51,11 @@
       <artifactId>nuxeo-core</artifactId>
       <scope>test</scope>
     </dependency>
-
-
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

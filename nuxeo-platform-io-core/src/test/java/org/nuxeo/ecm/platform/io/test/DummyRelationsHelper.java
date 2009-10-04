@@ -41,11 +41,11 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
-public class RelationsTestHelper {
+public class DummyRelationsHelper {
 
     public static final String DOCUMENT_NAMESPACE = "http://www.nuxeo.org/document/uid/";
 
-    private static final Log log = LogFactory.getLog(RelationsTestHelper.class);
+    private static final Log log = LogFactory.getLog(DummyRelationsHelper.class);
 
     private static RelationManager relationManager;
 

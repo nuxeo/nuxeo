@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.jbpm.test.JbpmTestConstants;
+import org.nuxeo.ecm.platform.jbpm.test.JbpmUTConstants;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
@@ -86,8 +86,8 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.publisher.core");
         deployBundle("org.nuxeo.ecm.platform.publisher.jbpm");
         deployBundle("org.nuxeo.ecm.platform.publisher.jbpm.test");
-        deployBundle(JbpmTestConstants.CORE_BUNDLE_NAME);
-        deployBundle(JbpmTestConstants.TESTING_BUNDLE_NAME);
+        deployBundle(JbpmUTConstants.CORE_BUNDLE_NAME);
+        deployBundle(JbpmUTConstants.TESTING_BUNDLE_NAME);
         openSession();
 
         directoryService = Framework.getService(DirectoryService.class);

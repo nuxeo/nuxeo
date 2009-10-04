@@ -167,7 +167,7 @@ public class TestIORemoteCopy2 extends NXRuntimeTestCase {
 
         // create a comment for the file
         //DocumentModel comment = RelationsTestHelper.createSampleComment(coreSession, child);
-        RelationsTestHelper.createRelation(child, child2);
+        DummyRelationsHelper.createRelation(child, child2);
 
         // add dummy resources for each of them
         DummyIOResourceAdapter.backend.clear();

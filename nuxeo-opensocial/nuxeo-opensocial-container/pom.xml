@@ -71,7 +71,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
         <configuration>
-          <extraJvmArgs>-Xmx512m</extraJvmArgs>
+          <extraJvmArgs>-Xmx768m</extraJvmArgs>
         </configuration>
         <executions>
           <execution>
@@ -81,6 +81,7 @@
             </goals>
             <configuration>
               <outputDirectory>${project.build.outputDirectory}/</outputDirectory>
+              <extraJvmArgs>-Xmx768m</extraJvmArgs>
             </configuration>
           </execution>
         </executions>

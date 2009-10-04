@@ -38,7 +38,7 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 import org.nuxeo.ecm.platform.jbpm.core.service.JbpmServiceImpl;
-import org.nuxeo.ecm.platform.jbpm.test.JbpmTestConstants;
+import org.nuxeo.ecm.platform.jbpm.test.JbpmUTConstants;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -69,8 +69,8 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.directory.sql");
         deployContrib("org.nuxeo.ecm.platform.jbpm.core.test", "OSGI-INF/jbpmService-contrib.xml");
 
-        deployBundle(JbpmTestConstants.CORE_BUNDLE_NAME);
-        deployBundle(JbpmTestConstants.TESTING_BUNDLE_NAME);
+        deployBundle(JbpmUTConstants.CORE_BUNDLE_NAME);
+        deployBundle(JbpmUTConstants.TESTING_BUNDLE_NAME);
 
         service = Framework.getService(JbpmService.class);
         userManager = Framework.getService(UserManager.class);

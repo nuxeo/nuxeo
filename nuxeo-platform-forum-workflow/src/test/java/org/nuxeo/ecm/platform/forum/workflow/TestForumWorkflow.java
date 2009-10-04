@@ -23,7 +23,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.core.service.JbpmServiceImpl;
-import org.nuxeo.ecm.platform.jbpm.test.JbpmTestConstants;
+import org.nuxeo.ecm.platform.jbpm.test.JbpmUTConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -52,10 +52,10 @@ public class TestForumWorkflow extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.directory.sql");
 
-        deployBundle(JbpmTestConstants.CORE_BUNDLE_NAME);
-        deployBundle(JbpmTestConstants.TESTING_BUNDLE_NAME);
-        deployBundle(ForumWorkflowTestConstants.FORUM_CORE_BUNDLE);
-        deployBundle(ForumWorkflowTestConstants.FORUM_WORKFLOW_BUNDLE);
+        deployBundle(JbpmUTConstants.CORE_BUNDLE_NAME);
+        deployBundle(JbpmUTConstants.TESTING_BUNDLE_NAME);
+        deployBundle(ForumWorkflowTUConstants.FORUM_CORE_BUNDLE);
+        deployBundle(ForumWorkflowTUConstants.FORUM_WORKFLOW_BUNDLE);
 
         service = Framework.getService(JbpmService.class);
         userManager = Framework.getService(UserManager.class);
