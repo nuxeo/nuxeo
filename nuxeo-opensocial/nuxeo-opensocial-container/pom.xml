@@ -70,6 +70,9 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <configuration>
+          <extraJvmArgs>-Xmx512m</extraJvmArgs>
+        </configuration>
         <executions>
           <execution>
             <goals>
