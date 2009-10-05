@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -76,7 +77,7 @@ public class SiteUtils {
                 // Check also if document has "webcontainer" schema and if has
                 // "isWebContainer" flag set on TRUE
                 if (currentDocumentModel.hasSchema(SiteConstants.WEBCONTAINER_SCHEMA)
-                        && ((Boolean) currentDocumentModel.getPropertyValue(SiteConstants.WEBCONTAINER_ISWEBCONTAINER))) {
+                        && Boolean.TRUE.equals(currentDocumentModel.getPropertyValue(SiteConstants.WEBCONTAINER_ISWEBCONTAINER))) {
                     return currentDocumentModel;
                 }
             }
@@ -180,7 +181,8 @@ public class SiteUtils {
 
         // Trim and replace problematic chars with -
         String theName = (StringUtils.isEmpty(pageName) ? title : pageName).trim();
-        theName = theName.replaceAll("[ | \\t|/\\@|\\?|\\&]+", "-");
+        theName = IdUtils.generateId(theName);
+        //theName = theName.replaceAll("[ | \\t|/\\@|\\?|\\&]+", "-");
 
         DocumentModel documentModel = session.createDocumentModel(parentPath,
                 theName, documentType);
