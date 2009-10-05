@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>nuxeo-opensocial-server</artifactId>
-  <name>Nuxeo OpenSocial :: Shindig Integration</name>
+  <name>Nuxeo OpenSocial - Shindig Integration</name>
   <description>Component that deploys on Nuxeo Server to handle the OpenSocial API</description>
 
   <dependencies>

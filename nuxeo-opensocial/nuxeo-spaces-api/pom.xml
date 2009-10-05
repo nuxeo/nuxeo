@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>nuxeo-spaces-api</artifactId>
-  <name>Nuxeo Opensocial :: Spaces API</name>
+  <name>Nuxeo OpenSocial - Spaces API</name>
   <description>Introduce concepts of Universe, Space and Gadgets. A Universe contains Spaces and a
   Space contains Gadgets. The service defines how to reach a Universe, what are the Spaces and what
   are their Gadgets.

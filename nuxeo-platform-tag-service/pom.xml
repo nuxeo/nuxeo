@@ -12,7 +12,7 @@
   <artifactId>nuxeo-platform-tag-parent</artifactId>
   <groupId>org.nuxeo.ecm.platform</groupId>
   <packaging>pom</packaging>
-  <name>Tag Service Module</name>
+  <name>Nuxeo Tag Service Module</name>
   <description>Nuxeo Platform Tag Service module is the addon
     providing tagging feature for Nuxeo.</description>
 

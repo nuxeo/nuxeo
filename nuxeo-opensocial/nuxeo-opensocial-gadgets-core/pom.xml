@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>nuxeo-opensocial-gadgets-core</artifactId>
-  <name>Nuxeo Opensocial :: Gadget Service</name>
+  <name>Nuxeo OpenSocial - Gadget Service</name>
   <description>Pluggable service that implements the gadget API</description>
 
   <dependencies>

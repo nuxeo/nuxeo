@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>nuxeo-spaces-web</artifactId>
-  <name>Nuxeo Opensocial :: Spaces Web (JSF) contribution</name>
+  <name>Nuxeo OpenSocial - Spaces Web (JSF) contribution</name>
   <description>Contribution to the JSF app to exposes spaces
     document types</description>
 

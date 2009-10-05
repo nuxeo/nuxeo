@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>nuxeo-webengine-spaces</artifactId>
-  <name>Nuxeo Opensocial :: Webengine Spaces</name>
+  <name>Nuxeo OpenSocial - Webengine Spaces</name>
   <description>WebEngine app that exposes spaces in a iGoogle manner</description>
 
   <build>

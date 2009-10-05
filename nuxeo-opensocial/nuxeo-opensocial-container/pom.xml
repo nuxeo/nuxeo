@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>nuxeo-opensocial-container</artifactId>
-  <name>Nuxeo Opensocial :: Container</name>
+  <name>Nuxeo OpenSocial - Container</name>
   <description>GWT gadgets container</description>
 
   <dependencies>

@@ -13,7 +13,7 @@
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-mail-parent</artifactId>
   <packaging>pom</packaging>
-  <name>Mail Module</name>
+  <name>Nuxeo Mail - Parent POM</name>
   <description>Mail module to connect to mail server, send and process mail.</description>
 
   <modules>

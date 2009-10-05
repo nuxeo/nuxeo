@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>nuxeo-webengine-gadgets</artifactId>
-  <name>Nuxeo Opensocial :: Webengine Gadget app</name>
+  <name>Nuxeo OpenSocial - Webengine Gadget app</name>
   <description>Nuxeo WebEngine app that serves gadgets and info about them</description>
 
   <build>

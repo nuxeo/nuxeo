@@ -10,8 +10,8 @@
   </parent>
 
   <artifactId>nuxeo-opensocial-features</artifactId>
-  <name>Nuxeo OpenSocial :: Features</name>
-  <description>Opensocial Features</description>
+  <name>Nuxeo OpenSocial - Features</name>
+  <description>OpenSocial Features</description>
 
   <build>
     <plugins>

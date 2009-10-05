@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>nuxeo-platform-mail-web</artifactId>
-  <name>Web Mail Module</name>
+  <name>Nuxeo Mail - Web</name>
   <description>Nuxeo Platform Mail Web module is the web module of the mail plugin for Nuxeo.</description>
 
   <dependencies>

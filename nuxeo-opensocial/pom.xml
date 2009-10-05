@@ -11,8 +11,8 @@
 
   <groupId>org.nuxeo.ecm.opensocial</groupId>
   <artifactId>nuxeo-opensocial-parent</artifactId>
-  <name>Nuxeo Opensocial :: Parent</name>
-  <description>Nuxeo OpenSocial is the integration of the Shindig (Opensocial) into Nuxeo</description>
+  <name>Nuxeo OpenSocial - Parent</name>
+  <description>Nuxeo OpenSocial is the integration of the Shindig (OpenSocial) into Nuxeo</description>
   <packaging>pom</packaging>
 
   <modules>

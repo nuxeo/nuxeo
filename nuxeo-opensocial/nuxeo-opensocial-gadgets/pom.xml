@@ -10,8 +10,8 @@
   </parent>
 
   <artifactId>nuxeo-opensocial-gadgets</artifactId>
-  <name>Nuxeo Opensocial :: Gadgets</name>
-  <description>Nuxeo Opensocial Gadgets</description>
+  <name>Nuxeo OpenSocial - Gadgets</name>
+  <description>Nuxeo OpenSocial Gadgets</description>
 
   <dependencies>
     <dependency>

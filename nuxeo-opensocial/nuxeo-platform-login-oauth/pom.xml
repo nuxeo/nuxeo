@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>nuxeo-platform-login-oauth</artifactId>
-  <name>Nuxeo Opensocial :: OAuth Plugin</name>
+  <name>Nuxeo OpenSocial - OAuth Plugin</name>
   <description>Simple login plugin that handles OAuth signed fetch (not 3 part fetch)</description>
 
   <dependencies>

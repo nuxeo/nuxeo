@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>nuxeo-opensocial-dashboard</artifactId>
-  <name>Nuxeo Opensocial :: Webengine Dashboard</name>
+  <name>Nuxeo OpenSocial - Webengine Dashboard</name>
   <description>Nuxeo Dashboard</description>
 
   <build>

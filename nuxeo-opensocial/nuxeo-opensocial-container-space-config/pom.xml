@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>nuxeo-opensocial-container-space-config</artifactId>
-  <name>Nuxeo Opensocial :: Container Configuration for Space API</name>
+  <name>Nuxeo OpenSocial - Container Configuration for Space API</name>
   <description>GWT container management configuration</description>
 
   <dependencies>

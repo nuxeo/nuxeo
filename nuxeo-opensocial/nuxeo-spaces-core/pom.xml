@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>nuxeo-spaces-core</artifactId>
-  <name>Nuxeo Opensocial :: Spaces Core</name>
+  <name>Nuxeo OpenSocial - Spaces Core</name>
   <description>Nuxeo Spaces Implementation</description>
 
   <dependencies>
