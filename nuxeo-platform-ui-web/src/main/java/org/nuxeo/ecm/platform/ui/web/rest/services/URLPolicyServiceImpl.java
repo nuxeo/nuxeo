@@ -93,7 +93,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         try {
             return Framework.getService(DocumentViewCodecManager.class);
         } catch (Exception e) {
-            log.error("Could not retrieve the document view service",e);
+            log.error("Could not retrieve the document view service", e);
         }
         return null;
     }
@@ -173,10 +173,10 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                 break;
             }
         }
-//        if (res == null && log.isDebugEnabled()) {
-//            log.debug("Could not get url pattern for request "
-//                    + request.getRequestURL());
-//        }
+        // if (res == null && log.isDebugEnabled()) {
+        // log.debug("Could not get url pattern for request "
+        // + request.getRequestURL());
+        // }
         return res;
     }
 
@@ -189,10 +189,10 @@ public class URLPolicyServiceImpl implements URLPolicyService {
             }
         }
 
-//        if (docView == null && log.isDebugEnabled()) {
-//            log.debug("Could not get document view from request "
-//                    + request.getRequestURL());
-//        }
+        // if (docView == null && log.isDebugEnabled()) {
+        // log.debug("Could not get document view from request "
+        // + request.getRequestURL());
+        // }
         return docView;
     }
 
@@ -244,9 +244,9 @@ public class URLPolicyServiceImpl implements URLPolicyService {
             } catch (IllegalArgumentException e) {
             }
         }
-//        if (res == null && log.isDebugEnabled()) {
-//            log.debug("Could not get url pattern for document view");
-//        }
+        // if (res == null && log.isDebugEnabled()) {
+        // log.debug("Could not get url pattern for document view");
+        // }
         return res;
     }
 
@@ -258,9 +258,9 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                 break;
             }
         }
-//        if (url == null && log.isDebugEnabled()) {
-//            log.debug("Could not get url from document view");
-//        }
+        // if (url == null && log.isDebugEnabled()) {
+        // log.debug("Could not get url from document view");
+        // }
         return url;
     }
 
@@ -393,8 +393,8 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         ELContext context = facesContext.getELContext();
         String actionBinding = pattern.getActionBinding();
         MethodExpression action = ef.createMethodExpression(context,
-                actionBinding, String.class, new Class[]{ DocumentView.class });
-        return (String) action.invoke(context, new Object[]{ docView });
+                actionBinding, String.class, new Class[] { DocumentView.class });
+        return (String) action.invoke(context, new Object[] { docView });
     }
 
     // registries management
