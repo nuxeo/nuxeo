@@ -1,3 +1,33 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Thierry Delprat
+ */
+
+package org.nuxeo.ecm.platform.ui.web.util;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.jboss.seam.Component;
+import org.jboss.seam.annotations.Name;
+import org.jboss.seam.util.EJB;
+
 /**
  *
  * This class provides helper methods for accessing a Seam Component
@@ -20,22 +50,7 @@
  *  - executing a method via a method name on a Seam component.
  *
  * @author tiry
- *
  */
-
-package org.nuxeo.ecm.platform.ui.web.util;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.jboss.seam.Component;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.util.EJB;
-
 public final class SeamComponentCallHelper {
 
     // This is an utility class.
