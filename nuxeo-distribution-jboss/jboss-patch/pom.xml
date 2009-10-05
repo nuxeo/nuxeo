@@ -243,6 +243,10 @@
                 <!-- this dtd is needed for the transform to read the file correctly -->
                 <copy file="src/main/dtd/log4j.dtd" todir="${jboss.conf}"
                   overwrite="true" />
+                <echo message="Patching main deployer ..." />  
+                <copy file="src/main/xml/org.jboss.deployment.MainDeployer-xmbean.xml" 
+                  todir="${jboss.conf}/xmdesc"
+                  overwrite="true" />                  
               </tasks>
             </configuration>
           </execution>
