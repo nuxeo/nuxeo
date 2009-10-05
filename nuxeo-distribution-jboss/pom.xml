@@ -40,6 +40,7 @@
     <dependency>
       <groupId>org.jboss</groupId>
       <artifactId>jboss-as</artifactId>
+      <classifier>light</classifier>
       <type>zip</type>
     </dependency>
   </dependencies>
@@ -54,7 +55,7 @@
             <phase>package</phase>
             <configuration>
               <tasks>
-                <resolveArtifact groupId="org.jboss" artifactId="jboss-as"
+                <resolveArtifact groupId="org.jboss" artifactId="jboss-as" classifier="light"
                   type="zip" property="jboss" />
                 <unzip src="${jboss}" dest="${project.build.directory}/jboss" />
                 <ant antfile="build.xml" target="patch">

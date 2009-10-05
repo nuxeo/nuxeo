@@ -4,6 +4,7 @@ syntax:glob
 .settings
 bin
 target
+target*
 *~
 *.orig
 .pydevproject

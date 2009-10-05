@@ -12,11 +12,11 @@
   <artifactId>nuxeo-distribution-windows</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo Windows Distribution</name>
-  <description>Build Nuxeo Windows installer with ISTools
-  Requirements:
-  * wine (from apt sources)
-  * ispack-5.2.3.exe from http://www.innosetup.com (http://files.jrsoftware.org/ispack/ispack-5.2.3.exe)
-  This should install Inno Setup Compiler and ISTool 
+  <description>Build Nuxeo Windows installer with ISTools\n
+  Requirements:\n
+  * wine (from apt sources)\n
+  * ispack-5.2.3.exe from http://www.innosetup.com (http://files.jrsoftware.org/ispack/ispack-5.2.3.exe)\n
+  This should install Inno Setup Compiler and ISTool
   </description>
 
   <properties>
