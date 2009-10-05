@@ -35,7 +35,7 @@ public class TestXPathBuilder extends TestCase {
 
         q = "select * from File where ecm:path LIKE '%/wiki/FrontPage'";
         //x = "//%/ecm:children/wiki/ecm:children/element(FrontPage,ecmdt:File)";
-        x = "//element(*,ecmdt:File)[ jcr:like(@ecm:path, '%/wiki/FrontPage') ]";        
+        x = "//element(*,ecmdt:File)[ jcr:like(@ecm:path, '%/wiki/FrontPage') ]";
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
 
@@ -46,12 +46,12 @@ public class TestXPathBuilder extends TestCase {
 
         q = "select * from File where ecm:path LIKE '%/wiki/FrontPage/%'";
         //x = "//%/ecm:children/wiki/ecm:children/FrontPage/ecm:children//element(*,ecmdt:File)";
-        x = "//element(*,ecmdt:File)[ jcr:like(@ecm:path, '%/wiki/FrontPage/%') ]";        
+        x = "//element(*,ecmdt:File)[ jcr:like(@ecm:path, '%/wiki/FrontPage/%') ]";
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
         q = "select * from File where ecm:path LIKE '/wiki/FrontPage'";
         //x = "/jcr:root/ecm:root/ecm:children/wiki/ecm:children/element(FrontPage,ecmdt:File)";
-        x = "//element(*,ecmdt:File)[ jcr:like(@ecm:path, '/wiki/FrontPage') ]";        
+        x = "//element(*,ecmdt:File)[ jcr:like(@ecm:path, '/wiki/FrontPage') ]";
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
         q = "select * from File where ecm:path LIKE '/wiki/FrontPage/'";
@@ -115,7 +115,7 @@ public class TestXPathBuilder extends TestCase {
 
         q = "SELECT * FROM Workspace WHERE ecm:path STARTSWITH '/default-domain/templates' AND NOT (ecm:path STARTSWITH '/default-domain/templates/t1')";
         x = "//element(*,ecmdt:Workspace)[( jcr:like(@ecm:path, '/default-domain/templates/%') ) and ( not(( jcr:like(@ecm:path, '/default-domain/templates/t1/%') )) )]";
-        System.out.println(XPathBuilder.fromNXQL(q));
+        // System.out.println(XPathBuilder.fromNXQL(q));
         assertEquals(x, XPathBuilder.fromNXQL(q));
     }
 
