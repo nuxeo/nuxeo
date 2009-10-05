@@ -202,7 +202,7 @@ public class TaggingHelper {
                         SecurityConstants.WRITE)) {
             return true;
         }
-        return tagService.getTaggingId(session, tag.tagId, tag.tagLabel,
+        return tagService.getTaggingId(session, document.getId(), tag.tagLabel,
                 principal.getName()) != null;
     }
 
