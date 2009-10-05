@@ -271,6 +271,27 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
+   public boolean supportsReadAcl() {
+        return true;
+    }
+
+    @Override
+    public String getReadAclsCheckSql(String idColumnName) {
+        return String.format("%s IN (SELECT * FROM nx_get_read_acls_for(?))",
+                idColumnName);
+    }
+
+    @Override
+    public String getUpdateReadAclsSql() {
+        return "SELECT nx_update_read_acls();";
+    }
+
+    @Override
+    public String getRebuildReadAclsSql() {
+        return "SELECT nx_rebuild_read_acls();";
+    }
+
+    @Override
     public String getClobCast(boolean inOrderBy) {
         if (!inOrderBy) {
             return "CAST(%s AS VARCHAR)";
