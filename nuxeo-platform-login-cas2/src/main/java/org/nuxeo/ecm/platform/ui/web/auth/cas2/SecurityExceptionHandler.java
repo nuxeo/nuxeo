@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -37,7 +37,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
         Throwable unwrappedException = unwrapException(t);
 
         if ((!ExceptionHelper.isSecurityError(unwrappedException))
-                && (!response.containsHeader(NuxeoAuthenticationFilter.SSO_INITIAL_URL_REQUEST))) {
+                && (!response.containsHeader(NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY))) {
             super.handleException(request, response, t);
             return;
         }
@@ -46,7 +46,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
 
         String urlToReach = getURLToReach(request);
         Cookie cookieUrlToReach = new Cookie(
-                NuxeoAuthenticationFilter.SSO_INITIAL_URL_REQUEST, urlToReach);
+                NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY, urlToReach);
         cookieUrlToReach.setPath("/");
         cookieUrlToReach.setMaxAge(60);
         response.addCookie(cookieUrlToReach);
