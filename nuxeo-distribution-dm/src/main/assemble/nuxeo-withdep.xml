@@ -96,9 +96,9 @@
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
-      <artifact group="org.nuxeo.*" category="runtime,jboss4"
+      <artifact group="org.nuxeo*" category="runtime,jboss4"
         includeDependsOnCategory="false" />
-      <artifact group="org.nuxeo.*" category="core,search,web,stateful,stateless" />
+      <artifact group="org.nuxeo*" category="core,search,web,stateful,stateless" />
       <!-- add here nuxeo-addons -->
     </includes>
     <excludes>
@@ -112,6 +112,9 @@
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
       <artifact name="nuxeo-apt-extensions" />
+      <artifact name="nuxeo-webengine-apt" />
+      <artifact name="nuxeo-platform-ear" />
+      <artifact name="nuxeo-distribution-dm" />
     </excludes>
   </artifactSet>
 
@@ -148,7 +151,7 @@
       <artifact scope="compile" />
     </includes>
     <excludes>
-      <artifact group="org.nuxeo.*" />
+      <artifact group="org.nuxeo*" />
       <artifact name="jackrabbit-jcr-commons" />
       <artifact name="stax-api" />
       <artifact name="xercesImpl" />

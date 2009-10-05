@@ -65,9 +65,9 @@
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
-      <artifact group="org.nuxeo.*" category="runtime,jboss4"
+      <artifact group="org.nuxeo*" category="runtime,jboss4"
         includeDependsOnCategory="false" />
-      <artifact group="org.nuxeo.*" category="core,stateful" />
+      <artifact group="org.nuxeo*" category="core,stateful" />
       <!-- add here core and stateful nuxeo-addons -->
     </includes>
     <excludes>
@@ -79,8 +79,12 @@
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
       <artifact name="nuxeo-apt-extensions" />
+      <artifact name="nuxeo-webengine-apt" />
       <artifact name="nuxeo-platform-ear" />
       <artifact name="nuxeo-distribution-dm" />
+
+      <!-- excluding nuxeo-theme-webwidgets not ready for two parts deployment -->
+      <artifact name="nuxeo-theme-webwidgets*" />
     </excludes>
   </artifactSet>
 
@@ -189,6 +193,7 @@
 
       <!-- Remote publication lib -->
       <artifact group="org.apache.httpcomponents" name="httpclient" />
+      <artifact group="org.apache.httpcomponents" name="httpcore" />
     </artifacts>
   </artifactSet>
 
@@ -198,7 +203,7 @@
     <set>nuxeo-libs-via-dependency-tree</set> </assemble> <artifactSet
     id="nuxeo-libs-via-dependency-tree"> <import>**</import>
     <includeDependencies>true</includeDependencies> <includes> <artifact
-    scope="compile" /> </includes> <excludes> <artifact group="org.nuxeo.*" />
+    scope="compile" /> </includes> <excludes> <artifact group="org.nuxeo*" />
     </excludes> </artifactSet>
   -->
 

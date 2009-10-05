@@ -33,7 +33,7 @@
 		
 		<!--artifactSet id="myset" select="*" include-dependencies="all" include-dependends="all">
 			<includes>
-			  <artifact id="org.nuxeo.*"   />
+			  <artifact id="org.nuxeo*"   />
 			</includes>
 			<excludes>
 				<artifact scope="test" />
@@ -45,7 +45,7 @@
 			<resolveArtifact pattern="org.nuxeo.ecm.core:nuxeo-core-parent:1.5-SNAPSHOT:pom"/>
 			<expand level="1">
 				<includes>
-					<artifact groupId="org.nuxeo.*"/>
+					<artifact groupId="org.nuxeo*"/>
 					<artifact scope="compile"/>
 				</includes>
 			    <excludes>
