@@ -56,17 +56,14 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
             while (paramNames.hasMoreElements()) {
                 String name = paramNames.nextElement();
                 String value = httpRequest.getParameter(name);
-                if (NXAuthConstants.LOGIN_ERROR.equals(name)) {
-                    String loginError = value;
-                    if (loginError != null) {
-                        if (NXAuthConstants.ERROR_USERNAME_MISSING.equals(loginError)) {
-                            parameters.put(NXAuthConstants.LOGIN_MISSING, "true");
-                        } else {
-                            parameters.put(NXAuthConstants.LOGIN_FAILED, "true");
-                        }
-                    }
+                parameters.put(name, value);
+            }
+            String loginError = (String) httpRequest.getAttribute(NXAuthConstants.LOGIN_ERROR);
+            if (loginError != null) {
+                if (NXAuthConstants.ERROR_USERNAME_MISSING.equals(loginError)) {
+                    parameters.put(NXAuthConstants.LOGIN_MISSING, "true");
                 } else {
-                    parameters.put(name, value);
+                    parameters.put(NXAuthConstants.LOGIN_FAILED, "true");
                 }
             }
             redirectUrl = URIUtils.addParametersToURIQuery(redirectUrl,
