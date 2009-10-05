@@ -161,6 +161,8 @@
       <artifact name="jackrabbit-core" />
       <artifact name="persistence-api" />
       <artifact name="dom4j" />
+      <artifact group="org.freemarker" name="freemarker" />
+      <artifact group="commons-lang" name="commons-lang" />
     </excludes>
   </artifactSet>
 
