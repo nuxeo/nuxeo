@@ -79,8 +79,12 @@
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
       <artifact name="nuxeo-apt-extensions" />
+      <artifact name="nuxeo-webengine-apt" />
       <artifact name="nuxeo-platform-ear" />
       <artifact name="nuxeo-distribution-dm" />
+
+      <!-- excluding nuxeo-theme-webwidgets not ready for two parts deployment -->
+      <artifact name="nuxeo-theme-webwidgets*" />
     </excludes>
   </artifactSet>
 

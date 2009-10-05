@@ -112,6 +112,8 @@
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
       <artifact name="nuxeo-apt-extensions" />
+      <artifact name="nuxeo-webengine-apt" />
+      <artifact name="nuxeo-platform-ear" />
     </excludes>
   </artifactSet>
 
