@@ -370,23 +370,25 @@ public class H2Functions extends EmbeddedFunctions {
          */
         public void fire(Connection conn, Object[] oldRow, Object[] newRow)
                 throws SQLException {
-            if (newRow != null) {
-                PreparedStatement ps = null;
-                try {
-                    ps = conn.prepareStatement("INSERT INTO hierarchy_modified_acl VALUES(?, ?);");
-                    ps.setString(2, "f");
-                    if (oldRow != null) {
-                        // update or delete
-                        ps.setString(1, oldRow[idIndex].toString());
-                    } else {
-                        // insert
-                        ps.setString(1, newRow[idIndex].toString());
-                    }
-                    ps.executeUpdate();
-                } finally {
-                    if (ps != null) {
-                        ps.close();
-                    }
+            String id = null;
+            if (oldRow != null) {
+                // update or delete
+                id = oldRow[idIndex].toString();
+            } else if (newRow != null) {
+                // insert
+                id = newRow[idIndex].toString();
+            } else {
+                return;
+            }
+            PreparedStatement ps = null;
+            try {
+                ps = conn.prepareStatement("INSERT INTO hierarchy_modified_acl VALUES(?, ?);");
+                ps.setString(1, id);
+                ps.setString(2, "f");
+                ps.executeUpdate();
+            } finally {
+                if (ps != null) {
+                    ps.close();
                 }
             }
         }
