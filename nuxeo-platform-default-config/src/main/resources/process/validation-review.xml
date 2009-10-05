@@ -57,7 +57,7 @@
     <task name="validate-after-reject">
       <event type="task-create">
         <action
-          class="org.nuxeo.ecm.platform.jbpm.core.helper.TaskNotificationHandler" />
+          class="org.nuxeo.ecm.platform.jbpm.core.helper.RejectedTaskNotificationHandler" />
       </event>
       <controller
         class="org.nuxeo.ecm.platform.jbpm.core.node.ValidateRejectController" />
