@@ -586,6 +586,7 @@
         <artifactId>jboss-as</artifactId>
         <version>4.2.3.GA</version>
         <type>zip</type>
+        <classifier>light</classifier>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
