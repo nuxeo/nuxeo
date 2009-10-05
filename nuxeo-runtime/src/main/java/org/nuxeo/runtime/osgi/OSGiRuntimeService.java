@@ -380,6 +380,10 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                 return defValue == null ? null : expandVars(defValue);
             }
         }
+        if (value.startsWith("$") && value.equals("${" + name + "}")) {
+            // avoid loop, don't expand
+            return value;
+        }
         return expandVars(value);
     }
 
