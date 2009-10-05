@@ -73,7 +73,6 @@ function doEdit(docid)
   navigateOnPopupDoc('TAB_EDIT');
 }
 
-
 function doRename(docid)
 {
  span=document.getElementById('title_'+docid);
@@ -120,8 +119,11 @@ function doSendEmail(docid){
 
 function onEditKeyPress(event)
 {
-if (event.keyCode == 13)
- saveRename(event);
+if(!event) event = window.event;
+var keyCode = (event.which) ? event.which: event.keyCode;
+var target = (event.target) ? event.target: event.srcElement;
+if (keyCode == 13)
+ saveRename(target);
 }
 
 function saveRenameCallback(result)
@@ -130,9 +132,9 @@ function saveRenameCallback(result)
    refreshPage()
 }
 
-function saveRename(event)
+function saveRename(target)
 {
- input = event['target'];
+ input = target;
  span = document.createElement('span');
  input.parentNode.replaceChild(span,input);
  span.innerHTML = input.value;
