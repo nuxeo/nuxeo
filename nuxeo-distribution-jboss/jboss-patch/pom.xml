@@ -214,7 +214,7 @@
                   </includes>
                   <stylesheet>src/main/xsl/jbossjta-properties.xsl</stylesheet>
                 </transformationSet>
-                <!-- can not activate because of validation of DTD ... pfff
+                <!-- warning : this requires web access to validate DTD ... -->
                 <transformationSet>
                    <validating>false</validating>
                    <dir>${jboss.server}</dir>
@@ -222,8 +222,7 @@
                       <include>deploy/jboss-web.deployer/ROOT.war/WEB-INF/web.xml</include>
                    </includes>
                    <stylesheet>src/main/xsl/root-web.xsl</stylesheet>
-                 </transformationSet>
-                -->
+                 </transformationSet>               
               </transformationSets>
             </configuration>
           </execution>
