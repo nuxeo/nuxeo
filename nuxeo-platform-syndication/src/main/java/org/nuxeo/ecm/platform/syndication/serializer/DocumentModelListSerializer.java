@@ -39,6 +39,8 @@ public interface DocumentModelListSerializer {
 
     String urlField = "url";
 
+    String iconField = "icon";
+
     String pathField = "path";
 
     String authorField = "author";
