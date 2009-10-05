@@ -1045,6 +1045,11 @@
         <version>4.0</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>4.0.1</version>
+      </dependency>
+      <dependency>
         <groupId>net.jcip</groupId>
         <artifactId>jcip-annotations</artifactId>
         <version>1.0</version>
@@ -1665,12 +1670,12 @@
                 </stylesheetfile
               -->
               <windowtitle>
-                Nuxeo Enterprise Platform 5.2 API Documentation
+                Nuxeo Enterprise Platform 5.3 API Documentation
               </windowtitle>
               <doctitle>
-                Nuxeo Enterprise Platform 5.2 API Documentation
+                Nuxeo Enterprise Platform 5.3 API Documentation
               </doctitle>
-              <header>Nuxeo Enterprise Platform 5.2</header>
+              <header>Nuxeo Enterprise Platform 5.3</header>
               <links>
                 <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
                 <link>http://java.sun.com/javaee/5/docs/api/</link>

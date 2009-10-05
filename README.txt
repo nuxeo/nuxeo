@@ -23,11 +23,7 @@ notably:
 See http://doc.nuxeo.org/xwiki/bin/view/FAQ/DownloadingNuxeoSources for more
 information if needed.
 
-2. Have the "right" version of JBoss installed somewhere on your system (we
-like /opt/jboss, but YMMV).
-
-"Right" = JBoss 4.2.2 or 4.2.3 for Nuxeo EP 5.2, and JBoss 4.0.5 for Nuxeo EP
-5.1.
+2. Have JBoss 4.2.3 installed somewhere on your system (we like /opt/jboss, but YMMV).
 
 3. Copy build.properties.sample to build.properties and edit it to match the
 location of your JBoss instance (not needed if your JBoss is in /opt/jboss).
