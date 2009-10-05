@@ -12,7 +12,8 @@
 
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-wss-backend</artifactId>
-    <name>nuxeo-platform-wss-backend</name>
+    <name>Nuxeo Platform WSS Backend</name>
+
     <dependencies>
         <dependency>
             <groupId>org.nuxeo.ecm.core</groupId>
