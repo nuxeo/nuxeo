@@ -193,6 +193,7 @@
 
       <!-- Remote publication lib -->
       <artifact group="org.apache.httpcomponents" name="httpclient" />
+      <artifact group="org.apache.httpcomponents" name="httpcore" />
     </artifacts>
   </artifactSet>
 
