@@ -353,6 +353,77 @@ public class DialectH2 extends Dialect {
         statements.add(makeFunction("NX_CLUSTER_GET_INVALS", //
                 "getClusterInvalidationsString"));
 
+
+        // read acls ----------------------------------------------------------
+        // table to store canonical read acls
+        statements.add(new ConditionalStatement( //
+                false, // late
+                Boolean.FALSE, // no drop
+                null, //
+                null, //
+                "CREATE TABLE IF NOT EXISTS read_acls (" //
+                        + "  id character varying(4096) PRIMARY KEY," //
+                        + "  acl character varying(4096));")); //
+        // table to maintain a read acl for each hierarchy entry
+        statements.add(new ConditionalStatement(
+                false, // late
+                Boolean.FALSE, // no drop
+                null, //
+                null, //
+                "CREATE TABLE IF NOT EXISTS hierarchy_read_acl (" //
+                        + "  id character varying(36) PRIMARY KEY," //
+                        + "  acl_id character varying(4096)," //
+                        + "  CONSTRAINT hierarchy_read_acl_id_fk FOREIGN KEY (id) REFERENCES hierarchy(id) ON DELETE CASCADE" //
+                        + ");"));
+        // Add index
+        statements.add(new ConditionalStatement(
+                false, // late
+                Boolean.FALSE, // no drop
+                null, //
+                null, //
+                "CREATE INDEX IF NOT EXISTS hierarchy_read_acl_acl_id_idx ON hierarchy_read_acl(acl_id);"));
+        // Log hierarchy with updated read acl
+        statements.add(new ConditionalStatement(
+                false, // late
+                Boolean.FALSE, // no drop
+                null, //
+                null, //
+                "CREATE TABLE IF NOT EXISTS hierarchy_modified_acl ("
+                        + "  id character varying(36)," //
+                        + "  is_new boolean" //
+                        + ");"));
+        statements.add(makeFunction("nx_get_read_acl", //
+                "getReadAcl"));
+        statements.add(makeFunction("nx_get_read_acls_for", //
+                "getReadAclsFor"));
+        statements.add(makeFunction("nx_rebuild_read_acls", //
+                "rebuildReadAcls"));
+        statements.add(makeFunction("nx_update_read_acls", //
+                "updateReadAcls"));
+        statements.add(new ConditionalStatement(
+                false, // late
+                Boolean.TRUE, // do a drop
+                null, //
+                "DROP TRIGGER IF EXISTS nx_trig_acls_modified;",
+                "CREATE TRIGGER nx_trig_acls_modified\n" //
+                        + "  AFTER INSERT, UPDATE, DELETE ON acls\n" //
+                        + "  FOR EACH ROW CALL \""+ h2Functions +"$LogAclsModified\";"));
+        statements.add(new ConditionalStatement(
+                false, // late
+                Boolean.TRUE, // do a drop
+                null, //
+                "DROP TRIGGER IF EXISTS nx_trig_hierarchy_modified;",
+                "CREATE TRIGGER nx_trig_hierarchy_modified\n" //
+                        + "  AFTER INSERT, UPDATE ON hierarchy\n" //
+                        + "  FOR EACH ROW CALL \""+ h2Functions +"$LogHierarchyModified\";"));
+        // build the read acls if empty, this takes care of the upgrade
+        statements.add(new ConditionalStatement(
+                false, // late
+                null, // perform a check
+                "SELECT 1 WHERE NOT EXISTS(SELECT 1 FROM read_acls LIMIT 1);",
+                "SELECT * FROM nx_rebuild_read_acls();", //
+                "SELECT 1;"));
+
         statements.add(makeFunction("NX_INIT_DESCENDANTS", //
                 "initDescendants"));
 
