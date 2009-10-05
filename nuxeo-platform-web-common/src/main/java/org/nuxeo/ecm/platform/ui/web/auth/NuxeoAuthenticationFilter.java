@@ -104,12 +104,6 @@ public class NuxeoAuthenticationFilter implements Filter {
      */
     protected String securityDomain = LOGIN_DOMAIN;
 
-    public static final String URLPolicyService_DISABLE_REDIRECT_REQUEST_KEY = "nuxeo.disable.redirect.wrapper";
-
-    public static final String SSO_INITIAL_URL_REQUEST = "sso.initial.url.request";
-
-    public static final String SSO_INITIAL_URL_REQUEST_TO_REMOVE = "sso.initial.url.request.remove.cookie";
-
     public void destroy() {
     }
 
@@ -286,8 +280,8 @@ public class NuxeoAuthenticationFilter implements Filter {
         // reinit Seam so the afterResponseComplete does not crash
         // ServletLifecycle.beginRequest(httpRequest);
 
-        // flag redirect to not be catched by URLPolicy
-        request.setAttribute(URLPolicyService_DISABLE_REDIRECT_REQUEST_KEY,
+        // flag redirect to avoid being caught by URLPolicy
+        request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
                 Boolean.TRUE);
         String baseURL = service.getBaseURL(request);
         ((HttpServletResponse) response).sendRedirect(baseURL
@@ -631,7 +625,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         Cookie[] cookies = httpRequest.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (SSO_INITIAL_URL_REQUEST.equals(cookie.getName())) {
+                if (NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY.equals(cookie.getName())) {
                     requestedPage = cookie.getValue();
                     cookie.setMaxAge(0);
                 }
@@ -659,8 +653,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         // invalidate Session !
         service.invalidateSession(request);
 
-        request.setAttribute(URLPolicyService_DISABLE_REDIRECT_REQUEST_KEY,
-                true);
+        request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
         Map<String, String> parameters = new HashMap<String, String>();
         String securityError = request.getParameter(NXAuthConstants.SECURITY_ERROR);
         if (securityError != null) {

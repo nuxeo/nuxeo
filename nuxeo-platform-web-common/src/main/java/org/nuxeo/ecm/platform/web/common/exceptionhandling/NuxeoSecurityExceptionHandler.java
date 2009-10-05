@@ -76,16 +76,20 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
             if (nuxeoPrincipal.isAnonymous()) {
                 urlParameters.put(NXAuthConstants.SECURITY_ERROR, "true");
                 urlParameters.put(NXAuthConstants.FORCE_ANONYMOUS_LOGIN, "true");
-                urlParameters.put(NXAuthConstants.REQUESTED_URL,
-                        NuxeoAuthenticationFilter.getRequestedUrl(request));
+                if (request.getAttribute(NXAuthConstants.REQUESTED_URL) != null) {
+                    urlParameters.put(NXAuthConstants.REQUESTED_URL, (String)
+                            request.getAttribute(NXAuthConstants.REQUESTED_URL));
+                } else {
+                    urlParameters.put(NXAuthConstants.REQUESTED_URL,
+                            NuxeoAuthenticationFilter.getRequestedUrl(request));
+                }
                 // Redirect to login with urlParameters
                 if (!response.isCommitted()) {
                     String baseURL = initAuthentificationService().getBaseURL(
                             request)
                             + NXAuthConstants.LOGOUT_PAGE;
                     request.setAttribute(
-                            NuxeoAuthenticationFilter.URLPolicyService_DISABLE_REDIRECT_REQUEST_KEY,
-                            true);
+                            NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
                     baseURL = URIUtils.addParametersToURIQuery(baseURL,
                             urlParameters);
                     response.sendRedirect(baseURL);

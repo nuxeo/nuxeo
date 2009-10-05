@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.auth.plugins;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,20 +52,25 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
             log.debug("Forward to Login Screen");
             Map<String, String> parameters = new HashMap<String, String>();
             String redirectUrl = baseURL + loginPage;
-            String securityError = httpRequest.getParameter(NXAuthConstants.SECURITY_ERROR);
-            if (securityError != null) {
-                parameters.put(NXAuthConstants.SECURITY_ERROR, securityError);
-            } else {
-                String loginError = (String) httpRequest.getAttribute(NXAuthConstants.LOGIN_ERROR);
-                if (loginError != null) {
-                    if (NXAuthConstants.ERROR_USERNAME_MISSING.equals(loginError)) {
-                        parameters.put(NXAuthConstants.LOGIN_MISSING, "true");
-                    } else {
-                        parameters.put(NXAuthConstants.LOGIN_FAILED, "true");
+            Enumeration<String> paramNames = httpRequest.getParameterNames();
+            while (paramNames.hasMoreElements()) {
+                String name = paramNames.nextElement();
+                String value = httpRequest.getParameter(name);
+                if (NXAuthConstants.LOGIN_ERROR.equals(name)) {
+                    String loginError = value;
+                    if (loginError != null) {
+                        if (NXAuthConstants.ERROR_USERNAME_MISSING.equals(loginError)) {
+                            parameters.put(NXAuthConstants.LOGIN_MISSING, "true");
+                        } else {
+                            parameters.put(NXAuthConstants.LOGIN_FAILED, "true");
+                        }
                     }
+                } else {
+                    parameters.put(name, value);
                 }
             }
-            redirectUrl = URIUtils.addParametersToURIQuery(redirectUrl, parameters);
+            redirectUrl = URIUtils.addParametersToURIQuery(redirectUrl,
+                    parameters);
             httpResponse.sendRedirect(redirectUrl);
         } catch (IOException e) {
             // TODO Auto-generated catch block
