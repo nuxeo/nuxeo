@@ -16,16 +16,16 @@ public class ContextTransmitterHelper {
         Resource target = ctx.getTargetObject();
         Resource parentResource = target.getPrevious();
         String siteName = "";
-        while (parentResource!=null && !parentResource.isInstanceOf("site")) {
+        while (parentResource!=null && !parentResource.isInstanceOf(SiteConstants.WEBSITE)) {
             parentResource = parentResource.getPrevious();
         }
         if (parentResource!=null) {
             siteName = parentResource.getName();
         }
         String targetObjectPath = target.getPath();
-        doc.getContextData().put("basePath", basePath);
-        doc.getContextData().put("siteName", siteName);
-        doc.getContextData().put("targetObjectPath", targetObjectPath);
+        doc.getContextData().putScopedValue("basePath", basePath);
+        doc.getContextData().putScopedValue("siteName", siteName);
+        doc.getContextData().putScopedValue("targetObjectPath", targetObjectPath);
 
     }
 }
