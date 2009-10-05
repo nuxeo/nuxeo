@@ -35,6 +35,7 @@
       <artifact name="jbossall-client" />
       <artifact group="log4j" name="log4j" />
       <artifact group="com.sun.xml" name="xsom" />
+      <artifact group="xerces" name="xercesImpl" />
     </includes>
   </artifactSet>
 

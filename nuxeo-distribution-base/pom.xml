@@ -138,6 +138,10 @@
       <groupId>com.sun.xml</groupId>
       <artifactId>xsom</artifactId>
     </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+    </dependency>
   </dependencies>
 
   <profiles>

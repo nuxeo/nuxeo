@@ -60,8 +60,8 @@
   </build>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution/nuxeo-distribution-shell</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distribution/nuxeo-distribution-shell</developerConnection>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution/</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distribution/</developerConnection>
     <url>http://hg.nuxeo.org/nuxeo/nuxeo-distribution/nuxeo-distribution-shell/</url>
   </scm>
 
