@@ -74,10 +74,12 @@
       <artifact group="!org.nuxeo*" />
       <artifact group="org.nuxeo.common" />
       <artifact name="nuxeo-runtime-jboss-extensions" />
+      <artifact name="nuxeo-generic-wss-handler" />
 
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
       <artifact name="nuxeo-apt-extensions" />
+      <artifact name="nuxeo-platform-ear" />
     </excludes>
   </artifactSet>
 
@@ -108,11 +110,9 @@
   </assemble>
   <artifactSet id="nuxeo-fixed-libs">
     <artifacts>
-      <artifact group="org.freemarker" name="freemarker" />
       <artifact group="org.osgi" name="osgi-core" />
       <artifact group="commons-collections" name="commons-collections" />
       <artifact group="commons-io" name="commons-io" />
-      <artifact group="commons-lang" name="commons-lang" />
       <artifact group="commons-fileupload" name="commons-fileupload" />
       <artifact group="commons-beanutils" name="commons-beanutils" />
       <artifact group="net.sourceforge.cssparser" name="cssparser" />
@@ -184,6 +184,9 @@
       <artifact group="org.apache" name="xmlbeans" />
       <artifact group="com.sun.xml" name="relaxngDatatype" />
       <artifact group="com.sun.xml" name="xsom" />
+
+      <!-- Remote publication lib -->
+      <artifact group="org.apache.httpcomponents" name="httpclient" />
     </artifacts>
   </artifactSet>
 
