@@ -29,10 +29,10 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 
-
 /**
- * jUnit4 runner that can Inject class into the test class
- * Injection is based on the Guice injection framework
+ * jUnit4 runner that can Inject class into the test class Injection is based on
+ * the Guice injection framework
+ *
  * @author dmetzler
  *
  */
@@ -41,10 +41,9 @@ public class NuxeoRunner extends BlockJUnit4ClassRunner {
     private static final Logger LOG = Logger.getLogger(NuxeoRunner.class);
 
     /**
-     * Runtim harness that holds all the machinery
+     * Runtime harness that holds all the machinery
      */
     protected static RuntimeHarness harness = new RuntimeHarness();
-
 
     /**
      * Guice modules to create the injector
@@ -56,18 +55,7 @@ public class NuxeoRunner extends BlockJUnit4ClassRunner {
      */
     protected Injector injector;
 
-    /**
-     * Test class settings (annotations)
-     */
-    private Settings settings;
-
-
-    /**
-     * The running instance
-     * FIXME: see if it is needed
-     */
     private static NuxeoRunner currentInstance;
-
 
     public NuxeoRunner(Class<?> classToRun) throws InitializationError {
         this(classToRun, new RuntimeModule());
@@ -76,13 +64,12 @@ public class NuxeoRunner extends BlockJUnit4ClassRunner {
     public NuxeoRunner(Class<?> classToRun, Module... modules)
             throws InitializationError {
         super(classToRun);
+        currentInstance = this;
 
-        //Create the Guice injector, based on modules
+        // Create the Guice injector, based on modules
         this.modules = modules;
         this.injector = Guice.createInjector(modules);
 
-        settings = new Settings(getDescription());
-        currentInstance = this;
 
     }
 
@@ -90,29 +77,36 @@ public class NuxeoRunner extends BlockJUnit4ClassRunner {
         this.injector = Guice.createInjector(modules);
     }
 
-
-
     @Override
     public Object createTest() {
 
-
-        //Return a Guice injected test class
+        // Return a Guice injected test class
         return injector.getInstance(getTestClass().getJavaClass());
+    }
+
+    public String[] getBundles() {
+        Bundles annotation = getDescription().getAnnotation(Bundles.class);
+        if (annotation != null) {
+            return annotation.value();
+        } else {
+            return new String[0];
+        }
     }
 
     /**
      * Deploy bundles specified in the @Bundles annotation
      */
     private void deployTestClassBundles() {
-        try {
-            if (settings.getBundles().length > 0) {
+        String[] bundles = getBundles();
+        if (bundles.length > 0) {
+            try {
                 harness = getRuntimeHarness();
-                for (String bundle : settings.getBundles()) {
+                for (String bundle : bundles) {
                     harness.deployBundle(bundle);
                 }
+            } catch (Exception e) {
+                LOG.error("Unable to start bundles: " + bundles);
             }
-        } catch (Exception e) {
-            LOG.error("Unable to start bundles: " + settings.getBundles());
         }
 
     }
@@ -141,12 +135,11 @@ public class NuxeoRunner extends BlockJUnit4ClassRunner {
         return currentInstance;
     }
 
-    public Settings getSettings() {
-        return settings;
-    }
 
     /**
-     * Returns the harness used by the Nuxeo Runner (only used by the RTHarnessProvider)
+     * Returns the harness used by the Nuxeo Runner (only used by the
+     * RTHarnessProvider)
+     *
      * @return
      * @throws Exception
      */
@@ -154,26 +147,33 @@ public class NuxeoRunner extends BlockJUnit4ClassRunner {
         return harness;
     }
 
-
     @Override
     public void run(final RunNotifier notifier) {
         try {
-            //Starts Nuxeo Runtim
+            // Starts Nuxeo Runtim
             harness.start();
 
-            //Deploy additional bundles
+            // Deploy additional bundles
             deployTestClassBundles();
 
-            //Runs the class
+            beforeRun();
+            // Runs the class
             super.run(notifier);
-
-            //Stops the harness if needed
+            afterRun();
+            // Stops the harness if needed
             if (harness.isStarted()) {
                 harness.stop();
             }
         } catch (Exception e) {
             notifier.fireTestFailure(new Failure(getDescription(), e));
         }
+
+    }
+
+    public void beforeRun() {
+
+    }
+    public void afterRun() {
 
     }
 }

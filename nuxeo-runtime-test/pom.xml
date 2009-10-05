@@ -87,6 +87,12 @@
       <version>6.1H.7</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.5</version>
+      <scope>compile</scope>
+    </dependency>
 
   </dependencies>
 
