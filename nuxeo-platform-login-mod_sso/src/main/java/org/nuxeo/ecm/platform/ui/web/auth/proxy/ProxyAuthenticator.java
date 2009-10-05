@@ -124,7 +124,8 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
         boolean isStartPageValid = false;
         if (httpRequest.getMethod().equals("GET")) {
             // try to keep valid start page
-            isStartPageValid = NuxeoAuthenticationFilter.saveRequestedURLBeforeRedirect(
+            NuxeoAuthenticationFilter filter = new NuxeoAuthenticationFilter();
+            isStartPageValid = filter.saveRequestedURLBeforeRedirect(
                     httpRequest, httpResponse);
         }
         HttpSession session;
