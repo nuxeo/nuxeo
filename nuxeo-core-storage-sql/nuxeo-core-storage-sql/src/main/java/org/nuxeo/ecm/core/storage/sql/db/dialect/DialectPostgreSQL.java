@@ -742,8 +742,7 @@ public class DialectPostgreSQL extends Dialect {
         ));
 
         statements.add(new ConditionalStatement(
-                //
-                false, // late
+                true, // early
                 Boolean.FALSE, // no drop needed
                 null, //
                 null, //
@@ -771,8 +770,7 @@ public class DialectPostgreSQL extends Dialect {
         ));
 
         statements.add(new ConditionalStatement(
-                //
-                false, // late
+                true, // early
                 Boolean.FALSE, // no drop needed
                 null, //
                 null, //
