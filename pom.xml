@@ -1665,12 +1665,12 @@
                 </stylesheetfile
               -->
               <windowtitle>
-                Nuxeo Enterprise Platform 5.2 API Documentation
+                Nuxeo Enterprise Platform 5.3 API Documentation
               </windowtitle>
               <doctitle>
-                Nuxeo Enterprise Platform 5.2 API Documentation
+                Nuxeo Enterprise Platform 5.3 API Documentation
               </doctitle>
-              <header>Nuxeo Enterprise Platform 5.2</header>
+              <header>Nuxeo Enterprise Platform 5.3</header>
               <links>
                 <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
                 <link>http://java.sun.com/javaee/5/docs/api/</link>
