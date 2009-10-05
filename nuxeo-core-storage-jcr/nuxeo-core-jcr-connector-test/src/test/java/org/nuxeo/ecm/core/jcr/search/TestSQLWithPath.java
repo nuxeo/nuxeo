@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
@@ -176,10 +177,10 @@ public class TestSQLWithPath extends RepositoryTestCase {
 
         Query qry = session.createQuery(sql, Query.Type.NXQL);
         QueryResult qr = qry.execute();
-
-        printResults(qr, logPrefix);
-
-        assertEquals(7, qr.count());
+        DocumentModelList list = qr.getDocumentModels();
+        //printResults(qr, logPrefix);
+        // compare the resulted number of docs (not or nodes since the root node is removed from the doc list)
+        assertEquals(7, list.size());
     }
 
     public void OBSOLETEtestSQLSubpathWithLike1() throws Exception {
