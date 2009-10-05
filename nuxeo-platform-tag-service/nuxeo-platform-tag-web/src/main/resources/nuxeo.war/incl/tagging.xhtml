@@ -13,11 +13,14 @@
       rendered="#{not empty tagActions.documentTags}">
 
       <nxu:column>
-        <h:graphicImage id="tagIcon" url="/icons/tag_blue.png"/>
+        <h:commandLink action="#{tagActions.listDocumentsForTag(tag.tagId)}">
+          <h:graphicImage id="tagIcon" url="/icons/tag_blue.png"/>
+        </h:commandLink>
       </nxu:column>
 
       <nxu:column>
-        <h:outputText value="#{tag}" />
+        <h:commandLink value="#{tag.tagLabel}"
+          action="#{tagActions.listDocumentsForTag(tag.tagId)}" />
       </nxu:column>
 
       <nxu:column>
