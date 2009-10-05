@@ -239,12 +239,12 @@
 
   <scm>
     <connection>
-      scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-webengine#5.2
+      scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-webengine
     </connection>
     <developerConnection>
-      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-webengine#5.2
+      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-webengine
     </developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo/nuxeo-webengine#5.2/</url>
+    <url>http://hg.nuxeo.org/nuxeo/nuxeo-webengine</url>
   </scm>
 
   <developers>
