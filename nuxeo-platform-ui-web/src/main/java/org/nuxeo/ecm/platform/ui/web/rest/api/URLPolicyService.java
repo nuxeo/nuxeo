@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.ui.web.rest.api;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.rest.descriptors.URLPatternDescriptor;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
@@ -43,6 +44,11 @@ public interface URLPolicyService {
 
     String DOCUMENT_VIEW_REQUEST_KEY = "DocumentView";
 
+    /**
+     * @deprecated: use {@link NXAuthConstants#DISABLE_REDIRECT_REQUEST_KEY}
+     *              instead
+     */
+    @Deprecated
     String DISABLE_REDIRECT_REQUEST_KEY = "nuxeo.disable.redirect.wrapper";
 
     String FORCE_URL_ENCODING_REQUEST_KEY = "nuxeo.force.url.encoding";
