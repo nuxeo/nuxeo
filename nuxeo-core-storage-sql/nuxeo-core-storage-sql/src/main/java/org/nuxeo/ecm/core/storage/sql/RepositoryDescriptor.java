@@ -97,6 +97,12 @@ public class RepositoryDescriptor {
     @XNodeList(value = "indexing/fulltext/index", type = ArrayList.class, componentType = FulltextIndexDescriptor.class)
     public List<FulltextIndexDescriptor> fulltextIndexes;
 
+    @XNode("pathOptimizations@enabled")
+    public boolean pathOptimizationsEnabled = true;
+
+    @XNode("aclOptimizations@enabled")
+    public boolean aclOptimizationsEnabled = true;
+
     /** Merges only non-JCA properties. */
     public void mergeFrom(RepositoryDescriptor other) {
         clusteringEnabled = other.clusteringEnabled;
@@ -106,6 +112,8 @@ public class RepositoryDescriptor {
         fulltextCatalog = other.fulltextCatalog;
         queryMakerClasses = other.queryMakerClasses;
         fulltextIndexes = other.fulltextIndexes;
+        pathOptimizationsEnabled = other.pathOptimizationsEnabled;
+        aclOptimizationsEnabled = other.aclOptimizationsEnabled;
     }
 
     @XNode("xa-datasource")

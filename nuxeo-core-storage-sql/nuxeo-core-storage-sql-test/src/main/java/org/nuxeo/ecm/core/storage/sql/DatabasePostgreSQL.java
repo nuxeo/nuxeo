@@ -81,6 +81,7 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         properties.put("Password", System.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;
         descriptor.fulltextAnalyzer = "french";
+        descriptor.pathOptimizationsEnabled = true;
         return descriptor;
     }
 

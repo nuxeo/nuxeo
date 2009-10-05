@@ -19,6 +19,7 @@
             </index>
           </fulltext>
         </indexing>
+        <pathOptimizations enabled="true"/>
         <xa-datasource>org.postgresql.xa.PGXADataSource</xa-datasource>
         <property name="ServerName">${nuxeo.test.vcs.server}</property>
         <property name="PortNumber">${nuxeo.test.vcs.port}</property>

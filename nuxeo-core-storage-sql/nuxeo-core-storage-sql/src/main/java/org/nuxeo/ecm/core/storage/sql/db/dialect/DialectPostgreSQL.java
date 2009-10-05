@@ -29,7 +29,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -64,11 +63,16 @@ public class DialectPostgreSQL extends Dialect {
 
     protected final String fulltextAnalyzer;
 
+    protected boolean hierarchyCreated;
+
+    protected boolean pathOptimizationsEnabled;
+
     public DialectPostgreSQL(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(metadata);
         fulltextAnalyzer = repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
                 : repositoryDescriptor.fulltextAnalyzer;
+        pathOptimizationsEnabled = repositoryDescriptor.pathOptimizationsEnabled;
     }
 
     @Override
@@ -336,7 +340,14 @@ public class DialectPostgreSQL extends Dialect {
 
     @Override
     public String getInTreeSql(String idColumnName) {
-        return String.format("NX_IN_TREE(%s, ?)", idColumnName);
+        if (pathOptimizationsEnabled) {
+            return String.format(
+                    "EXISTS(SELECT 1 FROM descendants WHERE id = ? AND descendantid = %s)",
+                    idColumnName);
+        } else {
+            return String.format("NX_IN_TREE(%s, ?)", idColumnName);
+        }
+
     }
 
     @Override
@@ -1117,10 +1128,6 @@ public class DialectPostgreSQL extends Dialect {
         return statements;
     }
 
-    protected boolean hierarchyCreated;
-
-    protected boolean skipInitDescendants;
-
     @Override
     public boolean preCreateTable(Connection connection, Table table,
             Model model, Database database) throws SQLException {
@@ -1145,7 +1152,9 @@ public class DialectPostgreSQL extends Dialect {
             if (count > 1000) {
                 // if the hierarchy table is too big, tell the admin to do the
                 // init by hand
-                skipInitDescendants = true;
+                pathOptimizationsEnabled = false;
+                log.error("Table DESCENDANTS not initialized automatically because table HIERARCHY is too big. "
+                        + "Upgrade by hand by calling: SELECT NX_INIT_DESCENDANTS()");
             }
             return true;
         }
@@ -1157,11 +1166,10 @@ public class DialectPostgreSQL extends Dialect {
             Database database) {
         if (table.getName().equals(Model.DESCENDANTS_TABLE_NAME.toLowerCase())) {
             List<String> sqls = new ArrayList<String>();
-            if (skipInitDescendants) {
-                log.error("Table DESCENDANTS empty, must be upgraded by hand by calling: "
-                        + "SELECT NX_INIT_DESCENDANTS()");
-            } else {
+            if (pathOptimizationsEnabled) {
                 sqls.add("SELECT NX_INIT_DESCENDANTS()");
+            } else {
+                log.info("Path optimizations disabled");
             }
             return sqls;
         }
@@ -1172,8 +1180,12 @@ public class DialectPostgreSQL extends Dialect {
     public void existingTableDetected(Connection connection, Table table,
             Model model, Database database) throws SQLException {
         if (table.getName().equals(Model.DESCENDANTS_TABLE_NAME.toLowerCase())) {
+            if (!pathOptimizationsEnabled) {
+                log.info("Path optimizations disabled");
+                return;
+            }
             // check if we want to initialize the descendants table now, or log
-            // a warning if the hierachy table is too big
+            // a warning if the hierarchy table is too big
             String sql = "SELECT COUNT(*) FROM descendants";
             Statement s = connection.createStatement();
             ResultSet rs = s.executeQuery(sql);
@@ -1181,12 +1193,12 @@ public class DialectPostgreSQL extends Dialect {
             long count = rs.getLong(1);
             rs.close();
             s.close();
-            if (count != 0) {
-                // already initialized
-                return;
+            if (count == 0) {
+                pathOptimizationsEnabled = false;
+                log.error("Table DESCENDANTS empty, must be upgraded by hand by calling: "
+                        + "SELECT NX_INIT_DESCENDANTS()");
+                log.info("Path optimizations disabled");
             }
-            log.error("Table DESCENDANTS empty, must be upgraded by hand by calling: "
-                    + "SELECT NX_INIT_DESCENDANTS()");
         }
     }
 
