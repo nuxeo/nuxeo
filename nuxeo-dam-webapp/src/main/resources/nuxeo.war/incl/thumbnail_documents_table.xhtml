@@ -16,16 +16,18 @@
     columns="4"
     rendered="#{documents.rowCount > 0}">
       
-      <rich:panel><div class="popupTarget" docRef="#{row.data.ref}">
+      <rich:panel><div class="thumbViewElement" docRef="#{row.data.ref}">
         <h:panelGrid>
-          <a4j:commandLink id="imageLink" action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
+          <a4j:commandLink id="imageLink" styleClass="thumbViewPictureLink"  action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
             <nxh:graphicImage id="theImage"
               url="#{nxd:fileUrl('downloadPicture', row.data, 'Medium:content', row.data.dublincore.modified)}?conversationId=#{conversation.id}"
-              style="max-height: 80px;"
-              rendered="#{row.data.hasSchema('picture')}"/>
+              style="max-height: 90px; max-width:140px;"
+              rendered="#{row.data.hasSchema('picture')}"
+              styleClass="thumbViewPicture"/>
             <nxh:graphicImage value="/img/file_preview.png"
-              style="max-height: 80px;"
-              rendered="#{!row.data.hasSchema('picture')}"/> 
+              style="max-height: 90px; max-width:140px;"
+              rendered="#{!row.data.hasSchema('picture')}"
+              styleClass="thumbViewPicture"/> 
           </a4j:commandLink>
           <h:panelGroup>           
             <h:selectBooleanCheckbox
@@ -36,18 +38,20 @@
               <a4j:commandLink id="titleLink" action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
                 <nxh:outputText value="#{nxd:titleOrId(row.data)}"
                   title="#{row.data.dc.description}"
-                  rendered="#{!empty row.data.dc.description}"/>
+                  rendered="#{!empty row.data.dc.description}"
+                  styleClass="thumbViewTitle"/>
                 <nxh:outputText value="#{nxd:titleOrId(row.data)}"
-                  rendered="#{empty row.data.dc.description}"/>
+                  rendered="#{empty row.data.dc.description}"
+                  styleClass="thumbViewTitle"/>
               </a4j:commandLink>
             </span>
           </h:panelGroup>
           <h:panelGroup>  
-            <h:outputText value="#{messages['label.content.thumbnail.by']} " /> 
+            <h:outputText class="thumbViewlabel" value="#{messages['label.content.thumbnail.by']} " /> 
 	    <h:outputText value="#{nxu:userFullName(row.data.dam_common.author)}" />
           </h:panelGroup>
           <h:panelGroup>
-            <h:outputText value="#{messages['label.content.thumbnail.creation']} " />
+            <h:outputText class="thumbViewlabel" value="#{messages['label.content.thumbnail.creation']} " />
             <h:outputText value="#{row.data.dam_common.authoringDate}">
               <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
                 timeZone="#{timeZone}" />
@@ -55,7 +59,7 @@
           </h:panelGroup>        
           
           <h:panelGroup>
-            <h:outputText value="#{messages['label.content.thumbnail.size']} " /> 
+            <h:outputText class="thumbViewlabel" value="#{messages['label.content.thumbnail.size']} " /> 
             <h:outputText value="#{row.data.picture.views[1].content.length}" rendered="#{row.data.hasSchema('picture') and !empty row.data.picture.views}" />
             <h:outputText value="#{row.data.file.content.length}" rendered="#{row.data.hasSchema('file')}" />
           </h:panelGroup>                  

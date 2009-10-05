@@ -348,6 +348,37 @@
         <text-align>center</text-align>
         <background-color>#6F6F6F</background-color>
       </selector>
+      <selector path=".actionPanelViews">
+        <background-color>#D0D1D8</background-color>
+        <padding>2px 5px</padding>
+        <height>18px</height>
+      </selector>
+      <selector path=".ListViewIcon, .ThumbViewIcon">
+        <margin>0 5px 0 0</margin>
+      </selector>
+      <selector path=".thumbViewElement">
+        <background-color>#ebefff</background-color>
+        <padding>8px 10px</padding>
+        <width>149px</width>
+        <height>178px</height>
+      </selector>
+      <selector path=".thumbViewElement table">
+        <font-size>10px</font-size>
+      </selector>
+      <selector path=".thumbViewPictureLink">
+        <display>table-cell</display>
+        <text-align>center</text-align>
+        <vertical-align>middle</vertical-align>
+        <padding-bottom>7px</padding-bottom>
+        <width>140px</width>
+        <height>90px</height>
+      </selector>
+      <selector path=".thumbViewTitle">
+        <font-size>11px</font-size>
+      </selector>
+      <selector path=".thumbViewlabel">
+        <color>#4d4d4d</color>
+      </selector>
     </style>
     <style element="page[1]/section[1]" inherit="common style">
       <selector path="" view="section frame">

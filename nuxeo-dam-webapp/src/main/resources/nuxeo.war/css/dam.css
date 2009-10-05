@@ -1,3 +1,9 @@
-.selected { 
-  background-color: gray; 
+/* Thumbnail view */
+
+.dr-table-cell {
+  border:none;
+}
+
+.dr-pnl rich-panel {
+  background-color:ebefff;
 }
