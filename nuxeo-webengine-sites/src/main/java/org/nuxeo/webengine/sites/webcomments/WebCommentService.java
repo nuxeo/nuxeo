@@ -60,6 +60,7 @@ public class WebCommentService extends CommentService {
             // simply publish the comment
             super.publishComment(session, target, comment);
         }
+        session.save();
     }
 
 }

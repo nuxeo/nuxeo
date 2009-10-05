@@ -68,19 +68,34 @@ public class DashBoardRestlet extends BaseQueryModelRestlet {
 
         if ("USER_DOCUMENTS".equals(qmName)) {
             queryParams.add(0, getUserPrincipal(req).getName());
+            queryParams.add(1, getDomainPath(req));
+        }
+        else if ("USER_DOMAINS".equals(qmName)) {
+            //queryParams.add(0, getUserPrincipal(req).getName());
         }
         else if ("USER_DELETED_DOCUMENTS".equals(qmName)) {
             queryParams.add(0, getUserPrincipal(req).getName());
+            //queryParams.add(1, getDomainPath(req));
         }
         else if ("USER_WORKSPACES".equals(qmName)) {
             queryParams.add(0, getDomainPath(req));
+            queryParams.add(1, getDomainPath(req)+ "templates");
         }
         else if ("USER_SITES".equals(qmName)) {
             queryParams.add(0, getDomainPath(req));
+            queryParams.add(1, getDomainPath(req)+ "templates");
         }
         else if ("DOMAIN_PUBLISHED_DOCUMENTS".equals(qmName)) {
             queryParams.add(0, getDomainPath(req));
         }
+        else if ("DOMAIN_DOCUMENTS".equals(qmName)) {
+            queryParams.add(0, getDomainPath(req));
+            queryParams.add(1, getDomainPath(req)+ "templates");
+        }
+        else if ("USER_SECTIONS".equals(qmName)) {
+            queryParams.add(0, getDomainPath(req));
+        }
+
         return queryParams;
     }
 

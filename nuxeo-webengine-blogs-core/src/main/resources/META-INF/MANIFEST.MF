@@ -6,5 +6,4 @@ Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/webengine-blogs-core-types-contrib.xml,
  OSGI-INF/webengine-blogs-listener-contrib.xml
 Require-Bundle: org.nuxeo.ecm.core
-
-
+Bundle-Category: stateful

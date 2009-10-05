@@ -135,7 +135,7 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
         this.configName = configName;
         this.factory = factory;
         this.coreSession = coreSession;
-        treeTitle = title;
+        treeTitle = title != null ? title : configName;
 
         String userName = parameters.get(USERNAME_KEY);
         String password = parameters.get(PASSWORD_KEY);
@@ -178,7 +178,7 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
                     targetTreeName, remoteParameters);
 
             serverSessionId = rTree.get("sessionId");
-            title = rTree.get("title");
+            this.title = rTree.get("title");
             rootPath = rTree.get("path");
             nodeType = rTree.get("nodeType");
 
@@ -188,7 +188,7 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
         }
 
         PublicationNode basicRootNode = new BasicPublicationNode(nodeType,
-                rootPath, title, configName, sessionId);
+                rootPath, this.title, configName, sessionId);
         rootNode = new ClientRemotePublicationNode(configName, sessionId,
                 basicRootNode, serverSessionId, treeService,
                 getTargetTreeName());

@@ -26,14 +26,19 @@ import javax.servlet.http.HttpServletRequest;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 
 public abstract class AbstractDocumentModelSerializer implements
         DocumentModelListSerializer {
+
+    protected UserManager um = null;
 
     public String serialize(DocumentModelList docList,
             List<String> columnsDefinition, HttpServletRequest req) throws ClientException {
@@ -76,19 +81,38 @@ public abstract class AbstractDocumentModelSerializer implements
         res.setEntity(xml, MediaType.TEXT_XML);
     }
 
+    protected String getFullUserName(String login) throws Exception {
+        String fullname = login;
+        if (um==null) {
+            um = Framework.getService(UserManager.class);
+        }
+        NuxeoPrincipal principal = um.getPrincipal(login);
+        if (principal!=null) {
+            fullname = principal.getFirstName() + " "+ principal.getLastName();
+        }
+        return fullname;
+    }
+
     @SuppressWarnings("unchecked")
     protected ResultField getDocumentProperty(DocumentModel doc, String colDef) throws ClientException {
         ResultField res = null;
         if (colDef.equals(urlField)) {
             String url = getDocumentURL(doc);
             return new ResultField(urlField, url);
+        } else if (colDef.contains(iconField)) {
+            String icon = DocumentModelFunctions.iconPath(doc);
+            return new ResultField(iconField, icon);
         } else if (colDef.contains(pathField)) {
             String path = doc.getPath().toString();
             return new ResultField(pathField, path);
         } else if (colDef.contains(authorField)) {
-            List<Object> list = Arrays.asList((Object[]) doc.getProperty(
-                    "dublincore", "contributors"));
-            return new ResultField(authorField, (String) list.get(0));
+            String authorLogin = (String)doc.getProperty("dublincore", "creator");
+            try {
+                String author = getFullUserName(authorLogin);
+                return new ResultField(authorField,author);
+            } catch (Exception e) {
+                return new ResultField(authorField,authorLogin);
+            }
         } else if (colDef.contains(SchemaDelimiter)) {
             String[] params = colDef.split("\\" + SchemaDelimiter);
 

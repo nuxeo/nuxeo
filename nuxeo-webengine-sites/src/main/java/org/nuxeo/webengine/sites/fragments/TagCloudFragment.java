@@ -50,7 +50,7 @@ public class TagCloudFragment extends AbstractFragment {
         TagCloudListModel model = new TagCloudListModel();
         try {
             TagService tagService = Framework.getService(TagService.class);
-            if (tagService != null && WebEngine.getActiveContext() != null) {
+            if (tagService != null && WebEngine.getActiveContext() != null && tagService.isEnabled()) {
                 WebContext ctx = WebEngine.getActiveContext();
                 CoreSession session = ctx.getCoreSession();
                 DocumentModel documentModel = ctx.getTargetObject().getAdapter(
