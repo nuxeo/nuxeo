@@ -488,4 +488,5 @@ public class TestQuery extends RepositoryTestCase {
         return buf.toString();
     }
 
+    
 }

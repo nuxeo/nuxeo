@@ -45,8 +45,6 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 
-import com.sun.org.apache.xalan.internal.xsltc.runtime.Operators;
-
 /**
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
@@ -137,33 +135,36 @@ public class XPathBuilder {
         if (query.where != null) {
             Expression expr = query.where.predicate;
             if (expr != null) {
-                if (expr.isPathExpression()) {
-                    pathExpression(expr);
-                } else {
+// the lookahead of path expression is depreciated. see lookaheadxxx method                
+//                if (expr.isPathExpression()) {
+//                    pathExpression(expr);
+//                } else {
                     expression(expr);
-                }
+//                }
             }
         }
     }
 
-    private Operand lookaheadPathExpression(Expression expr)
-            throws QueryException {
-        if (expr.lvalue instanceof Expression) {
-            Expression lexpr = (Expression) expr.lvalue;
-            if (lexpr.isPathExpression()) {
-                pathExpression(lexpr);
-                return expr.rvalue;
-            }
-        }
-        if (expr.rvalue instanceof Expression) {
-            Expression rexpr = (Expression) expr.rvalue;
-            if (rexpr.isPathExpression()) {
-                pathExpression(rexpr);
-                return expr.lvalue;
-            }
-        }
-        return null;
-    }
+// This method is depreciated since ecm:path handling changed. Before the XPATH support for path were used
+// now the virtual ecm:path property is used instead.    
+//    private Operand lookaheadPathExpression(Expression expr)
+//            throws QueryException {
+//        if (expr.lvalue instanceof Expression) {
+//            Expression lexpr = (Expression) expr.lvalue;
+//            if (lexpr.isPathExpression()) {
+//                pathExpression(lexpr);
+//                return expr.rvalue;
+//            }
+//        }
+//        if (expr.rvalue instanceof Expression) {
+//            Expression rexpr = (Expression) expr.rvalue;
+//            if (rexpr.isPathExpression()) {
+//                pathExpression(rexpr);
+//                return expr.lvalue;
+//            }
+//        }
+//        return null;
+//    }
 
     private void pathExpression(Expression expr) throws QueryException {
         if (xq.path != null) { // path already set
@@ -349,14 +350,14 @@ public class XPathBuilder {
     }
 
     private void expression(Expression expr) throws QueryException {
-        // look ahead for path expressions
-        if (xq.path == null) {
-            Operand remaining = lookaheadPathExpression(expr);
-            if (remaining != null) { // was a path expr
-                operand(remaining);
-                return;
-            }
-        }
+// look ahead for path expressions is depreciated - see lookaheadPathExpression method
+//        if (xq.path == null) {
+//            Operand remaining = lookaheadPathExpression(expr);
+//            if (remaining != null) { // was a path expr
+//                operand(remaining);
+//                return;
+//            }
+//        }
         // test for a special expression
         if (specialExpression(expr)) {
             // special expression are exception from the general rule and should

@@ -72,7 +72,7 @@ public class XPathQuery {
     }
 
     public void initPath() {
-        path = "//";
+        if (path == null) path = "//";
     }
 
 }

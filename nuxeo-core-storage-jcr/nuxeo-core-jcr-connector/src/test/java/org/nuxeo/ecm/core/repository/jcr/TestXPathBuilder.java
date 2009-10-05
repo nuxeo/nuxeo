@@ -34,27 +34,34 @@ public class TestXPathBuilder extends TestCase {
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
         q = "select * from File where ecm:path LIKE '%/wiki/FrontPage'";
-        x = "//%/ecm:children/wiki/ecm:children/element(FrontPage,ecmdt:File)";
+        //x = "//%/ecm:children/wiki/ecm:children/element(FrontPage,ecmdt:File)";
+        x = "//element(*,ecmdt:File)[ jcr:like(@ecm:path, '%/wiki/FrontPage') ]";        
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
+
         q = "select * from File where ecm:path LIKE '%/wiki/FrontPage/'";
-        x = "//%/ecm:children/wiki/ecm:children/FrontPage/ecm:children/element(*,ecmdt:File)";
+        //x = "//%/ecm:children/wiki/ecm:children/FrontPage/ecm:children/element(*,ecmdt:File)";
+        x = "//element(*,ecmdt:File)[ jcr:like(@ecm:path, '%/wiki/FrontPage/') ]";
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
         q = "select * from File where ecm:path LIKE '%/wiki/FrontPage/%'";
-        x = "//%/ecm:children/wiki/ecm:children/FrontPage/ecm:children//element(*,ecmdt:File)";
+        //x = "//%/ecm:children/wiki/ecm:children/FrontPage/ecm:children//element(*,ecmdt:File)";
+        x = "//element(*,ecmdt:File)[ jcr:like(@ecm:path, '%/wiki/FrontPage/%') ]";        
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
         q = "select * from File where ecm:path LIKE '/wiki/FrontPage'";
-        x = "/jcr:root/ecm:root/ecm:children/wiki/ecm:children/element(FrontPage,ecmdt:File)";
+        //x = "/jcr:root/ecm:root/ecm:children/wiki/ecm:children/element(FrontPage,ecmdt:File)";
+        x = "//element(*,ecmdt:File)[ jcr:like(@ecm:path, '/wiki/FrontPage') ]";        
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
         q = "select * from File where ecm:path LIKE '/wiki/FrontPage/'";
-        x = "/jcr:root/ecm:root/ecm:children/wiki/ecm:children/FrontPage/ecm:children/element(*,ecmdt:File)";
+        //x = "/jcr:root/ecm:root/ecm:children/wiki/ecm:children/FrontPage/ecm:children/element(*,ecmdt:File)";
+        x = "//element(*,ecmdt:File)[ jcr:like(@ecm:path, '/wiki/FrontPage/') ]";
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
         q = "select * from File where ecm:path LIKE '/wiki/FrontPage/%'";
-        x = "/jcr:root/ecm:root/ecm:children/wiki/ecm:children/FrontPage/ecm:children//element(*,ecmdt:File)";
+        //x = "/jcr:root/ecm:root/ecm:children/wiki/ecm:children/FrontPage/ecm:children//element(*,ecmdt:File)";
+        x = "//element(*,ecmdt:File)[ jcr:like(@ecm:path, '/wiki/FrontPage/%') ]";
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
         //
@@ -87,8 +94,9 @@ public class TestXPathBuilder extends TestCase {
         // This test is disabled since it is not passing in Java6. In java6 the expected date in xs:dateTime
         // is T00:00:00.000Z and not T00:00:00.000+01:00
         q = "select * from document where ecm:path LIKE '%/ws/%' and dc:created between DATE '2004-02-10' and DATE '2005-01-02'";
-        x = "//%/ecm:children/ws/ecm:children//element(*,ecmnt:document)[( (dc:created >= xs:dateTime('2004-02-10T00:00:00.000+01:00') and dc:created <= xs:dateTime('2005-01-02T00:00:00.000+01:00')))]";
-//        assertEquals(x, XPathBuilder.fromNXQL(q));
+        //x = "//%/ecm:children/ws/ecm:children//element(*,ecmnt:document)[( (dc:created >= xs:dateTime('2004-02-10T00:00:00.000+01:00') and dc:created <= xs:dateTime('2005-01-02T00:00:00.000+01:00')))]";
+        x = "//element(*,ecmnt:document)[( jcr:like(@ecm:path, '%/ws/%') ) and ( (dc:created >= xs:dateTime('2004-02-10T00:00:00.000+01:00') and dc:created <= xs:dateTime('2005-01-02T00:00:00.000+01:00')))]";
+        //assertEquals(x, XPathBuilder.fromNXQL(q));
 
         //q = "select * from document where ecm:path LIKE '/default-domain/workspaces/%' and   dc:created != TIMESTAMP '1003-02-10 10:00:00' and my:urgency = 2 order by ecm:path";
         //x = "/jcr:root/ecm:root/ecm:children/default-domain/ecm:children/workspaces/ecm:children//element(*,ecmnt:document)[((@dc:created <> xs:dateTime('1003-02-10T10:00:00.000+00:09:21'))) and (@my:urgency = 2)] order by @jcr:path ascending";
@@ -101,7 +109,13 @@ public class TestXPathBuilder extends TestCase {
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
         q = "SELECT * FROM Workspace WHERE ecm:path STARTSWITH '/default-domain/templates' ORDER BY dc:title";
-        x = "/jcr:root/ecm:root/ecm:children/default-domain/ecm:children/templates/ecm:children//element(*,ecmdt:Workspace) order by @dc:title";
+        //x = "/jcr:root/ecm:root/ecm:children/default-domain/ecm:children/templates/ecm:children//element(*,ecmdt:Workspace) order by @dc:title";
+        x = "//element(*,ecmdt:Workspace)[ jcr:like(@ecm:path, '/default-domain/templates/%') ] order by @dc:title";
+        assertEquals(x, XPathBuilder.fromNXQL(q));
+
+        q = "SELECT * FROM Workspace WHERE ecm:path STARTSWITH '/default-domain/templates' AND NOT (ecm:path STARTSWITH '/default-domain/templates/t1')";
+        x = "//element(*,ecmdt:Workspace)[( jcr:like(@ecm:path, '/default-domain/templates/%') ) and ( not(( jcr:like(@ecm:path, '/default-domain/templates/t1/%') )) )]";
+        System.out.println(XPathBuilder.fromNXQL(q));
         assertEquals(x, XPathBuilder.fromNXQL(q));
     }
 
