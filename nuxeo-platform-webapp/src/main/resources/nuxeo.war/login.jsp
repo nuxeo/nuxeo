@@ -20,7 +20,7 @@ String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
 <!--
  body {
   font: normal 11px "Lucida Grande", sans-serif;
-  background: url(/nuxeo/img/theme_galaxy/chicago_black.jpg) 0 0 no-repeat #000;
+  background: url(/nuxeo/img/theme_galaxy/boston4.jpg) 0 0 no-repeat #000;
   color: #343434;
   }
 
