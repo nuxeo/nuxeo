@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.platform.mail.utils.MailCoreHelper;
@@ -68,7 +69,13 @@ public class MailEventListener implements EventListener {
             // open a system session
             loginContext = Framework.login();
             RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-            coreSession = mgr.getDefaultRepository().open();
+            Repository repository = mgr.getDefaultRepository();
+            if (repository != null) {
+                coreSession = repository.open();
+            }
+            if (coreSession == null) {
+                return;
+            }
 
             StringBuilder query = new StringBuilder();
             query.append("SELECT * FROM MailFolder ");
