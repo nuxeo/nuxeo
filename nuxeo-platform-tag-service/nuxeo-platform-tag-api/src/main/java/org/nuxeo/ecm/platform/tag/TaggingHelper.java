@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -112,7 +113,10 @@ public class TaggingHelper {
                     "Can not remove tag(s) from document null.");
         }
 
-        if (((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
+        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        if (principal.isAdministrator()
+                || session.hasPermission(document.getRef(),
+                        SecurityConstants.WRITE)) {
             getTagService().completeUntagDocument(session, document, taggingId);
         } else {
             getTagService().untagDocument(session, document, taggingId);
@@ -193,11 +197,10 @@ public class TaggingHelper {
     public boolean canModifyTag(CoreSession session, DocumentModel document,
             Tag tag) throws ClientException {
         NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
-        if (principal.isAdministrator()) {
+        if (principal.isAdministrator()
+                || session.hasPermission(document.getRef(),
+                        SecurityConstants.WRITE)) {
             return true;
-        }
-        if (!session.hasPermission(document.getRef(), "Write")) {
-            return false;
         }
         return tagService.getTaggingId(session, tag.tagId, tag.tagLabel,
                 principal.getName()) != null;
