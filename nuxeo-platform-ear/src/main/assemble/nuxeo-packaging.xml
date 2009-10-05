@@ -2,9 +2,9 @@
 <packaging>
   <serverSet id="nuxeo-mono">
     <includes>
-      <artifacts group="org.nuxeo.*" category="runtime,jboss4"
+      <artifacts group="org.nuxeo*" category="runtime,jboss4"
         includeDependsOn="false" />
-      <artifacts group="org.nuxeo.*" category="core,search,web" />
+      <artifacts group="org.nuxeo*" category="core,search,web" />
     </includes>
     <excludes>
       <artifacts group="org.nuxeo.common" />
@@ -38,9 +38,9 @@
   <!-- Nuxeo 3 parts -->
   <serverSet id="nuxeo-core">
     <includes>
-      <artifacts group="org.nuxeo.*" category="runtime,jboss4"
+      <artifacts group="org.nuxeo*" category="runtime,jboss4"
         includeDependsOn="false" />
-      <artifacts group="org.nuxeo.*" category="core" />
+      <artifacts group="org.nuxeo*" category="core" />
     </includes>
     <excludes>
       <artifacts group="org.nuxeo.common" />
@@ -61,9 +61,9 @@
   </serverSet>
   <serverSet id="nuxeo-search">
     <includes>
-      <artifacts group="org.nuxeo.*" category="runtime,jboss4"
+      <artifacts group="org.nuxeo*" category="runtime,jboss4"
         includeDependsOn="false" />
-      <artifacts group="org.nuxeo.*" category="search" />
+      <artifacts group="org.nuxeo*" category="search" />
     </includes>
     <excludes>
       <artifacts group="org.nuxeo.common" />
@@ -84,9 +84,9 @@
   </serverSet>
   <serverSet id="nuxeo-web">
     <includes>
-      <artifacts group="org.nuxeo.*" category="runtime,jboss4"
+      <artifacts group="org.nuxeo*" category="runtime,jboss4"
         includeDependsOn="false" />
-      <artifacts group="org.nuxeo.*" category="web" />
+      <artifacts group="org.nuxeo*" category="web" />
     </includes>
     <excludes>
       <artifacts group="org.nuxeo.common" />

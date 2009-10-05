@@ -96,9 +96,9 @@
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
-      <artifact group="org.nuxeo.*" category="runtime,jboss4"
+      <artifact group="org.nuxeo*" category="runtime,jboss4"
         includeDependsOnCategory="false" />
-      <artifact group="org.nuxeo.*" category="core,search,web,stateful,stateless" />
+      <artifact group="org.nuxeo*" category="core,search,web,stateful,stateless" />
       <!-- add here nuxeo-addons -->
     </includes>
     <excludes>
