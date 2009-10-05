@@ -32,10 +32,10 @@ public class DefaultNuxeoProvider extends ItemProvider {
     @Override
     public String[] getRoots() {
         return new String[] {
-                "org.nuxeo.runtime:nuxeo-runtime-parent:1.5-SNAPSHOT:pom",
-                "org.nuxeo.ecm.core:nuxeo-core-parent:1.5-SNAPSHOT:pom",
-                "org.nuxeo.ecm.platform:nuxeo-platform-parent:5.2-SNAPSHOT:pom",
-                "org.nuxeo.ecm.webengine:nuxeo-webengine-parent:5.2-SNAPSHOT:pom",
+                "org.nuxeo.runtime:nuxeo-runtime-parent:1.6.0-SNAPSHOT:pom",
+                "org.nuxeo.ecm.core:nuxeo-core-parent:1.6.0-SNAPSHOT:pom",
+                "org.nuxeo.ecm.platform:nuxeo-platform-parent:5.3.0-SNAPSHOT:pom",
+                "org.nuxeo.ecm.webengine:nuxeo-webengine-parent:5.3.0-SNAPSHOT:pom",
 
         };
     }
