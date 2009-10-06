@@ -7,8 +7,8 @@
 		<internalGadget name="meteo">
 			<mountPoint>/meteo/meteo</mountPoint>
 			<directory>meteo-gadget</directory>
-			<category>information</category>
-			<icon>meteo_icon.png</icon>
+			<category>Information</category>
+			<icon>/nuxeo/opensocial/images/meteo_icon.png</icon>
 		</internalGadget>
 	</extension>
 </component>

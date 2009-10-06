@@ -79,6 +79,10 @@
       <artifactId>nuxeo-opensocial-container-space-config</artifactId>
     </dependency>
     <dependency>
+	<groupId>org.nuxeo.theme</groupId>
+	<artifactId>nuxeo-theme-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-spaces-api</artifactId>
     </dependency>
@@ -90,7 +94,10 @@
       <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-spaces-web</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>

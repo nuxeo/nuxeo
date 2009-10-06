@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.opensocial.OAuthFilter">
+
+    <extension
+        target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+        point="authenticators">
+
+        <authenticationPlugin name="OAUTH_OPENSOCIAL" enabled="true"
+            class="org.nuxeo.opensocial.auth.OAuthSessionFilter">
+            <needStartingURLSaving>true</needStartingURLSaving>
+            <loginModulePlugin>Trusting_LM</loginModulePlugin>
+        </authenticationPlugin>
+
+    </extension>
+    
+     <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="chain">
+
+    <authenticationChain>
+      <plugins>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>FORM_AUTH</plugin>
+        <plugin>ANONYMOUS_AUTH</plugin>
+        <plugin>WEBSERVICES_AUTH</plugin>
+        <plugin>OAUTH_OPENSOCIAL</plugin>
+      </plugins>
+    </authenticationChain>
+
+  </extension>
+ 
+
+</component>

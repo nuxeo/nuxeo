@@ -1,0 +1,824 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<theme name="galaxy-opensocial" template-engines="jsf-facelets">
+	<layout>
+		<page name="ignored1">
+			<section>
+				<cell>
+					<!-- logo -->
+					<fragment type="generic fragment" />
+				</cell>
+				<cell>
+					<!-- user services -->
+					<fragment type="generic fragment" />
+				</cell>
+				<cell>
+					<!-- Include -->
+					<fragment type="generic fragment" />
+				</cell>
+			</section>
+			<section>
+			    
+				<cell>
+					<!-- tree view -->
+					<fragment perspectives="default,multiple_domains" type="generic fragment" />
+					<!-- clip board -->
+					<fragment perspectives="default,multiple_domains" type="generic fragment" />
+					<!-- calendar -->
+					<fragment perspectives="view_calendar" type="generic fragment" />
+				</cell>
+				<cell>
+					<!-- breadcrumbs -->
+					<fragment type="generic fragment" />
+					<!-- main area -->
+					<fragment type="region fragment" />
+				</cell>
+				
+			</section>
+			<section>
+				<cell>
+					<!-- copyrights -->
+					<fragment type="generic fragment" />
+				</cell>
+			</section>
+		</page>
+		<page name="ignored2">
+			<section>
+				<cell>
+					<!-- main area -->
+					<fragment type="region fragment" />
+				</cell>
+				<cell>
+					<!-- Include -->
+					<fragment type="generic fragment" />
+				</cell>
+			</section>
+		</page>
+		<!--                 -->
+		<!-- opensocial page -->
+		<!--                 -->
+		<page name="opensocial_dashboard">
+			<!-- Top bar -->
+			<section>
+                <cell>
+                    <!-- logo -->
+                    <fragment type="generic fragment" />
+                </cell>
+                <cell>
+                    <!-- user services -->
+                    <fragment type="generic fragment" />
+                </cell>
+                <cell>
+                    <!-- Include -->
+                    <fragment type="generic fragment" />
+                </cell>
+			</section>
+			<!-- on other pages, this is the navigation and breadcrumb stuff -->
+			<section>
+			    <cell/>
+			</section>
+			<!-- what's this for? -->
+			<section>
+				<cell />
+			</section>
+			<section>
+				<cell>
+					<fragment type="dashboardLayoutManager" />
+					<fragment type="dashboardGadgetManager" />
+				</cell>
+			</section>
+			<section>
+				<cell>
+					<fragment type="dashboardMainContent" />
+				</cell>
+			</section>
+			<!-- what's this for? -->
+			<section>
+				<cell />
+			</section>
+			<section>
+                <cell>
+                    <!-- copyrights -->
+                    <fragment type="generic fragment" />
+                </cell>
+			</section>
+		</page>
+	</layout>
+	<formats>
+		<!--                        -->
+		<!--     OPENSOCIAL LAYOUT  -->
+		<!--                        -->
+		<!-- 
+		<layout element="page[3]" />
+		<layout element="page[3]/section[1]">
+			<margin-left>auto</margin-left>
+			<margin-right>auto</margin-right>
+			<width>100%</width>
+    </layout>
+    <layout element="page[3]/section[1]/cell[1]">
+      <width>30%</width>
+    </layout>
+    <layout element="page[3]/section[1]/cell[2]">
+      <width>70%</width>
+      <text-align>right</text-align>
+    </layout>
+    -->
+    <layout element="page[3]/section[7]">
+      <margin-left>auto</margin-left>
+      <margin-right>auto</margin-right>
+      <width>100%</width>
+    </layout>
+    <layout element="page[3]/section[7]/cell[1]">
+      <width>100%</width>
+    </layout>
+    <!-- 
+    <layout element="page[3]/section[2]">
+      <margin-left>auto</margin-left>
+      <margin-right>auto</margin-right>
+      <width>100%</width>
+    </layout>
+    <layout element="page[3]/section[2]/cell[1]">
+      <width>100%</width>
+      <text-align>right</text-align>
+    </layout>
+    -->
+    <layout element="page[3]/section[5]">
+      <margin-left>auto</margin-left>
+      <margin-right>auto</margin-right>
+      <width>100%</width>
+    </layout>
+    <layout element="page[3]/section[5]/cell[1]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[3]/section[3]">
+      <margin-left>auto</margin-left>
+      <margin-right>auto</margin-right>
+      <width>100%</width>
+    </layout>
+    <layout element="page[3]/section[3]/cell[1]">
+      <width>100%</width>
+    </layout>
+        <layout element="page[3]/section[4]">
+      <margin-left>auto</margin-left>
+      <margin-right>auto</margin-right>
+      <width>100%</width>
+    </layout>
+    <layout element="page[3]/section[4]/cell[1]">
+      <width>100%</width>
+    </layout>
+    
+    <layout element="page[3]/section[6]">
+      <margin-left>auto</margin-left>
+      <margin-right>auto</margin-right>
+      <width>100%</width>
+    </layout>
+    <layout element="page[3]/section[6]/cell[1]">
+      <width>100%</width>
+      <text-align>right</text-align>
+    </layout>
+    
+	<!-- end of opensocial -->
+	
+	<!-- compatibility with galaxy -->
+    <layout element="page[3]">
+      <margin>0</margin>
+      <padding>0</padding>
+    </layout>
+    <layout element="page[3]/section[1]">
+      <height>36px</height>
+      <width>100%</width>
+      <overflow>auto</overflow>
+    </layout>
+    <layout element="page[3]/section[1]/cell[1]">
+      <width>18%</width>
+      <text-align>center</text-align>
+    </layout>
+    <layout element="page[3]/section[1]/cell[2]">
+      <width>82%</width>
+      <padding>0px 10px 0px 0px</padding>
+    </layout>
+    <layout element="page[3]/section[1]/cell[3]">
+      <width>0%</width>
+    </layout>
+    <layout element="page[3]/section[2]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[3]/section[2]/cell[1]"/>
+    <layout element="page[3]/section[3]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[3]/section[3]/cell[1]">
+      <width>50%</width>
+      <padding>20px</padding>
+    </layout>
+    <layout element="page[3]/section[3]/cell[2]">
+      <width>50%</width>
+      <padding>20px</padding>
+    </layout>
+
+    <!--                        -->
+    <!--     OPENSOCIAL WIDGET  -->
+    <!--                        -->
+    <widget element="page[3]">
+      <view>page frame</view>
+    </widget>
+    <widget element="page[3]/section[1]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[3]/section[1]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[3]/section[1]/cell[2]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[3]/section[7]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[3]/section[7]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[3]/section[2]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[3]/section[2]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <!-- 
+    <widget element="page[3]/section[2]/cell[1]/fragment[1]">
+      <view>module onglets</view> 
+    </widget>
+    -->
+    <widget element="page[3]/section[5]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[3]/section[5]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[3]/section[5]/cell[1]/fragment[1]">
+      <view>contenu principal</view>
+    </widget>
+    <widget element="page[3]/section[3]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[3]/section[3]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[3]/section[6]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[3]/section[6]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[3]/section[4]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[3]/section[4]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[3]/section[4]/cell[1]/fragment[1]">
+      <view>module layout manager</view>
+    </widget>
+    <widget element="page[3]/section[4]/cell[1]/fragment[2]">
+      <view>module gadget manager</view>
+    </widget>
+    
+    <!-- end of opensocial -->
+    
+    
+    <!-- widget compatibility with the rest of nuxeo5 -->
+    <widget element="">
+      <view>theme view</view>
+      <icon>/nuxeo/icons/favicon.png</icon>
+      <charset>utf-8</charset>
+    </widget>
+    
+    <!-- section 1 -->
+    <widget element="page[3]/section[1]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[3]/section[1]/cell[2]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[3]/section[1]/cell[3]">
+      <view>cell frame</view>
+    </widget>
+    
+    <widget element="page[3]/section[1]/cell[1]/fragment[1]">
+      <view>Nuxeo EP logo (Galaxy Theme)</view>
+    </widget>
+    <widget element="page[3]/section[1]/cell[2]/fragment[1]">
+      <view>User services (Galaxy theme)</view>
+    </widget>
+    <widget element="page[3]/section[1]/cell[3]/fragment[1]">
+      <view>opensocial includes</view>
+    </widget>
+    
+    <!--section 2-->
+    <widget element="page[3]/section[2]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[3]/section[2]/cell[2]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[3]/section[2]/cell[1]/fragment[1]">
+      <view>nuxeo5 tree explorer</view>
+    </widget>
+    <widget element="page[3]/section[2]/cell[1]/fragment[2]">
+      <view>nuxeo5 clip board</view>
+    </widget>
+    <widget element="page[3]/section[2]/cell[1]/fragment[3]">
+      <view>nuxeo5 calendar actions</view>
+    </widget>
+    <widget element="page[3]/section[2]/cell[2]/fragment[1]">
+      <view>nuxeo5 breadcrumbs</view>
+    </widget>
+    
+    <!-- section 7 -->
+    <widget element="page[3]/section[7]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    
+    <widget element="page[3]/section[7]/cell[1]/fragment[1]">
+      <view>nuxeo5 includes</view>
+    </widget>
+
+    <!--                  -->
+    <!-- OPENSOCIAL STYLE -->
+    <!--                  -->
+      <style name="dashboardLayoutManager">
+      <selector path="*#layoutManagerContainer">
+        <height>130px</height>
+        <width>100%</width>
+        <padding-bottom>7px</padding-bottom>
+        <background-color>rgb(214, 213, 211)</background-color>
+      </selector>
+      <selector path="*#closeLayoutManager">
+        <padding-top>2px</padding-top>
+        <width>100%</width>
+        <padding-bottom>2px</padding-bottom>
+        <background-color>rgb(214, 213, 211)</background-color>
+        <text-align>right</text-align>
+      </selector>
+      <selector path="*#getLayoutManager">
+        <padding-top>2px</padding-top>
+        <width>100%</width>
+        <padding-bottom>2px</padding-bottom>
+        <background-color>rgb(214, 213, 211)</background-color>
+        <text-align>left</text-align>
+      </selector>
+      <selector path="*#openLayoutManager">
+        <padding-left>5px</padding-left>
+      </selector>
+      <selector path="*#listColumns">
+        <padding-left>5px</padding-left>
+        <width>5%</width>
+        <float>left</float>
+      </selector>
+      <selector path="*#listLayouts">
+        <height>131px</height>
+        <width>92%</width>
+        <background-color>rgb(187, 187, 187)</background-color>
+        <float>left</float>
+      </selector>
+      <selector path="*.nv-layout">
+        <text-decoration>none</text-decoration>
+        <margin>auto</margin>
+        <color>rgb(51, 51, 51)</color>
+        <border-style>solid</border-style>
+        <border-width>1px</border-width>
+        <display>block</display>
+        <border-color>rgb(221, 221, 221)</border-color>
+        <padding>0.1em 3px</padding>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path="*.listBoxes div.selected">
+        <background-color>rgb(187, 187, 187)</background-color>
+      </selector>
+      <selector path="*#listColumns div button.selected">
+        <border-color>rgb(187, 187, 187)</border-color>
+      </selector>
+      <selector path="*#listColumns div.selected">
+        <background-color>rgb(187, 187, 187)</background-color>
+      </selector>
+      <selector path="*#tabLayout li a.selected">
+        <border>2px solid rgb(0,0,0)</border>
+      </selector>
+      <selector path="div.button-container">
+        <padding>5px</padding>
+      </selector>
+      <selector path="*#x-1-default">
+        <background-image>url(/nuxeo/opensocial/images/x-1-default.png)</background-image>
+      </selector>
+      <selector path="*#x-2-default">
+        <background-image>url(/nuxeo/opensocial/images/x-2-default.png)</background-image>
+      </selector>
+      <selector path="*#x-3-default">
+        <background-image>url(/nuxeo/opensocial/images/x-3-default.png)</background-image>
+      </selector>
+      <selector path="*#x-3-header2cols">
+        <background-image>url(/nuxeo/opensocial/images/x-3-header2cols.png)</background-image>
+      </selector>
+      <selector path="*#x-4-footer3cols">
+        <background-image>url(/nuxeo/opensocial/images/x-4-footer3cols.png)</background-image>
+      </selector>
+      <selector path="*#closeLinkLayoutManager">
+        <background-image>url(/nuxeo/opensocial/images/close.gif)</background-image>
+        <color>rgb(0, 0, 0)</color>
+        <margin-right>10px</margin-right>
+        <padding-left>15px</padding-left>
+        <background-repeat>no-repeat</background-repeat>
+      </selector>
+      <selector path="*.invisible">
+        <display>none</display>
+      </selector>
+      <selector path="*.typeLayout">
+        <height>75px</height>
+        <border>2px solid rgb(255,255,255)</border>
+        <width>100px</width>
+        <background-color>rgb(255, 255, 255)</background-color>
+        <display>block</display>
+      </selector>
+      <selector path="ul.option li">
+        <list-style-type>none</list-style-type>
+        <margin>0 7px 7px 0</margin>
+        <padding>2px 0</padding>
+        <float>left</float>
+      </selector>
+      <selector path="ul.option">
+        <height>120px</height>
+        <margin-left>7px</margin-left>
+        <margin-top>5px</margin-top>
+        <padding>0</padding>
+        <overflow>auto</overflow>
+      </selector>
+      <selector path="*#generalOptions">
+        <width>22%</width>
+        <background-color>rgb(187, 187, 187)</background-color>
+        <margin>5px</margin>
+        <float>left</float>
+      </selector>
+      <selector path="*#tabDescription">
+        <height>35px</height>
+        <margin-left>30px</margin-left>
+        <font-family>arial</font-family>
+        <width>175px</width>
+        <margin-bottom>5px</margin-bottom>
+        <font-size>11px</font-size>
+      </selector>
+      <selector path="*#modifyOptions">
+        <margin-right>5px</margin-right>
+        <margin-bottom>5px</margin-bottom>
+        <display>block</display>
+        <float>right</float>
+      </selector>
+      <selector path="*#tabTitle">
+        <font-family>arial</font-family>
+        <width>175px</width>
+        <margin-bottom>5px</margin-bottom>
+        <margin-top>5px</margin-top>
+        <font-size>11px</font-size>
+      </selector>
+      <selector path="span">
+        <margin-left>2px</margin-left>
+      </selector>
+      <selector path="*#theme-list li">
+        <width>50px</width>
+        <float>left</float>
+      </selector>
+      <selector path="*#theme-list">
+        <margin-left>30px</margin-left>
+      </selector>
+    </style>
+    <style name="dashboardGadgetManager">
+      <selector path="*#gadgetManagerContainer">
+        <height>130px</height>
+        <width>100%</width>
+        <padding-bottom>7px</padding-bottom>
+        <background-color>rgb(214, 213, 211)</background-color>
+      </selector>
+      <selector path="*#closeGadgetManager">
+        <padding-top>2px</padding-top>
+        <width>100%</width>
+        <padding-bottom>2px</padding-bottom>
+        <background-color>rgb(214, 213, 211)</background-color>
+        <text-align>right</text-align>
+      </selector>
+      <selector path="*#getGadgetManager">
+        <padding-top>2px</padding-top>
+        <width>100%</width>
+        <padding-bottom>2px</padding-bottom>
+        <background-color>rgb(214, 213, 211)</background-color>
+        <text-align>left</text-align>
+      </selector>
+      <selector path="*#openGadgetManager">
+        <padding-left>5px</padding-left>
+      </selector>
+      <selector path="*#listCategories">
+        <padding-left>5px</padding-left>
+        <width>10%</width>
+        <float>left</float>
+      </selector>
+      <selector path="*#listGadgets">
+        <height>131px</height>
+        <width>89%</width>
+        <background-color>rgb(187, 187, 187)</background-color>
+        <float>left</float>
+      </selector>
+      <selector path="*.nv-category">
+        <color>rgb(51, 51, 51)</color>
+        <text-decoration>none</text-decoration>
+        <font-weight>bold</font-weight>
+        <margin>auto</margin>
+        <padding>1px</padding>
+        <display>block</display>
+        <font-size>11px</font-size>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path="*.nv-category:hover">
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path="*#listCategories div button.selected">
+        <border-color>rgb(187, 187, 187)</border-color>
+      </selector>
+      <selector path="*#listCategories div.selected">
+        <background-color>rgb(187, 187, 187)</background-color>
+      </selector>
+      <selector path="*#tabGadgets li a.selected">
+        <border>2px solid rgb(0,0,0)</border>
+      </selector>
+      <selector path="div.button-container">
+        <padding>5px</padding>
+      </selector>
+      <selector path="*#closeLinkGadgetManager">
+        <background-image>url(/nuxeo/opensocial/images/close.gif)</background-image>
+        <color>rgb(0, 0, 0)</color>
+        <margin-right>10px</margin-right>
+        <padding-left>15px</padding-left>
+        <background-repeat>no-repeat</background-repeat>
+      </selector>
+      <selector path="*.invisible">
+        <display>none</display>
+      </selector>
+      <selector path="*.typeGadget">
+        <height>64px</height>
+        <border>2px solid rgb(255,255,255)</border>
+        <width>64px</width>
+        <background-color>rgb(255, 255, 255)</background-color>
+        <display>block</display>
+      </selector>
+      <selector path="ul.option li">
+        <list-style-type>none</list-style-type>
+        <margin>0 7px 7px 0</margin>
+        <padding>2px 0</padding>
+        <float>left</float>
+      </selector>
+      <selector path="ul.option">
+        <height>130px</height>
+        <margin-left>7px</margin-left>
+        <margin-top>5px</margin-top>
+        <padding>0</padding>
+        <overflow>auto</overflow>
+      </selector>
+      <selector path="*.directAdd">
+        <height>18px</height>
+        <bottom>-19px</bottom>
+        <width>68px</width>
+        <margin-top>10px</margin-top>
+        <line-height>18px</line-height>
+        <display>block</display>
+        <cursor>default</cursor>
+        <text-align>center</text-align>
+      </selector>
+      <selector path="*.directAdd a">
+        <color>rgb(255, 255, 255)</color>
+        <display>inline-block</display>
+        <cursor>pointer</cursor>
+        <padding-right>8px</padding-right>
+      </selector>
+      <selector path="*.directAdd a.linkAdd">
+        <background-position>right 0</background-position>
+        <background>transparent url(/nuxeo/opensocial/images/bt-green-18px.png) no-repeat scroll 0 0</background>
+      </selector>
+      <selector path="*.directAdd a.linkAdded">
+        <padding-left>6px</padding-left>
+        <background>transparent url(/nuxeo/opensocial/images/ok.png) no-repeat scroll 0 0</background>
+      </selector>
+      <selector path="*.directAdd span.addGadgetButton">
+        <background-position>left 0</background-position>
+        <background>transparent url(/nuxeo/opensocial/images/bt-green-18px.png) no-repeat scroll 0 0</background>
+        <padding>0 2px 0 10px</padding>
+        <display>inline-block</display>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path="*.directAdd span.addedGadgetButton">
+        <background-position>left 0</background-position>
+        <padding>0 2px 0 10px</padding>
+        <display>inline-block</display>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path="*.directAdd a:hover span.addGadgetButton">
+        <background-position>left -18px</background-position>
+      </selector>
+      <selector path="div.nameGadget">
+        <text-align>center</text-align>
+      </selector>
+    </style>
+    <style name="loading">
+      <selector path="*">
+        <margin>auto</margin>
+        <padding>0</padding>
+      </selector>
+    </style>
+    <!--                      -->
+    <!-- open social presets? -->
+    <!--                      -->
+    <style element="page[3]">
+      <selector path="" view="page frame">
+        <font preset="default (intralm fonts)"/>
+      </selector>
+    </style>
+    <!-- Actions de la top bar -->
+    <style element="page[3]/section[1]">
+      <selector path="" view="section frame">
+        <background preset="header (intralm background)"/>
+      </selector>
+    </style>
+    <style element="page[3]/section[7]"/>
+    <style element="page[3]/section[7]/cell[1]">
+      <selector path="" view="cell frame">
+        <background preset="fond_gris (intralm background)"/>
+      </selector>
+    </style>
+    <style element="page[3]/section[1]/cell[1]"/>
+
+    <style element="page[3]/section[2]/cell[1]"/>
+    <!-- orig: <style element="page[1]/section[2]/cell[1]/fragment[1]" inherit="onglets"/>-->
+    <style element="page[3]/section[2]/cell[1]/fragment[1]"/>
+    <style element="page[3]/section[5]"/>
+    <style element="page[3]/section[5]/cell[1]">
+      <selector path="" view="cell frame">
+        <background preset="fond_gris (intralm background)"/>
+      </selector>
+    </style>
+    <style element="page[3]/section[3]"/>
+    <style element="page[3]/section[3]/cell[1]"/>
+    <style element="page[3]/section[5]/cell[1]/fragment[1]" inherit="loading">
+      <selector path="*" view="contenu principal">
+        <margin>0</margin>
+        <padding>0</padding>
+      </selector>
+    </style>
+    <style element="page[3]/section[6]"/>
+    <style element="page[3]/section[6]/cell[1]">
+      <selector path="" view="cell frame">
+        <background preset="fond_gris (intralm background)"/>
+      </selector>
+    </style>
+    <style element="page[3]/section[4]"/>
+    <style element="page[3]/section[4]/cell[1]"/>
+    <style element="page[3]/section[4]/cell[1]/fragment[1]" inherit="dashboardLayoutManager"/>
+    <style element="page[3]/section[4]/cell[1]/fragment[2]" inherit="dashboardGadgetManager"/>
+    
+    
+    <!-- end of opensocial -->
+    
+    <!-- compatibility with nuxeo 5 -->
+        <style name="default buttons">
+      <selector path="input.button">
+        <font preset="default (Galaxy fonts)"/>
+        <color>#333333</color>
+        <border preset="buttons (Galaxy borders)"/>
+        <background preset="buttons (Galaxy backgrounds)"/>
+        <margin>5px 10px 10px 0px</margin>
+        <padding>2px 5px 2px 5px</padding>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path="input.button:hover">
+        <color>#000000</color>
+        <border-color>#92999e</border-color>
+      </selector>
+      <selector path="input.button[disabled=disabled], input.button[disabled=disabled]:hover">
+        <color>#ccc</color>
+      </selector>
+    </style>
+    <style name="breadcrumbs style">
+      <selector path="">
+        <border-bottom preset="breadcrumb (Galaxy borders)"/>
+        <height>25px</height>
+        <background preset="breadcrumb (Galaxy backgrounds)"/>
+        <padding>3px 7px</padding>
+      </selector>
+      <selector path="div">
+        <font preset="small (Galaxy fonts)"/>
+        <margin>0</margin>
+        <line-height>1.25em</line-height>
+        <padding>0</padding>
+      </selector>
+      <selector path="a">
+        <color>#666666</color>
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path="a:visited">
+        <color>#666666</color>
+      </selector>
+      <selector path="a:active">
+        <color>#666666</color>
+      </selector>
+      <selector path="a:hover">
+        <color>#666666</color>
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path=".breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited">
+        <font-weight>normal</font-weight>
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".breadcrumbs a:hover, .breadcrumbs a:active">
+        <font-weight>normal</font-weight>
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path=".printButton">
+        <float>right</float>
+        <padding-right>1px</padding-right>
+      </selector>
+      <selector path=".printButton div a img">
+        <margin-left>5px</margin-left>
+      </selector>
+      <selector path=".printButton .liveEditCreateButtons">
+        <margin-right>5px</margin-right>
+        <border-right>1px solid #ccc</border-right>
+        <padding-right>8px</padding-right>
+      </selector>
+      <selector path=".breadcrumbs">
+        <height>20px</height>
+        <font-size>9px</font-size>
+        <padding>5px 4px 0px 0px</padding>
+        <float>left</float>
+      </selector>
+    </style>
+    
+    <!-- widget compatibility -->
+       <!-- Logo -->
+    <style element="page[3]/section[1]/cell[1]/fragment[1]">
+      <selector path="form" view="Nuxeo EP logo (Galaxy Theme)">
+        <margin>0</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path="img, a" view="Nuxeo EP logo (Galaxy Theme)">
+        <outline>none</outline>
+      </selector>
+    </style>
+    <!-- user services -->
+    <style
+      element="page[3]/section[1]/cell[2]/fragment[1]" inherit="default buttons">
+      <selector path="div" view="User services (Galaxy theme)">
+        <font preset="small (Galaxy fonts)"/>
+        <color>#cecece</color>
+        <margin>0</margin>
+        <padding>2px 2px 0px 0px</padding>
+        <line-height>185%</line-height>
+      </selector>
+      <selector path=".searchService" view="User services (Galaxy theme)">
+        <vertical-align>middle</vertical-align>
+        <float>right</float>
+      </selector>
+      <selector path=".userActions" view="User services (Galaxy theme)">
+        <padding-top>11px</padding-top>
+      </selector>
+      <selector path=".directoryFilter, .searchField" view="User services (Galaxy theme)">
+        <border>1px normal #666</border>
+        <background>url(/nuxeo/icons/search.gif) 2px 2px no-repeat #FFF</background>
+        <margin>0 5px 10px 0</margin>
+        <padding>3px 3px 3px 20px</padding>
+        <font-size>11px</font-size>
+      </selector>
+      <selector path="a, a:link, a:visited" view="User services (Galaxy theme)">
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path="a:hover, a:active" view="User services (Galaxy theme)">
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path="a, a:link, a:visited, a:hover, a:active" view="User services (Galaxy theme)">
+        <color>#ffffff</color>
+      </selector>
+      <selector path="img" view="User services (Galaxy theme)">
+        <margin-left>5px</margin-left>
+        <margin-right>2px</margin-right>
+        <vertical-align>middle</vertical-align>
+      </selector>
+      <selector path=".advancedSearchLink" view="User services (Galaxy theme)">
+        <margin>0 2px 0 0</margin>
+        <padding>0</padding>
+        <line-height>1%</line-height>
+      </selector>
+      <selector path=".userServices .button" view="User services (Galaxy theme)">
+        <margin-right>4px</margin-right>
+      </selector>
+      <selector path="form" view="User services (Galaxy theme)">
+        <margin>0</margin>
+        <padding>0</padding>
+      </selector>
+    </style>
+ 
+    
+  </formats>
+</theme>
+

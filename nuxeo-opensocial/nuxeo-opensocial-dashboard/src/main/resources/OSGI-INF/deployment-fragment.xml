@@ -7,11 +7,22 @@
     </module>
   </extension>
 
+  
   <install>
-    <!--  unzip the war template -->
     <unzip from="${bundle.fileName}" to="/">
       <include>nuxeo.war/**</include>
     </unzip>
   </install>
 
+
+  <extension target="faces-config#NAVIGATION">
+      <navigation-case>
+      <from-outcome>user_dashboard</from-outcome>
+      <to-view-id>/opensocial-dashboard.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+ 
+  </extension>
+
+ 
 </fragment>

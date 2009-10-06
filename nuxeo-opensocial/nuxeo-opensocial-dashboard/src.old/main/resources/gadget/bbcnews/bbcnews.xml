@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="BBC News Front Page" />
+  <Content type="html">
+     <![CDATA[
+       <div id="content">Loading feeds...</div>
+       <script type="text/javascript">
+        var html = '';
+        var url = "http://newsrss.bbc.co.uk/rss/newsonline_world_edition/front_page/rss.xml";
+        
+        /*var url = "http://feeds.feedburner.com/linuxjournalcom";*/
+        var callback = function(resultObj) {
+            html += "<h5>BBC News Feed</h5>";
+            html += "<ul>\n";
+            var feed = resultObj.data;
+            for (var counter = 0; counter < feed.Entry.length; counter++)  {
+                html += "<li>" + '<a href="' +
+                feed.Entry[counter].Link + '" target="_blank">' + 
+                feed.Entry[counter].Title + "</a>"  + "</li>";
+            }
+            html += "</ul>\n";
+
+        _gel('content').innerHTML = html;
+        };
+
+        var num_entries = 5;
+        var params={};
+        var get_summaries = false;
+        params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.FEED;
+        
+        gadgets.io.makeRequest(url, callback, params);
+        
+        /*_IG_FetchFeedAsJSON(url, callback, num_entries, get_summaries);*/
+       </script>
+     ]]>
+
+  </Content>
+</Module>

@@ -1,110 +1,67 @@
-/*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- */
-
 package org.nuxeo.opensocial.dashboard;
 
-import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.Startup;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.spaces.api.Space;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
 import org.nuxeo.ecm.spaces.api.Univers;
-import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.model.View;
-import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
-import org.nuxeo.opensocial.container.client.bean.Container;
+import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
+import org.nuxeo.ecm.spaces.api.exceptions.UniversNotFoundException;
 import org.nuxeo.opensocial.container.component.api.FactoryManager;
-import org.nuxeo.opensocial.container.factory.api.ContainerManager;
-import org.nuxeo.opensocial.container.factory.api.GadgetManager;
 import org.nuxeo.runtime.api.Framework;
 
-@WebObject(type = "Dashboard")
-@Produces("text/html; charset=UTF-8")
-public class Dashboard extends ModuleRoot {
+@Name("opensocialDashboard")
+@Scope(ScopeType.SESSION)
+@Startup
+public class Dashboard implements Serializable {
+    private static final long serialVersionUID = 8748161330761041337L;
+
     private static final Log log = LogFactory.getLog(Dashboard.class);
 
-    // protected GadgetManager gadgetManager;
+    @In(create = true, required = false)
+    CoreSession documentManager;
 
-    // protected ContainerManager containerManager;
-
-    protected SpaceManager spaceManager;
-
-    protected Space dashboard;
-
-    protected Container container;
-
-    protected CoreSession getSession() {
-        return WebEngine.getActiveContext().getCoreSession();
-    }
-
-    @Override
-    public void initialize(Object... args) {
+    public String getPersonalDashboardId() {
+        SpaceManager spaceManager;
         try {
-            FactoryManager factoryManager = Framework.getService(FactoryManager.class);
-            GadgetManager gadgetManager = factoryManager.getGadgetFactory();
-            log.info("gadget manager ok? " + (gadgetManager != null));
-            ContainerManager containerManager = factoryManager.getContainerFactory();
-            log.info("container manager ok? " + (containerManager != null));
-
-            CoreSession session = getSession();
-
             spaceManager = Framework.getService(SpaceManager.class);
-
             if (spaceManager == null) {
                 log.warn("unable to find space manager!");
             } else {
 
-                Univers universe = spaceManager.getUnivers(
+                Univers universe;
+                universe = spaceManager.getUnivers(
                         DashboardUniverseProvider.DASHBOARD_UNIVERSE_NAME,
-                        session);
-                dashboard = spaceManager.getSpace(
+                        documentManager);
+                return spaceManager.getSpace(
                         DashboardSpaceProvider.DASHBOARD_SPACE_NAME, universe,
-                        session);
+                        documentManager).getId().toString();
             }
+        } catch (UniversNotFoundException e) {
+            log.error("Unable to find the default universe for our space!", e);
+        } catch (SpaceException e) {
+            log.error("Unable to access space correctly for our dashboard!", e);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error("Error attempting to find the SpaceManager!", e);
         }
+        return null;
     }
 
-    @GET
-    public View getView() {
-        return new View(WebEngine.getActiveContext(), "dashboard");
-    }
-
-    public Space getDashboard() {
-        return dashboard;
-    }
-
-    // for script compatibility
-    public Space getSpace() {
-        return getDashboard();
+    public boolean isAnonymous() {
+        NuxeoPrincipal principal = (NuxeoPrincipal) documentManager.getPrincipal();
+        return principal.isAnonymous();
     }
 
     public List<String> getCategories() {
@@ -142,13 +99,9 @@ public class Dashboard extends ModuleRoot {
         return result;
     }
 
-    @Path("/resources/{name:.*}")
-    @Produces("text/plain")
-    @GET
-    public Object getResource(@PathParam("name") String name) throws Exception {
-        String path = "resources/" + name;
-        InputStream file = getClass().getClassLoader().getResourceAsStream(path);
-        String itWontBeBig = IOUtils.toString(file);
-        return javax.ws.rs.core.Response.ok(itWontBeBig).type("text/plain").build();
+    @Override
+    public String toString() {
+        return "opensocial dashboard:" + getCategories() + " categories";
     }
+
 }

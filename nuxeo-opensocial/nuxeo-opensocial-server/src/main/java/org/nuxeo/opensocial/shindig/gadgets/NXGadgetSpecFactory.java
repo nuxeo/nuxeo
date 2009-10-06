@@ -1,20 +1,3 @@
-/*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- */
-
 package org.nuxeo.opensocial.shindig.gadgets;
 
 import java.net.URI;
@@ -161,10 +144,10 @@ public class NXGadgetSpecFactory implements GadgetSpecFactory {
         // globally. This ensures propagation to shared caches when this is set.
         request.setCacheTtl((int) (refresh / ONE_SECOND));
 
-        // Verify we ask WE for an action that can be protected, we must
-        // sign the request
-        if (context.getToken() != null
-                && uri.getPath().contains(WEBENGINE_GET_DEF_ACTION)) {
+        // For now, if there is a token, we use it to send a signed message
+        // if (context.getToken() != null
+        // && uri.getPath().contains(WEBENGINE_GET_DEF_ACTION)) {
+        if (context.getToken() != null) {
             AuthType auth = AuthType.SIGNED;
             request.setAuthType(auth);
             SecurityToken token = context.getToken();
@@ -178,6 +161,7 @@ public class NXGadgetSpecFactory implements GadgetSpecFactory {
                     this.oAuthFetcherConfig, fetcher, request);
 
             response = oauthFetcher.fetch(request);
+
         } else {
             /*
              * if (request.getGadget() == null) {

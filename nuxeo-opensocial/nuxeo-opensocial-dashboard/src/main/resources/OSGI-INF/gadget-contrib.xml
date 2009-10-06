@@ -15,7 +15,14 @@
       <mountPoint>/bbcnews/bbcnews</mountPoint>
       <directory>bbcnews-gadget</directory>
       <category>Information</category>
-     <!--  <icon>hello2.png</icon> -->
+      <icon>http://www.bbc.co.uk/images/bbcpage/v3-0/bbc.gif</icon> 
+    </internalGadget>
+
+    <internalGadget name="hello">
+      <mountPoint>/hello/hello</mountPoint>
+      <directory>hello-gadget</directory>
+      <category>Information</category>
+      <!--  <icon>http://www.bbc.co.uk/images/bbcpage/v3-0/bbc.gif</icon> -->
     </internalGadget>
 
   </extension>

@@ -32,7 +32,6 @@
 .x-panel-body {
   background: transparent;
   min-width:100%;
-  border: 1px solid;
 }
 
 .x-panel-mc { /*background-color: #60a524;*/
@@ -59,7 +58,6 @@
   overflow: hidden;
   width: 100%;
   min-width: 100%;
-  border-style:none;
 }
 
 .x-panel-nofooter .x-panel-bc {
@@ -124,7 +122,7 @@
 }
 
 .x-column-possible {
-  background-image: url(transparent.png);
+  background-image: url(/nuxeo/opensocial/images/transparent.png);
   background-repeat: repeat;
   height: 100%;
 }
@@ -190,8 +188,4 @@
 #fourCol.x-4-footer3cols {
   min-width: 97%;
   width: 97%;
-}
-
-.x-panel-ml  {
-    border: 1px solid;
 }
