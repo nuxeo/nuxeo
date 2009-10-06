@@ -46,7 +46,7 @@ public class TestInfoRequests extends TestCase {
 
         String result= response.getOutput();
 
-        System.out.println(result);
+        // System.out.println(result);
 
         String[] lines = result.split("\n");
         assertEquals("FPVersion=\"12.0.0.000\"", lines[1]);
@@ -67,7 +67,7 @@ public class TestInfoRequests extends TestCase {
 
         String result= response.getOutput();
 
-        System.out.println(result);
+        // System.out.println(result);
 
         String[] lines = result.split("\n");
 
@@ -85,7 +85,7 @@ public class TestInfoRequests extends TestCase {
 
         String result= response.getOutput();
 
-        System.out.println(result);
+        // System.out.println(result);
 
         String[] lines = result.split("\n");
 
@@ -104,7 +104,7 @@ public class TestInfoRequests extends TestCase {
 
         String result= response.getOutput();
 
-        System.out.println(result);
+        // System.out.println(result);
 
     }
 

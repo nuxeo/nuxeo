@@ -44,6 +44,7 @@ public class TestFPRequests extends TestCase {
 
 
     public void testPut() throws Exception {
+        DummyMemoryTree.resetInstance();
         FakeRequest request = FakeRequestBuilder.buildFromResource("VermeerEncodedPost.dump");
         FakeResponse response = new FakeResponse();
 
@@ -66,7 +67,7 @@ public class TestFPRequests extends TestCase {
 
         String result= response.getOutput();
 
-        System.out.println(result);
+        // System.out.println(result);
 
         String[] lines = result.split("\n");
         assertEquals("<p>message=successfully put document 'DocLib0/Workspace-1-1/Document-2-1.doc' as 'DocLib0/Workspace-1-1/Document-2-1.doc'", lines[3]);

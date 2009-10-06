@@ -56,6 +56,7 @@ NXThemesWebWidgets.moveWidget = function(info) {
          onFailure: function(r) {
              var text = r.responseText;
              window.alert(text);
+             window.location.reload();
          }
     });
 };

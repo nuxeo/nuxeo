@@ -56,7 +56,7 @@ public class TestFakeWSDWS extends TestCase {
 
             String result= response.getOutput();
 
-            System.out.println(result);
+            // System.out.println(result);
 
             String[] lines = result.split("\n");
 
