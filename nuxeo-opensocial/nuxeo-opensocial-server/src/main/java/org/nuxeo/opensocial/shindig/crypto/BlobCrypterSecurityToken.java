@@ -18,13 +18,12 @@
  */
 package org.nuxeo.opensocial.shindig.crypto;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.shindig.auth.SecurityToken;
 import org.apache.shindig.common.crypto.BlobCrypter;
 import org.apache.shindig.common.crypto.BlobCrypterException;
-
-import com.google.common.collect.Maps;
 
 /**
  * Authentication based on a provided BlobCrypter.
@@ -98,7 +97,7 @@ public class BlobCrypterSecurityToken implements SecurityToken {
    * encoded before being used as a form parameter.
    */
   public String encrypt() throws BlobCrypterException {
-    Map<String, String> values = Maps.newHashMap();
+    Map<String, String> values = new HashMap<String, String>();
     if (ownerId != null) {
       values.put(OWNER_KEY, ownerId);
     }

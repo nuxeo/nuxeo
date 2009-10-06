@@ -17,6 +17,7 @@
 
 package org.nuxeo.opensocial.shindig.crypto;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.shindig.auth.AnonymousSecurityToken;
@@ -29,8 +30,6 @@ import org.apache.shindig.common.crypto.BlobCrypter;
 import org.apache.shindig.common.crypto.BlobCrypterException;
 import org.apache.shindig.common.util.CharsetUtil;
 
-import com.google.common.collect.Maps;
-
 public class BlobCrypterSecurityTokenDecoder implements
         SecurityTokenDecoder {
 
@@ -41,7 +40,7 @@ public class BlobCrypterSecurityTokenDecoder implements
     /**
      * Keys are container ids, values are domains used for signed fetch.
      */
-    private Map<String, String> domains = Maps.newHashMap();
+    private Map<String, String> domains = new HashMap<String, String>();
 
     public BlobCrypterSecurityTokenDecoder(ContainerConfig config, String key) {
         byte[] keyBytes = CharsetUtil.getUtf8Bytes(key.trim());

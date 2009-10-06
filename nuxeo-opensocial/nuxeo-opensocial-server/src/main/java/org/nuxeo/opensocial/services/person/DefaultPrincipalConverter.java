@@ -17,17 +17,17 @@
 
 package org.nuxeo.opensocial.services.person;
 
+import java.util.Collections;
+
 import org.apache.shindig.social.core.model.NameImpl;
+import org.apache.shindig.social.core.model.OrganizationImpl;
 import org.apache.shindig.social.core.model.PersonImpl;
+import org.apache.shindig.social.opensocial.model.Organization;
 import org.apache.shindig.social.opensocial.model.Person;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
-import edu.emory.mathcs.backport.java.util.Collections;
-
 public class DefaultPrincipalConverter implements PrincipalConverter {
 
-
-    @SuppressWarnings("unchecked")
     public Person convert(NuxeoPrincipal principal) {
 
         PersonImpl person = new PersonImpl();
@@ -41,7 +41,9 @@ public class DefaultPrincipalConverter implements PrincipalConverter {
 
         String company = principal.getCompany();
         if (company != null) {
-            person.setOrganizations(Collections.singletonList(company));
+            Organization organization = new OrganizationImpl();
+            organization.setName(company);
+            person.setOrganizations(Collections.singletonList(organization));
         }
 
         return person;
