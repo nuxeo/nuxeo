@@ -145,6 +145,9 @@
       <artifact group="org.apache" name="xmlbeans" />
       <artifact group="oro" name="oro" />
       <artifact group="opensymphony" name="quartz-all" />
+      
+      <artifact group="net.sf.ehcache" name="ehcache" />
+      <artifact group="com.google.code.google-collections" name="google-collect" />
     </artifacts>
   </artifactSet>
 

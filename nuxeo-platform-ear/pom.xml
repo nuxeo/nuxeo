@@ -555,7 +555,7 @@
       <artifactId>nuxeo-platform-lang-ext</artifactId>
       <version>${nuxeo.features.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
