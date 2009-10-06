@@ -5,3 +5,4 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.facade;singleton=true
 Bundle-Vendor: Nuxeo
 Require-Bundle: org.nuxeo.ecm.platform.picture.api,
  org.nuxeo.ecm.platform.picture.core
+Bundle-Category: stateful

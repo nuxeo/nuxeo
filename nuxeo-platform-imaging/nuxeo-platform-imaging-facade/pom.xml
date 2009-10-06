@@ -8,7 +8,7 @@
   </parent>
 
   <description>
-    Nuxeo Platform Imaging provides picture managment to Nuxeo Web Platform and
+    Nuxeo Platform Imaging provides picture management to Nuxeo Web Platform and
     RCP. It offers minor picture transformation like rotation or resizing.
     Imaging-facade provides session bean wrapper for the local ImagingService.
   </description>
