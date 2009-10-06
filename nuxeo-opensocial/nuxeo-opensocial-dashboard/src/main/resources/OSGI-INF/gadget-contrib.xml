@@ -15,7 +15,7 @@
       <mountPoint>/bbcnews/bbcnews</mountPoint>
       <directory>bbcnews-gadget</directory>
       <category>Information</category>
-      <icon>http://www.bbc.co.uk/images/bbcpage/v3-0/bbc.gif</icon> 
+      <icon>http://www.bbc.co.uk/images/bbcpage/v3-0/bbc.gif</icon>
     </internalGadget>
 
     <internalGadget name="hello">
@@ -23,6 +23,20 @@
       <directory>hello-gadget</directory>
       <category>Information</category>
       <!--  <icon>http://www.bbc.co.uk/images/bbcpage/v3-0/bbc.gif</icon> -->
+    </internalGadget>
+
+    <internalGadget name="userworkspaces">
+      <mountPoint>/documentlists/userworkspaces</mountPoint>
+      <directory>documentlists-gadget</directory>
+      <category>Nuxeo</category>
+     <!--  <icon>hello2.png</icon> -->
+    </internalGadget>
+
+    <internalGadget name="userdocuments">
+      <mountPoint>/documentlists/userdocuments</mountPoint>
+      <directory>documentlists-gadget</directory>
+      <category>Nuxeo</category>
+     <!--  <icon>hello2.png</icon> -->
     </internalGadget>
 
   </extension>
