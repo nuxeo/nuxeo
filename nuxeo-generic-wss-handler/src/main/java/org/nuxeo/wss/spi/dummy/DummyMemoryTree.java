@@ -41,6 +41,10 @@ public class DummyMemoryTree {
         return instance;
     }
 
+    public static void resetInstance() {
+        instance = null;
+    }
+
     public WSSListItem getItem(String location) {
 
         if (location==null || location=="" || location == "/") {

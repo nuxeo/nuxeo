@@ -28,46 +28,48 @@ import junit.framework.TestCase;
 public class TestDummySpiTree extends TestCase {
 
     public void testTree() throws Exception{
-
         List<WSSListItem> items;
 
-        items = DummyMemoryTree.instance().listItems("/");
+        DummyMemoryTree.resetInstance();
+        DummyMemoryTree instance = DummyMemoryTree.instance();
+
+        items = instance.listItems("/");
         assertNotNull(items);
         assertEquals(5, items.size());
 
-        items = DummyMemoryTree.instance().listItems("DocLib0");
+        items = instance.listItems("DocLib0");
         assertNotNull(items);
         assertEquals(11, items.size());
 
-        items = DummyMemoryTree.instance().listItems("/DocLib0");
+        items = instance.listItems("/DocLib0");
         assertNotNull(items);
         assertEquals(11, items.size());
 
-        items = DummyMemoryTree.instance().listItems("DoesNotExist");
+        items = instance.listItems("DoesNotExist");
         assertNull(items);
 
-        items = DummyMemoryTree.instance().listItems("/DocLib0/Workspace-1-1");
+        items = instance.listItems("/DocLib0/Workspace-1-1");
         assertNotNull(items);
         assertEquals(11, items.size());
 
-        WSSListItem item = DummyMemoryTree.instance().getItem("/");
+        WSSListItem item = instance.getItem("/");
         assertNotNull(item);
         assertEquals("Root node", item.getDescription());
 
-        item = DummyMemoryTree.instance().getItem("/DocLib0");
+        item = instance.getItem("/DocLib0");
         assertNotNull(item);
         assertEquals("This is Dummy Document Libray 0", item.getDescription());
 
-        item = DummyMemoryTree.instance().getItem("DocLib0");
+        item = instance.getItem("DocLib0");
         assertNotNull(item);
         assertEquals("This is Dummy Document Libray 0", item.getDescription());
 
-        item = DummyMemoryTree.instance().getItem("/DocLib0/Workspace-1-1");
+        item = instance.getItem("/DocLib0/Workspace-1-1");
         assertNotNull(item);
         assertTrue(item.isFolderish());
         assertEquals("This is Dummy Workspace 1", item.getDescription());
 
-        item = DummyMemoryTree.instance().getItem("/DocLib0/Workspace-1-1/Document-2-1.doc");
+        item = instance.getItem("/DocLib0/Workspace-1-1/Document-2-1.doc");
         assertNotNull(item);
         assertFalse(item.isFolderish());
         assertEquals("This is Dummy File 1", item.getDescription());
@@ -78,7 +80,7 @@ public class TestDummySpiTree extends TestCase {
         assertTrue(read>0);
         assertEquals(7680, read);
 
-        item = DummyMemoryTree.instance().getItem("/DocLib0/Workspace-1-1/toto.doc");
+        item = instance.getItem("/DocLib0/Workspace-1-1/toto.doc");
         assertNull(item);
 
     }
