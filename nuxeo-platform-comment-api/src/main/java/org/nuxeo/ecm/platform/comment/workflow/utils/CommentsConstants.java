@@ -49,6 +49,7 @@ public final class CommentsConstants {
 
     public static final String COMMENT_PUBLISHED = "commentPublished";
 
+    public static final String COMMENT_LIFECYCLE = "comment_moderation";
 
     /**
      * Schemas and fields.

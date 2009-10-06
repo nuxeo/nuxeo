@@ -30,6 +30,7 @@ import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
@@ -84,11 +85,13 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         TaskInstance moderationTask = getModerationTask(jbpmService, session,
                 doc, commentId);
         if (moderationTask == null) {
-            throw new ClientException("No moderation task found");
-        }
+            //throw new ClientException("No moderation task found");
+            session.followTransition(new IdRef(commentId), CommentsConstants.TRANSITION_TO_PUBLISHED_STATE);
+        } else {
         jbpmService.endTask(moderationTask.getId(),
                 CommentsConstants.TRANSITION_TO_PUBLISHED_STATE, null, null,
                 null, (NuxeoPrincipal) session.getPrincipal());
+        }
 
         Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
         eventInfo.put("emailDetails", "test");
@@ -101,11 +104,13 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         TaskInstance moderationTask = getModerationTask(jbpmService, session,
                 doc, commentId);
         if (moderationTask == null) {
-            throw new ClientException("No moderation task found");
-        }
-        jbpmService.endTask(moderationTask.getId(),
+            //throw new ClientException("No moderation task found");
+            session.followTransition(new IdRef(commentId), CommentsConstants.REJECT_STATE);
+        } else {
+            jbpmService.endTask(moderationTask.getId(),
                 CommentsConstants.REJECT_STATE, null, null, null,
                 (NuxeoPrincipal) session.getPrincipal());
+        }
     }
 
     @SuppressWarnings("unchecked")

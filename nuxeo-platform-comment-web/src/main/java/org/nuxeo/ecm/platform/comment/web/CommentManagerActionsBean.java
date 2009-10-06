@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
+import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -177,6 +178,13 @@ public class CommentManagerActionsBean implements CommentManagerActions, Seriali
             } else {
                 newComment = commentableDoc.addComment(comment);
             }
+
+            // automatically validate the comments
+            if ( CommentsConstants.COMMENT_LIFECYCLE.equals(newComment.getLifeCyclePolicy())) {
+                documentManager.followTransition(newComment.getRef(), CommentsConstants.TRANSITION_TO_PUBLISHED_STATE);
+                documentManager.save();
+            }
+
             // Events.instance().raiseEvent(CommentEvents.COMMENT_ADDED, null,
             // newComment);
             cleanContextVariable();
