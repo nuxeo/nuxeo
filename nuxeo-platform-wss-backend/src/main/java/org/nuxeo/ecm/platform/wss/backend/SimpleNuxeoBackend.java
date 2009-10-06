@@ -88,14 +88,21 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
         } else {
             Path path = new Path(location);
             String parentSubPath = path.removeLastSegments(1).toString();
+            Path parentPath = new Path(corePathPrefix);
 
             String filename = path.lastSegment();
 
-            Path parentPath = new Path(corePathPrefix);
+            // first try with spaces (for create New Folder)
+            String folderName = filename.replace(" ", "-");
+            DocumentRef folderRef = new PathRef(parentPath.append(folderName).toString());
+            if (getCoreSession().exists(folderRef)) {
+                return getCoreSession().getDocument(folderRef);
+            }
+            // look for a child
             parentPath = parentPath.append(parentSubPath);
             docRef = new PathRef(parentPath.toString());
             if (!getCoreSession().exists(docRef)) {
-                throw new WSSException("Unable to find item " + location);
+                throw new WSSException("Unable to find parent for item " + location);
             }
             List<DocumentModel> children = getCoreSession().getChildren(docRef);
             for (DocumentModel child : children) {

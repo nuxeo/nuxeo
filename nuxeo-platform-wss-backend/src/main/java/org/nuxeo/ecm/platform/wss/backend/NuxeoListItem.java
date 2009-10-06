@@ -23,6 +23,8 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -31,11 +33,14 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.spi.AbstractWSSListItem;
 import org.nuxeo.wss.spi.WSSListItem;
 
 public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
+
+    private static final Log log = LogFactory.getLog(NuxeoListItem.class);
 
     protected DocumentModel doc;
     protected String corePathPrefix;
@@ -276,18 +281,30 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
         }
     }
 
-    public void setStream(InputStream is) throws WSSException {
+    public void setStream(InputStream is, String fileName) throws WSSException {
         if (doc.hasSchema("file")) {
-
-            Blob blob = new InputStreamBlob(is);
-
-            try {
-                doc.setProperty("file", "content", blob);
-                doc = getSession().saveDocument(doc);
-            } catch (ClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            //Blob blob = new InputStreamBlob(is);
+            Blob blob = StreamingBlob.createFromStream(is);
+            if (fileName!=null) {
+                blob.setFilename(fileName);
             }
+            try {
+                Blob oldBlob = (Blob) doc.getProperty("file", "content");
+                if (oldBlob==null) {
+                    // force to recompute icon
+                    if (doc.hasSchema("common")) {
+                        doc.setProperty("common", "icon", null);
+                    }
+                }
+                doc.setProperty("file", "content", blob);
+                doc.setProperty("file", "filename", fileName);
+                doc = getSession().saveDocument(doc);
+                } catch (ClientException e) {
+                log.error("Error while setting stream", e);
+            }
+        } else {
+            // XXX needs writable BlobHolder
+            log.error("Update of type " + doc.getType() + " is not supported for now");
         }
     }
 

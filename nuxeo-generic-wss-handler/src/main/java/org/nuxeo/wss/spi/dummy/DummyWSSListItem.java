@@ -79,7 +79,7 @@ public class DummyWSSListItem extends AbstractWSSListItem implements WSSListItem
             this.subPath= name;
         }
         try {
-            setStream(is);
+            setStream(is, null);
         } catch (WSSException e) {
             log.error("Error processing stream", e);
         }
@@ -112,7 +112,7 @@ public class DummyWSSListItem extends AbstractWSSListItem implements WSSListItem
         return stream;
     }
 
-    public void setStream(InputStream stream) throws WSSException{
+    public void setStream(InputStream stream, String fileName) throws WSSException{
         if (stream==null) {
             type="folder";
         } else {

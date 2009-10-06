@@ -38,7 +38,7 @@ public interface WSSListItem {
 
     public InputStream getStream();
 
-    public void setStream(InputStream stream) throws WSSException;
+    public void setStream(InputStream stream, String fileName) throws WSSException;
 
     public String getName();
 

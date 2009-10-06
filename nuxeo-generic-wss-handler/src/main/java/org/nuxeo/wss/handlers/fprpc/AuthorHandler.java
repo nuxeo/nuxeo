@@ -123,14 +123,19 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
 
              WSSListItem doc = null;
 
+             String fileName = null;
+
              if (backend.exists(location)) {
                  doc = backend.getItem(location);
+                 String[] urlParts = url.split("/");
+                 fileName = urlParts[urlParts.length-1];
              } else {
                  String[] urlParts = url.split("/");
                  String newFileName = urlParts[urlParts.length-1];
                  String parentPath = (url + "*").replace("/" + newFileName + "*", "");
                  String parentLocation = WSSUrlMapper.getUrlWithSitePath(request, parentPath);
                  doc = backend.createFileItem(parentLocation, newFileName);
+                 fileName = newFileName;
              }
 
              if (doc==null) {
@@ -143,8 +148,7 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
                 fpResponse.setProcessed(true);
                 return;
              }
-
-             doc.setStream(request.getVermeerBinary());
+             doc.setStream(request.getVermeerBinary(), fileName);
              fpResponse.addRenderingParameter("doc", doc);
              fpResponse.setRenderingTemplateName("put-document.ftl");
          }
