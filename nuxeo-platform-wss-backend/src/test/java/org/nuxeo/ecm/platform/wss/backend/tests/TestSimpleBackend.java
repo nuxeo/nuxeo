@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.wss.backend.tests;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -33,6 +34,14 @@ import org.nuxeo.wss.spi.WSSBackend;
 import org.nuxeo.wss.spi.WSSListItem;
 
 public class TestSimpleBackend extends SQLRepositoryTestCase {
+
+    public static class WSSListItemSorter implements Comparator<WSSListItem> {
+        public int compare(WSSListItem a, WSSListItem b) {
+            return a.getName().compareTo(b.getName());
+        }
+    }
+
+    public static WSSListItemSorter wssListItemSorter = new WSSListItemSorter();
 
     @Override
     public void setUp() throws Exception {
@@ -123,6 +132,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         items = backend.listItems("/nuxeo/workspaces");
         assertNotNull(items);
         assertEquals(2, items.size());
+        Collections.sort(items, wssListItemSorter);
         assertEquals("ws1", items.get(0).getName());
         assertEquals("ws2", items.get(1).getName());
         assertEquals("Ws1", items.get(0).getDisplayName());
@@ -136,21 +146,26 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         items = backend.listItems("/nuxeo/workspaces/ws1");
         assertNotNull(items);
         assertEquals(2, items.size());
-        assertEquals("folder", items.get(0).getName());
-        assertEquals("doc1", items.get(1).getName());
+        Collections.sort(items, wssListItemSorter);
+        assertEquals("doc1", items.get(0).getName());
+        assertEquals("folder", items.get(1).getName());
 
-        assertEquals("Folder1", items.get(0).getDisplayName());
-        assertEquals("document1.doc", items.get(1).getDisplayName());
-        assertEquals("nuxeo/workspaces/ws1/folder", items.get(0).getSubPath());
-        assertEquals("nuxeo/workspaces/ws1/folder",
-                items.get(0).getRelativeSubPath(""));
-        assertEquals("nuxeo/workspaces/ws1/doc1", items.get(1).getSubPath());
+        assertEquals("document1.doc", items.get(0).getDisplayName());
+        assertEquals("Folder1", items.get(1).getDisplayName());
+        assertEquals("nuxeo/workspaces/ws1/doc1", items.get(0).getSubPath());
         assertEquals("nuxeo/workspaces/ws1/doc1",
+                items.get(0).getRelativeSubPath(""));
+        assertEquals("nuxeo/workspaces/ws1/folder", items.get(1).getSubPath());
+        assertEquals("nuxeo/workspaces/ws1/folder",
                 items.get(1).getRelativeSubPath(""));
-        assertEquals("workspaces/ws1/doc1", items.get(1).getRelativeSubPath(
+        assertEquals("workspaces/ws1/doc1", items.get(0).getRelativeSubPath(
                 "nuxeo"));
         assertEquals("workspaces/ws1/document1.doc",
-                items.get(1).getRelativeFilePath("nuxeo"));
+                items.get(0).getRelativeFilePath("nuxeo"));
+        assertEquals("workspaces/ws1/folder", items.get(1).getRelativeSubPath(
+                "nuxeo"));
+        assertEquals("workspaces/ws1/folder", items.get(1).getRelativeFilePath(
+                "nuxeo"));
 
         WSSListItem item = backend.getItem("nuxeo/workspaces/ws1/doc1");
         assertNotNull(item);
@@ -261,18 +276,21 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         items = backend.listItems("/nuxeo/ws1");
         assertNotNull(items);
         assertEquals(2, items.size());
-        assertEquals("folder", items.get(0).getName());
-        assertEquals("doc1", items.get(1).getName());
+        Collections.sort(items, wssListItemSorter);
+        assertEquals("doc1", items.get(0).getName());
+        assertEquals("folder", items.get(1).getName());
 
-        assertEquals("Folder1", items.get(0).getDisplayName());
-        assertEquals("document1.doc", items.get(1).getDisplayName());
-        assertEquals("nuxeo/ws1/folder", items.get(0).getSubPath());
-        assertEquals("nuxeo/ws1/folder", items.get(0).getRelativeSubPath(""));
-        assertEquals("nuxeo/ws1/doc1", items.get(1).getSubPath());
-        assertEquals("nuxeo/ws1/doc1", items.get(1).getRelativeSubPath(""));
-        assertEquals("ws1/doc1", items.get(1).getRelativeSubPath("nuxeo"));
-        assertEquals("ws1/document1.doc", items.get(1).getRelativeFilePath(
+        assertEquals("document1.doc", items.get(0).getDisplayName());
+        assertEquals("Folder1", items.get(1).getDisplayName());
+        assertEquals("nuxeo/ws1/doc1", items.get(0).getSubPath());
+        assertEquals("nuxeo/ws1/doc1", items.get(0).getRelativeSubPath(""));
+        assertEquals("nuxeo/ws1/folder", items.get(1).getSubPath());
+        assertEquals("nuxeo/ws1/folder", items.get(1).getRelativeSubPath(""));
+        assertEquals("ws1/doc1", items.get(0).getRelativeSubPath("nuxeo"));
+        assertEquals("ws1/document1.doc", items.get(0).getRelativeFilePath(
                 "nuxeo"));
+        assertEquals("ws1/folder", items.get(1).getRelativeSubPath("nuxeo"));
+        assertEquals("ws1/folder", items.get(1).getRelativeFilePath("nuxeo"));
 
         WSSListItem item = backend.getItem("nuxeo/ws1/doc1");
         assertNotNull(item);
