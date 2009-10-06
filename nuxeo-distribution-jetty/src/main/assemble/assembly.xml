@@ -27,7 +27,12 @@
       <artifact name="nuxeo-platform-jbpm-core" />
       <artifact name="nuxeo-platform-jbpm-web" />
       <artifact name="nuxeo-platform-publisher-jbpm" />
-      
+
+      <!-- exclude tag -->
+      <artifact name="nuxeo-platform-tag-core" />
+      <artifact name="nuxeo-platform-tag-web" />
+      <artifact name="nuxeo-platform-tag-api" />
+
       <!-- exclude webservices -->
       <artifact name="nuxeo-platform-ws" />
       

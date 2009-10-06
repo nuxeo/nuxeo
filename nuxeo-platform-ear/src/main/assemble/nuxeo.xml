@@ -219,7 +219,7 @@
       <artifact group="org.apache" name="xmlbeans" />
       <artifact group="com.sun.xml" name="relaxngDatatype" />
       <artifact group="com.sun.xml" name="xsom" />
-
+      <artifact group="backport-util-concurrent" name="backport-util-concurrent"/>
       <!-- Remote publication lib -->
       <artifact group="org.apache.httpcomponents" name="httpclient" />
     </artifacts>

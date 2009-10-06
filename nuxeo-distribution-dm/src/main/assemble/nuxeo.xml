@@ -73,6 +73,13 @@
       org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-jcr-postgresql
     </artifact>
   </zipEntrySet>
+  <assemble>
+    <set>resources-opensocial</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <fileSet id="resources-opensocial">
+    <directory>src/main/resources</directory>
+  </fileSet>
 
   <!-- ARTIFACTS -->
   <assemble>
@@ -122,8 +129,10 @@
   <assemble>
     <delete>true</delete>
     <outputFile>system</outputFile>
-    <file>nuxeo-platform-ear-${project.version}.pom</file>
-    <file>nuxeo-distribution-dm-${project.version}.pom</file>
+    <file>nuxeo-platform-ear-${project.version}.pom
+    </file>
+    <file>nuxeo-distribution-dm-${project.version}.pom
+    </file>
   </assemble>
 
   <assemble>
@@ -169,10 +178,11 @@
       <artifact group="bouncycastle" name="bcmail-jdk14" />
       <artifact group="bouncycastle" name="bcprov-jdk14" />
       <!--
-        version required because maven-nuxeo-plugin don't manage classifier here
+        version required because maven-nuxeo-plugin don't manage
+        classifier here
       -->
-      <artifact group="net.sf.json-lib" name="json-lib" classifier="jdk15"
-        version="2.2.1" />
+      <artifact group="net.sf.json-lib" name="json-lib"
+        classifier="jdk15" version="2.2.1" />
       <artifact group="org.apache.lucene" name="lucene-core" />
       <artifact group="net.sf.opencsv" name="opencsv" />
       <artifact group="org.slf4j" name="slf4j-api" />
@@ -237,9 +247,10 @@
 
   <!-- CUSTOM ARTIFACTS -->
   <!--
-    <assemble> <outputFile>plugins</outputFile> <set>custom-plugins</set>
-    </assemble> <artifactSet id="custom-plugins"> <import>**</import>
-    <includeDependencies>false</includeDependencies> <includes> <artifact
-    group="com.custom.sample" /> </includes> </artifactSet>
+    <assemble> <outputFile>plugins</outputFile>
+    <set>custom-plugins</set> </assemble> <artifactSet
+    id="custom-plugins"> <import>**</import>
+    <includeDependencies>false</includeDependencies> <includes>
+    <artifact group="com.custom.sample" /> </includes> </artifactSet>
   -->
 </assembly>
