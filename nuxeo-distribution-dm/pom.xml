@@ -221,6 +221,11 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-opensocial-dashboard</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-spaces-api</artifactId>
       <version>${nuxeo.features.version}</version>
     </dependency>
