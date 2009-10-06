@@ -39,6 +39,10 @@
       <artifactId>poi-ooxml</artifactId>
     </dependency>
     <dependency>
+      <groupId>net.sourceforge.nekohtml</groupId>
+      <artifactId>nekohtml</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache</groupId>
       <artifactId>xmlbeans</artifactId>
     </dependency>
@@ -59,12 +63,6 @@
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xmlParserAPIs</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>nekohtml</groupId>
-      <artifactId>nekohtml</artifactId>
-      <version>0.9.5</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
