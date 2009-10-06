@@ -234,7 +234,7 @@
       <artifact group="org.apache.httpcomponents" name="httpcore" />
 
       <artifact group="net.sf.ehcache" name="ehcache" />
-      <artifact group="com.google.code.google-collections" name="google-collect" />
+      <artifact group="com.google.collections" name="google-collections" />
       <artifact group="backport-util-concurrent" name="backport-util-concurrent" />
     </artifacts>
   </artifactSet>
