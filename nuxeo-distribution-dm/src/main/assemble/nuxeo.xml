@@ -177,12 +177,9 @@
       <artifact group="jboss" name="jgroups" />
       <artifact group="bouncycastle" name="bcmail-jdk14" />
       <artifact group="bouncycastle" name="bcprov-jdk14" />
-      <!--
-        version required because maven-nuxeo-plugin don't manage
-        classifier here
-      -->
-      <artifact group="net.sf.json-lib" name="json-lib"
-        classifier="jdk15" version="2.2.1" />
+      <!-- version required because maven-nuxeo-plugin don't manage classifier here -->
+      <artifact group="net.sf.json-lib" name="json-lib" classifier="jdk15"
+        version="2.2.1" />
       <artifact group="org.apache.lucene" name="lucene-core" />
       <artifact group="net.sf.opencsv" name="opencsv" />
       <artifact group="org.slf4j" name="slf4j-api" />
@@ -235,7 +232,7 @@
       <!-- Remote publication lib -->
       <artifact group="org.apache.httpcomponents" name="httpclient" />
       <artifact group="org.apache.httpcomponents" name="httpcore" />
-      
+
       <artifact group="net.sf.ehcache" name="ehcache" />
       <artifact group="com.google.code.google-collections" name="google-collect" />
     </artifacts>
@@ -250,10 +247,9 @@
 
   <!-- CUSTOM ARTIFACTS -->
   <!--
-    <assemble> <outputFile>plugins</outputFile>
-    <set>custom-plugins</set> </assemble> <artifactSet
-    id="custom-plugins"> <import>**</import>
-    <includeDependencies>false</includeDependencies> <includes>
-    <artifact group="com.custom.sample" /> </includes> </artifactSet>
+    <assemble> <outputFile>plugins</outputFile> <set>custom-plugins</set>
+    </assemble> <artifactSet id="custom-plugins"> <import>**</import>
+    <includeDependencies>false</includeDependencies> <includes> <artifact
+    group="com.custom.sample" /> </includes> </artifactSet>
   -->
 </assembly>
