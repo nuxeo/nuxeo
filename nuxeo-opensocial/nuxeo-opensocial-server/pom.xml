@@ -210,10 +210,10 @@
                   <version>20080621</version>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>com.google.code.google-collections
+                  <groupId>com.google.collections
                   </groupId>
-                  <artifactId>google-collect</artifactId>
-                  <version>snapshot-20080321</version>
+                  <artifactId>google-collections</artifactId>
+                  <version>0.8</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>com.google.code.guice</groupId>
