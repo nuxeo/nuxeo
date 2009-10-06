@@ -72,8 +72,7 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
     // const for USER Parameter
     protected static final String QPUSER = "$USER";
 
-
-    private static final String defaultColumns = "dublincore.title,dublincore.description,dublincorfe.creator,url, icon";
+    private static final String defaultColumns = "dublincore.title,dublincore.description,dublincore.creator,url,icon,dublincore.created,dublincore.modified";
 
     private static final String defaultFormat = "XML";
 

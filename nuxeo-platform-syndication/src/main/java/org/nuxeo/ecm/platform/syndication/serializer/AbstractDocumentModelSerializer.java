@@ -117,8 +117,8 @@ public abstract class AbstractDocumentModelSerializer implements
             String[] params = colDef.split("\\" + SchemaDelimiter);
 
             if (params.length == 2) {
-                String schemaName = params[0];
-                String fieldName = params[1];
+                String schemaName = params[0].trim();
+                String fieldName = params[1].trim();
                 // We want to get an item from a list
                 // Should not be used, generates malformed XML caused by
                 // mylist[X]=...

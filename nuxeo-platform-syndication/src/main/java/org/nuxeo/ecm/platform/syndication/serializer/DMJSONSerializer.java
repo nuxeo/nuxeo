@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.syndication.serializer;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +48,10 @@ public class DMJSONSerializer extends AbstractDocumentModelSerializer {
             return EMPTY_LIST;
         }
 
+        Map<String, Object> all = new HashMap<String, Object>();
+
+        all.put("summary", summary);
+
         List<Map<String, String>> struct = new ArrayList<Map<String, String>>();
 
         for (DocumentModel doc : docList) {
@@ -61,7 +66,9 @@ public class DMJSONSerializer extends AbstractDocumentModelSerializer {
             struct.add(resDoc);
         }
 
-        JSON jsonRes = JSONSerializer.toJSON(struct);
+        all.put("data", struct);
+        //JSON jsonRes = JSONSerializer.toJSON(struct);
+        JSON jsonRes = JSONSerializer.toJSON(all);
 
         if (jsonRes instanceof JSONObject) {
             JSONObject jsonOb = (JSONObject) jsonRes;
