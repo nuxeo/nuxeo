@@ -78,12 +78,12 @@ public class TestJobHistoryHelper extends NXRuntimeTestCase {
         assertNull(exportDate);
 
         helper.logJobEnded();
-        long t0 = System.currentTimeMillis();
 
         exportDate = helper.getLastSucessfulRun();
         assertNotNull(exportDate);
 
         Thread.sleep(3000);
+        long t0 = System.currentTimeMillis();
 
         exportDate = helper.getLastSucessfulRun();
         long loggedT0 = exportDate.getTime();
