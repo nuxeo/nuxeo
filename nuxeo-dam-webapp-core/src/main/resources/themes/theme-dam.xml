@@ -299,20 +299,42 @@
       <selector path=".filterContent">
         <padding>10px</padding>
       </selector>
+      <selector path=".banner_actions ul">
+        <padding>0</padding>
+        <margin>0</margin>
+        <height>30px</height>
+        <width>290px</width>
+        <float>right</float>
+        <list-style>none</list-style>
+      </selector>
+      <selector path=".banner_actions ul li">
+        <float>left</float>
+      </selector>
+      <selector path=".banner_actions ul li a">
+        <display>block</display>
+        <padding>9px 10px 8px</padding>
+        <background>transparent url(/nuxeo/img/headerLink_bg.png) repeat-x top left</background>
+      </selector>
+      <selector path=".banner_actions ul li a:hover">
+        <background>transparent url(/nuxeo/img/headerLink_bg_hover.png) repeat-x top left</background>
+        <text-decoration>none</text-decoration>
+      </selector>
       <selector path=".importButton">
         <padding>6px 0px 0px 20px</padding>
         <background>transparent url(/nuxeo/img/import_button.png) no-repeat top left</background>
-        <margin>0 10px 0px 15px</margin>
       </selector>
       <selector path=".settingsButton">
         <padding>6px 0px 0px 20px</padding>
         <background>transparent url(/nuxeo/img/settings_button.png) no-repeat top left</background>
-        <margin>0 10px 0px 15px</margin>
       </selector>
       <selector path=".configButton">
         <padding>6px 0px 0px 20px</padding>
         <background>transparent url(/nuxeo/img/config_button.png) no-repeat top left</background>
-        <margin>0 10px 0px 15px</margin>
+      </selector>
+      <selector path=".separator">
+        <padding>9px 0px 8px</padding>
+        <display>block</display>
+        <height>30px</height>
       </selector>
       <selector path=".logOutButton">
         <color>#afafaf</color>
@@ -389,7 +411,8 @@
     <style element="page[1]/section[1]/cell[2]" inherit="common style"/>
         <style element="page[1]/section[1]/cell[2]/fragment[1]" inherit="common style">
       <selector path=".banner_actions" view="dam banner">
-        <margin>8px 10px 0px 0px</margin>
+        <margin>0</margin>
+        <padding>0px 10px 0px 0px</padding>
         <text-align>right</text-align>
         <font preset="small (DAM fonts)"/>
         <color preset="gray.light (DAM colors)"/>

@@ -25,24 +25,32 @@
     </rich:modalPanel>
 
     <h:form>
-    
-      <h:outputLink value="javascript:Richfaces.showModalPanel('importSetFormPanel');" id="importset_creation_button">
-          <h:outputText class="importButton" value="${messages['label.action.createImportSet']}"/>
-      </h:outputLink>
-      
-      <h:outputLink id="settings_button" action="#{documentActions.logout}" disabled="true">
-          <h:outputText class="settingsButton" value="${messages['label.action.settings']}"/>
-      </h:outputLink>
-      
-      <h:outputLink id="configuration_button" action="#{documentActions.logout}" disabled="true">
-          <h:outputText class="configButton" value="${messages['label.action.config']}"/>
-      </h:outputLink>
-      
-      <h:outputText value=" | " />
-    
-      <h:commandLink action="#{documentActions.logout}">
-        <h:outputText class="logOutButton" value="#{messages['command.logout']}" />
-      </h:commandLink>
+      <ul>
+        <li>
+          <h:outputLink value="javascript:Richfaces.showModalPanel('importSetFormPanel');" id="importset_creation_button">
+            <h:outputText class="importButton" value="${messages['label.action.createImportSet']}"/>
+          </h:outputLink>
+        </li>
+        <li>
+          <h:outputLink id="settings_button" action="#{documentActions.logout}">
+            <h:outputText class="settingsButton" value="${messages['label.action.settings']}"/>
+          </h:outputLink>
+        </li>
+        <li>
+          <h:outputLink id="configuration_button" action="#{documentActions.logout}">
+            <h:outputText class="configButton" value="${messages['label.action.config']}"/>
+          </h:outputLink>
+        </li>
+        <li>
+          <h:outputText class="separator" value=" | " />
+        </li>
+        <li>
+          <h:commandLink action="#{documentActions.logout}">
+            <h:outputText class="logOutButton" value="#{messages['command.logout']}" />
+          </h:commandLink>
+        </li>
+      </ul>
+      <div style="clear:both;"></div>
     </h:form>
     
     <ui:include src="/incl/waiter.xhtml"/>
