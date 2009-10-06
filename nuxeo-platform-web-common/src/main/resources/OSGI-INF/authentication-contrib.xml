@@ -30,6 +30,7 @@
         </parameter>
         <parameter name="ForcePromptURL_Restlet">restAPI/</parameter>
         <parameter name="ForcePromptURL_WebEngineRest">site/api/</parameter>
+        <parameter name="ForcePromptURL_WebEngineRSS">site/sites/@rss/</parameter>
       </parameters>
     </authenticationPlugin>
 
