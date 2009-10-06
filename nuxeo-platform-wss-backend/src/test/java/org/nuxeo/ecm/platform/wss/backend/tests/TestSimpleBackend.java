@@ -320,10 +320,18 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         session.save(); // for cache invalidation
         assertTrue(session.exists(new PathRef("/default-domain/workspaces/ws1/testMe3")));
 
-        backend.removeItem("/nuxeo/ws1/testMe3");
+        // move across
+        item = backend.moveItem("/nuxeo/ws1/testMe3", "/nuxeo/ws2/testMe3");
+        assertNotNull(item);
+        assertEquals("nuxeo/ws2/testMe3", item.getSubPath());
         backend.saveChanges(false); // for cache invalidation
         session.save(); // for cache invalidation
-        assertFalse(session.exists(new PathRef("/default-domain/workspaces/ws1/testMe3")));
+        assertTrue(session.exists(new PathRef("/default-domain/workspaces/ws1/folder/ws2/testMe3")));
+
+        backend.removeItem("/nuxeo/ws2/testMe3");
+        backend.saveChanges(false); // for cache invalidation
+        session.save(); // for cache invalidation
+        assertFalse(session.exists(new PathRef("/default-domain/workspaces/ws1/folder/ws2/testMe3")));
 
     }
 

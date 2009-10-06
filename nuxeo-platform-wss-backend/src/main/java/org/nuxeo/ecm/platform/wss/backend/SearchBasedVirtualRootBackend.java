@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -39,12 +41,14 @@ import org.nuxeo.wss.spi.dws.Site;
 public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend implements
         WSSBackend {
 
+    private static final Log log = LogFactory.getLog(SearchBasedVirtualRootBackend.class);
+
     protected Map<String, String> name2path = null;
-    protected Map<String, WSSBackend> name2backend = new HashMap<String, WSSBackend>();
+    protected Map<String, SimpleNuxeoBackend> name2backend = new HashMap<String, SimpleNuxeoBackend>();
 
     protected String urlRoot;
 
-    protected String query = "select * from Workspace order by ecm:path";
+    protected String query = "select * from Workspace where ecm:mixinType != 'HiddenInNavigation' AND  ecm:currentLifeCycleState != 'deleted' AND ecm:isProxy = 0 order by ecm:path";
 
     public SearchBasedVirtualRootBackend(String urlRoot, String query) {
         this.urlRoot = urlRoot;
@@ -53,9 +57,9 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
         }
     }
 
-    protected WSSBackend getBackend(String name) throws WSSException {
+    protected SimpleNuxeoBackend getBackend(String name) throws WSSException {
         try {
-            WSSBackend backend =name2backend.get(name);
+            SimpleNuxeoBackend backend =name2backend.get(name);
             if (backend==null) {
                 String path = getName2path().get(name);
                 if (path==null) {
@@ -163,9 +167,21 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
         if (path.segmentCount()==1) {
             throw new WSSException("can not move this item");
         } else {
-            WSSListItem item =  getBackend(base).moveItem(path.removeFirstSegments(1).toString(), new Path(newLocation).removeFirstSegments(1).toString());
-            ((NuxeoListItem)item).setVirtualRootNodeName(base);
-            return item;
+            String baseDest = new Path(newLocation).segment(0);
+            if (base.equals(baseDest)) {
+                // move within the same workspace
+                WSSListItem item =  getBackend(base).moveItem(path.removeFirstSegments(1).toString(), new Path(newLocation).removeFirstSegments(1).toString());
+                ((NuxeoListItem)item).setVirtualRootNodeName(base);
+                return item;
+            }
+            else {
+                // move from one workspace to an other
+                NuxeoListItem sourceItem  = (NuxeoListItem)getBackend(base).getItem(path.removeFirstSegments(1).toString());
+                DocumentModel sourceDocument = sourceItem.getDoc();
+                WSSListItem item = getBackend(baseDest).moveDocument(sourceDocument, new Path(newLocation).removeFirstSegments(1).toString());
+                ((NuxeoListItem)item).setVirtualRootNodeName(baseDest);
+                return item;
+            }
         }
     }
 
@@ -225,7 +241,7 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
         return name2path;
     }
 
-    protected Map<String, WSSBackend> getName2backend() {
+    protected Map<String, SimpleNuxeoBackend> getName2backend() {
         return name2backend;
     }
 

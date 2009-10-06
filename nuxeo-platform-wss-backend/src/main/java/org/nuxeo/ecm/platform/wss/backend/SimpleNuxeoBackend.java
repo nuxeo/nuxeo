@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -64,6 +66,8 @@ import org.nuxeo.wss.spi.dws.User;
 import org.nuxeo.wss.spi.dws.UserImpl;
 
 public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSBackend {
+
+    private static final Log log = LogFactory.getLog(SimpleNuxeoBackend.class);
 
     protected String corePathPrefix;
     protected String urlRoot;
@@ -167,6 +171,30 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
         }
         catch (Exception e) {
             throw new WSSException("Error while getting children for " + location, e);
+        }
+    }
+
+    // called when moving from one backend to an other
+    public WSSListItem moveDocument(DocumentModel source, String newLocation) throws WSSException {
+
+        Path destinationPath = new Path(corePathPrefix);
+        destinationPath = destinationPath.append(newLocation);
+
+        String name = source.getName();
+        DocumentRef targetRef = new PathRef(destinationPath.removeLastSegments(1).toString());
+        DocumentModel movedDoc = null;
+
+        try {
+            movedDoc = getCoreSession().move(source.getRef(), targetRef, name);
+        } catch (Exception e) {
+            log.error("Error while moving " + source.getPathAsString() + " to " + newLocation, e);
+            throw new WSSException("Error while moving " + source.getPathAsString() + " to " + newLocation, e);
+        }
+
+        if (movedDoc!=null) {
+            return new NuxeoListItem(movedDoc, corePathPrefix,urlRoot);
+        } else {
+            throw new WSSException("No resulting doc found !!!");
         }
     }
 
