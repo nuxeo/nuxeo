@@ -159,12 +159,17 @@ public class TagSchemaUpdater {
         String script = table.getCreateSql(dialect);
         try {
             Connection connection = settings.getConnectionProvider().getConnection();
-            ResultSet result = connection.getMetaData().getTables(null, null, table.getName(), null);
+            String name = table.getName();
+            DatabaseMetaData md = connection.getMetaData();
+            if (!md.storesUpperCaseIdentifiers()) {
+                name = name.toLowerCase();
+            }
+            ResultSet result = md.getTables(null, null, name, null);
             if (!result.next()) {
                 log.debug("creating TagService tables");
                 Statement statement = connection.createStatement();
                 statement.execute(script);
-            }else {
+            } else {
                 log.debug("TagService tables already exist");
             }
         } catch (SQLException e) {
