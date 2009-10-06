@@ -32,6 +32,8 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
+import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.tag.entity.DublincoreEntity;
 import org.nuxeo.ecm.platform.tag.entity.TagEntity;
@@ -47,8 +49,17 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         super(TestTaggingProvider.class.getName());
     }
 
+    public boolean disableTests() {
+        return !DatabaseHelper.DATABASE.getClass().equals(DatabaseH2.class);
+    }
+
     @Override
     public void setUp() throws Exception {
+        if (disableTests()) {
+            log.error("test disabled for non-H2");
+            return;
+        }
+
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.core");
@@ -70,8 +81,15 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         persistenceProvider.openPersistenceUnit();
         entityManager = persistenceProvider.acquireEntityManagerWithActiveTransaction();
 
-
         taggingProvider = TaggingProvider.createProvider(entityManager);
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        if (disableTests()) {
+            return;
+        }
+        super.tearDown();
     }
 
     protected TaggingEntity doCreateTaggingEntry(
@@ -83,7 +101,7 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         taggingEntry.setTag(tag);
         taggingEntry.setAuthor(author);
         taggingEntry.setCreationDate(new Date());
-        taggingEntry.setIsPrivate(isPrivate?1:0);
+        taggingEntry.setIsPrivate(isPrivate ? 1 : 0);
         return taggingEntry;
     }
 
@@ -223,6 +241,9 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
     public static final Log log = LogFactory.getLog(TestTaggingProvider.class);
 
     public void testGetById() throws Exception {
+        if (disableTests()) {
+            return;
+        }
         DublincoreEntity dcEntity = taggingProvider.getDcById(file2.getId());
         TagEntity tagEntity = taggingProvider.getTagById(tag2.getId());
         assertNotNull("Failed to get document", dcEntity);
@@ -232,6 +253,9 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
     }
 
     public void testAddTagging() throws Exception {
+        if (disableTests()) {
+            return;
+        }
         DublincoreEntity dcEntity = taggingProvider.getDcById(file2.getId());
         TagEntity tagEntity = taggingProvider.getTagById(tag2.getId());
         TaggingEntity entry = doCreateTaggingEntry(dcEntity, tagEntity,
@@ -245,6 +269,9 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
     }
 
     public void testListTagsForDocumentPublic() throws Exception {
+        if (disableTests()) {
+            return;
+        }
         createTaggings();
         List<Tag> listTag = taggingProvider.listTagsForDocument(file1.getId(),
                 "hunus");
@@ -257,6 +284,9 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
     }
 
     public void testGetAuthor() throws Exception {
+        if (disableTests()) {
+            return;
+        }
         createTaggings();
         TagEntity tagEntity2 = taggingProvider.getTagById(tag2.getId());
         String author = taggingProvider.getTaggingId(file1.getId(),
@@ -265,6 +295,9 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
     }
 
     public void testListTagsForDocumentPrivate() throws Exception {
+        if (disableTests()) {
+            return;
+        }
         createTaggings();
         List<Tag> listTag = taggingProvider.listTagsForDocument(file3.getId(),
                 "hunus");
@@ -278,6 +311,9 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
     }
 
     public void testListDocumentsForTag() throws Exception {
+        if (disableTests()) {
+            return;
+        }
         createTaggings();
         // tag2 was applied on file1 (and file3 by gigi or private)
         List<String> result = taggingProvider.getDocumentsForTag(tag2.getId(),
@@ -292,6 +328,9 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
     }
 
     public void testGetVoteTag() throws Exception {
+        if (disableTests()) {
+            return;
+        }
         createTaggings();
         // file1: tag1 - 1, tag2 - 2
         Long result = taggingProvider.getVoteTag(file1.getId(), tag1.getId(),
@@ -310,6 +349,9 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
     }
 
     public void testRemoveTagging() throws Exception {
+        if (disableTests()) {
+            return;
+        }
         createTaggings();
         // check folder has tag3 applied
         List<Tag> listTag = taggingProvider.listTagsForDocument(folder.getId(),
@@ -327,6 +369,9 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
     }
 
     public void testPopularCloudGeneration() throws Exception {
+        if (disableTests()) {
+            return;
+        }
         createTaggings();
         // popular cloud for folder / any user: tag1 - 3, tag2 - 1, tag3 - 2
         DocumentModelList documents = new DocumentModelListImpl();

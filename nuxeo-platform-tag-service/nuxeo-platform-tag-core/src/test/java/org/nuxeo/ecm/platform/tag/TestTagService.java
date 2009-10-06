@@ -28,6 +28,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
@@ -43,8 +45,17 @@ public class TestTagService extends SQLRepositoryTestCase {
 
     private DocumentModel file1;
 
+    public boolean disableTests() {
+        return !DatabaseHelper.DATABASE.getClass().equals(DatabaseH2.class);
+    }
+
     @Override
     public void setUp() throws Exception {
+        if (disableTests()) {
+            log.error("test disabled for non-H2");
+            return;
+        }
+
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.core");
@@ -62,22 +73,11 @@ public class TestTagService extends SQLRepositoryTestCase {
     }
 
 
-    private static boolean deleteDirectory(File path) {
-        if (path.exists()) {
-            File[] files = path.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isDirectory()) {
-                    deleteDirectory(files[i]);
-                } else {
-                    files[i].delete();
-                }
-            }
-        }
-        return (path.delete());
-    }
-
     @Override
     public void tearDown() throws Exception {
+        if (disableTests()) {
+            return;
+        }
         closeSession();
         super.tearDown();
 
@@ -88,6 +88,9 @@ public class TestTagService extends SQLRepositoryTestCase {
     }
 
     public void testServiceTagInitialization() throws Exception {
+        if (disableTests()) {
+            return;
+        }
         TagService tagService = getTagService();
         assertNotNull("Failed to get tag service.", tagService);
         RepositoryManager repoService = Framework.getLocalService(RepositoryManager.class);
@@ -97,6 +100,9 @@ public class TestTagService extends SQLRepositoryTestCase {
     }
 
     public void testTagCreation() throws Exception {
+        if (disableTests()) {
+            return;
+        }
         TagService tagService = getTagService();
         DocumentModel tagRoot = tagService.getRootTag(session);
         assertNotNull(tagRoot);
@@ -132,6 +138,9 @@ public class TestTagService extends SQLRepositoryTestCase {
     }
 
     public void testDetachedDocumentList() throws ClientException {
+        if (disableTests()) {
+            return;
+        }
         createAndTagDocument();
         ((DocumentModelImpl) file1).detach(true);
         List<Tag> tags = tagService.listTagsAppliedOnDocument(session, file1);
@@ -140,6 +149,9 @@ public class TestTagService extends SQLRepositoryTestCase {
     }
 
     public void testEnabled() throws ClientException {
+        if (disableTests()) {
+            return;
+        }
         TagService tagService = getTagService();
         assertTrue(tagService.isEnabled());
     }
