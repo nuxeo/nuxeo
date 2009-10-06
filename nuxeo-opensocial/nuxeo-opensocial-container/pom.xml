@@ -17,6 +17,7 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>com.google.gwt.google-apis</groupId>
@@ -25,10 +26,12 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
+      <scope>provided</scope>
       <classifier>${platform}</classifier>
     </dependency>
 
@@ -80,7 +83,11 @@
               <goal>test</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.outputDirectory}/</outputDirectory>
+              <outputDirectory>${project.build.outputDirectory}/</outputDirectory> <!-- 1.0 -->
+              <webappDirectory>${project.build.outputDirectory}/</webappDirectory> <!-- 1.1 -->
+              <modules>
+                <module>org.nuxeo.opensocial.container.ContainerEntryPoint</module>
+              </modules>
               <extraJvmArgs>-Xmx768m</extraJvmArgs>
             </configuration>
           </execution>
