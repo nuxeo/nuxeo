@@ -60,9 +60,6 @@
         <Field Name="Comments" Type="Note" Required="False">
             <Choices />
         </Field>
-        <Field Name="Type" Type="Text" Required="False">
-            <Choices />
-        </Field>
     </Schema>
     <ListInfo Name="Tasks">
         <Moderated>False</Moderated>

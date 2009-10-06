@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -369,7 +370,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
             metadata.setCurrentUser(currentUser);
 
             // get links
-            List<Link> links = getDocumentLinks(doc.getDoc(), userNames, request.getBaseUrl());
+            List<Link> links = getDocumentLinks(doc.getDoc(), userNames, request);
             metadata.setLinks(links);
 
             // get tasks
@@ -425,7 +426,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
 
 
 
-    protected List<Link> getDocumentLinks(DocumentModel doc, List<String> userNames, String baseUrl) throws Exception  {
+    protected List<Link> getDocumentLinks(DocumentModel doc, List<String> userNames, WSSRequest request) throws Exception  {
 
         List<Link> links = new ArrayList<Link>();
 
@@ -435,22 +436,24 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
 
         Statement pattern = new StatementImpl(null, null, documentResource);
         List<Statement> inStatements = relationManager.getStatements(RelationConstants.GRAPH_NAME, pattern);
-        links.addAll(computeLinks(inStatements, userNames, true, baseUrl));
+        links.addAll(computeLinks(inStatements, userNames, true, request));
 
         pattern = new StatementImpl(documentResource, null, null );
         List<Statement> outStatements = relationManager.getStatements(RelationConstants.GRAPH_NAME, pattern);
-        links.addAll(computeLinks(outStatements, userNames, false, baseUrl));
+        links.addAll(computeLinks(outStatements, userNames, false, request));
 
         return links;
 
     }
 
-    protected List<Link> computeLinks(List<Statement> statements, List<String> userNames, boolean incomming, String baseUrl) throws Exception  {
+    protected List<Link> computeLinks(List<Statement> statements, List<String> userNames, boolean incomming, WSSRequest request ) throws Exception  {
 
         List<Link> links = new ArrayList<Link>();
 
         int counter = 1;
 
+        String baseUrl = request.getBaseUrl();
+        String targetDocTitle="";
         for (Statement stmt : statements) {
 
             String url = "";
@@ -461,6 +464,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
                 } else if (subject.isQNameResource()) {
                     if (RelationConstants.DOCUMENT_NAMESPACE.equals(((QNameResource) subject).getNamespace())) {
                         url = mkDocLink(baseUrl, ((QNameResource) subject).getLocalName());
+                        targetDocTitle = getDocTitle(((QNameResource) subject).getLocalName());
                     } else {
                         url = ((QNameResource) subject).getUri();
                     }
@@ -475,6 +479,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
                 } else if (object.isQNameResource()) {
                     if (RelationConstants.DOCUMENT_NAMESPACE.equals(((QNameResource) object).getNamespace())) {
                         url = mkDocLink(baseUrl, ((QNameResource) object).getLocalName());
+                        targetDocTitle = getDocTitle(((QNameResource) object).getLocalName());
                     } else {
                         url = ((QNameResource) object).getUri();
                     }
@@ -513,6 +518,10 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
 
             String predicateURL = stmt.getPredicate().getUri();
             String predicate = new Path(predicateURL).lastSegment();
+            String labelKey = "label.relation.predicate." + predicate;
+            String prediacteLabel = TranslationHelper.getLabel(labelKey, request);
+
+            comment = prediacteLabel + "\n" + targetDocTitle + "\n" + comment;
 
             String id = "";
             if (incomming) {
@@ -533,6 +542,22 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
     protected String mkDocLink(String baseURL, String uri) {
         return baseURL + "nuxeo/nxdoc/" + uri + "/view_documents";
     }
+
+    protected String getDocTitle( String uri) {
+        String uuid = uri.split("/")[1];
+        DocumentRef ref = new IdRef(uuid);
+
+        try {
+            if (getCoreSession().exists(ref)) {
+                return getCoreSession().getDocument(ref).getTitle();
+            } else {
+                return "";
+            }
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
 
     protected User getUserFromLogin(String userLogin, int idx) throws Exception {
 
