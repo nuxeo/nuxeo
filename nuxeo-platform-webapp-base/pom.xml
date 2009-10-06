@@ -305,11 +305,6 @@
                   <artifactId>standard</artifactId>
                   <version>1.1.2</version>
                 </artifactItem>
-                <artifactItem>
-                  <groupId>nekohtml</groupId>
-                  <artifactId>nekohtml</artifactId>
-                  <version>0.9.5</version>
-                </artifactItem>
                 <!--  used by nuxeo-theme-jsf... -->
                 <artifactItem>
                   <groupId>org.dojotoolkit</groupId>
