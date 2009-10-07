@@ -88,4 +88,14 @@
       class="org.nuxeo.ecm.platform.ui.web.auth.service.SessionManagerDescriptor" />
   </extension-point>
 
+ <extension-point name="openUrl">
+  <documentation>
+    Contribute pattern to define urls that can be accessed without authentication
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ui.web.auth.service.OpenUrlDescriptor" />
+  </extension-point>
+
 </component>

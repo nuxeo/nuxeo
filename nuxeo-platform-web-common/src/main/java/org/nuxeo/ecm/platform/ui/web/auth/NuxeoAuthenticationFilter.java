@@ -56,6 +56,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor;
+import org.nuxeo.ecm.platform.ui.web.auth.service.OpenUrlDescriptor;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -741,6 +742,14 @@ public class NuxeoAuthenticationFilter implements Filter {
                 return true;
             }
         }
+
+        List<OpenUrlDescriptor> openUrls = service.getOpenUrls();
+        for (OpenUrlDescriptor openUrl : openUrls) {
+            if (openUrl.allowByPassAuth(httpRequest)) {
+                return true;
+            }
+        }
+
         return false;
     }
 

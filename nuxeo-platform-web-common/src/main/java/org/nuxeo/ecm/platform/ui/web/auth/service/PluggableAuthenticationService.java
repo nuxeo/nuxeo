@@ -52,6 +52,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
     public static final String EP_PROPAGATOR = "propagator";
     public static final String EP_CBFACTORY = "JbossCallbackfactory";
     public static final String EP_STARTURL = "startURL";
+    public static final String EP_OPENURL = "openUrl";
 
     private static final Log log = LogFactory.getLog(PluggableAuthenticationService.class);
 
@@ -69,6 +70,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
     private NuxeoCallbackHandlerFactory cbhFactory;
 
     private List<String> authChain;
+
+    private List<OpenUrlDescriptor> openUrls = new ArrayList<OpenUrlDescriptor>();
 
     private final List<String> startupURLs = new ArrayList<String>();
 
@@ -126,6 +129,9 @@ public class PluggableAuthenticationService extends DefaultComponent {
             AuthenticationChainDescriptor chainContrib = (AuthenticationChainDescriptor) contribution;
             authChain.clear();
             authChain.addAll(chainContrib.getPluginsNames());
+        } else if (extensionPoint.equals(EP_OPENURL)) {
+            OpenUrlDescriptor openUrlContrib = (OpenUrlDescriptor) contribution;
+            openUrls.add(openUrlContrib);
         } else if (extensionPoint.equals(EP_STARTURL)) {
             StartURLPatternDescriptor startupURLContrib = (StartURLPatternDescriptor) contribution;
             startupURLs.addAll(startupURLContrib.getStartURLPatterns());
@@ -321,6 +327,10 @@ public class PluggableAuthenticationService extends DefaultComponent {
                 sm.onAuthenticatedSessionCreated(request, session, cachebleUserInfo);
             }
         }
+    }
+
+    public List<OpenUrlDescriptor> getOpenUrls() {
+        return openUrls;
     }
 
 }
