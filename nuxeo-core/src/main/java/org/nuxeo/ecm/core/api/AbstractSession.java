@@ -1790,6 +1790,9 @@ public abstract class AbstractSession implements CoreSession,
             Document doc = resolveReference(docRef);
             checkPermission(doc, VERSION);
             Document headDocument = doc.getSourceDocument();
+            if (headDocument == null) {
+                throw new DocumentException("Source document has been deleted");
+            }
             return readModel(headDocument, null);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get head document for "
