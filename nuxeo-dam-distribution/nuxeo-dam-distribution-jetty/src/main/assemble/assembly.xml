@@ -14,22 +14,9 @@
       <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-deploy"/>
       <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-jetty-adapter"/>
 
-      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-jca"
-        profile="jca" />
-      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core" />
-      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-convert" />
-      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-convert-api" />
-      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-convert-plugins" />
-      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-event" />
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql"/>
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql-extensions"/>
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-persistence"/>
-
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-web-common" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-api" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-login" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-dublincore" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-content-template-manager" />
 
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-actions-core"/>
@@ -48,6 +35,7 @@
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-placeful-api"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-placeful-core"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-placeful-theme"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-preview"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-search-api"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-search-backend-core"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-search-core"/>
@@ -57,12 +45,10 @@
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-ui-web-compat"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-url-api"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-url-core"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-webapp-base"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-webapp-types"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-theme-jsf"/>
 
-    </artifacts>
-  </artifactSet>
-
-  <artifactSet id="dam-bundles" profile="dam">
-    <artifacts>
       <!-- Nuxeo DAM artifacts -->
       <artifact group="org.nuxeo.dam" name="nuxeo-dam-api" />
       <artifact group="org.nuxeo.dam" name="nuxeo-dam-core" />
@@ -75,54 +61,7 @@
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-imaging-facade" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-imaging-preview" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-imaging-convert" />
-    </artifacts>
-  </artifactSet>
 
-  <artifactSet id="platform-bundles" profile="platform">
-    <artifacts>
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-types-api" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-types-core" />
-
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-directory-core" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-directory-api" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-directory-core" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-directory-sql" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-directory-types-contrib" />
-
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-usermanager-api" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-usermanager-core" />
-
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-versioning-api" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-versioning-core" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-audit-api" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-audit-core" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-el" />
-    </artifacts>
-  </artifactSet>
-
-  <artifactSet id="webengine-bundles" profile="webengine">
-    <artifacts>
-      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-core"
-        version="${nuxeo.webengine.version}" />
-      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-resteasy-adapter"
-        version="${nuxeo.webengine.version}" />
-      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-base"
-        version="${nuxeo.webengine.version}" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-rendering"
-        version="${nuxeo.features.version}" />
-    </artifacts>
-  </artifactSet>
-
-  <artifactSet id="theme-bundles" profile="theme">
-    <artifacts>
-      <artifact group="org.nuxeo.theme" name="nuxeo-theme-core"
-        version="${nuxeo.theme.version}" />
-      <artifact group="org.nuxeo.theme" name="nuxeo-theme-fragments"
-        version="${nuxeo.theme.version}" />
-      <artifact group="org.nuxeo.theme" name="nuxeo-theme-html"
-        version="${nuxeo.theme.version}" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-theme-editor"
-        version="${nuxeo.features.version}" />
     </artifacts>
   </artifactSet>
 
@@ -205,9 +144,10 @@
       <artifact group="org.apache.poi" name="poi-scratchpad" />
       <artifact group="org.apache" name="xmlbeans" />
       <artifact group="oro" name="oro" />
-
+      
       <artifact group="net.sourceforge.cssparser" name="cssparser" />
       <artifact group="org.w3c" name="sac" />
+      
 
       <!-- Nuxeo DAM libs -->
       <artifact group="truezip" name="truezip"/>
@@ -227,17 +167,7 @@
   </assemble>
 
   <assemble>
-    <delete>true</delete>
-    <outputFile></outputFile>
-    <file>bundles</file>
-  </assemble>
-
-  <assemble>
     <set>bundles</set>
-    <set>dam-bundles</set>
-    <set>platform-bundles</set>
-    <set>webengine-bundles</set>
-    <set>theme-bundles</set>
     <outputFile>bundles</outputFile>
   </assemble>
 
