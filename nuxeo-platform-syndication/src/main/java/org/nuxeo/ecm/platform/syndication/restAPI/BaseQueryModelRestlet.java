@@ -76,40 +76,34 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
 
     private static final String defaultFormat = "XML";
 
-
     protected boolean sortAscending = false;
 
     protected String sortColomn = "";
-
 
     private static QueryModelService qmService;
 
     private static final Log log = LogFactory.getLog(BaseQueryModelRestlet.class);
 
-
     protected abstract String getQueryModelName(Request req);
 
-
-
-
-    protected String getDefaultColumns(){
+    protected String getDefaultColumns() {
         return defaultColumns;
     }
 
-    protected String getDefaultFormat(){
+    protected String getDefaultFormat() {
         return defaultFormat;
     }
 
-
-    protected CoreSession getCoreSession(Request req, Response res, String repoName) {
+    protected CoreSession getCoreSession(Request req, Response res,
+            String repoName) {
         try {
             Repository repository = null;
 
-            if (repoName==null) {
+            if (repoName == null) {
                 repository = Framework.getService(RepositoryManager.class).getDefaultRepository();
-            }
-            else {
-                repository = Framework.getService(RepositoryManager.class).getRepository(repoName);
+            } else {
+                repository = Framework.getService(RepositoryManager.class).getRepository(
+                        repoName);
             }
 
             if (repository == null) {
@@ -127,13 +121,11 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
     @Override
     public void handle(Request req, Response res) {
 
-
         DOMDocumentFactory domfactory = new DOMDocumentFactory();
         DOMDocument result = (DOMDocument) domfactory.createDocument();
 
-
         QueryModelService qmService = getQueryModelService(result, res);
-        if (qmService==null) {
+        if (qmService == null) {
             return;
         }
 
@@ -194,7 +186,8 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
             summary.setPageNumber(page);
 
             // format result
-            SerializerHelper.formatResult(summary, dmList, res, format, columnsDefinition, getHttpRequest(req));
+            SerializerHelper.formatResult(summary, dmList, res, format,
+                    columnsDefinition, getHttpRequest(req));
         } catch (Exception e) {
 
             handleError(res, e);
@@ -207,8 +200,9 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
         }
     }
 
-    protected QueryModelService getQueryModelService(DOMDocument result,Response res){
-        if (qmService==null) {
+    protected QueryModelService getQueryModelService(DOMDocument result,
+            Response res) {
+        if (qmService == null) {
             try {
                 qmService = (QueryModelService) Framework.getRuntime().getComponent(
                         QueryModelService.NAME);
@@ -231,7 +225,7 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
 
         Object[] parameters = null;
         List<String> strParams = extractQueryParameters(request);
-        if (strParams!=null && !strParams.isEmpty()) {
+        if (strParams != null && !strParams.isEmpty()) {
             parameters = strParams.toArray();
         }
 
@@ -250,8 +244,8 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
         }
     }
 
-
-    protected DocumentModel extractNamedParameters(Request req, String docType) throws PropertyException {
+    protected DocumentModel extractNamedParameters(Request req, String docType)
+            throws PropertyException {
         DocumentModel doc = new DocumentModelImpl(docType);
 
         for (Schema schema : getSchemaManager().getDocumentType(docType).getSchemas()) {
@@ -259,13 +253,12 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
 
             for (Field field : schema.getFields()) {
                 final String localName = field.getName().getLocalName();
-                String fName = schema.getName() + ':'
-                        + localName;
+                String fName = schema.getName() + ':' + localName;
                 String fValue = req.getResourceRef().getQueryAsForm().getFirstValue(
                         fName);
                 if (fValue != null) {
                     if (localName.equalsIgnoreCase("coverage")) {
-                        dm.setData(localName, new Object[] {fValue});
+                        dm.setData(localName, new Object[] { fValue });
                     } else {
                         dm.setData(localName, fValue);
                     }
@@ -281,7 +274,7 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
         return Framework.getRuntime().getService(SchemaManager.class);
     }
 
-    protected  List<String> extractQueryParameters(Request req) {
+    protected List<String> extractQueryParameters(Request req) {
         List<String> qp = new ArrayList<String>();
         List<String> rp = new ArrayList<String>(
                 req.getResourceRef().getQueryAsForm().getNames());

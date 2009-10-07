@@ -34,34 +34,36 @@ public class DashBoardRestlet extends BaseQueryModelRestlet {
     }
 
     @Override
-    protected CoreSession getCoreSession(Request req, Response res, String repoName) {
-        repoName = (String) (String)req.getResourceRef().getQueryAsForm().getFirstValue("repo");
+    protected CoreSession getCoreSession(Request req, Response res,
+            String repoName) {
+        repoName = (String) (String) req.getResourceRef().getQueryAsForm().getFirstValue(
+                "repo");
         return super.getCoreSession(req, res, repoName);
     }
 
     @Override
-    protected String getDefaultFormat(){
+    protected String getDefaultFormat() {
         return "ATOM";
     }
 
-    protected String getDomainPath(Request req)
-    {
-           String domain = (String)req.getResourceRef().getQueryAsForm().getFirstValue("domain");
-           if (domain==null) {
-               domain = "/default-domain/";
-           } else {
-               if (!domain.startsWith("/")) {
-                   domain = "/" + domain;
-               }
-               if (!domain.endsWith("/")) {
-                   domain =  domain + "/";
-               }
-           }
-           return domain;
+    protected String getDomainPath(Request req) {
+        String domain = (String) req.getResourceRef().getQueryAsForm().getFirstValue(
+                "domain");
+        if (domain == null) {
+            domain = "/default-domain/";
+        } else {
+            if (!domain.startsWith("/")) {
+                domain = "/" + domain;
+            }
+            if (!domain.endsWith("/")) {
+                domain = domain + "/";
+            }
+        }
+        return domain;
     }
 
     @Override
-    protected  List<String> extractQueryParameters(Request req) {
+    protected List<String> extractQueryParameters(Request req) {
         List<String> queryParams = super.extractQueryParameters(req);
 
         String qmName = getQueryModelName(req);
@@ -69,30 +71,23 @@ public class DashBoardRestlet extends BaseQueryModelRestlet {
         if ("USER_DOCUMENTS".equals(qmName)) {
             queryParams.add(0, getUserPrincipal(req).getName());
             queryParams.add(1, getDomainPath(req));
-        }
-        else if ("USER_DOMAINS".equals(qmName)) {
-            //queryParams.add(0, getUserPrincipal(req).getName());
-        }
-        else if ("USER_DELETED_DOCUMENTS".equals(qmName)) {
+        } else if ("USER_DOMAINS".equals(qmName)) {
+            // queryParams.add(0, getUserPrincipal(req).getName());
+        } else if ("USER_DELETED_DOCUMENTS".equals(qmName)) {
             queryParams.add(0, getUserPrincipal(req).getName());
-            //queryParams.add(1, getDomainPath(req));
-        }
-        else if ("USER_WORKSPACES".equals(qmName)) {
+            // queryParams.add(1, getDomainPath(req));
+        } else if ("USER_WORKSPACES".equals(qmName)) {
             queryParams.add(0, getDomainPath(req));
-            queryParams.add(1, getDomainPath(req)+ "templates");
-        }
-        else if ("USER_SITES".equals(qmName)) {
+            queryParams.add(1, getDomainPath(req) + "templates");
+        } else if ("USER_SITES".equals(qmName)) {
             queryParams.add(0, getDomainPath(req));
-            queryParams.add(1, getDomainPath(req)+ "templates");
-        }
-        else if ("DOMAIN_PUBLISHED_DOCUMENTS".equals(qmName)) {
+            queryParams.add(1, getDomainPath(req) + "templates");
+        } else if ("DOMAIN_PUBLISHED_DOCUMENTS".equals(qmName)) {
             queryParams.add(0, getDomainPath(req));
-        }
-        else if ("DOMAIN_DOCUMENTS".equals(qmName)) {
+        } else if ("DOMAIN_DOCUMENTS".equals(qmName)) {
             queryParams.add(0, getDomainPath(req));
-            queryParams.add(1, getDomainPath(req)+ "templates");
-        }
-        else if ("USER_SECTIONS".equals(qmName)) {
+            queryParams.add(1, getDomainPath(req) + "templates");
+        } else if ("USER_SECTIONS".equals(qmName)) {
             queryParams.add(0, getDomainPath(req));
         }
 
