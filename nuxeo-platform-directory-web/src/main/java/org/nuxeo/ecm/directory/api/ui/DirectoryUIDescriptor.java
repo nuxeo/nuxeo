@@ -29,9 +29,9 @@ import org.nuxeo.ecm.directory.DirectoryException;
 
 /**
  * Directory ui descriptor
- *
+ * 
  * @author Anahide Tchertchian
- *
+ * 
  */
 @XObject("directory")
 public class DirectoryUIDescriptor implements DirectoryUI {
@@ -52,6 +52,9 @@ public class DirectoryUIDescriptor implements DirectoryUI {
 
     @XNode("@enabled")
     Boolean enabled;
+
+    @XNode("@readOnly")
+    Boolean readOnly;
 
     @XNodeList(value = "deleteConstraint", type = ArrayList.class, componentType = DirectoryUIDeleteConstraintDescriptor.class)
     List<DirectoryUIDeleteConstraintDescriptor> deleteConstraints;
@@ -74,6 +77,10 @@ public class DirectoryUIDescriptor implements DirectoryUI {
 
     public Boolean isEnabled() {
         return enabled;
+    }
+
+    public Boolean isReadOnly() {
+        return readOnly;
     }
 
     public List<DirectoryUIDeleteConstraint> getDeleteConstraints()
