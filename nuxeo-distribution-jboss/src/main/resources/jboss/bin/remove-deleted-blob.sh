@@ -10,7 +10,7 @@
 # you need to set the following property first
 
 # the path of the jboss server
-JBOSS=/opt/nuxeo-dm-5.2.0
+JBOSS_HOME=/opt/nuxeo-dm-5.2.0
 # the path where the deleted blob will be moved
 BACKUP_DIR=/tmp/nuxeo-delete
 # other property you might change
@@ -23,7 +23,7 @@ PGPORT=${PGPORT:-5432}               # the port of the DB
 # check binaries and directories
 mkdir -p $BACKUP_DIR || exit 1
 [ -w $BACKUP_DIR ] || exit 1
-NUXEO_DATA_DIR=$JBOSS/server/default/data/NXRuntime/binaries/data/
+NUXEO_DATA_DIR=$JBOSS_HOME/server/default/data/NXRuntime/binaries/data/
 [ ! -d $NUXEO_DATA_DIR ] &&  echo "Nuxeo data directory not found: $NUXEO_DATA_DIR" && exit 1
 psql -V || exit 1
 
