@@ -47,9 +47,9 @@ public class DamWebActionsBean extends WebActionsBean {
 
     private ActionManager actionService;
 
-    private Boolean showList = Boolean.TRUE;
+    private Boolean showList = Boolean.FALSE;
 
-    private Boolean showThumbnail = Boolean.FALSE;
+    private Boolean showThumbnail = Boolean.TRUE;
 
     @Override
     @Factory(value = "tabsActionsList", scope = EVENT)
