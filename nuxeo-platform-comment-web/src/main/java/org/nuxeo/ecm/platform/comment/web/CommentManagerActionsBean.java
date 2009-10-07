@@ -47,7 +47,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
@@ -159,6 +161,27 @@ public class CommentManagerActionsBean implements CommentManagerActions, Seriali
         return comment;
     }
 
+    public static class FollowTransitionUnrestricted extends
+            UnrestrictedSessionRunner {
+
+        public final DocumentRef docRef;
+
+        public final String transition;
+
+        public FollowTransitionUnrestricted(CoreSession session,
+                DocumentRef docRef, String transition) {
+            super(session);
+            this.docRef = docRef;
+            this.transition = transition;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            session.followTransition(docRef, transition);
+            session.save();
+        }
+    }
+
     public DocumentModel addComment(DocumentModel comment)
             throws ClientException {
         try {
@@ -180,9 +203,10 @@ public class CommentManagerActionsBean implements CommentManagerActions, Seriali
             }
 
             // automatically validate the comments
-            if ( CommentsConstants.COMMENT_LIFECYCLE.equals(newComment.getLifeCyclePolicy())) {
-                documentManager.followTransition(newComment.getRef(), CommentsConstants.TRANSITION_TO_PUBLISHED_STATE);
-                documentManager.save();
+            if (CommentsConstants.COMMENT_LIFECYCLE.equals(newComment.getLifeCyclePolicy())) {
+                new FollowTransitionUnrestricted(documentManager,
+                        newComment.getRef(),
+                        CommentsConstants.TRANSITION_TO_PUBLISHED_STATE).runUnrestricted();
             }
 
             // Events.instance().raiseEvent(CommentEvents.COMMENT_ADDED, null,
