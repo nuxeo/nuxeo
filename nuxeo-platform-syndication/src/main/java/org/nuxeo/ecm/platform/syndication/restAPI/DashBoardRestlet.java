@@ -19,13 +19,30 @@
 
 package org.nuxeo.ecm.platform.syndication.restAPI;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.platform.audit.api.AuditReader;
+import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 public class DashBoardRestlet extends BaseQueryModelRestlet {
+
+    private static final Log log = LogFactory.getLog(DashBoardRestlet.class);
+
+    /**
+     * Number of documents we pull from the audit, assuming after filtering
+     * there will be enough left for the RELEVANT_DOCUMENTS querymodel.
+     */
+    // Could be a request parameter as well...
+    public static final int RELEVANT_NUMBER = 20;
 
     @Override
     protected String getQueryModelName(Request req) {
@@ -62,9 +79,48 @@ public class DashBoardRestlet extends BaseQueryModelRestlet {
         return domain;
     }
 
+    /**
+     * Finds the list of documents to use for the RELEVANT_DOCUMENTS querymodel.
+     * <p>
+     * This computes a short list of "relevant" documents for the user.
+     */
+    // TODO have different HQL queries depending on request params
+    protected List<String> getRelevantDocuments(Request req) {
+        AuditReader auditReader;
+        try {
+            auditReader = Framework.getService(AuditReader.class);
+        } catch (Exception e) {
+            log.error("Cannot get AuditReader", e);
+            return Collections.emptyList();
+        }
+        if (auditReader == null) {
+            log.error("Cannot get AuditReader");
+            return Collections.emptyList();
+        }
+
+        String username = getUserPrincipal(req).getName();
+        String query = String.format(
+                "from LogEntry log" //
+                        + " WHERE log.principalName = '%s'" //
+                        + "   AND log.eventId IN" //
+                        + "     ('%s', '%s')" //
+                        + "   AND log.docLifeCycle IS NOT NULL" //
+                        + "   AND log.docLifeCycle <> 'undefined'" //
+                        + " ORDER BY log.eventDate DESC", //
+                username, //
+                DocumentEventTypes.DOCUMENT_CREATED,
+                DocumentEventTypes.DOCUMENT_UPDATED);
+        List<?> logEntries = auditReader.nativeQuery(query, 1, RELEVANT_NUMBER);
+        List<String> ids = new ArrayList<String>(logEntries.size());
+        for (Object logEntry : logEntries) {
+            ids.add(((LogEntry) logEntry).getDocUUID());
+        }
+        return ids;
+    }
+
     @Override
-    protected List<String> extractQueryParameters(Request req) {
-        List<String> queryParams = super.extractQueryParameters(req);
+    protected List<Object> extractQueryParameters(Request req) {
+        List<Object> queryParams = super.extractQueryParameters(req);
 
         String qmName = getQueryModelName(req);
 
@@ -89,6 +145,8 @@ public class DashBoardRestlet extends BaseQueryModelRestlet {
             queryParams.add(1, getDomainPath(req) + "templates");
         } else if ("USER_SECTIONS".equals(qmName)) {
             queryParams.add(0, getDomainPath(req));
+        } else if ("RELEVANT_DOCUMENTS".equals(qmName)) {
+            queryParams.add(0, getRelevantDocuments(req));
         }
 
         return queryParams;

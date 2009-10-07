@@ -224,7 +224,7 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
             throws ClientException, QueryException {
 
         Object[] parameters = null;
-        List<String> strParams = extractQueryParameters(request);
+        List<Object> strParams = extractQueryParameters(request);
         if (strParams != null && !strParams.isEmpty()) {
             parameters = strParams.toArray();
         }
@@ -274,8 +274,8 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
         return Framework.getRuntime().getService(SchemaManager.class);
     }
 
-    protected List<String> extractQueryParameters(Request req) {
-        List<String> qp = new ArrayList<String>();
+    protected List<Object> extractQueryParameters(Request req) {
+        List<Object> qp = new ArrayList<Object>();
         List<String> rp = new ArrayList<String>(
                 req.getResourceRef().getQueryAsForm().getNames());
 
