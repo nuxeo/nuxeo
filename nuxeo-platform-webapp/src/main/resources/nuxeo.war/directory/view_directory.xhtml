@@ -22,6 +22,7 @@
     </script>
 
     <c:set var="currentVoc" value="#{directoryUIActions.currentDirectory}" />
+    <c:set var="isReadOnly" value="#{directoryUIActions.readOnly}" />
 
     <div>
       <h:form id="directoryManagementGoBack">
@@ -39,29 +40,31 @@
 
     <ui:include src="/incl/message_banner.xhtml" />
 
-    <c:if test="#{directoryUIActions.selectedDirectoryEntry == null}">
-      <h:form id="showHideAddDirectoryEntry">
+    <c:if test="#{!isReadOnly}"> 
+      <c:if test="#{directoryUIActions.selectedDirectoryEntry == null}">
+        <h:form id="showHideAddDirectoryEntry">
   
-        <h4>
-          <h:commandLink
-            action="#{directoryUIActions.toggleShowAddForm}">
-            <h:graphicImage url="/img/toggle_plus.png"
-              rendered="#{!directoryUIActions.showAddForm}" />
-            <h:graphicImage url="/img/toggle_minus.png"
-              rendered="#{directoryUIActions.showAddForm}" />
-            <h:outputText
-              value="#{messages['title.create.vocabulary.entry']}" />
-          </h:commandLink>
-        </h4>
-      </h:form>
+          <h4>
+            <h:commandLink
+              action="#{directoryUIActions.toggleShowAddForm}">
+              <h:graphicImage url="/img/toggle_plus.png"
+                rendered="#{!directoryUIActions.showAddForm}" />
+              <h:graphicImage url="/img/toggle_minus.png"
+                rendered="#{directoryUIActions.showAddForm}" />
+              <h:outputText
+                value="#{messages['title.create.vocabulary.entry']}" />
+            </h:commandLink>
+          </h4>
+        </h:form>
   
-      <c:if test="#{directoryUIActions.showAddForm}">
-        <div class="tabsContent">
-          <ui:include src="create_directory_entry.xhtml" />
-        </div>
+        <c:if test="#{directoryUIActions.showAddForm}">
+          <div class="tabsContent">
+            <ui:include src="create_directory_entry.xhtml" />
+          </div>
+        </c:if>
       </c:if>
     </c:if>
-
+    
     <div class="tabsContent">
 
       <c:if test="#{directoryUIActions.selectedDirectoryEntry != null}">

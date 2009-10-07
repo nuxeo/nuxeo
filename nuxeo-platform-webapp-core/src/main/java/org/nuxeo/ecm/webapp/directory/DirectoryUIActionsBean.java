@@ -52,7 +52,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * Manages directories editable by administrators.
- *
+ * 
  * @author Anahide Tchertchian
  */
 @Name("directoryUIActions")
@@ -308,4 +308,34 @@ public class DirectoryUIActionsBean implements Serializable {
         }
     }
 
+    public boolean isReadOnly() throws ClientException {
+
+        Session dirSession = null;
+        boolean isReadOnly = false;
+
+        try {
+            String dirName = currentDirectoryInfo.getName();
+            dirSession = dirService.open(dirName);
+
+            // Check Directory ReadOnly Status
+            boolean dirReadOnly = dirSession.isReadOnly();
+
+            // Check DirectoryUI ReadOnly Status
+            boolean dirUIReadOnly = currentDirectoryInfo.isReadOnly() == null ? false
+                    : currentDirectoryInfo.isReadOnly();
+
+            isReadOnly = dirReadOnly || dirUIReadOnly;
+        } catch (DirectoryException e) {
+            throw new ClientException(e);
+        } finally {
+
+            if (dirSession != null) {
+                dirSession.close();
+            }
+
+        }
+
+        return isReadOnly;
+
+    }
 }
