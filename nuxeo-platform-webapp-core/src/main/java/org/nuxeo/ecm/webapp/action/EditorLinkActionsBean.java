@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.action;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +45,10 @@ import org.nuxeo.ecm.webapp.base.InputController;
  */
 @Name("editorLinkActions")
 @Scope(CONVERSATION)
-public class EditorLinkActionsBean extends InputController implements EditorLinkActions {
+public class EditorLinkActionsBean extends InputController implements
+        EditorLinkActions, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(EditorLinkActionsBean.class);
 
