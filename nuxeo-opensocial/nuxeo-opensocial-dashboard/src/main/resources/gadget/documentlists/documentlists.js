@@ -2,7 +2,11 @@ var currentPage = 0;
 var maxPage=0;
 
 function getRestletUrl() {
-    return "http://127.0.0.1:8080/nuxeo/restAPI/dashboard/" + QM_Name + "?format=JSON&page="+ currentPage;
+    if (testMode) {
+        return "http://127.0.0.1:8080/nuxeo/restAPI/dashboard/" + QM_Name + "?format=JSON&page="+ currentPage;
+    } else {
+        return "http://127.0.0.1:8080/nuxeo/restAPI/dashboard/" + QM_Name + "?format=JSON&page="+ currentPage;
+    }
 }
 function getImageBaseUrl() {
     return "/nuxeo";
@@ -43,6 +47,7 @@ function getDocumentLists() {
     var params = {};
     var headers = {};
 
+    params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.NONE;
     params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
 
     var now = new Date().toUTCString();
@@ -98,7 +103,13 @@ function displayDocumentList(jsonObject) {
 }
 
 function mkRow(dashBoardItem, i) {
-    var htmlRow = "<tr class=\"dataRowEven\">";
+    var htmlRow = "<tr class=\"";
+    if (i%2==2){
+    htmlRow+="dataRowEven";
+    } else {
+    htmlRow+="dataRowOdd";
+    }
+    htmlRow+="dataRowEven";"\">";
     htmlRow+="<td class=\"iconColumn\">"
     htmlRow+="<img alt=\"File\" src=\""
     htmlRow+=getImageBaseUrl();
@@ -124,6 +135,7 @@ function mkRow(dashBoardItem, i) {
 }
 
 function refresh() {
+    alert("Refresh called!!!");
     if (testMode) {
         testGetDocumentLists();
     }

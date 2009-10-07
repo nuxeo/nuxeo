@@ -26,14 +26,14 @@
     </internalGadget>
 
     <internalGadget name="userworkspaces">
-      <mountPoint>/documentlists/userworkspaces</mountPoint>
+      <mountPoint>/userworkspaces/documentlists</mountPoint>
       <directory>documentlists-gadget</directory>
       <category>Nuxeo</category>
      <!--  <icon>hello2.png</icon> -->
     </internalGadget>
 
     <internalGadget name="userdocuments">
-      <mountPoint>/documentlists/userdocuments</mountPoint>
+      <mountPoint>/userdocuments/documentlists</mountPoint>
       <directory>documentlists-gadget</directory>
       <category>Nuxeo</category>
      <!--  <icon>hello2.png</icon> -->

@@ -1,0 +1,69 @@
+
+.pageNavigationControls span {
+color:#757575;
+font-size:13px;
+font-weight:bold;
+margin:10px 5px;
+vertical-align:top;
+}
+
+..pageNavigationControls {
+border:1px solid #3399FF;
+margin:5px 0px;
+padding:7px;
+text-align:center;
+}
+
+.pageNavigationControls input {
+margin-left:5px;
+}
+
+.dataList {
+width:100%;
+}
+
+.dataList td {
+border:1px solid #666666;
+padding:3px;
+}
+.dataOutput td table td {
+border:0px none transparent;
+}
+
+.dataList thead th {
+background:#767676 url(/nuxeo/img/table_header_gray_back.gif) repeat-x scroll left top;
+border:1px solid #333333;
+color:#FFFFFF;
+font-size:11px;
+padding:3px;
+text-align:left;
+}
+
+.dataList thead th a, .dataList thead th a:link {
+color:#FFFFFF;
+text-decoration:none;
+}
+.dataList thead th a:visited {
+color:#FFFFFF;
+}
+.dataList thead th a:active {
+color:#FFFFFF;
+}
+.dataList thead th a:hover {
+color:#FFFFFF;
+text-decoration:underline;
+}
+
+.dataList {
+background:white none repeat scroll 0% 0%;
+border-collapse:collapse;
+margin:0pt;
+}
+
+.dataRowEven {
+background:#F2F7FC none repeat scroll 0% 0%;
+}
+
+.dataRowOdd {
+background:#ECF6FF none repeat scroll 0% 0%;
+}

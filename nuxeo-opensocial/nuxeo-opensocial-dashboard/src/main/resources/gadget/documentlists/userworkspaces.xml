@@ -12,8 +12,9 @@
     <![CDATA[
     <script>
        var QM_Name="USER_WORKSPACES";
-       var testMode=true;
+       var testMode=false;
     </script>
+    <script type="text/javascript" language="javascript" src="base64.js"></script>
     <script type="text/javascript" language="javascript" src="documentlists.js"></script>
     <link rel="stylesheet" type="text/css" href="documentlists.css"/>
     <div id="nxDocumentList">
