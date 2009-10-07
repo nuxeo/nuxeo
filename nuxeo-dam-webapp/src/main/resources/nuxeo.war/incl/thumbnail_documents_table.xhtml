@@ -40,7 +40,8 @@
                   title="#{row.data.dc.description}"
                   rendered="#{!empty row.data.dc.description}"
                   styleClass="thumbViewTitle"/>
-                <nxh:outputText value="#{nxd:titleOrId(row.data)}"
+                <nxh:outputText value="#{documentActions.getTitleCropped(row.data, 20)}"
+                  title="#{row.data.dc.title}"
                   rendered="#{empty row.data.dc.description}"
                   styleClass="thumbViewTitle"/>
               </a4j:commandLink>

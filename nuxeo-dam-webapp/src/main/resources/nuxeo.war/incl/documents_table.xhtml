@@ -67,7 +67,8 @@
             <nxh:outputText value="#{nxd:titleOrId(row.data)}"
               title="#{row.data.dc.description}"
               rendered="#{!empty row.data.dc.description}"/>
-            <nxh:outputText value="#{nxd:titleOrId(row.data)}"
+            <nxh:outputText value="#{documentActions.getTitleCropped(row.data,40)}"
+              title="#{row.data.dc.title}"
               rendered="#{empty row.data.dc.description}"/>
           </a4j:commandLink>
         </span>

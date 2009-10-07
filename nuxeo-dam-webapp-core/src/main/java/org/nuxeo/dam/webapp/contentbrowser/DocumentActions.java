@@ -233,5 +233,118 @@ public class DocumentActions implements Serializable {
         }
         return null;
     }
+  
+    /**
+     * Takes in a DocumentModel, gets the 'title' from it, and crops
+     * it to a maximum of 20 characters. If the Title is more than 20
+     * it will return the Beginning of the title (first 9 characters), followed by 3 ellipses (...) 
+     * followed by the End of the title (last 8 characters).
+     *
+     * @param DocumentModel document to extract the title from
+     * @return String with the cropped title restricted to maximum of 20 characters
+     */
+    public String getTitleCropped(DocumentModel document) {
+        
+    	String title = null;
+    	String firstNineChars = null;
+    	String lastEightChars = null;
+    	
+    	log.info("cropping title to 20 characters");
+    	try {
+    		title = document.getTitle();
+    	} catch (ClientException e) {
+    		log.error("Exception while trying to retrieve 'title' of document. Returning a blank title.");
+    	}
+    	if(title == null) {
+    		return "";
+    	}
+    	int length = title.length();
+    	if(length <= 20) {
+    		return title;
+    	}
+    	// length is more than 20 characters: use first 9 characters, plus three ellipses ..., plus last 8 characters
+    	// to construct the new title
+    	
+    	// get the first 9 characters:
+    	firstNineChars = title.substring(0, 9);
+    	// get the last 8 characters:
+    	lastEightChars = title.substring(length-8, length);
+    	
+    	return firstNineChars + "..." + lastEightChars;
+    	
+    }
+    
+    /**
+     * Takes in a DocumentModel, gets the 'title' from it, and crops
+     * it to a maximum of maxLength characters. If the Title is more than maxLength characters
+     * it will return the Beginning of the title, followed by 3 ellipses (...) 
+     * followed by the End of the title.
+     * 
+     * A minimum of 6 characters is needed before cropping takes effect.
+     * If you specify a maxLength of less than 5, it is ignored - in this case maxLength will be set to begin at 5.
+     *
+     * @param DocumentModel document to extract the title from
+     * @param int maxLength the maximum length of the title before cropping will occur
+     * @return String with the cropped title restricted to maximum of maxLength characters
+     */
+    public String getTitleCropped(DocumentModel document, int maxLength) {
+        
+    	String title = null;
+    	String beginningChars = null;
+    	int nbrBeginningChars = -1;
+    	String endChars = null;
+    	int nbrEndChars = -1;
+    	int nbrEllipses = 3;
+    	int minLength = 5;
+    	
+    	log.debug("Cropping title to " + maxLength + " characters.");
+    	try {
+    		title = document.getTitle();
+    	} catch (ClientException e) {
+    		log.error("Exception while trying to retrieve 'title' of document. Returning a blank title.");
+    	}
+    	if(title == null) {
+    		return "";
+    	}
+    	int length = title.length();
+    	
+    	// a minimum of 5 characters needed before we crop
+    	if(length <= minLength) {
+    		log.debug("Title is " + length + " characters. A minimum of 5 characters needed before we crop. Returning title unchanged.");
+    		return title;
+    	}
+    	
+    	// if maxLength is crazy, set it to a proper value
+    	if(maxLength <= minLength ) {
+    		log.debug("A maxLength of " + maxLength + " is unreasonable. Setting maxLength to " + minLength);
+    		maxLength = minLength;
+    	}
+    	
+    	if(length <= maxLength) {
+    		log.debug("Title length " + length + " is less than maxLength " + maxLength + ". Returning title unchanged.");
+    		return title;
+    	}
+
+    	// at this point we should be ok to start cropping to our heart's content
+    	// length is more than maxLength characters: construct the new title
+    	
+    	// get the first (maxLength-3)/2 characters:
+    	if((maxLength-nbrEllipses)%2==0) {
+    		nbrBeginningChars = (maxLength-nbrEllipses)/2;
+    	} else {
+    		nbrBeginningChars = (maxLength-nbrEllipses)/2 + 1;
+    	}
+    	
+    	beginningChars = title.substring(0, nbrBeginningChars);
+    	// get the last n characters:
+    	nbrEndChars = maxLength - nbrBeginningChars - nbrEllipses;
+    	endChars = title.substring(length-nbrEndChars, length);
+    	
+    	String croppedTitle = beginningChars + "..." + endChars;
+    	log.debug("Original title: [" + title + "]");
+    	log.debug("Cropped title: [" + croppedTitle + "]");
+    	return croppedTitle;
+    	
+    }
 
 }
