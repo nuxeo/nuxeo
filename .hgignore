@@ -2,7 +2,7 @@ syntax:glob
 .classpath
 .project
 .settings
-bin
+nuxeo-distribution-*/bin
 target
 target*
 *~
@@ -18,3 +18,8 @@ nuxeo-distribution-dm/ftest/selenium/run.conf
 nuxeo-distribution-dm/ftest/selenium/user-extensions.js
 nuxeo-distribution-dm/ftest/selenium/ffprofile/prefs.js
 nuxeo-distribution-dm/ftest/selenium/selenium-server.jar
+
+# we are trying not to ignore: nuxeo-distribution-jboss/src/main/resources/jboss/bin/
+syntax: regexp
+nuxeo-distribution-[^/]*/bin
+nuxeo-platform-ear/bin
