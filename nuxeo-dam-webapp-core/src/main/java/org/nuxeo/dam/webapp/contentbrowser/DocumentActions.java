@@ -28,6 +28,7 @@ import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -233,46 +234,6 @@ public class DocumentActions implements Serializable {
         }
         return null;
     }
-  
-    /**
-     * Takes in a DocumentModel, gets the 'title' from it, and crops
-     * it to a maximum of 20 characters. If the Title is more than 20
-     * it will return the Beginning of the title (first 9 characters), followed by 3 ellipses (...) 
-     * followed by the End of the title (last 8 characters).
-     *
-     * @param DocumentModel document to extract the title from
-     * @return String with the cropped title restricted to maximum of 20 characters
-     */
-    public String getTitleCropped(DocumentModel document) {
-        
-    	String title = null;
-    	String firstNineChars = null;
-    	String lastEightChars = null;
-    	
-    	log.info("cropping title to 20 characters");
-    	try {
-    		title = document.getTitle();
-    	} catch (ClientException e) {
-    		log.error("Exception while trying to retrieve 'title' of document. Returning a blank title.");
-    	}
-    	if(title == null) {
-    		return "";
-    	}
-    	int length = title.length();
-    	if(length <= 20) {
-    		return title;
-    	}
-    	// length is more than 20 characters: use first 9 characters, plus three ellipses ..., plus last 8 characters
-    	// to construct the new title
-    	
-    	// get the first 9 characters:
-    	firstNineChars = title.substring(0, 9);
-    	// get the last 8 characters:
-    	lastEightChars = title.substring(length-8, length);
-    	
-    	return firstNineChars + "..." + lastEightChars;
-    	
-    }
     
     /**
      * Takes in a DocumentModel, gets the 'title' from it, and crops
@@ -298,14 +259,8 @@ public class DocumentActions implements Serializable {
     	int minLength = 5;
     	
     	log.debug("Cropping title to " + maxLength + " characters.");
-    	try {
-    		title = document.getTitle();
-    	} catch (ClientException e) {
-    		log.error("Exception while trying to retrieve 'title' of document. Returning a blank title.");
-    	}
-    	if(title == null) {
-    		return "";
-    	}
+    	title = DocumentModelFunctions.titleOrId(document);
+
     	int length = title.length();
     	
     	// a minimum of 5 characters needed before we crop

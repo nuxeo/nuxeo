@@ -33,7 +33,11 @@ public class TestDocumentActions extends SQLRepositoryTestCase {
 		DocumentModel doc = session.createDocumentModel("/", "doc", "File");
 		assertNotNull("doc is null", doc);
 	    doc.setPropertyValue("dc:title", "Image Name with longish name");
-	    // doc = session.createDocument(doc);
+	    // now create the doc in the session and save it to the session so that it gets given an id
+	    doc = session.createDocument(doc);
+	    session.save();
+	    // get the document's id for later tests
+	    String docId = doc.getId();
 
 	    DocumentActions actions = new DocumentActions();
 	    
@@ -87,6 +91,16 @@ public class TestDocumentActions extends SQLRepositoryTestCase {
 	    croppedTitle = actions.getTitleCropped(doc, 19);
 		log.warn(croppedTitle);
 	    assertEquals("12345678...45678901", croppedTitle);	   
+	    
+	    // test null or empty title. This should come back with the cropped id. Not really a good test cos it
+	    // uses same code as function being tested
+	    doc.setPropertyValue("dc:title", null);
+	    // we will crop to 21 so that the cropped id will contain the first 9 and last 9 characters
+	    String idStart = docId.substring(0, 9);
+	    String idEnd = docId.substring(docId.length()-9, docId.length());
+	    croppedTitle = actions.getTitleCropped(doc, 21);
+		log.warn(croppedTitle);
+	    assertEquals(idStart+"..."+idEnd, croppedTitle);	 
 		
 		tearDown();        
 		
