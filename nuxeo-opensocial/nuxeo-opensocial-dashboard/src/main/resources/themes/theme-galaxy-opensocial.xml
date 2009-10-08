@@ -202,6 +202,39 @@
                 <padding-bottom>2px</padding-bottom>
                 <background-color>rgb(214, 213, 211)</background-color>
                 <text-align>left</text-align>
+                <border-botton-width>1px solid</border-botton-width>
+                <border-botton-style>solid</border-botton-style>
+                <border-botton-color>rgb(78,154,225)</border-botton-color>
+            </selector>
+            <selector path="*#getGadgetManager">
+                <padding-top>2px</padding-top>
+                <width>100%</width>
+                <padding-bottom>2px</padding-bottom>
+                <text-align>left</text-align>
+                <border-botton-width>1px solid</border-botton-width>
+                <border-botton-style>solid</border-botton-style>
+                <border-botton-color>rgb(78,154,225)</border-botton-color>
+                <text-align>left</text-align>
+            </selector>
+            <selector path="*#getGadgetManager a">
+                <background-color>rgb(221,238,255)</background-color>
+                <border-bottom-width>1px</border-bottom-width>
+                <border-botton-style>solid</border-botton-style>
+                <border-bottom-color>rgb(78,154,225)</border-bottom-color>
+                <padding-left>7px</padding-left>
+                <padding-top>12px</padding-top>
+                <padding-right>7px</padding-right>
+                <width>931px</width>
+            </selector>
+            <selector path="*#getLayoutManager a">
+                <background-color>rgb(221,238,255)</background-color>
+                <border-bottom-width>1px</border-bottom-width>
+                <border-botton-style>solid</border-botton-style>
+                <border-bottom-color>rgb(78,154,225)</border-bottom-color>
+                <padding-left>7px</padding-left>
+                <padding-top>12px</padding-top>
+                <padding-right>7px</padding-right>
+                <width>931px</width>
             </selector>
             <selector path="*#openLayoutManager">
                 <padding-left>5px</padding-left>
@@ -339,13 +372,6 @@
                 <padding-bottom>2px</padding-bottom>
                 <background-color>rgb(214, 213, 211)</background-color>
                 <text-align>right</text-align>
-            </selector>
-            <selector path="*#getGadgetManager">
-                <padding-top>2px</padding-top>
-                <width>100%</width>
-                <padding-bottom>2px</padding-bottom>
-                <background-color>rgb(214, 213, 211)</background-color>
-                <text-align>left</text-align>
             </selector>
             <selector path="*#openGadgetManager">
                 <padding-left>5px</padding-left>

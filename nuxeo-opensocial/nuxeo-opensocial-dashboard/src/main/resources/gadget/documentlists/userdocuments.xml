@@ -17,7 +17,6 @@
     <script type="text/javascript" language="javascript" src="base64.js"></script>
     <script type="text/javascript" language="javascript" src="documentlists.js"></script>
     <link rel="stylesheet" type="text/css" href="documentlists.css"/>
-    <A href="javascript:refresh()"> refresh</A>
     <div id="nxDocumentList">
         <div class="pageNavigationControls">
         <input type="image" src="/nuxeo/icons/action_page_rewind.gif" onclick="firstPage()"/>
@@ -30,10 +29,10 @@
             <thead>
                 <tr>
                     <th/>
-                    <th></th>
+                    <th>Document</th>
                     <th/>
-                    <th></th>
-                    <th></th>
+                    <th>Modified</th>
+                    <th>Author</th>
                     <th/>
                 </tr>
             </thead>

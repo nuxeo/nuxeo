@@ -111,6 +111,19 @@ function displayDocumentList(jsonObject) {
     document.getElementById("nxDocumentListPage").innerHTML = pageInfoLabel;
 }
 
+
+function getDateForDisplay(datestr) {
+    try {
+        datestr = datestr.replace("-", "/").replace("-", "/");
+        var d = new Date(datestr);
+        var result = d.toLocaleDateString() + " " + d.toLocaleTimeString().substring(0,5);
+        return result;
+    }
+    catch(e) {
+        return datestr;
+    }
+}
+
 function mkRow(dashBoardItem, i) {
     var htmlRow = "<tr class=\"";
     if (i%2==2){
@@ -133,7 +146,7 @@ function mkRow(dashBoardItem, i) {
     htmlRow+=dashBoardItem.title;
     htmlRow+="</a></td><td class=\"iconColumn\"/>";
     htmlRow+="<td>";
-    htmlRow+=dashBoardItem.modified;
+    htmlRow+=getDateForDisplay(dashBoardItem.modified);
     htmlRow+="</td>";
     htmlRow+="<td>";
     htmlRow+=dashBoardItem.creator;
