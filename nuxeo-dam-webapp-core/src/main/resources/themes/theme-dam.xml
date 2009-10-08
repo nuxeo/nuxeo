@@ -300,7 +300,6 @@
         <padding>0</padding>
         <margin>0</margin>
         <height>30px</height>
-        <width>290px</width>
         <float>right</float>
         <list-style>none</list-style>
       </selector>
@@ -335,6 +334,9 @@
       </selector>
       <selector path=".logOutButton">
         <color>#afafaf</color>
+      </selector>
+      <selector path="a:hover .logOutButton">
+        <color>#ffffff</color>
       </selector>
       <selector path=".pageNavigationControls">
         <padding>2px 5px</padding>
