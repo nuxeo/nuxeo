@@ -275,13 +275,13 @@ ul.option
 {background:transparent url(/nuxeo/opensocial/images/bt-green-18px.png) no-repeat scroll 0 0;background-position:left 0;cursor:pointer;display:inline-block;padding:0 2px 0 10px;}
 
 *.directAdd a.linkAdd
-{background:transparent url(bt-green-18px.png) no-repeat scroll 0 0;background-position:right 0;}
+{background:transparent url(/nuxeo/opensocial/images/bt-green-18px.png) no-repeat scroll 0 0;background-position:right 0;}
 
 *.directAdd a.linkAdded
-{background:transparent url(ok.png) no-repeat scroll 0 0;padding-left:6px;}
+{background:transparent url(/nuxeo/opensocial/images/ok.png) no-repeat scroll 0 0;padding-left:6px;}
 
 *.directAdd span.addGadgetButton
-{background:transparent url(bt-green-18px.png) no-repeat scroll 0 0;background-position:left 0;cursor:pointer;display:inline-block;padding:0 2px 0 10px;}
+{background:transparent url(/nuxeo/opensocial/images/bt-green-18px.png) no-repeat scroll 0 0;background-position:left 0;cursor:pointer;display:inline-block;padding:0 2px 0 10px;}
 
 .directAdd span.addedGadgetButton
 {background-position:left 0;cursor:pointer;display:inline-block;padding:0 2px 0 10px;}

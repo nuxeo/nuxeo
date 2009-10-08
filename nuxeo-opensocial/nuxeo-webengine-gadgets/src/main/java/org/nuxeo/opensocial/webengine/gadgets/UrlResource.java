@@ -38,7 +38,7 @@ public class UrlResource extends InputStreamResource{
 
     URL url = ContainerServiceImpl.class.getResource(path);
 
-    return getObject(url.openStream(),path);
+    return url == null ? null : getObject(url.openStream(),path);
 
 
   }

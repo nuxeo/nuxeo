@@ -17,6 +17,7 @@
 
 package org.nuxeo.opensocial.container.service;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -198,6 +199,15 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
    * Utility methods
    */
 
+  public static String decode(String string) {
+      try {
+          string = new URI('?' + string).getQuery();
+      } catch (Exception e) {
+          // ignore, use unescaped stuff
+      }
+      return string;
+  }
+
   /**
    * Get a map of preferences
    *
@@ -214,11 +224,10 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
       StringTokenizer st = new StringTokenizer(params.nextToken(), "=");
       String key = "", value = "";
       if (st.hasMoreTokens())
-        key = st.nextToken();
+        key = decode(st.nextToken());
       while (st.hasMoreTokens()) {
-        value += st.nextToken();
+        value += decode(st.nextToken());
       }
-      log.info("key : " + key + " , value " + value);
       map.put(key, value);
     }
     return map;
