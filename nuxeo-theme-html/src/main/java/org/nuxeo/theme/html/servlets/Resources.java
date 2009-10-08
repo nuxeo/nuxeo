@@ -144,8 +144,17 @@ public final class Resources extends HttpServlet implements Serializable {
             os = new GZIPOutputStream(os);
         }
 
-        os.write(text.toString().getBytes());
-        os.close();
+        try {
+            os.write(text.toString().getBytes());
+            os.close();
+        } catch (IOException e) {
+            Throwable cause = e.getCause();
+            if (cause != null && "Broken pipe".equals(cause.getMessage())) {
+                log.debug("Swallowing: " + e);
+            } else {
+                throw e;
+            }
+        }
 
         log.debug(String.format("Served resource(s): %s %s", pathInfo,
                 supportsGzip ? "with gzip compression" : ""));
