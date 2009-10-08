@@ -24,11 +24,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Dashboard item implementation.
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @Deprecated
-public class DashBoardItemImpl extends org.nuxeo.ecm.platform.jbpm.dashboard.DashBoardItemImpl implements DashBoardItem{
+public class DashBoardItemImpl extends
+        org.nuxeo.ecm.platform.jbpm.dashboard.DashBoardItemImpl implements
+        DashBoardItem {
 
     public DashBoardItemImpl(TaskInstance task, DocumentModel document) {
         super(task, document);
@@ -39,4 +41,11 @@ public class DashBoardItemImpl extends org.nuxeo.ecm.platform.jbpm.dashboard.Das
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * REQUIRED FOR OPEN SOCIAL DASHBOARD
+     */
+    public String getDocumentLink() {
+        return "/nxdoc/" + getDocument().getRepositoryName() + "/"
+                + getDocument().getId() + "/view_document";
+    }
 }

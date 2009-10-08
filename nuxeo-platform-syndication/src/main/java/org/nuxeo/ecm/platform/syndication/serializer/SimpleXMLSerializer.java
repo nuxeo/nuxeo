@@ -66,7 +66,8 @@ public class SimpleXMLSerializer extends AbstractDocumentModelSerializer
 
     @Override
     public String serialize(ResultSummary summary, DocumentModelList docList,
-            List<String> columnsDefinition, HttpServletRequest req) throws ClientException {
+            List<String> columnsDefinition, HttpServletRequest req)
+            throws ClientException {
         if (docList == null) {
             return EMPTY_LIST;
         }
@@ -140,6 +141,7 @@ public class SimpleXMLSerializer extends AbstractDocumentModelSerializer
                 taskElem.addAttribute("directive", item.getDirective());
                 taskElem.addAttribute("description", item.getDescription());
                 taskElem.addAttribute("id", item.getId().toString());
+                taskElem.addAttribute("link", item.getDocumentLink());
                 if (item.getDueDate() != null) {
                     taskElem.addAttribute("dueDate",
                             DateFormat.getDateInstance().format(

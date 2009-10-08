@@ -1,12 +1,11 @@
 <div xmlns:c="http://java.sun.com/jstl/core">
 <c:if
 	test="#{!opensocialDashboard.anonymous}">
-	<div id="getGadgetManager"><a href="#" id="openGadgetManager">Ajouter
-	un gadget</a></div>
+	<div id="getGadgetManager"><a href="#" id="openGadgetManager">#{messages['dashboard.opensocial.addAGadget']}</a></div>
 	<div id="gadgetManager" style="display: none;">
 
 	<div id="closeGadgetManager"><a href="#"
-		id="closeLinkGadgetManager">Fermer</a></div>
+		id="closeLinkGadgetManager">#{messages['dashboard.opensocial.close']}</a></div>
 	<div id="gadgetManagerContainer">
 	<div id="listCategories"><c:forEach
 		items="#{opensocialDashboard.categories}" var="category">
@@ -23,7 +22,7 @@
 				style="background-image: url(#{gadget.iconUrl})"></a>
 			<div class="directAdd"><a href="#"
 				class="directAddLink linkAdd" name="#{gadget.name}"> <span
-				class="addGadgetButton">ajouter</span> </a></div>
+				class="addGadgetButton">#{messages['dashboard.opensocial.add']}</span> </a></div>
 			</li>
 		</c:forEach>
 	</ul>
