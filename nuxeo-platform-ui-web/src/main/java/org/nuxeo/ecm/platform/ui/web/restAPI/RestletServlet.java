@@ -128,7 +128,13 @@ public class RestletServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        converter.service(req, res);
+        if (converter.getTarget().isStarted()) {
+            converter.service(req, res);
+        } else {
+            synchronized (this) {
+                converter.service(req, res);
+            }
+        }
     }
 
 }
