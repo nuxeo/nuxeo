@@ -12,11 +12,11 @@
   <rich:dataGrid
     id="dataTable"
     value="#{documents.rows}"
-    var="row"  
+    var="row"
     columns="4"
     rendered="#{documents.rowCount > 0}">
-      
-      <rich:panel><div class="thumbViewElement" docRef="#{row.data.ref}">
+
+      <rich:panel><div class="thumbViewElement selected" docRef="#{row.data.ref}">
         <h:panelGrid>
           <a4j:commandLink id="imageLink" styleClass="thumbViewPictureLink"  action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
             <nxh:graphicImage id="theImage"
@@ -27,9 +27,9 @@
             <nxh:graphicImage value="/img/file_preview.png"
               style="max-height: 90px; max-width:140px;"
               rendered="#{!row.data.hasSchema('picture')}"
-              styleClass="thumbViewPicture"/> 
+              styleClass="thumbViewPicture"/>
           </a4j:commandLink>
-          <h:panelGroup>           
+          <h:panelGroup>
             <h:selectBooleanCheckbox
               value="#{row.selected}"
               onclick="selectDataTableRow('#{row.data.ref}', '#{providerName}', this)">
@@ -47,8 +47,8 @@
               </a4j:commandLink>
             </span>
           </h:panelGroup>
-          <h:panelGroup>  
-            <h:outputText class="thumbViewlabel" value="#{messages['label.content.thumbnail.by']} " /> 
+          <h:panelGroup>
+            <h:outputText class="thumbViewlabel" value="#{messages['label.content.thumbnail.by']} " />
 	    <h:outputText value="#{nxu:userFullName(row.data.dam_common.author)}" />
           </h:panelGroup>
           <h:panelGroup>
@@ -57,15 +57,15 @@
               <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
                 timeZone="#{timeZone}" />
             </h:outputText>
-          </h:panelGroup>        
-          
+          </h:panelGroup>
+
           <h:panelGroup>
-            <h:outputText class="thumbViewlabel" value="#{messages['label.content.thumbnail.size']} " /> 
+            <h:outputText class="thumbViewlabel" value="#{messages['label.content.thumbnail.size']} " />
             <h:outputText value="#{nxu:printFileSize(row.data.picture.views[1].content.length)}" rendered="#{row.data.hasSchema('picture') and !empty row.data.picture.views}" />
             <h:outputText value="#{nxu:printFileSize(row.data.file.content.length)}" rendered="#{row.data.hasSchema('file')}" />
-          </h:panelGroup>                  
+          </h:panelGroup>
         </h:panelGrid>
-          
+
       </div></rich:panel>
 
   </rich:dataGrid>
