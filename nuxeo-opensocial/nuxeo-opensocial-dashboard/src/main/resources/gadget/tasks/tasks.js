@@ -130,7 +130,7 @@ function createItem(name,link) {
 	if (link==null) {
 		return '<span class="nxcategory-item">'+name+'</span>';
 	}
-	return '<span class="nxcategory-item">'+'<A HREF="http://localhost:8080/nuxeo'+link+'">'+name+'</A></span>';
+	return '<span class="nxcategory-item">'+'<A target="_top" HREF="http://localhost:8080/nuxeo'+link+'">'+name+'</A></span>';
 }
 
 gadgets.util.registerOnLoadHandler(requestTasks);
