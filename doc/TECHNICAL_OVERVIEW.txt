@@ -174,8 +174,14 @@ Batch import of assets
 Physical document hierarchy layouting
 -------------------------------------
 
-As said before, an ImportSet document is created for each import. They are all stored in 
-the same ImportSetRoot: /default-domain/import-sets
+As stated previously, an ImportSet document is created for each import, regardless of whether the file being imported is a
+composite file (eg. a zip file) or a single file (eg. a single jpg image).
+ 
+They are all stored in the same ImportSetRoot: /default-domain/import-sets in the repository.
+
+See the accompanying document: import.txt for a full example.
+
+
 Each ImportSet document contains the assets imported.
 
 Hierarchy example:
@@ -184,12 +190,13 @@ Hierarchy example:
                   |     |
                   |     |-file1
                   |     |-image1
-                  |      `-audio_file1
+                  |     `-audio_file1
                   `- import-set-2
                         |
                         |-file2
                         |-image2
                         `-audio_file2
+
 
 Blobs stored externally (default in VCS?).
 
