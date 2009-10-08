@@ -18,5 +18,6 @@ Nuxeo-Component: OSGI-INF/gadget-contrib.xml,
  OSGI-INF/type-contrib.xml,
  OSGI-INF/ui-contrib.xml,
  OSGI-INF/auth-contrib.xml,
- OSGI-INF/actions-contrib.xml
+ OSGI-INF/actions-contrib.xml,
+ OSGI-INF/type-contrib.xml
 Bundle-Category: stateless

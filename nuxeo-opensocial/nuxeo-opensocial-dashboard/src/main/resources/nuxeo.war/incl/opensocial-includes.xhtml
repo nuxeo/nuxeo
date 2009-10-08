@@ -7,8 +7,16 @@
     <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/js/loading.js"></script>
     <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/js/thickbox.js"></script>
     <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/js/initMenu.js"></script>
-    
+
     <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/js/layoutManager.js"></script>
     <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/js/gadgetManager.js"></script>
     -->
+    <script>
+        <h:outputText value="top.nxBaseUrl='#{baseURL}';"/>
+        <h:outputText value="top.nxDomain='#{currentDomain.name}';" rendered="#{currentDomain!=null}"/>
+        <h:outputText value="top.nxDomain=null;" rendered="#{currentDomain==null}"/>
+        <h:outputText value="top.nxUserLogin='#{currentUser.name}';"/>
+        <h:outputText value="top.nxServerSideUrl='#{opensocialNuxeoServerUrl}';"/>
+    </script>
+
 </div>

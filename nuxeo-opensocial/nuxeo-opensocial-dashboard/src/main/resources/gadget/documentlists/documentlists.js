@@ -1,5 +1,18 @@
 var currentPage = 0;
 var maxPage=0;
+var errors=0;
+
+function getNuxeoServerSideUrl() {
+    return top.nxServerSideUrl;
+}
+
+function getNuxeoClientSideUrl() {
+    return top.nxBaseUrl;
+}
+
+function getCurrentDomain() {
+    return top.nxDomain;
+}
 
 function getRestletUrl() {
     var ts = new Date().getTime() + "" + Math.random()*11
@@ -7,19 +20,22 @@ function getRestletUrl() {
     if (testMode) {
         url= "http://127.0.0.1:8080/nuxeo/restAPI/dashboard/";
     } else {
-        url= "http://127.0.0.1:8080/nuxeo/restAPI/dashboard/";
+        url= getNuxeoServerSideUrl() + "nuxeo/restAPI/dashboard/";
     }
     url+=QM_Name + "?format=JSON&page="+ currentPage;
+    if (getCurrentDomain()!=null && getCurrentDomain()!="") {
+        url+="&domain=" + getCurrentDomain();
+    }
     url+="&ts=" + ts;
     return url;
 }
 
 function getImageBaseUrl() {
-    return "/nuxeo";
+    return getNuxeoClientSideUrl();
 }
 
 function getBaseUrl() {
-    return "/nuxeo/";
+    return getNuxeoClientSideUrl();
 }
 
 function nextPage() {
@@ -89,8 +105,15 @@ function testHandleJSONResponse(req) {
 function handleJSONResponse(obj) {
     var jsonObject = obj.data;
     if (jsonObject==null) {
-        alert("Error, no result from server : " + obj.errors);
+        if (errors==0) {
+            errors=1;
+            getDocumentLists();
+        } else {
+            alert("Error, no result from server : " + obj.errors);
+        }
         return;
+    } else {
+        errors=0;
     }
     displayDocumentList(jsonObject);
 }
@@ -110,7 +133,6 @@ function displayDocumentList(jsonObject) {
     maxPage = pageInfo.pages;
     document.getElementById("nxDocumentListPage").innerHTML = pageInfoLabel;
 }
-
 
 function getDateForDisplay(datestr) {
     try {
@@ -137,7 +159,7 @@ function mkRow(dashBoardItem, i) {
     htmlRow+=getImageBaseUrl();
     htmlRow+=dashBoardItem.icon;
     htmlRow+="\"/>";
-    htmlRow+="</td><td><a title=\"";
+    htmlRow+="</td><td><a target = \"_top\" title=\"";
     htmlRow+=dashBoardItem.title;
     htmlRow+="\" href=\"";
     htmlRow+=getBaseUrl();

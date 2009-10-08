@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -108,6 +109,16 @@ public class Dashboard implements Serializable {
     @Override
     public String toString() {
         return "opensocial dashboard:" + getCategories() + " categories";
+    }
+
+
+
+    @Factory(value="opensocialNuxeoServerUrl", scope = ScopeType.APPLICATION)
+    public String getNuxeoServerUrl() {
+        String host = Framework.getProperty("gadgets.host","127.0.0.1");
+        String port = Framework.getProperty("gadgets.port","8080");
+
+        return "http://" + host + ":" + port + "/";
     }
 
 }
