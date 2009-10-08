@@ -201,9 +201,6 @@
         <width>20px</width>
         <text-align>center</text-align>
       </selector>
-      <selector path=".selected">
-        <background-color>#c7d3e0</background-color>
-      </selector>
       <selector path=".searchInput">
         <background preset="searchInput (DAM backgrounds)"/>
         <border-width>1px</border-width>
@@ -400,6 +397,9 @@
       </selector>
       <selector path=".thumbViewlabel">
         <color>#4d4d4d</color>
+      </selector>
+      <selector path=".selected">
+        <background-color>#c7d3e0</background-color>
       </selector>
     </style>
     <style element="page[1]/section[1]" inherit="common style">
