@@ -38,8 +38,8 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Filter used to decode URLs and wrap requests to enable encoding.
- * This filter is useful because Nuxeo support pluggable URL patterns
+ * Filter used to decode URLs and wrap requests to enable encoding. This filter
+ * is useful because Nuxeo support pluggable URL patterns
  *
  * @author tiry
  */
@@ -53,22 +53,22 @@ public class FancyURLFilter implements Filter {
 
     public void init(FilterConfig conf) throws ServletException {
         log.debug("Nuxeo5 URLFilter started");
-        dummyNavigationHandler = new StaticNavigationHandler(conf.getServletContext());
+        dummyNavigationHandler = new StaticNavigationHandler(
+                conf.getServletContext());
         getUrlService(true);
     }
-
 
     protected URLPolicyService getUrlService() {
         return getUrlService(false);
     }
 
     protected URLPolicyService getUrlService(boolean silent) {
-        if (urlService==null) {
+        if (urlService == null) {
             try {
                 urlService = Framework.getService(URLPolicyService.class);
             } catch (Exception e) {
                 if (!silent) {
-                    log.error("Could not retrieve the URLPolicyService",e);
+                    log.error("Could not retrieve the URLPolicyService", e);
                 }
             }
         }
@@ -81,38 +81,37 @@ public class FancyURLFilter implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
-
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+        try {
 
-        getUrlService();
+            getUrlService();
 
-        // check if this is an URL that needs to be parsed
-        if (urlService.isCandidateForDecoding(httpRequest)) {
-            DocumentView docView = urlService.getDocumentViewFromRequest(httpRequest);
-            // if parse succeeded => process
-            if (docView != null) {
-                // put it in request
-                urlService.setDocumentViewInRequest(httpRequest, docView);
+            // check if this is an URL that needs to be parsed
+            if (urlService.isCandidateForDecoding(httpRequest)) {
+                DocumentView docView = urlService.getDocumentViewFromRequest(httpRequest);
+                // if parse succeeded => process
+                if (docView != null) {
+                    // put it in request
+                    urlService.setDocumentViewInRequest(httpRequest, docView);
 
-                // get the view id for navigation from the stored outcome
-                String jsfOutcome = docView.getViewId();
+                    // get the view id for navigation from the stored outcome
+                    String jsfOutcome = docView.getViewId();
 
-                // get target page according to navigation rules
-                String target = dummyNavigationHandler.getViewIdFromOutcome(jsfOutcome);
+                    // get target page according to navigation rules
+                    String target = dummyNavigationHandler.getViewIdFromOutcome(jsfOutcome);
 
-                // dispatch
-                RequestDispatcher dispatcher;
-                if (target != null) {
-                    dispatcher = httpRequest.getRequestDispatcher(target);
-                } else {
-                    // Use a dummy dispactcher if the target is not needed.
-                    // This comes handy for instance for nxfile url
-                    dispatcher = httpRequest.getRequestDispatcher("/malformed_url_error_page.faces");
-                }
-                try {
-                    // set force encoding in case forward triggers a redirect
-                    // (when a seam page is processed for instance).
+                    // dispatch
+                    RequestDispatcher dispatcher;
+                    if (target != null) {
+                        dispatcher = httpRequest.getRequestDispatcher(target);
+                    } else {
+                        // Use a dummy dispactcher if the target is not needed.
+                        // This comes handy for instance for nxfile url
+                        dispatcher = httpRequest.getRequestDispatcher("/malformed_url_error_page.faces");
+                    }
+                    // set force encoding in case forward triggers a
+                    // redirect (when a seam page is processed for instance).
                     request.setAttribute(
                             URLPolicyService.FORCE_URL_ENCODING_REQUEST_KEY,
                             true);
@@ -120,15 +119,18 @@ public class FancyURLFilter implements Filter {
                     dispatcher.forward(new FancyURLRequestWrapper(httpRequest,
                             docView), wrapResponse(httpRequest, httpResponse));
                     return;
-                } catch (Exception e) {
-                    // do nothing
                 }
             }
+
+            // do not filter if it's candidate for encoding so soon : document
+            // view has not been set in the request yet => always wrap
+            chain.doFilter(request, wrapResponse(httpRequest, httpResponse));
+
+        } catch (Throwable t) {
+            // interrupt chain and throw exception
+            throw new ServletException(t);
         }
 
-        // do not filter if it's candidate for encoding so soon : document view
-        // has not been set in the request yet => always wrap
-        chain.doFilter(request, wrapResponse(httpRequest, httpResponse));
     }
 
     private ServletResponse wrapResponse(HttpServletRequest request,

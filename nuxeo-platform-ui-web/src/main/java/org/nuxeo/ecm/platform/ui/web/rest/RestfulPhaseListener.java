@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.rest;
 
-import static javax.faces.event.PhaseId.INVOKE_APPLICATION;
-import static javax.faces.event.PhaseId.RENDER_RESPONSE;
-
 import java.io.IOException;
 
 import javax.faces.context.ExternalContext;
@@ -33,8 +30,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jboss.seam.contexts.FacesLifecycle;
-import org.jboss.seam.transaction.Transaction;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionHandler;
@@ -50,6 +47,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class RestfulPhaseListener implements PhaseListener {
 
+    private static final Log log = LogFactory.getLog(RestfulPhaseListener.class);
+
     private static final long serialVersionUID = -1064952127559721398L;
 
     protected URLPolicyService service;
@@ -62,7 +61,7 @@ public class RestfulPhaseListener implements PhaseListener {
     }
 
     public PhaseId getPhaseId() {
-        return RENDER_RESPONSE;
+        return PhaseId.RENDER_RESPONSE;
     }
 
     public void beforePhase(PhaseEvent event) {
@@ -83,39 +82,36 @@ public class RestfulPhaseListener implements PhaseListener {
                 service.applyRequestParameters(context);
             }
         } catch (Exception e) {
-            FacesLifecycle.setPhaseId(INVOKE_APPLICATION); // XXX Hack !
-            try {
-                if (Transaction.instance().isMarkedRollback()) {
-                    Transaction.instance().rollback();
-                }
-            } catch (Exception te) {
-                throw new IllegalStateException(
-                        "Could not rollback transaction", te);
-            }
-
-            try {
-                ExternalContext externalContext = context.getExternalContext();
-                ExceptionHandlingService exceptionHandlingService;
-                try {
-                    exceptionHandlingService = Framework.getService(ExceptionHandlingService.class);
-                } catch (Exception e1) {
-                    //hopeless
-                    throw new ClientRuntimeException(e1);
-                }
-                NuxeoExceptionHandler handler = exceptionHandlingService.getExceptionHandler();
-                handler.handleException(
-                        (HttpServletRequest) externalContext.getRequest(),
-                        (HttpServletResponse) externalContext.getResponse(), e);
-            } catch (ServletException e1) {
-                throw new ClientRuntimeException(e1);
-            } catch (IOException e1) {
-                throw new ClientRuntimeException(e1);
-            }
+            handleException(context, e);
         }
     }
 
     public void afterPhase(PhaseEvent event) {
         // nothing to do
+    }
+
+    protected void handleException(FacesContext context, Exception e)
+            throws ClientRuntimeException {
+        try {
+            ExternalContext externalContext = context.getExternalContext();
+            ExceptionHandlingService exceptionHandlingService;
+            try {
+                exceptionHandlingService = Framework.getService(ExceptionHandlingService.class);
+            } catch (Exception e1) {
+                // hopeless
+                throw new ClientRuntimeException(e1);
+            }
+            // XXX: maybe check if excpetion has already been handled to avoid
+            // loops (?)
+            NuxeoExceptionHandler handler = exceptionHandlingService.getExceptionHandler();
+            handler.handleException(
+                    (HttpServletRequest) externalContext.getRequest(),
+                    (HttpServletResponse) externalContext.getResponse(), e);
+        } catch (ServletException e1) {
+            throw new ClientRuntimeException(e1);
+        } catch (IOException e1) {
+            throw new ClientRuntimeException(e1);
+        }
     }
 
 }
