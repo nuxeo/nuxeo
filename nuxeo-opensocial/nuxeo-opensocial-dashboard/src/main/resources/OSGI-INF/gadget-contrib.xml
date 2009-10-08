@@ -8,21 +8,21 @@
       <mountPoint>/tasks/tasks</mountPoint>
       <directory>tasks-gadget</directory>
       <category>Nuxeo</category>
-     <!--  <icon>hello2.png</icon> -->
+      <icon>tasks.png</icon>
     </internalGadget>
 
     <internalGadget name="bbcnews">
       <mountPoint>/bbcnews/bbcnews</mountPoint>
       <directory>bbcnews-gadget</directory>
       <category>Information</category>
-      <icon>http://www.bbc.co.uk/images/bbcpage/v3-0/bbc.gif</icon>
+      <icon>bbc.png</icon>
     </internalGadget>
 
     <internalGadget name="hello">
       <mountPoint>/hello/hello</mountPoint>
       <directory>hello-gadget</directory>
       <category>Information</category>
-      <!--  <icon>http://www.bbc.co.uk/images/bbcpage/v3-0/bbc.gif</icon> -->
+      <icon>hello.png</icon>
     </internalGadget>
 
     <internalGadget name="userworkspaces">

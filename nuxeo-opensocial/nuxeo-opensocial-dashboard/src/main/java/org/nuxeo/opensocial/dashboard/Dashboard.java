@@ -2,6 +2,7 @@ package org.nuxeo.opensocial.dashboard;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,8 @@ import org.nuxeo.ecm.spaces.api.Univers;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
 import org.nuxeo.ecm.spaces.api.exceptions.UniversNotFoundException;
 import org.nuxeo.opensocial.container.component.api.FactoryManager;
+import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
+import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
 import org.nuxeo.runtime.api.Framework;
 
 @Name("opensocialDashboard")
@@ -82,6 +85,7 @@ public class Dashboard implements Serializable {
 
         try {
             FactoryManager factoryManager = Framework.getService(FactoryManager.class);
+            GadgetService gadgetService = Framework.getService(GadgetService.class);
             Map<String, ArrayList<String>> gadgetList = factoryManager.getContainerFactory().getGadgetList();
             for (String category : gadgetList.keySet()) {
                 ArrayList<String> inCategory = gadgetList.get(category);
@@ -89,6 +93,8 @@ public class Dashboard implements Serializable {
                     HashMap<String, String> gadgetText = new HashMap<String, String>();
                     gadgetText.put("name", gadgetName);
                     gadgetText.put("category", category);
+                    GadgetDeclaration gadget = gadgetService.getGadget(gadgetName);
+                    gadgetText.put("iconUrl", gadget.getIconUrl().toURI().toString());
                     result.add(gadgetText);
                 }
             }
