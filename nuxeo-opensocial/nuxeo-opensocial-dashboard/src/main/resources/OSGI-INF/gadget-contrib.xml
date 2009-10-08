@@ -29,14 +29,14 @@
       <mountPoint>/userworkspaces/documentlists</mountPoint>
       <directory>documentlists-gadget</directory>
       <category>Nuxeo</category>
-     <!--  <icon>hello2.png</icon> -->
+      <icon>workspace_64.png</icon>
     </internalGadget>
 
     <internalGadget name="userdocuments">
       <mountPoint>/userdocuments/documentlists</mountPoint>
       <directory>documentlists-gadget</directory>
       <category>Nuxeo</category>
-     <!--  <icon>hello2.png</icon> -->
+      <icon>note_64.png</icon>
     </internalGadget>
 
   </extension>
