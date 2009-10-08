@@ -30,6 +30,9 @@ public final class WidgetType {
     @XNode("@name")
     private String name;
 
+    @XNode("@id")
+    private String id;
+
     @XNode("category")
     private String category;
 
@@ -73,6 +76,10 @@ public final class WidgetType {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getCategory() {
