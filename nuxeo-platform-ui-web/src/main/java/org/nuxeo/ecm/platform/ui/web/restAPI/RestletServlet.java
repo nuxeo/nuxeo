@@ -33,6 +33,7 @@ import org.nuxeo.ecm.platform.ui.web.restAPI.service.RestletPluginDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.Filter;
 import org.restlet.Restlet;
+import org.restlet.Route;
 import org.restlet.Router;
 
 import com.noelios.restlet.ext.servlet.ServletConverter;
@@ -49,13 +50,18 @@ public class RestletServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1764653653643L;
 
-    protected ServletConverter converter;
+    protected ServletConverter converter=null;
 
     protected PluggableRestletService service;
 
     @Override
-    public void init() throws ServletException {
+    public synchronized void init() throws ServletException {
         super.init();
+
+        if (converter!=null) {
+            log.error("RestletServlet initialized several times");
+            return;
+        }
         converter = new ServletConverter(getServletContext());
 
         // init the router
@@ -101,43 +107,22 @@ public class RestletServlet extends HttpServlet {
                 }
             }
 
+            // force regexp init
             for (String urlPattern : plugin.getUrlPatterns()) {
-                restletRouter.attach(urlPattern, restletToAdd);
+                log.debug("Pre-compiling restlet pattern " + urlPattern);
+                Route route =  restletRouter.attach(urlPattern, restletToAdd);
+                route.getTemplate().match("");
             }
-
         }
 
-        // init the filters and restlets
-/*
-        Restlet testRestlet = new SimpleRestlet();
-        Restlet testRestlet2 = new SimpleRestlet2();
-
-        Filter seamFilter = new SeamRestletFilter();
-        Restlet testSeam = new SimpleResletWithSeam();
-        seamFilter.setNext(testSeam);
-
-        restletRouter.attach("/simple/{name}",testRestlet);
-        restletRouter.attach("/simple2/{name}",testRestlet2);
-
-        restletRouter.attach("/seam/{repo}/{docid}",seamFilter);
-*/
-        //this.converter.setTarget(testRestlet);
         converter.setTarget(restletRouter);
-    }
 
-    protected boolean restletInitDone = false;
+    }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        if (restletInitDone) {
-            converter.service(req, res);
-        } else {
-            synchronized (this) {
-                restletInitDone=true;
-                converter.service(req, res);
-            }
-        }
+        converter.service(req, res);
     }
 
 }
