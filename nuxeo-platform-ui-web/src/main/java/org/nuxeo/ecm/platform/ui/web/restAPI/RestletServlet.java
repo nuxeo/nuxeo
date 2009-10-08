@@ -125,13 +125,16 @@ public class RestletServlet extends HttpServlet {
         converter.setTarget(restletRouter);
     }
 
+    protected boolean restletInitDone = false;
+
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        if (converter.getTarget().isStarted()) {
+        if (restletInitDone) {
             converter.service(req, res);
         } else {
             synchronized (this) {
+                restletInitDone=true;
                 converter.service(req, res);
             }
         }
