@@ -10,9 +10,11 @@
   <!-- nuxeo datasource -->
   <local-tx-datasource>
     <jndi-name>NuxeoDS</jndi-name>
-    <connection-url>jdbc:oracle:thin:@localhost:1521:XE</connection-url>
     <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
-    <user-name>NUXEO</user-name>
-    <password>password</password>
+     <connection-url>jdbc:oracle:thin:@localhost:1521:NUXEO</connection-url>
+     <user-name>nuxeo</user-name>
+     <password>password</password>
+     <min-pool-size>5</min-pool-size>
+     <max-pool-size>20</max-pool-size>
   </local-tx-datasource>
 </datasources>
