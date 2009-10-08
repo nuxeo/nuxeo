@@ -46,10 +46,10 @@ import com.google.inject.Singleton;
 
 /**
  * @author cusgu
- * 
+ *
  *         Patch FeedProcessor in order to retrieve extra elements from RSS 2.0
  *         feeds : - enclosure
- * 
+ *
  */
 @Singleton
 public class NXMakeRequestHandler extends MakeRequestHandler {
@@ -76,6 +76,8 @@ public class NXMakeRequestHandler extends MakeRequestHandler {
 
     private static final Log LOG = LogFactory.getLog(NXMakeRequestHandler.class);
 
+    public static String AUTH_SESSION_HEADER = "X-NUXEO-INTEGRATED-AUTH";
+
     @Inject
     public NXMakeRequestHandler(ContentFetcherFactory contentFetcherFactory,
             ContentRewriterRegistry contentRewriterRegistry) {
@@ -99,30 +101,37 @@ public class NXMakeRequestHandler extends MakeRequestHandler {
          * +Framework.getProperty(SHINDIG_PROXY_PROXY_HOST));
          * LOG.info("NXMakeRequestHandler - shindig port"
          * +Framework.getProperty(SHINDIG_PROXY_PROXY_PORT));
-         * 
+         *
          * System.setProperty(HTTP_PROXY_SET,
          * Framework.getProperty(SHINDIG_PROXY_PROXY_SET));
          * System.setProperty(HTTP_PROXY_HOST,
          * Framework.getProperty(SHINDIG_PROXY_PROXY_HOST));
          * System.setProperty(HTTP_PROXY_PORT,
          * Framework.getProperty(SHINDIG_PROXY_PROXY_PORT));
-         * 
+         *
          * if (!(Framework.getProperty(SHINDIG_PROXY_USER) == null ||
          * Framework.getProperty(SHINDIG_PROXY_PASSWORD) == null)) {
-         * 
+         *
          * LOG.info("NXMakeRequestHandler - Authenticator "+
          * Framework.getProperty(SHINDIG_PROXY_USER));
          * LOG.info("NXMakeRequestHandler - Authenticator "+
          * Framework.getProperty(SHINDIG_PROXY_PASSWORD));
          * Authenticator.setDefault(new Authenticator() {
-         * 
+         *
          * @Override protected PasswordAuthentication
          * getPasswordAuthentication() {
-         * 
+         *
          * return new PasswordAuthentication(
          * Framework.getProperty(SHINDIG_PROXY_USER), Framework.getProperty(
          * SHINDIG_PROXY_PASSWORD) .toCharArray()); } }); }
          */
+
+        // propagate Nuxeo SessionId
+        String sessionId = rcr.getHeader(AUTH_SESSION_HEADER);
+        if (sessionId!=null) {
+            rcr.addHeader("Cookie", "JSESSIONID=" + sessionId);
+        }
+
         // Serialize the response
         HttpResponse results = contentFetcherFactory.fetch(rcr);
 
@@ -147,7 +156,7 @@ public class NXMakeRequestHandler extends MakeRequestHandler {
     /**
      * Generate a remote content request based on the parameters sent from the
      * client.
-     * 
+     *
      * @throws GadgetException
      */
     private HttpRequest buildHttpRequest(HttpServletRequest request)

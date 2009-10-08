@@ -2,15 +2,22 @@ var currentPage = 0;
 var maxPage=0;
 
 function getRestletUrl() {
+    var ts = new Date().getTime() + "" + Math.random()*11
+    var url ="";
     if (testMode) {
-        return "http://127.0.0.1:8080/nuxeo/restAPI/dashboard/" + QM_Name + "?format=JSON&page="+ currentPage;
+        url= "http://127.0.0.1:8080/nuxeo/restAPI/dashboard/";
     } else {
-        return "http://127.0.0.1:8080/nuxeo/restAPI/dashboard/" + QM_Name + "?format=JSON&page="+ currentPage;
+        url= "http://127.0.0.1:8080/nuxeo/restAPI/dashboard/";
     }
+    url+=QM_Name + "?format=JSON&page="+ currentPage;
+    url+="&ts=" + ts;
+    return url;
 }
+
 function getImageBaseUrl() {
     return "/nuxeo";
 }
+
 function getBaseUrl() {
     return "/nuxeo/";
 }
@@ -48,6 +55,7 @@ function getDocumentLists() {
     var headers = {};
 
     params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.NONE;
+    //params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.SIGNED;
     params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
 
     var now = new Date().toUTCString();
@@ -56,10 +64,7 @@ function getDocumentLists() {
     headers["Expires", "Fri, 01 Jan 1990 00:00:00 GMT"];
     headers["Pragma", "no-cache"];
     headers["Cache-control"] = "no-cache, must-revalidate";
-
-    var encoded = encode64("Administrator:Administrator");
-    console.log("encoded in base64 credentials:"+encoded);
-    headers["authentication"] = "basic "+encoded;
+    headers["X-NUXEO-INTEGRATED-AUTH"] = readCookie("JSESSIONID");
 
     params[gadgets.io.RequestParameters.HEADERS] = headers;
 
@@ -83,6 +88,10 @@ function testHandleJSONResponse(req) {
 
 function handleJSONResponse(obj) {
     var jsonObject = obj.data;
+    if (jsonObject==null) {
+        alert("Error, no result from server : " + obj.errors);
+        return;
+    }
     displayDocumentList(jsonObject);
 }
 
@@ -135,13 +144,25 @@ function mkRow(dashBoardItem, i) {
 }
 
 function refresh() {
-    alert("Refresh called!!!");
     if (testMode) {
         testGetDocumentLists();
     }
     else {
         getDocumentLists();
     }
+}
+
+function readCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for ( var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ')
+            c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0)
+            return c.substring(nameEQ.length, c.length);
+    }
+    return null;
 }
 
 if (testMode) {
