@@ -61,8 +61,8 @@
           
           <h:panelGroup>
             <h:outputText class="thumbViewlabel" value="#{messages['label.content.thumbnail.size']} " /> 
-            <h:outputText value="#{row.data.picture.views[1].content.length}" rendered="#{row.data.hasSchema('picture') and !empty row.data.picture.views}" />
-            <h:outputText value="#{row.data.file.content.length}" rendered="#{row.data.hasSchema('file')}" />
+            <h:outputText value="#{nxu:printFileSize(row.data.picture.views[1].content.length)}" rendered="#{row.data.hasSchema('picture') and !empty row.data.picture.views}" />
+            <h:outputText value="#{nxu:printFileSize(row.data.file.content.length)}" rendered="#{row.data.hasSchema('file')}" />
           </h:panelGroup>                  
         </h:panelGrid>
           

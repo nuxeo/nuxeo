@@ -134,8 +134,8 @@
           <h:outputText value="#{messages['label.content.header.size']}" />
         </h:panelGroup>
       </f:facet>
-      <h:outputText value="#{row.data.picture.views[1].content.length}" rendered="#{row.data.hasSchema('picture') and !empty row.data.picture.views}" />
-      <h:outputText value="#{row.data.file.content.length}" rendered="#{row.data.hasSchema('file')}" />
+      <h:outputText value="#{nxu:printFileSize(row.data.picture.views[1].content.length)}" rendered="#{row.data.hasSchema('picture') and !empty row.data.picture.views}" />
+      <h:outputText value="#{nxu:printFileSize(row.data.file.content.length)}" rendered="#{row.data.hasSchema('file')}" />
     </nxu:column>
   </nxu:dataTable>
 </div>
