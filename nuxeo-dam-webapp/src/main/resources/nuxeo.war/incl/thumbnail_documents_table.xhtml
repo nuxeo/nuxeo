@@ -16,7 +16,7 @@
     columns="4"
     rendered="#{documents.rowCount > 0}">
 
-      <rich:panel><div class="thumbViewElement selected" docRef="#{row.data.ref}">
+      <rich:panel><div class="thumbViewElement #{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}" docRef="#{row.data.ref}">
         <h:panelGrid>
           <a4j:commandLink id="imageLink" styleClass="thumbViewPictureLink"  action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
             <nxh:graphicImage id="theImage"
