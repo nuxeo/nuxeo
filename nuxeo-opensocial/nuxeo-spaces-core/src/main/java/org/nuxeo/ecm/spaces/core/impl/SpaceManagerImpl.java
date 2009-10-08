@@ -74,7 +74,7 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
             .newInstance();
         manageUniversDescriptor(descriptor, provider);
       } else {
-        LOGGER.info("Univers descriptor with name=" + descriptor.getName()
+        LOGGER.debug("Univers descriptor with name=" + descriptor.getName()
             + " and class name " + descriptor.getClassName()
             + " is ignored because has been blacklisted");
       }
@@ -114,7 +114,7 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
       x.setName(universDescriptorName);
 
       universDescriptorBlackList.add(universDescriptorName);
-      LOGGER.info("Univers descriptor " + universDescriptorName
+      LOGGER.debug("Univers descriptor " + universDescriptorName
           + " has been blackListed");
 
       DescriptorUniversProviderPair pair = new DescriptorUniversProviderPair(
@@ -323,7 +323,6 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
         pattern = ".*";
       if (Pattern.matches(pattern, univers.getName())) {
         try {
-          LOGGER.info("trying with "+descriptor.getName()+",className="+descriptor.getClassName());
           Space spaceResult = provider.getElement(name, univers, coreSession);
           if(spaceResult!=null){
             return spaceResult;

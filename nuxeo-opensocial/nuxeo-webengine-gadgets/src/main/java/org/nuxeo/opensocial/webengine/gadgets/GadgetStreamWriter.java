@@ -27,9 +27,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 
 public class GadgetStreamWriter implements MessageBodyWriter<GadgetStream> {
+
+  private static final Log log = LogFactory.getLog(GadgetStreamWriter.class);
 
   public long getSize(GadgetStream t, Class<?> type, Type genericType,
       Annotation[] annotations, MediaType mediaType) {
@@ -47,13 +52,20 @@ public class GadgetStreamWriter implements MessageBodyWriter<GadgetStream> {
       MultivaluedMap<String, Object> httpHeaders,
       OutputStream entityStream) throws IOException,
       WebApplicationException {
-    int c;
+        try {
+            int c;
 
-        while ((c = t.getStream().read()) != -1)
-        {
-           entityStream.write(c);
+            while ((c = t.getStream().read()) != -1) {
+                entityStream.write(c);
+            }
+            t.getStream().close();
+        } catch (IOException e) {
+            Throwable cause = e.getCause();
+            if (cause != null && "Broken pipe".equals(cause.getMessage())) {
+                log.debug("Swallowing: " + e);
+            } else {
+                throw e;
+            }
         }
-        t.getStream().close();
-
   }
 }

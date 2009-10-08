@@ -2,8 +2,6 @@ package org.nuxeo.opensocial.dashboard.theme;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -15,8 +13,6 @@ import org.nuxeo.theme.models.Model;
 import org.nuxeo.theme.models.ModelException;
 
 public class GadgetManagerFragment extends AbstractFragment {
-
-    private static final Log log = LogFactory.getLog(GadgetManagerFragment.class);
 
     @Override
     public Model getModel() throws ModelException {
@@ -33,9 +29,6 @@ public class GadgetManagerFragment extends AbstractFragment {
         try {
             GadgetService service = Framework.getService(GadgetService.class);
             List<String> categories = service.getGadgetCategory();
-            log.info("categories " + categories.size());
-            log.info("test categories "
-                    + service.getGadgetNameByCategory().size());
             List<GadgetDeclaration> gadgets = service.getGadgetList();
             GadgetManagerModel model = new GadgetManagerModel(categories,
                     gadgets);

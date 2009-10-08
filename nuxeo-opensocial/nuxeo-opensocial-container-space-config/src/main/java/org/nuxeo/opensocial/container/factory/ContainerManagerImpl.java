@@ -73,7 +73,7 @@ public class ContainerManagerImpl implements ContainerManager {
         e.printStackTrace();
       }
     } else {
-      log.info("Unable to get core session from repository name '"
+      log.error("Unable to get core session from repository name '"
           + repositoryName + "'.");
     }
     return null;
@@ -109,7 +109,6 @@ public class ContainerManagerImpl implements ContainerManager {
         retour = defaultValue;
     } else
       retour = value;
-    log.info("getParamValue("+key+")="+retour);
     return retour;
   }
 
