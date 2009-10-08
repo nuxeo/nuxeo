@@ -20,11 +20,10 @@ import java.io.IOException;
 
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
-import javax.faces.event.PhaseId;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,9 +35,8 @@ import org.jboss.seam.core.Manager;
 import org.jboss.seam.mock.MockApplication;
 import org.jboss.seam.mock.MockExternalContext;
 import org.jboss.seam.mock.MockFacesContext;
-import org.jboss.seam.transaction.Transaction;
-import org.jboss.seam.transaction.UserTransaction;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.NullExceptionHandlingListener;
+import org.nuxeo.ecm.platform.web.common.tx.TransactionsHelper;
 
 /**
  * Plays with conversations, trying to rollback transation.
@@ -55,6 +53,8 @@ public class SeamExceptionHandlingListener extends
     public void beforeSetErrorPageAttribute(Throwable t,
             HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
+        // check seam context
+
         // cut/paste from seam Exception filter.
         // we recreate the seam context to be able to use the messages.
 
@@ -67,6 +67,18 @@ public class SeamExceptionHandlingListener extends
             facesContext = mockContext;
             log.debug("Created mock faces context for exception handling");
         } else {
+            // do not use a mock faces context when a real one still exists:
+            // when released, the mock faces context is nullified, and this
+            // leads to errors like in the following stack trace:
+            /**
+             * java.lang.NullPointerException: FacesContext is null at
+             * org.ajax4jsf.context.AjaxContext.getCurrentInstance(AjaxContext.java:159)
+             * at
+             * org.ajax4jsf.context.AjaxContext.getCurrentInstance(AjaxContext.java:144)
+             * at
+             * org.ajax4jsf.component.AjaxViewRoot.getViewId(AjaxViewRoot.java:580)
+             * at com.sun.faces.lifecycle.Phase.doPhase(Phase.java:104)
+             */
             log.debug("Using existing faces context for exception handling");
         }
 
@@ -89,17 +101,6 @@ public class SeamExceptionHandlingListener extends
             Manager.instance().restoreConversation();
         }
 
-        // we get the message from the seam attribute as the EL won't work in
-        // xhtml
-        FacesLifecycle.beginExceptionRecovery(facesContext.getExternalContext());
-    }
-
-    @Override
-    public void afterDispatch(Throwable t, HttpServletRequest request,
-            HttpServletResponse response) throws IOException, ServletException {
-        FacesContext context = FacesContext.getCurrentInstance();
-        FacesLifecycle.endRequest(context.getExternalContext());
-        context.release();
     }
 
     /**
@@ -109,47 +110,62 @@ public class SeamExceptionHandlingListener extends
     public void startHandling(Throwable t, HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
         try {
-            rollbackTransactionIfNecessary(t, response);
-        } catch (IllegalStateException e) {
-            throw new ServletException(e);
-        } catch (SystemException e) {
-            throw new ServletException(e);
+            UserTransaction ut = TransactionsHelper.getUserTransaction();
+            if (ut != null && TransactionsHelper.isTransactionActive()) {
+                ut.setRollbackOnly();
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("Marking transaction as rollback only");
+            }
+        } catch (Throwable newThrowable) {
+            log.error("Unable to mark transaction as rollback only",
+                    newThrowable);
         }
     }
 
-    private void rollbackTransactionIfNecessary(Throwable t,
-            HttpServletResponse response) throws ServletException,
-            IllegalStateException, SecurityException, SystemException {
-        if (Contexts.isEventContextActive()) {
-            if (Transaction.instance().isActiveOrMarkedRollback()) {
-                try {
-                    UserTransaction transaction = Transaction.instance();
-                    if (transaction.isActiveOrMarkedRollback()
-                            || transaction.isRolledBack()) {
-                        log.debug("Rollback transaction");
-                        // mark it as rollback instead? see if SeamPhaseListener
-                        // will do the job properly
-                        transaction.rollback();
-                    }
-                } catch (Exception e) {
-                    log.error("Could not roll back transaction", e);
-                }
-            }
-        }
-        if (FacesLifecycle.getPhaseId() == PhaseId.RENDER_RESPONSE) {
-            if (response.isCommitted()) {
-                if (t instanceof ServletException) {
-                    throw (ServletException) t;
-                } else {
-                    throw new ServletException(t);
-                }
-            }
+    @Override
+    public void afterDispatch(Throwable t, HttpServletRequest request,
+            HttpServletResponse response) throws IOException, ServletException {
+        FacesContext context = FacesContext.getCurrentInstance();
+        // XXX: it's not clear what should be done here: current tests depending
+        // on the phase id or on the faces context just allow to avoid errors
+        // after
+        if (context instanceof MockFacesContext) {
+            // do not end the request if it's a real faces context, otherwise
+            // we'll get the following stack trace:
+            /**
+             * java.lang.IllegalStateException: No active application scope at
+             * org.jboss.seam.core.Init.instance(Init.java:76) at
+             * org.jboss.seam.jsf.SeamPhaseListener.handleTransactionsAfterPhase(SeamPhaseListener.java:330)
+             * at
+             * org.jboss.seam.jsf.SeamPhaseListener.afterServletPhase(SeamPhaseListener.java:241)
+             * at
+             * org.jboss.seam.jsf.SeamPhaseListener.afterPhase(SeamPhaseListener.java:192)
+             * at com.sun.faces.lifecycle.Phase.handleAfterPhase(Phase.java:175)
+             * at com.sun.faces.lifecycle.Phase.doPhase(Phase.java:114) at
+             * com.sun.faces.lifecycle.LifecycleImpl.render(LifecycleImpl.java:139)
+             */
+            FacesLifecycle.endRequest(context.getExternalContext());
+            // do not release an actual FacesContext that we did not create,
+            // otherwise we get the following stack trace:
+            /**
+             * java.lang.IllegalStateException at
+             * com.sun.faces.context.FacesContextImpl.assertNotReleased(FacesContextImpl.java:395)
+             * at
+             * com.sun.faces.context.FacesContextImpl.getExternalContext(FacesContextImpl.java:147)
+             * at
+             * com.sun.faces.util.RequestStateManager.getStateMap(RequestStateManager.java:276)
+             * at
+             * com.sun.faces.util.RequestStateManager.remove(RequestStateManager.java:243)
+             * at
+             * com.sun.faces.context.FacesContextImpl.release(FacesContextImpl.java:345)
+             */
+            context.release();
         }
     }
 
-    private MockFacesContext createFacesContext(HttpServletRequest request,
+    protected MockFacesContext createFacesContext(HttpServletRequest request,
             HttpServletResponse response) {
-
         MockFacesContext mockFacesContext = new MockFacesContext(
                 new MockExternalContext(
                         request.getSession().getServletContext(), request,
