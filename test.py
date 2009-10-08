@@ -127,11 +127,11 @@ def testJetty():
 
     clean()
     mvn("install package -P jetty")
-    zipfile = getZipFileFrom("nuxeo-distribution-jetty/target/")
+    zipfile = getZipFileFrom("nuxeo-distribution-jetty-ep/target/")
 
     os.mkdir("test")
     os.chdir("test")
-    system("unzip -q ../nuxeo-distribution-jetty/target/" + zipfile)
+    system("unzip -q ../nuxeo-distribution-jetty-ep/target/" + zipfile)
     os.chdir("nxserver")
 
     p = pexpect.spawn("sh nxserver.sh -console", timeout=120)
