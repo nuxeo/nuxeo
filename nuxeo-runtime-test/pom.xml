@@ -72,8 +72,6 @@
       <groupId>com.google.code.guice</groupId>
       <artifactId>guice</artifactId>
       <scope>compile</scope>
-      <!-- TODO: put in dependencyManagement -->
-      <version>1.0</version>
     </dependency>
 
     <dependency>
