@@ -365,7 +365,7 @@ class FolderPage(BasePage):
             ['j_id216', 'j_id216'],
             ['j_id216:selectDocTypePanelOpenedState', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id216:j_id222:0:j_id226:0:j_id228:3:j_id232', 'j_id216:j_id222:0:j_id226:0:j_id228:3:j_id232']],
+            ['j_id216:j_id222:0:j_id226:0:j_id228:2:j_id232', 'j_id216:j_id222:0:j_id226:0:j_id228:2:j_id232']],
             description="Create folder: New Folder")
         fl.assert_('document_create' in fl.getBody(),
                    "Folder form not found")
