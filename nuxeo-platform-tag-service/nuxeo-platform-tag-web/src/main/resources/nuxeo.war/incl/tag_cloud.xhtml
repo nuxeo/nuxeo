@@ -8,8 +8,8 @@
    <c:when test="#{tagServiceEnabled}">
       <h:form id="tagCloudForm">
         <nxu:dataList id="tagCloudTable"
-          value="#{tagActions.popularCloud}" var="tag"
-          rendered="#{not empty tagActions.popularCloud}">
+          value="#{tagCloudOnAllDocuments}" var="tag"
+          rendered="#{not empty tagCloudOnAllDocuments}">
 
             <h:commandLink value="#{tag.tagLabel}"
               action="#{tagActions.listDocumentsForTag(tag.tagId)}" style="font-size: #{tag.weight}%"/>

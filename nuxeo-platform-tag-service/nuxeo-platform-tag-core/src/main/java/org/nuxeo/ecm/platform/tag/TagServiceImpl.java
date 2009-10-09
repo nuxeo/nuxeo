@@ -308,6 +308,22 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
                 runner.result, getUserName(session));
     }
 
+    public List<WeightedTag> getPopularCloudOnAllDocuments(final CoreSession session) throws ClientException {
+         return getOrCreatePersistenceProvider().run(false,
+                 new RunCallback<List<WeightedTag>>() {
+                     public List<WeightedTag> runWith(EntityManager em)
+                             throws ClientException {
+                         return getPopularCloudOnAllDocuments(em, session);
+                     }
+                 });
+    }
+
+
+    public List<WeightedTag> getPopularCloudOnAllDocuments(EntityManager em,
+            CoreSession session) throws ClientException {
+        return TaggingProvider.createProvider(em).getPopularCloudOnAllDocuments(getUserName(session));
+    }
+
     public WeightedTag getPopularTag(final CoreSession session,
             final DocumentModel document, final String tagId)
             throws ClientException {

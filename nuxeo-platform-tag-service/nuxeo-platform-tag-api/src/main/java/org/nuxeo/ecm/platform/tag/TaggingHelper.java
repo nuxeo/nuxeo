@@ -159,6 +159,12 @@ public class TaggingHelper {
         return getTagService().getPopularCloud(session, document);
     }
 
+
+    public List<WeightedTag> getPopularCloudOnAllDocuments(CoreSession session) throws ClientException {
+        return getTagService().getPopularCloudOnAllDocuments(session);
+    }
+
+
     /**
      * Returns the list with documents which are tagged with a particular tag
      * that has the received <b>tagDocumentId</b> id.

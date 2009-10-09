@@ -186,6 +186,21 @@ public interface TagService {
     List<WeightedTag> getPopularCloud(CoreSession session,
             DocumentModel document) throws ClientException;
 
+
+    /**
+     * Retrieves the "popular" tag cloud without Document context.
+     *
+     * Compared to getPopularCloud, this method does not filter on documents
+     * accessible by the user.
+     * This makes this feature usable on big doc DB.
+     *
+     * @param session
+     * @return
+     * @throws ClientException
+     */
+    List<WeightedTag> getPopularCloudOnAllDocuments(CoreSession session) throws ClientException;
+
+
     /**
      * Tags a document.
      *

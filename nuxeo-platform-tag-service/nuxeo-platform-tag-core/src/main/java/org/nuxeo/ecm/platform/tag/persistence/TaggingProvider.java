@@ -314,6 +314,28 @@ public class TaggingProvider {
         return ret;
     }
 
+    @SuppressWarnings("unchecked")
+    public List<WeightedTag> getPopularCloudOnAllDocuments(String userName) {
+        List<String> params = new LinkedList<String>();
+        StringBuilder sb = new StringBuilder("SELECT tag.id, tag.label, COUNT(DISTINCT tg.targetDocument.id) FROM Tagging tg " + "JOIN tg.tag tag JOIN tag.hierarchy h JOIN h.dublincore dc "
+                + "WHERE ");
+        sb.append(" (tg.isPrivate=0 OR tg.author=");
+        sb.append("?1");
+        sb.append(") AND ");
+        sb.append("(tg.tag.private1 = 0 OR dc.creator = ");
+        sb.append("?2");
+        sb.append(") GROUP BY tag.id , tag.label");
+        params.add(userName);
+        params.add(userName);
+        List<Object[]> queryResults = (List<Object[]>) doQuery(sb.toString(), params);
+        List<WeightedTag> ret = new ArrayList<WeightedTag>();
+        for (Object[] queryResult : queryResults) {
+            WeightedTag weightedTag = new WeightedTag((String) queryResult[0], (String) queryResult[1], ((Long) queryResult[2]).intValue());
+            ret.add(weightedTag);
+        }
+        return ret;
+    }
+
     /**
      * Lists distinct the documents tagged with specified tag.
      *

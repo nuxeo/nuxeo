@@ -192,6 +192,37 @@ public class TagActionsBean implements Serializable {
         return tagCloud;
     }
 
+    /**
+     * Returns tag cloud infor for the whole repository
+     * For performance reasons, the security on underlying documents is not tested.
+     *
+     * @return
+     * @throws ClientException
+     */
+    @Factory(value="tagCloudOnAllDocuments", scope=ScopeType.EVENT)
+    public List<WeightedTag> getPopularCloudOnAllDocuments() throws ClientException {
+        List<WeightedTag> tagCloud = new ArrayList<WeightedTag>();
+        int min, max;
+        min = max = 0;
+
+        for (WeightedTag weightedTag : taggingHelper.getPopularCloudOnAllDocuments(documentManager)) {
+            if (weightedTag.getWeight() > max) {
+                max = weightedTag.getWeight();
+            }
+            if (weightedTag.getWeight() < min) {
+                min = weightedTag.getWeight();
+            }
+            tagCloud.add(weightedTag);
+        }
+        for (WeightedTag tag : tagCloud) {
+            tag.setWeight((int) Math.round((150.0 * (1.0 + (1.5 * tag.getWeight() - min / 2)
+                    / max))) / 2);
+        }
+
+        return tagCloud;
+    }
+
+
     public String listDocumentsForTag(String tagDocumentId)
             throws ClientException {
         this.tagDocumentId = tagDocumentId;

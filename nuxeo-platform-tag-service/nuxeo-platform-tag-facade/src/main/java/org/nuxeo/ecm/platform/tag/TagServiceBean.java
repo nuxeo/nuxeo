@@ -104,6 +104,10 @@ public class TagServiceBean implements TagService {
         return getLocalTagService().getPopularCloud(em, session, document);
     }
 
+    public List<WeightedTag> getPopularCloudOnAllDocuments(CoreSession session) throws ClientException {
+        return getLocalTagService().getPopularCloudOnAllDocuments(em, session);
+    }
+
     public WeightedTag getPopularTag(CoreSession session,
             DocumentModel document, String tagId) throws ClientException {
         return getLocalTagService().getPopularTag(em, session, document, tagId);
