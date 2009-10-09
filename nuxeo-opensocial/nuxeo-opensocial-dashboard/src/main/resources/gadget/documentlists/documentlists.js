@@ -66,7 +66,7 @@ function lastPage() {
 }
 
 function getDocumentLists() {
-    console.log("calling REST API go to QM " + QM_Name);
+    //console.log("calling REST API go to QM " + QM_Name);
     var params = {};
     var headers = {};
 

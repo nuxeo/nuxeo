@@ -39,5 +39,12 @@
       <icon>note_64.png</icon>
     </internalGadget>
 
+    <internalGadget name="usersites">
+      <mountPoint>/userdocuments/documentlists</mountPoint>
+      <directory>documentlists-gadget</directory>
+      <category>Nuxeo</category>
+      <icon>website_64.png</icon>
+    </internalGadget>
+
   </extension>
 </component>
