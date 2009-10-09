@@ -128,8 +128,7 @@ public class SeamExceptionHandlingListener extends
             HttpServletResponse response) throws IOException, ServletException {
         FacesContext context = FacesContext.getCurrentInstance();
         // XXX: it's not clear what should be done here: current tests depending
-        // on the phase id or on the faces context just allow to avoid errors
-        // after
+        // on the faces context just allow to avoid errors after
         if (context instanceof MockFacesContext) {
             // do not end the request if it's a real faces context, otherwise
             // we'll get the following stack trace:
