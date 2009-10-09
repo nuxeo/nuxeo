@@ -1,5 +1,5 @@
 #!/bin/sh
-#MVN_OPTS=-o
+MVN_OPTS=-o
 ASSEMBLY=$1
 shift;
 
