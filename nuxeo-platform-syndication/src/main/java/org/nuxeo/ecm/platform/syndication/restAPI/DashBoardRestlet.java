@@ -115,6 +115,10 @@ public class DashBoardRestlet extends BaseQueryModelRestlet {
         for (Object logEntry : logEntries) {
             ids.add(((LogEntry) logEntry).getDocUUID());
         }
+        if (ids.isEmpty()) {
+            // NXQL doesn't do IN (), so add dummy value
+            ids.add("00000000-0000-0000-0000-000000000000");
+        }
         return ids;
     }
 
