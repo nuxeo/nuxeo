@@ -1,0 +1,113 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.nuxeo.tool</groupId>
+  <artifactId>selenium-utility</artifactId>
+  <version>1.0</version>
+  <packaging>pom</packaging>
+  <name>Utility POM for running Selenium tests</name>
+  <description>
+    This POM allow download of Selenium Server jar file. 
+    It also provide a plugin for running regular Surefire tests.
+  </description>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <configuration>
+          <artifactItems>
+            <artifactItem>
+              <groupId>org.seleniumhq.selenium.server</groupId>
+              <artifactId>selenium-server</artifactId>
+              <version>1.0-beta-2</version>
+              <classifier>standalone</classifier>
+              <overWrite>false</overWrite>
+              <outputDirectory>.</outputDirectory>
+              <destFileName>selenium-server.jar</destFileName>
+            </artifactItem>
+            <!--
+              We should test org.seleniumhq.selenium.client-drivers:selenium-java-client-driver
+            -->
+          </artifactItems>
+        </configuration>
+      </plugin>
+      <!-- Following plugin works only with Java Selenium tests -->
+      <!--      <plugin>-->
+      <!--        <groupId>org.codehaus.mojo</groupId>-->
+      <!--        <artifactId>selenium-maven-plugin</artifactId>-->
+      <!--        <executions>-->
+      <!--          <execution>-->
+      <!--            <phase>pre-integration-test</phase>-->
+      <!--            <goals>-->
+      <!--              <goal>selenese</goal>-->
+      <!--            </goals>-->
+      <!--            <configuration>-->
+      <!--              <background>true</background>-->
+      <!--              <userExtensions>user-extensions.js</userExtensions>-->
+      <!--              <firefoxProfileTemplate>ffprofile</firefoxProfileTemplate>-->
+<!---->
+      <!--              <browser>*chrome</browser>-->
+      <!--              <startURL>http://localhost:8080/nuxeo/</startURL>-->
+      <!--              <suite>tests/suite1.html</suite>-->
+      <!--              <multiWindow>true</multiWindow>-->
+      <!--              <results>result-suite1.html</results>-->
+      <!--            </configuration>-->
+      <!--          </execution>-->
+      <!--        </executions>-->
+      <!--        <configuration>-->
+      <!--        </configuration>-->
+      <!--      </plugin>-->
+    </plugins>
+  </build>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/public</url>
+      <name>Nuxeo virtual release repository</name>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/public-snapshot</url>
+      <name>Nuxeo virtual snapshot repository</name>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+</project>

@@ -1,0 +1,51 @@
+<html xmlns:h="http://java.sun.com/jsf/html">
+
+<title>Test errors in nuxeo jsf</title>
+<body>
+
+<h3>Test errors in nuxeo jsf</h3>
+
+<h:form>
+  <ul>
+    <li><h:commandLink action="error_invalid_html"
+      value="Error invalid html" /></li>
+    <li><h:commandLink action="error_ui_include_not_found"
+      value="Error ui:include not found" /></li>
+    <li><h:commandLink action="error_jsf_function_checked"
+      value="JSF checked error" /></li>
+    <li><h:commandLink action="error_jsf_function_unchecked"
+      value="JSF unchecked error" /></li>
+  </ul>
+</h:form>
+
+<h3>Test errors in nuxeo seam</h3>
+
+<h:form>
+  <ul>
+    <li><h:commandLink action="error_seam_getter_checked"
+      value="Seam getter checked error" /></li>
+    <li><h:commandLink action="error_seam_getter_unchecked"
+      value="Seam getter unchecked error" /></li>
+    <li><h:commandLink action="error_seam_getter_security"
+      value="Seam getter security error" /></li>
+    <li><h:commandLink action="error_seam_factory_checked"
+      value="Seam factory checked error" /></li>
+    <li><h:commandLink action="error_seam_factory_unchecked"
+      value="Seam factory unchecked error" /></li>
+    <li><h:commandLink action="error_seam_factory_security"
+      value="Seam factory security error" /></li>
+    <li><h:commandLink
+      action="#{errorSeamComponent.performCheckedError}"
+      value="Seam action checked error" /></li>
+    <li><h:commandLink
+      action="#{errorSeamComponent.performUncheckedError}"
+      value="Seam action unchecked error" /></li>
+    <li><h:commandLink
+      action="#{errorSeamComponent.performSecurityError}"
+      value="Seam action security error" /></li>
+  </ul>
+</h:form>
+
+</body>
+
+</html>

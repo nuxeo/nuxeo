@@ -1,0 +1,1 @@
+- add selenium tests for errors on document creation/rollback
