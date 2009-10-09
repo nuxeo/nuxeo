@@ -80,10 +80,10 @@ public interface GadgetService {
     URL getGadgetDefinition(String gadgetName);
 
     /**
-     * Returns a URL to the gadget icon url
+     * Returns a relative URL to the gadget icon
      * @param gadgetName the gadget symbolic name
      * @return
      */
-    URL getIconUrl(String gadgetName);
+    String getIconUrl(String gadgetName);
 
 }

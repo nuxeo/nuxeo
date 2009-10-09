@@ -110,7 +110,7 @@ public class Dashboard implements Serializable {
                     gadgetText.put("name", gadgetName);
                     gadgetText.put("category", category);
                     GadgetDeclaration gadget = gadgetService.getGadget(gadgetName);
-                    gadgetText.put("iconUrl", gadget.getIconUrl().toURI().toString());
+                    gadgetText.put("iconUrl", gadget.getIconUrl());
                     result.add(gadgetText);
                 }
             }

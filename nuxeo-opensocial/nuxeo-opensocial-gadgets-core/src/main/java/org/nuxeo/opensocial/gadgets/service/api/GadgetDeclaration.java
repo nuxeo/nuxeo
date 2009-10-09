@@ -99,7 +99,7 @@ public class GadgetDeclaration {
     }
   }
 
-  public URL getIconUrl() {
+  public String getIconUrl() {
     try {
       return Framework.getService(GadgetService.class)
           .getIconUrl(this.name);

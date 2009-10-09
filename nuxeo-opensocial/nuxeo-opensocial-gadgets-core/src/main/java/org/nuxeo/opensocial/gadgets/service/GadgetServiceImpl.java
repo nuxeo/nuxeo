@@ -180,18 +180,13 @@ public class GadgetServiceImpl extends DefaultComponent implements
     return categories;
   }
 
-  public URL getIconUrl(String gadgetName) {
-    StringBuilder sb = getUrlPrefix();
+  public String getIconUrl(String gadgetName) {
+    StringBuilder sb = new StringBuilder(Framework.getProperty(GADGETS_PATH));
     GadgetDeclaration gadget = getGadget(gadgetName);
     sb.append(gadget.getMountPoint());
     sb.append(URL_SEPARATOR);
     sb.append(gadget.getIcon());
-    try {
-      return new URL(sb.toString());
-    } catch (MalformedURLException e) {
-      e.printStackTrace();
-      return null;
-    }
+    return sb.toString();
   }
 
 }
