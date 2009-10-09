@@ -30,8 +30,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionHandler;
@@ -46,8 +44,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author Florent Guillaume
  */
 public class RestfulPhaseListener implements PhaseListener {
-
-    private static final Log log = LogFactory.getLog(RestfulPhaseListener.class);
 
     private static final long serialVersionUID = -1064952127559721398L;
 
@@ -101,8 +97,6 @@ public class RestfulPhaseListener implements PhaseListener {
                 // hopeless
                 throw new ClientRuntimeException(e1);
             }
-            // XXX: maybe check if excpetion has already been handled to avoid
-            // loops (?)
             NuxeoExceptionHandler handler = exceptionHandlingService.getExceptionHandler();
             handler.handleException(
                     (HttpServletRequest) externalContext.getRequest(),
