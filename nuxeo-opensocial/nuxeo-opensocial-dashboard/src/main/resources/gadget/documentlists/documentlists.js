@@ -153,7 +153,7 @@ function mkRow(dashBoardItem, i) {
     } else {
     htmlRow+="dataRowOdd";
     }
-    htmlRow+="dataRowEven";"\">";
+    htmlRow+="\">";
     htmlRow+="<td class=\"iconColumn\">"
     htmlRow+="<img alt=\"File\" src=\""
     htmlRow+=getImageBaseUrl();

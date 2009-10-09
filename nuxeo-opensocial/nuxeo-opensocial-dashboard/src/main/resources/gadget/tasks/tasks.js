@@ -113,8 +113,9 @@ function openDiv(name) {
 }
 
 function closeDiv(name) {
-    return '</div> <!--'+name+' -->';
-    return '</div> <!--'+name+'wrapper -->';
+    var result = '</div> <!--'+name+' -->';
+    result += '</div> <!--'+name+'wrapper -->';
+    return result;
 }
 
 function getNuxeoClientSideUrl() {

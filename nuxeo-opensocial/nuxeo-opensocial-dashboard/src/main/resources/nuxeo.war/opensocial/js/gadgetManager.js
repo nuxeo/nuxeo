@@ -31,16 +31,17 @@ $(document).ready(
             element.parent().find(".typeGadget").addClass(
                 "selected");
 
-            element.parent().find(".addGadgetButton").text("ajoute");
+            var text = element.parent().find(".addGadgetButton").text();
+            element.parent().find(".addGadgetButton").text(text + "...");
 
             element.parent().find(".addGadgetButton").removeClass("addGadgetButton").addClass("addedGadgetButton");
             element.parent().find(".linkAdd").removeClass("linkAdd").addClass("linkAdded");
 
             setTimeout( function() {
-              element.parent().find(".addedGadgetButton").text("ajouter");
+              element.parent().find(".addedGadgetButton").text(text);
               element.parent().find('.addedGadgetButton').removeClass('addedGadgetButton').addClass('addGadgetButton');
               element.parent().find('.linkAdded').removeClass('linkAdded').addClass('linkAdd');
-            }, 3000);
+            }, 2000);
 
             return false
           });
