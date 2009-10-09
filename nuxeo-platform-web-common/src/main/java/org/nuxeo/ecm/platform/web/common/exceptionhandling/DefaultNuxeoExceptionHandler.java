@@ -52,15 +52,37 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
         this.parameters = parameters;
     }
 
+    /**
+     * Puts a marker in request to avoid looping over the exception handling
+     * mechanism
+     *
+     * @throws ServletException if request has already been marked as handled.
+     *             The initial exception is then wrapped.
+     */
+    protected void startHandlingException(HttpServletRequest request,
+            HttpServletResponse response, Throwable t) throws IOException,
+            ServletException {
+        if (request.getAttribute(EXCEPTION_HANDLER_MARKER) == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Initial exception", t);
+            }
+            // mark request as already processed by this mechanism to avoid
+            // looping
+            // over it
+            request.setAttribute(EXCEPTION_HANDLER_MARKER, true);
+            // disable further redirect by nuxeo url system
+            request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
+                    true);
+        } else {
+            // avoid looping over exception mechanism
+            throw new ServletException(t);
+        }
+    }
+
     public void handleException(HttpServletRequest request,
             HttpServletResponse response, Throwable t) throws IOException,
             ServletException {
-        // mark request as already processed by this mechanism to avoid looping
-        // over it
-        request.setAttribute(NuxeoExceptionFilter.EXCEPTION_FILTER_ATTRIBUTE,
-                true);
-        // disable further redirect by nuxeo url system
-        request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
+        startHandlingException(request, response, t);
         try {
             ErrorHandler handler = getHandler(t);
             parameters.getListener().startHandling(t, request, response);

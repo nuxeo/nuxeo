@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface NuxeoExceptionHandler {
 
+    public static final String EXCEPTION_HANDLER_MARKER = "NuxeoExceptionHandlerMarker";
+
     public abstract void handleException(HttpServletRequest request,
             HttpServletResponse response, Throwable t) throws IOException,
             ServletException;

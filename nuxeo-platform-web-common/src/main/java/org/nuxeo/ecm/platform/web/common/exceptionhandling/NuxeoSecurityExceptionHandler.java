@@ -53,7 +53,6 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
     private PluggableAuthenticationService service;
 
     public NuxeoSecurityExceptionHandler() throws Exception {
-        // initAuthentificationService();
     }
 
     @Override
@@ -77,8 +76,9 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
                 urlParameters.put(NXAuthConstants.SECURITY_ERROR, "true");
                 urlParameters.put(NXAuthConstants.FORCE_ANONYMOUS_LOGIN, "true");
                 if (request.getAttribute(NXAuthConstants.REQUESTED_URL) != null) {
-                    urlParameters.put(NXAuthConstants.REQUESTED_URL, (String)
-                            request.getAttribute(NXAuthConstants.REQUESTED_URL));
+                    urlParameters.put(
+                            NXAuthConstants.REQUESTED_URL,
+                            (String) request.getAttribute(NXAuthConstants.REQUESTED_URL));
                 } else {
                     urlParameters.put(NXAuthConstants.REQUESTED_URL,
                             NuxeoAuthenticationFilter.getRequestedUrl(request));
