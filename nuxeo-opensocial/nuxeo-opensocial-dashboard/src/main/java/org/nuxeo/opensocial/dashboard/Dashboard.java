@@ -2,10 +2,11 @@ package org.nuxeo.opensocial.dashboard;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,7 +17,9 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
 import org.nuxeo.ecm.spaces.api.Univers;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
@@ -34,8 +37,20 @@ public class Dashboard implements Serializable {
 
     private static final Log log = LogFactory.getLog(Dashboard.class);
 
+    public static final String OLD_DASHBARD_VIEWID = "user_dashboard";
+    public static final String NEW_DASHBARD_VIEWID = "opensocial_dashboard";
+    public static final String DASHBARD_MODE_PROPERTY = "org.nuxeo.ecm.webapp.dashboard.viewid";
+    public static final String SELENIUM_USERAGENT = "Nuxeo-Selenium-Tester";
+
+    protected String dashBoardViewId = null;
+
     @In(create = true, required = false)
-    CoreSession documentManager;
+    protected CoreSession documentManager;
+
+    @In(required = true)
+    protected transient NavigationContext navigationContext;
+
+    protected DocumentModel lastAccessedDocument;
 
     public String getPersonalDashboardId() {
         SpaceManager spaceManager;
@@ -119,6 +134,41 @@ public class Dashboard implements Serializable {
         String port = Framework.getProperty("gadgets.port","8080");
 
         return "http://" + host + ":" + port + "/";
+    }
+
+    public String goToDashBoard() {
+        if (dashBoardViewId==null) {
+            String userAgent =null;
+            FacesContext fContext = FacesContext.getCurrentInstance();
+            if (fContext == null) {
+                log.error("unable to fetch facesContext, can not detect client type");
+            } else {
+                userAgent = fContext.getExternalContext().getRequestHeaderMap().get("User-Agent");
+            }
+
+            if (userAgent!=null && userAgent.contains(SELENIUM_USERAGENT)) {
+                dashBoardViewId =  OLD_DASHBARD_VIEWID;
+            }
+            else {
+                dashBoardViewId = Framework.getProperty(DASHBARD_MODE_PROPERTY, NEW_DASHBARD_VIEWID);
+            }
+        }
+
+        if (NEW_DASHBARD_VIEWID.equals(dashBoardViewId)) {
+            lastAccessedDocument = navigationContext.getCurrentDocument();
+        }
+
+        return dashBoardViewId;
+    }
+
+
+    public String exit() throws Exception {
+
+        if (lastAccessedDocument==null) {
+            return navigationContext.goHome();
+        } else {
+            return navigationContext.navigateToDocument(lastAccessedDocument);
+        }
     }
 
 }
