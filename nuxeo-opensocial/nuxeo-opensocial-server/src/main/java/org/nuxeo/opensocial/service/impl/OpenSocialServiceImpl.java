@@ -19,10 +19,7 @@ package org.nuxeo.opensocial.service.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.Authenticator;
-import java.net.InetSocketAddress;
-import java.net.PasswordAuthentication;
-import java.net.Proxy;
+import java.net.ProxySelector;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,13 +53,6 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
 
     private Map<String, String> keys = new HashMap<String, String>();
 
-    private static final String SHINDIG_PROXY_PROXY_PORT = "shindig.proxy.proxyPort";
-    private static final String SHINDIG_PROXY_PROXY_HOST = "shindig.proxy.proxyHost";
-    private static final String SHINDIG_PROXY_PROXY_SET = "shindig.proxy.proxySet";
-    private static final String SHINDIG_PROXY_PASSWORD = "shindig.proxy.password";
-    private static final String SHINDIG_PROXY_USER = "shindig.proxy.user";
-
-    private Proxy proxySettings = null;
 
     public Injector getInjector() {
         return injector;
@@ -176,45 +166,8 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
         return keys.get(defaultContainer);
     }
 
-    public Proxy getProxySettings() {
-        if (isProxySet()) {
-            if (proxySettings == null) {
-                setAuthenticator();
-                proxySettings = new Proxy(
-                        Proxy.Type.HTTP,
-                        new InetSocketAddress(Framework
-                                .getProperty(SHINDIG_PROXY_PROXY_HOST), Integer
-                                .parseInt(Framework
-                                        .getProperty(SHINDIG_PROXY_PROXY_PORT))));
-            }
-
-            return proxySettings;
-        } else {
-            return Proxy.NO_PROXY;
-        }
-    }
-
-    private static void setAuthenticator() {
-        Authenticator.setDefault(new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-
-                String password = Framework.getProperty(SHINDIG_PROXY_PASSWORD);
-                if (password != null) {
-                    return new PasswordAuthentication(Framework
-                            .getProperty(SHINDIG_PROXY_USER), password
-                            .toCharArray());
-                }
-                return null;
-
-            }
-        });
-    }
-
-    private static boolean isProxySet() {
-        return Framework.getProperty(SHINDIG_PROXY_PROXY_SET) != null
-                && Framework.getProperty(SHINDIG_PROXY_PROXY_SET)
-                        .equals("true");
+    public ProxySelector getProxySelector() {
+        return new SimpleProxySelector();
     }
 
 }

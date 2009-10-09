@@ -17,38 +17,34 @@
 
 package org.nuxeo.opensocial.shindig;
 
-import java.net.Authenticator;
-import java.net.InetSocketAddress;
-import java.net.PasswordAuthentication;
-import java.net.Proxy;
+import java.net.ProxySelector;
 
+import org.apache.shindig.gadgets.http.HttpFetcher;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
+import org.nuxeo.opensocial.shindig.gadgets.ProxySelectorHttpFetcher;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
+import com.google.inject.Scopes;
 
 public class ProxyModule extends AbstractModule {
-    private static final String SHINDIG_PROXY_PROXY_PORT = "shindig.proxy.proxyPort";
-    private static final String SHINDIG_PROXY_PROXY_HOST = "shindig.proxy.proxyHost";
-
-    private static final String SHINDIG_PROXY_PASSWORD = "shindig.proxy.password";
-    private static final String SHINDIG_PROXY_USER = "shindig.proxy.user";
 
     @Override
     protected void configure() {
-        bind(Proxy.class).toProvider(ProxyProvider.class);
+        bind(ProxySelector.class).toProvider(ProxySelectorProvider.class);
+        bind(HttpFetcher.class).to(ProxySelectorHttpFetcher.class).in(Scopes.SINGLETON);
     }
 
-    public static class ProxyProvider implements Provider<Proxy> {
-        public ProxyProvider() {
+    public static class ProxySelectorProvider implements Provider<ProxySelector> {
+        public ProxySelectorProvider() {
         }
 
 
-        public Proxy get() {
+        public ProxySelector get() {
             try {
             OpenSocialService os = Framework.getService(OpenSocialService.class);
-            return os.getProxySettings();
+            return os.getProxySelector();
             } catch (Exception e) {
                 return null;
             }

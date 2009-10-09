@@ -17,7 +17,7 @@
 
 package org.nuxeo.opensocial.service.api;
 
-import java.net.Proxy;
+import java.net.ProxySelector;
 
 import org.apache.shindig.gadgets.GadgetSpecFactory;
 
@@ -51,6 +51,6 @@ public interface OpenSocialService {
      * Returns the proxy settings if set
      * @return
      */
-    Proxy getProxySettings();
+    ProxySelector getProxySelector();
 
 }
