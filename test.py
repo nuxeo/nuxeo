@@ -82,8 +82,9 @@ def testCore():
     print "## Testing 'core' packaging"
     flush()
 
-    clean()
-    mvn("install package -P core")
+    #clean()
+    #mvn("install package -P core")
+    print "Testing result of 'package -P core'"
     zipfile = getZipFileFrom('nuxeo-distribution-server/target/')
 
     os.mkdir("test")
@@ -102,8 +103,10 @@ def testShell():
     print "## Testing 'nxshell' packaging"
     flush()
 
-    clean()
-    mvn("install package -P shell")
+    #clean()
+    #mvn("install package -P shell")
+    print "Testing result of 'package -P shell'"
+
     zipfile = getZipFileFrom("nuxeo-distribution-shell/target/")
 
     os.mkdir("test")
@@ -125,8 +128,10 @@ def testJetty():
     print "## Testing 'jetty' packaging"
     flush()
 
-    clean()
-    mvn("install package -P jetty")
+    #clean()
+    #mvn("install package -P jetty")
+    print "Testing result of 'package -P jetty'"
+
     zipfile = getZipFileFrom("nuxeo-distribution-jetty-ep/target/")
 
     os.mkdir("test")
@@ -171,8 +176,10 @@ def testGf3():
     print "## Testing 'gf3' packaging"
     flush()
 
-    clean()
-    mvn("install package -P gf3")
+    #clean()
+    #mvn("install package -P gf3")
+    print "Testing result of 'package -P gf3'"
+
     zipfile = getZipFileFrom("nuxeo-distribution-gf3/target/")
 
     os.mkdir("test")
