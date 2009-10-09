@@ -28,7 +28,7 @@ def mvn(args):
         system("mvn -q " + args)
 
 def clean():
-    mvn("clean")
+    #mvn("clean")
     system("rm -rf test")
 
 def fileExists(path):
@@ -82,7 +82,7 @@ def testCore():
     print "## Testing 'core' packaging"
     flush()
 
-    #clean()
+    clean()
     #mvn("install package -P core")
     print "Testing result of 'package -P core'"
     zipfile = getZipFileFrom('nuxeo-distribution-server/target/')
@@ -103,7 +103,7 @@ def testShell():
     print "## Testing 'nxshell' packaging"
     flush()
 
-    #clean()
+    clean()
     #mvn("install package -P shell")
     print "Testing result of 'package -P shell'"
 
@@ -128,7 +128,7 @@ def testJetty():
     print "## Testing 'jetty' packaging"
     flush()
 
-    #clean()
+    clean()
     #mvn("install package -P jetty")
     print "Testing result of 'package -P jetty'"
 
@@ -176,7 +176,7 @@ def testGf3():
     print "## Testing 'gf3' packaging"
     flush()
 
-    #clean()
+    clean()
     #mvn("install package -P gf3")
     print "Testing result of 'package -P gf3'"
 
