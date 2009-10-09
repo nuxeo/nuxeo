@@ -258,25 +258,21 @@ public class DocumentActions implements Serializable {
     	int nbrEllipses = 3;
     	int minLength = 5;
     	
-    	log.debug("Cropping title to " + maxLength + " characters.");
     	title = DocumentModelFunctions.titleOrId(document);
 
     	int length = title.length();
     	
     	// a minimum of 5 characters needed before we crop
     	if(length <= minLength) {
-    		log.debug("Title is " + length + " characters. A minimum of 5 characters needed before we crop. Returning title unchanged.");
     		return title;
     	}
     	
     	// if maxLength is crazy, set it to a proper value
     	if(maxLength <= minLength ) {
-    		log.debug("A maxLength of " + maxLength + " is unreasonable. Setting maxLength to " + minLength);
     		maxLength = minLength;
     	}
     	
     	if(length <= maxLength) {
-    		log.debug("Title length " + length + " is less than maxLength " + maxLength + ". Returning title unchanged.");
     		return title;
     	}
 
@@ -296,8 +292,6 @@ public class DocumentActions implements Serializable {
     	endChars = title.substring(length-nbrEndChars, length);
     	
     	String croppedTitle = beginningChars + "..." + endChars;
-    	log.debug("Original title: [" + title + "]");
-    	log.debug("Cropped title: [" + croppedTitle + "]");
     	return croppedTitle;
     	
     }

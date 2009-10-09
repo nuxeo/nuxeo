@@ -36,13 +36,8 @@
             </h:selectBooleanCheckbox>
             <span id="title_#{row.data.ref}" class="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
               <a4j:commandLink id="titleLink" action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
-                <nxh:outputText value="#{nxd:titleOrId(row.data)}"
-                  title="#{row.data.dc.description}"
-                  rendered="#{!empty row.data.dc.description}"
-                  styleClass="thumbViewTitle"/>
                 <nxh:outputText value="#{documentActions.getTitleCropped(row.data, 20)}"
                   title="#{row.data.dc.title}"
-                  rendered="#{empty row.data.dc.description}"
                   styleClass="thumbViewTitle"/>
               </a4j:commandLink>
             </span>

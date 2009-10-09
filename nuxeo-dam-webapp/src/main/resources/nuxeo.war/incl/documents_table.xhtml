@@ -64,12 +64,7 @@
         <!-- Title -->
         <span id="title_#{row.data.ref}">
           <a4j:commandLink id="titleLink" action="#{documentActions.setCurrentSelection(row.data)}" reRender="documentsList, selectionView">
-            <nxh:outputText value="#{nxd:titleOrId(row.data)}"
-              title="#{row.data.dc.description}"
-              rendered="#{!empty row.data.dc.description}"/>
-            <nxh:outputText value="#{documentActions.getTitleCropped(row.data,40)}"
-              title="#{row.data.dc.title}"
-              rendered="#{empty row.data.dc.description}"/>
+            <nxh:outputText value="#{documentActions.getTitleCropped(row.data,40)}" title="#{row.data.dc.title}"/>
           </a4j:commandLink>
         </span>
        </div>

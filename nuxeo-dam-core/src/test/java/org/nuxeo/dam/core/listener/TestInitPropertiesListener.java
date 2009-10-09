@@ -35,6 +35,9 @@ public class TestInitPropertiesListener extends SQLRepositoryTestNG {
         importSet.setPropertyValue("damc:author", "testCreator");
         Calendar cal = GregorianCalendar.getInstance();
         importSet.setPropertyValue("damc:authoringDate", cal);
+        importSet.setPropertyValue("dc:description", "testDescription");
+        importSet.setPropertyValue("dc:coverage", "testCoverage");
+        importSet.setPropertyValue("dc:expired", cal);
         importSet = session.createDocument(importSet);
         assertNotNull(importSet);
         session.saveDocument(importSet);
@@ -49,8 +52,12 @@ public class TestInitPropertiesListener extends SQLRepositoryTestNG {
         session.saveDocument(file);
         session.save();
         assertTrue(file.hasSchema("dam_common"));
+        assertTrue(file.hasSchema("dublincore"));
         assertEquals(file.getPropertyValue("damc:author"), "testCreator");
         assertEquals(file.getPropertyValue("damc:authoringDate"), cal);
+        assertEquals(file.getPropertyValue("dc:description"), "testDescription");
+        assertEquals(file.getPropertyValue("dc:coverage"), "testCoverage");
+        assertEquals(file.getPropertyValue("dc:expired"), cal);
 
         // Picture document
         DocumentModel picture = session.createDocumentModel(
@@ -60,8 +67,12 @@ public class TestInitPropertiesListener extends SQLRepositoryTestNG {
         session.saveDocument(picture);
         session.save();
         assertTrue(picture.hasSchema("dam_common"));
+        assertTrue(picture.hasSchema("dublincore"));
         assertEquals(picture.getPropertyValue("damc:author"), "testCreator");
         assertEquals(picture.getPropertyValue("damc:authoringDate"), cal);
+        assertEquals(picture.getPropertyValue("dc:description"), "testDescription");
+        assertEquals(picture.getPropertyValue("dc:coverage"), "testCoverage");
+        assertEquals(picture.getPropertyValue("dc:expired"), cal);
     }
 
     @AfterMethod
