@@ -26,16 +26,25 @@
       <deniedsubtypes>
         <type>Space</type>
       </deniedsubtypes>
+      <subtypes>
+        <type hidden="create,paste,edit">Space</type>
+       </subtypes>
     </type>
     <type id="Folder">
       <deniedsubtypes>
         <type>Space</type>
       </deniedsubtypes>
+      <subtypes>
+        <type hidden="create,paste,edit">Space</type>
+       </subtypes>
     </type>
     <type id="WorkspaceRoot">
       <deniedsubtypes>
         <type>Space</type>
       </deniedsubtypes>
+      <subtypes>
+        <type hidden="create,paste,edit">Space</type>
+       </subtypes>
     </type>
 
   </extension>
