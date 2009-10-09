@@ -114,6 +114,7 @@ public class JsLibrary {
   public static native void updateFrameHeight()/*-{
     $wnd.$(".x-panel-body").attr("style","width:100%");
     $wnd.$(".gwt-Frame").attr("style","width:100%");
+    $wnd.$(".gwt-Frame").attr("style","height:200px");
   }-*/;
 
   public static native void updateColumnStyle() /*-{
@@ -126,4 +127,7 @@ public class JsLibrary {
    $wnd.$("#"+id).fadeIn("slow");
   }-*/;
 
+  public static native String getNuxeoClientSideUrl()/*-{
+        return top.nxBaseUrl;
+  }-*/;
 }

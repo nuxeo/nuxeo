@@ -38,7 +38,7 @@
                 </tr>
             </thead>
             <tbody id="nxDocumentListData">
-                <tr><td><img src="/nuxeo/img/standart_waiter.gif"></td></tr>
+                <tr><td colspan="6" style="text-align:center"><img src="/nuxeo/img/standart_waiter.gif"></td></tr>
             </tbody>
         </table>
     </div>

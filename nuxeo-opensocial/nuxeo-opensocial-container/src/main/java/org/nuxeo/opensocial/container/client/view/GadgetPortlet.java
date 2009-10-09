@@ -62,8 +62,26 @@ public class GadgetPortlet extends Portlet {
     return GADGET_CONTAINER + this.gadget.getRef();
   }
 
+  private String getClientVirtualHostedUrl(String renderUrl) {
+      //JsLibrary.log("call getClientVirtualHostedUrl on url " + renderUrl);
+      String clientSiteBaseUrl = JsLibrary.getNuxeoClientSideUrl();
+      if (clientSiteBaseUrl==null) {
+          JsLibrary.error("unable to get Client Side url from top");
+          return renderUrl;
+      } else {
+          // XXX this is a hack : should do better than that !!!
+          String[] parts = renderUrl.split("/nuxeo/");
+          String oldServerUrl = parts[0];
+          String newServerUrl = clientSiteBaseUrl.replace("/nuxeo/", "");
+          String newurl = renderUrl.replaceAll(oldServerUrl, newServerUrl);
+          //JsLibrary.log("computed url =" + newurl);
+          return newurl;
+      }
+  }
+
   private Frame buildFrame() {
-    Frame f = new Frame(this.gadget.getRenderUrl());
+    String iFrameUrl = getClientVirtualHostedUrl(gadget.getRenderUrl());
+    Frame f = new Frame(iFrameUrl);
     f.setHeight("100%");
     f.setWidth("100%");
     Element elem = f.getElement();
