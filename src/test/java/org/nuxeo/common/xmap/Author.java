@@ -180,7 +180,7 @@ public class Author {
     }
 
 
-    // map to load objetcs
+    // map to load objects
     @XNodeMap(value = "persons/person", key = "firstName", type = HashMap.class, componentType = Name.class)
     Map<String, Name> persons;
 

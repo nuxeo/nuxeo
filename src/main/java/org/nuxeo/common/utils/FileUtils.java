@@ -352,7 +352,7 @@ public final class FileUtils {
             if (dst.exists()) {
                 dst = new File(dst, src.getName());
                 dst.mkdir();
-            } else { // alow renaming dest dir
+            } else { // allows renaming dest dir
                 dst.mkdirs();
             }
             File[] files = src.listFiles();
@@ -372,7 +372,7 @@ public final class FileUtils {
             if (dst.exists()) {
                 dst = new File(dst, src.getName());
                 dst.mkdir();
-            } else { // alow renaming dest dir
+            } else { // allow renaming dest dir
                 dst.mkdirs();
             }
             File[] files = src.listFiles();

@@ -26,8 +26,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @SuppressWarnings({"SuppressionAnnotation"})
 public class XAnnotatedMap extends XAnnotatedList {
@@ -54,8 +53,7 @@ public class XAnnotatedMap extends XAnnotatedList {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Object getValue(Context ctx, Element base)
-    throws IllegalAccessException, InstantiationException {
+    protected Object getValue(Context ctx, Element base) throws IllegalAccessException, InstantiationException {
         Map<String, Object> values = (Map) type.newInstance();
         if (xao != null) {
             DOMHelper.visitMapNodes(ctx, this, base, path, elementMapVisitor, values);
@@ -78,10 +76,10 @@ public class XAnnotatedMap extends XAnnotatedList {
     @Override
     public void toXML(Object instance, Element parent) throws Exception {
         Object v = accessor.getValue(instance);
-        if ( v != null && v instanceof Map<?, ?>){
+        if (v != null && v instanceof Map<?, ?>) {
             Map<String, ?> map = (Map<String, ?>) v;
-            if ( xao == null ) {
-                for ( Map.Entry<String, ?>  entry: map.entrySet()){
+            if (xao == null) {
+                for (Map.Entry<String, ?> entry : map.entrySet()) {
                     String entryKey = entry.getKey();
                     String value = valueFactory.serialize(null, entry.getValue());
                     Element e = XMLBuilder.addElement(parent, path);
@@ -90,7 +88,7 @@ public class XAnnotatedMap extends XAnnotatedList {
                     XMLBuilder.fillField(e, value, null);
                 }
             } else {
-                for ( Map.Entry<String, ?>  entry: map.entrySet()){
+                for (Map.Entry<String, ?> entry : map.entrySet()) {
                     String entryKey = entry.getKey();
                     Element e = XMLBuilder.addElement(parent, path);
                     Element keyElement = XMLBuilder.getOrCreateElement(e, key);
@@ -103,8 +101,7 @@ public class XAnnotatedMap extends XAnnotatedList {
 }
 
 class ElementMapVisitor implements DOMHelper.NodeMapVisitor {
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key,
-            Map<String, Object> result) {
+    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key, Map<String, Object> result) {
         try {
             result.put(key, xam.xao.newInstance(ctx, (Element) node));
         } catch (Exception e) {
@@ -115,8 +112,7 @@ class ElementMapVisitor implements DOMHelper.NodeMapVisitor {
 }
 
 class ElementValueMapVisitor implements DOMHelper.NodeMapVisitor {
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key,
-            Map<String, Object> result) {
+    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key, Map<String, Object> result) {
         String val = node.getTextContent();
         if (xam.trim) {
             val = val.trim();
@@ -131,8 +127,7 @@ class ElementValueMapVisitor implements DOMHelper.NodeMapVisitor {
 }
 
 class AttributeValueMapVisitor implements DOMHelper.NodeMapVisitor {
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key,
-            Map<String, Object> result) {
+    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key, Map<String, Object> result) {
         String val = node.getNodeValue();
         if (xam.valueFactory != null) {
             result.put(key, xam.valueFactory.deserialize(ctx, val));

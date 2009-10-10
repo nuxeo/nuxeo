@@ -82,7 +82,8 @@ public class XMethodAccessor implements XAccessor {
             try {
                 return klass.getMethod(getterName, new Class[0]);
             } catch (Exception e) {
-                throw new IllegalArgumentException("there is NO getter defined for annotated setter: " + setterName, e);
+                throw new IllegalArgumentException(
+                        "there is NO getter defined for annotated setter: " + setterName, e);
             }
         }
         return null;

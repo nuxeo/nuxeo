@@ -120,7 +120,9 @@ public class URLStreamHandlerFactoryInstaller {
     }
 
     public static class FactoryStack implements URLStreamHandlerFactory {
-        ArrayList<URLStreamHandlerFactory> factories = new ArrayList<URLStreamHandlerFactory>();
+
+        final ArrayList<URLStreamHandlerFactory> factories = new ArrayList<URLStreamHandlerFactory>();
+
         public URLStreamHandler createURLStreamHandler(String protocol) {
             for (int i = factories.size()-1; i>=0; i--) {
                 URLStreamHandler h = factories.get(i).createURLStreamHandler(protocol);
@@ -155,6 +157,7 @@ public class URLStreamHandlerFactoryInstaller {
         public void clear() {
             factories.clear();
         }
+
     }
 
 }
