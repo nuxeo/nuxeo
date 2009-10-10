@@ -30,7 +30,7 @@ import com.google.gwt.json.client.JSONValue;
  */
 public class HttpResponse extends Response {
 
-    protected Response response;
+    protected final Response response;
 
     public HttpResponse(Response response) {
         this.response = response;

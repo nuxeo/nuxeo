@@ -44,8 +44,6 @@ import com.google.gwt.core.ext.typeinfo.JType;
  */
 public class BundleGenerationTask extends GenerationTask {
 
-
-
     @Override
     public void run() throws UnableToCompleteException {
         composer.addImport(Framework.class.getName());
@@ -116,7 +114,6 @@ public class BundleGenerationTask extends GenerationTask {
         Set<JMethod> extPoints = new LinkedHashSet<JMethod>();
         Set<JMethod> instances = new LinkedHashSet<JMethod>();
 
-
         // start processing bundles
         for (JClassType type : bundles) {
             collectAnnotatedMethods(type, extensions, lastExtensions, extPoints, instances);
@@ -149,7 +146,6 @@ public class BundleGenerationTask extends GenerationTask {
         writer.outdent();
         writer.println("}");
     }
-
 
     private void writeInstanceDecls(Set<JMethod> instances) {
         for (JMethod m : instances) {
@@ -236,4 +232,5 @@ public class BundleGenerationTask extends GenerationTask {
             return h1 - h2;
         }
     }
+
 }

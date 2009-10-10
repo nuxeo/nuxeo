@@ -24,18 +24,18 @@ import org.nuxeo.ecm.platform.gwt.client.ui.view.ViewSite;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class EditorSite extends ViewSite {
-    protected Editor editor;
+
+    protected final Editor editor;
     protected static int cnt = 0;
 
     public EditorSite(Editor editor) {
-        this ("editor", editor);
+        this("editor", editor);
     }
 
     public EditorSite(String name, Editor editor) {
-        super(name+"#"+(cnt++), editor.getView()); //TODO
+        super(name + "#" + (cnt++), editor.getView()); //TODO
         this.editor = editor;
     }
 
@@ -57,4 +57,5 @@ public class EditorSite extends ViewSite {
     public Editor getEditor() {
         return editor;
     }
+
 }

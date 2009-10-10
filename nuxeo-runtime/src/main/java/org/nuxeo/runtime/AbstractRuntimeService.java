@@ -66,7 +66,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         this(context, null);
     }
 
-    // warnings during the deployment. Here are collected all errors occured during the startup
+    // warnings during the deployment. Here are collected all errors occurred during the startup
     protected final List<String> warnings = new ArrayList<String>();
 
 

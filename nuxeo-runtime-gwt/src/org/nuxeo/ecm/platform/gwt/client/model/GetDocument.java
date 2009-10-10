@@ -35,8 +35,7 @@ import com.google.gwt.user.client.ui.DialogBox;
  */
 public class GetDocument extends HttpCommand {
 
-    protected String id;
-
+    protected final String id;
 
     public GetDocument(String id) {
         this.id = id;
@@ -77,7 +76,6 @@ public class GetDocument extends HttpCommand {
             }
             super.onFailure(cause);
         }
-
     }
 
 }

@@ -131,7 +131,9 @@ public class GF3Component extends DefaultComponent {
 
 
     class WarDeployer implements Runnable {
-        WebApplication app;
+
+        final WebApplication app;
+
         public WarDeployer(WebApplication app) {
             this.app = app;
         }

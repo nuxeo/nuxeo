@@ -33,10 +33,9 @@ public class AdaptableDescriptor {
 
     public static final Class<?>[] EMPTY_CLASSES = new Class[0];
 
-    protected Class<?> adaptable;
+    protected final Class<?> adaptable;
+    protected final Map<Class<?>, AdapterFactory<?>> factories;
     protected Class<?>[] superTypes;
-    protected Map<Class<?>, AdapterFactory<?>> factories;
-
 
     public AdaptableDescriptor(Class<?> adaptable) {
         this.adaptable = adaptable;

@@ -23,26 +23,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Context extends HashMap<String,Object> {
 
     private static final long serialVersionUID = 1L;
 
     protected Object input;
-    protected static List<ContextListener> contextListeners = new ArrayList<ContextListener>();
-
+    protected static final List<ContextListener> contextListeners = new ArrayList<ContextListener>();
 
     public Object getInputObject() {
         return input;
     }
 
-    /**
-     * @param object the object to set.
-     */
     public void setInputObject(Object object) {
         if (this.input != object) {
             this.input = object;
@@ -56,7 +50,6 @@ public class Context extends HashMap<String,Object> {
         fireEvent(new ContextEvent(ContextEvent.PROP, key));
         return obj;
     }
-
 
     public static void fireEvent(ContextEvent event) {
         for (ContextListener listener : contextListeners) {

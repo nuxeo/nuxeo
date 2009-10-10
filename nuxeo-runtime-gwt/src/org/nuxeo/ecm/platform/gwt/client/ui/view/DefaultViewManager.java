@@ -32,8 +32,7 @@ import org.nuxeo.ecm.platform.gwt.client.ui.View;
 public class DefaultViewManager implements ViewManager {
 
     protected Container container;
-    protected ArrayList<ViewSite> sites = new ArrayList<ViewSite>();
-
+    protected final ArrayList<ViewSite> sites = new ArrayList<ViewSite>();
 
     public DefaultViewManager() {
     }
@@ -144,6 +143,5 @@ public class DefaultViewManager implements ViewManager {
             container.deactivateSite(vs);
         }
     }
-
 
 }

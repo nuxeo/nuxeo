@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.gwt.client.ui;
 
 import com.google.gwt.user.client.ui.Widget;
 
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -33,7 +31,6 @@ public abstract class AbstractView implements View {
     protected Site site;
     protected String name;
     protected Widget widget;
-
 
     public AbstractView(String name) {
         this.name = name;
@@ -96,7 +93,8 @@ public abstract class AbstractView implements View {
     }
 
     /**
-     * Create a widget to be bound to this view
+     * Creates a widget to be bound to this view.
+     *
      * @return the new widget. must be never null.
      */
     protected abstract Widget createWidget();
@@ -114,19 +112,18 @@ public abstract class AbstractView implements View {
     }
 
     /**
-     * May override this to notify the site about title or icon updates.
+     * You may override this to notify the site about title or icon updates.
      */
     protected void inputChanged() {
-
     }
 
     public Object getInput() {
         return input;
     }
 
-
     @Override
     public String toString() {
         return "View: "+name+" ["+getClass().getName()+"]";
     }
+
 }

@@ -31,21 +31,21 @@ import com.google.gwt.user.rebind.SourceWriter;
 
 /**
  * A source writer that is writing in memory.
- * Used to be able to add imports after begining to write
+ * Used to be able to add imports after begining to write.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JSourceWriter extends StringWriter implements SourceWriter {
 
-    protected String crlf = System.getProperty("line.separator");
-    protected ClassSourceFileComposerFactory composer;
+    protected final String crlf = System.getProperty("line.separator");
+    protected final ClassSourceFileComposerFactory composer;
+    protected final ArrayList<String> interfaces = new ArrayList<String>();
+    protected final ArrayList<String> imports = new ArrayList<String>();
+    protected final GeneratorContext context;
+    protected final PrintWriter printWriter;
+
     protected int indent = 0;
     protected boolean inComment = false;
-    protected ArrayList<String> interfaces = new ArrayList<String>();
-    protected ArrayList<String> imports = new ArrayList<String>();
-    protected GeneratorContext context;
-    protected PrintWriter printWriter;
 
     public JSourceWriter(ClassSourceFileComposerFactory composer, GeneratorContext context, PrintWriter printWriter) {
         this.composer = composer;
@@ -53,13 +53,9 @@ public class JSourceWriter extends StringWriter implements SourceWriter {
         this.printWriter = printWriter;
     }
 
-    /**
-     * @return the composer.
-     */
     public ClassSourceFileComposerFactory getComposer() {
         return composer;
     }
-
 
     public void println() {
         write(crlf);
@@ -129,6 +125,5 @@ public class JSourceWriter extends StringWriter implements SourceWriter {
     public void addImplementedInterface(String intfName) {
         interfaces.add(intfName);
     }
-
 
 }
