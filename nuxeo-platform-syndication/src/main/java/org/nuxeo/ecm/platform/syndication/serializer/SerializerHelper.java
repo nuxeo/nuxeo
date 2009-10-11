@@ -37,6 +37,13 @@ public class SerializerHelper {
     public static void formatResult(ResultSummary summary,
             DocumentModelList dmList, Response res, String format,
             String columnsDefinition, HttpServletRequest req) throws ClientException {
+        formatResult(summary, dmList, res, format, columnsDefinition, req, null,null);
+    }
+
+
+    public static void formatResult(ResultSummary summary,
+            DocumentModelList dmList, Response res, String format,
+            String columnsDefinition, HttpServletRequest req, List<String> labels, String lang) throws ClientException {
         DocumentModelListSerializer dms;
 
         if (format.equalsIgnoreCase("JSON")) {
@@ -51,7 +58,12 @@ public class SerializerHelper {
             dms = new SimpleXMLSerializer();
         }
 
-        dms.serialize(summary, dmList, columnsDefinition, res, req);
+        if (lang!=null) {
+            dms.serialize(summary, dmList, columnsDefinition, res, req,labels, lang);
+        } else {
+            dms.serialize(summary, dmList, columnsDefinition, res, req);
+        }
+
     }
 
     public static void formatResult(ResultSummary summary,

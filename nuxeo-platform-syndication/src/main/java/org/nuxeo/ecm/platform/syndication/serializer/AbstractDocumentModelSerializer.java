@@ -81,6 +81,12 @@ public abstract class AbstractDocumentModelSerializer implements
         res.setEntity(xml, MediaType.TEXT_XML);
     }
 
+    public void serialize(ResultSummary summary, DocumentModelList docList,
+            String columnsDefinition, Response res, HttpServletRequest req, List<String> labels, String lang) throws ClientException {
+        serialize(summary, docList, columnsDefinition, res, req);
+    }
+
+
     protected String getFullUserName(String login) throws Exception {
         String fullname = login;
         if (um==null) {

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.syndication.restAPI;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
+import org.nuxeo.ecm.platform.syndication.serializer.DocumentModelListSerializer;
 import org.nuxeo.ecm.platform.syndication.serializer.ResultSummary;
 import org.nuxeo.ecm.platform.syndication.serializer.SerializerHelper;
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseStatelessNuxeoRestlet;
@@ -165,12 +167,17 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
                 format = getDefaultFormat();
             }
 
+
             // get Columns definition
             String columnsDefinition = req.getResourceRef().getQueryAsForm().getFirstValue(
                     "columns");
             if (columnsDefinition == null) {
                 columnsDefinition = getDefaultColumns();
             }
+
+            // get format
+            String lang = req.getResourceRef().getQueryAsForm().getFirstValue(
+                    "lang");
 
             // fetch result
             DocumentModelList dmList = provider.getPage(page);
@@ -185,9 +192,22 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
             summary.setPages(provider.getNumberOfPages());
             summary.setPageNumber(page);
 
-            // format result
-            SerializerHelper.formatResult(summary, dmList, res, format,
-                    columnsDefinition, getHttpRequest(req));
+
+            if (lang!=null) {
+                String[] cols = columnsDefinition.split(DocumentModelListSerializer.colDefinitonDelimiter);
+                List<String> labels = new ArrayList<String>();
+                for (String col : cols) {
+                    labels.add("label." + col);
+                }
+                // format result
+                SerializerHelper.formatResult(summary, dmList, res, format,
+                        columnsDefinition, getHttpRequest(req), labels, lang);
+            }
+            else {
+                // format result
+                SerializerHelper.formatResult(summary, dmList, res, format,
+                        columnsDefinition, getHttpRequest(req));
+            }
         } catch (Exception e) {
 
             handleError(res, e);

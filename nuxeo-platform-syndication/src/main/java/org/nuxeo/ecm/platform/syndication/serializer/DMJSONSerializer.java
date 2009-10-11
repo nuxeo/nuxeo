@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.platform.syndication.serializer;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +32,11 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
+import org.apache.derby.iapi.store.raw.Transaction;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.platform.syndication.translate.TranslationHelper;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 
@@ -43,6 +45,12 @@ public class DMJSONSerializer extends AbstractDocumentModelSerializer {
     @Override
     public String serialize(ResultSummary summary, DocumentModelList docList,
             List<String> columnsDefinition, HttpServletRequest req) throws ClientException {
+        return serialize(summary, docList, columnsDefinition, req, null, null);
+    }
+
+
+    public String serialize(ResultSummary summary, DocumentModelList docList,
+            List<String> columnsDefinition, HttpServletRequest req, List<String> labels, String lang) throws ClientException {
 
         if (docList == null) {
             return EMPTY_LIST;
@@ -67,6 +75,16 @@ public class DMJSONSerializer extends AbstractDocumentModelSerializer {
         }
 
         all.put("data", struct);
+
+        // add translations if asked for
+        if (lang!=null && labels!=null) {
+            Map<String, String> translations = new HashMap<String, String>();
+            for (String key : labels) {
+                translations.put(key, TranslationHelper.getLabel(key, lang));
+            }
+            all.put("translations", translations);
+        }
+
         //JSON jsonRes = JSONSerializer.toJSON(struct);
         JSON jsonRes = JSONSerializer.toJSON(all);
 
@@ -87,5 +105,17 @@ public class DMJSONSerializer extends AbstractDocumentModelSerializer {
         String json = serialize(summary, docList, columnsDefinition, req);
         res.setEntity(json, MediaType.TEXT_PLAIN);
     }
+
+    @Override
+    public void serialize(ResultSummary summary, DocumentModelList docList,
+            String columnsDefinition, Response res, HttpServletRequest req, List<String> labels, String lang) throws ClientException {
+        List<String> cols = new ArrayList<String>();
+        if (columnsDefinition != null) {
+            cols = Arrays.asList(columnsDefinition.split(colDefinitonDelimiter));
+        }
+        String json = serialize(summary, docList, cols, req, labels, lang);
+        res.setEntity(json, MediaType.TEXT_PLAIN);
+    }
+
 
 }
