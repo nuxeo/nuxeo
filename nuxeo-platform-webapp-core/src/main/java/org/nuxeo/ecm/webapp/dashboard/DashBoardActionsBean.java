@@ -97,6 +97,9 @@ public class DashBoardActionsBean implements DashboardActions {
     @In(required = false)
     protected transient Principal currentUser;
 
+    @In(create = true)
+    protected DashboardNavigationHelper dashboardNavigationHelper;
+
     protected transient DocumentModel selectedDomain;
 
     protected transient List<DocumentModel> availableDomains;
@@ -158,7 +161,7 @@ public class DashBoardActionsBean implements DashboardActions {
     }
 
     public String viewDashboard() {
-        return "user_dashboard";
+        return dashboardNavigationHelper.navigateToDashboard();
     }
 
     @Observer(value = { EventNames.DOMAIN_SELECTION_CHANGED }, create = false, inject = false)

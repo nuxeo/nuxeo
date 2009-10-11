@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActionsBean;
+import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 
 @Name("startupHelper")
 @Scope(SESSION)
@@ -55,8 +56,6 @@ public class StartupHelper implements Serializable {
     protected static final String SERVERS_VIEW = "view_servers";
 
     protected static final String DOMAINS_VIEW = "view_domains";
-
-    protected static final String DASHBOARD_VIEW = "user_dashboard";
 
     protected static final String DOMAIN_TYPE = "Domain";
 
@@ -74,6 +73,9 @@ public class StartupHelper implements Serializable {
     protected transient Context sessionContext;
 
     @In(create = true)
+    protected DashboardNavigationHelper dashboardNavigationHelper;
+
+    @In(create = true)
     ConversationIdGenerator conversationIdGenerator;
 
     @In(create = true, required = false)
@@ -83,7 +85,7 @@ public class StartupHelper implements Serializable {
      * Initializes the context with the principal id, and try to connect to the
      * default server if any. If several servers are available, let the user
      * choose.
-     * 
+     *
      * @return the view_id of the contextually computed startup page
      * @throws ClientException
      */
@@ -116,7 +118,7 @@ public class StartupHelper implements Serializable {
      * domain with title 'domainTitle' and redirect to it on viewId.
      * <p>
      * If several servers are available, let the user choose.
-     * 
+     *
      * @return the view id of the contextually computed startup page
      */
     @Begin(id = "#{conversationIdGenerator.nextMainConversationId}", join = true)
@@ -142,7 +144,7 @@ public class StartupHelper implements Serializable {
                     SecurityConstants.READ_CHILDREN)) {
                 // user cannot see the root but maybe she can see contained
                 // documents thus forwarding her to her dashboard
-                return DASHBOARD_VIEW;
+                return dashboardNavigationHelper.navigateToDashboard();
             }
 
             FacetFilter facetFilter = new FacetFilter(
