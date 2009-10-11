@@ -14,6 +14,11 @@ function getCurrentDomain() {
     return top.nxDomain;
 }
 
+function getUserLang() {
+    return top.nxUserLang;
+}
+
+
 function getRestletUrl() {
     var ts = new Date().getTime() + "" + Math.random()*11
     var url ="";
@@ -25,6 +30,9 @@ function getRestletUrl() {
     url+=QM_Name + "?format=JSON&page="+ currentPage;
     if (getCurrentDomain()!=null && getCurrentDomain()!="") {
         url+="&domain=" + getCurrentDomain();
+    }
+    if (getUserLang()!=null && getUserLang()!="") {
+        url+="&lang=" + getUserLang();
     }
     url+="&ts=" + ts;
     return url;
@@ -126,12 +134,21 @@ function displayDocumentList(jsonObject) {
     }
     document.getElementById("nxDocumentListData").innerHTML = htmlContent;
 
+    // page info
     var pageInfo = jsonObject.summary;
     var pageInfoLabel = pageInfo.pageNumber+1;
     pageInfoLabel+= "/";
     pageInfoLabel+= pageInfo.pages;
     maxPage = pageInfo.pages;
     document.getElementById("nxDocumentListPage").innerHTML = pageInfoLabel;
+
+    // labels
+    var labelInfo = jsonObject.translations;
+    if (labelInfo!=null && labelInfo!='undefined') {
+        document.getElementById("title").innerHTML = labelInfo['label.dublincore.title'];
+        document.getElementById("modified").innerHTML = labelInfo['label.dublincore.modified'];
+        document.getElementById("creator").innerHTML = labelInfo['label.dublincore.creator'];
+    }
 }
 
 function getDateForDisplay(datestr) {

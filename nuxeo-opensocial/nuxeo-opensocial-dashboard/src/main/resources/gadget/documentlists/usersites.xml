@@ -28,10 +28,10 @@
             <thead>
                 <tr>
                     <th/>
-                    <th>Document</th>
+                    <th id="title">Document</th>
                     <th/>
-                    <th>Modified</th>
-                    <th>Author</th>
+                    <th id="modified">Modified</th>
+                    <th id="creator">Author</th>
                     <th/>
                 </tr>
             </thead>
