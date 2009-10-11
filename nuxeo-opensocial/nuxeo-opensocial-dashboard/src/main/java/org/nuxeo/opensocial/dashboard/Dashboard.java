@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,14 +16,13 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.spaces.api.SpaceManager;
-import org.nuxeo.ecm.spaces.api.Univers;
-import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
-import org.nuxeo.ecm.spaces.api.exceptions.UniversNotFoundException;
+import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 import org.nuxeo.opensocial.container.component.api.FactoryManager;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
@@ -37,12 +36,7 @@ public class Dashboard implements Serializable {
 
     private static final Log log = LogFactory.getLog(Dashboard.class);
 
-    public static final String OLD_DASHBARD_VIEWID = "user_dashboard";
-    public static final String NEW_DASHBARD_VIEWID = "opensocial_dashboard";
-    public static final String DASHBARD_MODE_PROPERTY = "org.nuxeo.ecm.webapp.dashboard.viewid";
-    public static final String SELENIUM_USERAGENT = "Nuxeo-Selenium-Tester";
-
-    protected String dashBoardViewId = null;
+    protected DocumentModelList domains=null;
 
     @In(create = true, required = false)
     protected CoreSession documentManager;
@@ -50,33 +44,10 @@ public class Dashboard implements Serializable {
     @In(required = true)
     protected transient NavigationContext navigationContext;
 
+    @In(create = true)
+    protected DashboardNavigationHelper dashboardNavigationHelper;
+
     protected DocumentModel lastAccessedDocument;
-
-    public String getPersonalDashboardId() {
-        SpaceManager spaceManager;
-        try {
-            spaceManager = Framework.getService(SpaceManager.class);
-            if (spaceManager == null) {
-                log.warn("unable to find space manager!");
-            } else {
-
-                Univers universe;
-                universe = spaceManager.getUnivers(
-                        DashboardUniverseProvider.DASHBOARD_UNIVERSE_NAME,
-                        documentManager);
-                return spaceManager.getSpace(
-                        DashboardSpaceProvider.DASHBOARD_SPACE_NAME, universe,
-                        documentManager).getId().toString();
-            }
-        } catch (UniversNotFoundException e) {
-            log.error("Unable to find the default universe for our space!", e);
-        } catch (SpaceException e) {
-            log.error("Unable to access space correctly for our dashboard!", e);
-        } catch (Exception e) {
-            log.error("Error attempting to find the SpaceManager!", e);
-        }
-        return null;
-    }
 
     public boolean isAnonymous() {
         NuxeoPrincipal principal = (NuxeoPrincipal) documentManager.getPrincipal();
@@ -126,8 +97,6 @@ public class Dashboard implements Serializable {
         return "opensocial dashboard:" + getCategories() + " categories";
     }
 
-
-
     @Factory(value="opensocialNuxeoServerUrl", scope = ScopeType.APPLICATION)
     public String getNuxeoServerUrl() {
         String host = Framework.getProperty("gadgets.host","127.0.0.1");
@@ -137,38 +106,56 @@ public class Dashboard implements Serializable {
     }
 
     public String goToDashBoard() {
-        if (dashBoardViewId==null) {
-            String userAgent =null;
-            FacesContext fContext = FacesContext.getCurrentInstance();
-            if (fContext == null) {
-                log.error("unable to fetch facesContext, can not detect client type");
-            } else {
-                userAgent = fContext.getExternalContext().getRequestHeaderMap().get("User-Agent");
-            }
-
-            if (userAgent!=null && userAgent.contains(SELENIUM_USERAGENT)) {
-                dashBoardViewId =  OLD_DASHBARD_VIEWID;
-            }
-            else {
-                dashBoardViewId = Framework.getProperty(DASHBARD_MODE_PROPERTY, NEW_DASHBARD_VIEWID);
-            }
-        }
-
-        if (NEW_DASHBARD_VIEWID.equals(dashBoardViewId)) {
-            lastAccessedDocument = navigationContext.getCurrentDocument();
-        }
-
-        return dashBoardViewId;
+         String dashboardViewId = dashboardNavigationHelper.navigateToDashboard();
+         if (OpensocialDashboardNavigationHelper.NEW_DASHBARD_VIEWID.equals(dashboardViewId)) {
+             lastAccessedDocument = navigationContext.getCurrentDocument();
+         }
+        return dashboardViewId;
     }
 
 
     public String exit() throws Exception {
-
         if (lastAccessedDocument==null) {
             return navigationContext.goHome();
         } else {
             return navigationContext.navigateToDocument(lastAccessedDocument);
         }
     }
+
+    public List<SelectItem> getDomainsSelectItems() throws ClientException {
+
+        List<SelectItem> items = new ArrayList<SelectItem>();
+        DocumentModelList domains = getAccessibleDomains();
+
+        for (DocumentModel domain : domains) {
+            SelectItem item = new SelectItem(domain.getName(), domain.getTitle());
+            items.add(item);
+        }
+        return items;
+    }
+
+    protected DocumentModelList getAccessibleDomains() throws ClientException {
+        if (domains==null) {
+            domains = documentManager.query("select * from Domain order by dc:created");
+        }
+        return domains;
+    }
+
+    public String getCurrentDashboardDomainName() throws ClientException {
+
+        DocumentModel currentDomain = navigationContext.getCurrentDomain();
+        if (currentDomain==null) {
+            DocumentModelList domains = getAccessibleDomains();
+            if (domains.size()>0) {
+                currentDomain = domains.get(0);
+            }
+        }
+        if (currentDomain==null) {
+            return "";
+        } else {
+            return currentDomain.getName();
+        }
+    }
+
 
 }
