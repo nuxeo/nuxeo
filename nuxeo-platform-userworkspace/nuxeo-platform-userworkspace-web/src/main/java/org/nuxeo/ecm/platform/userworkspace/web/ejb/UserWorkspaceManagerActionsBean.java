@@ -40,6 +40,7 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceManagerActions;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.platform.userworkspace.constants.UserWorkspaceConstants;
+import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
@@ -61,8 +62,6 @@ public class UserWorkspaceManagerActionsBean implements
 
     private static final String DOCUMENT_VIEW = "view_documents";
 
-    private static final String DASHBOARD_VIEW = "user_dashboard";
-
     private boolean showingPersonalWorkspace;
 
     private boolean initialized;
@@ -78,6 +77,9 @@ public class UserWorkspaceManagerActionsBean implements
 
     @In(required = true)
     private transient CoreSession documentManager;
+
+    @In(create = true)
+    protected DashboardNavigationHelper dashboardNavigationHelper;
 
     public void initialize() {
         log.debug("Initializing user workspace manager actions bean");
@@ -151,7 +153,7 @@ public class UserWorkspaceManagerActionsBean implements
             navigationContext.setCurrentDocument(navigationContext.getCurrentDomain());
         } else {
             navigationContext.setCurrentDocument(null);
-            returnView = DASHBOARD_VIEW;
+            returnView = dashboardNavigationHelper.navigateToDashboard();
         }
         showingPersonalWorkspace = false;
 
