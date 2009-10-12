@@ -56,9 +56,9 @@ public class GadgetTools {
                   .getGadgetPortlet(ref)
                   .getGadgetBean();
 
-              setTitle("Suppression de gadget");
-              setMsg("Voulez-vous vraiment supprimer le gadget '"
-                  + gadget.getTitle() + "' ?");
+              setTitle("Delete a gadget");
+              setMsg("Are you sure you want to delete '"
+                  + gadget.getTitle() + "' gadget ?");
               setButtons(MessageBox.YESNO);
               setCallback(new MessageBox.PromptCallback() {
                 public void execute(String btnID, String text) {
@@ -67,8 +67,8 @@ public class GadgetTools {
                         .removeGadget(gadget, ContainerEntryPoint.getGwtParams(),
                             new AsyncCallback<GadgetBean>() {
                               public void onFailure(Throwable arg0) {
-                                ContainerPortal.showErrorMessage("Erreur",
-                                    "La suppression du gadget a échouée");
+                                ContainerPortal.showErrorMessage("Error",
+                                    "Error while deleting gadget");
                               }
 
                               public void onSuccess(GadgetBean gadget) {
