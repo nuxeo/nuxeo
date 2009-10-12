@@ -31,7 +31,7 @@ public class ServerException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    protected Response response;
+    protected final Response response;
 
     public ServerException(Response response) {
         super(response.getStatusCode()+" "+response.getStatusText());
@@ -39,17 +39,18 @@ public class ServerException extends Exception {
     }
 
     /**
-     * Get the status code of the server response
+     * Gets the status code of the server response.
      */
     public int getStatusCode() {
         return response.getStatusCode();
     }
 
     /**
-     * Get the server response
+     * Gets the server response.
      * @return the response.
      */
     public Response getResponse() {
         return response;
     }
+
 }

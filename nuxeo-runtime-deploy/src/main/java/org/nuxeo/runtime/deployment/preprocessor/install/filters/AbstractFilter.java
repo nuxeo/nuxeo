@@ -37,7 +37,7 @@ public abstract class AbstractFilter implements PathFilter {
     }
 
     public boolean accept(Path path, boolean defaultPolicy) {
-        // path should be in cannonical form
+        // path should be in canonical form
         boolean match = segmentsMatch(pattern, path);
         return match ? !defaultPolicy : defaultPolicy;
     }

@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -46,7 +47,6 @@ import org.nuxeo.common.logging.JavaUtilLoggingHelper;
 import org.nuxeo.runtime.deployment.preprocessor.ContainerDescriptor;
 import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.deployment.preprocessor.FragmentDescriptor;
-import org.nuxeo.runtime.deployment.preprocessor.FragmentRegistry;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.SeamHotReloadPreprocessor;
 
 /**
@@ -57,6 +57,7 @@ import org.nuxeo.runtime.jboss.deployment.preprocessor.SeamHotReloadPreprocessor
 public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
 
     public static final String LIB_DIR = "lib";
+    public static final String SYSTEM_DIR = "system";
     public static final String CONFIG_DIR = "config";
     public static final String DS_DIR = "datasources";
     public static final String MBEANS_DIR = CONFIG_DIR + "/mbeans";
@@ -169,21 +170,24 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
             // and predeploy
             processor.predeploy();
 
-            FragmentRegistry freg = processor.getRootContainer().fragments;
-            //freg.get("org.nuxeo.osgi");
-            FragmentDescriptor fd = freg.get("org.nuxeo.osgi");
-            if (fd != null) {
-                di.addLibraryJar(new File(directory, fd.filePath).toURL());
-            }
-            //TODO this should not be hardcoded here -> find a fix for this
-            di.addLibraryJar(new File(directory, "lib/osgi-core-4.1.jar").toURL());
+            // put all jars in the classpath
+            addJarsToClassPath(di);
+            
+//            FragmentRegistry freg = processor.getRootContainer().fragments;
+//            //freg.get("org.nuxeo.osgi");
+//            FragmentDescriptor fd = freg.get("org.nuxeo.osgi");
+//            if (fd != null) {
+//                di.addLibraryJar(new File(directory, fd.filePath).toURL());
+//            }
+//            //TODO this should not be hardcoded here -> find a fix for this
+//            di.addLibraryJar(new File(directory, "lib/osgi-core-4.1.jar").toURL());
 
             //di.addLibraryJar(new File(directory, "system/").toURL());
             // let the EAR deployer doing its job
             super.init(di);
 
             // handle special dirs
-            Collection<String> firstDeployments = processStaticLibraries(di);
+            Collection<String> firstDeployments = new ArrayList<String>(); //processStaticLibraries(di);
             Collection<String> mbeansDeployments = processNestedMBeans(di);
             firstDeployments.addAll(mbeansDeployments);
             Collection<String> dsDeployments = processNestedDataSources(di);
@@ -539,4 +543,31 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
 
     }
 
+    protected void addJarsToClassPath(DeploymentInfo di, File dir) throws DeploymentException {
+        if (dir.isDirectory()) {
+            File[] jars = dir.listFiles();
+            if (jars != null) {
+                for (File jar : jars) {
+                    try {
+                        di.addLibraryJar(jar.toURI().toURL());
+                    } catch (MalformedURLException e) {
+                        throw new DeploymentException("Invalid URL for file: "+jar, e);
+                    }
+                }
+            }
+        }
+    }
+
+    protected File getLibDir(DeploymentInfo di) throws DeploymentException {
+        return new File(getEarDirectory(di), LIB_DIR);
+    }
+
+    protected File getSystemDir(DeploymentInfo di) throws DeploymentException {
+        return new File(getEarDirectory(di), SYSTEM_DIR);
+    }
+    
+    protected void addJarsToClassPath(DeploymentInfo di) throws DeploymentException {
+        addJarsToClassPath(di, getLibDir(di));
+        addJarsToClassPath(di, getSystemDir(di));
+    }
 }

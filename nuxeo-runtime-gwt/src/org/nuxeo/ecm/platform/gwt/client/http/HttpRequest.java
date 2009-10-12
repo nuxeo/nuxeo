@@ -33,15 +33,12 @@ import com.google.gwt.json.client.JSONValue;
  */
 public class HttpRequest {
 
-    protected RequestBuilder builder;
+    protected final RequestBuilder builder;
 
     public HttpRequest(Method method, String url) {
         builder = new RequestBuilder(method, URL.encode(url));
     }
 
-    /**
-     * @return the builder.
-     */
     public RequestBuilder getBuilder() {
         return builder;
     }

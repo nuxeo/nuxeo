@@ -85,12 +85,12 @@ public class ComponentMBean extends ServiceDynamicMBeanSupport {
     @Override
     protected Object internalInvoke(String actionName, Object[] params, String[] signature)
             throws MBeanException, ReflectionException {
-        Method meth = mbeanDescriptor.getOperationMethod(actionName);
-        if (meth == null) {
+        Method method = mbeanDescriptor.getOperationMethod(actionName);
+        if (method == null) {
             throw new MBeanException(new OperationNotSupportedException(actionName));
         }
         try {
-            return meth.invoke(ri, params);
+            return method.invoke(ri, params);
         } catch (Exception e) {
             throw new MBeanException(e, "failed to invoke MBean operation: " + actionName);
         }
@@ -111,8 +111,8 @@ public class ComponentMBean extends ServiceDynamicMBeanSupport {
     }
 
     /**
-     * Loads the template file for the jboss service
-     * and generates the service xml definition
+     * Loads the template file for the JBoss service
+     * and generates the service XML definition
      * for the given service name.
      *
      * @param name the service name

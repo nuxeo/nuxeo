@@ -43,27 +43,24 @@ public class Framework {
     public static final String HISTORY_LISTENER_XP = "HISTORY_LISTENER";
     public static final String JS_HANDLER_XP = "JS_HANDLER";
 
-    protected static Map<String, Extensible> extensionPoints = new HashMap<String, Extensible>();
-    protected static Map<String, List<Object>> waitingExtensions = new HashMap<String, List<Object>>();
+    protected static final Map<String, Extensible> extensionPoints = new HashMap<String, Extensible>();
+    protected static final Map<String, List<Object>> waitingExtensions = new HashMap<String, List<Object>>();
     protected static Application application;
     protected static ErrorHandler errorHandler;
     protected static boolean isStarted = false;
-    protected static Map<String, JSHandler> jsHandlers = new HashMap<String, JSHandler>();
-
+    protected static final Map<String, JSHandler> jsHandlers = new HashMap<String, JSHandler>();
 
     public static Application getApplication() {
         return application;
-    }
-
-
-    public static void setErrorHandler(ErrorHandler errorHandler) {
-        Framework.errorHandler = errorHandler;
     }
 
     public static ErrorHandler getErrorHandler() {
         return errorHandler;
     }
 
+    public static void setErrorHandler(ErrorHandler errorHandler) {
+        Framework.errorHandler = errorHandler;
+    }
 
     public static void handleError(Throwable t) {
         GWT.log(t.getMessage(), t);
@@ -148,9 +145,6 @@ public class Framework {
         start(null);
     }
 
-
-
-
     public static void registerJSHandler(String id, JSHandler handler) {
         jsHandlers.put(id, handler);
     }
@@ -158,7 +152,6 @@ public class Framework {
     public static void unregisterJSHandler(String id) {
         jsHandlers.remove(id);
     }
-
 
     public static Object handleJSEvent(String eventId, String data) {
         JSHandler handler = jsHandlers.get(eventId);
@@ -232,6 +225,5 @@ public class Framework {
             }
         }
     }
-
 
 }

@@ -79,8 +79,8 @@ public class ClassPathScanner {
             return;
         }
         if (blackList != null) {
-            for (int i=0; i<blackList.length; i++) {
-                if (path.startsWith(blackList[i])) {
+            for (String prefix : blackList) {
+                if (path.startsWith(prefix)) {
                     return;
                 }
             }

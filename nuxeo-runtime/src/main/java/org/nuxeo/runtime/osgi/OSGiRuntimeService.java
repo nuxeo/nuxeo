@@ -61,7 +61,7 @@ import org.osgi.framework.FrameworkListener;
 public class OSGiRuntimeService extends AbstractRuntimeService implements
         FrameworkListener {
 
-    public static ComponentName FRAMEWORK_STARTED_COMP = new ComponentName("org.nuxeo.runtime.started");
+    public static final ComponentName FRAMEWORK_STARTED_COMP = new ComponentName("org.nuxeo.runtime.started");
 
     /** Can be used to change the runtime home directory */
     public static final String PROP_HOME_DIR = "org.nuxeo.runtime.home";

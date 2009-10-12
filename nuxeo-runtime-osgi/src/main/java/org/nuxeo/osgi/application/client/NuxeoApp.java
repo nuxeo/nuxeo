@@ -36,12 +36,10 @@ import org.osgi.framework.BundleException;
 
 /**
  * Nuxeo Runtime launcher.
- *
- * This launcher assume all bundles are already on the classpath.
- *
+ * <p>
+ * This launcher assumes all bundles are already on the classpath.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class NuxeoApp {
 
@@ -75,17 +73,17 @@ public class NuxeoApp {
     }
 
     public Environment getEnvironment() {
-        return this.env;
+        return env;
     }
 
     public void deployBundles(String bundlePath) throws BundleException,
             IOException {
-        deployBundles(NuxeoApp.getBundleFiles(new File("."), bundlePath, ":"));
+        deployBundles(getBundleFiles(new File("."), bundlePath, ":"));
     }
 
     public void deployBundles(File baseDir, String bundlePath)
             throws BundleException, IOException {
-        deployBundles(NuxeoApp.getBundleFiles(baseDir, bundlePath, ":"));
+        deployBundles(getBundleFiles(baseDir, bundlePath, ":"));
     }
 
     public synchronized void deployBundles(Collection<File> files)
@@ -145,7 +143,7 @@ public class NuxeoApp {
 
     public static Collection<File> getBundleFiles(File baseDir, String bundles,
             String delim) throws IOException {
-        LinkedHashSet<File> result = new LinkedHashSet<File>();
+        Collection<File> result = new LinkedHashSet<File>();
         StringTokenizer tokenizer = new StringTokenizer(bundles,
                 delim == null ? " \t\n\r\f" : delim);
         while (tokenizer.hasMoreTokens()) {

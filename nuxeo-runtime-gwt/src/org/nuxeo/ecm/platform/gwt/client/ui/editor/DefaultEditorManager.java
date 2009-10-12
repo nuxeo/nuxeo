@@ -36,18 +36,16 @@ import com.google.gwt.user.client.Window;
  * Manage editors that can be tabbed and instantiated more than once in same time.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DefaultEditorManager implements EditorManager, Extensible, SiteEventHandler {
 
-    protected List<Editor> editors;
-    protected List<EditorSite> sites;
+    protected final List<Editor> editors;
+    protected final List<EditorSite> sites;
     protected Editor defaultEditor;
     protected Container container;
 
-
     public DefaultEditorManager() {
-        this (null);
+        this(null);
     }
 
     public DefaultEditorManager(Container container) {
@@ -101,7 +99,8 @@ public class DefaultEditorManager implements EditorManager, Extensible, SiteEven
 
     /**
      * Must be called by the implementation when closing a tab through mouse click or through API.
-     * to free up the associated editor view
+     * To free up the associated editor view.
+     *
      * @param id
      */
     protected void siteClosed(Object handle) {
@@ -128,10 +127,10 @@ public class DefaultEditorManager implements EditorManager, Extensible, SiteEven
     public View[] getOpenedEditors() {
         int len = sites.size();
         View[] views = new View[len];
-        for (int i=0; i<len; i++) {
+        for (int i = 0; i < len; i++) {
             views[i] = sites.get(i).getView();
         }
-         return views;
+        return views;
     }
 
     public Editor[] getRegisteredEditors() {
@@ -162,7 +161,9 @@ public class DefaultEditorManager implements EditorManager, Extensible, SiteEven
         if (esite == null) {
             esite = openEditor(defaultEditor, input, newView);
             if (esite == null) {
-                Window.alert("No editor registered for this input.\r\n\r\nYou must contribute a default editor that will be used for any unknown input");
+                Window.alert(
+                        "No editor registered for this input.\r\n\r\n"
+                        + "You must contribute a default editor that will be used for any unknown input");
                 return null;
             }
         }
@@ -201,9 +202,9 @@ public class DefaultEditorManager implements EditorManager, Extensible, SiteEven
 
     public void registerExtension(String target, Object extension) {
         if (ExtensionPoints.EDITORS_XP.equals(target)) {
-            editors.add((Editor)extension);
+            editors.add((Editor) extension);
         } else if (ExtensionPoints.DEFAULT_EDITOR_XP.equals(target)) {
-            defaultEditor = (Editor)extension;
+            defaultEditor = (Editor) extension;
         }
     }
 

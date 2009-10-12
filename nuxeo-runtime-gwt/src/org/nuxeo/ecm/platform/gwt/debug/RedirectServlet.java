@@ -42,7 +42,7 @@ public class RedirectServlet extends HttpServlet implements Debug {
 
     private static final long serialVersionUID = 1L;
 
-    protected static Pattern HTTP_RESP = Pattern.compile("HTTP/1\\..\\s+([0-9]+)\\s+(.*)");
+    protected static final Pattern HTTP_RESP = Pattern.compile("HTTP/1\\..\\s+([0-9]+)\\s+(.*)");
 
     protected String  redirectPrefix = REDIRECT_PREFIX;
     protected String  redirectHost = REDIRECT_HOST;

@@ -34,7 +34,7 @@ import com.google.gwt.core.client.JavaScriptObject;
  */
 public class JSContext extends JavaScriptObject {
 
-    private static JSContext current = createContext();
+    private static final JSContext current = createContext();
 
     private native static JSContext createContext()/*-{
     if ($wnd.nx === undefined) {
@@ -49,7 +49,6 @@ public class JSContext extends JavaScriptObject {
     public static JSContext getCurrent() {
         return current;
     }
-
 
     // Overlay types always have protected, zero-arg constructors
     protected JSContext() { }
@@ -91,6 +90,5 @@ public class JSContext extends JavaScriptObject {
         }
         return map;
     }-*/;
-
 
 }
