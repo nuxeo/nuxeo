@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.webengine.blogs.ecm.types" version="1.0">
 
-  <require>org.nuxeo.ecm.core.CoreExtensions</require>
   <require>org.nuxeo.ecm.core.schema.TypeService</require>
 
-  <extension target="org.nuxeo.ecm.core.schema.TypeService"
-             point="configuration">
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="configuration">
     <configuration>
       <prefetch>
         common.icon, dc:title, dc:modified, dc:contributors, dc:creator
@@ -13,7 +11,6 @@
     </configuration>
   </extension>
 
-  
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
     <type id="BlogSite" coretype="BlogSite">
       <label>Blog Site</label>
@@ -47,7 +44,7 @@
       <category>SimpleDocument</category>
       <description>BlogPost.description</description>
       <default-view>view_documents</default-view>
-       <layouts mode="any">
+      <layouts mode="any">
         <layout>heading</layout>
         <layout>webpage</layout>
         <!-- The specifics are not shown for the moment. -->
@@ -75,15 +72,5 @@
     </type>
 
   </extension>
-  
-  
-  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
-    point="types">
-    <types>
-      <type name="BlogSite">default</type>
-      <type name="BlogPost">default</type>
-    </types>
-  </extension>  
-  
 
 </component>
