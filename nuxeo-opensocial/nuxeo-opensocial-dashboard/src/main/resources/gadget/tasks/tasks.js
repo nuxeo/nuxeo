@@ -38,17 +38,19 @@ function displayTaskList(data) {
 	var directive = data.translations['workflowDirectiveValidation'];
 	var i;
 
-	for (i = 0; i < validation.length; i++) {
-		htmlContent += mkRow(validation[i], i, directive);
-	}
-/*	validation = data.data['workflowDirectiveCheck'];
-	directive = data.translations['workflowDirectiveCheck'];
 	if (validation) {
-		for ( var i = 0; i < validation.length; i++) {
+		for (i = 0; i < validation.length; i++) {
 			htmlContent += mkRow(validation[i], i, directive);
 		}
 	}
-	
+	validation = data.data['workflowDirectiveCheck'];
+	directive = data.translations['workflowDirectiveCheck'];
+	if (validation) {
+		for (i = 0; i < validation.length; i++) {
+			htmlContent += mkRow(validation[i], i, directive);
+		}
+	}
+
 	validation = data.data['workflowDirectiveDiffusion'];
 	directive = data.translations['workflowDirectiveDiffusion'];
 	if (validation) {
@@ -63,7 +65,7 @@ function displayTaskList(data) {
 			htmlContent += mkRow(validation[i], i, directive);
 		}
 	}
-	
+
 	validation = data.data['workflowDirectiveVerification'];
 	directive = data.translations['workflowDirectiveVerification'];
 	if (validation) {
@@ -71,7 +73,6 @@ function displayTaskList(data) {
 			htmlContent += mkRow(validation[i], i, directive);
 		}
 	}
-	*/
 
 	document.getElementById("nxDocumentListData").innerHTML = htmlContent;
 	// page info
