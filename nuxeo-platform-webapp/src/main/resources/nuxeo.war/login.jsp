@@ -258,6 +258,8 @@ nxthemes css is not used in login.jsp */
                  <td></td>
                  <td>
                                     <% // label.login.logIn %>
+                <input type="hidden" name="requestedUrl"
+                    id="requestedUrl" value="${param.requestedUrl}">
                 <input type="hidden" name="form_submitted_marker"
                     id="form_submitted_marker">
                     <input class="login_button" type="submit" name="Submit"
