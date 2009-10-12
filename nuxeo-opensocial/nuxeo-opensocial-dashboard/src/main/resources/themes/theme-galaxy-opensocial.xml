@@ -57,7 +57,6 @@
     </layout>
     <layout element="page[1]/section[6]/cell[1]">
       <width>100%</width>
-      <text-align>right</text-align>
     </layout>
     <layout element="page[1]/section[4]">
       <margin-left>auto</margin-left>
@@ -182,11 +181,11 @@
     <widget element="page[1]/section[6]/cell[1]">
       <view>cell frame</view>
     </widget>
+    <widget element="page[1]/section[6]/cell[1]/fragment[1]">
+      <view>nuxeo5 includes</view>
+    </widget>
     <widget element="page[1]/section[2]/cell[1]/fragment[1]">
       <view>opensocialDashBoardNav</view>
-    </widget>
-    <widget element="page[1]/section[6]/cell[1]/fragment[1]">
-      <view>Nuxeo EP footer (Galaxy Theme)</view>
     </widget>
     <!--  -->
     <style name="dashboardLayoutManager">
@@ -645,43 +644,6 @@
     <style element="page[1]/section[2]/cell[1]/fragment[1]" inherit="opensocialDashboardNav">
       <selector path="form" view="opensocialDashBoardNav">
         <text-align>center</text-align>
-      </selector>
-    </style>
-    <style element="page[1]/section[6]/cell[1]/fragment[1]" inherit="default buttons">
-      <selector path="form, p" view="Nuxeo EP footer (Galaxy Theme)">
-        <margin>5px 0px 0px 0px</margin>
-        <padding>0</padding>
-      </selector>
-      <selector path="" view="Nuxeo EP footer (Galaxy Theme)">
-        <color>#5c5c5c</color>
-        <font preset="small (Galaxy fonts)"/>
-        <padding>5px 15px 5px 5px</padding>
-      </selector>
-      <selector path="div" view="Nuxeo EP footer (Galaxy Theme)">
-        <margin>0</margin>
-        <font-size preset="small (Galaxy fonts)"/>
-        <line-height>1.25em</line-height>
-        <padding>0</padding>
-      </selector>
-      <selector path="a" view="Nuxeo EP footer (Galaxy Theme)">
-        <color>#0066CC</color>
-        <text-decoration>none</text-decoration>
-      </selector>
-      <selector path="a:visited" view="Nuxeo EP footer (Galaxy Theme)">
-        <color>#112B8C</color>
-      </selector>
-      <selector path="a:active" view="Nuxeo EP footer (Galaxy Theme)">
-        <color>#0066CC</color>
-      </selector>
-      <selector path="a:hover" view="Nuxeo EP footer (Galaxy Theme)">
-        <color>#0066CC</color>
-        <text-decoration>underline</text-decoration>
-      </selector>
-      <selector path="select.langSelect" view="Nuxeo EP footer (Galaxy Theme)">
-        <margin>9px 5px 0px 5px</margin>
-      </selector>
-      <selector path="input.button" view="Nuxeo EP footer (Galaxy Theme)">
-        <margin>5px 0px 5px 10px</margin>
       </selector>
     </style>
   </formats>
