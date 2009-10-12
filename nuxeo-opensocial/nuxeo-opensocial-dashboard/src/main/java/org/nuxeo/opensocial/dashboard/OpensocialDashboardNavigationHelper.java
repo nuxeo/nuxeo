@@ -23,12 +23,19 @@ public class OpensocialDashboardNavigationHelper implements
         DashboardNavigationHelper {
 
     public static final String OLD_DASHBARD_VIEWID = "user_dashboard";
+
     public static final String NEW_DASHBARD_VIEWID = "opensocial_dashboard";
+
     public static final String DASHBARD_MODE_PROPERTY = "org.nuxeo.ecm.webapp.dashboard.mode";
+
     public static final String DASHBARD_MODE_AUTO = "auto";
+
     public static final String DASHBARD_MODE_OS = "opensocoal";
+
     public static final String DASHBARD_MODE_OLD = "old";
+
     public static final String SELENIUM_USERAGENT = "Nuxeo-Selenium-Tester";
+
     public static final String MSIE_USERAGENT = "MSIE";
 
     private static final Log log = LogFactory.getLog(OpensocialDashboardNavigationHelper.class);
@@ -38,7 +45,7 @@ public class OpensocialDashboardNavigationHelper implements
     @In(create = true, required = false)
     protected CoreSession documentManager;
 
-    protected boolean personnalDashboardCreated=false;
+    protected boolean personnalDashboardCreated = false;
 
     public String navigateToDashboard() {
         createPersonnalDashbordIfNeeded();
@@ -52,7 +59,7 @@ public class OpensocialDashboardNavigationHelper implements
         }
     }
 
-    @Factory(value="personalDashboardContainerIdRef", scope=ScopeType.SESSION)
+    @Factory(value = "personalDashboardContainerIdRef", scope = ScopeType.SESSION)
     public String getPersonalDashboardContainerIdRef() {
         SpaceManager spaceManager;
         try {
@@ -80,33 +87,34 @@ public class OpensocialDashboardNavigationHelper implements
     }
 
     protected String computeDashbordView() {
-        if (dashBoardViewId==null) {
-            String userAgent =null;
+        if (dashBoardViewId == null) {
+            String userAgent = null;
             FacesContext fContext = FacesContext.getCurrentInstance();
             if (fContext == null) {
                 log.error("unable to fetch facesContext, can not detect client type");
             } else {
-                userAgent = fContext.getExternalContext().getRequestHeaderMap().get("User-Agent");
+                userAgent = fContext.getExternalContext().getRequestHeaderMap().get(
+                        "User-Agent");
             }
 
             // force old dashboard for Selenium tests
-            if (userAgent!=null && userAgent.contains(SELENIUM_USERAGENT)) {
+            if (userAgent != null && userAgent.contains(SELENIUM_USERAGENT)) {
                 return OLD_DASHBARD_VIEWID;
             }
 
-            String mode = Framework.getProperty(DASHBARD_MODE_PROPERTY, DASHBARD_MODE_AUTO);
+            String mode = Framework.getProperty(DASHBARD_MODE_PROPERTY,
+                    DASHBARD_MODE_AUTO);
             if (DASHBARD_MODE_AUTO.equals(mode)) {
                 // force old dashboard for MSIE
-                if (userAgent!=null && userAgent.contains(MSIE_USERAGENT)) {
-                    dashBoardViewId =  OLD_DASHBARD_VIEWID;
-                }
-                else {
+                if (userAgent != null && userAgent.contains(MSIE_USERAGENT)) {
+                    dashBoardViewId = OLD_DASHBARD_VIEWID;
+                } else {
                     dashBoardViewId = NEW_DASHBARD_VIEWID;
                 }
             } else if (DASHBARD_MODE_OS.equals(mode)) {
-                   dashBoardViewId = NEW_DASHBARD_VIEWID;
+                dashBoardViewId = NEW_DASHBARD_VIEWID;
             } else if (DASHBARD_MODE_OLD.equals(mode)) {
-                   dashBoardViewId = OLD_DASHBARD_VIEWID;
+                dashBoardViewId = OLD_DASHBARD_VIEWID;
             }
         }
         return dashBoardViewId;
