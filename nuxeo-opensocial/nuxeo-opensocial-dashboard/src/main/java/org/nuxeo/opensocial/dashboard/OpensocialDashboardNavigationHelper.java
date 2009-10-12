@@ -37,6 +37,8 @@ public class OpensocialDashboardNavigationHelper implements
     public static final String SELENIUM_USERAGENT = "Nuxeo-Selenium-Tester";
 
     public static final String MSIE_USERAGENT = "MSIE";
+    public static final String MSIE7_USERAGENT = "MSIE 7.";
+    public static final String MSIE8_USERAGENT = "MSIE 8.";
 
     private static final Log log = LogFactory.getLog(OpensocialDashboardNavigationHelper.class);
 
@@ -107,7 +109,16 @@ public class OpensocialDashboardNavigationHelper implements
             if (DASHBARD_MODE_AUTO.equals(mode)) {
                 // force old dashboard for MSIE
                 if (userAgent != null && userAgent.contains(MSIE_USERAGENT)) {
-                    dashBoardViewId = OLD_DASHBARD_VIEWID;
+
+                    if (userAgent.contains(MSIE7_USERAGENT)) {
+                        dashBoardViewId = NEW_DASHBARD_VIEWID;
+                    }
+                    else if (userAgent.contains(MSIE7_USERAGENT)) {
+                        dashBoardViewId = NEW_DASHBARD_VIEWID;
+                    } else {
+                        // IE 4, IE 5 , IE 5.5, IE6
+                        dashBoardViewId = OLD_DASHBARD_VIEWID;
+                    }
                 } else {
                     dashBoardViewId = NEW_DASHBARD_VIEWID;
                 }

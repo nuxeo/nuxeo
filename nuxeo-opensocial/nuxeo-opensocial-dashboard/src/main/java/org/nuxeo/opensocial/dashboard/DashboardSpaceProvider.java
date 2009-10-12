@@ -101,11 +101,13 @@ public class DashboardSpaceProvider extends DefaultSpaceProvider {
         createGadgetForInitialDashboard(session, spaceDocument,
                 "tasks", title, COLS[0], new Integer(0));
 
+        /*
         log.debug("creating UserWorkflow ");
         labelKey = "title.dashboard.userProcesses";
         title = TranslationHelper.getLabel(labelKey, language);
         createGadgetForInitialDashboard(session, spaceDocument,
-                "tasks", title, COLS[0], new Integer(0)); // XXX
+                "tasks", title, COLS[0], new Integer(0));
+                */
 
         // User Sites
         log.debug("creating UserSites ");
