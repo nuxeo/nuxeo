@@ -28,7 +28,6 @@
     <module>nuxeo-opensocial-gadgets</module>
     <module>nuxeo-webengine-spaces</module>
     <module>nuxeo-webengine-gadgets</module>
-    <module>nuxeo-opensocial-container</module>
     <module>nuxeo-opensocial-container-space-config</module>
     <module>nuxeo-opensocial-dashboard</module>
   </modules>
@@ -166,5 +165,25 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <profiles>
+    <profile>
+      <id>gwt</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>nuxeo-opensocial-container</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>nogwt</id>
+      <activation>
+        <property>
+          <name>nogwt</name>
+        </property>
+      </activation>
+    </profile>
+  </profiles> 
 
 </project>

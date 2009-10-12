@@ -18,7 +18,6 @@
     <module>nuxeo-platform-annotations-core</module>
     <module>nuxeo-platform-annotations-core-contrib</module>
     <module>nuxeo-platform-annotations-facade</module>
-    <module>nuxeo-platform-annotations-web</module>
     <module>nuxeo-platform-annotations-http</module>
     <module>nuxeo-platform-annotations-repository-plugin</module>
   </modules>
@@ -121,4 +120,23 @@
    </repository>
   </repositories>
  
+  <profiles>
+    <profile>
+      <id>gwt</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>nuxeo-platform-annotations-web</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>nogwt</id>
+      <activation>
+        <property>
+          <name>nogwt</name>
+        </property>
+      </activation>
+    </profile>
+  </profiles>
 </project>

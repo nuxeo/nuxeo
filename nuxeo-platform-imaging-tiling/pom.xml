@@ -16,7 +16,6 @@
 
   <modules>
     <module>nuxeo-platform-imaging-tiling</module>
-    <module>nuxeo-platform-imaging-tiling-preview</module>
   </modules>
 
   <dependencyManagement>
@@ -88,4 +87,23 @@
     </repository>
   </repositories>
   
+  <profiles>
+    <profile>
+      <id>gwt</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>nuxeo-platform-imaging-tiling-preview</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>nogwt</id>
+      <activation>
+        <property>
+          <name>nogwt</name>
+        </property>
+      </activation>
+    </profile>
+  </profiles> 
 </project>
