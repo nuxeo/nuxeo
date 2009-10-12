@@ -29,11 +29,19 @@ function requestTasks() {
     gadgets.io.makeRequest(url, response, params);
 };
 
+function getNXTElement(node, localName) {
+    if (node.getElementsByTagNameNS) {
+        return node.getElementsByTagNameNS("http://www.nuxeo.org/tasks", localName)
+    } else {
+        return node.getElementsByTagName("nxt:" + localName);
+    }
+}
+
 function response(obj) {
     var dom = obj.data;
     var resultHTML = "";
     //console.log("starting to parse "+obj);
-    var categories = dom.getElementsByTagName("nxt:category");
+    var categories = getNXTElement(dom, "category");
     var i= 0;
     //console.log("number of categories "+categories.length);
 
@@ -52,7 +60,7 @@ function response(obj) {
             }
         }
 
-        var tasks = categoryNode.getElementsByTagName("nxt:task")
+        var tasks = getNXTElement(categoryNode, "task")
         //console.log("parsing category:"+categoryName+" with "+ tasks.length +" tasks");
 
         resultHTML += openDiv(categoryName);
