@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Locale;
 
+import javax.faces.context.FacesContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +32,7 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.WrappedException;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandler;
 
 /**
@@ -50,51 +52,90 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
         this.parameters = parameters;
     }
 
+    /**
+     * Puts a marker in request to avoid looping over the exception handling
+     * mechanism
+     *
+     * @throws ServletException if request has already been marked as handled.
+     *             The initial exception is then wrapped.
+     */
+    protected void startHandlingException(HttpServletRequest request,
+            HttpServletResponse response, Throwable t) throws IOException,
+            ServletException {
+        if (request.getAttribute(EXCEPTION_HANDLER_MARKER) == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Initial exception", t);
+            }
+            // mark request as already processed by this mechanism to avoid
+            // looping
+            // over it
+            request.setAttribute(EXCEPTION_HANDLER_MARKER, true);
+            // disable further redirect by nuxeo url system
+            request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
+                    true);
+        } else {
+            // avoid looping over exception mechanism
+            throw new ServletException(t);
+        }
+    }
+
     public void handleException(HttpServletRequest request,
             HttpServletResponse response, Throwable t) throws IOException,
             ServletException {
-        request.setAttribute(NuxeoExceptionFilter.EXCEPTION_FILTER_ATTRIBUTE,
-                true);
-        ErrorHandler handler = getHandler(t);
-        parameters.getListener().startHandling(t, request, response);
+        startHandlingException(request, response, t);
+        try {
+            ErrorHandler handler = getHandler(t);
+            parameters.getListener().startHandling(t, request, response);
 
-        Throwable unwrappedException = unwrapException(t);
-        StringWriter swriter = new StringWriter();
-        PrintWriter pwriter = new PrintWriter(swriter);
-        t.printStackTrace(pwriter);
-        String stackTrace = swriter.getBuffer().toString();
-        log.error(stackTrace);
-        parameters.getLogger().error(stackTrace);
+            Throwable unwrappedException = unwrapException(t);
+            StringWriter swriter = new StringWriter();
+            PrintWriter pwriter = new PrintWriter(swriter);
+            t.printStackTrace(pwriter);
+            String stackTrace = swriter.getBuffer().toString();
+            log.error(stackTrace);
+            parameters.getLogger().error(stackTrace);
 
-        parameters.getListener().beforeSetErrorPageAttribute(
-                unwrappedException, request, response);
-        request.setAttribute("exception_message",
-                unwrappedException.getLocalizedMessage());
-        request.setAttribute("user_message", getUserMessage(
-                handler.getMessage(), request.getLocale()));
-        request.setAttribute("stackTrace", stackTrace);
-        request.setAttribute("securityError",
-                ExceptionHelper.isSecurityError(unwrappedException));
-        String dumpedRequest = parameters.getRequestDumper().getDump(request);
-        parameters.getLogger().error(dumpedRequest);
-        request.setAttribute("request_dump", dumpedRequest);
+            parameters.getListener().beforeSetErrorPageAttribute(
+                    unwrappedException, request, response);
+            request.setAttribute("exception_message",
+                    unwrappedException.getLocalizedMessage());
+            request.setAttribute("user_message", getUserMessage(
+                    handler.getMessage(), request.getLocale()));
+            request.setAttribute("stackTrace", stackTrace);
+            request.setAttribute("securityError",
+                    ExceptionHelper.isSecurityError(unwrappedException));
+            String dumpedRequest = parameters.getRequestDumper().getDump(
+                    request);
+            parameters.getLogger().error(dumpedRequest);
+            request.setAttribute("request_dump", dumpedRequest);
 
-        parameters.getListener().beforeForwardToErrorPage(unwrappedException,
-                request, response);
-        if (!response.isCommitted()) {
-            Integer error = handler.getCode();
-            if (error != null) {
-                response.setStatus(error);
+            parameters.getListener().beforeForwardToErrorPage(
+                    unwrappedException, request, response);
+            if (!response.isCommitted()) {
+                Integer error = handler.getCode();
+                if (error != null) {
+                    response.setStatus(error);
+                }
+                String errorPage = handler.getPage();
+                errorPage = (errorPage == null) ? parameters.getDefaultErrorPage()
+                        : errorPage;
+                request.getRequestDispatcher(errorPage).forward(request,
+                        response);
+                FacesContext fContext = FacesContext.getCurrentInstance();
+                if (fContext != null) {
+                    fContext.responseComplete();
+                } else {
+                    log.error("Cannot set response complete: faces context is null");
+                }
+            } else {
+                log.error("Cannot forward to error page: "
+                        + "response is already commited");
+                throw new ServletException(t);
             }
-            String errorPage = handler.getPage();
-            errorPage = (errorPage == null) ? parameters.getDefaultErrorPage()
-                    : errorPage;
-            request.getRequestDispatcher(errorPage).forward(request, response);
             parameters.getListener().afterDispatch(unwrappedException, request,
                     response);
-        } else {
-            log.error("Cannot forward to error page: "
-                    + "response is already commited");
+        } catch (Throwable newError) {
+            throw new ServletException(newError);
         }
     }
 

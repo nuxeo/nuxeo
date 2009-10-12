@@ -26,7 +26,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 
 /**
  * Interface for directory UI info.
- *
+ * 
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  * @since 5.2.0 GA
  */
@@ -53,8 +53,13 @@ public interface DirectoryUI extends Serializable {
     String getSortField();
 
     /**
+     * Returns the readOnly status.
+     */
+    Boolean isReadOnly();
+
+    /**
      * Returns the directory delete constraints
-     *
+     * 
      * @see DirectoryUIDeleteConstraint
      * @since 5.2.1
      */

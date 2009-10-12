@@ -66,10 +66,12 @@ import org.nuxeo.ecm.directory.sql.repository.Update;
 
 /**
  * This class represents a session against an SQLDirectory.
- *
+ * 
  * @author glefter@nuxeo.com
  */
 public class SQLSession extends BaseSession implements EntrySource {
+
+    private static final String READ_ONLY_VOCABULARY_WARN = "This SQLDirectory is ReadOnly, you are not allowed to modify it.";
 
     private static final Log log = LogFactory.getLog(SQLSession.class);
 
@@ -148,6 +150,10 @@ public class SQLSession extends BaseSession implements EntrySource {
     @SuppressWarnings("unchecked")
     public DocumentModel createEntry(Map<String, Object> fieldMap)
             throws ClientException {
+
+        if (isReadOnly()) {
+            log.warn(READ_ONLY_VOCABULARY_WARN);
+        }
         acquireConnection();
         if (idGenerator != null) {
             Integer idValue = idGenerator.nextId();
@@ -280,6 +286,12 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     @SuppressWarnings("unchecked")
     public void updateEntry(DocumentModel docModel) throws ClientException {
+
+        if (isReadOnly()) {
+            log.warn(READ_ONLY_VOCABULARY_WARN);
+            return;
+        }
+
         acquireConnection();
         List<Column> storedColumnList = new LinkedList<Column>();
         List<String> referenceFieldList = new LinkedList<String>();
@@ -359,6 +371,11 @@ public class SQLSession extends BaseSession implements EntrySource {
     public void deleteEntry(String id) throws ClientException {
         acquireConnection();
 
+        if (isReadOnly()) {
+            log.warn(READ_ONLY_VOCABULARY_WARN);
+            return;
+        }
+
         // first step: remove references for this entry
         for (Reference reference : getDirectory().getReferences()) {
             if (reference instanceof TableReference) {
@@ -389,6 +406,12 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     public void deleteEntry(String id, Map<String, String> map)
             throws DirectoryException {
+
+        if (isReadOnly()) {
+            log.warn(READ_ONLY_VOCABULARY_WARN);
+            return;
+        }
+
         acquireConnection();
 
         // Assume in this case that there are no References to this entry.
@@ -803,7 +826,7 @@ public class SQLSession extends BaseSession implements EntrySource {
      * Public getter to allow custom {@link Reference} implementation to access
      * the current connection even if it lives in a separate java package,
      * typically: com.company.custom.nuxeo.project.MyCustomReference
-     *
+     * 
      * @return the current {@link Connection} instance
      */
     public Connection getSqlConnection() {

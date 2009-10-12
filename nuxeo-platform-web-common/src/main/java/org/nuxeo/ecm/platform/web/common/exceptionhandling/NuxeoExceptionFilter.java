@@ -37,6 +37,10 @@ import org.nuxeo.runtime.api.Framework;
 
 public class NuxeoExceptionFilter implements Filter {
 
+    /**
+     * @deprecated use {@link NuxeoExceptionHandler#EXCEPTION_HANDLER_MARKER}
+     */
+    @Deprecated
     public static final String EXCEPTION_FILTER_ATTRIBUTE = "NuxeoExceptionFilter";
 
     private NuxeoExceptionHandler exceptionHandler;
@@ -44,7 +48,6 @@ public class NuxeoExceptionFilter implements Filter {
     private static final Log log = LogFactory.getLog(NuxeoExceptionFilter.class);
 
     public void init(FilterConfig filterConfig) throws ServletException {
-
         try {
             getHandler();
         } catch (ServletException e) {
@@ -53,7 +56,7 @@ public class NuxeoExceptionFilter implements Filter {
     }
 
     protected NuxeoExceptionHandler getHandler() throws ServletException {
-        if (exceptionHandler==null) {
+        if (exceptionHandler == null) {
             ExceptionHandlingService service;
             try {
                 service = Framework.getService(ExceptionHandlingService.class);
@@ -76,14 +79,14 @@ public class NuxeoExceptionFilter implements Filter {
         try {
             chain.doFilter(request, response);
         } catch (Throwable t) {
-            if (request.getAttribute(EXCEPTION_FILTER_ATTRIBUTE) == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Initial exception", t);
-                }
+            try {
                 handleException((HttpServletRequest) request,
                         (HttpServletResponse) response, t);
+            } catch (ServletException e) {
+                throw e;
+            } catch (Throwable newThrowable) {
+                throw new ServletException(newThrowable);
             }
-            throw new ServletException(t);
         }
     }
 
