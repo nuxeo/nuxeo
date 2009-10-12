@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="default-repository-config">
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="default"
+      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
+      <repository name="default">
+        <schema>
+          <field type="largetext">note</field>
+        </schema>
+        <!--
+          For Oracle (Oracle Text indexing parameters), see:
+          http://jira.nuxeo.org/browse/NXP-4035
+          http://download.oracle.com/docs/cd/B19306_01/text.102/b14218/cdatadic.htm
+          <indexing> <fulltext analyzer="LEXER MY_LEXER"/> </indexing>
+        -->
+      </repository>
+    </repository>
+  </extension>
+</component>

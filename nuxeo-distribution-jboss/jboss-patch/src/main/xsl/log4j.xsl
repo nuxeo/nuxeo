@@ -27,6 +27,8 @@
   </xsl:template>
   <xsl:template match="category[@name='org.ajax4jsf']">
   </xsl:template>
+  <xsl:template match="category[@name='org.ajax4jsf.cache.LRUMapCacheFactory']">
+  </xsl:template>
   <xsl:template match="category[@name='org.hibernate']">
   </xsl:template>
   <xsl:template match="category[@name='org.hibernate.engine.StatefulPersistenceContext.ProxyWarnLog']">
@@ -128,6 +130,11 @@
     </xsl:text>
     <category name="org.ajax4jsf">
       <priority value="INFO"/>
+    </category>
+    <xsl:text>
+    </xsl:text>
+    <category name="org.ajax4jsf.cache.LRUMapCacheFactory">
+      <priority value="ERROR"/>
     </category>
     <xsl:text>
     </xsl:text>
