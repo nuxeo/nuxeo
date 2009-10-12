@@ -19,8 +19,11 @@
 
 package org.nuxeo.ecm.platform.syndication.serializer;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,24 +36,29 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
 import org.apache.derby.iapi.store.raw.Transaction;
+import org.dom4j.DocumentFactory;
+import org.dom4j.QName;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.syndication.translate.TranslationHelper;
+import org.nuxeo.ecm.platform.syndication.workflow.DashBoardItem;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 
-public class DMJSONSerializer extends AbstractDocumentModelSerializer {
+public class DMJSONSerializer extends AbstractDocumentModelSerializer implements
+        DashBoardItemSerializer {
 
     @Override
     public String serialize(ResultSummary summary, DocumentModelList docList,
-            List<String> columnsDefinition, HttpServletRequest req) throws ClientException {
+            List<String> columnsDefinition, HttpServletRequest req)
+            throws ClientException {
         return serialize(summary, docList, columnsDefinition, req, null, null);
     }
 
-
     public String serialize(ResultSummary summary, DocumentModelList docList,
-            List<String> columnsDefinition, HttpServletRequest req, List<String> labels, String lang) throws ClientException {
+            List<String> columnsDefinition, HttpServletRequest req,
+            List<String> labels, String lang) throws ClientException {
 
         if (docList == null) {
             return EMPTY_LIST;
@@ -77,7 +85,7 @@ public class DMJSONSerializer extends AbstractDocumentModelSerializer {
         all.put("data", struct);
 
         // add translations if asked for
-        if (lang!=null && labels!=null) {
+        if (lang != null && labels != null) {
             Map<String, String> translations = new HashMap<String, String>();
             for (String key : labels) {
                 translations.put(key, TranslationHelper.getLabel(key, lang));
@@ -85,15 +93,17 @@ public class DMJSONSerializer extends AbstractDocumentModelSerializer {
             all.put("translations", translations);
         }
 
-        //JSON jsonRes = JSONSerializer.toJSON(struct);
-        JSON jsonRes = JSONSerializer.toJSON(all);
+        return makeJSON(all);
+    }
 
+    protected static String makeJSON(Map<String, Object> all) {
+        JSON jsonRes = JSONSerializer.toJSON(all);
         if (jsonRes instanceof JSONObject) {
             JSONObject jsonOb = (JSONObject) jsonRes;
-            return jsonOb.toString(1);
+            return jsonOb.toString(2);
         } else if (jsonRes instanceof JSONArray) {
             JSONArray jsonOb = (JSONArray) jsonRes;
-            return jsonOb.toString(1);
+            return jsonOb.toString(2);
         } else {
             return null;
         }
@@ -101,14 +111,16 @@ public class DMJSONSerializer extends AbstractDocumentModelSerializer {
 
     @Override
     public void serialize(ResultSummary summary, DocumentModelList docList,
-            String columnsDefinition, Response res, HttpServletRequest req) throws ClientException {
+            String columnsDefinition, Response res, HttpServletRequest req)
+            throws ClientException {
         String json = serialize(summary, docList, columnsDefinition, req);
         res.setEntity(json, MediaType.TEXT_PLAIN);
     }
 
     @Override
     public void serialize(ResultSummary summary, DocumentModelList docList,
-            String columnsDefinition, Response res, HttpServletRequest req, List<String> labels, String lang) throws ClientException {
+            String columnsDefinition, Response res, HttpServletRequest req,
+            List<String> labels, String lang) throws ClientException {
         List<String> cols = new ArrayList<String>();
         if (columnsDefinition != null) {
             cols = Arrays.asList(columnsDefinition.split(colDefinitonDelimiter));
@@ -117,5 +129,89 @@ public class DMJSONSerializer extends AbstractDocumentModelSerializer {
         res.setEntity(json, MediaType.TEXT_PLAIN);
     }
 
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
+            "yyyy-MM-dd HH:mm:ss");
+
+    protected String serialize(ResultSummary summary,
+            List<DashBoardItem> workItems, String columnsDefinition,
+            List<String> labels, String lang) throws ClientException {
+        if (workItems == null) {
+            workItems = Collections.emptyList();
+        }
+
+        Map<String, List<Map<String, String>>> data = new HashMap<String, List<Map<String, String>>>();
+        for (DashBoardItem item : workItems) {
+            String cat = item.getDirective();
+            if (cat == null) {
+                cat = "None";
+            }
+            List<Map<String, String>> category = data.get(cat);
+            if (category == null) {
+                data.put(cat, category = new ArrayList<Map<String, String>>());
+            }
+
+            Map<String, String> m = new HashMap<String, String>();
+            m.put("id", item.getId().toString());
+            m.put("name", item.getName());
+            if (lang != null) {
+                m.put("nameI18n", TranslationHelper.getLabel(
+                        "label.workflow.task." + item.getName(), lang));
+            }
+            m.put("directive", item.getDirective());
+            if (lang != null) {
+                m.put("directiveI18n", TranslationHelper.getLabel(
+                        item.getDirective(), lang));
+            }
+            m.put("description", item.getDescription());
+            m.put("title", item.getDocument().getTitle());
+            m.put("link", item.getDocumentLink());
+            String currentLifeCycle;
+            try {
+                currentLifeCycle = item.getDocument().getCurrentLifeCycleState();
+            } catch (ClientException e) {
+                currentLifeCycle = "";
+            }
+            m.put("currentDocumentLifeCycle", currentLifeCycle);
+
+            if (item.getDueDate() != null) {
+                m.put("dueDate", DATE_FORMAT.format(item.getDueDate()));
+            }
+            if (item.getStartDate() != null) {
+                m.put("startDate", DATE_FORMAT.format(item.getStartDate()));
+            }
+            if (item.getComment() != null) {
+                m.put("comment", item.getComment());
+            }
+            category.add(m);
+        }
+
+        Map<String, Object> all = new HashMap<String, Object>();
+        all.put("data", data);
+        all.put("summary", summary);
+
+        if (lang != null && labels != null) {
+            Map<String, String> translations = new HashMap<String, String>();
+            for (String key : labels) {
+                translations.put(key, TranslationHelper.getLabel(key, lang));
+            }
+            all.put("translations", translations);
+        }
+
+        return makeJSON(all);
+    }
+
+    public void serialize(ResultSummary summary, List<DashBoardItem> workItems,
+            String columnsDefinition, Response res, HttpServletRequest req)
+            throws ClientException {
+        serialize(summary, workItems, columnsDefinition, null, null, res, req);
+    }
+
+    public void serialize(ResultSummary summary, List<DashBoardItem> workItems,
+            String columnsDefinition, List<String> labels, String lang,
+            Response res, HttpServletRequest req) throws ClientException {
+        String json = serialize(summary, workItems, columnsDefinition, labels,
+                lang);
+        res.setEntity(json, MediaType.TEXT_PLAIN);
+    }
 
 }

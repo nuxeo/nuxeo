@@ -5,7 +5,6 @@ function requestTasks() {
     var hostname = prefs.getString("nuxeo_host");
     //console.log("my nuxeo host is "+hostname);
 
-    var ts = new Date().getTime() + "" + Math.random()*11
     var params = {};
     var headers = {};
 
@@ -25,7 +24,7 @@ function requestTasks() {
     params[gadgets.io.RequestParameters.HEADERS] = headers
     params[gadgets.io.RequestParameters.REFRESH_INTERVAL]=0;
 
-    var url = "http://localhost:8080/nuxeo/restAPI/workflowTasks/default?ts="+ts;
+    var url = getRestletUrl();
     gadgets.io.makeRequest(url, response, params);
 };
 
@@ -121,13 +120,31 @@ function openDiv(name) {
 }
 
 function closeDiv(name) {
-    var result = '</div> <!--'+name+' -->';
-    result += '</div> <!--'+name+'wrapper -->';
-    return result;
+    return "</div></div>";
+}
+
+function getNuxeoServerSideUrl() {
+    return top.nxServerSideUrl;
 }
 
 function getNuxeoClientSideUrl() {
     return top.nxBaseUrl;
+}
+
+function getUserLang() {
+    return top.nxUserLang;
+}
+
+function getRestletUrl() {
+    var url = getNuxeoServerSideUrl();
+    url += "nuxeo/restAPI/workflowTasks/default?format=XML";
+    var lang = getUserLang();
+    if (lang != null && lang != "") {
+        url += "&lang=" + lang;
+    }
+    var ts = new Date().getTime() + "" + Math.random()*11
+    url += "&ts=" + ts;
+    return url;
 }
 
 function openCategory(divname) {

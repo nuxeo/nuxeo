@@ -102,7 +102,8 @@ public class SimpleXMLSerializer extends AbstractDocumentModelSerializer
     }
 
     public void serialize(ResultSummary summary, List<DashBoardItem> workItems,
-            String columnsDefinition, Response res, HttpServletRequest req) {
+            String columnsDefinition, List<String> labels, String lang,
+            Response res, HttpServletRequest req) {
         if (workItems == null) {
             return;
         }
