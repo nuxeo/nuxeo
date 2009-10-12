@@ -7,6 +7,9 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 public class TranslationHelper {
 
     public static String getLabel(String key, String lang) {
+        if (key == null || lang == null) {
+            return key;
+        }
         Locale locale = new Locale(lang);
         return getLabel(key, locale);
     }

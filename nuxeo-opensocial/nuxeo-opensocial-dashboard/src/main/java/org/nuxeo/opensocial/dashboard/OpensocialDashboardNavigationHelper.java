@@ -39,6 +39,7 @@ public class OpensocialDashboardNavigationHelper implements
     public static final String MSIE_USERAGENT = "MSIE";
     public static final String MSIE7_USERAGENT = "MSIE 7.";
     public static final String MSIE8_USERAGENT = "MSIE 8.";
+    public static final String SAFARI_USERAGENT = "Safari";
 
     private static final Log log = LogFactory.getLog(OpensocialDashboardNavigationHelper.class);
 
@@ -113,13 +114,18 @@ public class OpensocialDashboardNavigationHelper implements
                     if (userAgent.contains(MSIE7_USERAGENT)) {
                         dashBoardViewId = NEW_DASHBARD_VIEWID;
                     }
-                    else if (userAgent.contains(MSIE7_USERAGENT)) {
+                    else if (userAgent.contains(MSIE8_USERAGENT)) {
                         dashBoardViewId = NEW_DASHBARD_VIEWID;
                     } else {
                         // IE 4, IE 5 , IE 5.5, IE6
                         dashBoardViewId = OLD_DASHBARD_VIEWID;
                     }
-                } else {
+                }
+                else if (userAgent != null && userAgent.contains(SAFARI_USERAGENT)) {
+                    // Safari work only when sending MSIE or FF UserAgent to GWT and RichFaces
+                    dashBoardViewId = OLD_DASHBARD_VIEWID;
+                }
+                else {
                     dashBoardViewId = NEW_DASHBARD_VIEWID;
                 }
             } else if (DASHBARD_MODE_OS.equals(mode)) {
