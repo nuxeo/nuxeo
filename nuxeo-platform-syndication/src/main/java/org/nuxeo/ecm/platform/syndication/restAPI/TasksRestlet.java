@@ -47,7 +47,7 @@ import org.restlet.data.Response;
 /**
  * @author bchaffangeon
  * @author arussel
- *
+ * 
  */
 public class TasksRestlet extends BaseStatelessNuxeoRestlet {
     private JbpmService jbpmService;
@@ -87,10 +87,10 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
             String allLabels = request.getResourceRef().getQueryAsForm().getFirstValue(
                     "labels");
             if (allLabels != null) {
-                for (String label : allLabels.split(",")) {
-                    if (!label.startsWith("label.")) {
-                        label = "label." + label;
-                    }
+                for (String label : allLabels.split("\\,")) {
+                    // if (!label.startsWith("label.")) {
+                    // label = "label." + label;
+                    // }
                     labels.add(label);
                 }
             }
@@ -157,10 +157,9 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
         }
 
         Repository repo = null;
-        if (repoId==null) {
+        if (repoId == null) {
             repo = rm.getDefaultRepository();
-        }
-        else {
+        } else {
             repo = rm.getRepository(repoId);
         }
 

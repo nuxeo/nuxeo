@@ -1,5 +1,6 @@
+var testMode = false;
+
 function requestTasks() {
-    //console.log("hi! i'm a log message!");
 
     var prefs = new gadgets.Prefs();
     var hostname = prefs.getString("nuxeo_host");
@@ -11,7 +12,8 @@ function requestTasks() {
     //var cookie = readCookie('JSESSIONID');
     //console.log("we are using cookie:"+cookie);
 
-    params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;
+    params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.NONE;
+    params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
 
     var now = new Date().toUTCString();
     headers["Date", now];
@@ -26,74 +28,139 @@ function requestTasks() {
 
     var url = getRestletUrl();
     gadgets.io.makeRequest(url, response, params);
-};
+}
 
-function getNXTElement(node, localName) {
-    if (node.getElementsByTagNameNS) {
-        return node.getElementsByTagNameNS("http://www.nuxeo.org/tasks", localName)
-    } else {
-        return node.getElementsByTagName("nxt:" + localName);
+function displayTaskList(data) {
+    var htmlContent = "";
+  
+    //validation
+    var validation = data.data['workflowDirectiveValidation'];
+    var directive = data.translations['workflowDirectiveValidation'];    
+    for (var i=0; i< validation.length; i++) {
+        htmlContent+=mkRow(validation[i], i, directive);
+    }
+    //check
+    validation = data.data['workflowDirectiveCheck'];
+    directive = data.translations['workflowDirectiveCheck'];    
+    for (var i=0; i< validation.length; i++) {
+        htmlContent+=mkRow(validation[i], i, directive);
+    }
+    //alert("diffusion");
+    //diffusion
+    validation = data.data['workflowDirectiveDiffusion'];
+    directive = data.translations['workflowDirectiveDiffusion'];    
+    for (var i=0; i< validation.length; i++) {
+        htmlContent+=mkRow(validation[i], i, directive);
+    }
+    //alert("opinion")
+    //opinion
+    validation = data.data['workflowDirectiveOpinion'];
+    directive = data.translations['workflowDirectiveOpinion'];    
+    for (var i=0; i< validation.length; i++) {
+        htmlContent+=mkRow(validation[i], i, directive);
+    }
+    //verification
+    validation = data.data['workflowDirectiveVerification'];
+    directive = data.translations['workflowDirectiveVerification'];    
+    for (var i=0; i< validation.length; i++) {
+        htmlContent+=mkRow(validation[i], i, directive);
+    }
+    
+    
+    document.getElementById("nxDocumentListData").innerHTML = htmlContent;
+    // page info
+    alert("page info "+ data.summary.pageNumber)
+    var pageInfoLabel = data.summary.pageNumber+1;
+    pageInfoLabel+= "/";
+    maxPage = data.summary.pages;
+    pageInfoLabel+= maxPage+1;
+    document.getElementById("nxDocumentListPage").innerHTML = pageInfoLabel;
+
+    // labels
+    var labelInfo = data.translations;
+    if (labelInfo!=null && labelInfo!='undefined') {
+    	alert("here");
+        document.getElementById("title").innerHTML = labelInfo['label.workflow.task.name'];
+        document.getElementById("modified").innerHTML = labelInfo['label.workflow.task.duedate'];
+        document.getElementById("creator").innerHTML = labelInfo['label.workflow.task.directive'];
     }
 }
 
-function response(obj) {
-    var dom = obj.data;
-    var resultHTML = "";
-    //console.log("starting to parse "+obj);
-    var categories = getNXTElement(dom, "category");
-    var i= 0;
-    //console.log("number of categories "+categories.length);
-
-    while (i < categories.length) {
-        categoryNode = categories[i];
-        var categoryName = categoryNode.getAttribute("category");
-        //console.log("entered category "+categoryName);
-
-        if (categoryName!=null) {
-            //console.log("we have a category name:"+categoryName);
-            //17 is the length of workflowDirective...startsWith doesn't work
-            if (categoryName.substring(17) == "workflowDirective") {
-                //console.log("category name is clunky...")
-                categoryName=categoryName.substring("workflowDirective".length);
-                //console.log("shorted category name to "+categoryName)
-            }
-        }
-
-        var tasks = getNXTElement(categoryNode, "task")
-        //console.log("parsing category:"+categoryName+" with "+ tasks.length +" tasks");
-
-        resultHTML += openDiv(categoryName);
-
-        var j =0 ;
-        while (j < tasks.length) {
-            var taskNode = tasks[j];
-            var value="<nothing>";
-            var link=null;
-
-            //should we try backup plan?
-            if (taskNode.childNodes.length==0) {
-                //console.log("no node value, using name");
-                value = taskNode.getAttribute("name");
-            } else {
-                value=taskNode.childNodes[0].nodeValue;
-                link = taskNode.getAttribute("link");
-                //console.log("task link:"+link);
-            }
-            //console.log(categoryName + " -> "+value);
-            resultHTML += createItem(value,link);
-            ++j;
-        }
-
-        resultHTML += closeDiv(categoryName);
-        ++i;
+function getDateForDisplay(datestr) {
+    try {
+        datestr = datestr.replace("-", "/").replace("-", "/");
+        var d = new Date(datestr);
+        var result = d.toLocaleDateString() + " " + d.toLocaleTimeString().substring(0,5);
+        return result;
     }
-    //console.log("done parsing!");
-    var taskListDiv = _gel("nxTaskList");
-    if (taskListDiv==null) {
-        //console.log("can't find nxTaskList!")
+    catch(e) {
+        return datestr;
+    }
+}
+
+function getNuxeoClientSideUrl() {
+    return top.nxBaseUrl;
+}
+function getImageBaseUrl() {
+    return getNuxeoClientSideUrl();
+}
+
+function getBaseUrl() {
+    return getNuxeoClientSideUrl();
+}
+
+
+function mkRow(dashBoardItem, i, directive) {	
+    var htmlRow = "<tr class=\"";
+    if (i%2==2){
+    htmlRow+="dataRowEven";
     } else {
-        taskListDiv.innerHTML = resultHTML;
+    htmlRow+="dataRowOdd";
     }
+    htmlRow+="\">";
+    htmlRow+="<td class=\"iconColumn\">"
+    htmlRow+="<img alt=\"File\" src=\""
+    htmlRow+=getImageBaseUrl();
+    htmlRow+="icons/file.gif";
+    htmlRow+="\"/>";
+    htmlRow+="</td><td><a target = \"_top\" title=\"";
+    var title = dashBoardItem.name;
+    if ((dashBoardItem.title!=null) && (dashBoardItem.title!="")) {
+    	title=dashBoardItem.title;
+    }
+    htmlRow+=title;
+    htmlRow+="\" href=\"";
+    htmlRow+=getBaseUrl();
+    htmlRow+=dashBoardItem.link.substring(1);
+    htmlRow+="\" />";
+    htmlRow+=title;
+    htmlRow+="</a></td><td class=\"iconColumn\"/>";
+    htmlRow+="<td>";
+    var dateToDisplay = null;
+    if ((dashBoardItem.dueDate!=null) && (dashBoardItem.dueDate!="")) {
+    	dateToDisplay=dashBoardItem.dueDate;
+    }
+    if (dateToDisplay!=null) {
+    	htmlRow+=getDateForDisplay(dateToDisplay);
+    }
+    htmlRow+="</td>";
+    htmlRow+="<td>";
+    htmlRow+=directive;
+    alert("directive is "+directive);
+    htmlRow+="</td>";
+    htmlRow+="<td class=\"iconColumn\"/>";
+    htmlRow+="</tr>";
+    return htmlRow;
+}
+
+function response(obj) {
+    //var jsonObject = eval('(' + obj + ')');
+    //var data = jsonObject;
+	//alert("eval is "+eval(obj));
+    var jsonObject = obj.data;
+	//alert("howdy"+jsonObject);
+
+    displayTaskList(jsonObject);
 };
 
 function readCookie(name) {
@@ -107,16 +174,6 @@ function readCookie(name) {
             return c.substring(nameEQ.length, c.length);
     }
     return null;
-}
-
-function openDiv(name) {
-    var result =  '<div class="nxcategory-wrapper">';
-    result += '<span class="nxcategory-title">'+name+' ';
-    result +='<a class="nxcategory-toggle" href="javascript:openCategory('+"'nxcat-"+name+"')"+'">';
-    result +='<span class="takeupspace"></span></a>';
-    result +="</span>";
-    result +='<div class="nxcategory" id="nxcat-'+name+'">';
-    return result;
 }
 
 function closeDiv(name) {
@@ -137,26 +194,61 @@ function getUserLang() {
 
 function getRestletUrl() {
     var url = getNuxeoServerSideUrl();
-    url += "nuxeo/restAPI/workflowTasks/default?format=XML";
+    if (testMode) {
+    	url = 'http://localhost:8080/';
+    }
+    url += "nuxeo/restAPI/workflowTasks/default?format=JSON";
+    var ts = new Date().getTime() + "" + Math.random()*11
+    url += "&ts=" + ts;
+    
     var lang = getUserLang();
     if (lang != null && lang != "") {
         url += "&lang=" + lang;
     }
-    var ts = new Date().getTime() + "" + Math.random()*11
-    url += "&ts=" + ts;
+    if (testMode) {
+    	url += "&lang=en";
+    }
+    url+="&labels=";
+    //labels
+    url+="workflowDirectiveValidation,";
+    url+="workflowDirectiveOpinion,";
+    url+="workflowDirectiveVerification,";
+    url+="workflowDirectiveCheck,";
+    url+="workflowDirectiveDiffusion,";
+    url+="label.workflow.task.name,";
+    url+="label.workflow.task.duedate,";
+    url+="label.workflow.task.directive";
+
     return url;
 }
 
-function openCategory(divname) {
-    //console.log(divname);
+
+function testHandleJSONResponse(req) {
+   if (req.readyState == 4) {
+       var jsonObject = eval('(' + req.responseText + ')');
+       var data = jsonObject;
+       displayTaskList(data);
+   }
 }
-function createItem(name,link) {
-    if (link==null) {
-        return '<span class="nxcategory-item">'+name+'</span>';
-    }
-    var baseUrl = getNuxeoClientSideUrl();
-    baseUrl = baseUrl.substring(0,baseUrl.length-1);
-    return '<span class="nxcategory-item">'+'<A target="_top" HREF="' + baseUrl +link+'">'+name+'</A></span>';
+function testGetTaskList() {
+    var req = new XMLHttpRequest();
+    req.open("GET", getRestletUrl(), true);
+    req.onreadystatechange = function(){testHandleJSONResponse(req)};
+    req.send(null);
 }
 
-gadgets.util.registerOnLoadHandler(requestTasks);
+function refresh() {
+    if (testMode) {
+        testGetTaskList();
+    }
+    else {
+        requestTasks();
+    }
+}
+
+if (testMode) {
+    refresh();
+}
+else {
+    gadgets.util.registerOnLoadHandler(refresh);
+}
