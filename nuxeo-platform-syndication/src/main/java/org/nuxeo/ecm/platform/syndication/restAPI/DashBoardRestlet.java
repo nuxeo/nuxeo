@@ -69,7 +69,7 @@ public class DashBoardRestlet extends BaseQueryModelRestlet {
         if (domain == null) {
             domain = "/default-domain/";
         }
-       else if (domain.equals("")) {
+       else if (domain.equals("*")) {
                 domain = "/";
        } else {
             if (!domain.startsWith("/")) {

@@ -229,7 +229,7 @@ public class Dashboard implements Serializable {
     public List<SelectItem> getDomainsSelectItems() throws ClientException {
         List<SelectItem> items = new ArrayList<SelectItem>();
 
-        SelectItem rootitem = new SelectItem("", "All");
+        SelectItem rootitem = new SelectItem("*", "All");
         items.add(rootitem);
 
         DocumentModelList domains = getAccessibleDomains();
@@ -262,7 +262,7 @@ public class Dashboard implements Serializable {
                 }
             }
             if (currentDomain==null) {
-                return "";
+                return "*";
             } else {
                 return currentDomain.getName();
             }
