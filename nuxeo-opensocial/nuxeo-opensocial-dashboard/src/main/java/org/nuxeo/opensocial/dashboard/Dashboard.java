@@ -154,7 +154,6 @@ public class Dashboard implements Serializable {
     public String getNuxeoServerUrl() {
         String host = Framework.getProperty("gadgets.host", "127.0.0.1");
         String port = Framework.getProperty("gadgets.port", "8080");
-
         return "http://" + host + ":" + port + "/";
     }
 

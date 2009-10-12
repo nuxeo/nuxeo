@@ -2,6 +2,8 @@ package org.nuxeo.opensocial.dashboard;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.Component;
+import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -19,6 +21,7 @@ import org.nuxeo.ecm.spaces.core.impl.exceptions.NoElementFoundException;
 public class DashboardSpaceProvider extends DefaultSpaceProvider {
 
     public static final String DASHBOARD_SPACE_NAME = "dashboardSpace";
+    public static final String DASHBOARD_DEFAULT_LAYOUT = "x-2-default";
 
     private static final Log log = LogFactory.getLog(DashboardSpaceProvider.class);
 
@@ -66,6 +69,10 @@ public class DashboardSpaceProvider extends DefaultSpaceProvider {
                         universeDoc, desiredSpace.getName(),
                         desiredSpace.getTitle(), desiredSpace.getDescription(),
                         session, Constants.Space.TYPE);
+                // set layout
+                spaceDocument.setProperty("space", "layout", DASHBOARD_DEFAULT_LAYOUT);
+                spaceDocument = session.saveDocument(spaceDocument);
+                session.save();
                 createInitialGadgets(session, spaceDocument);
                 return spaceDocument.getAdapter(Space.class);
             }
@@ -79,24 +86,59 @@ public class DashboardSpaceProvider extends DefaultSpaceProvider {
     protected void createInitialGadgets(CoreSession session,
             DocumentModel spaceDocument) throws Exception {
 
-        log.info("trying to create first gadget");
+        LocaleSelector localeSelector = (LocaleSelector) Component.getInstance("org.jboss.seam.international.localeSelector");
+        String language = "en";
+        if (localeSelector!=null) {
+            language = localeSelector.getLanguage();
+        }
+        String labelKey = "";
+        String title = "";
 
+        // UserTasks
+        log.debug("creating UserTasks ");
+        labelKey = "title.dashboard.userTasks";
+        title = TranslationHelper.getLabel(labelKey, language);
         createGadgetForInitialDashboard(session, spaceDocument,
-                "userdocuments", COLS[0], new Integer(0));
-        log.info("trying to create second gadget");
+                "tasks", title, COLS[0], new Integer(0));
+
+        log.debug("creating UserWorkflow ");
+        labelKey = "title.dashboard.userProcesses";
+        title = TranslationHelper.getLabel(labelKey, language);
         createGadgetForInitialDashboard(session, spaceDocument,
-                "userworkspaces", COLS[1], new Integer(0));
-        log.info("trying to create save initial gadgets");
+                "tasks", title, COLS[0], new Integer(0)); // XXX
+
+        // User Sites
+        log.debug("creating UserSites ");
+        labelKey = "title.dashboard.userSites";
+        title = TranslationHelper.getLabel(labelKey, language);
+        createGadgetForInitialDashboard(session, spaceDocument,
+                "usersites",title,  COLS[0], new Integer(0));
+
+        // UserDocuments
+        log.debug("creating UserDocuments ");
+        labelKey = "title.dashboard.userDocuments";
+        title = TranslationHelper.getLabel(labelKey, language);
+        createGadgetForInitialDashboard(session, spaceDocument,
+                "userdocuments", title, COLS[1], new Integer(0));
+
+        // User Workspaces
+        log.debug("creating UserWorkspaces ");
+        labelKey = "title.dashboard.userWorkspaces";
+        title = TranslationHelper.getLabel(labelKey, language);
+        createGadgetForInitialDashboard(session, spaceDocument,
+                "userworkspaces",title,  COLS[1], new Integer(0));
+
         session.save();
+
 
     }
 
     protected Gadget createGadgetForInitialDashboard(CoreSession session,
-            DocumentModel parent, String name, String placeId, Integer position)
+            DocumentModel parent, String name, String title, String placeId, Integer position)
             throws Exception {
 
         DocumentModel model = DocumentHelper.createInternalDocument(parent,
-                name, name, name, session, Constants.Gadget.TYPE);
+                name, title, "", session, Constants.Gadget.TYPE);
 
         // TODO: Why is this null not something sensible?
         model.setPropertyValue(Constants.Gadget.GADGET_CATEGORY, null);
