@@ -30,8 +30,41 @@ function requestTasks() {
     gadgets.io.makeRequest(url, response, params);
 }
 
+// insert the whole table, as stupid IE can't do a tbody.innerHtml
+function tableStart(jsonObject) {
+    var title = "Document";
+    var modified = "Modified";
+    var creator = "Author";
+    var labelInfo = jsonObject.translations;
+    if (labelInfo != null && labelInfo != 'undefined') {
+        title = labelInfo['label.dublincore.title'];
+        modified = labelInfo['label.dublincore.modified'];
+        creator = labelInfo['label.dublincore.creator'];
+    }
+    var html = "";
+    html += "<table class='dataList'>";
+    html += "  <thead>";
+    html += "    <tr>";
+    html += "      <th/>";
+    html += "      <th>" + title + "</th>";
+    html += "      <th/>";
+    html += "      <th>" + modified + "</th>";
+    html += "      <th>" + creator + "</th>";
+    html += "    </tr>";
+    html += "  </thead>";
+    html += "  <tbody>";
+    return html;
+}
+
+function tableEnd() {
+    var html = "";
+    html += "  </tbody>";
+    html += "</table>";
+    return html
+}
+
 function displayTaskList(data) {
-    var htmlContent = "";
+    var htmlContent = tableStart(data);
 
     //validation
     var validation = data.data['workflowDirectiveValidation'];
@@ -74,6 +107,8 @@ function displayTaskList(data) {
         }
     }
 
+    htmlContent += tableEnd();
+
     document.getElementById("nxDocumentListData").innerHTML = htmlContent;
     // page info
     //alert("page info " + data.summary.pageNumber)
@@ -82,15 +117,6 @@ function displayTaskList(data) {
     maxPage = data.summary.pages;
     pageInfoLabel += maxPage + 1;
     document.getElementById("nxDocumentListPage").innerHTML = pageInfoLabel;
-
-    // labels
-    var labelInfo = data.translations;
-    if (labelInfo != null && labelInfo != 'undefined') {
-        //alert("here");
-        document.getElementById("title").innerHTML = labelInfo['label.workflow.task.name'];
-        document.getElementById("modified").innerHTML = labelInfo['label.workflow.task.duedate'];
-        document.getElementById("creator").innerHTML = labelInfo['label.workflow.task.directive'];
-    }
 }
 
 function getDateForDisplay(datestr) {

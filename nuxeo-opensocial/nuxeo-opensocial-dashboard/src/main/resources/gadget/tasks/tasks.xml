@@ -20,21 +20,9 @@
         <input type="image" src="/nuxeo/icons/action_page_next.gif" onclick="nextPage()"/>
         <input type="image" src="/nuxeo/icons/action_page_fastforward.gif"onclick="lastPage()"/>
         </div>
-        <table id="" class="dataList">
-            <thead>
-                <tr>
-                    <th/>
-                    <th id="title">Document</th>
-                    <th/>
-                    <th id="modified">Modified</th>
-                    <th id="creator">Author</th>
-                    <th/>
-                </tr>
-            </thead>
-            <tbody id="nxDocumentListData">
-                <tr><td colspan="6" style="text-align:center"><img src="/nuxeo/img/standart_waiter.gif"></td></tr>
-            </tbody>
-        </table>
+        <div id="nxDocumentListData">
+          <img src="/nuxeo/img/standart_waiter.gif">
+        </div>
     </div>
 
      ]]>

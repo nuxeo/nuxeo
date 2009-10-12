@@ -126,12 +126,46 @@ function handleJSONResponse(obj) {
     displayDocumentList(jsonObject);
 }
 
+// insert the whole table, as stupid IE can't do a tbody.innerHtml
+function tableStart(jsonObject) {
+    var title = "Document";
+    var modified = "Modified";
+    var creator = "Author";
+    var labelInfo = jsonObject.translations;
+    if (labelInfo != null && labelInfo != 'undefined') {
+        title = labelInfo['label.dublincore.title'];
+        modified = labelInfo['label.dublincore.modified'];
+        creator = labelInfo['label.dublincore.creator'];
+    }
+    var html = "";
+    html += "<table class='dataList'>";
+    html += "  <thead>";
+    html += "    <tr>";
+    html += "      <th/>";
+    html += "      <th>" + title + "</th>";
+    html += "      <th/>";
+    html += "      <th>" + modified + "</th>";
+    html += "      <th>" + creator + "</th>";
+    html += "    </tr>";
+    html += "  </thead>";
+    html += "  <tbody>";
+    return html;
+}
+
+function tableEnd() {
+    var html = "";
+    html += "  </tbody>";
+    html += "</table>";
+    return html
+}
+
 function displayDocumentList(jsonObject) {
-    var htmlContent = "";
+    var htmlContent = tableStart(jsonObject);
     var data = jsonObject.data;
     for (var i=0; i< data.length; i++) {
         htmlContent+=mkRow(data[i], i);
     }
+    htmlContent += tableEnd();
     _gel("nxDocumentListData").innerHTML = htmlContent;
 
     // page info
@@ -141,14 +175,6 @@ function displayDocumentList(jsonObject) {
     pageInfoLabel+= pageInfo.pages;
     maxPage = pageInfo.pages;
     _gel("nxDocumentListPage").innerHTML = pageInfoLabel;
-
-    // labels
-    var labelInfo = jsonObject.translations;
-    if (labelInfo!=null && labelInfo!='undefined') {
-        _gel("title").innerHTML = labelInfo['label.dublincore.title'];
-        _gel("modified").innerHTML = labelInfo['label.dublincore.modified'];
-        _gel("creator").innerHTML = labelInfo['label.dublincore.creator'];
-    }
 }
 
 function getDateForDisplay(datestr) {
