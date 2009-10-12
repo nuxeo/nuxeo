@@ -30,7 +30,7 @@ public class OpensocialDashboardNavigationHelper implements
 
     public static final String DASHBARD_MODE_AUTO = "auto";
 
-    public static final String DASHBARD_MODE_OS = "opensocoal";
+    public static final String DASHBARD_MODE_OS = "opensocial";
 
     public static final String DASHBARD_MODE_OLD = "old";
 
