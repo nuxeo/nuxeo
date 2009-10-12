@@ -4,6 +4,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
@@ -13,14 +14,38 @@
 <div class="filterContent">
   <a4j:region>
   <a4j:outputPanel id="filterFormPanel">
-
   <a4j:form id="filterForm">
-    <h:inputText id="fulltextFilter" class="searchInput"
-      value="#{filterActions.filterDocument.filter_query.ecm_fulltext}">
-      <a4j:support event="onkeyup" reRender="filterResultTable"
-        requestDelay="1000" action="#{filterActions.invalidateProvider}"
-        ignoreDupResponces="true" eventsQueue="fulltextSearchQueue"/>
-    </h:inputText>
+
+  <rich:panelMenu style="width:200px"  mode="ajax" reRender="filterResultTable"
+      iconExpandedGroup="disc" iconCollapsedGroup="disc" 
+      iconExpandedTopGroup="chevronUp" iconGroupTopPosition="right" 
+      iconCollapsedTopGroup="chevronDown">
+      
+      <rich:panelMenuGroup label="#{messages['heading.filter.fulltext']}">
+        <h:inputText id="fulltextFilter" class="searchInput"
+          value="#{filterActions.filterDocument.filter_query.ecm_fulltext}">
+       <a4j:support event="onkeyup" reRender="filterResultTable"
+         requestDelay="1000" action="#{filterActions.invalidateProvider}"
+         ignoreDupResponces="true" eventsQueue="filterFormQueue"/>
+     </h:inputText>
+      </rich:panelMenuGroup>
+      
+      <rich:panelMenuGroup label="#{messages['heading.filter.docTypes']}">
+        <rich:panelMenuItem label="#{messages['File']}" action="#{filterActions.toggleSelectDocType}">
+          <f:param name="docType" value="File"/>
+        </rich:panelMenuItem>
+        <rich:panelMenuItem label="#{messages['Picture']}" action="#{filterActions.toggleSelectDocType}">
+          <f:param name="docType" value="Picture"/>
+        </rich:panelMenuItem> 
+        <rich:panelMenuItem label="#{messages['Audio']}" action="#{filterActions.toggleSelectDocType}">
+          <f:param name="docType" value="Audio"/>
+        </rich:panelMenuItem>
+        <rich:panelMenuItem label="#{messages['Video']}" action="#{filterActions.toggleSelectDocType}">
+          <f:param name="docType" value="Video"/>
+        </rich:panelMenuItem>
+      </rich:panelMenuGroup>
+    </rich:panelMenu>
+
     <a4j:commandButton  id="filterFormSubmit" type="submit"
       styleClass="button" style="visibility: hidden"
       value="#{messages['label.action.filter.doFulltextSearch']}"

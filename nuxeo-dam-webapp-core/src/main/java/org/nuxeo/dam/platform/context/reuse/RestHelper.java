@@ -33,7 +33,8 @@ import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 
 /**
- * TODO: remove RestHelper : waiting Techlead solution
+ * TODO: remove RestHelper : waiting Techlead solution (don't want NavigationContext dependency)
+ * override RestHelper component without NavigationContext
  *
  * @author Benjamin JALON
  */
@@ -64,4 +65,8 @@ public class RestHelper implements Serializable {
         this.documentView = documentView;
     }
 
+    public DocumentView getNewDocumentView() {
+    	// since 5.3 release this method have been added don't know why (BJA)
+    	return null;
+    }
 }

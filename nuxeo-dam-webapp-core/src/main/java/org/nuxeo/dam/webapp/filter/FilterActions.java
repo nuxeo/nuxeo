@@ -29,6 +29,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -61,6 +62,9 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
     @In(create = true, required = false)
     transient ResultsProvidersCache resultsProvidersCache;
 
+    @RequestParameter
+    protected String docType;
+    
     protected transient QueryModelService queryModelService;
 
     protected DocumentModel filterDocument;
@@ -80,6 +84,14 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
 
     public void setFilterDocument(DocumentModel filterDocument) {
         this.filterDocument = filterDocument;
+    }
+    
+    public void toggleSelectDocType() {
+    	if (docType != null) {
+    		log.info("TODO: handle toggleSelect: " + docType);
+    	} else {
+    		log.error("handle toggleSelect: null docType");
+    	}
     }
 
     public PagedDocumentsProvider getResultsProvider(String queryModelName)
