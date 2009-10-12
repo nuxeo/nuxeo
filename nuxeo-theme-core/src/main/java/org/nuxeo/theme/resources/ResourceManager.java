@@ -39,10 +39,12 @@ public final class ResourceManager implements Registrable {
     private final TypeRegistry typeRegistry = Manager.getTypeRegistry();
 
     public void addResource(String name, URL themeUrl) {
+        log.debug("Theme resource: " + themeUrl + " -> " + name);
         ResourceType resourceType = (ResourceType) typeRegistry.lookup(
                 TypeFamily.RESOURCE, name);
         if (resourceType != null) {
             for (String dependency : resourceType.getDependencies()) {
+                log.debug("  Subresource dependency: " + name + " -> " + dependency);
                 addResource(dependency, themeUrl);
             }
 
