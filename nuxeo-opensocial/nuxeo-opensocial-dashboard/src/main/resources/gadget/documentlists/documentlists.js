@@ -132,7 +132,7 @@ function displayDocumentList(jsonObject) {
     for (var i=0; i< data.length; i++) {
         htmlContent+=mkRow(data[i], i);
     }
-    document.getElementById("nxDocumentListData").innerHTML = htmlContent;
+    _gel("nxDocumentListData").innerHTML = htmlContent;
 
     // page info
     var pageInfo = jsonObject.summary;
@@ -140,14 +140,14 @@ function displayDocumentList(jsonObject) {
     pageInfoLabel+= "/";
     pageInfoLabel+= pageInfo.pages;
     maxPage = pageInfo.pages;
-    document.getElementById("nxDocumentListPage").innerHTML = pageInfoLabel;
+    _gel("nxDocumentListPage").innerHTML = pageInfoLabel;
 
     // labels
     var labelInfo = jsonObject.translations;
     if (labelInfo!=null && labelInfo!='undefined') {
-        document.getElementById("title").innerHTML = labelInfo['label.dublincore.title'];
-        document.getElementById("modified").innerHTML = labelInfo['label.dublincore.modified'];
-        document.getElementById("creator").innerHTML = labelInfo['label.dublincore.creator'];
+        _gel("title").innerHTML = labelInfo['label.dublincore.title'];
+        _gel("modified").innerHTML = labelInfo['label.dublincore.modified'];
+        _gel("creator").innerHTML = labelInfo['label.dublincore.creator'];
     }
 }
 
