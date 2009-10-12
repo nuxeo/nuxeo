@@ -153,12 +153,12 @@ public class DMJSONSerializer extends AbstractDocumentModelSerializer implements
             Map<String, String> m = new HashMap<String, String>();
             m.put("id", item.getId().toString());
             m.put("name", item.getName());
-            if (lang != null) {
+            if (lang != null && item.getName() != null) {
                 m.put("nameI18n", TranslationHelper.getLabel(
                         "label.workflow.task." + item.getName(), lang));
             }
             m.put("directive", item.getDirective());
-            if (lang != null) {
+            if (lang != null && item.getDirective() != null) {
                 m.put("directiveI18n", TranslationHelper.getLabel(
                         item.getDirective(), lang));
             }

@@ -121,7 +121,7 @@
             <resource>jquery.cookie.js</resource>
             <resource>jquery.menu.js</resource>
             <resource>thickbox.js</resource>
-            <resource>initMenu.js</resource>
+            <resource>initmenu.js</resource>
             <resource>container.css</resource>
             <resource>gadgetManager.js</resource>
             <resource>layoutManager.js</resource>

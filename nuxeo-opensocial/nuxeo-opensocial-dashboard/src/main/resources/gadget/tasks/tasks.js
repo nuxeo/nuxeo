@@ -32,24 +32,24 @@ function requestTasks() {
 
 // insert the whole table, as stupid IE can't do a tbody.innerHtml
 function tableStart(jsonObject) {
-    var title = "Document";
-    var modified = "Modified";
-    var creator = "Author";
+    var name = "Name";
+    var duedate = "Due Date";
+    var directive = "Directive";
     var labelInfo = jsonObject.translations;
     if (labelInfo != null && labelInfo != 'undefined') {
-        title = labelInfo['label.dublincore.title'];
-        modified = labelInfo['label.dublincore.modified'];
-        creator = labelInfo['label.dublincore.creator'];
+        name = labelInfo['label.workflow.task.name'];
+        duedate = labelInfo['label.workflow.task.duedate'];
+        directive = labelInfo['label.workflow.task.directive'];
     }
     var html = "";
     html += "<table class='dataList'>";
     html += "  <thead>";
     html += "    <tr>";
     html += "      <th/>";
-    html += "      <th>" + title + "</th>";
+    html += "      <th>" + name + "</th>";
     html += "      <th/>";
-    html += "      <th>" + modified + "</th>";
-    html += "      <th>" + creator + "</th>";
+    html += "      <th>" + duedate + "</th>";
+    html += "      <th>" + directive + "</th>";
     html += "    </tr>";
     html += "  </thead>";
     html += "  <tbody>";
@@ -144,7 +144,7 @@ function getBaseUrl() {
 
 function mkRow(dashBoardItem, i, directive) {
     var htmlRow = "<tr class=\"";
-    if (i % 2 == 2) {
+    if (i % 2 == 0) {
         htmlRow += "dataRowEven";
     } else {
         htmlRow += "dataRowOdd";

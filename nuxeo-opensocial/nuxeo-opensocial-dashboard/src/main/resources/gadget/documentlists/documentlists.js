@@ -191,7 +191,7 @@ function getDateForDisplay(datestr) {
 
 function mkRow(dashBoardItem, i) {
     var htmlRow = "<tr class=\"";
-    if (i%2==2){
+    if (i%2==0){
     htmlRow+="dataRowEven";
     } else {
     htmlRow+="dataRowOdd";

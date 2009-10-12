@@ -114,7 +114,7 @@ public class OpensocialDashboardNavigationHelper implements
                     if (userAgent.contains(MSIE7_USERAGENT)) {
                         dashBoardViewId = NEW_DASHBARD_VIEWID;
                     }
-                    else if (userAgent.contains(MSIE7_USERAGENT)) {
+                    else if (userAgent.contains(MSIE8_USERAGENT)) {
                         dashBoardViewId = NEW_DASHBARD_VIEWID;
                     } else {
                         // IE 4, IE 5 , IE 5.5, IE6
