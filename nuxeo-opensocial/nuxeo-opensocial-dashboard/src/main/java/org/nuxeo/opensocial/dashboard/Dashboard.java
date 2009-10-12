@@ -53,7 +53,7 @@ public class Dashboard implements Serializable {
 
     public static final String SELENIUM_USERAGENT = "Nuxeo-Selenium-Tester";
 
-    protected String dashBoardViewId = null;
+    protected String selectedDomainId;
 
     protected DocumentModelList domains = null;
 
@@ -215,11 +215,24 @@ public class Dashboard implements Serializable {
         }
     }
 
+    public String getSelectedDomain() throws ClientException {
+        if (selectedDomainId==null) {
+            selectedDomainId = getCurrentDashboardDomainName();
+        }
+        return selectedDomainId;
+    }
+
+    public void setSelectedDomain(String selectedDomain) {
+        this.selectedDomainId = selectedDomain;
+    }
+
     public List<SelectItem> getDomainsSelectItems() throws ClientException {
-
         List<SelectItem> items = new ArrayList<SelectItem>();
-        DocumentModelList domains = getAccessibleDomains();
 
+        SelectItem rootitem = new SelectItem("", "All");
+        items.add(rootitem);
+
+        DocumentModelList domains = getAccessibleDomains();
         for (DocumentModel domain : domains) {
             SelectItem item = new SelectItem(domain.getName(),
                     domain.getTitle());
@@ -235,19 +248,27 @@ public class Dashboard implements Serializable {
         return domains;
     }
 
-    public String getCurrentDashboardDomainName() throws ClientException {
+    public String submitSelectedDomainChange() throws ClientException {
+        return null;
+    }
 
-        DocumentModel currentDomain = navigationContext.getCurrentDomain();
-        if (currentDomain == null) {
-            DocumentModelList domains = getAccessibleDomains();
-            if (domains.size() > 0) {
-                currentDomain = domains.get(0);
+    public String getCurrentDashboardDomainName() throws ClientException {
+        if (selectedDomainId==null) {
+            DocumentModel currentDomain = navigationContext.getCurrentDomain();
+            if (currentDomain==null) {
+                DocumentModelList domains = getAccessibleDomains();
+                if (domains.size()>0) {
+                    currentDomain = domains.get(0);
+                }
+            }
+            if (currentDomain==null) {
+                return "";
+            } else {
+                return currentDomain.getName();
             }
         }
-        if (currentDomain == null) {
-            return "";
-        } else {
-            return currentDomain.getName();
+        else {
+            return selectedDomainId;
         }
     }
 

@@ -126,6 +126,11 @@
             <resource>gadgetManager.js</resource>
             <resource>layoutManager.js</resource>
         </view>
+        <view name="opensocialDashBoardNav" template-engine="jsf-facelets">
+            <format-type>widget</format-type>
+            <template>incl/opensocial-dashboard-nav.xhtml
+            </template>
+        </view>
     </extension>
 
 
