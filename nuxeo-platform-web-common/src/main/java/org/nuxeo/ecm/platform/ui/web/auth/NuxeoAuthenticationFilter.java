@@ -566,18 +566,25 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
 
         String requestPage;
+        boolean requestPageInParams = false;
         if (httpRequest.getParameter(NXAuthConstants.REQUESTED_URL) != null) {
+            requestPageInParams = true;
             requestPage = httpRequest.getParameter(NXAuthConstants.REQUESTED_URL);
         } else {
             requestPage = getRequestedUrl(httpRequest);
         }
-        // avoid redirect if not usefull
+
+        // avoid redirect if not useful
         if (requestPage.startsWith(DEFAULT_START_PAGE)) {
             return true;
         }
 
+        // avoid saving to session is start page is not valid or if it's already
+        // in the request params
         if (isStartPageValid(requestPage)) {
-            session.setAttribute(START_PAGE_SAVE_KEY, requestPage);
+            if (!requestPageInParams) {
+                session.setAttribute(START_PAGE_SAVE_KEY, requestPage);
+            }
             return true;
         }
 
@@ -604,8 +611,9 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         String requestedPage = null;
 
-        if (httpRequest.getParameter(NXAuthConstants.REQUESTED_URL) != null) {
-            return httpRequest.getParameter(NXAuthConstants.REQUESTED_URL);
+        String requestedUrl = httpRequest.getParameter(NXAuthConstants.REQUESTED_URL);
+        if (requestedUrl != null && !"".equals(requestedUrl)) {
+            return requestedUrl;
         }
 
         if (httpRequest.getParameter(START_PAGE_SAVE_KEY) == null) {
