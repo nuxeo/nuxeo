@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.3.0-SNAPSHOT</version>
+    <version>5.3.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.theme</groupId>
@@ -17,8 +17,8 @@
   </description>
 
   <properties>
-    <nuxeo.common.version>1.6.0-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>1.6.0-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.common.version>1.6.1-SNAPSHOT</nuxeo.common.version>
+    <nuxeo.runtime.version>1.6.1-SNAPSHOT</nuxeo.runtime.version>
     <nuxeo.services.version>${pom.version}</nuxeo.services.version>
     <nuxeo.theme.version>${pom.version}</nuxeo.theme.version>
   </properties>
