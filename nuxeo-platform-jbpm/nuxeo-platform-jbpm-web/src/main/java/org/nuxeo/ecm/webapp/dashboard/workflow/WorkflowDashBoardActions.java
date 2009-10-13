@@ -36,6 +36,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
@@ -87,7 +88,7 @@ public class WorkflowDashBoardActions implements Serializable, WorkflowDashBoard
                         }
                         DocumentModel doc = jbpmService.getDocumentModel(task,
                                 pal);
-                        if (doc != null) {
+                        if (doc != null && !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
                             currentUserTasks.add(new DashBoardItemImpl(task,
                                     doc));
                         } else {
@@ -124,7 +125,7 @@ public class WorkflowDashBoardActions implements Serializable, WorkflowDashBoard
                         }
                         DocumentModel doc = jbpmService.getDocumentModel(
                                 process, pal);
-                        if (doc != null) {
+                        if (doc != null && !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
                             currentUserProcesses
                                     .add(new DocumentProcessItemImpl(process,
                                             doc));
