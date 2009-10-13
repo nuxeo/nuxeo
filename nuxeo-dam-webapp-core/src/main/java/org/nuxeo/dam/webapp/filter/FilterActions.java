@@ -22,9 +22,16 @@ package org.nuxeo.dam.webapp.filter;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
@@ -49,101 +56,144 @@ import org.nuxeo.runtime.api.Framework;
 @Name("filterActions")
 public class FilterActions implements Serializable, ResultsProviderFarm {
 
-    private static final long serialVersionUID = 8713355502550622010L;
+	private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(FilterActions.class);
+	@SuppressWarnings("unused")
+	private static final Log log = LogFactory.getLog(FilterActions.class);
 
-    protected static final String QUERY_MODEL_NAME = "FILTERED_DOCUMENTS";
+	public static final List<String> DAM_DOCUMENT_TYPES = Arrays.asList("File",
+			"Picture", "Video", "Audio");
 
-    @In(create = true, required = false)
-    transient CoreSession documentManager;
+	protected static final String QUERY_MODEL_NAME = "FILTERED_DOCUMENTS";
 
-    @In(create = true, required = false)
-    transient ResultsProvidersCache resultsProvidersCache;
+	protected static final String DOCTYPE_FIELD_XPATH = "filter_query:ecm_primaryType";
 
-    @RequestParameter
-    protected String docType;
-    
-    protected transient QueryModelService queryModelService;
+	@In(create = true, required = false)
+	transient CoreSession documentManager;
 
-    protected DocumentModel filterDocument;
+	@In(create = true, required = false)
+	transient ResultsProvidersCache resultsProvidersCache;
 
-    public DocumentModel getFilterDocument() throws ClientException {
-        if (filterDocument == null) {
-            QueryModelDescriptor descriptor;
-            try {
-                descriptor = getQueryModelDescriptor(QUERY_MODEL_NAME);
-            } catch (Exception e) {
-                throw new ClientException("Failed to get query model: " + QUERY_MODEL_NAME, e);
-            }
-            filterDocument = documentManager.createDocumentModel(descriptor.getDocType());
-        }
-        return filterDocument;
-    }
+	@RequestParameter
+	protected String docType;
 
-    public void setFilterDocument(DocumentModel filterDocument) {
-        this.filterDocument = filterDocument;
-    }
-    
-    public void toggleSelectDocType() {
-    	if (docType != null) {
-    		log.info("TODO: handle toggleSelect: " + docType);
-    	} else {
-    		log.error("handle toggleSelect: null docType");
-    	}
-    }
+	protected transient QueryModelService queryModelService;
 
-    public PagedDocumentsProvider getResultsProvider(String queryModelName)
-            throws ClientException, ResultsProviderFarmUserException {
-        try {
-            return getResultsProvider(queryModelName, null);
-        } catch (SortNotSupportedException e) {
-            throw new ClientException("unexpected exception", e);
-        }
-    }
+	protected DocumentModel filterDocument;
 
-    public PagedDocumentsProvider getResultsProvider(String queryModelName,
-            SortInfo sortInfo) throws ClientException,
-            ResultsProviderFarmUserException {
-        if (!QUERY_MODEL_NAME.equals(queryModelName)) {
-            return null;
-        }
+	public DocumentModel getFilterDocument() throws ClientException {
+		if (filterDocument == null) {
+			QueryModelDescriptor descriptor;
+			try {
+				descriptor = getQueryModelDescriptor(QUERY_MODEL_NAME);
+			} catch (Exception e) {
+				throw new ClientException("Failed to get query model: "
+						+ QUERY_MODEL_NAME, e);
+			}
+			filterDocument = documentManager.createDocumentModel(descriptor
+					.getDocType());
+		}
+		return filterDocument;
+	}
 
-        QueryModelDescriptor descriptor;
-        try {
-            descriptor = getQueryModelDescriptor(queryModelName);
-        } catch (Exception e) {
-            throw new ClientException("Failed to get query model: " + queryModelName, e);
-        }
+	@Factory(value = "docTypeSelectItems", scope = ScopeType.EVENT)
+	public List<SelectItem> getDocTypeSelectItems() throws ClientException {
+		DocumentModel filterDocument = getFilterDocument();
+		List<String> docTypeSelection = filterDocument.getProperty(
+				DOCTYPE_FIELD_XPATH).getValue(List.class);
+		List<SelectItem> items = new ArrayList<SelectItem>();
+		items.add(new SelectItem("All", "label.type.All", "", docTypeSelection
+				.isEmpty()));
+		for (String type : DAM_DOCUMENT_TYPES) {
+			items.add(new SelectItem(type, "label.type." + type, "",
+					docTypeSelection.contains(type)));
+		}
+		return items;
+	}
 
-        QueryModel model = new QueryModel(descriptor, getFilterDocument());
+	public void setFilterDocument(DocumentModel filterDocument) {
+		this.filterDocument = filterDocument;
+	}
 
-        if (!descriptor.isSortable() && sortInfo != null) {
-            throw new SortNotSupportedException();
-        }
+	@SuppressWarnings("unchecked")
+	public void toggleSelectDocType() throws ClientException {
+		DocumentModel filterDocument = getFilterDocument();
+		List<String> previousSelection = filterDocument.getProperty(
+				DOCTYPE_FIELD_XPATH).getValue(List.class);
+		if ("All".equalsIgnoreCase(docType)) {
+			log.debug("select all document types");
+			previousSelection.clear();
+		} else {
+			if (previousSelection.contains(docType)) {
+				log.debug("unselect: " + docType);
+				previousSelection.remove(docType);
+			} else {
+				log.debug("select: " + docType);
+				previousSelection.add(docType);
+				if (DAM_DOCUMENT_TYPES.equals(previousSelection)) {
+					// back to empty selection which means no document type
+					// filtering:
+					previousSelection.clear();
+				}
+			}
+		}
+		filterDocument.setPropertyValue(DOCTYPE_FIELD_XPATH,
+				(Serializable) previousSelection);
+		invalidateProvider();
+	}
 
-        PagedDocumentsProvider provider = model.getResultsProvider(
-                documentManager, null, sortInfo);
-        provider.setName(queryModelName);
-        return provider;
-    }
+	public PagedDocumentsProvider getResultsProvider(String queryModelName)
+			throws ClientException, ResultsProviderFarmUserException {
+		try {
+			return getResultsProvider(queryModelName, null);
+		} catch (SortNotSupportedException e) {
+			throw new ClientException("unexpected exception", e);
+		}
+	}
 
-    @Observer(EventNames.QUERY_MODEL_CHANGED)
-    public void queryModelChanged(QueryModel qm) {
-        resultsProvidersCache.invalidate(qm.getDescriptor().getName());
-    }
-    
-    public void invalidateProvider() {
-        resultsProvidersCache.invalidate(QUERY_MODEL_NAME);
-    }
+	public PagedDocumentsProvider getResultsProvider(String queryModelName,
+			SortInfo sortInfo) throws ClientException,
+			ResultsProviderFarmUserException {
+		if (!QUERY_MODEL_NAME.equals(queryModelName)) {
+			return null;
+		}
 
-    protected QueryModelDescriptor getQueryModelDescriptor(String descriptorName)
-            throws Exception {
-        if (queryModelService == null) {
-            queryModelService = (QueryModelService) Framework.getService(QueryModelService.class);
-        }
-        return queryModelService.getQueryModelDescriptor(descriptorName);
-    }
+		QueryModelDescriptor descriptor;
+		try {
+			descriptor = getQueryModelDescriptor(queryModelName);
+		} catch (Exception e) {
+			throw new ClientException("Failed to get query model: "
+					+ queryModelName, e);
+		}
+
+		QueryModel model = new QueryModel(descriptor, getFilterDocument());
+
+		if (!descriptor.isSortable() && sortInfo != null) {
+			throw new SortNotSupportedException();
+		}
+
+		PagedDocumentsProvider provider = model.getResultsProvider(
+				documentManager, null, sortInfo);
+		provider.setName(queryModelName);
+		return provider;
+	}
+
+	@Observer(EventNames.QUERY_MODEL_CHANGED)
+	public void queryModelChanged(QueryModel qm) {
+		resultsProvidersCache.invalidate(qm.getDescriptor().getName());
+	}
+
+	public void invalidateProvider() {
+		resultsProvidersCache.invalidate(QUERY_MODEL_NAME);
+	}
+
+	protected QueryModelDescriptor getQueryModelDescriptor(String descriptorName)
+			throws Exception {
+		if (queryModelService == null) {
+			queryModelService = (QueryModelService) Framework
+					.getService(QueryModelService.class);
+		}
+		return queryModelService.getQueryModelDescriptor(descriptorName);
+	}
 
 }
