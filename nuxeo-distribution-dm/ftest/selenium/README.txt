@@ -166,7 +166,22 @@ Generic advice when writing tests
        <td>10000</td>
      </tr>
 
+- how to get an element when no id is availble (taken from http://lawrencesong.net/2008/01/selenium-element-locators/)
 
+  1. get the link with the link text          : <a href=”link url”>Link Text</a> -> link=Link Text
+  2. get element with the element text        : <a href=”link url”>Link Text</a> -> //a[text()='Link Text']
+  3. get element with part of the element text: <a href=”link url”>Link Text</a> -> //a[contains(text(), 'ink Tex')]
+  4. get element with an attribute            :<a href=”link url”>Link Text</a> -> //a[@href='link url']
+  5. get element with two attributes          :<input type=”text” value=”value”/> -> //input[@type='text' and @value='value']
+
+- sometimes this command will succed:
+	<td>click</td>
+	<td>dashboardDocumentProcessTable:j_id130</td>
+	<td></td>
+  when this one will faile:
+	<td>click</td>
+	<td>//input[@id="dashboardDocumentProcessTable:j_id130"]</td>
+	<td></td>
 
 Test suites description
 =======================
