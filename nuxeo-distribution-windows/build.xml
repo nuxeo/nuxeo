@@ -4,6 +4,7 @@
   <property file="build.properties" />
   <property name="jboss.config" value="default" />
   <property name="jboss.dir" value="/opt/jboss" />
+  <property name="project.build.directory" value="target" />
 
   <condition property="osfamily-macosx">
     <and>
