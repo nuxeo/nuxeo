@@ -43,6 +43,6 @@ HIDE_FF=true "$HERE"/run.sh
 ret1=$?
 
 echo "stop jboss"
-#$JBOSS_HOME/bin/jbossctl stop || exit 1
+$JBOSS_HOME/bin/jbossctl stop || exit 1
 
 exit $ret1
