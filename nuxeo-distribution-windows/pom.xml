@@ -32,28 +32,32 @@
       <properties>
         <application.name>nuxeo-dm-jboss</application.name>
       </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.distribution</groupId>
+          <artifactId>nuxeo-distribution-jboss</artifactId>
+          <type>zip</type>
+          <classifier>nuxeo-dm-jboss</classifier>
+        </dependency>
+      </dependencies>
     </profile>
     <profile>
       <id>nuxeo-ep-jboss</id>
       <properties>
         <application.name>nuxeo-ep-jboss</application.name>
       </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.distribution</groupId>
+          <artifactId>nuxeo-distribution-jboss</artifactId>
+          <type>zip</type>
+          <classifier>nuxeo-ep-jboss</classifier>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
 
   <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-jboss</artifactId>
-      <type>zip</type>
-      <classifier>nuxeo-dm-jboss</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-jboss</artifactId>
-      <type>zip</type>
-      <classifier>nuxeo-ep-jboss</classifier>
-    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-shell</artifactId>
