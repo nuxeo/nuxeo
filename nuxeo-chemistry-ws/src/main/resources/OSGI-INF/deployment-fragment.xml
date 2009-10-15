@@ -6,6 +6,20 @@
     </module>
   </extension>
 
+  <extension target="web#AUTH-FILTER">
+    <filter>
+      <filter-name>WSSUsernameTokenSSOFilter</filter-name>
+      <filter-class>org.nuxeo.ecm.core.chemistry.ws.WSSUsernameTokenSSOFilter</filter-class>
+    </filter>
+
+    <!-- should be in target="web#FILTER-MAPPING" but needs to be
+         before standard NuxeoAuthenticationFilter filter-mapping -->
+    <filter-mapping>
+      <filter-name>WSSUsernameTokenSSOFilter</filter-name>
+      <url-pattern>/webservices/cmis/*</url-pattern>
+    </filter-mapping>
+  </extension>
+
   <extension target="jaxws#ENDPOINT">
     <endpoint name="RepositoryService"
       implementation="org.nuxeo.ecm.core.chemistry.ws.RepositoryServicePortImpl"

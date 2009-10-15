@@ -44,6 +44,11 @@
 	<version>${version}</version>
       </dependency>
       <dependency>
+	<groupId>org.nuxeo.ecm.core</groupId>
+	<artifactId>nuxeo-chemistry-ws</artifactId>
+	<version>${version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-core</artifactId>
 	<version>${nuxeo.webengine.version}</version>
