@@ -120,19 +120,17 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
 		DocumentModel filterDocument = getFilterDocument();
 		List<String> previousSelection = filterDocument.getProperty(
 				DOCTYPE_FIELD_XPATH).getValue(List.class);
+		
 		if ("All".equalsIgnoreCase(docType)) {
-			log.debug("select all document types");
 			previousSelection.clear();
 		} else {
 			if (previousSelection.contains(docType)) {
-				log.debug("unselect: " + docType);
 				previousSelection.remove(docType);
 			} else {
-				log.debug("select: " + docType);
 				previousSelection.add(docType);
-				if (DAM_DOCUMENT_TYPES.equals(previousSelection)) {
-					// back to empty selection which means no document type
-					// filtering:
+
+				if (previousSelection.size() == DAM_DOCUMENT_TYPES.size()) {
+					// back to empty selection which means no document type filtering:
 					previousSelection.clear();
 				}
 			}

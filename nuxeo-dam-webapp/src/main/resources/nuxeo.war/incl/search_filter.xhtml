@@ -23,7 +23,7 @@
      iconCollapsedTopGroup="chevronDown">
      
      <rich:panelMenuGroup label="#{messages['heading.filter.fulltext']}"
-       expanded="true">
+       expanded="true" iconExpanded="none" id="keywords">
      
        <h:inputText id="fulltextFilter" class="searchInput"
          value="#{filterActions.filterDocument.filter_query.ecm_fulltext}">
@@ -35,11 +35,11 @@
      </rich:panelMenuGroup>
      
      <rich:panelMenuGroup label="#{messages['heading.filter.docType']}"
-       expanded="true">
+       expanded="true" id="docTypes">
        
        <c:forEach varStatus="status" items="#{docTypeSelectItems}" var="item">
        
-         <rich:panelMenuItem label="#{messages[item.label]}"
+         <rich:panelMenuItem label="#{messages[item.label]}" id="#{messages[item.value]}"
            styleClass="#{item.disabled ? 'selected' : ''}"
            mode="ajax" action="#{filterActions.toggleSelectDocType}"
            reRender="filterResultTable,filterFormPanel"
