@@ -28,6 +28,7 @@
   <target name="package-macosx" if="osfamily-macosx">
     <property name="installer.path" value="${user.home}/.wine/drive_c/workspace/tools/win32Installer" />
     <property name="istool.path" value="${user.home}/.wine/drive_c/Program Files/ISTool" />
+    <delete dir="${installer.path}" failonerror="false"/>
     <mkdir dir="${installer.path}" />
     <echo message="Update win32installer sources" />
     <exec executable="svn" failonerror="true">
@@ -52,6 +53,7 @@
   <target name="package-unix" if="osfamily-unix">
     <property name="installer.path" value="${user.home}/.wine/drive_c/workspace/tools/win32Installer" />
     <property name="istool.path" value="${user.home}/.wine/drive_c/Program Files/ISTool" />
+    <delete dir="${installer.path}" failonerror="false"/>
     <mkdir dir="${installer.path}" />
     <echo message="Update win32installer sources" />
     <exec executable="svn" failonerror="true">
@@ -83,6 +85,7 @@
   <target name="package-windows" if="osfamily-windows">
     <property name="installer.path" value="C:/workspace/tools/win32Installer" />
     <property name="istool.path" value="C:/Program Files/ISTool" />
+    <delete dir="${installer.path}" failonerror="false"/>
     <mkdir dir="${installer.path}" />
     <echo message="Update win32installer sources" />
     <exec executable="svn.exe" failonerror="true">
