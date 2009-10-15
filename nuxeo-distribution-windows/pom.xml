@@ -41,15 +41,18 @@
     </profile>
   </profiles>
 
-  <dependencyManagement>
-    <dependencies>
-    </dependencies>
-  </dependencyManagement>
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-jboss</artifactId>
       <type>zip</type>
+      <classifier>nuxeo-dm-jboss</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-jboss</artifactId>
+      <type>zip</type>
+      <classifier>nuxeo-ep-jboss</classifier>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -69,7 +72,7 @@
             <configuration>
               <tasks>
                 <resolveArtifact groupId="org.nuxeo.ecm.distribution" artifactId="nuxeo-distribution-jboss"
-                  type="zip" property="nuxeo-jboss" />
+                  type="zip" classifier="${application.name}" property="nuxeo-jboss" />
                 <unzip src="${nuxeo-jboss}" dest="${project.build.directory}/nuxeo-jboss" />
                 <resolveArtifact groupId="org.nuxeo.ecm.distribution" artifactId="nuxeo-distribution-shell"
                   type="zip" property="nuxeo-shell" />

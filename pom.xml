@@ -987,6 +987,14 @@
         <artifactId>nuxeo-distribution-jboss</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
+        <classifier>nuxeo-dm-jboss</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-jboss</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+        <classifier>nuxeo-ep-jboss</classifier>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
