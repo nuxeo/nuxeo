@@ -46,7 +46,11 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
 
     private static String HEADER_NAME_KEY = "ssoHeaderName";
 
+    private static String HEADER_NOREDIRECT_KEY = "ssoNeverRedirect";
+
     protected String userIdHeaderName = "remote_user";
+
+    protected boolean noRedirect;
 
     public final static String HTTP_CREDENTIAL_DIRECTORY_FIELD_PROPERTY_NAME = "org.nuxeo.ecm.platform.login.mod_sso.credentialDirectoryField";
 
@@ -110,7 +114,9 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
             }
         }
 
-        handleRedirectToValidStartPage(httpRequest, httpResponse);
+        if (!noRedirect) {
+            handleRedirectToValidStartPage(httpRequest, httpResponse);
+        }
         return new UserIdentificationInfo(userName, userName);
     }
 
@@ -122,7 +128,8 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
     protected void handleRedirectToValidStartPage(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         boolean isStartPageValid = false;
-        if (httpRequest.getMethod().equals("GET")) {
+        if (httpRequest.getMethod().equals("GET")
+                || httpRequest.getMethod().equals("POST")) {
             // try to keep valid start page
             NuxeoAuthenticationFilter filter = new NuxeoAuthenticationFilter();
             isStartPageValid = filter.saveRequestedURLBeforeRedirect(
@@ -142,8 +149,12 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
     }
 
     public void initPlugin(Map<String, String> parameters) {
-        if (parameters.containsKey(HEADER_NAME_KEY))
+        if (parameters.containsKey(HEADER_NAME_KEY)) {
             userIdHeaderName = parameters.get(HEADER_NAME_KEY);
+        }
+        if (parameters.containsKey(HEADER_NOREDIRECT_KEY)) {
+            noRedirect = Boolean.parseBoolean(parameters.get(HEADER_NOREDIRECT_KEY));
+        }
     }
 
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
