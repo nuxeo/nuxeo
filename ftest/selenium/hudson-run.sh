@@ -3,7 +3,7 @@
 HERE=$(cd $(dirname $0); pwd -P)
 NXDIR="$HERE/nuxeo"
 NXDIST="$NXDIR/nuxeo-distribution"
-NXVERSION="5.2"
+NXVERSION=${NXVERSION:-5.3}
 JBOSS_HOME="$NXDIST/nuxeo-distribution-jboss/target/jboss"
 
 echo "get nuxeo"
@@ -43,6 +43,6 @@ HIDE_FF=true "$HERE"/run.sh
 ret1=$?
 
 echo "stop jboss"
-#$JBOSS_HOME/bin/jbossctl stop || exit 1
+$JBOSS_HOME/bin/jbossctl stop || exit 1
 
 exit $ret1
