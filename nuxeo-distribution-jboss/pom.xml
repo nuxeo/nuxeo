@@ -106,6 +106,7 @@
             <configuration>
               <file>${project.build.directory}/${application.name}-${application.version}.zip</file>
               <type>zip</type>
+              <classifier>${application.name}</classifier>
             </configuration>
           </execution>
         </executions>
