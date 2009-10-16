@@ -24,7 +24,6 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +50,7 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -251,12 +251,7 @@ public class DocumentActionsBean extends InputController implements
                     bigDownloadURL += doc.getRef().toString() + "/";
                     bigDownloadURL += docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY)
                             + "/";
-                    try {
-                        // TM: NXP-4172 need to encode for IE or the request crashed
-                        bigDownloadURL += URLEncoder.encode(filename, "UTF-8");
-                    } catch (Exception e) {
-                        bigDownloadURL += filename;
-                    }
+                    bigDownloadURL += URIUtils.quoteURIPathComponent(filename, true);
                     try {
                         response.sendRedirect(bigDownloadURL);
                     } catch (IOException e) {
