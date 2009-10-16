@@ -63,7 +63,10 @@ public class ATOMSerializer extends AbstractSyndicationSerializer implements
     }
 
     public void serialize(ResultSummary summary, List<DashBoardItem> workItems,
-            String columnsDefinition, Response response, HttpServletRequest req) throws ClientException {
+            String columnsDefinition, List<String> labels,
+            String lang, Response response, HttpServletRequest req)
+            throws ClientException {
+        // TODO labels, lang
 
         SyndFeed atomFeed = new SyndFeedImpl();
         atomFeed.setFeedType(ATOM_TYPE);

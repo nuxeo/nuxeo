@@ -95,8 +95,10 @@ public class GadgetPortlet extends Portlet {
   }
 
   public void updateGadgetPortlet(GadgetBean bean) {
-    JsLibrary.updateIframe(getIframeId(), bean.getRenderUrl());
+    String iFrameUrl = getClientVirtualHostedUrl(gadget.getRenderUrl());
+    JsLibrary.updateIframe(getIframeId(), iFrameUrl);
     this.setGadgetBean(bean);
+    this.setTitle(bean.getTitle());
     this.frame = buildFrame();
   }
 

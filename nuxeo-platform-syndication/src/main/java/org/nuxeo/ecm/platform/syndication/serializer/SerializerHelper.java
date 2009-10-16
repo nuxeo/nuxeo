@@ -36,7 +36,16 @@ public class SerializerHelper {
 
     public static void formatResult(ResultSummary summary,
             DocumentModelList dmList, Response res, String format,
-            String columnsDefinition, HttpServletRequest req) throws ClientException {
+            String columnsDefinition, HttpServletRequest req)
+            throws ClientException {
+        formatResult(summary, dmList, res, format, columnsDefinition, req,
+                null, null);
+    }
+
+    public static void formatResult(ResultSummary summary,
+            DocumentModelList dmList, Response res, String format,
+            String columnsDefinition, HttpServletRequest req,
+            List<String> labels, String lang) throws ClientException {
         DocumentModelListSerializer dms;
 
         if (format.equalsIgnoreCase("JSON")) {
@@ -51,23 +60,41 @@ public class SerializerHelper {
             dms = new SimpleXMLSerializer();
         }
 
-        dms.serialize(summary, dmList, columnsDefinition, res, req);
+        if (lang != null) {
+            dms.serialize(summary, dmList, columnsDefinition, res, req, labels,
+                    lang);
+        } else {
+            dms.serialize(summary, dmList, columnsDefinition, res, req);
+        }
+
     }
 
     public static void formatResult(ResultSummary summary,
             List<DashBoardItem> tasks, Response response, String format,
-            String columnsDefinition, HttpServletRequest req) throws ClientException {
+            String columnsDefinition, HttpServletRequest req)
+            throws ClientException {
+        formatResult(summary, tasks, response, format, columnsDefinition, req,
+                null, null);
+    }
+
+    public static void formatResult(ResultSummary summary,
+            List<DashBoardItem> tasks, Response response, String format,
+            String columnsDefinition, HttpServletRequest req,
+            List<String> labels, String lang) throws ClientException {
         DashBoardItemSerializer dis;
 
-        if (format.equalsIgnoreCase("ATOM")) {
-            dis = new ATOMSerializer();
+        if (format.equalsIgnoreCase("JSON")) {
+            dis = new DMJSONSerializer();
         } else if (format.equalsIgnoreCase("XML")) {
             dis = new SimpleXMLSerializer();
+        } else if (format.equalsIgnoreCase("ATOM")) {
+            dis = new ATOMSerializer();
         } else {
             dis = new SimpleXMLSerializer();
         }
 
-        dis.serialize(summary, tasks, columnsDefinition, response, req);
+        dis.serialize(summary, tasks, columnsDefinition, labels, lang,
+                response, req);
     }
 
 }

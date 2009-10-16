@@ -14,6 +14,11 @@ function getCurrentDomain() {
     return top.nxDomain;
 }
 
+function getUserLang() {
+    return top.nxUserLang;
+}
+
+
 function getRestletUrl() {
     var ts = new Date().getTime() + "" + Math.random()*11
     var url ="";
@@ -25,6 +30,9 @@ function getRestletUrl() {
     url+=QM_Name + "?format=JSON&page="+ currentPage;
     if (getCurrentDomain()!=null && getCurrentDomain()!="") {
         url+="&domain=" + getCurrentDomain();
+    }
+    if (getUserLang()!=null && getUserLang()!="") {
+        url+="&lang=" + getUserLang();
     }
     url+="&ts=" + ts;
     return url;
@@ -118,20 +126,55 @@ function handleJSONResponse(obj) {
     displayDocumentList(jsonObject);
 }
 
+// insert the whole table, as stupid IE can't do a tbody.innerHtml
+function tableStart(jsonObject) {
+    var title = "Document";
+    var modified = "Modified";
+    var creator = "Author";
+    var labelInfo = jsonObject.translations;
+    if (labelInfo != null && labelInfo != 'undefined') {
+        title = labelInfo['label.dublincore.title'];
+        modified = labelInfo['label.dublincore.modified'];
+        creator = labelInfo['label.dublincore.creator'];
+    }
+    var html = "";
+    html += "<table class='dataList'>";
+    html += "  <thead>";
+    html += "    <tr>";
+    html += "      <th/>";
+    html += "      <th>" + title + "</th>";
+    html += "      <th/>";
+    html += "      <th>" + modified + "</th>";
+    html += "      <th>" + creator + "</th>";
+    html += "    </tr>";
+    html += "  </thead>";
+    html += "  <tbody>";
+    return html;
+}
+
+function tableEnd() {
+    var html = "";
+    html += "  </tbody>";
+    html += "</table>";
+    return html
+}
+
 function displayDocumentList(jsonObject) {
-    var htmlContent = "";
+    var htmlContent = tableStart(jsonObject);
     var data = jsonObject.data;
     for (var i=0; i< data.length; i++) {
         htmlContent+=mkRow(data[i], i);
     }
-    document.getElementById("nxDocumentListData").innerHTML = htmlContent;
+    htmlContent += tableEnd();
+    _gel("nxDocumentListData").innerHTML = htmlContent;
 
+    // page info
     var pageInfo = jsonObject.summary;
     var pageInfoLabel = pageInfo.pageNumber+1;
     pageInfoLabel+= "/";
     pageInfoLabel+= pageInfo.pages;
     maxPage = pageInfo.pages;
-    document.getElementById("nxDocumentListPage").innerHTML = pageInfoLabel;
+    _gel("nxDocumentListPage").innerHTML = pageInfoLabel;
 }
 
 function getDateForDisplay(datestr) {
@@ -148,7 +191,7 @@ function getDateForDisplay(datestr) {
 
 function mkRow(dashBoardItem, i) {
     var htmlRow = "<tr class=\"";
-    if (i%2==2){
+    if (i%2==0){
     htmlRow+="dataRowEven";
     } else {
     htmlRow+="dataRowOdd";

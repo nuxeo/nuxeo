@@ -12,9 +12,19 @@
     <![CDATA[
     <script type="text/javascript" language="javascript" src="tasks.js"></script>
     <link rel="stylesheet" type="text/css" href="tasks.css"/>
-    <div id="nxTaskList">
-      <img src="/nuxeo/img/standart_waiter.gif"/>
+      <div id="nxDocumentList">
+        <div class="pageNavigationControls">
+        <input type="image" src="/nuxeo/icons/action_page_rewind.gif" onclick="firstPage()"/>
+        <input type="image" src="/nuxeo/icons/action_page_previous.gif" onclick="prevPage()"/>
+        <span class="currentPageStatus" id="nxDocumentListPage"></span>
+        <input type="image" src="/nuxeo/icons/action_page_next.gif" onclick="nextPage()"/>
+        <input type="image" src="/nuxeo/icons/action_page_fastforward.gif"onclick="lastPage()"/>
+        </div>
+        <div id="nxDocumentListData">
+          <img src="/nuxeo/img/standart_waiter.gif">
+        </div>
     </div>
+
      ]]>
   </Content>
 </Module>

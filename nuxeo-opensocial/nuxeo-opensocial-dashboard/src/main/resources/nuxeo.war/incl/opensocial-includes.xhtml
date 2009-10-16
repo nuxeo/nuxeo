@@ -1,27 +1,12 @@
 <div xmlns:h="http://java.sun.com/jsf/html">
-<!--
-    <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/js/jquery/jquery-1.3.2.min.js"></script>
-    <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/js/jquery/query.cookie.js"></script>
-    <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/js/jquery/jquery.menu.js"></script>
-
-    <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/js/loading.js"></script>
-    <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/js/thickbox.js"></script>
-    <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/js/initMenu.js"></script>
-
-    <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/js/layoutManager.js"></script>
-    <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/js/gadgetManager.js"></script>
-    -->
     <script>
         <h:outputText value="top.nxBaseUrl='#{baseURL}';"/>
-        <h:outputText value="top.nxDomain='#{currentDomain.name}';" rendered="#{currentDomain!=null}"/>
-        <h:outputText value="top.nxDomain=null;" rendered="#{currentDomain==null}"/>
+        <h:outputText value="top.nxDomain='#{opensocialDashboard.currentDashboardDomainName}';"/>
         <h:outputText value="top.nxUserLogin='#{currentUser.name}';"/>
+        <h:outputText value="top.nxUserLang='#{org.jboss.seam.international.localeSelector.localeString}';"/>
         <h:outputText value="top.nxServerSideUrl='#{opensocialNuxeoServerUrl}';"/>
+        if (jQuery) {
+            jQuery.noConflict();
+        }
     </script>
-
-    <h:form>
-        <h:commandButton value="BACK!!!"
-          class="button"
-          action="#{opensocialDashboard.exit}"></h:commandButton>
-    </h:form>
 </div>

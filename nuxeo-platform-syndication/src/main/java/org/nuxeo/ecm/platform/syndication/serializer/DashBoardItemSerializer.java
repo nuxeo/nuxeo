@@ -29,7 +29,8 @@ import org.restlet.data.Response;
 
 public interface DashBoardItemSerializer {
 
-     void serialize(ResultSummary summary, List<DashBoardItem> workItems,
-                String columnsDefinition, Response response, HttpServletRequest req) throws ClientException;
+    void serialize(ResultSummary summary, List<DashBoardItem> workItems,
+            String columnsDefinition, List<String> labels, String lang,
+            Response response, HttpServletRequest req) throws ClientException;
 
 }

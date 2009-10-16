@@ -36,12 +36,13 @@ public class GetRecipientsForTaskOperation implements JbpmOperation {
 
     private static final long serialVersionUID = 1L;
 
-    private long taskId;
+    private final long taskId;
 
     public GetRecipientsForTaskOperation(long taskId) {
         this.taskId = taskId;
     }
 
+    @SuppressWarnings("unchecked")
     public Serializable run(JbpmContext context) throws NuxeoJbpmException {
         HashSet<String> recipients = new HashSet<String>();
         ProcessInstance pi = context.getTaskInstance(taskId).getProcessInstance();

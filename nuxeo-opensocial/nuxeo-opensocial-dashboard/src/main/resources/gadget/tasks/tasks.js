@@ -1,18 +1,19 @@
+var testMode = false;
+
 function requestTasks() {
-    //console.log("hi! i'm a log message!");
 
     var prefs = new gadgets.Prefs();
     var hostname = prefs.getString("nuxeo_host");
     //console.log("my nuxeo host is "+hostname);
 
-    var ts = new Date().getTime() + "" + Math.random()*11
     var params = {};
     var headers = {};
 
     //var cookie = readCookie('JSESSIONID');
     //console.log("we are using cookie:"+cookie);
 
-    params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;
+    params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.NONE;
+    params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
 
     var now = new Date().toUTCString();
     headers["Date", now];
@@ -23,70 +24,174 @@ function requestTasks() {
     headers["X-NUXEO-INTEGRATED-AUTH"] = readCookie("JSESSIONID");
 
     params[gadgets.io.RequestParameters.HEADERS] = headers
-    params[gadgets.io.RequestParameters.REFRESH_INTERVAL]=0;
+    params[gadgets.io.RequestParameters.REFRESH_INTERVAL] = 0;
 
-    var url = "http://localhost:8080/nuxeo/restAPI/workflowTasks/default?ts="+ts;
+    var url = getRestletUrl();
     gadgets.io.makeRequest(url, response, params);
-};
+}
+
+// insert the whole table, as stupid IE can't do a tbody.innerHtml
+function tableStart(jsonObject) {
+    var name = "Name";
+    var duedate = "Due Date";
+    var directive = "Directive";
+    var labelInfo = jsonObject.translations;
+    if (labelInfo != null && labelInfo != 'undefined') {
+        name = labelInfo['label.workflow.task.name'];
+        duedate = labelInfo['label.workflow.task.duedate'];
+        directive = labelInfo['label.workflow.task.directive'];
+    }
+    var html = "";
+    html += "<table class='dataList'>";
+    html += "  <thead>";
+    html += "    <tr>";
+    html += "      <th/>";
+    html += "      <th>" + name + "</th>";
+    html += "      <th/>";
+    html += "      <th>" + duedate + "</th>";
+    html += "      <th>" + directive + "</th>";
+    html += "    </tr>";
+    html += "  </thead>";
+    html += "  <tbody>";
+    return html;
+}
+
+function tableEnd() {
+    var html = "";
+    html += "  </tbody>";
+    html += "</table>";
+    return html
+}
+
+function displayTaskList(data) {
+    var htmlContent = tableStart(data);
+
+    //validation
+    var validation = data.data['workflowDirectiveValidation'];
+    var directive = data.translations['workflowDirectiveValidation'];
+    var i;
+
+    if (validation) {
+        for (i = 0; i < validation.length; i++) {
+            htmlContent += mkRow(validation[i], i, directive);
+        }
+    }
+    validation = data.data['workflowDirectiveCheck'];
+    directive = data.translations['workflowDirectiveCheck'];
+    if (validation) {
+        for (i = 0; i < validation.length; i++) {
+            htmlContent += mkRow(validation[i], i, directive);
+        }
+    }
+
+    validation = data.data['workflowDirectiveDiffusion'];
+    directive = data.translations['workflowDirectiveDiffusion'];
+    if (validation) {
+        for (i = 0; i < validation.length; i++) {
+            htmlContent += mkRow(validation[i], i, directive);
+        }
+    }
+    validation = data.data['workflowDirectiveOpinion'];
+    directive = data.translations['workflowDirectiveOpinion'];
+    if (validation) {
+        for (i = 0; i < validation.length; i++) {
+            htmlContent += mkRow(validation[i], i, directive);
+        }
+    }
+
+    validation = data.data['workflowDirectiveVerification'];
+    directive = data.translations['workflowDirectiveVerification'];
+    if (validation) {
+        for (i = 0; i < validation.length; i++) {
+            htmlContent += mkRow(validation[i], i, directive);
+        }
+    }
+
+    htmlContent += tableEnd();
+
+    document.getElementById("nxDocumentListData").innerHTML = htmlContent;
+    // page info
+    //alert("page info " + data.summary.pageNumber)
+    var pageInfoLabel = data.summary.pageNumber + 1;
+    pageInfoLabel += "/";
+    maxPage = data.summary.pages;
+    pageInfoLabel += maxPage + 1;
+    document.getElementById("nxDocumentListPage").innerHTML = pageInfoLabel;
+}
+
+function getDateForDisplay(datestr) {
+    try {
+        datestr = datestr.replace("-", "/").replace("-", "/");
+        var d = new Date(datestr);
+        var result = d.toLocaleDateString() + " "
+                + d.toLocaleTimeString().substring(0, 5);
+        return result;
+    } catch (e) {
+        return datestr;
+    }
+}
+
+function getNuxeoClientSideUrl() {
+    return top.nxBaseUrl;
+}
+function getImageBaseUrl() {
+    return getNuxeoClientSideUrl();
+}
+
+function getBaseUrl() {
+    return getNuxeoClientSideUrl();
+}
+
+function mkRow(dashBoardItem, i, directive) {
+    var htmlRow = "<tr class=\"";
+    if (i % 2 == 0) {
+        htmlRow += "dataRowEven";
+    } else {
+        htmlRow += "dataRowOdd";
+    }
+    htmlRow += "\">";
+    htmlRow += "<td class=\"iconColumn\">"
+    htmlRow += "<img alt=\"File\" src=\""
+    htmlRow += getImageBaseUrl();
+    htmlRow += "icons/file.gif";
+    htmlRow += "\"/>";
+    htmlRow += "</td><td><a target = \"_top\" title=\"";
+    var title = dashBoardItem.name;
+    if ((dashBoardItem.title != null) && (dashBoardItem.title != "")) {
+        title = dashBoardItem.title;
+    }
+    htmlRow += title;
+    htmlRow += "\" href=\"";
+    htmlRow += getBaseUrl();
+    htmlRow += dashBoardItem.link.substring(1);
+    htmlRow += "\" />";
+    htmlRow += title;
+    htmlRow += "</a></td><td class=\"iconColumn\"/>";
+    htmlRow += "<td>";
+    var dateToDisplay = null;
+    if ((dashBoardItem.dueDate != null) && (dashBoardItem.dueDate != "")) {
+        dateToDisplay = dashBoardItem.dueDate;
+    }
+    if (dateToDisplay != null) {
+        htmlRow += getDateForDisplay(dateToDisplay);
+    }
+    htmlRow += "</td>";
+    htmlRow += "<td>";
+    htmlRow += directive;
+    htmlRow += "</td>";
+    htmlRow += "<td class=\"iconColumn\"/>";
+    htmlRow += "</tr>";
+    return htmlRow;
+}
 
 function response(obj) {
-    var dom = obj.data;
-    var resultHTML = "";
-    //console.log("starting to parse "+obj);
-    var categories = dom.getElementsByTagName("nxt:category");
-    var i= 0;
-    //console.log("number of categories "+categories.length);
+    //var jsonObject = eval('(' + obj + ')');
+    //var data = jsonObject;
+    //alert("eval is "+eval(obj));
+    var jsonObject = obj.data;
+    //alert("howdy"+jsonObject);
 
-    while (i < categories.length) {
-        categoryNode = categories[i];
-        var categoryName = categoryNode.getAttribute("category");
-        //console.log("entered category "+categoryName);
-
-        if (categoryName!=null) {
-            //console.log("we have a category name:"+categoryName);
-            //17 is the length of workflowDirective...startsWith doesn't work
-            if (categoryName.substring(17) == "workflowDirective") {
-                //console.log("category name is clunky...")
-                categoryName=categoryName.substring("workflowDirective".length);
-                //console.log("shorted category name to "+categoryName)
-            }
-        }
-
-        var tasks = categoryNode.getElementsByTagName("nxt:task")
-        //console.log("parsing category:"+categoryName+" with "+ tasks.length +" tasks");
-
-        resultHTML += openDiv(categoryName);
-
-        var j =0 ;
-        while (j < tasks.length) {
-            var taskNode = tasks[j];
-            var value="<nothing>";
-            var link=null;
-
-            //should we try backup plan?
-            if (taskNode.childNodes.length==0) {
-                //console.log("no node value, using name");
-                value = taskNode.getAttribute("name");
-            } else {
-                value=taskNode.childNodes[0].nodeValue;
-                link = taskNode.getAttribute("link");
-                //console.log("task link:"+link);
-            }
-            //console.log(categoryName + " -> "+value);
-            resultHTML += createItem(value,link);
-            ++j;
-        }
-
-        resultHTML += closeDiv(categoryName);
-        ++i;
-    }
-    //console.log("done parsing!");
-    var taskListDiv = _gel("nxTaskList");
-    if (taskListDiv==null) {
-        //console.log("can't find nxTaskList!")
-    } else {
-        taskListDiv.innerHTML = resultHTML;
-    }
+    displayTaskList(jsonObject);
 };
 
 function readCookie(name) {
@@ -102,36 +207,78 @@ function readCookie(name) {
     return null;
 }
 
-function openDiv(name) {
-    var result =  '<div class="nxcategory-wrapper">';
-    result += '<span class="nxcategory-title">'+name+' ';
-    result +='<a class="nxcategory-toggle" href="javascript:openCategory('+"'nxcat-"+name+"')"+'">';
-    result +='<span class="takeupspace"></span></a>';
-    result +="</span>";
-    result +='<div class="nxcategory" id="nxcat-'+name+'">';
-    return result;
+function closeDiv(name) {
+    return "</div></div>";
 }
 
-function closeDiv(name) {
-    var result = '</div> <!--'+name+' -->';
-    result += '</div> <!--'+name+'wrapper -->';
-    return result;
+function getNuxeoServerSideUrl() {
+    return top.nxServerSideUrl;
 }
 
 function getNuxeoClientSideUrl() {
     return top.nxBaseUrl;
 }
 
-function openCategory(divname) {
-    //console.log(divname);
-}
-function createItem(name,link) {
-    if (link==null) {
-        return '<span class="nxcategory-item">'+name+'</span>';
-    }
-    var baseUrl = getNuxeoClientSideUrl();
-    baseUrl = baseUrl.substring(0,baseUrl.length-1);
-    return '<span class="nxcategory-item">'+'<A target="_top" HREF="' + baseUrl +link+'">'+name+'</A></span>';
+function getUserLang() {
+    return top.nxUserLang;
 }
 
-gadgets.util.registerOnLoadHandler(requestTasks);
+function getRestletUrl() {
+    var url = getNuxeoServerSideUrl();
+    if (testMode) {
+        url = 'http://localhost:8080/';
+    }
+    url += "nuxeo/restAPI/workflowTasks/default?format=JSON";
+    var ts = new Date().getTime() + "" + Math.random() * 11
+    url += "&ts=" + ts;
+
+    var lang = getUserLang();
+    if (lang != null && lang != "") {
+        url += "&lang=" + lang;
+    }
+    if (testMode) {
+        url += "&lang=en";
+    }
+    url += "&labels=";
+    //labels
+    url += "workflowDirectiveValidation,";
+    url += "workflowDirectiveOpinion,";
+    url += "workflowDirectiveVerification,";
+    url += "workflowDirectiveCheck,";
+    url += "workflowDirectiveDiffusion,";
+    url += "label.workflow.task.name,";
+    url += "label.workflow.task.duedate,";
+    url += "label.workflow.task.directive";
+
+    return url;
+}
+
+function testHandleJSONResponse(req) {
+    if (req.readyState == 4) {
+        var jsonObject = eval('(' + req.responseText + ')');
+        var data = jsonObject;
+        displayTaskList(data);
+    }
+}
+function testGetTaskList() {
+    var req = new XMLHttpRequest();
+    req.open("GET", getRestletUrl(), true);
+    req.onreadystatechange = function() {
+        testHandleJSONResponse(req)
+    };
+    req.send(null);
+}
+
+function refresh() {
+    if (testMode) {
+        testGetTaskList();
+    } else {
+        requestTasks();
+    }
+}
+
+if (testMode) {
+    refresh();
+} else {
+    gadgets.util.registerOnLoadHandler(refresh);
+}

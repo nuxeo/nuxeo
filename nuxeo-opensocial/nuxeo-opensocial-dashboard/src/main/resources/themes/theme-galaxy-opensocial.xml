@@ -19,7 +19,9 @@
       </section>
       <!-- on other pages, this is the navigation and breadcrumb stuff -->
       <section>
-        <cell/>
+        <cell>
+          <fragment type="generic fragment"/>
+        </cell>
       </section>
       <section>
         <cell>
@@ -44,6 +46,9 @@
       </section>
     </page>
   </layout>
+  <presets>
+    <preset category="color" name="opensocialdashboard">#000000</preset>
+  </presets>
   <formats>
     <layout element="page[1]/section[6]">
       <margin-left>auto</margin-left>
@@ -65,7 +70,7 @@
       <margin-left>auto</margin-left>
       <margin-right>auto</margin-right>
       <width>100%</width>
-      <padding>20px 30px 20px 30px</padding>
+      <padding>5px 30px 5px 30px</padding>
     </layout>
     <layout element="page[1]/section[3]/cell[1]">
       <width>100%</width>
@@ -178,6 +183,9 @@
     </widget>
     <widget element="page[1]/section[6]/cell[1]/fragment[1]">
       <view>nuxeo5 includes</view>
+    </widget>
+    <widget element="page[1]/section[2]/cell[1]/fragment[1]">
+      <view>opensocialDashBoardNav</view>
     </widget>
     <!--  -->
     <style name="dashboardLayoutManager">
@@ -510,6 +518,13 @@
         <color>#ccc</color>
       </selector>
     </style>
+    <style name="opensocialDashboardNav">
+      <selector path="form a.button">
+        <color>#000000</color>
+        <font-family>'Lucida Grande',Verdana,Arial,sans-serif</font-family>
+        <font-size>11px</font-size>
+      </selector>
+    </style>
     <!--  -->
     <style element="page[1]">
       <selector path="" view="page frame">
@@ -624,6 +639,11 @@
     <style element="page[1]/section[1]/cell[3]">
       <selector path="" view="cell frame">
         <background preset="topbar (Galaxy backgrounds)"/>
+      </selector>
+    </style>
+    <style element="page[1]/section[2]/cell[1]/fragment[1]" inherit="opensocialDashboardNav">
+      <selector path="form" view="opensocialDashBoardNav">
+        <text-align>center</text-align>
       </selector>
     </style>
   </formats>

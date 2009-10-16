@@ -37,6 +37,7 @@ import org.dom4j.dom.DOMDocumentFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.platform.syndication.translate.TranslationHelper;
 import org.nuxeo.ecm.platform.syndication.workflow.DashBoardItem;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
@@ -56,6 +57,8 @@ public class SimpleXMLSerializer extends AbstractDocumentModelSerializer
     private static final String taskNodeName = "task";
 
     private static final String taskCategoryNodeName = "category";
+
+    private static final String translationNodeName = "translation";
 
     private static final String taskNS = "http://www.nuxeo.org/tasks";
 
@@ -99,7 +102,8 @@ public class SimpleXMLSerializer extends AbstractDocumentModelSerializer
     }
 
     public void serialize(ResultSummary summary, List<DashBoardItem> workItems,
-            String columnsDefinition, Response res, HttpServletRequest req) {
+            String columnsDefinition, List<String> labels, String lang,
+            Response res, HttpServletRequest req) {
         if (workItems == null) {
             return;
         }
@@ -176,8 +180,45 @@ public class SimpleXMLSerializer extends AbstractDocumentModelSerializer
                 }
             }
         }
+        QName translationTag = DocumentFactory.getInstance().createQName(
+                translationNodeName, taskNSPrefix, taskNS);
+        org.dom4j.Element translationElem = rootElem.addElement(translationTag);
+
+        Map<String, String> translatedWords = getTranslationsForWorkflow("en");
+        for (String key : translatedWords.keySet()) {
+            translationElem.addAttribute(key, translatedWords.get(key));
+        }
 
         res.setEntity(rootDoc.asXML(), MediaType.TEXT_XML);
     }
 
+    public static Map<String, String> getTranslationsForWorkflow(String lang) {
+        HashMap<String, String> result = new HashMap<String, String>();
+
+        String validation = "workflowDirectiveValidation";
+        result.put(validation, TranslationHelper.getLabel(validation, lang));
+
+        String opinion = "workflowDirectiveOpinion";
+        result.put(opinion, TranslationHelper.getLabel(opinion, lang));
+
+        String diffusion = "workflowDirectiveDiffusion";
+        result.put(diffusion, TranslationHelper.getLabel(diffusion, lang));
+
+        String check = "workflowDirectiveCheck";
+        result.put(check, TranslationHelper.getLabel(check, lang));
+
+        String verification = "workflowDirectiveVerification";
+        result.put(verification, TranslationHelper.getLabel(verification, lang));
+
+        String dueDate = "label.workflow.task.duedate";
+        result.put(dueDate, TranslationHelper.getLabel(dueDate, lang));
+
+        String startDate = "label.workflow.task.startdate";
+        result.put(startDate, TranslationHelper.getLabel(startDate, lang));
+
+        String name = "label.workflow.task.name";
+        result.put(name, TranslationHelper.getLabel(name, lang));
+
+        return result;
+    }
 }

@@ -44,12 +44,7 @@ public class TaskNotificationHandler extends AbstractJbpmHandlerHelper {
                     JbpmService.VariableName.document.name());
             NuxeoPrincipal principal = (NuxeoPrincipal) getTransientVariable(
                     JbpmService.VariableName.principal.name());
-            VirtualTaskInstance participant = (VirtualTaskInstance) getTransientVariable(
-                    JbpmService.VariableName.participant.name());
-            if (participant == null) {
-                participant = (VirtualTaskInstance) executionContext.getContextInstance().getVariable(
-                        JbpmService.VariableName.participant.name());
-            }
+
             CoreSession coreSession = getCoreSession(principal);
             if (coreSession == null || documentModel == null) {
                 return;
@@ -62,11 +57,21 @@ public class TaskNotificationHandler extends AbstractJbpmHandlerHelper {
             }
             DocumentEventContext ctx = new DocumentEventContext(coreSession,
                     principal, documentModel);
-            ctx.setProperty("recipients", participant.getActors().toArray(
-                    new String[] {}));
+            ctx.setProperty("recipients", getRecipients());
             eventProducer.fireEvent(ctx.newEvent(JbpmEventNames.WORKFLOW_TASK_ASSIGNED));
             closeCoreSession(coreSession);
         }
+    }
+
+    protected String[] getRecipients() {
+        VirtualTaskInstance participant = (VirtualTaskInstance) getTransientVariable(
+                JbpmService.VariableName.participant.name());
+        if (participant == null) {
+            participant = (VirtualTaskInstance) executionContext.getContextInstance().getVariable(
+                    JbpmService.VariableName.participant.name());
+        }
+        return participant.getActors().toArray(
+                new String[] {});
     }
 
 }
