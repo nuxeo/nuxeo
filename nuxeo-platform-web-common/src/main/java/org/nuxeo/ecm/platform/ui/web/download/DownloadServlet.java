@@ -22,7 +22,8 @@ package org.nuxeo.ecm.platform.ui.web.download;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URLDecoder;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -73,7 +74,12 @@ public class DownloadServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        String requestURI = req.getRequestURI();
+        String requestURI;
+        try {
+            requestURI = new URI(req.getRequestURI()).getPath();
+        } catch (URISyntaxException e1) {
+            requestURI = req.getRequestURI();
+        }
         String filePath = requestURI.replace("/nuxeo/nxbigfile/", "");
         String[] pathParts = filePath.split("/");
 
@@ -130,7 +136,6 @@ public class DownloadServlet extends HttpServlet {
                 fileName = "file";
             }
             boolean inline = req.getParameter("inline") != null;
-            fileName = URLDecoder.decode(fileName, "UTF-8");
             String userAgent = req.getHeader("User-Agent");
             String contentDisposition = RFC2231.encodeContentDisposition(
                     fileName, inline, userAgent);
