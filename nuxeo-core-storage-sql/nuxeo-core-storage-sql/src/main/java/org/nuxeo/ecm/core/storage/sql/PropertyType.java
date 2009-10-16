@@ -150,7 +150,7 @@ public enum PropertyType {
             throw new IllegalArgumentException("value is not a ACLRow: " +
                     value);
         default:
-            throw new AssertionError(this);
+            throw new RuntimeException(this.toString());
         }
     }
 

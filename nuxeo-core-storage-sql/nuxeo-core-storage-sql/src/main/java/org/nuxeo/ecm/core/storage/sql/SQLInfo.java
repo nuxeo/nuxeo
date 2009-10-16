@@ -668,7 +668,7 @@ public class SQLInfo {
                 } else if (key.equals(model.REPOINFO_REPONAME_KEY)) {
                     where = qname + " = ?";
                 } else {
-                    throw new AssertionError(column);
+                    throw new RuntimeException(column.toString());
                 }
             }
             Select select = new Select(table);

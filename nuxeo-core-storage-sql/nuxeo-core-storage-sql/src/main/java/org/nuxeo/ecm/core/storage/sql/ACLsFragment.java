@@ -84,7 +84,7 @@ public class ACLsFragment extends ArrayFragment {
                     } else if (key.equals(model.MAIN_KEY)) {
                         // skip
                     } else {
-                        throw new AssertionError(key);
+                        throw new RuntimeException(key);
                     }
                 }
                 ACLRow acl = new ACLRow(pos, name, grant, permission, user,
@@ -140,7 +140,7 @@ public class ACLsFragment extends ArrayFragment {
                 } else if (key.equals(model.ACL_GROUP_KEY)) {
                     v = acl.group;
                 } else {
-                    throw new AssertionError(key);
+                    throw new RuntimeException(key);
                 }
                 column.setToPreparedStatement(ps, n, v);
                 if (debugValues != null) {

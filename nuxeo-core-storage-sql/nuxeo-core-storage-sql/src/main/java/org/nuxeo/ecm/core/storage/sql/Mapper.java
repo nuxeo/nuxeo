@@ -576,7 +576,7 @@ public class Mapper {
     // join that works on a set
     protected static final String join(Collection<String> strings, char sep) {
         if (strings.isEmpty()) {
-            throw new AssertionError();
+            throw new RuntimeException();
         }
         if (strings.size() == 1) {
             return strings.iterator().next();
@@ -740,7 +740,7 @@ public class Mapper {
                     } else if (key.equals(Model.REPOINFO_REPONAME_KEY)) {
                         v = repositoryId;
                     } else {
-                        throw new AssertionError(key);
+                        throw new RuntimeException(key);
                     }
                     column.setToPreparedStatement(ps, i, v);
                     if (debugValues != null) {
@@ -983,7 +983,7 @@ public class Mapper {
                 } else if (joinMap.containsKey(key)) {
                     v = joinMap.get(key);
                 } else {
-                    throw new AssertionError(key);
+                    throw new RuntimeException(key);
                 }
                 if (v == null) {
                     throw new StorageException("Null value for key: " + key);
@@ -1095,7 +1095,7 @@ public class Mapper {
                     } else if (key.equals(Model.HIER_CHILD_NAME_KEY)) {
                         v = childName;
                     } else {
-                        throw new AssertionError("Invalid hier column: " + key);
+                        throw new RuntimeException("Invalid hier column: " + key);
                     }
                     if (v == null) {
                         throw new IllegalStateException("Null value for key: "
@@ -1525,7 +1525,7 @@ public class Mapper {
                         && (key.equals(Model.MAIN_BASE_VERSION_KEY) || key.equals(Model.MAIN_CHECKED_IN_KEY))) {
                     v = null;
                 } else {
-                    throw new AssertionError(column);
+                    throw new RuntimeException(column.toString());
                 }
                 column.setToPreparedStatement(ps, i++, v);
                 if (debugValues != null) {

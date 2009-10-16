@@ -121,7 +121,7 @@ public class ArrayFragment extends CollectionFragment {
                 }
             }
             if (column == null) {
-                throw new AssertionError(columns);
+                throw new RuntimeException(columns.toString());
             }
             List<Serializable> list = new ArrayList<Serializable>();
             while (rs.next()) {
@@ -195,7 +195,7 @@ public class ArrayFragment extends CollectionFragment {
                 } else if (key.equals(model.COLL_TABLE_VALUE_KEY)) {
                     v = array[i];
                 } else {
-                    throw new AssertionError(key);
+                    throw new RuntimeException(key);
                 }
                 column.setToPreparedStatement(ps, n, v);
                 if (debugValues != null) {

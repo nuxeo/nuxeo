@@ -368,7 +368,7 @@ public class DialectPostgreSQL extends Dialect {
             break;
         default:
             // TODO others not used yet
-            throw new AssertionError(type);
+            throw new RuntimeException("" + type);
         }
         return new PostgreSQLArray(type, typeName, elements);
     }

@@ -307,7 +307,7 @@ public abstract class Fragment implements Serializable {
             state = State.DELETED;
             break;
         case DELETED:
-            throw new AssertionError(this);
+            throw new RuntimeException(this.toString());
         }
     }
 
@@ -334,7 +334,7 @@ public abstract class Fragment implements Serializable {
         case INVALIDATED_DELETED:
             break;
         case DETACHED:
-            throw new AssertionError(this);
+            throw new RuntimeException(this.toString());
         }
     }
 
@@ -360,7 +360,7 @@ public abstract class Fragment implements Serializable {
         case INVALIDATED_DELETED:
             break;
         case DETACHED:
-            throw new AssertionError(this);
+            throw new RuntimeException(this.toString());
         }
     }
 
@@ -391,7 +391,7 @@ public abstract class Fragment implements Serializable {
         case INVALIDATED_MODIFIED:
         case INVALIDATED_DELETED:
             // incoherent with the pristine map + expected state
-            throw new AssertionError(this);
+            throw new RuntimeException(this.toString());
         }
     }
 
@@ -414,7 +414,7 @@ public abstract class Fragment implements Serializable {
         case MODIFIED:
         case DELETED:
             // incoherent with the pristine map
-            throw new AssertionError(this);
+            throw new RuntimeException(this.toString());
         }
     }
 
@@ -437,7 +437,7 @@ public abstract class Fragment implements Serializable {
         case MODIFIED:
         case DELETED:
             // incoherent with the pristine map
-            throw new AssertionError(this);
+            throw new RuntimeException(this.toString());
         }
     }
 

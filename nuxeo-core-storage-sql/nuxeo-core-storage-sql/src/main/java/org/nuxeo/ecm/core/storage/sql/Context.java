@@ -411,7 +411,7 @@ public class Context {
                         + fragment);
                 break;
             default:
-                throw new AssertionError(fragment);
+                throw new RuntimeException(fragment.toString());
             }
         }
         modified.clear();

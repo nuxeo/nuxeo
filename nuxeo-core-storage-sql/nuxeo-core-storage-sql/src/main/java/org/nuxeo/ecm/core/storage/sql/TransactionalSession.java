@@ -23,7 +23,6 @@ import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
  * The transactional session is an {@link XAResource} for this session.
@@ -61,7 +60,7 @@ public class TransactionalSession implements XAResource {
         if (flags == TMNOFLAGS) {
             try {
                 session.processReceivedInvalidations();
-            } catch (StorageException e) {
+            } catch (Exception e) {
                 log.error("Could not start transaction", e);
                 throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
             }
@@ -77,7 +76,7 @@ public class TransactionalSession implements XAResource {
             if (flags != TMFAIL) {
                 try {
                     session.flush();
-                } catch (StorageException e) {
+                } catch (Exception e) {
                     log.error("Could not end transaction", e);
                     throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
                 }
@@ -110,7 +109,7 @@ public class TransactionalSession implements XAResource {
                 } finally {
                     session.checkThreadEnd();
                 }
-            } catch (StorageException e) {
+            } catch (Exception e) {
                 log.error("Could not commit transaction", e);
                 throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
             }
@@ -132,7 +131,7 @@ public class TransactionalSession implements XAResource {
                 } finally {
                     session.checkThreadEnd();
                 }
-            } catch (StorageException e) {
+            } catch (Exception e) {
                 log.error("Could not rollback transaction", e);
                 throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
             }
