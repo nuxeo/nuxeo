@@ -353,6 +353,7 @@ public class RepoStatsCommand extends AbstractCommand {
 
         long t1 = System.currentTimeMillis();
 
+        log.info("Stats for " + root.getPathAsString());
         log.info("Total number of documents (without versions):"
                 + info.getTotalNbDocs());
         Map<String, Long> docsPerType = info.getDocsPerType();
@@ -370,17 +371,20 @@ public class RepoStatsCommand extends AbstractCommand {
                     + ((float) info.maxBlobSize / 1024. / 1024.) + " in "
                     + info.maxBlobSizePath);
         }
-        long count = context.getCoreSession().query(
-                "select * from Document where ecm:isCheckedInVersion=1").size();
-        log.info("Versions: " + count);
-        log.info("Total number of documents (with versions): "
-                + (info.getTotalNbDocs() + count));
-        count = context.getCoreSession().query(
-                "select * from Document where ecm:isProxy=1").size();
-        log.info("Proxies: " + count);
-        count = context.getCoreSession().query(
-                "select * from Document where ecm:currentLifeCycleState = 'deleted'").size();
-        log.info("Mark as deleted: " + count);
+        if (root.getPathAsString().equals("/")) {
+            // Add info on version and proxies for the wall repository
+            long count = context.getCoreSession().query(
+                    "select * from Document where ecm:isCheckedInVersion=1").size();
+            log.info("Versions: " + count);
+            log.info("Total number of documents (with versions): "
+                    + (info.getTotalNbDocs() + count));
+            count = context.getCoreSession().query(
+                    "select * from Document where ecm:isProxy=1").size();
+            log.info("Proxies: " + count);
+            count = context.getCoreSession().query(
+                    "select * from Document where ecm:currentLifeCycleState = 'deleted'").size();
+            log.info("Mark as deleted: " + count);
+        }
         log.info("Folders");
         log.info("   Maximum depth: " + info.maxDepth + " in "
                 + info.maxDepthPath);
