@@ -3,7 +3,7 @@
 HERE=$(cd $(dirname $0); pwd -P)
 NXDIR="$HERE/nuxeo"
 NXDIST="$NXDIR/nuxeo-distribution"
-NXVERSION="5.2"
+NXVERSION=${NXVERSION:-5.3}
 JBOSS_HOME="$NXDIST/nuxeo-distribution-jboss/target/jboss"
 
 echo "get nuxeo"
