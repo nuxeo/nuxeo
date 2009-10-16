@@ -156,7 +156,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
         osgi = new OSGiAdapter(workingDir);
         bundleLoader = new StandaloneBundleLoader(osgi,
                 NXRuntimeTestCase.class.getClassLoader());
-        Thread.currentThread().setContextClassLoader(bundleLoader.getSharedClassLoader());
+        Thread.currentThread().setContextClassLoader(bundleLoader.getSharedClassLoader().getLoader());
 
         bundleLoader.setScanForNestedJARs(false); // for now
         bundleLoader.setExtractNestedJARs(false);
