@@ -24,6 +24,7 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +41,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -251,7 +251,12 @@ public class DocumentActionsBean extends InputController implements
                     bigDownloadURL += doc.getRef().toString() + "/";
                     bigDownloadURL += docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY)
                             + "/";
-                    bigDownloadURL += docView.getParameter(DocumentFileCodec.FILENAME_KEY);
+                    try {
+                        // TM: NXP-4172 need to encode for IE or the request crashed
+                        bigDownloadURL += URLEncoder.encode(filename, "UTF-8");
+                    } catch (Exception e) {
+                        bigDownloadURL += filename;
+                    }
                     try {
                         response.sendRedirect(bigDownloadURL);
                     } catch (IOException e) {
