@@ -348,9 +348,13 @@ public class RepoStatsCommand extends AbstractCommand {
             printStats(pool.getActiveCount());
             Thread.sleep(1000);
         } while (pool.getActiveCount() > 0);
+
         printStats(pool.getActiveCount());
 
-        log.info("Total number of documents:" + info.getTotalNbDocs());
+        long t1 = System.currentTimeMillis();
+
+        log.info("Total number of documents (without versions):"
+                + info.getTotalNbDocs());
         Map<String, Long> docsPerType = info.getDocsPerType();
         for (String type : docsPerType.keySet()) {
             log.info("   Number of " + type + " docs: " + docsPerType.get(type));
@@ -366,13 +370,22 @@ public class RepoStatsCommand extends AbstractCommand {
                     + ((float) info.maxBlobSize / 1024. / 1024.) + " in "
                     + info.maxBlobSizePath);
         }
+        long count = context.getCoreSession().query(
+                "select * from Document where ecm:isCheckedInVersion=1").size();
+        log.info("Versions: " + count);
+        log.info("Total number of documents (with versions): "
+                + (info.getTotalNbDocs() + count));
+        count = context.getCoreSession().query(
+                "select * from Document where ecm:isProxy=1").size();
+        log.info("Proxies: " + count);
+        count = context.getCoreSession().query(
+                "select * from Document where ecm:currentLifeCycleState = 'deleted'").size();
+        log.info("Mark as deleted: " + count);
         log.info("Folders");
         log.info("   Maximum depth: " + info.maxDepth + " in "
                 + info.maxDepthPath);
         log.info("   Maximum children: " + info.maxChildren + " in "
                 + info.maxChildrenPath);
-
-        long t1 = System.currentTimeMillis();
         log.info("Repository performance during stats was " + 1000
                 * ((float) info.getTotalNbDocs()) / (t1 - t0) + " doc/s");
     }
