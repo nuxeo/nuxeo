@@ -110,29 +110,32 @@ public class SessionImpl implements Session {
             return 0;
         }
         int n = context.clearCaches();
-        clearThread();
+        checkThreadEnd();
         return n;
     }
 
     protected void checkThread() {
+        if (threadId == 0) {
+            return;
+        }
         long currentThreadId = Thread.currentThread().getId();
         if (threadId == currentThreadId) {
             return;
         }
         String currentThreadName = Thread.currentThread().getName();
-        if (threadId == 0) {
-            threadId = currentThreadId;
-            threadName = currentThreadName;
-        } else {
-            String msg = String.format(
-                    "Concurrency Error: Session was started in thread %s (%s)"
-                            + " but is being used in thread %s (%s)", threadId,
-                    threadName, currentThreadId, currentThreadName);
-            log.debug(msg, new Exception(msg));
-        }
+        String msg = String.format(
+                "Concurrency Error: Session was started in thread %s (%s)"
+                        + " but is being used in thread %s (%s)", threadId,
+                threadName, currentThreadId, currentThreadName);
+        log.debug(msg, new Exception(msg));
     }
 
-    protected void clearThread() {
+    protected void checkThreadStart() {
+        threadId = Thread.currentThread().getId();
+        threadName = Thread.currentThread().getName();
+    }
+
+    protected void checkThreadEnd() {
         threadId = 0;
     }
 

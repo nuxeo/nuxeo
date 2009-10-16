@@ -68,7 +68,7 @@ public class TransactionalSession implements XAResource {
         }
         mapper.start(xid, flags);
         inTransaction = true;
-        session.checkThread();
+        session.checkThreadStart();
     }
 
     public void end(Xid xid, int flags) throws XAException {
@@ -108,7 +108,7 @@ public class TransactionalSession implements XAResource {
                 try {
                     session.sendInvalidationsToOthers();
                 } finally {
-                    session.clearThread();
+                    session.checkThreadEnd();
                 }
             } catch (StorageException e) {
                 log.error("Could not commit transaction", e);
@@ -130,7 +130,7 @@ public class TransactionalSession implements XAResource {
                 try {
                     session.sendInvalidationsToOthers();
                 } finally {
-                    session.clearThread();
+                    session.checkThreadEnd();
                 }
             } catch (StorageException e) {
                 log.error("Could not rollback transaction", e);
