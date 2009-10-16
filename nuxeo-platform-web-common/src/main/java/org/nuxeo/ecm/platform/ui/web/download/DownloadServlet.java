@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.ui.web.download;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLDecoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -129,13 +130,11 @@ public class DownloadServlet extends HttpServlet {
                 fileName = "file";
             }
             boolean inline = req.getParameter("inline") != null;
+            fileName = URLDecoder.decode(fileName, "UTF-8");
             String userAgent = req.getHeader("User-Agent");
-            String flash = req.getHeader("x-flash-version");
-            if (flash != null && !flash.equals("")) {
-                String contentDisposition = RFC2231.encodeContentDisposition(
-                        fileName, inline, userAgent);
-                resp.setHeader("Content-Disposition", contentDisposition);
-            }
+            String contentDisposition = RFC2231.encodeContentDisposition(
+                    fileName, inline, userAgent);
+            resp.setHeader("Content-Disposition", contentDisposition);
             resp.setContentType(blob.getMimeType());
 
             long fileSize = blob.getLength();
