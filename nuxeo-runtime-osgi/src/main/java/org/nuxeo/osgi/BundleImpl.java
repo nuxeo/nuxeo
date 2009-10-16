@@ -110,7 +110,11 @@ public class BundleImpl implements Bundle {
     }
 
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-        return loader.loadClass(name);
+        try {
+            return loader.loadClass(name);
+        } catch (NoClassDefFoundError e) {
+            throw e;
+        }
     }
 
     public URL getEntry(String name) {

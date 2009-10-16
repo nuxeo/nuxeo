@@ -49,8 +49,8 @@ public class Main {
         }
         try {
             RootClassLoader rootLoader = new RootClassLoader(parent, SharedClassLoader.class);
-            SharedClassLoader classLoader = new SharedClassLoader(((URLClassLoader)cl).getURLs(), rootLoader);
-            Thread.currentThread().setContextClassLoader(classLoader);
+            SharedClassLoaderImpl classLoader = new SharedClassLoaderImpl(((URLClassLoader)cl).getURLs(), rootLoader);
+            Thread.currentThread().setContextClassLoader(classLoader.getLoader());
             URL systemBundle = classLoader.getURLs()[0];
             // build the class path now
             List<File> cp = buildClassPath(classLoader, args[0]);

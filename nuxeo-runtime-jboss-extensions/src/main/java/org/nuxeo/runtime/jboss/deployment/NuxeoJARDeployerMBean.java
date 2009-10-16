@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,31 +12,19 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     bstefanescu
  */
+package org.nuxeo.runtime.jboss.deployment;
 
-package org.nuxeo.osgi.application;
-
-import java.net.URL;
+import org.jboss.deployment.SubDeployer;
+import org.jboss.deployment.SubDeployerExtMBean;
 
 /**
- * Used to decorate a classloader with a public addURL() method
- *   
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface SharedClassLoader {
+public interface NuxeoJARDeployerMBean extends SubDeployerExtMBean {
 
-    public void addURL(URL url);
-    
-    /**
-     * Must return itself.
-     * @return
-     */
-    public ClassLoader getLoader();
-    
-    public URL[] getURLs();
+    public SubDeployer getDeployer();
     
 }

@@ -91,7 +91,7 @@ public class ApplicationBundleLoader {
     public ClassLoader loadBundles(List<File> classPath) throws Exception {
         // create the standalone loader
         bundleLoader = new StandaloneBundleLoader(app, app.getSharedClassLoader());
-        Thread.currentThread().setContextClassLoader(bundleLoader.getSharedClassLoader());
+        Thread.currentThread().setContextClassLoader(bundleLoader.getSharedClassLoader().getLoader());
 
         aboutToStartRuntime();
         boolean scan = true;
@@ -115,7 +115,7 @@ public class ApplicationBundleLoader {
         }
         // that's all
         runtimeStarted();
-        return bundleLoader.getSharedClassLoader();
+        return bundleLoader.getSharedClassLoader().getLoader();
     }
 
     public void scanAndLoad(List<File> classPath, List<BundleFile> bundles, List<BundleFile> jars) {

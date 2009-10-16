@@ -149,7 +149,7 @@ public class StandaloneApplication extends OSGiAdapter {
 
     protected void startBundles(List<BundleFile> bundles) throws Exception {
         for (BundleFile bf : bundles) {
-            this.install(new BundleImpl(this, bf, classLoader));
+            this.install(new BundleImpl(this, bf, classLoader.getLoader()));
         }
     }
 
@@ -215,12 +215,12 @@ public class StandaloneApplication extends OSGiAdapter {
     }
 
     public void install(BundleFile bf) throws BundleException {
-        install(new BundleImpl(this, bf, classLoader));
+        install(new BundleImpl(this, bf, classLoader.getLoader()));
     }
 
     public void installAll(List<BundleFile> bundles) throws BundleException {
         for (BundleFile bf : bundles) {
-            install(new BundleImpl(this, bf, classLoader));
+            install(new BundleImpl(this, bf, classLoader.getLoader()));
         }
     }
 
@@ -315,7 +315,7 @@ public class StandaloneApplication extends OSGiAdapter {
             app = createInstance(classLoader);
             // start level 0
             app.setClassPath(classPath);
-            app.setSystemBundle(new SystemBundle(app, createSystemBundle(systemBundle), classLoader));
+            app.setSystemBundle(new SystemBundle(app, createSystemBundle(systemBundle), classLoader.getLoader()));
             // start level 1
             app.start();
             System.out.println("Framework started in "+((System.currentTimeMillis()-startTime)/1000)+" sec.");

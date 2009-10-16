@@ -76,7 +76,7 @@ public class TestMain {
                 installDir = new File(installDirProp);
             }
 
-            SharedClassLoader cl = new SharedClassLoader(TestMain.class.getClassLoader());
+            SharedClassLoader cl = new SharedClassLoaderImpl(TestMain.class.getClassLoader());
             if (libList != null) {
                 String[] libs = STR_LIST.split(libList, 0);
                 //loadLibs(cl, installDir, libs);

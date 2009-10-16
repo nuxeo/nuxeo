@@ -103,7 +103,7 @@ public class StandaloneApplication2 extends OSGiAdapter {
     }
 
     public ClassLoader getClassLoader() {
-        return classLoader;
+        return classLoader.getLoader();
     }
 
     public Environment getEnvironment() {
@@ -180,7 +180,7 @@ public class StandaloneApplication2 extends OSGiAdapter {
             classLoader.addURL(bf.getURL());
         }
         for (BundleFile bf : bundles) {
-            this.install(new BundleImpl(this, bf, classLoader));
+            this.install(new BundleImpl(this, bf, classLoader.getLoader()));
         }
     }
 
@@ -191,8 +191,28 @@ public class StandaloneApplication2 extends OSGiAdapter {
     public void setClassPath(List<File> classPath) {
         this.classPath = classPath;
     }
+    
+    protected String[] getBundleBlackList() throws IOException {
+        // hack to avoid deploying all jars in classpath as bundles        
+        String javaLibsProp = System.getProperty("org.nuxeo.launcher.libdirs");
+        if (javaLibsProp != null) {
+            String[] ar = StringUtils.split(javaLibsProp, ',', false);
+            if (ar.length > 0) {
+                String[] blackList = ar;
+                File wd = instance.getWorkingDir();
+                for (int i=0; i<ar.length; i++) {
+                    if (!ar[i].startsWith("/")) {
+                        blackList[i] = new File(wd, ar[i]).getCanonicalFile().getAbsolutePath();
+                    }
+                }
+                return blackList;
+            }
+        }
+        return null;
+        // end hack
+    }
 
-    protected void autoInstallBundles() throws Exception {
+    protected void autoInstallBundles() throws Exception {        
         List<File> cp = getClassPath();
         if (cp == null || cp.isEmpty()) {
             return;
@@ -203,11 +223,11 @@ public class StandaloneApplication2 extends OSGiAdapter {
             try {
                 cpath.restore(cache);
             } catch (BundleException e) { // rebuild cache
-                cpath.scan(classPath, scanForNestedJARs, null);
+                cpath.scan(classPath, scanForNestedJARs, getBundleBlackList());
                 cpath.store(cache);
             }
         } else {
-            cpath.scan(classPath, scanForNestedJARs, null);
+            cpath.scan(classPath, scanForNestedJARs, getBundleBlackList());
             cpath.store(cache);
         }
         installAll(cpath.getBundles());
@@ -215,12 +235,12 @@ public class StandaloneApplication2 extends OSGiAdapter {
     }
 
     public void install(BundleFile bf) throws BundleException {
-        install(new BundleImpl(this, bf, classLoader));
+        install(new BundleImpl(this, bf, classLoader.getLoader()));
     }
 
     public void installAll(List<BundleFile> bundles) throws BundleException {
         for (BundleFile bf : bundles) {
-            install(new BundleImpl(this, bf, classLoader));
+            install(new BundleImpl(this, bf, classLoader.getLoader()));
         }
     }
 

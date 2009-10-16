@@ -43,7 +43,7 @@ public class StandaloneBundleLoader extends ApplicationLoader {
 
     public StandaloneBundleLoader(OSGiAdapter osgi, ClassLoader parentLoader) {
         super(osgi);
-        loader = new SharedClassLoader(parentLoader);
+        loader = new SharedClassLoaderImpl(parentLoader);
     }
 
     public StandaloneBundleLoader(OSGiAdapter osgi, SharedClassLoader scl) {
@@ -61,7 +61,7 @@ public class StandaloneBundleLoader extends ApplicationLoader {
 
     @Override
     public void installBundle(BundleFile bundleFile) throws BundleException {
-        osgi.install(new BundleImpl(osgi, bundleFile, loader));
+        osgi.install(new BundleImpl(osgi, bundleFile, loader.getLoader()));
     }
     @Override
     public void loadBundle(BundleFile bundleFile) {
@@ -78,7 +78,7 @@ public class StandaloneBundleLoader extends ApplicationLoader {
         OSGiAdapter osgi = new OSGiAdapter(home);
         System.out.println("Starting ...");
         StandaloneBundleLoader loader = new StandaloneBundleLoader(osgi);
-        Thread.currentThread().setContextClassLoader(loader.loader);
+        Thread.currentThread().setContextClassLoader(loader.loader.getLoader());
         double s = System.currentTimeMillis();
         try {
             loader.setExtractNestedJARs(true);

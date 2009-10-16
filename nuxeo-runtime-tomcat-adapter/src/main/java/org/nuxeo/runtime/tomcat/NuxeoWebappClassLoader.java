@@ -22,7 +22,6 @@ package org.nuxeo.runtime.tomcat;
 import java.net.URL;
 
 import org.apache.catalina.loader.WebappClassLoader;
-import org.nuxeo.osgi.application.SharedClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,12 +33,12 @@ public class NuxeoWebappClassLoader extends WebappClassLoader {
     }
 
     public NuxeoWebappClassLoader(ClassLoader parent) {
-        super(new SharedClassLoader(parent));
+        super(parent);
     }
 
     @Override
     public void addURL(URL url) {
         super.addURL(url);
     }
-
+    
 }

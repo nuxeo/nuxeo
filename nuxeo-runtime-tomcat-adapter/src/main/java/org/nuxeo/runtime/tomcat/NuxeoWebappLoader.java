@@ -33,7 +33,6 @@ import org.apache.catalina.Container;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.WebappLoader;
-import org.nuxeo.osgi.application.SharedClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -130,13 +129,13 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
          // start tomcat webapp loader
         super.start();
         // start nuxeo osgi framework
-        startFramework();
+        //startFramework();
     }
 
     @Override
     public void stop() throws LifecycleException {
         // stop nuxeo osgi framework
-        stopFramework();
+        //stopFramework();
         // stop tomcat webapp loader
         super.stop();
     }
@@ -181,7 +180,7 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
 
         try {
             File systemBundleFile = newFile(home, (String)env.get(SYSTEM_BUNDLE));
-            SharedClassLoader loader = (SharedClassLoader)getClassLoader().getParent();
+            NuxeoWebappClassLoader loader = (NuxeoWebappClassLoader)getClassLoader();
             // add system bundle to class path so that we can instantiate the loader without having class not found errors
             loader.addURL(systemBundleFile.toURI().toURL());
             // add any other nuxeo bundles and libs on the class path
@@ -194,7 +193,7 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
             // we are using the webapp class loader an not te shared loader to get the launcher class since
             // the launcher may be put into WEB-INF/lib
             Class<?> clazz = getClassLoader().loadClass("org.nuxeo.osgi.application.loader.Loader");
-            Method method = clazz.getMethod("loadFramework", SharedClassLoader.class, File.class, List.class, Properties.class);
+            Method method = clazz.getMethod("loadFramework", ClassLoader.class, File.class, List.class, Properties.class);
             method.invoke(null, loader, systemBundleFile, cp, env);
         } catch (Throwable t) {
             System.err.println("Failed to invoke nuxeo launcher");
@@ -213,7 +212,7 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         }
     }
 
-    public static List<File> buildClassPath(SharedClassLoader classLoader, File home, String rawcp) {
+    public static List<File> buildClassPath(NuxeoWebappClassLoader classLoader, File home, String rawcp) {
         List<File> result = new ArrayList<File>();
         try {
             String[] cp = rawcp.split(":");

@@ -21,6 +21,7 @@ package org.nuxeo.osgi.application.loader;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.DirectoryBundleFile;
 import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.SystemBundle;
+import org.nuxeo.osgi.application.DelegateLoader;
 import org.nuxeo.osgi.application.SharedClassLoader;
 
 /**
@@ -112,12 +114,20 @@ public class Loader {
         }
     }
 
-    public static void loadFramework(SharedClassLoader cl, File systemBundle, List<File> classPath, Properties properties) throws Exception {
+    public static void loadFramework(ClassLoader cl, File systemBundle, List<File> classPath, Properties properties) throws Exception {
         long startTime = System.currentTimeMillis();
+        SharedClassLoader loader = null;
+        if (cl instanceof SharedClassLoader) {
+            loader = (SharedClassLoader)cl;
+        } else if (cl instanceof URLClassLoader) {
+            loader = new DelegateLoader((URLClassLoader)cl);
+        } else {
+            throw new IllegalArgumentException("ClassLoader is not supported: "+cl);            
+        }                
         Environment env = createEnvironment(properties);
         Environment.setDefault(env);
         String[] args = env.getCommandLineArguments();
-        StandaloneApplication2 app = new StandaloneApplication2(cl, env);
+        StandaloneApplication2 app = new StandaloneApplication2(loader, env);
         StandaloneApplication2.instance = app;
         if (args != null) {
             if (hasArgument(args, "-scanForNestedJars")) {
@@ -153,9 +163,9 @@ public class Loader {
 
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(cl);
+            Thread.currentThread().setContextClassLoader(loader.getLoader());
             // start level 0
-            app.setSystemBundle(new SystemBundle(app, createSystemBundle(systemBundle), cl));
+            app.setSystemBundle(new SystemBundle(app, createSystemBundle(systemBundle), loader.getLoader()));
             // start level 1
             app.start();
             System.out.println("Framework started in "+((System.currentTimeMillis()-startTime)/1000)+" sec.");
