@@ -1,5 +1,7 @@
 package org.nuxeo.opensocial.dashboard;
 
+import java.io.Serializable;
+
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
@@ -20,7 +22,9 @@ import org.nuxeo.runtime.api.Framework;
 @Name("dashboardNavigationHelper")
 @Scope(ScopeType.SESSION)
 public class OpensocialDashboardNavigationHelper implements
-        DashboardNavigationHelper {
+        DashboardNavigationHelper, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String OLD_DASHBARD_VIEWID = "user_dashboard";
 
