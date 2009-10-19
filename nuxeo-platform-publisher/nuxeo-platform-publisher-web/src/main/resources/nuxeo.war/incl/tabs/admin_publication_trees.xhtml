@@ -67,11 +67,11 @@
       </h:panelGroup>
 
       <a4j:outputPanel id="sectionList">
-        <h:panelGroup rendered="#{!empty workspaceConfiguredPublishingRoots}">
+        <h:panelGroup rendered="#{!empty adminPublishActions.selectedSections}">
 
           <h:outputText value="#{messages['label.publish.selected.sections']}"/>
 
-          <nxu:dataTable value="#{workspaceConfiguredPublishingRoots}"
+          <nxu:dataTable value="#{adminPublishActions.selectedSections}"
                          var="section"
                          preserveSort="true" preserveDataModel="false"
                          rowClasses="dataRowEven,dataRowOdd" sortable="false"
@@ -105,7 +105,7 @@
 
         </h:panelGroup>
 
-        <h:panelGroup rendered="#{empty workspaceConfiguredPublishingRoots}">
+        <h:panelGroup rendered="#{empty adminPublishActions.selectedSections}">
 
           <h:outputText
                   value="#{messages['label.publish.selected.sections.empty']}"/>
