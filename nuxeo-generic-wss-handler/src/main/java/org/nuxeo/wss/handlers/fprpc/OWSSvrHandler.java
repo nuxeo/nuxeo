@@ -89,6 +89,8 @@ public class OWSSvrHandler extends AbstractFPRPCHandler implements FPRPCHandler 
         MSOWebPartCookie.setPath("/");
         MSOWebPartCookie.setMaxAge(3600);
 
+        response.getHttpResponse().setCharacterEncoding("UTF-8");
+
         response.getHttpResponse().addCookie(MSOWebPartCookie);
         if (save) {
             //response.setRenderingTemplateName("FileSave.ftl");
