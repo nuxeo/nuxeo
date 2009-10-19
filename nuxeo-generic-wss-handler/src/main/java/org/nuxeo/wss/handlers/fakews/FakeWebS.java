@@ -16,11 +16,14 @@
  */
 package org.nuxeo.wss.handlers.fakews;
 
+import java.util.List;
+
 import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.servlet.WSSRequest;
 import org.nuxeo.wss.servlet.WSSResponse;
 import org.nuxeo.wss.spi.Backend;
 import org.nuxeo.wss.spi.WSSBackend;
+import org.nuxeo.wss.spi.WSSListItem;
 import org.nuxeo.wss.spi.dws.Site;
 import org.nuxeo.wss.url.WSSUrlMapper;
 import org.nuxeo.wss.url.WSSUrlMapping;
@@ -53,6 +56,16 @@ public class FakeWebS implements FakeWSHandler {
 
             response.addRenderingParameter("siteUrl", siteUrl);
             response.setRenderingTemplateName("WebUrlFromPageUrlResponse.ftl");
+        }
+        else if ("http://schemas.microsoft.com/sharepoint/soap/GetWebCollection".equals(request.getAction()))
+        {
+            response.setContentType("text/xml");
+            WSSBackend backend = Backend.get(request);
+            List<WSSListItem> items = backend.listItems("/");
+
+            response.addRenderingParameter("sites", items);
+            response.setRenderingTemplateName("GetWebCollection.ftl");
+
         }
         else {
             throw new WSSException("no FakeWS implemented for action " + request.getAction());

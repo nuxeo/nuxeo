@@ -74,6 +74,15 @@ public class WSSFilter implements Filter {
                 }
             }
 
+            try {
+                if ("OPTIONS".equals(httpRequest.getMethod())) {
+                    handleOptionCall(httpRequest, httpResponse);
+                    return;
+                }
+            } catch (Exception e) {
+                throw new ServletException("error processing request", e);
+            }
+
             // let back filter do the job if any
             if (isRootFilter() && uri.startsWith(getRootFilterTarget())) {
                 log.debug("let WSS request to to back filter");
@@ -91,10 +100,6 @@ public class WSSFilter implements Filter {
                      return;
                 }
 
-                if ("OPTIONS".equals(httpRequest.getMethod())) {
-                    handleOptionCall(httpRequest, httpResponse);
-                    return;
-                }
 
                 FilterBindingConfig config = FilterBindingResolver.getBinding(httpRequest);
                 if (config!=null) {
@@ -198,21 +203,24 @@ public class WSSFilter implements Filter {
         return rootFilter;
     }
 
-    public synchronized void  init(FilterConfig filterConfig) throws ServletException {
-        simpleGetHandler = new SimpleGetHandler();
-        resourcesHandler = new ResourcesHandler();
-        this.filterConfig = filterConfig;
+    public void  init(FilterConfig filterConfig) throws ServletException {
 
-        if (filterConfig!=null) {
-            String factoryName = filterConfig.getInitParameter(BACKEND_FACTORY_PARAM);
-            if (factoryName!=null) {
-                WSSConfig.instance().setWssBackendFactoryClassName(factoryName);
-                Class factoryKlass = Backend.getFactory().getClass();
-                FreeMarkerRenderer.addLoader(factoryKlass);
+        synchronized (this.getClass()) {
+            simpleGetHandler = new SimpleGetHandler();
+            resourcesHandler = new ResourcesHandler();
+            this.filterConfig = filterConfig;
+
+            if (filterConfig!=null) {
+                String factoryName = filterConfig.getInitParameter(BACKEND_FACTORY_PARAM);
+                if (factoryName!=null) {
+                    WSSConfig.instance().setWssBackendFactoryClassName(factoryName);
+                    Class factoryKlass = Backend.getFactory().getClass();
+                    FreeMarkerRenderer.addLoader(factoryKlass);
+                }
             }
-        }
-        if (isRootFilter()) {
-            WSSConfig.instance().setContextPath(rootFilterTarget);
+            if (isRootFilter()) {
+                WSSConfig.instance().setContextPath(rootFilterTarget);
+            }
         }
     }
 

@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.wss.WSSException;
+import org.nuxeo.wss.fprpc.FPError;
 import org.nuxeo.wss.fprpc.FPRPCCall;
 import org.nuxeo.wss.fprpc.FPRPCRequest;
 import org.nuxeo.wss.fprpc.FPRPCResponse;
@@ -107,7 +108,9 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
              }
 
              if ("chkoutExclusive".equalsIgnoreCase(call.getParameters().get("get_option"))) {
-                 doc.checkOut(request.getUserName());
+                 if (doc.canCheckOut(request.getUserName())) {
+                     doc.checkOut(request.getUserName());
+                 }
              }
 
              fpResponse.addRenderingParameter("doc", doc);
@@ -155,26 +158,28 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
          else if ("checkout document".equals(call.getMethodName())) {
 
              String location = call.getParameters().get("document_name");
-
              location = WSSUrlMapper.getUrlWithSitePath(request, location);
+
+             if (!backend.exists(location)) {
+                 fpResponse.sendFPError(request, FPError.UrlDoesNotExists, location);
+                 return;
+             }
 
              WSSListItem doc = backend.getItem(location);
              fpResponse.addRenderingParameter("request", request);
-             if (doc==null) {
-                 try {
-                    fpResponse.getHttpResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
-                    fpResponse.getHttpResponse().flushBuffer();
-                } catch (IOException e) {
-                    log.error("Error handling error page", e);
-                }
-                fpResponse.setProcessed(true);
-                return;
+
+             if (doc.canCheckOut(request.getUserName())) {
+                 doc.checkOut(request.getUserName());
+                 fpResponse.addRenderingParameter("doc", doc);
+                 fpResponse.setRenderingTemplateName("checkout-document.ftl");
+             } else {
+                 if (doc.isCheckOut()) {
+                     fpResponse.sendFPError(request, FPError.AlreadyLocked, doc.getDisplayName());
+                 } else {
+                     fpResponse.sendFPError(request, FPError.AccessDenied, doc.getDisplayName());
+                 }
+                 return;
              }
-
-             doc.checkOut(request.getUserName());
-
-             fpResponse.addRenderingParameter("doc", doc);
-             fpResponse.setRenderingTemplateName("checkout-document.ftl");
          }
          else if ("uncheckout document".equals(call.getMethodName())) {
 
@@ -182,22 +187,25 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
 
              location = WSSUrlMapper.getUrlWithSitePath(request, location);
 
-             WSSListItem doc = backend.getItem(location);
-             if (doc==null) {
-                 try {
-                    fpResponse.getHttpResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
-                    fpResponse.getHttpResponse().flushBuffer();
-                } catch (IOException e) {
-                    log.error("Error handling error page", e);
-                }
-                fpResponse.setProcessed(true);
-                return;
+             if (!backend.exists(location)) {
+                 fpResponse.sendFPError(request, FPError.UrlDoesNotExists, location);
+                 return;
              }
 
-             doc.uncheckOut(request.getUserName());
+             WSSListItem doc = backend.getItem(location);
 
-             fpResponse.addRenderingParameter("doc", doc);
-             fpResponse.setRenderingTemplateName("uncheckout-document.ftl");
+             if (doc.canUnCheckOut(request.getUserName())) {
+                 doc.uncheckOut(request.getUserName());
+                 fpResponse.addRenderingParameter("doc", doc);
+                 fpResponse.setRenderingTemplateName("uncheckout-document.ftl");
+             } else {
+                 if (!doc.isCheckOut()) {
+                     fpResponse.sendFPError(request, FPError.NotCheckedOut, doc.getDisplayName());
+                 } else {
+                     fpResponse.sendFPError(request, FPError.AccessDenied, doc.getDisplayName());
+                 }
+             return;
+             }
          }
          else if ("create url-directories".equals(call.getMethodName())) {
 
@@ -225,17 +233,12 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
              location = WSSUrlMapper.getUrlWithSitePath(request, location);
              newLocation = WSSUrlMapper.getUrlWithSitePath(request, newLocation);
 
-             WSSListItem doc = backend.getItem(location);
-             if (doc==null) {
-                 try {
-                    fpResponse.getHttpResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
-                    fpResponse.getHttpResponse().flushBuffer();
-                } catch (IOException e) {
-                    log.error("Error handling error page", e);
-                }
-                fpResponse.setProcessed(true);
-                return;
+             if (!backend.exists(location)) {
+                 fpResponse.sendFPError(request, FPError.UrlDoesNotExists, location);
+                 return;
              }
+
+             WSSListItem doc = backend.getItem(location);
              doc = backend.moveItem(location, newLocation);
              fpResponse.addRenderingParameter("doc", doc);
              fpResponse.addRenderingParameter("oldUrl", location);

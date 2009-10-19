@@ -41,7 +41,7 @@ public class FPRPCResponse extends WSSResponse {
     }
 
 
-    protected void sendFPError(FPRPCRequest request, String errorCode, String errorMessage) {
+    public void sendFPError(FPRPCRequest request, String errorCode, String errorMessage) {
 
         String method = request.getCalls().get(0).getMethodName();
         this.addRenderingParameter("request", request);

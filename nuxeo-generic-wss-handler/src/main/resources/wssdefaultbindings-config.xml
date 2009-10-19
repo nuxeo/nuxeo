@@ -27,6 +27,10 @@
 <filtermapping url="(.*)/_vti_bin/dws.asmx.*" service="FakeDWS" type="FakeWS">
 </filtermapping>
 
+<!--POST /_vti_bin/lists.asmx-->
+<filtermapping url="(.*)/_vti_bin/lists.asmx.*" service="FakeLists" type="FakeWS">
+</filtermapping>
+
 <!--
 http://Server_Name/[sites/][Site/]_vti_bin/owssvr.dll?
   dialogview=[FileOpen|FileSave|SaveForm]

@@ -130,4 +130,37 @@ public abstract class AbstractWSSListItem implements WSSListItem {
         return isSiteItem;
     }
 
+    public boolean isCheckOut() {
+        String lockingUser = getCheckoutUser();
+        if (lockingUser!=null) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean canCheckOut(String userName) {
+        String lockingUser = getCheckoutUser();
+        if (lockingUser==null) {
+            return true;
+        } else {
+            if (lockingUser.equals(userName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean canUnCheckOut(String userName) {
+        String lockingUser = getCheckoutUser();
+        if (lockingUser==null) {
+            return false;
+        } else {
+            if (lockingUser.equals(userName)) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
 }

@@ -63,6 +63,25 @@ public class TestFakeWSWebS extends TestCase {
 
     }
 
+    public void testHandlingGetWebCollection() throws Exception {
+
+        Filter filter=new WSSFilter();
+        filter.init(null);
+
+        FakeRequest request = FakeRequestBuilder.buildFromResource("GetWebCollection.dump");
+        FakeResponse response = new FakeResponse();
+
+        filter.doFilter(request, response, null);
+
+        String result= response.getOutput();
+
+        System.out.println(result);
+
+        //String[] lines = result.split("\n");
+
+        //assertEquals("<WebUrlFromPageUrlResult>http://localhost/</WebUrlFromPageUrlResult>", lines[4].trim());
+
+    }
 
 
 }

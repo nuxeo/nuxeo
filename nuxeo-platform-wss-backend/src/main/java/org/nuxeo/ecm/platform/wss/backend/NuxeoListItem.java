@@ -64,8 +64,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
         try {
             existingLock = getSession().getLock(doc.getRef());
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Unable to get lock", e);
         }
         if (existingLock != null) {
             String[] info = existingLock.split(":");
@@ -75,8 +74,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
                     return DateFormat.getDateInstance(DateFormat.MEDIUM).parse(
                             dateStr);
                 } catch (ParseException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    log.error("Unable to parse date", e);
                 }
             }
         }
@@ -103,7 +101,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
                 return modified.getTime();
             }
         } catch (ClientException e) {
-            e.printStackTrace();
+            log.error("Unable to get creation date", e);
         }
         return Calendar.getInstance().getTime();
     }
@@ -115,7 +113,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
                 return modified.getTime();
             }
         } catch (ClientException e) {
-            e.printStackTrace();
+            log.error("Unable to get modification date", e);
         }
         return Calendar.getInstance().getTime();
     }
@@ -138,18 +136,13 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
         }
     }
 
-/*    protected String[] getLockInfo(String lock) {
-        return lock.split(":");
-    }*/
-
     public String getCheckoutUser() {
 
         String existingLock = null;
         try {
             existingLock = getSession().getLock(doc.getRef());
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Unable to lock", e);
         }
         if (existingLock != null) {
             String[] info = existingLock.split(":");
@@ -162,8 +155,8 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
         try {
             return (String) doc.getPropertyValue("dc:description");
         } catch (Exception e) {
-            e.printStackTrace();
-            return "description";
+            log.error("Unable to get description", e);
+            return "";
         }
     }
 
@@ -193,8 +186,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
                         size = (int) blob.getLength();
                     }
                 } catch (ClientException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    log.error("Unable to get blob Size", e);
                 }
             }
         }
@@ -207,7 +199,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
             try {
                 return bh.getBlob().getStream();
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Unable to get Stream",e);
             }
         }
         return null;
@@ -257,8 +249,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
                     return blob.getFilename();
                 }
             } catch (ClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error("Unable to get filename", e);
             }
         }
         return null;
@@ -275,8 +266,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
         try {
             doc.setPropertyValue("dc:description", desc);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Error while setting description", e);
         }
     }
 
@@ -382,6 +372,34 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
     @Override
     public boolean isFolderish() {
         return doc.isFolder();
+    }
+
+    @Override
+    public boolean canCheckOut(String userName) {
+        boolean canCheckOut = super.canCheckOut(userName);
+        if (canCheckOut) {
+            try {
+                return getSession().hasPermission(doc.getRef(), "WriteProperties");
+            } catch (ClientException e) {
+                log.error("Error during permission check", e);
+                return false;
+            }
+        }
+        return canCheckOut;
+    }
+
+    @Override
+    public boolean canUnCheckOut(String userName) {
+        boolean canUnCheckOut = super.canUnCheckOut(userName);
+        if (canUnCheckOut) {
+            try {
+                return getSession().hasPermission(doc.getRef(), "WriteProperties");
+            } catch (ClientException e) {
+                log.error("Error during permission check", e);
+                return false;
+            }
+        }
+        return canUnCheckOut;
     }
 
 }

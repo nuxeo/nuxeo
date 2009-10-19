@@ -84,4 +84,10 @@ public interface WSSListItem {
 
     public Date getModificationDate();
 
+    public boolean canCheckOut(String userName);
+
+    public boolean canUnCheckOut(String userName);
+
+    public boolean isCheckOut();
+
 }
