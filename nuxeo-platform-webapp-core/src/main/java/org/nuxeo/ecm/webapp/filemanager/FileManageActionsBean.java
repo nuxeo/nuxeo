@@ -23,11 +23,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
@@ -45,6 +44,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
+import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -56,8 +56,8 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.api.FileManagerPermissionException;
-import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.types.SubType;
+import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -67,8 +67,6 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
-
-import sun.misc.BASE64Decoder;
 
 /**
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
@@ -202,8 +200,7 @@ public class FileManageActionsBean extends InputController implements
         try {
             byte[] bcontent;
             if (UseBase64.booleanValue()) {
-                BASE64Decoder decoder = new BASE64Decoder();
-                bcontent = decoder.decodeBuffer(content);
+                bcontent = Base64.decode(content);
             } else {
                 bcontent = content.getBytes();
             }
