@@ -275,7 +275,8 @@ public class Mapper {
         if (value instanceof String) {
             String v = (String) value;
             if (v.length() > DEBUG_MAX_STRING) {
-                v = v.substring(0, DEBUG_MAX_STRING) + "...";
+                v = v.substring(0, DEBUG_MAX_STRING) + "...(" + v.length()
+                        + " chars)...";
             }
             return "'" + v.replace("'", "''") + "'";
         }
@@ -310,7 +311,7 @@ public class Mapper {
                 if (i > 0) {
                     b.append(',');
                     if (i > DEBUG_MAX_ARRAY) {
-                        b.append("...");
+                        b.append("...(" + v.length + " items)...");
                         break;
                     }
                 }
@@ -1914,7 +1915,7 @@ public class Mapper {
                             break;
                         }
                     }
-                    end = "...";
+                    end = "...(" + ids.size() + " ids)...";
                 }
                 if (countTotal) {
                     end += " (total " + totalSize + ')';
