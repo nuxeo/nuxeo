@@ -9,9 +9,6 @@ Bundle-Version: 1.0.0
 Bundle-SymbolicName: org.nuxeo.runtime.jetty;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Localization: bundle
-Require-Bundle: system.bundle,
- org.nuxeo.runtime,
- org.nuxeo.runtime.server.configuration,
- org.mortbay.jetty
+Require-Bundle: org.nuxeo.runtime
 Export-Package: org.nuxeo.runtime.jetty
 Nuxeo-Component: OSGI-INF/JettyComponent.xml

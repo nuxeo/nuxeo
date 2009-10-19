@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<fragment>
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+
+  <!-- Site Servlet mapping -->
+  <extension target="web#SERVLET">
+    <servlet>
+	   <servlet-name>Nuxeo Jetty Resource Servlet</servlet-name>
+	   <servlet-class>org.nuxeo.runtime.jetty.JettyResourceServlet
+	   </servlet-class>
+	   <load-on-startup>1</load-on-startup>
+    </servlet>
+	<servlet-mapping>
+		<servlet-name>Nuxeo Jetty Resource Servlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+  </extension>
+
+</fragment>
+
