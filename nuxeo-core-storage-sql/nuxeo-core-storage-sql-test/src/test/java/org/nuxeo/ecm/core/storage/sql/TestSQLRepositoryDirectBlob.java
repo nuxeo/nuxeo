@@ -98,7 +98,8 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         /*
          * 2. Later, create and use the blob for this digest.
          */
-        BinaryManager binaryManager = new BinaryManager(null);
+        BinaryManager binaryManager = new BinaryManager(
+                new RepositoryDescriptor());
         Binary binary = binaryManager.getBinary(digest);
         if (binary == null) {
             throw new RuntimeException("Missing file for digest: " + digest);
@@ -143,7 +144,8 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         // create a binary instance pointing to some content stored on the
         // filesystem
         String digest = createFile();
-        BinaryManager binaryManager = new BinaryManager(null);
+        BinaryManager binaryManager = new BinaryManager(
+                new RepositoryDescriptor());
         Binary binary = binaryManager.getBinary(digest);
         if (binary == null) {
             throw new RuntimeException("Missing file for digest: " + digest);
