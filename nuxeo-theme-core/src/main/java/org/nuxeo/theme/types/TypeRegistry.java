@@ -37,14 +37,14 @@ public final class TypeRegistry implements Registrable {
         TypeFamily typeFamily = type.getTypeFamily();
         String key = computeKey(typeFamily, typeName);
         if (registry.containsKey(key)) {
-            log.warn("**** Overriding " + typeFamily + ": " + typeName);
+            log.debug("Overriding theme " + typeFamily + ": " + typeName);
         }
         registry.put(key, type);
         if (!typeNames.containsKey(typeFamily)) {
             typeNames.put(typeFamily, new ArrayList<String>());
         }
         typeNames.get(typeFamily).add(typeName);
-        log.debug("Registered " + typeFamily + ": " + typeName);
+        log.debug("Registered theme " + typeFamily + ": " + typeName);
     }
 
     public synchronized void unregister(final Type type) {
@@ -53,7 +53,7 @@ public final class TypeRegistry implements Registrable {
         String key = computeKey(typeFamily, typeName);
         registry.remove(key);
         typeNames.get(typeFamily).remove(typeName);
-        log.debug("Unregistered " + typeFamily + ": " + typeName);
+        log.debug("Unregistered theme " + typeFamily + ": " + typeName);
     }
 
     public Type lookup(final TypeFamily typeFamily, final String name) {
