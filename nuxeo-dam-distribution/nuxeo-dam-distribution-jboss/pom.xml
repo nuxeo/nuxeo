@@ -33,6 +33,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-jboss</artifactId>
+      <classifier>nuxeo-dm-jboss</classifier>
       <type>zip</type>
     </dependency>
     <dependency>
