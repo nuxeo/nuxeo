@@ -19,9 +19,13 @@
 
 package org.nuxeo.runtime;
 
-import org.nuxeo.runtime.api.DataSourceHelper;
+import java.io.File;
 
 import junit.framework.TestCase;
+
+import org.nuxeo.common.Environment;
+import org.nuxeo.runtime.api.DataSourceHelper;
+
 
 public class DataSourceHelperTest extends TestCase {
 
@@ -46,6 +50,8 @@ public class DataSourceHelperTest extends TestCase {
     }
 
     public void testDetect() {
+        Environment env = new Environment(new File("."));
+        Environment.setDefault(env);
         DataSourceHelper.autodetectPrefix();
     }
 
