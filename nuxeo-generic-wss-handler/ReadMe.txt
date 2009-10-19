@@ -117,4 +117,20 @@ You should be able to create a WebFolder or to open from MSOffice using :
  - http://server:8080/ : to access directly server root
 
 
+About VirtualHosting 
+====================
+For general information about Nuxeo Virtual Hosting, please see :
+http://doc.nuxeo.org/5.2/books/nuxeo-book/html-single/index-admin.html#admin-virtualhosting
+
+Because WSS has specific URL managament, it requires additionnal reverse proxy configuration, you need to forward all _vti call to the root to Nuxeo server.
+
+ ProxyPass /nuxeo/ http://127.0.0.1:8080/nuxeo/
+ ProxyPass /_vti_bin/ http://127.0.0.1:8080/_vti_bin/
+ ProxyPass /_vti_inf.html http://127.0.0.1:8080/_vti_inf.html
+
+ ProxyPassReverse /nuxeo/ http://127.0.0.1:8080/nuxeo/
+ ProxyPassReverse /_vti_bin/ http://127.0.0.1:8080/_vti_bin/
+ ProxyPassReverse /_vti_inf.html http://127.0.0.1:8080/_vti_inf.html
+
+
 
