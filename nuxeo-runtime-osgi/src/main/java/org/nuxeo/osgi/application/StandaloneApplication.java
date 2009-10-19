@@ -34,6 +34,7 @@ import org.nuxeo.osgi.DirectoryBundleFile;
 import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.SystemBundle;
+import org.omg.IOP.ENCODING_CDR_ENCAPS;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkEvent;
 
@@ -284,7 +285,7 @@ public class StandaloneApplication extends OSGiAdapter {
             if (val != null) {
                 env.setProperty(Environment.BUNDLES, val);
             }
-            env.setHostApplicationName("NXLauncher");
+            env.setHostApplicationName(Environment.NXSERVER_HOST);
             env.setHostApplicationVersion("1.0.0");
             env.getData().mkdirs();
             env.getLog().mkdirs();

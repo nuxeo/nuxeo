@@ -93,13 +93,13 @@ public class Loader {
             if (val != null) {
                 env.setProperty(Environment.BUNDLES, val);
             }
-            val = (String) props.get(Constants.TMP_DIR);
+            val = (String) props.get(Constants.HOST_NAME);
             if (val != null) {
                 env.setHostApplicationName(val);
             } else {
-                env.setHostApplicationName("NXLauncher");
+                env.setHostApplicationName(Environment.TOMCAT_HOST);
             }
-            val = (String) props.get(Constants.TMP_DIR);
+            val = (String) props.get(Constants.HOST_VERSION);
             if (val != null) {
                 env.setHostApplicationVersion(val);
             } else {

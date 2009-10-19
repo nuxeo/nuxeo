@@ -35,12 +35,18 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.WebappLoader;
 
 /**
+ * shared attribute is experimental. do not use it yet.
+ * (it's purpose is to be able to deploy multiple WARs using the same nuxeo instance but it is not working yet) 
+ *  
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class NuxeoWebappLoader extends WebappLoader implements Constants {
 
-    protected boolean isStarted = false;
+    protected final static Object LOCK = new Object(); 
+
+    protected boolean shared;
+    protected int webApps = 0;
     protected String home = "nuxeo";
     protected String data;
     protected String tmp;
@@ -51,6 +57,14 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
     protected String classPath;
     protected String args;
 
+    public void setShared(boolean shared) {
+        this.shared = shared;
+    }
+    
+    public boolean isShared() {
+        return shared;
+    }
+    
     public void setHome(String root) {
         home = root;
     }
@@ -86,7 +100,7 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
     public String getClassPath() {
         return classPath;
     }
-
+    
     public void setClassPath(String classPath) {
         this.classPath = classPath;
     }
@@ -140,10 +154,26 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         super.stop();
     }
 
-    protected void stopFramework() {
-        if (!isStarted) {
-            return;
+    public int getWebAppsCount() {
+        synchronized(LOCK) {
+            return webApps;
         }
+    }
+    
+    public boolean isFrameworkStarted() {
+        return getWebAppsCount() > 0;
+    }
+    
+    protected void stopFramework() {
+        synchronized (LOCK) {
+            if (webApps == 1) {
+                doStopFramework();
+                webApps = 0;
+            }
+        }
+    }
+    
+    protected void doStopFramework() {
         try {
             System.out.println("Stopping Nuxeo Framework");
             Class<?> clazz = getClassLoader().loadClass("org.nuxeo.osgi.application.loader.Loader");
@@ -155,7 +185,24 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         }
     }
 
+    protected void checkSharedClassLoader() {
+        if (shared) {
+            NuxeoWebappClassLoader cl = (NuxeoWebappClassLoader)getClassLoader();
+            cl.setParentClassLoader(FrameworkClassLoader.getInstance(cl.getParentClassLoader()));
+        }
+    }
+    
     protected void startFramework() {
+        checkSharedClassLoader();
+        synchronized (LOCK) {
+            if (webApps == 0) {
+                doStartFramework();
+                webApps++;
+            }
+        }
+    }
+    
+    private void doStartFramework() {
         File home = resolveHomeDirectory();
         if (home == null) {
             return;
@@ -181,12 +228,15 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         try {
             File systemBundleFile = newFile(home, (String)env.get(SYSTEM_BUNDLE));
             NuxeoWebappClassLoader loader = (NuxeoWebappClassLoader)getClassLoader();
+            MutableURLClassLoader cl = shared 
+                ? (FrameworkClassLoader)loader.getParentClassLoader() 
+                        : loader;
             // add system bundle to class path so that we can instantiate the loader without having class not found errors
-            loader.addURL(systemBundleFile.toURI().toURL());
+            cl.addURL(systemBundleFile.toURI().toURL());
             // add any other nuxeo bundles and libs on the class path
             List<File> cp = null;
             if (classPath != null) {
-                cp = buildClassPath(loader, home, classPath);
+                cp = buildClassPath(cl, home, classPath);
             } else {
                 cp = new ArrayList<File>();
             }
@@ -194,13 +244,11 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
             // the launcher may be put into WEB-INF/lib
             Class<?> clazz = getClassLoader().loadClass("org.nuxeo.osgi.application.loader.Loader");
             Method method = clazz.getMethod("loadFramework", ClassLoader.class, File.class, List.class, Properties.class);
-            method.invoke(null, loader, systemBundleFile, cp, env);
+            method.invoke(null, cl, systemBundleFile, cp, env);
         } catch (Throwable t) {
             System.err.println("Failed to invoke nuxeo launcher");
             t.printStackTrace();
         }
-
-        isStarted = true;
     }
 
 
@@ -212,7 +260,7 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         }
     }
 
-    public static List<File> buildClassPath(NuxeoWebappClassLoader classLoader, File home, String rawcp) {
+    public static List<File> buildClassPath(MutableURLClassLoader classLoader, File home, String rawcp) {
         List<File> result = new ArrayList<File>();
         try {
             String[] cp = rawcp.split(":");

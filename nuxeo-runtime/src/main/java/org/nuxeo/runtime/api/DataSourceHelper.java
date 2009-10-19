@@ -74,7 +74,7 @@ public class DataSourceHelper {
             if (Framework.isInitialized()) {
                 String configuredPrefix = Framework.getProperty(DS_PREFIX_NAME);
                 if (configuredPrefix != null) {
-                    prefix = Framework.getProperty(DS_PREFIX_NAME);
+                    prefix = configuredPrefix;
                 }
                 if (prefix == null) {
                     autodetectPrefix();

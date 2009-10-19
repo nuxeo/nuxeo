@@ -13,42 +13,17 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
 package org.nuxeo.runtime.tomcat;
 
 import java.net.URL;
-
-import org.apache.catalina.loader.WebappClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class NuxeoWebappClassLoader extends WebappClassLoader implements MutableURLClassLoader {
+public interface MutableURLClassLoader {
 
-    
-    public NuxeoWebappClassLoader() {
-    }
-
-    public NuxeoWebappClassLoader(ClassLoader parent) {
-        super(parent);
-    }
-    
-    @Override
-    public void addURL(URL url) {
-        super.addURL(url);
-    }
-    
-    @Override
-    public void setParentClassLoader(ClassLoader pcl) {
-        super.setParentClassLoader(pcl);
-    }
-    
-    public ClassLoader getParentClassLoader() {
-        return parent;
-    }
+    void addURL(URL url);
 
 }

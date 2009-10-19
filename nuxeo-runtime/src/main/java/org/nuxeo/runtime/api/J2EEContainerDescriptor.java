@@ -21,17 +21,20 @@ package org.nuxeo.runtime.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 
 /**
  * Helper class to get container related properties
  *
  * @author Stephane Lacoin
+ * @author bstefanescu
  */
 public enum J2EEContainerDescriptor {
 
 	JBOSS("java:", TransactionTypeHelper.JTA), 
+	TOMCAT("java:comp/env/jdbc", TransactionTypeHelper.RESOURCE_LOCAL),
 	JETTY("jdbc", TransactionTypeHelper.RESOURCE_LOCAL), 
-	GF3("jdbc", TransactionTypeHelper.RESOURCE_LOCAL);
+	GF3("jdbc", TransactionTypeHelper.RESOURCE_LOCAL);	
 
 	private J2EEContainerDescriptor(String datasourcePrefix, String hibernateTransactionStrategy) {
 		this.datasourcePrefix = datasourcePrefix;
@@ -45,32 +48,39 @@ public enum J2EEContainerDescriptor {
 	public static final Log log = LogFactory.getLog(J2EEContainerDescriptor.class);
 
 	protected static J2EEContainerDescriptor autodetect() {
+	    Environment env = Environment.getDefault();
 
-		try {
-			Class.forName("org.jboss.tm.usertx.server.UserTransactionSessionImpl");
-			log.info("Detected JBoss host");
-			return JBOSS;
-		} catch (Exception e) {
-			log.debug("Autodetect : not a JBoss host");
-		}
-
-		try {
-			Class.forName("org.mortbay.jetty.webapp.WebAppContext");
-			log.info("Detected Jetty host");
-			return JETTY;
-		} catch (Exception e) {
-			log.debug("Autodetect : not a jetty host");
-		}
-
-		try {
-			Class.forName("com.sun.enterprise.glassfish.bootstrap.AbstractMain");
-			log.info("Detected GlassFish host");
-			return GF3;
-		} catch (Exception e) {
-			log.debug("Autodetect : not a glassfish host");
-		}
-		
-		return null;
+	    String hostName = env.getHostApplicationName();
+	    if (hostName == null) {
+	        return null;
+	    }
+	    
+	    if (Environment.JBOSS_HOST.equals(hostName)) {
+	        log.info("Detected JBoss host");
+	        return JBOSS;
+	    } else if (Environment.TOMCAT_HOST.equals(hostName)) {
+	        log.info("Detected Tomcat host");
+	        return TOMCAT;
+	    } else if (Environment.NXSERVER_HOST.equals(hostName)) {
+	        // can be jetty or gf3 embedded
+	        try {
+	            Class.forName("com.sun.enterprise.glassfish.bootstrap.AbstractMain");
+	            log.info("Detected GlassFish host");
+	            return GF3;
+	        } catch (Exception e) {
+	            log.debug("Autodetect : not a glassfish host");
+	        }
+	        try {
+	            Class.forName("org.mortbay.jetty.webapp.WebAppContext");
+	            log.info("Detected Jetty host");
+	            return JETTY;
+	        } catch (Exception e) {
+	            log.debug("Autodetect : not a jetty host");
+	        }
+	        return null; // unknown host
+	    } else {
+	        return null; // unknown host
+	    }		
 	}
 	
 	private static J2EEContainerDescriptor selected;

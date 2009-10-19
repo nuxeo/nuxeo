@@ -248,6 +248,12 @@ public class StandaloneApplication2 extends OSGiAdapter {
         return createEnvironment(null);
     }
 
+    /**
+     * @deprecated this method is not used. see {@link Loader#createEnvironment()} instead.
+     * @param props
+     * @return
+     * @throws IOException
+     */
     public static Environment createEnvironment(Properties props) throws IOException {
         if (props != null) {
             String val = (String) props.get("home");
@@ -288,7 +294,7 @@ public class StandaloneApplication2 extends OSGiAdapter {
             if (val != null) {
                 env.setProperty(Environment.BUNDLES, val);
             }
-            env.setHostApplicationName("NXLauncher");
+            env.setHostApplicationName(Environment.TOMCAT_HOST);
             env.setHostApplicationVersion("1.0.0");
             env.getData().mkdirs();
             env.getLog().mkdirs();

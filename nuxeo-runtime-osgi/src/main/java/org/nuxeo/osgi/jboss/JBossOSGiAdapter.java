@@ -141,7 +141,7 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
         env.setConfig(configDir);
         env.setLog( jbossConfig.getServerLogDir());
         env.setTemp(jbossConfig.getServerTempDir());
-        env.setHostApplicationName("JBoss");
+        env.setHostApplicationName(Environment.JBOSS_HOST);
         Package pkg = Package.getPackage("org.jboss");
         if (pkg == null) {
             env.setHostApplicationVersion("4.0.5.GA");
