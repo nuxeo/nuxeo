@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.relations.api.Literal;
@@ -165,7 +166,13 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
 
             List<DocumentModel> children = getCoreSession().getChildren(docRef);
             for (DocumentModel child : children) {
-                items.add(new NuxeoListItem(child, corePathPrefix, urlRoot));
+                if (child.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION)) {
+                    log.debug("Skipping hidden doc");
+                } else if ("deleted".equalsIgnoreCase(child.getCurrentLifeCycleState())) {
+                    log.debug("Skipping deleted doc");
+                } else {
+                    items.add(new NuxeoListItem(child, corePathPrefix, urlRoot));
+                }
             }
             return items;
         }
