@@ -27,6 +27,13 @@ import java.util.Properties;
  */
 public class Environment {
 
+    /**
+     * Constants that identifies possible hosts for the framework. 
+     */
+    public static final String JBOSS_HOST = "JBoss";
+    public static final String NXSERVER_HOST = "NXServer"; // Jetty or GF3 embedded
+    public static final String TOMCAT_HOST = "Tomcat";
+    
     // the home directory
     public static final String HOME_DIR = "org.nuxeo.app.home";
     // the web root
