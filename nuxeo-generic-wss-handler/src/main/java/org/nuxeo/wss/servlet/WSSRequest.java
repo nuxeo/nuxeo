@@ -44,28 +44,24 @@ public class WSSRequest {
 
     public String getBaseUrl(String fpDir) {
 
-        StringBuffer base = new StringBuffer();
-
-        base.append(getHttpRequest().getScheme());
-        base.append("://");
-        base.append(getHttpRequest().getServerName());
-
-        if (getHttpRequest().getServerPort()!=80) {
-            base.append(":");
-            base.append(getHttpRequest().getServerPort());
-        }
-
-        /*String ctx = WSSConfig.instance().getContextPath();
-        if ((ctx!=null) && (!"".equals(ctx))) {
-            base.append("/");
-            base.append(ctx);
+        if (VHHelper.isVirtualHosted(getHttpRequest())) {
+            return VHHelper.getServerURL(getHttpRequest(), false);
         } else {
+
+            StringBuffer base = new StringBuffer();
+
+            base.append(getHttpRequest().getScheme());
+            base.append("://");
+            base.append(getHttpRequest().getServerName());
+
+            if (getHttpRequest().getServerPort()!=80) {
+                base.append(":");
+                base.append(getHttpRequest().getServerPort());
+            }
+
             base.append("/");
-        }*/
-
-        base.append("/");
-
-        return base.toString();
+            return base.toString();
+        }
     }
 
 
