@@ -27,10 +27,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
-
-import sun.misc.BASE64Decoder;
 
 public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
 
@@ -68,18 +67,11 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
         if (auth != null && auth.toLowerCase().startsWith("basic")) {
             int idx = auth.indexOf(' ');
             String b64userpassword = auth.substring(idx + 1);
-            BASE64Decoder decoder = new BASE64Decoder();
-            try {
-                byte[] clearUp = decoder.decodeBuffer(b64userpassword);
-                String userpassword = new String(clearUp);
-                String username = userpassword.split(":")[0];
-                String password = userpassword.split(":")[1];
-                return new UserIdentificationInfo(username, password);
-
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            byte[] clearUp = Base64.decode(b64userpassword);
+            String userpassword = new String(clearUp);
+            String username = userpassword.split(":")[0];
+            String password = userpassword.split(":")[1];
+            return new UserIdentificationInfo(username, password);
         }
         return null;
     }
