@@ -307,7 +307,8 @@ public class DashBoardActionsBean implements DashboardActions {
             String query = String.format(
                     "SELECT * from Document WHERE ecm:parentId = '%s' "
                             + "AND ecm:currentLifeCycleState != '%s' "
-                            + "AND ecm:mixinType != '%s'",
+                            + "AND ecm:mixinType != '%s' "
+                            + "AND ecm:isProxy = 0",
                     rootDocument.getId(),
                     ClipboardActionsBean.DELETED_LIFECYCLE_STATE,
                     FacetNames.HIDDEN_IN_NAVIGATION);
