@@ -19,9 +19,11 @@ package org.nuxeo.ecm.platform.tag;
 import java.util.Calendar;
 
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 
 /**
@@ -33,16 +35,23 @@ public class TagServiceInitializer extends RepositoryInitializationHandler {
     @Override
     public void doInitializeRepository(CoreSession session)
             throws ClientException {
-        DocumentModel rootTag = session.createDocumentModel(
-                session.getRootDocument().getPathAsString(),
-                IdUtils.generateId(TagConstants.TAGS_DIRECTORY),
-                TagConstants.HIDDEN_FOLDER_TYPE);
-        rootTag.setPropertyValue("dc:title", TagConstants.TAGS_DIRECTORY);
-        rootTag.setPropertyValue("dc:description", "");
-        rootTag.setPropertyValue("dc:created", Calendar.getInstance());
-        rootTag = session.createDocument(rootTag);
-        rootTag = session.saveDocument(rootTag);
-        session.save();
+
+        Path rootTagPath = new Path(session.getRootDocument().getPathAsString());
+        String rootTagName = IdUtils.generateId(TagConstants.TAGS_DIRECTORY);
+        rootTagPath = rootTagPath.append(rootTagName);
+
+        if (!session.exists(new PathRef(rootTagPath.toString()))) {
+            DocumentModel rootTag = session.createDocumentModel(
+                    session.getRootDocument().getPathAsString(),
+                    rootTagName,
+                    TagConstants.HIDDEN_FOLDER_TYPE);
+            rootTag.setPropertyValue("dc:title", TagConstants.TAGS_DIRECTORY);
+            rootTag.setPropertyValue("dc:description", "");
+            rootTag.setPropertyValue("dc:created", Calendar.getInstance());
+            rootTag = session.createDocument(rootTag);
+            rootTag = session.saveDocument(rootTag);
+            session.save();
+        }
     }
 
 }
