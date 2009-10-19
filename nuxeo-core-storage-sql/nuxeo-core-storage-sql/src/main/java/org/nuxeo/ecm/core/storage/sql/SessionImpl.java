@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -632,22 +631,13 @@ public class SessionImpl implements Session {
     public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
-        try {
-            return mapper.query(query, queryFilter, countTotal, this);
-        } catch (SQLException e) {
-            throw new StorageException("Invalid query: " + query, e);
-        }
+        return mapper.query(query, queryFilter, countTotal, this);
     }
 
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException {
-        try {
-            return mapper.queryAndFetch(query, queryType, queryFilter, true,
-                    this, params);
-        } catch (SQLException e) {
-            throw new StorageException("Invalid query: " + queryType + ": "
-                    + query, e);
-        }
+        return mapper.queryAndFetch(query, queryType, queryFilter, true, this,
+                params);
     }
 
     public void requireReadAclsUpdate() {
@@ -655,20 +645,12 @@ public class SessionImpl implements Session {
     }
 
     public void updateReadAcls() throws StorageException {
-        try {
-            mapper.updateReadAcls();
-        } catch (SQLException e) {
-            throw new StorageException("Failed to update read acls", e);
-        }
+        mapper.updateReadAcls();
         readAclsChanged = false;
     }
 
     public void rebuildReadAcls() throws StorageException {
-        try {
-            mapper.rebuildReadAcls();
-        } catch (SQLException e) {
-            throw new StorageException("Failed to rebuild read acls", e);
-        }
+        mapper.rebuildReadAcls();
         readAclsChanged = false;
     }
 

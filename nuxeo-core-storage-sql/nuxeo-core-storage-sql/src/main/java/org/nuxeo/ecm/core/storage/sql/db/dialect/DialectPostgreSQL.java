@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.storage.sql.db.dialect;
 
 import java.io.Serializable;
+import java.net.SocketException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -1260,4 +1261,25 @@ public class DialectPostgreSQL extends Dialect {
                 "ALTER TABLE testschema2 ADD CONSTRAINT testschema2_pk PRIMARY KEY (id)"));
         return statements;
     }
+
+    @Override
+    public boolean connectionClosedByException(Throwable t) {
+        while (t.getCause() != null) {
+            t = t.getCause();
+        }
+        // org.postgresql.util.PSQLException. message: An I/O error occured
+        // while sending to the backend
+        // Caused by: java.net.SocketException. message: Broken pipe
+        if (t instanceof SocketException) {
+            return true;
+        }
+        // org.postgresql.util.PSQLException. message: FATAL: terminating
+        // connection due to administrator command
+        String message = t.getMessage();
+        if (message != null && message.contains("FATAL:")) {
+            return true;
+        }
+        return false;
+    }
+
 }

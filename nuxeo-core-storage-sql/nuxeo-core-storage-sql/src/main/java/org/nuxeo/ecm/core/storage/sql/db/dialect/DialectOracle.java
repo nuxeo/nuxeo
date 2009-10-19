@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.storage.sql.db.dialect;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.net.SocketException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -495,6 +497,30 @@ public class DialectOracle extends Dialect {
                 null,
                 "ALTER TABLE TESTSCHEMA2 ADD CONSTRAINT TESTSCHEMA2_PK PRIMARY KEY (ID)"));
         return statements;
+    }
+
+    @Override
+    public boolean connectionClosedByException(Throwable t) {
+        while (t.getCause() != null) {
+            t = t.getCause();
+        }
+        if (t instanceof SocketException) {
+            return true;
+        }
+        // XAResource.start:
+        // oracle.jdbc.xa.OracleXAException
+        Integer err = Integer.valueOf(0);
+        try {
+            Method m = t.getClass().getMethod("getOracleError");
+            err = (Integer) m.invoke(t);
+        } catch (Exception e) {
+            // ignore
+        }
+        switch (err.intValue()) {
+        case 17002: // ORA-17002 IO Exception
+            return true;
+        }
+        return false;
     }
 
 }

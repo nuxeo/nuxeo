@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.net.SocketException;
 import java.security.MessageDigest;
 import java.sql.Array;
 import java.sql.Connection;
@@ -158,8 +159,31 @@ public class Mapper {
             connection = xaconnection.getConnection();
             xaresource = xaconnection.getXAResource();
         } catch (SQLException e) {
-            close();
             throw new StorageException(e);
+        }
+    }
+
+    /**
+     * Checks the SQL error we got and determine if the low level connection has
+     * to be reset.
+     */
+    protected void checkConnectionReset(SQLException e) throws StorageException {
+        if (sqlInfo.dialect.connectionClosedByException(e)) {
+            resetConnection();
+        }
+    }
+
+    /**
+     * Checks the XA error we got and determine if the low level connection has
+     * to be reset.
+     */
+    protected void checkConnectionReset(XAException e) {
+        if (sqlInfo.dialect.connectionClosedByException(e)) {
+            try {
+                resetConnection();
+            } catch (StorageException ee) {
+                // swallow, exception already thrown by caller
+            }
         }
     }
 
@@ -501,6 +525,7 @@ public class Mapper {
             st.execute(sql);
             st.close();
         } catch (SQLException e) {
+            checkConnectionReset(e);
             throw new StorageException(e);
         }
     }
@@ -540,6 +565,7 @@ public class Mapper {
                 }
             }
         } catch (SQLException e) {
+            checkConnectionReset(e);
             throw new StorageException("Could not invalidate", e);
         } finally {
             if (ps != null) {
@@ -627,6 +653,7 @@ public class Mapper {
             }
             return invalidations;
         } catch (SQLException e) {
+            checkConnectionReset(e);
             throw new StorageException("Could not invalidate", e);
         } finally {
             if (st != null) {
@@ -677,6 +704,7 @@ public class Mapper {
                 closePreparedStatement(ps);
             }
         } catch (SQLException e) {
+            checkConnectionReset(e);
             throw new StorageException("Could not select: " + sql, e);
         }
     }
@@ -756,6 +784,7 @@ public class Mapper {
                 closePreparedStatement(ps);
             }
         } catch (SQLException e) {
+            checkConnectionReset(e);
             throw new StorageException("Could not insert: " + sql, e);
         }
     }
@@ -797,6 +826,7 @@ public class Mapper {
                 }
                 ps.execute();
             } catch (SQLException e) {
+                checkConnectionReset(e);
                 throw new StorageException("Could not insert: " + sql, e);
             }
             // TODO DB_IDENTITY : post insert fetch idrow
@@ -844,6 +874,7 @@ public class Mapper {
                     ps.execute();
                 }
             } catch (SQLException e) {
+                checkConnectionReset(e);
                 throw new StorageException("Could not insert: " + sql, e);
             }
 
@@ -1030,6 +1061,7 @@ public class Mapper {
             }
             return list;
         } catch (SQLException e) {
+            checkConnectionReset(e);
             throw new StorageException("Could not select: " + select.sql, e);
         } finally {
             if (ps != null) {
@@ -1095,7 +1127,8 @@ public class Mapper {
                     } else if (key.equals(Model.HIER_CHILD_NAME_KEY)) {
                         v = childName;
                     } else {
-                        throw new RuntimeException("Invalid hier column: " + key);
+                        throw new RuntimeException("Invalid hier column: "
+                                + key);
                     }
                     if (v == null) {
                         throw new IllegalStateException("Null value for key: "
@@ -1167,6 +1200,7 @@ public class Mapper {
                 closePreparedStatement(ps);
             }
         } catch (SQLException e) {
+            checkConnectionReset(e);
             throw new StorageException("Could not select: " + sql, e);
         }
     }
@@ -1235,6 +1269,7 @@ public class Mapper {
                 closePreparedStatement(ps);
             }
         } catch (SQLException e) {
+            checkConnectionReset(e);
             throw new StorageException("Could not select: " + sql, e);
         }
     }
@@ -1276,6 +1311,7 @@ public class Mapper {
                 closePreparedStatement(ps);
             }
         } catch (SQLException e) {
+            checkConnectionReset(e);
             throw new StorageException("Could not update: " + update.sql, e);
         }
         row.clearDirty();
@@ -1311,6 +1347,7 @@ public class Mapper {
                 closePreparedStatement(ps);
             }
         } catch (SQLException e) {
+            checkConnectionReset(e);
             throw new StorageException("Could not update: " + sql, e);
         }
     }
@@ -1338,6 +1375,7 @@ public class Mapper {
         try {
             deleteFragment(fragment.getTableName(), fragment.getId());
         } catch (SQLException e) {
+            checkConnectionReset(e);
             throw new StorageException("Could not delete: "
                     + fragment.getId().toString(), e);
         }
@@ -1434,6 +1472,7 @@ public class Mapper {
             }
             return newRootId;
         } catch (SQLException e) {
+            checkConnectionReset(e);
             throw new StorageException(
                     "Could not copy: " + sourceId.toString(), e);
         }
@@ -1776,7 +1815,7 @@ public class Mapper {
      */
     public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal, Session session)
-            throws StorageException, SQLException {
+            throws StorageException {
         QueryMaker queryMaker = findQueryMaker(query);
         if (queryMaker == null) {
             throw new StorageException("No QueryMaker accepts query: " + query);
@@ -1802,9 +1841,11 @@ public class Mapper {
             }
             logSQL(sql, q.selectParams);
         }
-        PreparedStatement ps = connection.prepareStatement(q.selectInfo.sql,
-                ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        PreparedStatement ps = null;
         try {
+            ps = connection.prepareStatement(q.selectInfo.sql,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
             int i = 1;
             for (Object object : q.selectParams) {
                 if (object instanceof Calendar) {
@@ -1882,22 +1923,37 @@ public class Mapper {
             }
 
             return new PartialList<Serializable>(ids, totalSize);
+        } catch (SQLException e) {
+            checkConnectionReset(e);
+            throw new StorageException("Invalid query: " + query, e);
         } finally {
-            closePreparedStatement(ps);
+            if (ps != null) {
+                try {
+                    closePreparedStatement(ps);
+                } catch (SQLException e) {
+                    log.error("Cannot close connection", e);
+                }
+            }
         }
     }
 
     // queryFilter used for principals and permissions
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, boolean countTotal, Session session,
-            Object... params) throws StorageException, SQLException {
+            Object... params) throws StorageException {
         QueryMaker queryMaker = findQueryMaker(queryType);
         if (queryMaker == null) {
             throw new StorageException("No QueryMaker accepts query: "
                     + queryType + ": " + query);
         }
-        return new IterableQueryResultImpl(queryMaker, query, queryFilter,
-                session, this, params);
+        try {
+            return new IterableQueryResultImpl(queryMaker, query, queryFilter,
+                    session, this, params);
+        } catch (SQLException e) {
+            checkConnectionReset(e);
+            throw new StorageException("Invalid query: " + queryType + ": "
+                    + query, e);
+        }
     }
 
     protected static class IterableQueryResultImpl implements
@@ -2071,32 +2127,34 @@ public class Mapper {
     /**
      * ----- read acls methods -------------------------
      */
-    public void updateReadAcls() throws SQLException {
+    public void updateReadAcls() throws StorageException {
         if (!sqlInfo.dialect.supportsReadAcl()) {
             return;
         }
-        if (log.isDebugEnabled()) {
-            log.debug("updateReadAcls: updating ...");
+        log.debug("updateReadAcls: updating ...");
+        try {
+            Statement st = connection.createStatement();
+            st.execute(sqlInfo.dialect.getUpdateReadAclsSql());
+        } catch (SQLException e) {
+            checkConnectionReset(e);
+            throw new StorageException("Failed to update read acls", e);
         }
-        Statement st = connection.createStatement();
-        st.execute(sqlInfo.dialect.getUpdateReadAclsSql());
-        if (log.isDebugEnabled()) {
-            log.debug("updateReadAcls: done.");
-        }
+        log.debug("updateReadAcls: done.");
     }
 
-    public void rebuildReadAcls() throws SQLException {
+    public void rebuildReadAcls() throws StorageException {
         if (!sqlInfo.dialect.supportsReadAcl()) {
             return;
         }
-        if (log.isDebugEnabled()) {
-            log.debug("rebuildReadAcls: rebuilding ...");
+        log.debug("rebuildReadAcls: rebuilding ...");
+        try {
+            Statement st = connection.createStatement();
+            st.execute(sqlInfo.dialect.getRebuildReadAclsSql());
+        } catch (SQLException e) {
+            checkConnectionReset(e);
+            throw new StorageException("Failed to rebuild read acls", e);
         }
-        Statement st = connection.createStatement();
-        st.execute(sqlInfo.dialect.getRebuildReadAclsSql());
-        if (log.isDebugEnabled()) {
-            log.debug("rebuildReadAcls: done.");
-        }
+        log.debug("rebuildReadAcls: done.");
     }
 
     /**
@@ -2107,6 +2165,7 @@ public class Mapper {
         try {
             xaresource.start(xid, flags);
         } catch (XAException e) {
+            checkConnectionReset(e);
             log.error("XA error on start: " + e.getMessage());
             throw e;
         }
