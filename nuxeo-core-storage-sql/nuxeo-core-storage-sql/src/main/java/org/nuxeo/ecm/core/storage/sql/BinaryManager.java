@@ -26,6 +26,8 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.runtime.api.Framework;
 
@@ -47,11 +49,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class BinaryManager {
 
+    private static final Log log = LogFactory.getLog(BinaryManager.class);
+
     public static final String DEFAULT_DIGEST = "MD5"; // "SHA-256"
 
     public static final int DEFAULT_DEPTH = 2;
 
-    public static final String BINARIES = "binaries";
+    public static final String DEFAULT_PATH = "binaries";
 
     public static final String DATA = "data";
 
@@ -68,13 +72,41 @@ public class BinaryManager {
     private final int depth;
 
     public BinaryManager(RepositoryDescriptor descriptor) throws IOException {
-        File base = new File(Framework.getRuntime().getHome(), BINARIES);
+        String path = descriptor.binaryStorePath;
+        if (path == null || path.trim().length() == 0) {
+            path = DEFAULT_PATH;
+        }
+        path = path.trim();
+        File base;
+        if (path.startsWith("/") || path.startsWith("\\")
+                || path.contains("://") || path.contains(":\\")) {
+            // absolute
+            base = new File(path);
+        } else {
+            // relative
+            String home = Framework.getRuntime().getHome().getPath();
+            if (home.endsWith("/") || home.endsWith("\\")) {
+                home = home.substring(0, home.length() - 1);
+            }
+            base = new File(home, path);
+        }
+        log.info("Repository '" + descriptor.name + "' using binary store: "
+                + base);
         storageDir = new File(base, DATA);
         tmpDir = new File(base, TMP);
         storageDir.mkdirs();
         tmpDir.mkdirs();
+        BinaryManagerDescriptor desc = getDescriptor(new File(base, CONFIG_FILE));
+        digestAlgorithm = desc.digest;
+        depth = desc.depth;
+    }
+
+    /**
+     * Gets existing descriptor or creates a default one.
+     */
+    protected BinaryManagerDescriptor getDescriptor(File configFile)
+            throws IOException {
         BinaryManagerDescriptor desc;
-        File configFile = new File(base, CONFIG_FILE);
         if (configFile.exists()) {
             XMap xmap = new XMap();
             xmap.register(BinaryManagerDescriptor.class);
@@ -89,10 +121,9 @@ public class BinaryManager {
             // TODO fetch from repo descriptor
             desc.digest = DEFAULT_DIGEST;
             desc.depth = DEFAULT_DEPTH;
-            desc.write(configFile);
+            desc.write(configFile); // may throw IOException
         }
-        digestAlgorithm = desc.digest;
-        depth = desc.depth;
+        return desc;
     }
 
     /**

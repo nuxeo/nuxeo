@@ -53,6 +53,7 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         schemaField.field = "tst:bignote";
         schemaField.type = Model.FIELD_TYPE_LARGETEXT;
         descriptor.schemaFields = Arrays.asList(schemaField);
+        descriptor.binaryStorePath = "testbinaries";
         return new RepositoryImpl(descriptor, schemaManager);
     }
 

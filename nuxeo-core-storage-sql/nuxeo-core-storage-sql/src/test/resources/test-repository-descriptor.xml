@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <repository name="foo">
+  <binaryStore path="/foo/bar" />
   <clustering enabled="true" delay="1234" />
   <schema>
     <field type="biig">my:bignote</field>

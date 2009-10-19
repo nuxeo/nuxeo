@@ -103,4 +103,8 @@ public class TestRepositoryDescriptor extends TestCase {
         assertEquals("xyz", fd.type);
     }
 
+    public void testBinaryStorePath() throws Exception {
+        assertEquals("/foo/bar", desc.binaryStorePath);
+    }
+
 }

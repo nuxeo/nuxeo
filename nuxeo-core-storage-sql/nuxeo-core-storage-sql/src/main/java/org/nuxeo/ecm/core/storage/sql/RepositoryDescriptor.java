@@ -103,6 +103,9 @@ public class RepositoryDescriptor {
     @XNode("aclOptimizations@enabled")
     public boolean aclOptimizationsEnabled = true;
 
+    @XNode("binaryStore@path")
+    public String binaryStorePath;
+
     /** Merges only non-JCA properties. */
     public void mergeFrom(RepositoryDescriptor other) {
         clusteringEnabled = other.clusteringEnabled;
@@ -114,6 +117,7 @@ public class RepositoryDescriptor {
         fulltextIndexes = other.fulltextIndexes;
         pathOptimizationsEnabled = other.pathOptimizationsEnabled;
         aclOptimizationsEnabled = other.aclOptimizationsEnabled;
+        binaryStorePath = other.binaryStorePath;
     }
 
     @XNode("xa-datasource")
