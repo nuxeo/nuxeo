@@ -77,6 +77,35 @@
           </execution>
         </executions>
       </plugin>
+      <!-- deploy by default PostgreSQL 8.3 and MySQL JDBC drivers into JBoss -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-jdbc-drivers</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/jboss/server/default/lib/</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>postgresql</groupId>
+                  <artifactId>postgresql</artifactId>
+                  <version>8.3-604.jdbc3</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>mysql</groupId>
+                  <artifactId>mysql-connector-java</artifactId>
+                  <version>5.1.6</version>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-nuxeo-plugin</artifactId>
