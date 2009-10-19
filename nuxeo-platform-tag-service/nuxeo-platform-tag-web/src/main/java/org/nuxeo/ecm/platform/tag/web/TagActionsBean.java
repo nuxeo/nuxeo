@@ -116,8 +116,13 @@ public class TagActionsBean implements Serializable {
      * @throws ClientException
      */
     public List<Tag> getDocumentTags() throws ClientException {
-        return taggingHelper.listDocumentTags(documentManager,
-                navigationContext.getCurrentDocument());
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (currentDocument==null) {
+            return new ArrayList<Tag>();
+        } else {
+            return taggingHelper.listDocumentTags(documentManager,
+                currentDocument);
+        }
     }
 
     /**
