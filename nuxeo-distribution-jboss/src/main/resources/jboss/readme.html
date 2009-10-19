@@ -6,7 +6,7 @@
 
   <h2>Requirements</h2>
   
-  <p>Nuxeo DM 5.3 needs Java. <br>Please set up  recommended <a href="http://java.sun.com/products/archive/j2se/5.0_17/index.html">Sun Java Runtime Environment  (JRE) 1.5</a> if it's not already installed on your computer.<br>It won't work with  any previous release of Java (e.g. Java 1.4). It can work with Java 6 (see  specific <a href="readme-java6.html">notes about Java 6</a>).</p>
+  <p>Nuxeo DM 5.3 needs Java. <br>Please set up recommended <a href="http://java.sun.com/products/archive/j2se/5.0_17/index.html">Sun Java Runtime Environment  (JRE) 1.5</a> if it's not already installed on your computer.<br>It won't work with  any previous release of Java (e.g. Java 1.4). It also works with Java 6 (see  specific <a href="readme-java6.html">notes about Java 6</a>).</p>
 
   <h2>Getting Started</h2>
 
@@ -16,7 +16,7 @@
     <li>Go to your installation directory</li>
 
     <li>Start the application
-      <ul><li>under Linux/Unix/MacOS,  run &quot;bin/run.sh&quot; or use convenient command &quot;bin/jbossctl start/stop/restart&quot;.</li>
+      <ul><li>under Linux/Unix/MacOS,  run &quot;bin/run.sh&quot; or use convenient command &quot;bin/jbossctl [start|stop|restart|status|tail|tailf|info|help]&quot;.</li>
       <li>under Windows if you installed Nuxeo  from the .zip file, run &quot;bin/run.bat&quot;.</li>
       <li>under Windows if you installed Nuxeo from the .exe file, either use "bin/run.bat" or start/stop using Windows services.</li>
       </ul>
@@ -27,6 +27,9 @@
     <li>Log in using the "Administrator" login and the "Administrator" password (no quotes, of course, but capital &quot;A&quot;).</li>
 
   </ol>
+  <p>Copy jbossctl.conf.sample to jbossctl.conf and edit it if you want to change default values.<br/>
+  By default, JBoss is binded only on localhost. Edit bind.conf if you want to set a specific IP (set BINDHOST=0.0.0.0 to bind all available addresses).
+  </p>
 
   <h2>Complementary features</h2>
   <p>The following features depend on the environment where you installed Nuxeo DM.</p>
@@ -68,7 +71,10 @@ Save time: you can save and reuse your most frequent queries.</li>
 
   <h2>Known Issues</h2>
 
-  <p>Please go to the <a href="http://jira.nuxeo.org/browse/NXP/fixforversion/10290">Jira issue tracker</a> for the Nuxeo ECM Platform project on jira.nuxeo.org to check the currently bugs and issues with this release.</p>
+  <p>Please go to the <a href="http://jira.nuxeo.org/browse/NXP?report=com.atlassian.jira.plugin.system.project:versions-panel">Jira issue tracker</a> for the Nuxeo ECM Platform project on jira.nuxeo.org to check the currently bugs and issues with this release.</br>
+  <a href="http://jira.nuxeo.org/browse/NXP/fixforversion/10812">Fix for 5.3 GA</a>.</br>
+  <a href="http://jira.nuxeo.org/browse/NXP/fixforversion/10646">Fix for 5.3 RC</a>.
+  </p>
 
   <h2>Documentation and Help</h2>
 
