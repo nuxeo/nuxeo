@@ -375,26 +375,26 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
 
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", "some text");
         assertEquals(
-                "SELECT * FROM Document WHERE ecm:fulltext LIKE 'some text'",
+                "SELECT * FROM Document WHERE ecm:fulltext LIKE '+some +text'",
                 descriptor.getQuery(documentModel));
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", null);
 
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", "can't");
         assertEquals(
-                "SELECT * FROM Document WHERE ecm:fulltext LIKE 'can\\'t'",
+                "SELECT * FROM Document WHERE ecm:fulltext LIKE '+can\\'t'",
                 descriptor.getQuery(documentModel));
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", null);
 
         // Tests the minimal lucene escaper and its registration
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", "can\"t");
         assertEquals(
-                "SELECT * FROM Document WHERE ecm:fulltext LIKE 'can\\\"t'",
+                "SELECT * FROM Document WHERE ecm:fulltext LIKE '+can\\\"t'",
                 descriptor.getQuery(documentModel));
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", null);
 
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", "NXP-1576");
         assertEquals(
-                "SELECT * FROM Document WHERE ecm:fulltext LIKE 'NXP\\-1576'",
+                "SELECT * FROM Document WHERE ecm:fulltext LIKE '+NXP\\-1576'",
                 descriptor.getQuery(documentModel));
 
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", null);
