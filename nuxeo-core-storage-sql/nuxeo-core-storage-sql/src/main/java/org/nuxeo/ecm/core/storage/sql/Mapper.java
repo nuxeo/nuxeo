@@ -291,13 +291,14 @@ public class Mapper {
                 sign = '+';
             }
             return String.format(
-                    "TIMESTAMP '%04d-%02d-%02dT%02d:%02d:%02d%c%02d:%02d'",
+                    "TIMESTAMP '%04d-%02d-%02dT%02d:%02d:%02d.%03d%c%02d:%02d'",
                     cal.get(Calendar.YEAR), //
                     cal.get(Calendar.MONTH) + 1, //
                     cal.get(Calendar.DAY_OF_MONTH), //
                     cal.get(Calendar.HOUR_OF_DAY), //
                     cal.get(Calendar.MINUTE), //
                     cal.get(Calendar.SECOND), //
+                    cal.get(Calendar.MILLISECOND), //
                     sign, offset / 60, offset % 60);
         }
         if (value instanceof Binary) {
