@@ -219,37 +219,22 @@ public class PredicateDescriptor {
      * Prepares a statement for a fulltext field by converting FULLTEXT* virtual
      * operators to a syntax that the SearchEngineBackend accepts.
      *
-     * TODO this is hardcoded for Lucene Query Parser Syntax
-     *
      * @param value
      * @return the serialized statement
      */
     protected String serializeFullText(String value) {
-        // TODO Lucene Query Parser is the only supportedtokens one
         // TODO apply escapes
-        String tokPrefix = null;
         String opPrefix = null;
         if ("FULLTEXT ALL".equals(operator)) {
-            tokPrefix = "+";
             opPrefix = "LIKE";
         } else if ("FULLTEXT NONE".equals(operator)) {
-            tokPrefix = "";
             opPrefix = "NOT LIKE";
         } else if ("FULLTEXT ONE OF".equals(operator)) {
-            tokPrefix = "";
             opPrefix = "LIKE";
         }
 
-        String res = "";
-        String[] tokens = value.split(" ");
-        for (int i = 0; i < tokens.length; i++) {
-            if (i != 0) {
-                res += " ";
-            }
-            res += tokPrefix + tokens[i];
-        }
         // TODO move back to SQLQueryParser at org.nuxeo.ecm.core v 1.4
-        return opPrefix + ' ' + QueryModelDescriptor.prepareStringLiteral(res);
+        return opPrefix + ' ' + QueryModelDescriptor.prepareStringLiteral(value);
     }
 
     protected String serializeUnary(String operator, String rvalue) {
