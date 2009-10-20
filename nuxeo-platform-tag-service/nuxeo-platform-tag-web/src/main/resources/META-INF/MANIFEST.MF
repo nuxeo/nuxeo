@@ -8,4 +8,6 @@ Bundle-Category: web,stateless
 Require-Bundle: org.nuxeo.ecm.platform.tag.api,
  org.nuxeo.ecm.webapp.ui
 Export-Package: org.nuxeo.ecm.platform.tag.web
+Nuxeo-Component: OSGI-INF/navtree-contrib.xml
+
 

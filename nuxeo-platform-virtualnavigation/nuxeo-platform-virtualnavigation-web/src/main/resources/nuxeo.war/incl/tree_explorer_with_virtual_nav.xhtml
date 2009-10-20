@@ -17,7 +17,7 @@
           itemStyleClass="#{nxu:test(multiNavTreeManager.selectedNavigationTree == tree.treeId, 'selected', '')}">
           <a4j:commandLink
             action="#{multiNavTreeManager.setSelectedNavigationTree(tree.treeId)}"
-            reRender="MultiTreeView, documentViewPanel">
+            reRender="MultiTreeView">
             <nxu:graphicImage value="img/#{tree.treeId}.png" title="#{messages[docList.title]}" />
           </a4j:commandLink>
          </nxu:dataList>
@@ -26,19 +26,24 @@
     <div style="clear:both" />
 
     <div class="userClipboardContent">
-      <h:panelGroup rendered="#{multiNavTreeManager.selectedNavigationTree == 'CONTENT_TREE'}">
-        <ui:include src="/incl/tree_explorer.xhtml"/>
-      </h:panelGroup>
-      
-      <h:panelGroup rendered="#{multiNavTreeManager.selectedNavigationTree != 'CONTENT_TREE' and multiNavTreeManager.selectedNavigationTree != 'TAG_CLOUD'}">
+
+      <c:choose>
+       <c:when test="#{multiNavTreeManager.selectedNavigationTree == 'CONTENT_TREE'}">
+             <ui:include src="/incl/tree_explorer.xhtml"/>
+       </c:when>
+
+       <c:when test="#{selectedNavigationTreeDescriptor.directoryTreeBased}">
         <ui:include src="/incl/single_directory_tree_explorer.xhtml">
-          <ui:param name="treeModel" value="#{directoryTreeManager.selectedTree}" />            
+          <ui:param name="treeModel" value="#{directoryTreeManager.selectedTree}" />
         </ui:include>
-      </h:panelGroup>
-      
-      <h:panelGroup rendered="#{multiNavTreeManager.selectedNavigationTree == 'TAG_CLOUD'}">
-        <ui:include src="/incl/tag_cloud.xhtml"/>
-      </h:panelGroup>
+       </c:when>
+
+       <c:when test="#{selectedNavigationTreeDescriptor.xhtmlview != null}">
+           <ui:include src="#{selectedNavigationTreeDescriptor.xhtmlview}"/>
+       </c:when>
+
+      </c:choose>
+
     </div>
 
   </a4j:outputPanel>

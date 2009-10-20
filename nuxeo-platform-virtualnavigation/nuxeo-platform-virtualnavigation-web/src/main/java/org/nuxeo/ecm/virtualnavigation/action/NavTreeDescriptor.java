@@ -20,17 +20,54 @@ package org.nuxeo.ecm.virtualnavigation.action;
 
 import java.io.Serializable;
 
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
+
+@XObject("navTree")
 public class NavTreeDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @XNode("@treeId")
     private String treeId;
 
+    @XNode("@treeLabel")
     private String treeLabel;
 
+    @XNode("@xhtmlview")
+    private String xhtmlview;
+
+    @XNode("@directoryTreeBased")
+    private boolean directoryTreeBased = false;
+
+    public boolean isDirectoryTreeBased() {
+        return directoryTreeBased;
+    }
+
+    public void setDirectoryTreeBased(boolean directoryTreeBased) {
+        this.directoryTreeBased = directoryTreeBased;
+    }
+
+    public String getXhtmlview() {
+        return xhtmlview;
+    }
+
+    public void setXhtmlview(String xhtmlview) {
+        this.xhtmlview = xhtmlview;
+    }
+
+    public NavTreeDescriptor() {
+        //
+    }
+
     public NavTreeDescriptor(String treeId, String treeLabel) {
+        this(treeId, treeLabel, false);
+    }
+
+    public NavTreeDescriptor(String treeId, String treeLabel, boolean directoryTreeBased) {
         this.treeId = treeId;
         this.treeLabel = treeLabel;
+        this.directoryTreeBased = directoryTreeBased;
     }
 
     public String getTreeId() {

@@ -35,8 +35,10 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.nuxeo.ecm.virtualnavigation.service.NavTreeService;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam component to handle MultiTree navigation
@@ -70,12 +72,14 @@ public class MultiNavTreeManager implements Serializable {
     public List<NavTreeDescriptor> getAvailableNavigationTrees() {
         if (availableNavigationTrees == null) {
             availableNavigationTrees = new ArrayList<NavTreeDescriptor>();
+            // default tree
             availableNavigationTrees.add(new NavTreeDescriptor(STD_NAV_TREE,
                     STD_NAV_TREE_LABEL));
-            for (String dTreeName : directoryTreeManager.getDirectoryTreeNames()) {
-                availableNavigationTrees.add(new NavTreeDescriptor(dTreeName,
-                        "label." + dTreeName));
-            }
+
+            // add registred additional tress
+            NavTreeService navTreeService = Framework.getLocalService(NavTreeService.class);
+            availableNavigationTrees.addAll(navTreeService.getTreeDescriptors());
+
         }
         return availableNavigationTrees;
     }
@@ -86,6 +90,17 @@ public class MultiNavTreeManager implements Serializable {
             setSelectedNavigationTree(STD_NAV_TREE);
         }
         return selectedNavigationTree;
+    }
+
+    @Factory(value="selectedNavigationTreeDescriptor", scope=ScopeType.EVENT)
+    public NavTreeDescriptor getSelectedNavigationTreeDescriptor() {
+        String navTreeName = getSelectedNavigationTree();
+        for (NavTreeDescriptor desc : getAvailableNavigationTrees()) {
+            if (desc.getTreeId().equals(navTreeName)) {
+                return desc;
+            }
+        }
+        return null;
     }
 
     public void setSelectedNavigationTree(String selectedNavigationTree) {
