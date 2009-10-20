@@ -39,10 +39,12 @@
         <cell/>
       </section>
       <section>
+      <!-- before this was the nuxeo includes, but that broke the JS world 
         <cell>
-          <!-- copyrights -->
+         
           <fragment type="generic fragment"/>
-        </cell>
+        </cell> -->
+        <cell/>
       </section>
     </page>
   </layout>
@@ -181,9 +183,12 @@
     <widget element="page[1]/section[6]/cell[1]">
       <view>cell frame</view>
     </widget>
+    <!-- this needs to be eliminated because it pulls in copies of a bunch of 
+      javascript libaries that break the opensocial code from LM 
     <widget element="page[1]/section[6]/cell[1]/fragment[1]">
-      <view>nuxeo5 includes</view>
+        <view>nuxeo5 includes</view> 
     </widget>
+    -->
     <widget element="page[1]/section[2]/cell[1]/fragment[1]">
       <view>opensocialDashBoardNav</view>
     </widget>

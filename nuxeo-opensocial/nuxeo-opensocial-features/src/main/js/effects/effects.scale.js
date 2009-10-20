@@ -10,18 +10,18 @@
  * Depends:
  *	effects.core.js
  */
-(function($) {
+(function(jQuery) {
 
-$.effects.puff = function(o) {
+jQuery.effects.puff = function(o) {
 
 	return this.queue(function() {
 
 		// Create element
-		var el = $(this);
+		var el = jQuery(this);
 	
 		// Set options
-		var options = $.extend(true, {}, o.options);
-		var mode = $.effects.setMode(el, o.options.mode || 'hide'); // Set Mode
+		var options = jQuery.extend(true, {}, o.options);
+		var mode = jQuery.effects.setMode(el, o.options.mode || 'hide'); // Set Mode
 		var percent = parseInt(o.options.percent) || 150; // Set default puff percent
 		options.fade = true; // It's not a puff if it doesn't fade! :)
 		var original = {height: el.height(), width: el.width()}; // Save original
@@ -42,16 +42,16 @@ $.effects.puff = function(o) {
 	
 };
 
-$.effects.scale = function(o) {
+jQuery.effects.scale = function(o) {
 	
 	return this.queue(function() {
 	
 		// Create element
-		var el = $(this);
+		var el = jQuery(this);
 
 		// Set options
-		var options = $.extend(true, {}, o.options);
-		var mode = $.effects.setMode(el, o.options.mode || 'effect'); // Set Mode
+		var options = jQuery.extend(true, {}, o.options);
+		var mode = jQuery.effects.setMode(el, o.options.mode || 'effect'); // Set Mode
 		var percent = parseInt(o.options.percent) || (parseInt(o.options.percent) == 0 ? 0 : (mode == 'hide' ? 0 : 100)); // Set default scaling percent
 		var direction = o.options.direction || 'both'; // Set default axis
 		var origin = o.options.origin; // The origin of the scaling
@@ -84,12 +84,12 @@ $.effects.scale = function(o) {
 	
 };
 
-$.effects.size = function(o) {
+jQuery.effects.size = function(o) {
 
 	return this.queue(function() {
 		
 		// Create element
-		var el = $(this), props = ['position','top','left','width','height','overflow','opacity'];
+		var el = jQuery(this), props = ['position','top','left','width','height','overflow','opacity'];
 		var props1 = ['position','top','left','overflow','opacity']; // Always restore
 		var props2 = ['width','height','overflow']; // Copy for children
 		var cProps = ['fontSize'];
@@ -97,7 +97,7 @@ $.effects.size = function(o) {
 		var hProps = ['borderLeftWidth', 'borderRightWidth', 'paddingLeft', 'paddingRight'];
 		
 		// Set options
-		var mode = $.effects.setMode(el, o.options.mode || 'effect'); // Set Mode
+		var mode = jQuery.effects.setMode(el, o.options.mode || 'effect'); // Set Mode
 		var restore = o.options.restore || false; // Default restore
 		var scale = o.options.scale || 'both'; // Default scale mode
 		var origin = o.options.origin; // The origin of the sizing
@@ -106,7 +106,7 @@ $.effects.size = function(o) {
 		el.to = o.options.to || original; // Default to state
 		// Adjust
 		if (origin) { // Calculate baseline shifts
-			var baseline = $.effects.getBaseline(origin, original);
+			var baseline = jQuery.effects.getBaseline(origin, original);
 			el.from.top = (original.height - el.from.height) * baseline.y;
 			el.from.left = (original.width - el.from.width) * baseline.x;
 			el.to.top = (original.height - el.to.height) * baseline.y;
@@ -119,24 +119,24 @@ $.effects.size = function(o) {
 		if (scale == 'box' || scale == 'both') { // Scale the css box
 			if (factor.from.y != factor.to.y) { // Vertical props scaling
 				props = props.concat(vProps);
-				el.from = $.effects.setTransition(el, vProps, factor.from.y, el.from);
-				el.to = $.effects.setTransition(el, vProps, factor.to.y, el.to);
+				el.from = jQuery.effects.setTransition(el, vProps, factor.from.y, el.from);
+				el.to = jQuery.effects.setTransition(el, vProps, factor.to.y, el.to);
 			};
 			if (factor.from.x != factor.to.x) { // Horizontal props scaling
 				props = props.concat(hProps);
-				el.from = $.effects.setTransition(el, hProps, factor.from.x, el.from);
-				el.to = $.effects.setTransition(el, hProps, factor.to.x, el.to);
+				el.from = jQuery.effects.setTransition(el, hProps, factor.from.x, el.from);
+				el.to = jQuery.effects.setTransition(el, hProps, factor.to.x, el.to);
 			};
 		};
 		if (scale == 'content' || scale == 'both') { // Scale the content
 			if (factor.from.y != factor.to.y) { // Vertical props scaling
 				props = props.concat(cProps);
-				el.from = $.effects.setTransition(el, cProps, factor.from.y, el.from);
-				el.to = $.effects.setTransition(el, cProps, factor.to.y, el.to);
+				el.from = jQuery.effects.setTransition(el, cProps, factor.from.y, el.from);
+				el.to = jQuery.effects.setTransition(el, cProps, factor.to.y, el.to);
 			};
 		};
-		$.effects.save(el, restore ? props : props1); el.show(); // Save & Show
-		$.effects.createWrapper(el); // Create Wrapper
+		jQuery.effects.save(el, restore ? props : props1); el.show(); // Save & Show
+		jQuery.effects.createWrapper(el); // Create Wrapper
 		el.css('overflow','hidden').css(el.from); // Shift
 		
 		// Animate
@@ -145,22 +145,22 @@ $.effects.size = function(o) {
 			hProps = hProps.concat(['marginLeft','marginRight']); // Add margins
 			props2 = props.concat(vProps).concat(hProps); // Concat
 			el.find("*[width]").each(function(){
-				child = $(this);
-				if (restore) $.effects.save(child, props2);
+				child = jQuery(this);
+				if (restore) jQuery.effects.save(child, props2);
 				var c_original = {height: child.height(), width: child.width()}; // Save original
 				child.from = {height: c_original.height * factor.from.y, width: c_original.width * factor.from.x};
 				child.to = {height: c_original.height * factor.to.y, width: c_original.width * factor.to.x};
 				if (factor.from.y != factor.to.y) { // Vertical props scaling
-					child.from = $.effects.setTransition(child, vProps, factor.from.y, child.from);
-					child.to = $.effects.setTransition(child, vProps, factor.to.y, child.to);
+					child.from = jQuery.effects.setTransition(child, vProps, factor.from.y, child.from);
+					child.to = jQuery.effects.setTransition(child, vProps, factor.to.y, child.to);
 				};
 				if (factor.from.x != factor.to.x) { // Horizontal props scaling
-					child.from = $.effects.setTransition(child, hProps, factor.from.x, child.from);
-					child.to = $.effects.setTransition(child, hProps, factor.to.x, child.to);
+					child.from = jQuery.effects.setTransition(child, hProps, factor.from.x, child.from);
+					child.to = jQuery.effects.setTransition(child, hProps, factor.to.x, child.to);
 				};
 				child.css(child.from); // Shift children
 				child.animate(child.to, o.duration, o.options.easing, function(){
-					if (restore) $.effects.restore(child, props2); // Restore children
+					if (restore) jQuery.effects.restore(child, props2); // Restore children
 				}); // Animate children
 			});
 		};
@@ -168,7 +168,7 @@ $.effects.size = function(o) {
 		// Animate
 		el.animate(el.to, { queue: false, duration: o.duration, easing: o.options.easing, complete: function() {
 			if(mode == 'hide') el.hide(); // Hide
-			$.effects.restore(el, restore ? props : props1); $.effects.removeWrapper(el); // Restore
+			jQuery.effects.restore(el, restore ? props : props1); jQuery.effects.removeWrapper(el); // Restore
 			if(o.callback) o.callback.apply(this, arguments); // Callback
 			el.dequeue();
 		}}); 

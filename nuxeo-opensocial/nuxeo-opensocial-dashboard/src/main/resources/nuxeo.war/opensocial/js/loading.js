@@ -1,8 +1,9 @@
+
 var loading_pathToImage = "/nuxeo/opensocial/images/loadingAnimation.gif";
 var loadOn = false;
 
 //on page load call tb_init
-$(document).ready(function(){
+jQuery(document).ready(function(){
   imgLoader = new Image();// preload image
   imgLoader.src = loading_pathToImage;
 });

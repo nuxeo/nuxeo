@@ -10,9 +10,9 @@
  * Depends:
  *	ui.core.js
  */
-(function($) {
+(function(jQuery) {
 
-$.widget("ui.accordion", {
+jQuery.widget("ui.accordion", {
 	init: function() {
 		var options = this.options;
 		
@@ -33,14 +33,14 @@ $.widget("ui.accordion", {
 		options.active = findActive(options.headers, options.active);
 		
 		// IE7-/Win - Extra vertical space in Lists fixed
-		if ($.browser.msie) {
+		if (jQuery.browser.msie) {
 			this.element.find('a').css('zoom', '1');
 		}
 		
 		if (!this.element.hasClass("ui-accordion")) {
 			this.element.addClass("ui-accordion");
-			$("<span class='ui-accordion-left'/>").insertBefore(options.headers);
-			$("<span class='ui-accordion-right'/>").appendTo(options.headers);
+			jQuery("<span class='ui-accordion-left'/>").insertBefore(options.headers);
+			jQuery("<span class='ui-accordion-right'/>").appendTo(options.headers);
 			options.headers.addClass("ui-accordion-header").attr("tabindex", "0");
 		}
 		
@@ -48,16 +48,16 @@ $.widget("ui.accordion", {
 		if ( options.fillSpace ) {
 			maxHeight = this.element.parent().height();
 			options.headers.each(function() {
-				maxHeight -= $(this).outerHeight();
+				maxHeight -= jQuery(this).outerHeight();
 			});
 			var maxPadding = 0;
 			options.headers.next().each(function() {
-				maxPadding = Math.max(maxPadding, $(this).innerHeight() - $(this).height());
+				maxPadding = Math.max(maxPadding, jQuery(this).innerHeight() - jQuery(this).height());
 			}).height(maxHeight - maxPadding);
 		} else if ( options.autoHeight ) {
 			maxHeight = 0;
 			options.headers.next().each(function() {
-				maxHeight = Math.max(maxHeight, $(this).outerHeight());
+				maxHeight = Math.max(maxHeight, jQuery(this).outerHeight());
 			}).height(maxHeight);
 		}
 	
@@ -82,7 +82,7 @@ $.widget("ui.accordion", {
 		if ( this.options.fillSpace || this.options.autoHeight ) {
 			this.options.headers.next().css("height", "");
 		}
-		$.removeData(this.element[0], "accordion");
+		jQuery.removeData(this.element[0], "accordion");
 		this.element.removeClass("ui-accordion").unbind(".accordion");
 	}
 });
@@ -95,11 +95,11 @@ function scopeCallback(callback, scope) {
 
 function completed(cancel) {
 	// if removed while animated data can be empty
-	if (!$.data(this, "accordion")) {
+	if (!jQuery.data(this, "accordion")) {
 		return;
 	}
 	
-	var instance = $.data(this, "accordion");
+	var instance = jQuery.data(this, "accordion");
 	var options = instance.options;
 	options.running = cancel ? 0 : --options.running;
 	if ( options.running ) {
@@ -111,11 +111,11 @@ function completed(cancel) {
 			overflow: ""
 		});
 	}
-	$(this).triggerHandler("accordionchange", [$.event.fix({type: 'accordionchange', target: instance.element[0]}), options.data], options.change);
+	jQuery(this).triggerHandler("accordionchange", [jQuery.event.fix({type: 'accordionchange', target: instance.element[0]}), options.data], options.change);
 }
 
 function toggle(toShow, toHide, data, clickedActive, down) {
-	var options = $.data(this, "accordion").options;
+	var options = jQuery.data(this, "accordion").options;
 	options.toShow = toShow;
 	options.toHide = toHide;
 	options.data = data;
@@ -126,7 +126,7 @@ function toggle(toShow, toHide, data, clickedActive, down) {
 	
 	if ( options.animated ) {
 		if ( !options.alwaysOpen && clickedActive ) {
-			$.ui.accordion.animations[options.animated]({
+			jQuery.ui.accordion.animations[options.animated]({
 				toShow: jQuery([]),
 				toHide: toHide,
 				complete: complete,
@@ -134,7 +134,7 @@ function toggle(toShow, toHide, data, clickedActive, down) {
 				autoHeight: options.autoHeight
 			});
 		} else {
-			$.ui.accordion.animations[options.animated]({
+			jQuery.ui.accordion.animations[options.animated]({
 				toShow: toShow,
 				toHide: toHide,
 				complete: complete,
@@ -154,7 +154,7 @@ function toggle(toShow, toHide, data, clickedActive, down) {
 }
 
 function clickHandler(event) {
-	var options = $.data(this, "accordion").options;
+	var options = jQuery.data(this, "accordion").options;
 	if (options.disabled) {
 		return false;
 	}
@@ -170,17 +170,17 @@ function clickHandler(event) {
 				newContent: jQuery([]),
 				oldContent: toHide
 			},
-			toShow = (options.active = $([]));
+			toShow = (options.active = jQuery([]));
 		toggle.call(this, toShow, toHide, data );
 		return false;
 	}
 	// get the click target
-	var clicked = $(event.target);
+	var clicked = jQuery(event.target);
 	
 	// due to the event delegation model, we have to check if one
 	// of the parent elements is our actual header, and find that
 	// otherwise stick with the initial target
-	clicked = $( clicked.parents(options.header)[0] || clicked );
+	clicked = jQuery( clicked.parents(options.header)[0] || clicked );
 	
 	var clickedActive = clicked[0] == options.active[0];
 	
@@ -211,7 +211,7 @@ function clickHandler(event) {
 		},
 		down = options.headers.index( options.active[0] ) > options.headers.index( clicked[0] );
 	
-	options.active = clickedActive ? $([]) : clicked;
+	options.active = clickedActive ? jQuery([]) : clicked;
 	toggle.call(this, toShow, toHide, data, clickedActive, down );
 
 	return false;
@@ -223,11 +223,11 @@ function findActive(headers, selector) {
 			? headers.filter(":eq(" + selector + ")")
 			: headers.not(headers.not(selector))
 		: selector === false
-			? $([])
+			? jQuery([])
 			: headers.filter(":eq(0)");
 }
 
-$.extend($.ui.accordion, {
+jQuery.extend(jQuery.ui.accordion, {
 	defaults: {
 		selectedClass: "selected",
 		alwaysOpen: true,
@@ -242,7 +242,7 @@ $.extend($.ui.accordion, {
 	},
 	animations: {
 		slide: function(options, additions) {
-			options = $.extend({
+			options = jQuery.extend({
 				easing: "swing",
 				duration: 300
 			}, options, additions);
@@ -257,7 +257,7 @@ $.extend($.ui.accordion, {
 			options.toHide.filter(":hidden").each(options.complete).end().filter(":visible").animate({height:"hide"},{
 				step: function(now) {
 					var current = (hideHeight - now) * difference;
-					if ($.browser.msie || $.browser.opera) {
+					if (jQuery.browser.msie || jQuery.browser.opera) {
 						current = Math.ceil(current);
 					}
 					options.toShow.height( current );
@@ -288,7 +288,7 @@ $.extend($.ui.accordion, {
 });
 
 // deprecated, use accordion("activate", index) instead
-$.fn.activate = function(index) {
+jQuery.fn.activate = function(index) {
 	return this.accordion("activate", index);
 };
 

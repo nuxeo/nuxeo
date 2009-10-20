@@ -10,17 +10,17 @@
  * Depends:
  *	effects.core.js
  */
-(function($) {
+(function(jQuery) {
 
-$.effects.bounce = function(o) {
+jQuery.effects.bounce = function(o) {
 
 	return this.queue(function() {
 
 		// Create element
-		var el = $(this), props = ['position','top','left'];
+		var el = jQuery(this), props = ['position','top','left'];
 
 		// Set options
-		var mode = $.effects.setMode(el, o.options.mode || 'effect'); // Set Mode
+		var mode = jQuery.effects.setMode(el, o.options.mode || 'effect'); // Set Mode
 		var direction = o.options.direction || 'up'; // Default direction
 		var distance = o.options.distance || 20; // Default distance
 		var times = o.options.times || 5; // Default # of times
@@ -28,8 +28,8 @@ $.effects.bounce = function(o) {
 		if (/show|hide/.test(mode)) props.push('opacity'); // Avoid touching opacity to prevent clearType and PNG issues in IE
 
 		// Adjust
-		$.effects.save(el, props); el.show(); // Save & Show
-		$.effects.createWrapper(el); // Create Wrapper
+		jQuery.effects.save(el, props); el.show(); // Save & Show
+		jQuery.effects.createWrapper(el); // Create Wrapper
 		var ref = (direction == 'up' || direction == 'down') ? 'top' : 'left';
 		var motion = (direction == 'up' || direction == 'left') ? 'pos' : 'neg';
 		var distance = o.options.distance || (ref == 'top' ? el.outerHeight({margin:true}) / 3 : el.outerWidth({margin:true}) / 3);
@@ -57,7 +57,7 @@ $.effects.bounce = function(o) {
 			animation[ref] = (motion == 'pos' ? '-=' : '+=')  + distance;
 			el.animate(animation, speed / 2, o.options.easing, function(){
 				el.hide(); // Hide
-				$.effects.restore(el, props); $.effects.removeWrapper(el); // Restore
+				jQuery.effects.restore(el, props); jQuery.effects.removeWrapper(el); // Restore
 				if(o.callback) o.callback.apply(this, arguments); // Callback
 			});
 		} else {
@@ -65,7 +65,7 @@ $.effects.bounce = function(o) {
 			animation1[ref] = (motion == 'pos' ? '-=' : '+=') + distance;
 			animation2[ref] = (motion == 'pos' ? '+=' : '-=') + distance;
 			el.animate(animation1, speed / 2, o.options.easing).animate(animation2, speed / 2, o.options.easing, function(){
-				$.effects.restore(el, props); $.effects.removeWrapper(el); // Restore
+				jQuery.effects.restore(el, props); jQuery.effects.removeWrapper(el); // Restore
 				if(o.callback) o.callback.apply(this, arguments); // Callback
 			});
 		};

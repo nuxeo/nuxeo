@@ -10,17 +10,17 @@
  * Depends:
  *	effects.core.js
  */
-(function($) {
+(function(jQuery) {
 
-$.effects.explode = function(o) {
+jQuery.effects.explode = function(o) {
 
 	return this.queue(function() {
 
 	var rows = o.options.pieces ? Math.round(Math.sqrt(o.options.pieces)) : 3;
 	var cells = o.options.pieces ? Math.round(Math.sqrt(o.options.pieces)) : 3;
 	
-	o.options.mode = o.options.mode == 'toggle' ? ($(this).is(':visible') ? 'hide' : 'show') : o.options.mode;
-	var el = $(this).show().css('visibility', 'hidden');
+	o.options.mode = o.options.mode == 'toggle' ? (jQuery(this).is(':visible') ? 'hide' : 'show') : o.options.mode;
+	var el = jQuery(this).show().css('visibility', 'hidden');
 	var offset = el.offset();
 	
 	//Substract the margins - not fixing the problem yet.
@@ -67,7 +67,7 @@ $.effects.explode = function(o) {
 				if(o.callback) o.callback.apply(el[0]); // Callback
 				el.dequeue();
 				
-				$('.effects-explode').remove();
+				jQuery('.effects-explode').remove();
 		
 	}, o.duration || 500);
 	

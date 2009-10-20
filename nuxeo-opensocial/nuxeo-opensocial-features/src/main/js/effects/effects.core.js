@@ -7,25 +7,25 @@
  *
  * http://docs.jquery.com/UI/Effects/
  */
-( function($) {
+( function(jQuery) {
 
-  $.effects = $.effects || {}; // Add the 'effects' scope
+  jQuery.effects = jQuery.effects || {}; // Add the 'effects' scope
 
-  $
+  jQuery
       .extend(
-          $.effects,
+          jQuery.effects,
           {
             save : function(el, set) {
               for ( var i = 0; i < set.length; i++) {
                 if (set[i] !== null)
-                  $.data(el[0], "ec.storage." + set[i],
+                  jQuery.data(el[0], "ec.storage." + set[i],
                       el[0].style[set[i]]);
               }
             },
             restore : function(el, set) {
               for ( var i = 0; i < set.length; i++) {
                 if (set[i] !== null)
-                  el.css(set[i], $.data(el[0], "ec.storage."
+                  el.css(set[i], jQuery.data(el[0], "ec.storage."
                       + set[i]));
               }
             },
@@ -124,7 +124,7 @@
             },
             setTransition : function(el, list, factor, val) {
               val = val || {};
-              $.each(list, function(i, x) {
+              jQuery.each(list, function(i, x) {
                 unit = el.cssUnit(x);
                 if (unit[0] > 0)
                   val[x] = unit[0] * factor + unit[1];
@@ -142,7 +142,7 @@
                   .each( function() {
 
                     var offset = {};
-                    var that = $(this);
+                    var that = jQuery(this);
                     var oldStyleAttr = that.attr("style") || '';
                     if (typeof oldStyleAttr == 'object')
                       oldStyleAttr = oldStyleAttr["cssText"]; /*
@@ -159,7 +159,7 @@
                     }
 
                     //Let's get a style offset
-                    var oldStyle = $
+                    var oldStyle = jQuery
                         .extend(
                             {},
                             (document.defaultView ? document.defaultView
@@ -171,7 +171,7 @@
                       that.addClass(value.add);
                     if (value.remove)
                       that.removeClass(value.remove);
-                    var newStyle = $
+                    var newStyle = jQuery
                         .extend(
                             {},
                             (document.defaultView ? document.defaultView
@@ -256,26 +256,26 @@
                               // stupid IE, we
                               // need to clear the
                               // damn object.
-                              if (typeof $(this)
+                              if (typeof jQuery(this)
                                   .attr(
                                       "style") == 'object') {
-                                $(this)
+                                jQuery(this)
                                     .attr(
                                         "style")["cssText"] = "";
-                                $(this)
+                                jQuery(this)
                                     .attr(
                                         "style")["cssText"] = oldStyleAttr;
                               } else
-                                $(this)
+                                jQuery(this)
                                     .attr(
                                         "style",
                                         oldStyleAttr);
                               if (value.add)
-                                $(this)
+                                jQuery(this)
                                     .addClass(
                                         value.add);
                               if (value.remove)
-                                $(this)
+                                jQuery(this)
                                     .removeClass(
                                         value.remove);
                               if (cb)
@@ -290,18 +290,18 @@
           });
 
   // Extend the methods of jQuery
-  $.fn
+  jQuery.fn
       .extend( {
         //Save old methods
-        _show : $.fn.show,
-        _hide : $.fn.hide,
-        __toggle : $.fn.toggle,
-        _addClass : $.fn.addClass,
-        _removeClass : $.fn.removeClass,
-        _toggleClass : $.fn.toggleClass,
+        _show : jQuery.fn.show,
+        _hide : jQuery.fn.hide,
+        __toggle : jQuery.fn.toggle,
+        _addClass : jQuery.fn.addClass,
+        _removeClass : jQuery.fn.removeClass,
+        _toggleClass : jQuery.fn.toggleClass,
         // New ec methods
         effect : function(fx, o, speed, callback) {
-          return $.effects[fx] ? $.effects[fx].call(this, {
+          return jQuery.effects[fx] ? jQuery.effects[fx].call(this, {
             method : fx,
             options : o || {},
             duration : speed,
@@ -349,24 +349,24 @@
           }
         },
         addClass : function(classNames, speed, easing, callback) {
-          return speed ? $.effects.animateClass.apply(this, [ {
+          return speed ? jQuery.effects.animateClass.apply(this, [ {
             add : classNames
           }, speed, easing, callback ]) : this._addClass(classNames);
         },
         removeClass : function(classNames, speed, easing, callback) {
-          return speed ? $.effects.animateClass.apply(this, [ {
+          return speed ? jQuery.effects.animateClass.apply(this, [ {
             remove : classNames
           }, speed, easing, callback ]) : this
               ._removeClass(classNames);
         },
         toggleClass : function(classNames, speed, easing, callback) {
-          return speed ? $.effects.animateClass.apply(this, [ {
+          return speed ? jQuery.effects.animateClass.apply(this, [ {
             toggle : classNames
           }, speed, easing, callback ]) : this
               ._toggleClass(classNames);
         },
         morph : function(remove, add, speed, easing, callback) {
-          return $.effects.animateClass.apply(this, [ {
+          return jQuery.effects.animateClass.apply(this, [ {
             add : add,
             remove : remove
           }, speed, easing, callback ]);
@@ -377,7 +377,7 @@
         // helper functions
         cssUnit : function(key) {
           var style = this.css(key), val = [];
-          $.each( [ 'em', 'px', '%', 'pt' ], function(i, unit) {
+          jQuery.each( [ 'em', 'px', '%', 'pt' ], function(i, unit) {
             if (style.indexOf(unit) > 0)
               val = [ parseFloat(style), unit ];
           });

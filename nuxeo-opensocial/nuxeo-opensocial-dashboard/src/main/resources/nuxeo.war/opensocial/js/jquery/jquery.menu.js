@@ -14,18 +14,18 @@
  * v 0.0.9 - 2008-01-19
  */
 
-(function($)
+(function(jQuery)
 {
   var menus = [], //list of all menus
     visibleMenus = [], //list of all visible menus
     activeMenu = activeItem = null,
-    menuDIVElement = $('<div class="menu-div outerbox" style="position:absolute;top:0;left:0;display:none;"><div class="shadowbox1"></div><div class="shadowbox2"></div><div class="shadowbox3"></div></div>')[0],
-    menuULElement = $('<ul class="menu-ul innerbox"></ul>')[0],
-    menuItemElement = $('<li style="position:relative;"><div class="menu-item"></div></li>')[0],
-    arrowElement = $('<img class="menu-item-arrow" />')[0],
-    $rootDiv = $('<div id="root-menu-div" style="position:absolute;top:0;left:0;"></div>'), //create main menu div
+    menuDIVElement = jQuery('<div class="menu-div outerbox" style="position:absolute;top:0;left:0;display:none;"><div class="shadowbox1"></div><div class="shadowbox2"></div><div class="shadowbox3"></div></div>')[0],
+    menuULElement = jQuery('<ul class="menu-ul innerbox"></ul>')[0],
+    menuItemElement = jQuery('<li style="position:relative;"><div class="menu-item"></div></li>')[0],
+    arrowElement = jQuery('<img class="menu-item-arrow" />')[0],
+    jQueryrootDiv = jQuery('<div id="root-menu-div" style="position:absolute;top:0;left:0;"></div>'), //create main menu div
     defaults = {
-      // $.Menu options
+      // jQuery.Menu options
       showDelay : 200,
       hideDelay : 200,
       hoverOpenDelay: 0,
@@ -35,20 +35,20 @@
       onOpen: null,
       onClose: null,
 
-      // $.MenuItem options
+      // jQuery.MenuItem options
       onClick: null,
       arrowSrc: null,
       addExpando: false,
 
-      // $.fn.menuFromElement options
+      // jQuery.fn.menuFromElement options
       copyClassAttr: false
     };
 
-  $(function(){
-    $rootDiv.appendTo('body');
+  jQuery(function(){
+    jQueryrootDiv.appendTo('body');
   });
 
-  $.extend({
+  jQuery.extend({
     MenuCollection : function(items) {
 
       this.menus = [];
@@ -56,7 +56,7 @@
       this.init(items);
     }
   });
-  $.extend($.MenuCollection, {
+  jQuery.extend(jQuery.MenuCollection, {
     prototype : {
       init : function(items)
       {
@@ -71,13 +71,13 @@
       },
       addMenu : function(menu)
       {
-        if ( menu instanceof $.Menu )
+        if ( menu instanceof jQuery.Menu )
           this.menus.push(menu);
 
         menu.menuCollection = this;
 
         var self = this;
-        $(menu.target).hover(function(){
+        jQuery(menu.target).hover(function(){
           if ( menu.visible )
             return;
 
@@ -97,17 +97,17 @@
   });
 
 
-  $.extend({
+  jQuery.extend({
     Menu : function(target, items, options) {
-      this.menuItems = []; //all direct child $.MenuItem objects
+      this.menuItems = []; //all direct child jQuery.MenuItem objects
       this.subMenus = []; //all subMenus from this.menuItems
       this.visible = false;
       this.active = false; //this menu has hover or one of its submenus is open
       this.parentMenuItem = null;
-      this.settings = $.extend({}, defaults, options);
+      this.settings = jQuery.extend({}, defaults, options);
       this.target = target;
-      this.$eDIV = null;
-      this.$eUL = null;
+      this.jQueryeDIV = null;
+      this.jQueryeUL = null;
       this.timer = null;
       this.menuCollection = null;
       this.openTimer = null;
@@ -118,7 +118,7 @@
     }
   });
 
-  $.extend($.Menu, {
+  jQuery.extend(jQuery.Menu, {
     checkMouse : function(e)
     {
       var t = e.target;
@@ -128,13 +128,13 @@
         return;
 
       //get the last node before the #root-menu-div
-      while ( t.parentNode && t.parentNode != $rootDiv[0] )
+      while ( t.parentNode && t.parentNode != jQueryrootDiv[0] )
         t = t.parentNode;
 
       //is the found node one of the visible menu elements?
-      if ( !$(visibleMenus).filter(function(){ return this.$eDIV[0] == t }).length )
+      if ( !jQuery(visibleMenus).filter(function(){ return this.jQueryeDIV[0] == t }).length )
       {
-        $.Menu.closeAll();
+        jQuery.Menu.closeAll();
       }
     },
     checkKey : function(e)
@@ -143,10 +143,10 @@
       {
         case 13: //return
           if ( activeItem )
-            activeItem.click(e, activeItem.$eLI[0]);
+            activeItem.click(e, activeItem.jQueryeLI[0]);
           break;
         case 27: //ESC
-          $.Menu.closeAll();
+          jQuery.Menu.closeAll();
           break;
         case 37: //left
           if ( !activeMenu )
@@ -156,7 +156,7 @@
           {
             //unbind the events temporary, as we dont want the hoverout event to fire
             var pmi = a.parentMenuItem;
-            pmi.$eLI.unbind('mouseout').unbind('mouseover');
+            pmi.jQueryeLI.unbind('mouseout').unbind('mouseover');
             a.hide();
             pmi.hoverIn(true);
             setTimeout(function(){ //bind again..but delay it
@@ -167,11 +167,11 @@
           {
             var pos,
               mcm = a.menuCollection.menus;
-            if ( (pos = $.inArray(a, mcm)) > -1 )
+            if ( (pos = jQuery.inArray(a, mcm)) > -1 )
             {
               if ( --pos < 0 )
                 pos = mcm.length - 1;
-              $.Menu.closeAll();
+              jQuery.Menu.closeAll();
               mcm[pos].show();
               mcm[pos].setActive();
               if ( mcm[pos].menuItems.length ) //select the first item
@@ -200,11 +200,11 @@
             {
               var pos,
                 mcm = a.menuCollection.menus;
-              if ( (pos = $.inArray(a, mcm)) > -1 )
+              if ( (pos = jQuery.inArray(a, mcm)) > -1 )
               {
                 if ( ++pos >= mcm.length )
                   pos = 0;
-                $.Menu.closeAll();
+                jQuery.Menu.closeAll();
                 mcm[pos].show();
                 mcm[pos].setActive();
                 if ( mcm[pos].menuItems.length ) //select the first item
@@ -233,7 +233,7 @@
     },
     setDefaults : function(d)
     {
-      $.extend(defaults, d);
+      jQuery.extend(defaults, d);
     },
     prototype : {
       /**
@@ -244,25 +244,25 @@
         var self = this;
         if ( !this.target )
           return;
-        else if ( this.target instanceof $.MenuItem )
+        else if ( this.target instanceof jQuery.MenuItem )
         {
           this.parentMenuItem = this.target;
           this.target.addSubMenu(this);
-          this.target = this.target.$eLI;
+          this.target = this.target.jQueryeLI;
         }
 
         menus.push(this);
 
         //use the dom methods instead the ones from jquery (faster)
-        this.$eDIV = $(menuDIVElement.cloneNode(1));
-        this.$eUL = $(menuULElement.cloneNode(1));
-        this.$eDIV[0].appendChild(this.$eUL[0]);
-        $rootDiv[0].appendChild(this.$eDIV[0]);
+        this.jQueryeDIV = jQuery(menuDIVElement.cloneNode(1));
+        this.jQueryeUL = jQuery(menuULElement.cloneNode(1));
+        this.jQueryeDIV[0].appendChild(this.jQueryeUL[0]);
+        jQueryrootDiv[0].appendChild(this.jQueryeDIV[0]);
 
         //bind events
         if ( !this.parentMenuItem )
         {
-          $(this.target).click(function(e){
+          jQuery(this.target).click(function(e){
             self.onClick(e);
           }).hover(function(e){
             self.setActive();
@@ -276,7 +276,7 @@
             }
           }, function(){
             if ( !self.visible )
-              $(this).removeClass('activetarget');
+              jQuery(this).removeClass('activetarget');
 
             if ( self.openTimer )
               clearTimeout(self.openTimer);
@@ -284,7 +284,7 @@
         }
         else
         {
-          this.$eDIV.hover(function(){
+          this.jQueryeDIV.hover(function(){
             self.setActive();
           }, function(){});
         }
@@ -292,17 +292,17 @@
       setActive : function()
       {
         if ( !this.parentMenuItem )
-          $(this.target).addClass('activetarget');
+          jQuery(this.target).addClass('activetarget');
         else
           this.active = true;
       },
       addItem : function(item)
       {
-        if ( item instanceof $.MenuItem )
+        if ( item instanceof jQuery.MenuItem )
         {
-          if ( $.inArray(item, this.menuItems) == -1 )
+          if ( jQuery.inArray(item, this.menuItems) == -1 )
           {
-            this.$eUL.append(item.$eLI);
+            this.jQueryeUL.append(item.jQueryeLI);
             this.menuItems.push(item);
             item.parentMenu = this;
             if ( item.subMenu )
@@ -311,7 +311,7 @@
         }
         else
         {
-          this.addItem(new $.MenuItem(item, this.settings));
+          this.addItem(new jQuery.MenuItem(item, this.settings));
         }
       },
       addItems : function(items)
@@ -323,7 +323,7 @@
       },
       removeItem : function(item)
       {
-        var pos = $.inArray(item, this.menuItems);
+        var pos = jQuery.inArray(item, this.menuItems);
         if ( pos > -1 )
           this.menuItems.splice(pos, 1);
         item.parentMenu = null;
@@ -334,15 +334,15 @@
           return;
 
         var i,
-          pos = $.inArray(this, visibleMenus);
+          pos = jQuery.inArray(this, visibleMenus);
 
-        this.$eDIV.hide();
+        this.jQueryeDIV.hide();
 
         if ( pos >= 0 )
           visibleMenus.splice(pos, 1);
         this.visible = this.active = false;
 
-        $(this.target).removeClass('activetarget');
+        jQuery(this.target).removeClass('activetarget');
 
         //hide all submenus
         for ( i = 0; i < this.subMenus.length; i++ )
@@ -358,7 +358,7 @@
         }
 
         if ( !visibleMenus.length ) //unbind events when the last menu was closed
-          $(document).unbind('mousedown', $.Menu.checkMouse).unbind('keydown', $.Menu.checkKey);
+          jQuery(document).unbind('mousedown', jQuery.Menu.checkMouse).unbind('keydown', jQuery.Menu.checkKey);
 
         if ( activeMenu == this )
           activeMenu = null;
@@ -378,67 +378,67 @@
         {
           if ( pmi ) //set z-index
           {
-            zi = parseInt(pmi.parentMenu.$eDIV.css('z-index'));
-            this.$eDIV.css('z-index', (isNaN(zi) ? 1 : zi + 1));
+            zi = parseInt(pmi.parentMenu.jQueryeDIV.css('z-index'));
+            this.jQueryeDIV.css('z-index', (isNaN(zi) ? 1 : zi + 1));
           }
-          this.$eDIV.css({visibility: 'hidden', display:'block'});
+          this.jQueryeDIV.css({visibility: 'hidden', display:'block'});
 
           //set min-width
           if ( this.settings.minWidth )
           {
-            if ( this.$eDIV.width() < this.settings.minWidth )
-              this.$eDIV.css('width', this.settings.minWidth);
+            if ( this.jQueryeDIV.width() < this.settings.minWidth )
+              this.jQueryeDIV.css('width', this.settings.minWidth);
           }
 
           this.setPosition();
-          this.$eDIV.css({display:'none', visibility: ''}).show();
+          this.jQueryeDIV.css({display:'none', visibility: ''}).show();
 
           //IEs default width: auto is bad! ie6 and ie7 have are producing different errors.. (7 = 5px shadowbox + 2px border)
-          if ( $.browser.msie )
-            this.$eUL.css('width', parseInt($.browser.version) == 6 ? this.$eDIV.width() - 7 : this.$eUL.width());
+          if ( jQuery.browser.msie )
+            this.jQueryeUL.css('width', parseInt(jQuery.browser.version) == 6 ? this.jQueryeDIV.width() - 7 : this.jQueryeUL.width());
 
           if ( this.settings.onOpen )
             this.settings.onOpen.call(this);
         }
         if ( visibleMenus.length == 0 )
-          $(document).bind('mousedown', $.Menu.checkMouse).bind('keydown', $.Menu.checkKey);
+          jQuery(document).bind('mousedown', jQuery.Menu.checkMouse).bind('keydown', jQuery.Menu.checkKey);
 
         this.visible = true;
         visibleMenus.push(this);
       },
       setPosition : function()
       {
-        var $t, o, posX, posY,
+        var jQueryt, o, posX, posY,
           pmo, //parent menu offset
           wst, //window scroll top
           wsl, //window scroll left
-          ww = $(window).width(),
-          wh = $(window).height(),
+          ww = jQuery(window).width(),
+          wh = jQuery(window).height(),
           pmi = this.parentMenuItem,
-          height = this.$eDIV[0].clientHeight,
-          width = this.$eDIV[0].clientWidth,
+          height = this.jQueryeDIV[0].clientHeight,
+          width = this.jQueryeDIV[0].clientWidth,
           pheight; //parent height
 
         if ( pmi )
         {
           //position on the right side of the parent menu item
-          o = pmi.$eLI.offset();
-          posX = o.left + pmi.$eLI.width();
+          o = pmi.jQueryeLI.offset();
+          posX = o.left + pmi.jQueryeLI.width();
           posY = o.top;
         }
         else
         {
           //position right below the target
-          $t = $(this.target);
-          o = $t.offset();
+          jQueryt = jQuery(this.target);
+          o = jQueryt.offset();
           posX = o.left + this.settings.offsetLeft;
-          posY = o.top + $t.height() + this.settings.offsetTop;
+          posY = o.top + jQueryt.height() + this.settings.offsetTop;
         }
 
         //y-pos
-        if ( $.fn.scrollTop )
+        if ( jQuery.fn.scrollTop )
         {
-          wst = $(window).scrollTop();
+          wst = jQuery(window).scrollTop();
           if ( wh < height ) //menu is bigger than the window
           {
             //position the menu at the top of the visible area
@@ -448,8 +448,8 @@
           {
             if ( pmi )
             {
-              pmo = pmi.parentMenu.$eDIV.offset();
-              pheight = pmi.parentMenu.$eDIV[0].clientHeight;
+              pmo = pmi.parentMenu.jQueryeDIV.offset();
+              pheight = pmi.parentMenu.jQueryeDIV[0].clientHeight;
               if ( height <= pheight )
               {
                 //bottom position = parentmenu-bottom position
@@ -475,15 +475,15 @@
           }
         }
         //x-pos
-        if ( $.fn.scrollLeft )
+        if ( jQuery.fn.scrollLeft )
         {
-          wsl = $(window).scrollLeft();
+          wsl = jQuery(window).scrollLeft();
           if ( ww + wsl < posX + width )
           {
             if ( pmi )
             {
               //display the menu not on the right side but on the left side
-              posX -= pmi.$eLI.width() + width;
+              posX -= pmi.jQueryeLI.width() + width;
               //outside on the left now?
               if ( posX < wsl )
                 posX = wsl;
@@ -497,7 +497,7 @@
         }
 
         //set position
-        this.$eDIV.css({left: posX, top: posY});
+        this.jQueryeDIV.css({left: posX, top: posY});
       },
       onClick : function(e)
       {
@@ -509,7 +509,7 @@
         else
         {
           //close all open menus
-          $.Menu.closeAll();
+          jQuery.Menu.closeAll();
           this.show(e);
         }
       },
@@ -571,9 +571,9 @@
 
         //unbind events
         if ( !this.parentMenuItem )
-          $(this.target).unbind('click').unbind('mouseover').unbind('mouseout');
+          jQuery(this.target).unbind('click').unbind('mouseover').unbind('mouseout');
         else
-          this.$eDIV.unbind('mouseover').unbind('mouseout');
+          this.jQueryeDIV.unbind('mouseover').unbind('mouseout');
 
         //destroy all items
         while ( this.menuItems.length )
@@ -583,21 +583,21 @@
           delete item;
         }
 
-        if ( (pos = $.inArray(this, menus)) > -1 )
+        if ( (pos = jQuery.inArray(this, menus)) > -1 )
           menus.splice(pos, 1);
 
         if ( this.menuCollection )
         {
-          if ( (pos = $.inArray(this, this.menuCollection.menus)) > -1 )
+          if ( (pos = jQuery.inArray(this, this.menuCollection.menus)) > -1 )
             this.menuCollection.menus.splice(pos, 1);
         }
 
-        this.$eDIV.remove();
+        this.jQueryeDIV.remove();
       }
     }
   });
 
-  $.extend({
+  jQuery.extend({
     MenuItem : function(obj, options)
     {
       if ( typeof obj == 'string' )
@@ -609,10 +609,10 @@
       this.addClass = obj.addClass || null;
       this.data = obj.data || null;
 
-      this.$eLI = null;
+      this.jQueryeLI = null;
       this.parentMenu = null;
       this.subMenu = null;
-      this.settings = $.extend({}, defaults, options);
+      this.settings = jQuery.extend({}, defaults, options);
       this.active = false;
       this.enabled = true;
       this.separator = false;
@@ -620,11 +620,11 @@
       this.init();
 
       if ( obj.subMenu )
-        new $.Menu(this, obj.subMenu, options);
+        new jQuery.Menu(this, obj.subMenu, options);
     }
   });
 
-  $.extend($.MenuItem, {
+  jQuery.extend(jQuery.MenuItem, {
     prototype : {
       init : function()
       {
@@ -632,28 +632,28 @@
           src = this.src,
           self = this;
 
-        this.$eLI = $(menuItemElement.cloneNode(1));
+        this.jQueryeLI = jQuery(menuItemElement.cloneNode(1));
 
         if ( this.addClass )
-          this.$eLI[0].setAttribute('class', this.addClass);
+          this.jQueryeLI[0].setAttribute('class', this.addClass);
 
         if ( this.settings.addExpando && this.data )
-          this.$eLI[0].menuData = this.data;
+          this.jQueryeLI[0].menuData = this.data;
 
         if ( src == '' )
         {
-          this.$eLI.addClass('menu-separator');
+          this.jQueryeLI.addClass('menu-separator');
           this.separator = true;
         }
         else
         {
           isStr = typeof src == 'string';
           if ( isStr && this.url ) //create a link node, when we have an url
-            src = $('<a href="' + this.url + '"' + (this.urlTarget ? 'target="' + this.urlTarget + '"' : '') + '>' + src + '</a>');
+            src = jQuery('<a href="' + this.url + '"' + (this.urlTarget ? 'target="' + this.urlTarget + '"' : '') + '>' + src + '</a>');
           else if ( isStr || !src.length )
             src = [src];
           //go through the passed DOM-Elements (or jquery objects or text nodes.) and append them to the menus list item
-          //this.$eLI.append(this.src) is really slow when having a lot(!!!) of items
+          //this.jQueryeLI.append(this.src) is really slow when having a lot(!!!) of items
           for ( i = 0; i < src.length; i++ )
           {
             if ( typeof src[i] == 'string' )
@@ -661,14 +661,14 @@
               //we cant use createTextNode, as html entities won't be displayed correctly (eg. &copy;)
               elem = document.createElement('span');
               elem.innerHTML = src[i];
-              this.$eLI[0].firstChild.appendChild(elem);
+              this.jQueryeLI[0].firstChild.appendChild(elem);
             }
             else
-              this.$eLI[0].firstChild.appendChild(src[i].cloneNode(1));
+              this.jQueryeLI[0].firstChild.appendChild(src[i].cloneNode(1));
           }
         }
 
-        this.$eLI.click(function(e){
+        this.jQueryeLI.click(function(e){
           self.click(e, this);
         });
         this.bindHover();
@@ -681,7 +681,7 @@
       bindHover : function()
       {
         var self = this;
-        this.$eLI.hover(function(){
+        this.jQueryeLI.hover(function(){
             self.hoverIn();
           }, function(){
             self.hoverOut();
@@ -750,7 +750,7 @@
       setActive : function()
       {
         this.active = true;
-        this.$eLI.addClass('active');
+        this.jQueryeLI.addClass('active');
 
         //set the parent menu item active too if necessary
         var pmi = this.parentMenu.parentMenuItem;
@@ -762,28 +762,28 @@
       setInactive : function()
       {
         this.active = false;
-        this.$eLI.removeClass('active');
+        this.jQueryeLI.removeClass('active');
         if ( this == activeItem )
           activeItem = null;
       },
       enable : function()
       {
-        this.$eLI.removeClass('disabled');
+        this.jQueryeLI.removeClass('disabled');
         this.enabled = true;
       },
       disable : function()
       {
-        this.$eLI.addClass('disabled');
+        this.jQueryeLI.addClass('disabled');
         this.enabled = false;
       },
       destroy : function()
       {
         this.removeTimer();
 
-        this.$eLI.remove();
+        this.jQueryeLI.remove();
 
         //unbind events
-        this.$eLI.unbind('mouseover').unbind('mouseout').unbind('click');
+        this.jQueryeLI.unbind('mouseover').unbind('mouseout').unbind('click');
         //delete submenu
         if ( this.subMenu )
         {
@@ -797,20 +797,20 @@
         if ( this.subMenu )
           return;
         this.subMenu = menu;
-        if ( this.parentMenu && $.inArray(menu, this.parentMenu.subMenus) == -1 )
+        if ( this.parentMenu && jQuery.inArray(menu, this.parentMenu.subMenus) == -1 )
           this.parentMenu.subMenus.push(menu);
         if ( this.settings.arrowSrc )
         {
           var a = arrowElement.cloneNode(0);
           a.setAttribute('src', this.settings.arrowSrc);
-          this.$eLI[0].firstChild.appendChild(a);
+          this.jQueryeLI[0].firstChild.appendChild(a);
         }
       }
     }
   });
 
 
-  $.extend($.fn, {
+  jQuery.extend(jQuery.fn, {
     menuFromElement : function(options, list, bar)
     {
       var createItems = function(ul)
@@ -818,7 +818,7 @@
         var menuItems = [],
           subItems,
           menuItem,
-          lis, $li, i, subUL, submenu, target,
+          lis, jQueryli, i, subUL, submenu, target,
           classNames = null;
 
         lis = getAllChilds(ul, 'LI');
@@ -828,7 +828,7 @@
 
           if ( !lis[i].childNodes.length ) //empty item? add separator
           {
-            menuItems.push(new $.MenuItem('', options));
+            menuItems.push(new jQuery.MenuItem('', options));
             continue;
           }
 
@@ -836,25 +836,25 @@
           {
             subItems = createItems(subUL);
             //remove subUL from DOM
-            $(subUL).remove();
+            jQuery(subUL).remove();
           }
 
           //select the target...get the elements inside the li
-          $li = $(lis[i]);
-          if ( $li[0].childNodes.length == 1 && $li[0].childNodes[0].nodeType == 3 )
-            target = $li[0].childNodes[0].nodeValue;
+          jQueryli = jQuery(lis[i]);
+          if ( jQueryli[0].childNodes.length == 1 && jQueryli[0].childNodes[0].nodeType == 3 )
+            target = jQueryli[0].childNodes[0].nodeValue;
           else
-            target = $li[0].childNodes;
+            target = jQueryli[0].childNodes;
 
           if ( options && options.copyClassAttr )
-            classNames = $li.attr('class');
+            classNames = jQueryli.attr('class');
 
           //create item
-          menuItem = new $.MenuItem({src: target, addClass: classNames}, options);
+          menuItem = new jQuery.MenuItem({src: target, addClass: classNames}, options);
           menuItems.push(menuItem);
           //add submenu
           if ( subItems.length )
-            new $.Menu(menuItem, subItems, options);
+            new jQuery.Menu(menuItem, subItems, options);
 
         }
         return menuItems;
@@ -866,15 +866,15 @@
         if ( list || (ul = getOneChild(this, 'UL')) )
         {
           //if a specific list element is used, clone it, as we probably need it more than once
-          ul = list ? $(list).clone(true)[0] : ul;
+          ul = list ? jQuery(list).clone(true)[0] : ul;
           menuItems = createItems(ul);
           if ( menuItems.length )
           {
-            m = new $.Menu(this, menuItems, options);
+            m = new jQuery.Menu(this, menuItems, options);
             if ( bar )
               bar.addMenu(m);
           }
-          $(ul).hide();
+          jQuery(ul).hide();
         }
       });
     },
@@ -887,9 +887,9 @@
 
         if ( lis.length )
         {
-          bar = new $.MenuCollection();
+          bar = new jQuery.MenuCollection();
           for ( i = 0; i < lis.length; i++ )
-            $(lis[i]).menuFromElement(options, null, bar);
+            jQuery(lis[i]).menuFromElement(options, null, bar);
         }
       });
     },
@@ -898,13 +898,13 @@
       return this.each(function()
       {
         if ( items && items.constructor == Array )
-          new $.Menu(this, items, options);
+          new jQuery.Menu(this, items, options);
         else
         {
           if ( this.nodeName.toUpperCase() == 'UL' )
-            $(this).menuBarFromUL(options);
+            jQuery(this).menuBarFromUL(options);
           else
-            $(this).menuFromElement(options, items);
+            jQuery(this).menuFromElement(options, items);
         }
       });
     }

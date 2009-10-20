@@ -28,121 +28,121 @@ import com.gwtext.client.widgets.portal.Portlet;
 
 public class GadgetPortlet extends Portlet {
 
-  static final String GADGET = "gadget-";
-  public static final String GADGET_CONTAINER = "gadget-container-";
-  public static final String FRAME_CONTAINER = "frame-container-";
+    static final String GADGET = "gadget-";
 
-  private GadgetBean gadget;
-  private GadgetTools tools;
-  private Frame frame;
+    public static final String GADGET_CONTAINER = "gadget-container-";
 
-  public GadgetPortlet(GadgetBean gadget) {
-    super();
-    this.gadget = gadget;
-    this.tools = new GadgetTools(gadget.getRef());
-    buildPortlet();
-  }
+    public static final String FRAME_CONTAINER = "frame-container-";
 
-  private void buildPortlet() {
-    this.setLayout(new FitLayout());
-    this.setTools(tools.getButtons(gadget.getPermission()));
-    this.setHideCollapseTool(!this.gadget.getPermission());
-    this.setTitle(this.gadget.getTitle());
-    this.setDraggable(gadget.getPermission());
-    this.addListener(new PortletListener(gadget));
-    this.frame = buildFrame();
-    this.add(frame);
-    this.setId(getGadgetId());
-    GadgetService.setAuthToken(getIframeId(), this.gadget.getRef());
-    GadgetService.setRelayRpc(getIframeId(), "");
-  }
+    private GadgetBean gadget;
 
+    private final GadgetTools tools;
 
-  private String getGadgetId() {
-    return GADGET_CONTAINER + this.gadget.getRef();
-  }
+    private Frame frame;
 
-  private String getClientVirtualHostedUrl(String renderUrl) {
-      //JsLibrary.log("call getClientVirtualHostedUrl on url " + renderUrl);
-      String clientSiteBaseUrl = JsLibrary.getNuxeoClientSideUrl();
-      if (clientSiteBaseUrl==null) {
-          JsLibrary.error("unable to get Client Side url from top");
-          return renderUrl;
-      } else {
-          // XXX this is a hack : should do better than that !!!
-          String[] parts = renderUrl.split("/nuxeo/");
-          String oldServerUrl = parts[0];
-          String newServerUrl = clientSiteBaseUrl.replace("/nuxeo/", "");
-          String newurl = renderUrl.replaceAll(oldServerUrl, newServerUrl);
-          //JsLibrary.log("computed url =" + newurl);
-          return newurl;
-      }
-  }
+    public GadgetPortlet(GadgetBean gadget) {
+        super();
+        this.gadget = gadget;
+        this.tools = new GadgetTools(gadget.getRef());
+        buildPortlet();
+    }
 
-  private Frame buildFrame() {
-    String iFrameUrl = getClientVirtualHostedUrl(gadget.getRenderUrl());
-    Frame f = new Frame(iFrameUrl);
-    f.setHeight("100%");
-    f.setWidth("100%");
-    Element elem = f.getElement();
-    elem.setId(getIframeId());
-    elem.setAttribute("overflow", "hidden");
-    return f;
-  }
+    private void buildPortlet() {
+        this.setLayout(new FitLayout());
+        this.setTools(tools.getButtons(gadget.getPermission()));
+        this.setHideCollapseTool(!this.gadget.getPermission());
+        this.setTitle(this.gadget.getTitle());
+        this.setDraggable(gadget.getPermission());
+        this.addListener(new PortletListener(gadget));
+        this.frame = buildFrame();
+        this.add(frame);
+        this.setId(getGadgetId());
+        GadgetService.setAuthToken(getIframeId(), this.gadget.getRef());
+        GadgetService.setRelayRpc(getIframeId(), "");
+    }
 
-  private String getIframeId() {
-    return GADGET + this.gadget.getRef();
-  }
+    private String getGadgetId() {
+        return GADGET_CONTAINER + this.gadget.getRef();
+    }
 
-  public void updateGadgetPortlet(GadgetBean bean) {
-    String iFrameUrl = getClientVirtualHostedUrl(gadget.getRenderUrl());
-    JsLibrary.updateIframe(getIframeId(), iFrameUrl);
-    this.setGadgetBean(bean);
-    this.setTitle(bean.getTitle());
-    this.frame = buildFrame();
-  }
+    private String getClientVirtualHostedUrl(String renderUrl) {
+        // JsLibrary.log("call getClientVirtualHostedUrl on url " + renderUrl);
+        String clientSiteBaseUrl = JsLibrary.getNuxeoClientSideUrl();
+        if (clientSiteBaseUrl == null) {
+            JsLibrary.error("unable to get Client Side url from top");
+            return renderUrl;
+        } else {
+            // XXX this is a hack : should do better than that !!!
+            String[] parts = renderUrl.split("/nuxeo/");
+            String oldServerUrl = parts[0];
+            String newServerUrl = clientSiteBaseUrl.replace("/nuxeo/", "");
+            String newurl = renderUrl.replaceAll(oldServerUrl, newServerUrl);
+            // JsLibrary.log("computed url =" + newurl);
+            return newurl;
+        }
+    }
 
-  private void setGadgetBean(GadgetBean bean) {
-    this.gadget = bean;
-  }
+    private Frame buildFrame() {
+        String iFrameUrl = getClientVirtualHostedUrl(gadget.getRenderUrl());
+        Frame f = new Frame(iFrameUrl);
+        f.setHeight("100%");
+        f.setWidth("100%");
+        Element elem = f.getElement();
+        elem.setId(getIframeId());
+        elem.setAttribute("overflow", "hidden");
+        return f;
+    }
 
-  public GadgetBean getGadgetBean() {
-    return gadget;
-  }
+    private String getIframeId() {
+        return GADGET + this.gadget.getRef();
+    }
 
-  public GadgetTools getTools() {
-    return tools;
-  }
+    public void updateGadgetPortlet(GadgetBean bean) {
+        String iFrameUrl = getClientVirtualHostedUrl(gadget.getRenderUrl());
+        JsLibrary.updateIframe(getIframeId(), iFrameUrl);
+        this.setGadgetBean(bean);
+        this.setTitle(bean.getTitle());
+        this.frame = buildFrame();
+    }
 
+    private void setGadgetBean(GadgetBean bean) {
+        this.gadget = bean;
+    }
 
-  @Override
-  protected void afterRender() {
-    if (this.gadget.isCollapse())
-      collapse(GADGET_CONTAINER + this.gadget.getRef());
-    super.afterRender();
-    JsLibrary.updateFrameHeight();
-  }
+    public GadgetBean getGadgetBean() {
+        return gadget;
+    }
 
+    public GadgetTools getTools() {
+        return tools;
+    }
 
+    @Override
+    protected void afterRender() {
+        if (this.gadget.isCollapse())
+            collapse(GADGET_CONTAINER + this.gadget.getRef());
+        super.afterRender();
+        JsLibrary.updateFrameHeight();
+    }
 
-  static native void collapse(String id) /*-{
-     var p = $wnd.$("#"+id);
-     $wnd.$(p).addClass("x-panel-collapsed");
-     $wnd.$(p.children()[1]).hide();
-   }-*/;
+    static native void collapse(String id) /*-{
+           var p = $wnd.jQuery("#"+id);
+           $wnd.jQuery(p).addClass("x-panel-collapsed");
+           $wnd.jQuery(p.children()[1]).hide();
+         }-*/;
 
-  static native void unCollapse(String id, String idFrame, String url) /*-{
-     var p = $wnd.$("#"+id);
-     $wnd.$(p).removeClass("x-panel-collapsed");
-     var f = $wnd.$(p).children()[1];
-     $wnd.$(f).show();
-     if($wnd.$(f).height() < 20) {
-        $wnd.document.getElementById(idFrame).src = "";
-        setTimeout(function(){
-          $wnd.document.getElementById(idFrame).src = url;
-          $wnd.$($wnd.$(p).children(".x-panel-body")).attr("style","overflow-x:auto;overflow-y:auto;");
-        },50);
-     }
-   }-*/;
+    static native void unCollapse(String id, String idFrame, String url) /*-{
+           var p = $wnd.jQuery("#"+id);
+           $wnd.jQuery(p).removeClass("x-panel-collapsed");
+           var f = $wnd.jQuery(p).children()[1];
+           $wnd.jQuery(f).show();
+           if($wnd.jQuery(f).height() < 20) {
+              $wnd.document.getElementById(idFrame).src = "";
+              setTimeout(function(){
+                $wnd.document.getElementById(idFrame).src = url;
+                $wnd.jQuery($wnd.jQuery(p).children(".x-panel-body")).attr("style","overflow-x:auto;overflow-y:auto;");
+              },50);
+           }
+         }-*/;
 
 }

@@ -1,33 +1,34 @@
-$(document).ready(
+
+jQuery(document).ready(
     function() {
 
-      $(".nv-category").click(
+      jQuery(".nv-category").click(
           function() {
-            $("#listCategories>div").removeClass("selected");
-            $("#listCategories>div>a").removeClass("selected");
-            $(".typeGadget").parent().removeClass("visible");
-            $(".typeGadget").parent().addClass("invisible");
-            $("a[category='" + $(this).attr("category") + "']")
+            jQuery("#listCategories>div").removeClass("selected");
+            jQuery("#listCategories>div>a").removeClass("selected");
+            jQuery(".typeGadget").parent().removeClass("visible");
+            jQuery(".typeGadget").parent().addClass("invisible");
+            jQuery("a[category='" + jQuery(this).attr("category") + "']")
                 .parent().removeClass("invisible").addClass(
                     "visible");
-            $(
-                "a[category='" + $(this).attr("category")
+            jQuery(
+                "a[category='" + jQuery(this).attr("category")
                     + "'][class='nv-category']").addClass(
                 "selected").parent().addClass("selected");
           });
 
       // Choix du gadget
-      $(".typeGadget").click( function() {
-        $(".typeGadget").removeClass("selected");
-        $(this).addClass("selected");
+      jQuery(".typeGadget").click( function() {
+        jQuery(".typeGadget").removeClass("selected");
+        jQuery(this).addClass("selected");
         return false
       });
 
-      $(".directAddLink").click(
+      jQuery(".directAddLink").click(
           function() {
-            var element = $(this);
+            var element = jQuery(this);
 
-            $(".typeGadget").removeClass("selected");
+            jQuery(".typeGadget").removeClass("selected");
             element.parent().find(".typeGadget").addClass(
                 "selected");
 
@@ -46,17 +47,17 @@ $(document).ready(
             return false
           });
 
-      $("#openGadgetManager").click( function() {
-        $("#getGadgetManager").hide();
-        $("#gadgetManager").slideDown();
+      jQuery("#openGadgetManager").click( function() {
+        jQuery("#getGadgetManager").hide();
+        jQuery("#gadgetManager").slideDown();
         return false
       });
 
-      $("#closeLinkGadgetManager").click( function() {
-        $("#getGadgetManager").show();
-        $("#gadgetManager").slideUp();
+      jQuery("#closeLinkGadgetManager").click( function() {
+        jQuery("#getGadgetManager").show();
+        jQuery("#gadgetManager").slideUp();
         return false;
       });
 
-      $($(".nv-category")[0]).click();
+      jQuery(jQuery(".nv-category")[0]).click();
     });
