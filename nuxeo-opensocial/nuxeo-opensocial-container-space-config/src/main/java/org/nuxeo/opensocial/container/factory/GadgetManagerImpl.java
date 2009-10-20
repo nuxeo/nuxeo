@@ -16,7 +16,7 @@ import org.nuxeo.runtime.api.Framework;
 public class GadgetManagerImpl implements GadgetManager {
 
   private static final Log log = LogFactory.getLog(GadgetManagerImpl.class);
-  private static final String TITLE = "title";
+  public static final String TITLE_KEY_PREF = "title";
 
   /**
    * Remove gadget to container
@@ -83,9 +83,8 @@ public class GadgetManagerImpl implements GadgetManager {
       GadgetMapper gadgetMapper = new GadgetMapper(gadget);
       if (updatePrefs != null) {
         gadgetMapper.setPreferences(updatePrefs);
-        if (updatePrefs.containsKey(TITLE)) {
-          gadgetMapper.setTitle(updatePrefs.get(TITLE));
-        }
+        if (updatePrefs.containsKey(TITLE_KEY_PREF)) 
+          gadgetMapper.setTitle(updatePrefs.get(TITLE_KEY_PREF));
       }
       Framework.getService(SpaceManager.class)
           .updateGadget(gadgetMapper, getCoreSession(gwtParams));

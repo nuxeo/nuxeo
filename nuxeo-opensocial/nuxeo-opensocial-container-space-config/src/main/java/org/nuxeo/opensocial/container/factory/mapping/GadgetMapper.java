@@ -13,6 +13,7 @@ import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 import org.nuxeo.opensocial.container.client.bean.GadgetPosition;
 import org.nuxeo.opensocial.container.client.bean.PreferencesBean;
+import org.nuxeo.opensocial.container.factory.GadgetManagerImpl;
 import org.nuxeo.opensocial.container.factory.PreferenceManager;
 import org.nuxeo.opensocial.container.factory.utils.UrlBuilder;
 
@@ -21,7 +22,6 @@ public class GadgetMapper extends GadgetBean implements Gadget {
   private Map<String, String> preferences = new HashMap<String, String>();
   private static final Log log = LogFactory.getLog(GadgetMapper.class);
   private static final String BOOL = "BOOL";
-  private static final Object TITLE_KEY_PREF = "title";
 
   private Integer pos;
   private String placeID;
@@ -214,7 +214,7 @@ public class GadgetMapper extends GadgetBean implements Gadget {
 
   private void updateTitleInPreference() {
     for (PreferencesBean p : this.userPrefs) {
-      if (TITLE_KEY_PREF.equals(p.getName())) {
+      if (GadgetManagerImpl.TITLE_KEY_PREF.equals(p.getName())) {
         this.title = p.getValue();
         return;
       }
