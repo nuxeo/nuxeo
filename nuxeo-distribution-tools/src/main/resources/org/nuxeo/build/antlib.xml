@@ -7,6 +7,10 @@
   
   <taskdef name="if" classname="org.nuxeo.build.ant.IfTask" />
 
-  <taskdef name="regexp" classname="org.nuxeo.build.ant.tasks.PropertyRegexp" />  
+  <taskdef name="regexp" classname="org.nuxeo.build.ant.tasks.PropertyRegexp" />
+  
+  <typedef name="preprocess" classname="org.nuxeo.build.ant.processor.NuxeoBuildProcessor" />  
+
+  <typedef name="rename" classname="org.nuxeo.build.ant.RenameTask" />  
 
 </antlib>
