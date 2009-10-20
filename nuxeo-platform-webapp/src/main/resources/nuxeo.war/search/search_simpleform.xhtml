@@ -30,30 +30,17 @@
 
 <c:set var="doc" value="#{searchDocumentModel}" />
 
-<h:panelGrid columns="2" styleClass="dataInput"
-  columnClasses="labelColumn, labelColumn, fieldColumn">
-
-  <h:outputText value="#{messages['label.search.all_words']}" />
-  <h:inputText value="#{doc.advanced_search.fulltext_all}"
-    styleClass="dataInputText" />
-
-  <h:outputText value="#{messages['lable.search.exact_text']}" />
-  <h:inputText value="#{doc.advanced_search.fulltext_phrase}"
-    styleClass="dataInputText" />
-
-  <h:outputText value="#{messages['label.search.one_word']}" />
-  <h:inputText value="#{doc.advanced_search.fulltext_one_of}"
-    styleClass="dataInputText" />
-
-  <h:outputText value="#{messages['label.search.no_word']}" />
-  <h:inputText value="#{doc.advanced_search.fulltext_none}"
-    styleClass="dataInputText" />
-</h:panelGrid>
-
-<br />
-
 <table class="dataInput">
   <tbody>
+    <tr>
+      <td class="labelColumn">
+        <h:outputText value="#{messages['label.search.all_words']}" />
+      </td>
+      <td class="fieldColumn" colspan="3">
+        <h:inputText value="#{doc.advanced_search.fulltext_all}"
+            styleClass="dataInputText" />
+      </td>
+    </tr>
     <tr>
       <td class="labelColumn">
         <h:outputText value="#{messages['label.dublincore.title']}" />
