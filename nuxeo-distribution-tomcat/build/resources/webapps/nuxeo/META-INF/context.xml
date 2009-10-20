@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<Context antiResourceLocking="false" privileged="true" shared="true">
+  
+  <!-- Disable HTTP Session persistence between restart since webengine session objects are not serializable -->
+  <Manager pathname="" />
+
+  <!-- define custom loader that is responsible to start nuxeo runtime (it extends the default one) -->
+  <Loader className="org.nuxeo.runtime.tomcat.NuxeoWebappLoader" loaderClass="org.nuxeo.runtime.tomcat.NuxeoWebappClassLoader"
+          home="nxserver" classPath="bundles/.:lib/.:config" systemBundle="bundles/nuxeo-runtime-osgi-1.5.1-SNAPSHOT.jar"  />
+
+  <Listener className="org.nuxeo.runtime.tomcat.NuxeoLauncher" />
+
+  <!--
+      Define JDBC datasaources: the JNDI names will be: java:comp/env/jdbc/DATABASE_NAME. For example java:comp/env/jdbc/nxsqldirectory
+      This means you need to update correspondly JNDI bindings in nuxeo data source definitions in the config directory
+  -->
+  <Resource name="jdbc/nxsqldirectory" auth="Container" type="javax.sql.DataSource"
+            maxActive="100" maxIdle="30" maxWait="10000"
+            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+            url="jdbc:derby:nxsqldirectory;create=true"/>
+
+  <Resource name="jdbc/nxrelations-default-jena" auth="Container" type="javax.sql.DataSource"
+            maxActive="100" maxIdle="30" maxWait="10000"
+            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+            url="jdbc:derby:nxrelations-default-jena;create=true"/>
+
+  <Resource name="jdbc/comment-relations" auth="Container" type="javax.sql.DataSource"
+            maxActive="100" maxIdle="30" maxWait="10000"
+            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+            url="jdbc:derby:comment-relations;create=true"/>
+
+  <Resource name="jdbc/nxaudit-logs" auth="Container" type="javax.sql.DataSource"
+            maxActive="100" maxIdle="30" maxWait="10000"
+            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+            url="jdbc:derby:nxaudit-logs;create=true"/>
+
+  <Resource name="jdbc/nxjbpm" auth="Container" type="javax.sql.DataSource"
+            maxActive="100" maxIdle="30" maxWait="10000"
+            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+            url="jdbc:derby:nxjbpm;create=true"/>
+
+  <Resource name="jdbc/placeful_service_ds" auth="Container" type="javax.sql.DataSource"
+            maxActive="100" maxIdle="30" maxWait="10000"
+            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+            url="jdbc:derby:placeful_service_ds;create=true"/>
+
+  <Resource name="jdbc/nxwebwidgets" auth="Container" type="javax.sql.DataSource"
+            maxActive="100" maxIdle="30" maxWait="10000"
+            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+            url="jdbc:derby:nxwebwidgets;create=true"/>
+
+</Context>
