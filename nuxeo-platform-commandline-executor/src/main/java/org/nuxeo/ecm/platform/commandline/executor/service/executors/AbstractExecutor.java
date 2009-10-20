@@ -42,7 +42,7 @@ public abstract class AbstractExecutor {
         Map<String, String> paramsValues = params.getParameters();
 
         for (String pname : paramsValues.keySet()) {
-            paramString = paramString.replaceAll("\\#\\{" + pname + "\\}", paramsValues.get(pname));
+            paramString = paramString.replace("#{" + pname + "}", paramsValues.get(pname));
         }
         return paramString;
     }
