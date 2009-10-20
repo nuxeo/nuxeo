@@ -1,9 +1,0 @@
-<component name="org.nuxeo.opensocial.deployment">
-
-  <extension target="org.nuxeo.runtime.server" point="webapp">
-    <webapp name="opensocial" path="/nuxeo/opensocial">
-      <root>opensocial</root>
-    </webapp>
-  </extension>
-
-</component>

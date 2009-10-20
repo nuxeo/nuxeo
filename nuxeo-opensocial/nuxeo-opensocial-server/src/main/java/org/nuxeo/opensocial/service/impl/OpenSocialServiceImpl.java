@@ -17,8 +17,6 @@
 
 package org.nuxeo.opensocial.service.impl;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.ProxySelector;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,16 +24,12 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.gadgets.GadgetSpecFactory;
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.opensocial.shindig.crypto.KeyDescriptor;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.osgi.framework.Bundle;
 
 import com.google.inject.Injector;
 
@@ -94,62 +88,13 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) {
         LOG.info("Activate component OpenSocial service");
-
-        File root = new File(Framework.getRuntime().getHome(), "opensocial");
-
-        // Be sure to delete the deployment root before deploying
-        if (root.exists()) {
-            FileUtils.deleteTree(root);
-        }
-
-        try {
-            root = root.getCanonicalFile();
-            LOG.info("Using web root: " + root);
-            if (!new File(root, "WEB-INF").exists()) {
-                try {
-                    root.mkdirs();
-                    // runtime predeployment is not supporting conditional
-                    // unziping so we
-                    // do
-                    // the predeployment here:
-                    deployWebDir(context.getRuntimeContext().getBundle(), root);
-                } catch (Exception e) { // delete incomplete files
-                    FileUtils.deleteTree(root);
-                    throw e;
-                }
-            }
-
-        } catch (Exception e1) {
-            LOG.error("Unable to deploy opensocial web dir");
-        }
-
-    }
-
-    public static void copyResources(Bundle bundle, String path, File root)
-            throws IOException {
-        File file = Framework.getRuntime().getBundleFile(bundle);
-        if (file == null) {
-            throw new UnsupportedOperationException(
-                    "Couldn't transform the bundle location into a file");
-        }
-        root.mkdirs();
-        if (file.isDirectory()) {
-            file = new File(file, path);
-            FileUtils.copy(file.listFiles(), root);
-        } else {
-            ZipUtils.unzip(path, file, root);
-        }
-    }
-
-    private static void deployWebDir(Bundle bundle, File root)
-            throws IOException {
-        copyResources(bundle, "opensocial", root);
     }
 
     @Override
     public void deactivate(ComponentContext arg0) {
         LOG.info("DeActivate component OpenSocial service");
     }
+
 
     public Object getInstance(Class<?> klass) {
         if (getInjector() != null)
