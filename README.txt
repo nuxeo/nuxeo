@@ -20,10 +20,15 @@ notably:
 - nuxeo-theme
 - nuxeo-webengine
 
+Under Linux/Unix/MacOS: run ./clone.sh
+
+Under Windows: run clone.bat
+
 See http://doc.nuxeo.org/xwiki/bin/view/FAQ/DownloadingNuxeoSources for more
 information if needed.
 
-2. Have JBoss 4.2.3 installed somewhere on your system (we like /opt/jboss, but YMMV).
+2. Have JBoss 4.2.3 installed somewhere on your system (we like /opt/jboss, but
+YMMV).
 
 3. Copy build.properties.sample to build.properties and edit it to match the
 location of your JBoss instance (not needed if your JBoss is in /opt/jboss).
