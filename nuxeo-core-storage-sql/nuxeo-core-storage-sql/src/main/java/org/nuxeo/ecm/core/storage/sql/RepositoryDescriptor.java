@@ -71,6 +71,12 @@ public class RepositoryDescriptor {
 
         @XNode
         public String field;
+
+        @Override
+        public String toString() {
+            return this.getClass().getSimpleName() + '(' + field + ",type="
+                    + type + ")";
+        }
     }
 
     @XNode("@name")

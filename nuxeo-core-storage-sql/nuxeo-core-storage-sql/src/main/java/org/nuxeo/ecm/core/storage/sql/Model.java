@@ -1010,6 +1010,8 @@ public class Model {
      * Creates all the models.
      */
     private void initModels(SchemaManager schemaManager) {
+        log.debug("Schemas fields from descriptor: "
+                + repositoryDescriptor.schemaFields);
         for (DocumentType documentType : schemaManager.getDocumentTypes()) {
             String typeName = documentType.getName();
             addTypeSimpleFragment(typeName, null); // create entry
@@ -1272,6 +1274,8 @@ public class Model {
                                 type = ColumnType.CLOB;
                             }
                         }
+                        log.debug("  String field '" + propertyName
+                                + "' using column type " + type);
                     }
                     String fragmentKey = field.getName().getLocalName();
                     if (fragmentName.equals(UID_SCHEMA_NAME)
