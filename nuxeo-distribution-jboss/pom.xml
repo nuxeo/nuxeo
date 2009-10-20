@@ -106,6 +106,30 @@
           </execution>
         </executions>
       </plugin>
+      <!-- deploy logging-monitor into JBoss -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-logging-monitor</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/jboss/server/default/lib/</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.jboss.services</groupId>
+                  <artifactId>logging-monitor</artifactId>
+                  <version>4.2.3.GA</version>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-nuxeo-plugin</artifactId>
