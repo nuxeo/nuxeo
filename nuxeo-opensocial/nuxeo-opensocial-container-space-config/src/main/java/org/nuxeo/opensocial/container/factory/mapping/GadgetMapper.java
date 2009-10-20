@@ -21,6 +21,7 @@ public class GadgetMapper extends GadgetBean implements Gadget {
   private Map<String, String> preferences = new HashMap<String, String>();
   private static final Log log = LogFactory.getLog(GadgetMapper.class);
   private static final String BOOL = "BOOL";
+  private static final Object TITLE_KEY_PREF = "title";
 
   private Integer pos;
   private String placeID;
@@ -203,11 +204,21 @@ public class GadgetMapper extends GadgetBean implements Gadget {
 
   public void createGadgetBean() {
     this.userPrefs = createUserPrefs();
+    updateTitleInPreference();
     bean = new GadgetBean(shindigId, ref, title, viewer, userPrefs, permission,
         collapsed, name, spaceName);
     this.renderUrl = createRenderUrl();
     bean.setRenderUrl(renderUrl);
     bean.setPosition(this.position);
+  }
+
+  private void updateTitleInPreference() {
+    for (PreferencesBean p : this.userPrefs) {
+      if (TITLE_KEY_PREF.equals(p.getName())) {
+        this.title = p.getValue();
+        return;
+      }
+    }
   }
 
   /**
