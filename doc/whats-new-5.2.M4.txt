@@ -29,9 +29,6 @@ Summary
   (multi-GB ones), thanks to this in-browser HTML-based annotation technology,
   leveraging W3C Annotea.
 
-- Implementation of *Microsoft Windows SharePoint Services 3.0* (WSS) for a
-  native integration with MS Office and Windows desktops.
-
 - Virtual Navigation is now bundled by default and allows to browse the
   repository on several metadata axis.
 
@@ -93,40 +90,17 @@ annotations to an URL)
 See the relevant chapter in the Nuxeo Book here:
 <http://doc.nuxeo.org/5.2/books/nuxeo-book/html/annotation-service.html>
 
-Windows SharePoint Services
-----------------------------
-
-### What's new?
-
-We have started implementing the "Windows SharePoint Services" protocols, namely
-WebDAV file upload / download and a small part of the WebServices.
-
-This will give you native and transparent integration with MS-Windows and
-MS-Office, since both see Nuxeo EP as a SharePoint server.
-
-### Why is it good?
-
-Basically, the Office integration doesn't require anymore any other software 
-installation. No need for addons or plugins to install in order to allow Office 
-connects and works with Nuxeo.
-
-Users can now:
-
-- open, create, save documents from Office to Nuxeo as easily as they can do 
-  with a SharePoint server
-- list the content of a workspace in Office
-
 Virtual Navigation
 ------------------
 
-The nuxeo virtual navigation plugin is now packaged with the release by default. 
+The nuxeo virtual navigation plugin is now packaged with the release by default.
 
 This allows the user to navigate the same content through many axes--not just 
 the parent/child relationship that one expects for a set of files in 
 directories.
 
 With Virtual Navigation, the user may navigate by any axis, such as the "by 
-country" or "by topic" options that are enabled by default.  This navigation can 
+country" or "by topic" options that are enabled by default. This navigation can 
 also be used in conjunction with our user-defined vocabularies to enable 
 navigation on any chosen set of dimensions. 
 
