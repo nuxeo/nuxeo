@@ -9,8 +9,8 @@
   <a4j:outputPanel id="taggingPanel">
     <ui:include src="/incl/message_banner.xhtml"/>
     <nxu:dataTable id="tagsTable"
-      value="#{tagActions.documentTags}" var="tag"
-      rendered="#{not empty tagActions.documentTags}">
+      value="#{currentDocumentTags}" var="tag"
+      rendered="#{not empty currentDocumentTags}">
 
       <nxu:column>
         <h:commandLink action="#{tagActions.listDocumentsForTag(tag.tagId)}">

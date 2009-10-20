@@ -34,11 +34,13 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TaggingHelper;
@@ -115,13 +117,20 @@ public class TagActionsBean implements Serializable {
      * @return
      * @throws ClientException
      */
+    @Factory(value = "currentDocumentTags", scope=ScopeType.EVENT)
     public List<Tag> getDocumentTags() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument==null) {
             return new ArrayList<Tag>();
         } else {
-            return taggingHelper.listDocumentTags(documentManager,
+            if (currentDocument.isProxy()) {
+                DocumentModel targetDocument = documentManager.getDocument(new IdRef(currentDocument.getSourceId()));
+                return taggingHelper.listDocumentTags(documentManager,
+                        targetDocument);
+            } else {
+                return taggingHelper.listDocumentTags(documentManager,
                 currentDocument);
+            }
         }
     }
 
@@ -140,6 +149,8 @@ public class TagActionsBean implements Serializable {
             taggingHelper.addTagging(documentManager, currentDocument,
                     tagsLabel);
             messageKey = "message.add.new.tagging";
+            // force invalidation
+            Contexts.getEventContext().remove("currentDocumentTags");
         }
         facesMessages.add(FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get(messageKey), tagsLabel);

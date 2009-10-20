@@ -225,7 +225,11 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
             return;
         }
         TaggingEntity taggingEntry = new TaggingEntity();
-        DublincoreEntity dc = provider.getDcById(document.getId());
+        String targetDocId = document.getId();
+        if (document.isProxy()) {
+            targetDocId = document.getSourceId();
+        }
+        DublincoreEntity dc = provider.getDcById(targetDocId);
         taggingEntry.setId(IdUtils.generateStringId());
         taggingEntry.setTag(tagEntity);
         taggingEntry.setTargetDocument(dc);

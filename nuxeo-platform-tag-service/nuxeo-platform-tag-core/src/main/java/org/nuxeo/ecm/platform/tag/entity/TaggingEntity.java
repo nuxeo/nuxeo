@@ -158,9 +158,17 @@ public class TaggingEntity implements Serializable{
         StringBuilder ret = new StringBuilder("Tagging: id - ");
         ret.append(id);
         ret.append("; target - ");
-        ret.append(targetDocument.getId());
+        if (targetDocument!=null) {
+            ret.append(targetDocument.getId());
+        } else {
+            ret.append("null");
+        }
         ret.append("; tag - ");
-        ret.append(tag.getLabel());
+        if (tag!=null) {
+            ret.append(tag.getLabel());
+        } else {
+            ret.append("null");
+        }
         return ret.toString();
     }
 
