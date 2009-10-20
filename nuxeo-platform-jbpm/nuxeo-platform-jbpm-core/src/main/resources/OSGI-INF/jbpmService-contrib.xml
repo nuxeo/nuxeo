@@ -18,6 +18,7 @@
 
     <configuration name="jboss" path="config/jboss-jbpm.cfg.xml" />
     <configuration name="jetty" path="config/jetty-jbpm.cfg.xml" />
+    <configuration name="tomcat" path="config/tomcat-jbpm.cfg.xml" />
   </extension>
 
 </component>

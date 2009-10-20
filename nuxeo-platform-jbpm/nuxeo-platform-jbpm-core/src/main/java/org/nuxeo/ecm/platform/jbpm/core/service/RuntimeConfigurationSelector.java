@@ -30,6 +30,8 @@ public class RuntimeConfigurationSelector {
             return JbpmComponent.ConfigurationName.jboss.name();
         case JETTY:
             return JbpmComponent.ConfigurationName.jetty.name();
+        case TOMCAT:
+            return JbpmComponent.ConfigurationName.tomcat.name();
         default:
             return null;
         }
