@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -168,7 +169,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
             for (DocumentModel child : children) {
                 if (child.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION)) {
                     log.debug("Skipping hidden doc");
-                } else if ("deleted".equalsIgnoreCase(child.getCurrentLifeCycleState())) {
+                } else if (LifeCycleConstants.DELETED_STATE.equals(child.getCurrentLifeCycleState())) {
                     log.debug("Skipping deleted doc");
                 } else {
                     items.add(new NuxeoListItem(child, corePathPrefix, urlRoot));
