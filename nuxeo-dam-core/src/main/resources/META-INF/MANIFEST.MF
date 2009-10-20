@@ -7,9 +7,11 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Bundle-Category: web
 Require-Bundle: org.nuxeo.dam.api,
-  org.nuxeo.ecm.platform.content.template,
-  org.nuxeo.ecm.platform.types.core,
-  org.nuxeo.ecm.platform.picture.core
+ org.nuxeo.ecm.platform.content.template,
+ org.nuxeo.ecm.platform.types.core,
+ org.nuxeo.ecm.platform.picture.core,
+ org.nuxeo.ecm.platform.video.core,
+ org.nuxeo.ecm.platform.audio.core
 Nuxeo-component: OSGI-INF/dam-content-template-contrib.xml,
-  OSGI-INF/dam-schemas-contrib.xml,
-  OSGI-INF/dam-listeners-contrib.xml
+ OSGI-INF/dam-schemas-contrib.xml,
+ OSGI-INF/dam-listeners-contrib.xml

@@ -35,6 +35,8 @@
       <artifact group="org.nuxeo.*" category="runtime,jboss4" includeDependsOnCategory="false" />
       <artifact group="org.nuxeo.*" category="core,search,web" />
       <artifact name="nuxeo-platform-imaging*" />
+      <artifact name="nuxeo-platform-video*" />
+      <artifact name="nuxeo-platform-audio*" />
       <artifact name="nuxeo-webengine*"/>
     </includes>
     <excludes>
