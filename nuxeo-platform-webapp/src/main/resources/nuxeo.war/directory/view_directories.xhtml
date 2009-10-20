@@ -13,7 +13,7 @@
 
   <ui:define name="body">
 
-    <h:form>
+    <h:form rendered="#{currentUser.administrator}">
 
       <h3><h:outputText value="#{messages['title.vocabularies']}" /></h3>
 
@@ -34,6 +34,10 @@
       </div>
 
     </h:form>
+    
+    <c:if test="#{!currentUser.administrator}">
+      Unauthorized user
+    </c:if>
 
   </ui:define>
 
