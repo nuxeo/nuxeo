@@ -61,6 +61,8 @@ test -r "$BINDHOST_CONF" && . "$BINDHOST_CONF"
 # Start command
 CMD_START="\"$JBOSS_HOME/bin/run.sh\" -c $CONFIG"
 test -n "$BINDHOST" && CMD_START="$CMD_START -b $BINDHOST"
+test -n "$PROPERTIES_FILE" && CMD_START="$CMD_START -P $PROPERTIES_FILE"
+
 # waiting time in s
 START_WAITING_TIME=300
 
