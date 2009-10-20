@@ -269,6 +269,8 @@ public class DialectSQLServer extends Dialect {
         for (String word : StringUtils.split(query, ' ', false)) {
             if (word.startsWith("-")) {
                 neg.add(word.substring(1));
+            } else if (word.startsWith("+")) {
+                pos.add(word.substring(1));
             } else {
                 pos.add(word);
             }

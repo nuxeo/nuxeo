@@ -256,6 +256,8 @@ public class DialectPostgreSQL extends Dialect {
         for (String word : StringUtils.split(query, ' ', false)) {
             if (word.startsWith("-")) {
                 res.add("!" + word.substring(1));
+            } else if (word.startsWith("+")) {
+                res.add(word.substring(1));
             } else {
                 res.add(word);
             }

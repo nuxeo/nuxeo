@@ -225,6 +225,8 @@ public class DialectH2 extends Dialect {
         for (String word : StringUtils.split(query, ' ', false)) {
             if (word.startsWith("-")) {
                 neg.add(word);
+            } else if (word.startsWith("+")) {
+                pos.add(word);
             } else {
                 pos.add("+" + word);
             }
