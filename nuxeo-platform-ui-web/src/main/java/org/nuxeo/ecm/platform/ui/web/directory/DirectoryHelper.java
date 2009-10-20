@@ -97,7 +97,7 @@ public final class DirectoryHelper {
 
     public List<DirectorySelectItem> getSelectItems(String directoryName,
             Map<String, Serializable> filter) {
-        return getSelectItems(directoryName, filter, false);
+        return getSelectItems(directoryName, filter, Boolean.FALSE);
     }
 
     public List<DirectorySelectItem> getSelectItems(String directoryName,
@@ -164,20 +164,21 @@ public final class DirectoryHelper {
 
     public static List<DirectorySelectItem> getSelectItems(
             VocabularyEntryList directoryValues, Map<String, Serializable> filter) {
-        return getSelectItems(directoryValues, filter, false);
+        return getSelectItems(directoryValues, filter, Boolean.FALSE);
     }
 
     public static List<DirectorySelectItem> getSelectItems(
             VocabularyEntryList directoryValues, Map<String, Serializable> filter, Boolean localize) {
         List<DirectorySelectItem> list = new ArrayList<DirectorySelectItem>();
 
-        Integer obsoleteInteger = (Integer) filter.get("obsolete");
-        Boolean obsolete = obsoleteInteger != null && 1 == obsoleteInteger;
+        // in obsolete filter we have either null (include obsoletes)
+        // or 0 (don't include obsoletes)
+        boolean obsolete = filter.get("obsolete") == null;
         String parentFilter = (String) filter.get("parent");
 
         FacesContext context = FacesContext.getCurrentInstance();
         for (VocabularyEntry entry : directoryValues.getEntries()) {
-            if (obsolete != null && !obsolete.equals(entry.getObsolete())) {
+            if (!obsolete && Boolean.TRUE.equals(entry.getObsolete())) {
                 continue;
             }
             String parent = entry.getParent();
