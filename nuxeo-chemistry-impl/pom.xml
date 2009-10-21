@@ -80,9 +80,9 @@
 
     <!-- scope provided -->
     <dependency>
-      <groupId>javax.resource</groupId>
-      <artifactId>connector</artifactId>
-      <version>1.0</version>
+      <groupId>javax.ressource</groupId>
+      <artifactId>jca-api</artifactId>
+      <version>1.5</version>
       <scope>provided</scope>
     </dependency>
 
