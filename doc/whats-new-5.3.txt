@@ -251,6 +251,11 @@ Some new APIs have been introduced to manage import and replication.
 Nuxeo DocumentManager now support CMIS queries (including JOINS).
 
 
+## CMIS <a name="cmis"></a>
+
+TODO: write blurb about CMIS.
+
+
 ### Tools
  
 #### Importer framework <a name="mail"></a>
@@ -301,6 +306,7 @@ This add-ons contains 2 parts:
 
 Documentation about data migration is available [here].
 
+
 ## Improving the developer experience <a name="developer"></a>
 
 ### Jetty / Tomcat support for DM
@@ -347,6 +353,7 @@ We improved the available documentation:
 ### Translations
 
 Translations files have been externalized so that it will be easy for the people interested in submitting translations to do so.
+
 
 ## Your turn now!
 
