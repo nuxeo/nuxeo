@@ -24,15 +24,6 @@
       <artifact name="nuxeo-core-storage-sql-ra" />
       <artifact name="nuxeo-apt-extensions" />
       <artifact name="nuxeo-webengine-apt" />
-
-      <!-- exclude tag -->
-      <artifact name="nuxeo-platform-tag-core" />
-      <artifact name="nuxeo-platform-tag-web" />
-      <artifact name="nuxeo-platform-tag-api" />
-      <artifact name="nuxeo-platform-" />
-      <!-- exclude virtual navigation du to bug related to direct dependency on tags for xhtml files. -->
-      <artifact name="nuxeo-platform-virtualnavigation-web" />
-      <artifact name="nuxeo-platform-virtualnavigation-core-contrib" />
       
       <!-- exclude webservices -->
       <artifact name="nuxeo-platform-ws" />
