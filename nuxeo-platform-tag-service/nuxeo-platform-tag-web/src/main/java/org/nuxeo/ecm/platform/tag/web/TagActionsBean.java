@@ -19,7 +19,9 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
@@ -33,7 +35,9 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -46,6 +50,7 @@ import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TaggingHelper;
 import org.nuxeo.ecm.platform.tag.WeightedTag;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
@@ -168,6 +173,9 @@ public class TagActionsBean implements Serializable {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         taggingHelper.removeTagging(documentManager, currentDocument, taggingId);
         reset();
+
+        // force invalidation
+        Contexts.getEventContext().remove("currentDocumentTags");
 
         facesMessages.add(FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get("message.remove.tagging"),
@@ -302,6 +310,36 @@ public class TagActionsBean implements Serializable {
 
     public void setAddTag(Boolean addTag) {
         this.addTag = addTag;
+    }
+
+
+    // Suggestion
+    public Object getSuggestions(Object input) throws ClientException {
+
+        String searchPattern = (String) input;
+        List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+
+        // XXX should sort on Tag weight
+        String query = "select * from Tag where tag:label like '" + searchPattern + "%' order by tag:label";
+        DocumentModelList tags = documentManager.query(query);
+
+        for (DocumentModel tag : tags) {
+          Map<String, Object> entry = new HashMap<String, Object>();
+          entry.put("id", tag.getPropertyValue("tag:label"));
+          entry.put("label", tag.getPropertyValue("tag:label"));
+          result.add(entry);
+          if (result.size()>10) {
+              break;
+          }
+        }
+
+        return result;
+    }
+
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
+    @BypassInterceptors
+    public void documentChanged() {
+        addTag=false;
     }
 
 }
