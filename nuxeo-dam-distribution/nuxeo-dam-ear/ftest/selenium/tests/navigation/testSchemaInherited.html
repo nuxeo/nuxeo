@@ -46,6 +46,7 @@
 	<td></td>
 	<td></td>
 </tr>
+<!-- test schema inherited for an image file -->
 <tr>
 	<td>click</td>
 	<td>link=Extra Wid...s To End</td>
@@ -81,14 +82,10 @@
 	<td>navigation:assetView:nxl_dublincore_1:nxw_expired_1</td>
 	<td>6/8/09</td>
 </tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
+<!-- test schema inherited for an office file -->
 <tr>
 	<td>click</td>
-	<td>toggleList:showList</td>
+	<td>link=P-01</td>
 	<td></td>
 </tr>
 <tr>
@@ -97,11 +94,183 @@
 	<td></td>
 </tr>
 <tr>
+	<td>verifyText</td>
+	<td>navigation:assetView:nxl_heading_1:nxw_title_1</td>
+	<td>P-01</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>navigation:assetView:nxl_heading_1:nxw_description_1</td>
+	<td>Test import set description</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>navigation:assetView:nxl_damc_1:nxw_author_1</td>
+	<td>John Do</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>navigation:assetView:nxl_damc_1:nxw_authoringDate_1</td>
+	<td>6/8/09</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>navigation:assetView:nxl_dublincore_1:nxw_expired_1</td>
+	<td>6/8/09</td>
+</tr>
+<!-- test schema inherited for a video file -->
+<tr>
+        <td>watchA4jRequests</td>
+        <td></td>
+        <td></td>
+</tr>
+<tr>
+        <td>click</td>
+        <td>iconfilterForm:Video</td>
+        <td></td>
+</tr>
+<tr>
+        <td>waitForA4jRequest</td>
+        <td>1200</td>
+        <td></td>
+</tr>
+<tr>
 	<td>verifyTextPresent</td>
-	<td>Extra Wide With Ext...Never Seems To End</td>
+	<td>sampleMPG</td>
 	<td></td>
 </tr>
-
+<tr>
+	<td>click</td>
+	<td>link=sampleMPG</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>1200</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>navigation:assetView:nxl_heading_1:nxw_title_1</td>
+	<td>sampleMPG</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>navigation:assetView:nxl_heading_1:nxw_description_1</td>
+	<td>Test import set description</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>navigation:assetView:nxl_damc_1:nxw_author_1</td>
+	<td>John Do</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>navigation:assetView:nxl_damc_1:nxw_authoringDate_1</td>
+	<td>6/8/09</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>navigation:assetView:nxl_dublincore_1:nxw_expired_1</td>
+	<td>6/8/09</td>
+</tr>
+<!-- test schema inherited for an audio file -->
+<tr>
+        <td>watchA4jRequests</td>
+        <td></td>
+        <td></td>
+</tr>
+<tr>
+        <td>click</td>
+        <td>iconfilterForm:Video</td>
+        <td></td>
+</tr>
+<tr>
+        <td>waitForA4jRequest</td>
+        <td>1200</td>
+        <td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>P-01</td>
+	<td></td>
+</tr>
+<tr>
+        <td>watchA4jRequests</td>
+        <td></td>
+        <td></td>
+</tr>
+<tr>
+        <td>click</td>
+        <td>iconfilterForm:Audio</td>
+        <td></td>
+</tr>
+<tr>
+        <td>waitForA4jRequest</td>
+        <td>1200</td>
+        <td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>sampleWAV</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=sampleWAV</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>1200</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>navigation:assetView:nxl_heading_1:nxw_title_1</td>
+	<td>sampleWAV</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>navigation:assetView:nxl_heading_1:nxw_description_1</td>
+	<td>Test import set description</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>navigation:assetView:nxl_damc_1:nxw_author_1</td>
+	<td>John Do</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>navigation:assetView:nxl_damc_1:nxw_authoringDate_1</td>
+	<td>6/8/09</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>navigation:assetView:nxl_dublincore_1:nxw_expired_1</td>
+	<td>6/8/09</td>
+</tr>
+<!-- to back to showing all documents -->
+<tr>
+        <td>watchA4jRequests</td>
+        <td></td>
+        <td></td>
+</tr>
+<tr>
+        <td>click</td>
+        <td>iconfilterForm:Audio</td>
+        <td></td>
+</tr>
+<tr>
+        <td>waitForA4jRequest</td>
+        <td>1200</td>
+        <td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>P-01</td>
+	<td></td>
+</tr>
 </tbody></table>
 </body>
 </html>
