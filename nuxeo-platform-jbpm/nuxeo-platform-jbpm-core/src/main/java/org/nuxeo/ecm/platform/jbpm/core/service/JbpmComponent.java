@@ -49,7 +49,7 @@ public class JbpmComponent extends DefaultComponent implements
         FrameworkListener {
 
     public enum ConfigurationName {
-        jboss, jetty, glassfish, tomcatTransactionnal, tomcatNontransactionnal
+        jboss, jetty, glassfish, tomcat, tomcatTransactionnal, tomcatNontransactionnal
     }
 
     public static final ComponentName NAME = new ComponentName(
