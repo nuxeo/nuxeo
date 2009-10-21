@@ -260,6 +260,9 @@ public class PublishActionsBean extends AbstractPublishActions implements
 
     public List<PublishedDocument> getPublishedDocumentsFor(String treeName)
             throws ClientException {
+        if (treeName==null || "".equals(treeName)) {
+            return null;
+        }
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         try {
             PublicationTree tree = publisherService.getPublicationTree(
