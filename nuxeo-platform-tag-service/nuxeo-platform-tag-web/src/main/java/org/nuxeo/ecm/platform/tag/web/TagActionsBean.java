@@ -147,6 +147,7 @@ public class TagActionsBean implements Serializable {
      */
     public String addTagging() throws ClientException {
         String messageKey = null;
+        tagsLabel = cleanTag(tagsLabel);
         if (StringUtils.isBlank(tagsLabel)) {
             messageKey = "message.add.new.tagging.not.empty";
         } else {
@@ -325,23 +326,37 @@ public class TagActionsBean implements Serializable {
     public Object getSuggestions(Object input) throws ClientException {
 
         String searchPattern = (String) input;
+        searchPattern = cleanTag(searchPattern);
         List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 
         // XXX should sort on Tag weight
-        String query = "select * from Tag where tag:label like '" + searchPattern + "%' order by tag:label";
+        String query = String.format(
+                "SELECT * FROM Tag WHERE tag:label LIKE '%s%%' "
+                        + "ORDER BY tag:label", searchPattern);
         DocumentModelList tags = documentManager.query(query);
 
         for (DocumentModel tag : tags) {
-          Map<String, Object> entry = new HashMap<String, Object>();
-          entry.put("id", tag.getPropertyValue("tag:label"));
-          entry.put("label", tag.getPropertyValue("tag:label"));
-          result.add(entry);
-          if (result.size()>10) {
-              break;
-          }
+            Serializable label = tag.getPropertyValue("tag:label");
+            Map<String, Object> entry = new HashMap<String, Object>();
+            entry.put("id", label);
+            entry.put("label", label);
+            result.add(entry);
+            if (result.size() > 10) {
+                break;
+            }
         }
 
         return result;
+    }
+
+    protected static String cleanTag(String tag) {
+        tag = tag.toLowerCase();
+        tag = tag.replaceAll(" +", " "); // collapse spaces
+        tag = tag.trim(); // trim spaces
+        tag = tag.replace("\\", ""); // dubious char
+        tag = tag.replace("'", ""); // dubious char
+        tag = tag.replace("%", ""); // dubious char
+        return tag;
     }
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)

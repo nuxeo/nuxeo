@@ -52,6 +52,7 @@
                     </span>
 
                     <a4j:commandButton value="#{messages['command.tag.add.new.tag']}"
+                        id="tagLabelAddButton"
                         action="#{tagActions.addTagging}" styleClass="button"
                         reRender="documentViewPanel, MultiTreeView" />
                     <a4j:status>
@@ -62,40 +63,23 @@
                 </div>
             </c:if>
 
-
             <c:if test="#{tagActions.addTag}">
                 <h:panelGroup id="tag_suggestGroup">
-
-                    <c:set var="minChars" value="3" />
-                    <c:set var="frequency" value="0" />
-                    <c:set var="requestDelay" value="100" />
-                    <c:set var="maxSearchResults" value="20" />
-
                     <rich:suggestionbox id="tag_suggestBox"
                         for="tagLabel" tokens=""
                         suggestionAction="#{tagActions.getSuggestions}"
                         var="result"
                         fetchValue="#{result.id}"
                         nothingLabel="#{messages['label.suggestion.noSearchResults']}"
-                        minChars="#{minChars}" frequency="#{frequency}" requestDelay="#{requestDelay}">
+                        minChars="3" frequency="0" requestDelay="100">
                         <a4j:support event="onselect"
-                            actionListener="#{suggestionActions.addSelectionToList}"
-                            onsubmit="if (event.keyCode == 9) {blankSuggestionInput('tag_suggestDiv');return false;}"
-                            oncomplete="javascript:blankSuggestionInput(tag_suggestDiv);"
-                            focus="tag_suggest"
-                            bypassUpdates="true"
-                            reRender="tag_suggest_listRegion"
-                            id="tag_suggest_listRegion_select">
-                            <f:param name="suggestionInputSelectorId" value="tag_suggest" />
-                            <f:param name="suggestionSelectionListId" value="tag_list" />
+                            oncomplete="javascript:$('document_view:tagLabelAddButton').click();"
+                            bypassUpdates="true">
                         </a4j:support>
                         <h:column>
-                            <f:subview  id="tag_suggest_result">
-                                <h:graphicImage value="/icons/tag_blue.png" alt="user.gif" />
+                            <f:subview>
+                                <h:graphicImage value="/icons/tag_blue.png" alt="(tag)" />
                                 <h:outputText value="${result.id}" />
-                            </f:subview>
-                            <f:subview rendered="#{empty result.type}" id="tag_result">
-                                <h:outputText value="#{item}" />
                             </f:subview>
                         </h:column>
                     </rich:suggestionbox>
