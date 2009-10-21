@@ -330,7 +330,7 @@ Seam components hot reload is now supported.
 
 This can significantly improve development speed when using the JSF framework.
 
-XXX [Link]
+See: <http://doc.nuxeo.org/xwiki/bin/view/FAQ/SeamJSFHotReload> for more info.
 
 ### GWT
 
