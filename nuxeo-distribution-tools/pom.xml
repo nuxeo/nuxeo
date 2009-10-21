@@ -10,7 +10,7 @@
 
   <groupId>org.nuxeo.build</groupId>
   <artifactId>nuxeo-distribution-tools</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1</version>
   <packaging>jar</packaging>
   <name>Nuxeo Distribution Build</name>
   <description>Assemble Nuxeo distributions</description>
@@ -18,6 +18,21 @@
   <properties>
     <mavenVersion>2.0.9</mavenVersion>
   </properties>
+
+  <distributionManagement>
+    <site>
+      <id>maven-website</id>
+      <url>scpexe://gironde.nuxeo.com/home/mavenweb/site/</url>
+    </site>
+    <repository>
+      <id>nuxeo-release</id>
+      <url>http://maven.nuxeo.org/nexus/content/repositories/nuxeo-release</url>
+    </repository>
+    <snapshotRepository>
+      <id>nuxeo-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/repositories/nuxeo-snapshot</url>
+    </snapshotRepository>
+  </distributionManagement>
 
   <repositories>
     <repository>
