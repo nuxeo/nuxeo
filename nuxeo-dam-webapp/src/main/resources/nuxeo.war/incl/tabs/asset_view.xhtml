@@ -128,7 +128,7 @@
           <div style="clear:both;"></div>
         </div>
         <div class="togglePanelBody" style="display: none">
-          <h:outputText value="#{messages['label.header.info.exif']}"/>
+          <nxl:layout name="exif_info" mode="view" value="#{documentActions.currentSelection}"/>
         </div>
       </div>
     </a4j:form>
