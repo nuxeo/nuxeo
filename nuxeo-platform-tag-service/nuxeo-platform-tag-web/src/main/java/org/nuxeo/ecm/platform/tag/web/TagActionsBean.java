@@ -171,6 +171,15 @@ public class TagActionsBean implements Serializable {
      */
     public String removeTagging(String taggingId) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        String deletedTagLabel = taggingId;
+        try {
+            DocumentModel tagToDelete = documentManager.getDocument(new IdRef(taggingId));
+            deletedTagLabel = (String)tagToDelete.getPropertyValue("tag:label");
+        }
+        catch (Exception e) {
+            log.warn("Unable to find deleted tag label", e);
+        }
+
         taggingHelper.removeTagging(documentManager, currentDocument, taggingId);
         reset();
 
@@ -179,8 +188,7 @@ public class TagActionsBean implements Serializable {
 
         facesMessages.add(FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get("message.remove.tagging"),
-                taggingId);
-
+                deletedTagLabel);
         return null;
     }
 

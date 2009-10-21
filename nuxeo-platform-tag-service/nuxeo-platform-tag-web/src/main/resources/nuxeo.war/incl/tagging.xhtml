@@ -1,112 +1,108 @@
 <div xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:rich="http://richfaces.org/rich">
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:nxu="http://nuxeo.org/nxweb/util"
+    xmlns:c="http://java.sun.com/jstl/core"
+    xmlns:rich="http://richfaces.org/rich">
 
- <c:if test="#{tagServiceEnabled}">
+    <c:if test="#{tagServiceEnabled}">
+        <a4j:outputPanel id="taggingPanel" ajaxRendered="false">
+            <ui:include src="/incl/message_banner.xhtml"/>
+            <nxu:dataTable id="tagsTable"
+                value="#{currentDocumentTags}" var="tag"
+                rendered="#{not empty currentDocumentTags}">
 
-  <a4j:outputPanel id="taggingPanel">
-    <ui:include src="/incl/message_banner.xhtml"/>
-    <nxu:dataTable id="tagsTable"
-      value="#{currentDocumentTags}" var="tag"
-      rendered="#{not empty currentDocumentTags}">
+                <nxu:column>
+                    <h:commandLink action="#{tagActions.listDocumentsForTag(tag.tagId)}">
+                        <h:graphicImage id="tagIcon" url="/icons/tag_blue.png"/>
+                    </h:commandLink>
+                </nxu:column>
 
-      <nxu:column>
-        <h:commandLink action="#{tagActions.listDocumentsForTag(tag.tagId)}">
-          <h:graphicImage id="tagIcon" url="/icons/tag_blue.png"/>
-        </h:commandLink>
-      </nxu:column>
+                <nxu:column>
+                    <h:commandLink value="#{tag.tagLabel}"
+                        action="#{tagActions.listDocumentsForTag(tag.tagId)}" />
+                </nxu:column>
 
-      <nxu:column>
-        <h:commandLink value="#{tag.tagLabel}"
-          action="#{tagActions.listDocumentsForTag(tag.tagId)}" />
-      </nxu:column>
+                <nxu:column>
+                    <c:if test="#{tagActions.canModifyTag(tag)}">
+                        <a4j:commandLink id="removeTag" action="#{tagActions.removeTagging(tag.tagId)}" immediate="true"
+                            reRender="documentViewPanel, MultiTreeView" >
+                            <h:graphicImage value="/icons/action_delete_mini.gif" />
+                        </a4j:commandLink>
+                    </c:if>
+                </nxu:column>
 
-      <nxu:column>
-          <c:if test="#{tagActions.canModifyTag(tag)}">
-        <a4j:commandLink id="removeTag" action="#{tagActions.removeTagging(tag.tagId)}" immediate="true"
-          reRender="documentViewPanel, MultiTreeView" >
-          <h:graphicImage value="/icons/action_delete_mini.gif" />
-        </a4j:commandLink>
-        </c:if>
-      </nxu:column>
-    </nxu:dataTable>
+            </nxu:dataTable>
 
-    <h:panelGrid columns="1">
-      <a4j:commandLink id="addTagLink"
-        ajaxSingle="true" actionListener="#{tagActions.showAddTag}"
-        reRender="documentViewPanel, MultiTreeView">
-        <h:graphicImage id="toggle_plus" url="/icons/action_add.gif" />
-        <h:outputText value="#{messages['command.tag.add.new.tag']} "/>
-      </a4j:commandLink>
+            <a4j:commandLink id="addTagLink"
+                ajaxSingle="true" actionListener="#{tagActions.showAddTag}"
+                reRender="documentViewPanel, MultiTreeView">
+                <h:graphicImage id="toggle_plus" url="/icons/action_add.gif" />
+                <h:outputText value="#{messages['command.tag.add.new.tag']} "/>
+            </a4j:commandLink>
 
 
-      <h:panelGroup rendered="#{tagActions.addTag}">
-          <span id="tag_suggestDiv">
-        <h:inputText id="tagLabel" value="#{tagActions.tagsLabel}"
-          styleClass="dataInputText" onkeydown="if (event.keyCode == 13 || event.keyCode == 9) {return false;}">
-        </h:inputText>
-        <a4j:status>
-            <f:facet name="start">
-              <h:graphicImage value="/img/standart_waiter.gif" />
-            </f:facet>
-        </a4j:status>
-        </span>
+            <c:if test="#{tagActions.addTag}">
+                <div>
+                    <span id="tag_suggestDiv">
+                        <h:inputText id="tagLabel" value="#{tagActions.tagsLabel}"
+                            styleClass="dataInputText" onkeydown="if (event.keyCode == 13 || event.keyCode == 9) {return false;}">
+                        </h:inputText>
+                    </span>
 
-        <a4j:commandButton value="#{messages['command.tag.add.new.tag']}"
-          action="#{tagActions.addTagging}" styleClass="button"
-          reRender="documentViewPanel, MultiTreeView" />
-      </h:panelGroup>
-    </h:panelGrid>
+                    <a4j:commandButton value="#{messages['command.tag.add.new.tag']}"
+                        action="#{tagActions.addTagging}" styleClass="button"
+                        reRender="documentViewPanel, MultiTreeView" />
+                    <a4j:status>
+                        <f:facet name="start">
+                            <h:graphicImage value="/img/standart_waiter.gif" />
+                        </f:facet>
+                    </a4j:status>
+                </div>
+            </c:if>
 
-  <a4j:region renderRegionOnly="true" id="tag_ajax_region">
-  <h:panelGroup id="tag_suggestGroup">
 
-        <a4j:status>
-            <f:facet name="start">
-              <h:graphicImage value="/img/standart_waiter.gif" />
-            </f:facet>
-        </a4j:status>
-    <c:set var="minChars" value="3" />
-    <c:set var="frequency" value="0" />
-    <c:set var="requestDelay" value="100" />
-    <c:set var="maxSearchResults" value="20" />
+            <c:if test="#{tagActions.addTag}">
+                <h:panelGroup id="tag_suggestGroup">
 
-   <rich:suggestionbox id="tag_suggestBox"
-         for="tagLabel" tokens=""
-            suggestionAction="#{tagActions.getSuggestions}"
-            var="result"
-            fetchValue="#{result.id}"
-            nothingLabel="#{messages['label.suggestion.noSearchResultsOrSearchOverflow']}"
-            minChars="#{minChars}" frequency="#{frequency}" requestDelay="#{requestDelay}">
-            <a4j:support event="onselect"
-              actionListener="#{suggestionActions.addSelectionToList}"
-              onsubmit="if (event.keyCode == 9) {blankSuggestionInput('tag_suggestDiv');return false;}"
-              oncomplete="javascript:blankSuggestionInput(tag_suggestDiv);"
-              focus="tag_suggest"
-              bypassUpdates="true"
-              reRender="tag_suggest_listRegion"
-              id="tag_suggest_listRegion_select">
-              <f:param name="suggestionInputSelectorId" value="tag_suggest" />
-              <f:param name="suggestionSelectionListId" value="tag_list" />
-            </a4j:support>
-            <h:column>
-              <f:subview  id="tag_suggest_result">
-                <h:graphicImage value="/icons/tag_blue.png" alt="user.gif" />
-                <h:outputText value="${result.id}" />
-              </f:subview>
-              <f:subview rendered="#{empty result.type}" id="tag_result">
-                <h:outputText value="#{item}" />
-              </f:subview>
-            </h:column>
-          </rich:suggestionbox>
+                    <c:set var="minChars" value="3" />
+                    <c:set var="frequency" value="0" />
+                    <c:set var="requestDelay" value="100" />
+                    <c:set var="maxSearchResults" value="20" />
 
-        </h:panelGroup>
-  </a4j:region>
-</a4j:outputPanel>
- </c:if>
+                    <rich:suggestionbox id="tag_suggestBox"
+                        for="tagLabel" tokens=""
+                        suggestionAction="#{tagActions.getSuggestions}"
+                        var="result"
+                        fetchValue="#{result.id}"
+                        nothingLabel="#{messages['label.suggestion.noSearchResults']}"
+                        minChars="#{minChars}" frequency="#{frequency}" requestDelay="#{requestDelay}">
+                        <a4j:support event="onselect"
+                            actionListener="#{suggestionActions.addSelectionToList}"
+                            onsubmit="if (event.keyCode == 9) {blankSuggestionInput('tag_suggestDiv');return false;}"
+                            oncomplete="javascript:blankSuggestionInput(tag_suggestDiv);"
+                            focus="tag_suggest"
+                            bypassUpdates="true"
+                            reRender="tag_suggest_listRegion"
+                            id="tag_suggest_listRegion_select">
+                            <f:param name="suggestionInputSelectorId" value="tag_suggest" />
+                            <f:param name="suggestionSelectionListId" value="tag_list" />
+                        </a4j:support>
+                        <h:column>
+                            <f:subview  id="tag_suggest_result">
+                                <h:graphicImage value="/icons/tag_blue.png" alt="user.gif" />
+                                <h:outputText value="${result.id}" />
+                            </f:subview>
+                            <f:subview rendered="#{empty result.type}" id="tag_result">
+                                <h:outputText value="#{item}" />
+                            </f:subview>
+                        </h:column>
+                    </rich:suggestionbox>
+
+                </h:panelGroup>
+            </c:if>
+        </a4j:outputPanel>
+    </c:if>
 
 </div>
