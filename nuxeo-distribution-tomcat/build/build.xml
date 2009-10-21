@@ -25,8 +25,8 @@
 
     <nx:rename from="${tomcat}/webapps/nuxeo/nuxeo-*" to="${tomcat}/webapps/nuxeo/nxserver" />
     
-    <copy todir="${tomcat}">
-      <fileset dir="resources" />      
+    <copy todir="${tomcat}" overwrite="true">
+      <fileset dir="resources" />
     </copy>
         
     <delete>

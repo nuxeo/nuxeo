@@ -15,14 +15,14 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<Context antiResourceLocking="false" privileged="true" shared="true">
+<Context antiResourceLocking="false" privileged="true">
   
   <!-- Disable HTTP Session persistence between restart since webengine session objects are not serializable -->
   <Manager pathname="" />
 
   <!-- define custom loader that is responsible to start nuxeo runtime (it extends the default one) -->
   <Loader className="org.nuxeo.runtime.tomcat.NuxeoWebappLoader" loaderClass="org.nuxeo.runtime.tomcat.NuxeoWebappClassLoader"
-          home="nxserver" classPath="bundles/.:lib/.:config" systemBundle="bundles/nuxeo-runtime-osgi-1.6.0-SNAPSHOT.jar"  />
+          home="nxserver" classPath="bundles/.:lib/.:config" systemBundle="bundles/nuxeo-runtime-osgi-*"  />
 
   <Listener className="org.nuxeo.runtime.tomcat.NuxeoLauncher" />
 
