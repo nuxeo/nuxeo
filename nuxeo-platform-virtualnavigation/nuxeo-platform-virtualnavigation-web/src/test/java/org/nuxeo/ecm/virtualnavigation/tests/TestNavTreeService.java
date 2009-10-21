@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.virtualnavigation.tests;
 
@@ -27,21 +26,19 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestNavTreeService extends NXRuntimeTestCase {
 
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.platform.virtualnavigation.web",
-        "OSGI-INF/navtree-framework.xml");
+                "OSGI-INF/navtree-framework.xml");
         deployContrib("org.nuxeo.platform.virtualnavigation.web.test",
-        "OSGI-INF/navtree-contrib.xml");
+                "OSGI-INF/navtree-contrib.xml");
     }
 
     public void testServiceLookup() {
         NavTreeService service = Framework.getLocalService(NavTreeService.class);
         assertNotNull(service);
     }
-
 
     public void testNavTrees() throws Exception {
         NavTreeService service = Framework.getLocalService(NavTreeService.class);
@@ -54,12 +51,13 @@ public class TestNavTreeService extends NXRuntimeTestCase {
         assertFalse(descs.get(0).isDirectoryTreeBased());
     }
 
-
     public void testNavTreesWithDirectories() throws Exception {
 
-        deployBundle("org.nuxeo.ecm.webapp.base");
+        deployContrib("org.nuxeo.ecm.webapp.base",
+                "OSGI-INF/directorytreemanager-framework.xml");
         deployContrib("org.nuxeo.platform.virtualnavigation.web",
-        "OSGI-INF/directorytreemanager-contrib.xml");
+                "OSGI-INF/directorytreemanager-contrib.xml");
+        fireFrameworkStarted(); // needed (org.nuxeo.runtime.started in contrib)
 
         NavTreeService service = Framework.getLocalService(NavTreeService.class);
         assertNotNull(service);
@@ -77,6 +75,5 @@ public class TestNavTreeService extends NXRuntimeTestCase {
         assertTrue(descs.get(2).isDirectoryTreeBased());
 
     }
-
 
 }

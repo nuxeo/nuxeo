@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.virtualnavigation.service;
 
@@ -29,49 +28,52 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- *
  * Very simple component to manage Navigation tree registration
  *
  * @author Thierry Delprat
- *
  */
 public class NavTreeService extends DefaultComponent {
 
-    public static String NAVTREE_EP ="navigationTree";
+    public static String NAVTREE_EP = "navigationTree";
 
-    protected static List<NavTreeDescriptor> descriptors = new ArrayList<NavTreeDescriptor>();
+    protected List<NavTreeDescriptor> descriptors;
 
-    protected static boolean directoryTreeFetched=false;
+    protected boolean directoryTreesFetched;
 
     public List<NavTreeDescriptor> getTreeDescriptors() {
-        initIfNeeded();
+        maybeFetchDirectoryTrees();
         return descriptors;
     }
 
-    protected void initIfNeeded() {
-        if (!directoryTreeFetched) {
-
-            DirectoryTreeService directoryTreeService = (DirectoryTreeService) Framework.getRuntime().getComponent(DirectoryTreeService.NAME);
-            if (directoryTreeService!=null) {
-                directoryTreeFetched=true;
-                List<String> treeNames = directoryTreeService.getDirectoryTrees();
-                for (String dTreeName : treeNames) {
-                    descriptors.add(new NavTreeDescriptor(dTreeName,
-                            "label." + dTreeName, true));
-                }
-            }
+    protected void maybeFetchDirectoryTrees() {
+        if (directoryTreesFetched) {
+            return;
         }
+        DirectoryTreeService directoryTreeService = (DirectoryTreeService) Framework.getRuntime().getComponent(
+                DirectoryTreeService.NAME);
+        if (directoryTreeService == null) {
+            return;
+        }
+        List<String> treeNames = directoryTreeService.getDirectoryTrees();
+        for (String dTreeName : treeNames) {
+            descriptors.add(new NavTreeDescriptor(dTreeName, "label."
+                    + dTreeName, true));
+        }
+        directoryTreesFetched = true;
     }
 
-    public void registerContribution(Object contribution, String extensionPoint,
-            ComponentInstance contributor) throws Exception {
+    @Override
+    public void registerContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
         if (NAVTREE_EP.equals(extensionPoint)) {
-            descriptors.add((NavTreeDescriptor)contribution);
+            descriptors.add((NavTreeDescriptor) contribution);
         }
     }
 
+    @Override
     public void activate(ComponentContext context) throws Exception {
-        directoryTreeFetched=false;
+        directoryTreesFetched = false;
         descriptors = new ArrayList<NavTreeDescriptor>();
     }
 
