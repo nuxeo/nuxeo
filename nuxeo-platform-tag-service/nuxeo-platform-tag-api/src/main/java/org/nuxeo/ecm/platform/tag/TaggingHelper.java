@@ -182,7 +182,7 @@ public class TaggingHelper {
         }
         DocumentModelList documentsForTag = new DocumentModelListImpl();
 
-        List<String> docsForTag = tagService.listDocumentsForTag(session,
+        List<String> docsForTag = getTagService().listDocumentsForTag(session,
                 tagDocumentId, session.getPrincipal().getName());
         for (String docForTagId : docsForTag) {
             documentsForTag.add(session.getDocument(new IdRef(docForTagId)));
@@ -208,7 +208,7 @@ public class TaggingHelper {
                         SecurityConstants.WRITE)) {
             return true;
         }
-        return tagService.getTaggingId(session, document.getId(), tag.tagLabel,
+        return getTagService().getTaggingId(session, document.getId(), tag.tagLabel,
                 principal.getName()) != null;
     }
 
