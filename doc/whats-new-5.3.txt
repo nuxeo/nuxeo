@@ -2,7 +2,27 @@
 
 Nuxeo EP and DM 5.3 have recently [been announced](http://www.nuxeo.com/en/dm53). Here are some additional technical notes about this release.
 
-## Summary
+If you can't wait, go [download the packages](http://www.nuxeo.com/en/products/dm/try-it) now.
+
+## Highlights
+
+**[Standards for Social Business](#opensocial)**: Support for OpenSocial allows the creation of gadgets to build web mashups within enterprise applications. Nuxeo DM 5.3 can serve as both publisher of gadgets as well as be an OpenSocial container, allowing the Nuxeo DM repository to host and participate in enterprise mashups.
+
+**[Windows Sharepoint Services support](#wss)**: Access Nuxeo DM 5.3 via Microsoft Sharepoint for basic library services. Native integration with Windows Explorer ensures information workers can use familiar browsing habits to access Nuxeo DM content and perform common file operations. Microsoft Office integration allows files to be opened or saved directly to/from Nuxeo DM and lets users see information about their content directly from the Document Panel in Microsoft Office.
+
+**[Federated publishing](#publishing)**: Centrally control and publish content to remote Nuxeo applications, file systems, HTTP servers, web portals, and more thanks to a pluggable and unified Publishing Service. It is suited to deployments with a distributed information architecture, balancing ease of publication with requirements to for content control.
+
+**[Tagging Services](#tagging)**: Enhanced metadata capabilities ensures information workers can categorize their content in ways that make sense for average users. Tagging recommendations and tag cloud support enrich an organization's ability to describe and retrieve their information assets.
+
+**[New Performance Record for Large Deployments](#perf)**: Faster search and retrieval benchmarks for Nuxeo DM repositories holding several million items for hundreds of concurrent users using inexpensive commodity hardware specifications.
+
+**[Email Capture Enhancements for MS Exchange and Gmail](#email)**: Improved support for email folders. Fetch email from Microsoft Exchange or Gmail to/from the Nuxeo DM 5.3 email archive folders to ensure contextual management of business communication.
+
+**[CMIS Support](#cmis)**: Ensure true interoperability across multiple ECM, ERP and search systems, Nuxeo DM 5.3 offers a CMIS Server via an add-on component, based on the CMIS draft 0.62.
+
+**[Search/Indexing Improvements](#indexing)**: Granular metadata search and indexing allows users to find and retrieve content based on one or more fields.
+
+**[Improved Developer Productivity](#developer)**: Several enhancements have been made to make the experience of developing on top of the Nuxeo platform more productive and enjoyable. 
 
 ### From 5.2.1 to 5.3
 
@@ -53,7 +73,7 @@ During the last months we've worked with our partners and customers on several i
 
 This means a lot of small improvements have been made to WebEngine and the Theme engine.
 
-#### Tag Service
+#### Tag Service <a name="tagging"></a>
 
 You can now add tags to Nuxeo Documents and:
 
@@ -83,7 +103,7 @@ It allows to include UWA JavaScript widgets containers in the Themes.
 
 WebWidgets are very close to OpenSocial gadgets (see below). In the future we will make converge these 2 javascript portlets models.
 
-### OpenSocial
+### OpenSocial <a name="opensocial"></a>
 
 Contributed by the community
 
@@ -124,7 +144,7 @@ In the next months, we expect to also take advantage of OpenSocial social featur
  
 ### Multi-instance management
 
-#### Remote Publishing
+#### Remote Publishing <a name="publishing"></a>
 
 The publishing service has been replaced by a completely new Publisher Service.
 
@@ -170,7 +190,7 @@ As a consequence, it will be easier to maintain and improve these plugins.
 
 Any feedback on these plugins will be helpful: we don't have many MSIE and MSOffice users on site.
 
-#### WSS Extensions
+#### WSS Extensions <a name="wss"></a>
 
 Windows SharePoint Services (WSS) is a set of protocols published by Microsoft that describe how SharePoint communicates with the rest of the Microsoft world.
 
@@ -198,7 +218,7 @@ Nuxeo 5.2 was the first version to ship with VCS, or "Visible Content Store", ou
 
 Nuxeo 5.3 comes with a lot of improvements of VCS.
 
-#### Performances
+#### Performances <a name="perf"></a>
 
 We did a lot of performances testing on VCS, using [FunkLoad](http://funkload.nuxeo.org/) (our open source functional and load testing toolkit) and the importer (see below).
 
@@ -212,7 +232,7 @@ Based on our results and on the feedbacks from support, we did some performance 
 
 Thanks to these optimizations, browsing and searching on a repository with several millions of documents is not an issue, even with a cheap server.
 
-#### Indexing
+#### Indexing <a name="indexing"></a>
 
 In addition of the CMIS Join support (see below), VCS now supports multiple fulltext indexes.
 
@@ -233,7 +253,7 @@ Nuxeo DocumentManager now support CMIS queries (including JOINS).
 
 ### Tools
  
-#### Importer framework
+#### Importer framework <a name="mail"></a>
 
 A lot of projects using Nuxeo need at some point to inject documents into a Nuxeo repository:
 
@@ -281,7 +301,16 @@ This add-ons contains 2 parts:
 
 Documentation about data migration is available [here].
 
-## Improving the developer experience
+## Improving the developer experience <a name="developer"></a>
+
+### Jetty / Tomcat support for DM
+
+<img src="tomcat.gif" align="right">
+Nuxeo distribution now supports deploying Nuxeo DM on Jetty and Tomcat.
+
+These distributions does not include any Java EE supports (Transactions, EJB3, JCA...), but provide the same ECM features.
+
+These packagings are mainly targeted to development environment since startup is significantly faster than a complete JEE container (less than 40s for full startup).
 
 ### JBoss speed-up
 
@@ -296,15 +325,6 @@ Seam components hot reload is now supported.
 This can significantly improve development speed when using the JSF framework.
 
 XXX [Link]
-
-### Jetty / Tomcat support for DM
-
-<img src="tomcat.gif" align="right">
-Nuxeo distribution now supports deploying Nuxeo DM on Jetty and Tomcat.
-
-These distributions does not include any Java EE supports (Transactions, EJB3, JCA...), but provide the same ECM features.
-
-These packagings are mainly targeted to development environment since startup is significantly faster than a complete JEE container (less than 40s for full startup).
 
 ### GWT
 
@@ -327,3 +347,28 @@ We improved the available documentation:
 ### Translations
 
 Translations files have been externalized so that it will be easy for the people interested in submitting translations to do so.
+
+## Your turn now!
+
+### Trying it out
+
+(TODO: put the right URLs).
+
+To try it out, grab the packages:
+
+- <http://www.nuxeo.org/static/NuxeoEP/nuxeo-ep-5.2.0.m4-1.tar.gz>
+- <http://www.nuxeo.org/static/NuxeoEP/nuxeo-ep-5.2.0.m4-1.zip>
+
+Or the installers:
+
+- <http://www.nuxeo.org/static/NuxeoEP/nuxeo-ep-5.2.0.m4-installer-1.jar> [Generic]
+- <http://www.nuxeo.org/static/NuxeoEP/nuxeo-ep-5.2.0.m4-setup.exe> [Windows 32 bits]
+- <http://www.nuxeo.org/static/NuxeoEP/nuxeo-ep-5.2.0.m4_64-setup.exe> [Windows 64 bits]
+
+### Joining the community
+
+- [Read the doc](http://www.nuxeo.org/).
+
+- [Get the source code](http://doc.nuxeo.org/xwiki/bin/view/Main/NuxeoDevGettingStarted).
+
+- Join the conversation: [mailing list](<http://lists.nuxeo.org/listinfo/ecm>), [forum](<http://www.nuxeo.org/discussions/>).
