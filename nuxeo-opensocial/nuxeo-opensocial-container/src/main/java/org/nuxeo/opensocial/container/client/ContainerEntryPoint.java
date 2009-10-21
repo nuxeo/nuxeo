@@ -28,6 +28,7 @@ import org.nuxeo.opensocial.container.client.view.ContainerPortal;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Timer;
@@ -41,6 +42,8 @@ import com.gwtext.client.widgets.layout.FitLayout;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class ContainerEntryPoint implements EntryPoint {
+
+    private static final String GWT_WINDOW_WIDTH = "windowWidth";
 
     private static final String SERVICE_ENTRY_POINT = "/nuxeo/gwtcontainer";
 
@@ -60,9 +63,13 @@ public class ContainerEntryPoint implements EntryPoint {
 
     private static final HashMap<String, String> GWT_PARAMS = new HashMap<String, String>();
 
+    private static final int MARGIN_FROM_FULL_WIDTH = 70;
+
     ServiceDefTarget endpoint = (ServiceDefTarget) SERVICE;
 
     private static ContainerPortal portal;
+
+    private int windowWidth = PANEL_WIDTH; // for variable sizing
 
     public void onModuleLoad() {
         JsLibrary.loadingShow();
@@ -70,6 +77,14 @@ public class ContainerEntryPoint implements EntryPoint {
         JSONObject objects = JSONParser.parse(getInitialisationParams()).isObject();
         for (String key : objects.keySet())
             GWT_PARAMS.put(key, getGwtParam(objects, key));
+
+        JSONNumber number = objects.get(GWT_WINDOW_WIDTH).isNumber();
+
+        if (number != null) {
+            windowWidth = (int) objects.get(GWT_WINDOW_WIDTH).isNumber().doubleValue();
+            // we want a little border
+            windowWidth -= MARGIN_FROM_FULL_WIDTH;
+        }
 
         SERVICE.getContainer(GWT_PARAMS, new AsyncCallback<Container>() {
             public void onFailure(Throwable object) {
@@ -88,10 +103,11 @@ public class ContainerEntryPoint implements EntryPoint {
                 RootPanel.get(GWT_CONTAINER_ID).add(panel);
 
                 portal = new ContainerPortal(container, panel);
-                panel.setWidth(PANEL_WIDTH);
+                // panel.setWidth(PANEL_WIDTH);
+                panel.setWidth(windowWidth);
                 panel.setHeight("100%");
                 portal.loader(DEFAULT_TIMEOUT);
-                portal.setHeight("100%");
+                // portal.setHeight("100%");
                 JsLibrary.updateFrameHeight();
                 createGwtContainerMask();
                 Timer t = new Timer() {
@@ -153,39 +169,37 @@ public class ContainerEntryPoint implements EntryPoint {
     };
 
     private static native String getInitialisationParams() /*-{
-                if($wnd.getGwtParams)
-                  return $wnd.getGwtParams();
-                return null;
-              }-*/;
+                                                                                                                                     if($wnd.getGwtParams)
+                                                                                                                                       return $wnd.getGwtParams();
+                                                                                                                                     return null;
+                                                                                                                                   }-*/;
 
     private static native void createGwtContainerMask() /*-{
-                $wnd.jQuery("#gwtContainer").append($wnd.jQuery("<div></div>").attr("id","gwtContainerMask"));
-                $wnd.jQuery("#gwtContainerMask").hide();
-              }-*/;
+                                                                                                                                     $wnd.jQuery("#gwtContainer").append($wnd.jQuery("<div></div>").attr("id","gwtContainerMask"));
+                                                                                                                                     $wnd.jQuery("#gwtContainerMask").hide();
+                                                                                                                                   }-*/;
 
     private static native void attachLayoutManager(String layout,
             Integer boxSelected) /*-{
-                console.log("attach layout manager called!");
-                //Initialisation
-                $wnd.jQuery("a[box='"+boxSelected+"']").parent().removeClass("invisible").addClass("visible");
-                $wnd.jQuery("#listBoxes>div").removeClass("selected");
-                $wnd.jQuery("#listBoxes>div>button").removeClass("selected");
-                $wnd.jQuery("button[box='"+boxSelected+"']").addClass("selected");
-                $wnd.jQuery("button[box='"+boxSelected+"']").parent().addClass("selected");
-                $wnd.jQuery("#"+layout).addClass("selected");
+                                                                                                                                     //Initialisation
+                                                                                                                                     $wnd.jQuery("a[box='"+boxSelected+"']").parent().removeClass("invisible").addClass("visible");
+                                                                                                                                     $wnd.jQuery("#listBoxes>div").removeClass("selected");
+                                                                                                                                     $wnd.jQuery("#listBoxes>div>button").removeClass("selected");
+                                                                                                                                     $wnd.jQuery("button[box='"+boxSelected+"']").addClass("selected");
+                                                                                                                                     $wnd.jQuery("button[box='"+boxSelected+"']").parent().addClass("selected");
+                                                                                                                                     $wnd.jQuery("#"+layout).addClass("selected");
 
-                //Choix du layout
-                $wnd.jQuery(".typeLayout").click(function(){
-                  @org.nuxeo.opensocial.container.client.ContainerEntryPoint::chooseLayout(Ljava/lang/String;)($wnd.jQuery(this).attr("name"));
-                  return false
-                });
+                                                                                                                                     //Choix du layout
+                                                                                                                                     $wnd.jQuery(".typeLayout").click(function(){
+                                                                                                                                       @org.nuxeo.opensocial.container.client.ContainerEntryPoint::chooseLayout(Ljava/lang/String;)($wnd.jQuery(this).attr("name"));
+                                                                                                                                       return false
+                                                                                                                                     });
 
-                $wnd.jQuery(".directAdd>a").click(function(){
-                  console.log("direct add function called!");
-                  @org.nuxeo.opensocial.container.client.ContainerEntryPoint::addGadget(Ljava/lang/String;)($wnd.jQuery(this).attr("name"));
-                  return false
-                });
+                                                                                                                                     $wnd.jQuery(".directAdd>a").click(function(){
+                                                                                                                                       @org.nuxeo.opensocial.container.client.ContainerEntryPoint::addGadget(Ljava/lang/String;)($wnd.jQuery(this).attr("name"));
+                                                                                                                                       return false
+                                                                                                                                     });
 
-              }-*/;
+                                                                                                                                   }-*/;
 
 }

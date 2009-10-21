@@ -1,6 +1,7 @@
 package org.nuxeo.opensocial.dashboard;
 
 import java.io.Serializable;
+import java.security.Principal;
 
 import javax.faces.context.FacesContext;
 
@@ -12,6 +13,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
 import org.nuxeo.ecm.spaces.api.Univers;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
@@ -41,8 +43,11 @@ public class OpensocialDashboardNavigationHelper implements
     public static final String SELENIUM_USERAGENT = "Nuxeo-Selenium-Tester";
 
     public static final String MSIE_USERAGENT = "MSIE";
+
     public static final String MSIE7_USERAGENT = "MSIE 7.";
+
     public static final String MSIE8_USERAGENT = "MSIE 8.";
+
     public static final String SAFARI_USERAGENT = "Safari";
 
     private static final Log log = LogFactory.getLog(OpensocialDashboardNavigationHelper.class);
@@ -109,6 +114,17 @@ public class OpensocialDashboardNavigationHelper implements
                 return OLD_DASHBARD_VIEWID;
             }
 
+            // force anonymous users to get old dashboard
+            if ((documentManager != null)
+                    && (documentManager.getPrincipal() != null)) {
+                Principal principal = documentManager.getPrincipal();
+                if (principal instanceof NuxeoPrincipal) {
+                    if (((NuxeoPrincipal) principal).isAnonymous()) {
+                        return OLD_DASHBARD_VIEWID;
+                    }
+                }
+            }
+
             String mode = Framework.getProperty(DASHBARD_MODE_PROPERTY,
                     DASHBARD_MODE_AUTO);
             if (DASHBARD_MODE_AUTO.equals(mode)) {
@@ -117,19 +133,18 @@ public class OpensocialDashboardNavigationHelper implements
 
                     if (userAgent.contains(MSIE7_USERAGENT)) {
                         dashBoardViewId = NEW_DASHBARD_VIEWID;
-                    }
-                    else if (userAgent.contains(MSIE8_USERAGENT)) {
+                    } else if (userAgent.contains(MSIE8_USERAGENT)) {
                         dashBoardViewId = NEW_DASHBARD_VIEWID;
                     } else {
                         // IE 4, IE 5 , IE 5.5, IE6
                         dashBoardViewId = OLD_DASHBARD_VIEWID;
                     }
-                }
-                else if (userAgent != null && userAgent.contains(SAFARI_USERAGENT)) {
-                    // Safari work only when sending MSIE or FF UserAgent to GWT and RichFaces
-                    dashBoardViewId = OLD_DASHBARD_VIEWID;
-                }
-                else {
+                } else if (userAgent != null
+                        && userAgent.contains(SAFARI_USERAGENT)) {
+                    // Safari work only when sending MSIE or FF UserAgent to GWT
+                    // and RichFaces
+                    dashBoardViewId = NEW_DASHBARD_VIEWID;
+                } else {
                     dashBoardViewId = NEW_DASHBARD_VIEWID;
                 }
             } else if (DASHBARD_MODE_OS.equals(mode)) {

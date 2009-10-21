@@ -18,7 +18,9 @@
   <modules>
     <module>nuxeo-opensocial-server</module>
     <module>nuxeo-opensocial-features</module>
+    <!--  
     <module>nuxeo-platform-login-oauth</module>
+    -->
     <module>nuxeo-spaces-api</module>
     <module>nuxeo-spaces-core</module>
     <module>nuxeo-spaces-web</module>
@@ -120,11 +122,13 @@
         <artifactId>nuxeo-opensocial-features</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+      <!-- 
       <dependency>
         <groupId>org.nuxeo.ecm.opensocial</groupId>
         <artifactId>nuxeo-platform-login-oauth</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+      -->
       <dependency>
         <groupId>org.nuxeo.ecm.opensocial</groupId>
         <artifactId>nuxeo-opensocial-gadgets-core</artifactId>

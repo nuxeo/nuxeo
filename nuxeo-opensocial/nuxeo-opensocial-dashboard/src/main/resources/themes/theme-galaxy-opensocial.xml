@@ -198,14 +198,16 @@
         <border-bottom>1px solid #4E9AE1</border-bottom>
         <height>130px</height>
         <background-color>#e9eef4</background-color>
-        <width>923px</width>
+        <width>94%</width>
+        <!-- <width>923px</width> -->
         <padding>10px</padding>
       </selector>
       <selector path="#closeLayoutManager">
         <border-bottom>1px solid #C0DCF5</border-bottom>
         <font>normal 11px "Lucida Grande" Verdana Arial sans-serif</font>
         <background-color>#ddeeff</background-color>
-        <width>931px</width>
+        <width>95%</width>
+        <!--  <width>931px</width> -->
         <padding>7px 12px 7px 0</padding>
         <text-align>left</text-align>
       </selector>
@@ -223,7 +225,8 @@
         <border-bottom>1px solid #4E9AE1</border-bottom>
         <font>normal 11px "Lucida Grande" Verdana Arial sans-serif</font>
         <background-color>#ddeeff</background-color>
-        <width>931px</width>
+        <width>95%</width>
+        <!-- <width>931px</width> -->
         <padding>7px 12px 7px 0px</padding>
       </selector>
       <selector path="#getLayoutManager a">
@@ -358,14 +361,16 @@
         <border-bottom>1px solid #4E9AE1</border-bottom>
         <height>130px</height>
         <background-color>#e9eef4</background-color>
-        <width>923px</width>
+        <!-- <width>923px</width> -->
+        <width>94%</width>
         <padding>10px</padding>
       </selector>
       <selector path="#closeGadgetManager">
         <border-bottom>1px solid #C0DCF5</border-bottom>
         <font>normal 11px "Lucida Grande" Verdana Arial sans-serif</font>
         <background-color>#ddeeff</background-color>
-        <width>931px</width>
+        <width>95%</width>
+        <!-- <width>931px</width> -->
         <padding>7px 12px 7px 0</padding>
         <text-align>left</text-align>
       </selector>
@@ -383,7 +388,8 @@
         <border-bottom>1px solid #4E9AE1</border-bottom>
         <font>normal 11px "Lucida Grande" Verdana Arial sans-serif</font>
         <background-color>#ddeeff</background-color>
-        <width>931px</width>
+        <!-- <width>931px</width> -->
+        <width>95%</width>
         <padding>7px 12px 7px 0px</padding>
       </selector>
       <selector path="#getGadgetManager a">

@@ -8,7 +8,9 @@
     <script type="text/javascript">
 
    function getGwtParams(){
-      return "{docRef:'#{personalDashboardContainerIdRef}', clientUrl: top.nxBaseUrl}";
+	   var w = document.documentElement.clientWidth;
+	   console.log("got w, it is "+w);
+      return "{docRef:'#{personalDashboardContainerIdRef}', clientUrl: top.nxBaseUrl, windowWidth: "+w+" }";
    }
 
     function loading_show(){}
