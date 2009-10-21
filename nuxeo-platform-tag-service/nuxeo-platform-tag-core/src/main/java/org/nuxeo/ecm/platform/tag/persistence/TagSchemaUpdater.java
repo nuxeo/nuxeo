@@ -135,9 +135,10 @@ public class TagSchemaUpdater {
     }
 
     public void update() {
-        String dataSource = connectionProperties.getProperty("hibernate.connection.datasource");
+        String dataSource = connectionProperties.getProperty("hibernate.connection.datasource"); 
         // change JNDI name prefix if needed
         dataSource = DataSourceHelper.getDataSourceJNDIName(dataSource);
+        connectionProperties.setProperty("hibernate.connection.datasource", dataSource);
         configuration.setProperties(connectionProperties);
         Settings settings = configuration.buildSettings();
         Table table = new Table(TAGGING_TABLE_NAME);
