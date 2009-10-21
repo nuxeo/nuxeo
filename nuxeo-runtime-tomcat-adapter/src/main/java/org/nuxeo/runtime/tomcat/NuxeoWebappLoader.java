@@ -226,7 +226,30 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         loadSystemProperties(home);
 
         try {
-            File systemBundleFile = newFile(home, (String)env.get(SYSTEM_BUNDLE));
+            File systemBundleFile = null;
+            String sysBundlePath = (String)env.get(SYSTEM_BUNDLE);
+            if (sysBundlePath.endsWith("*")) { // find the right JAR given its name prefix                
+                // the prefix is used to avoid hard coding artifact JAR version.                
+                File tmp = newFile(home, sysBundlePath);
+                File dir = tmp.getParentFile();
+                String[] files = dir.list();
+                if (files == null) {
+                    throw new Error("Could not locate system bundle: "+sysBundlePath);
+                }
+                String prefix = tmp.getName();
+                prefix = prefix.substring(0, prefix.length()-1);
+                for (String f : files) {
+                    if (f.startsWith(prefix)) {
+                        systemBundleFile = new File(dir, f);
+                    }
+                }
+                if (systemBundleFile == null) {
+                    throw new Error("Could not locate system bundle: "+sysBundlePath);
+                }
+            } else {
+                systemBundleFile = newFile(home, sysBundlePath);
+            }
+            
             NuxeoWebappClassLoader loader = (NuxeoWebappClassLoader)getClassLoader();
             MutableURLClassLoader cl = shared 
                 ? (FrameworkClassLoader)loader.getParentClassLoader() 
