@@ -208,6 +208,9 @@ public class TaggingHelper {
                         SecurityConstants.WRITE)) {
             return true;
         }
+        if ((document==null) || (tag==null)) {
+            return false;
+        }
         return getTagService().getTaggingId(session, document.getId(), tag.tagLabel,
                 principal.getName()) != null;
     }
