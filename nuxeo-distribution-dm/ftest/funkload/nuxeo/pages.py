@@ -169,9 +169,9 @@ class BasePage:
 
         # TODO: NXBT-77 navigate to create user form
         fl.post(fl.server_url + '/view_users.faces', params=[
-            ['j_id196', 'j_id196'],
+            ['j_id179', 'j_id179'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id196:j_id198', 'j_id196:j_id198']],
+            ['j_id179:j_id181', 'j_id179:j_id181']],
                 description="View user creation form")
 
         fl.post(fl.server_url + '/create_user.faces', params=[
@@ -341,9 +341,9 @@ class FolderPage(BasePage):
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
             # TODO: NXBT-77 navigate to create workspace form
-            ['j_id252', 'j_id252'],
+            ['j_id235', 'j_id235'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id252:j_id253:j_id255:0:j_id256', 'j_id252:j_id253:j_id255:0:j_id256']],
+            ['j_id235:j_id236:j_id238:0:j_id239', 'j_id235:j_id236:j_id238:0:j_id239']],
             description="Create workspace form")
         fl.assert_('nxw_title' in fl.getBody(),
                    "Workspace creation form not found.")
@@ -362,10 +362,10 @@ class FolderPage(BasePage):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
             # TODO: NXBT-77 navigate to create folder form
-            ['j_id216', 'j_id216'],
-            ['j_id216:selectDocTypePanelOpenedState', ''],
+            ['j_id199', 'j_id199'],
+            ['j_id199:selectDocTypePanelOpenedState', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id216:j_id222:0:j_id226:0:j_id228:2:j_id232', 'j_id216:j_id222:0:j_id226:0:j_id228:2:j_id232']],
+            ['j_id199:j_id205:0:j_id209:0:j_id211:2:j_id215', 'j_id199:j_id205:0:j_id209:0:j_id211:2:j_id215']],
             description="Create folder: New Folder")
         fl.assert_('document_create' in fl.getBody(),
                    "Folder form not found")
@@ -384,10 +384,10 @@ class FolderPage(BasePage):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
             # TODO: NXBT-77 navigate to create file form
-            ['j_id216', 'j_id216'],
-            ['j_id216:selectDocTypePanelOpenedState', ''],
+            ['j_id199', 'j_id199'],
+            ['j_id199:selectDocTypePanelOpenedState', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id216:j_id222:1:j_id226:0:j_id228:2:j_id232', 'j_id216:j_id222:1:j_id226:0:j_id228:2:j_id232']],
+            ['j_id199:j_id205:1:j_id209:0:j_id211:2:j_id215', 'j_id199:j_id205:1:j_id209:0:j_id211:2:j_id215']],
             description="Create file: New document")
         fl.assert_('document_create' in fl.getBody(),
                    "File form not found")
@@ -436,7 +436,7 @@ class FolderPage(BasePage):
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['CHILDREN_DOCUMENT_LIST', 'CHILDREN_DOCUMENT_LIST'],
             ['CHILDREN_DOCUMENT_LIST:dataTable:0:document_checkbox_select', 'on'],
-            ['CHILDREN_DOCUMENT_LIST:j_id366:1:j_id368', 'Supprimer'],
+            ['CHILDREN_DOCUMENT_LIST:j_id349:1:j_id351', 'Supprimer'],
             ['javax.faces.ViewState', state]],
             description='Delete document "%s"' % title)
         fl.assert_('Document(s) deleted' in fl.getBody())
