@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:nxs="http://www.nuxeo.org/ecm/schemas/image-metadata" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.nuxeo.org/ecm/schemas/image-metadata">
+
+  <!-- EXIF info -->
+  <xs:element name="image_description" type="xs:string"/>
+  <xs:element name="user_comment" type="xs:string"/>
+  <xs:element name="equipment" type="xs:string"/>
+  <xs:element name="date_time_original" type="xs:date"/>
+  <xs:element name="xresolution" type="xs:integer"/>
+  <xs:element name="yresolution" type="xs:integer"/>
+  <xs:element name="pixel_xdimension" type="xs:integer"/>
+  <xs:element name="pixel_ydimension" type="xs:integer"/>
+  <xs:element name="copyright" type="xs:string"/>
+  <xs:element name="exposure_time" type="xs:string"/>
+  <xs:element name="iso_speed_ratings" type="xs:string"/>
+  <xs:element name="focal_length" type="xs:double"/>
+  <xs:element name="color_space" type="xs:string"/>
+  <xs:element name="white_balance" type="xs:string"/>
+  <xs:element name="icc_profile" type="xs:string"/>
+  <xs:element name="orientation" type="xs:string"/>
+  <xs:element name="fnumber" type="xs:double"/>
+  <!-- End EXIF info -->
+
+</xs:schema>

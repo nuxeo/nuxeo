@@ -7,6 +7,7 @@
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
              point="schema">
     <schema name="picture" src="schema/picture.xsd"/>
+    <schema name="image_metadata" src="schema/image_metadata.xsd" prefix="imd"/>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
@@ -14,6 +15,7 @@
 
     <doctype name="Picture" extends="Document">
       <schema name="picture"/>
+      <schema name="image_metadata"/>
       <schema name="common"/>
       <schema name="uid"/>
       <schema name="dublincore"/>

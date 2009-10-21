@@ -19,33 +19,7 @@
 
 package org.nuxeo.ecm.platform.picture.core.imagej;
 
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_BYLINE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CAPTION;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CATEGORY;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CITY;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COLORSPACE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COMMENT;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COPYRIGHT;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COUNTRY;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CREDIT;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_DATE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_DESCRIPTION;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_EQUIPMENT;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_EXPOSURE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_FOCALLENGTH;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_HEADLINE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_HEIGHT;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_HRESOLUTION;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ICCPROFILE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ISOSPEED;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_LANGUAGE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_OBJECTNAME;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ORIGINALDATE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_SOURCE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_SUPPLEMENTALCATEGORIES;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_VRESOLUTION;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WHITEBALANCE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WIDTH;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.*;
 import ij.ImagePlus;
 import ij.io.Opener;
 import it.tidalwave.image.EditableImage;
@@ -115,11 +89,11 @@ public class ImageJMetadataUtils implements MetadataUtils {
                 String path = fb.getFile().getPath();
                 Opener op = new Opener();
                 im = op.openImage(path);
-           } catch (IOException e) {
+            } catch (IOException e) {
                 log.error("Failed to get file path", e);
             }
         }
-        if (im == null){
+        if (im == null) {
             return metadata;
         }
         metadata.put(META_WIDTH, im.getFileInfo().width);
@@ -127,8 +101,8 @@ public class ImageJMetadataUtils implements MetadataUtils {
 
         try {
             /* EXIF */
-            EditableImage image = EditableImage.create(new ReadOp(blob.getStream(),
-                    ReadOp.Type.METADATA));
+            EditableImage image = EditableImage.create(new ReadOp(
+                    blob.getStream(), ReadOp.Type.METADATA));
             EXIFDirectory exif = image.getEXIFDirectory();
 
             if (exif.isImageDescriptionAvailable()) {
@@ -162,6 +136,12 @@ public class ImageJMetadataUtils implements MetadataUtils {
                 metadata.put(META_VRESOLUTION, exif.getYResolution().intValue());
             }
 
+            if (exif.isPixelXDimensionAvailable()
+                    && exif.isPixelYDimensionAvailable()) {
+                metadata.put(META_PIXEL_XDIMENSION, exif.getPixelXDimension());
+                metadata.put(META_PIXEL_YDIMENSION, exif.getPixelYDimension());
+            }
+
             if (exif.isCopyrightAvailable()) {
                 String copyright = exif.getCopyright().trim();
                 if (copyright.length() > 0) {
@@ -189,7 +169,7 @@ public class ImageJMetadataUtils implements MetadataUtils {
             }
 
             if (exif.isColorSpaceAvailable()) {
-                metadata.put(META_COLORSPACE, exif.getColorSpace());
+                metadata.put(META_COLORSPACE, exif.getColorSpace().toString());
             }
 
             if (exif.isWhiteBalanceAvailable()) {
@@ -199,6 +179,14 @@ public class ImageJMetadataUtils implements MetadataUtils {
 
             if (exif.isInterColourProfileAvailable()) {
                 metadata.put(META_ICCPROFILE, exif.getICCProfile());
+            }
+
+            if (exif.isOrientationAvailable()) {
+                metadata.put(META_ORIENTATION, exif.getOrientation().toString());
+            }
+
+            if (exif.isFNumberAvailable()) {
+                metadata.put(META_FNUMBER, exif.getFNumber().doubleValue());
             }
         } catch (IOException e) {
             log.error("Failed to get EXIF metadata", e);

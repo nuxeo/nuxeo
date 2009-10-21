@@ -83,12 +83,14 @@ public class MistralMetadataUtils implements MetadataUtils {
 
         try {
             /* EXIF */
-            EditableImage image = EditableImage.create(new ReadOp(blob.getStream(), ReadOp.Type.METADATA));
+            EditableImage image = EditableImage.create(new ReadOp(
+                    blob.getStream(), ReadOp.Type.METADATA));
             EXIFDirectory exif = image.getEXIFDirectory();
 
             int width;
             int height;
-            if (exif.isPixelXDimensionAvailable() && exif.isPixelYDimensionAvailable()) {
+            if (exif.isPixelXDimensionAvailable()
+                    && exif.isPixelYDimensionAvailable()) {
                 width = exif.getPixelXDimension();
                 height = exif.getPixelYDimension();
             } else {
@@ -121,12 +123,19 @@ public class MistralMetadataUtils implements MetadataUtils {
             }
 
             if (exif.isDateTimeOriginalAvailable()) {
-                metadata.put(META_ORIGINALDATE, exif.getDateTimeOriginalAsDate());
+                metadata.put(META_ORIGINALDATE,
+                        exif.getDateTimeOriginalAsDate());
             }
 
             if (exif.isXResolutionAvailable() && exif.isYResolutionAvailable()) {
                 metadata.put(META_HRESOLUTION, exif.getXResolution().intValue());
                 metadata.put(META_VRESOLUTION, exif.getYResolution().intValue());
+            }
+
+            if (exif.isPixelXDimensionAvailable()
+                    && exif.isPixelYDimensionAvailable()) {
+                metadata.put(META_PIXEL_XDIMENSION, exif.getPixelXDimension());
+                metadata.put(META_PIXEL_YDIMENSION, exif.getPixelYDimension());
             }
 
             if (exif.isCopyrightAvailable()) {
@@ -151,19 +160,29 @@ public class MistralMetadataUtils implements MetadataUtils {
             }
 
             if (exif.isFocalLengthAvailable()) {
-                metadata.put(META_FOCALLENGTH, exif.getFocalLength().doubleValue());
+                metadata.put(META_FOCALLENGTH,
+                        exif.getFocalLength().doubleValue());
             }
 
             if (exif.isColorSpaceAvailable()) {
-                metadata.put(META_COLORSPACE, exif.getColorSpace());
+                metadata.put(META_COLORSPACE, exif.getColorSpace().toString());
             }
 
             if (exif.isWhiteBalanceAvailable()) {
-                metadata.put(META_WHITEBALANCE, exif.getWhiteBalance().toString().toLowerCase());
+                metadata.put(META_WHITEBALANCE,
+                        exif.getWhiteBalance().toString().toLowerCase());
             }
 
             if (exif.isInterColourProfileAvailable()) {
                 metadata.put(META_ICCPROFILE, exif.getICCProfile());
+            }
+
+            if (exif.isOrientationAvailable()) {
+                metadata.put(META_ORIENTATION, exif.getOrientation().toString());
+            }
+
+            if (exif.isFNumberAvailable()) {
+                metadata.put(META_FNUMBER, exif.getFNumber().doubleValue());
             }
         } catch (IOException e) {
             log.error("Failed to get EXIF metadata", e);
@@ -178,45 +197,59 @@ public class MistralMetadataUtils implements MetadataUtils {
             if (md != null) {
                 Directory iptc = md.getDirectory(IptcDirectory.class);
                 if (iptc.containsTag(IptcDirectory.TAG_BY_LINE)) {
-                    metadata.put(META_BYLINE, iptc.getString(IptcDirectory.TAG_BY_LINE));
+                    metadata.put(META_BYLINE,
+                            iptc.getString(IptcDirectory.TAG_BY_LINE));
                 }
                 if (iptc.containsTag(IptcDirectory.TAG_CAPTION)) {
-                    metadata.put(META_CAPTION, iptc.getString(IptcDirectory.TAG_CAPTION));
+                    metadata.put(META_CAPTION,
+                            iptc.getString(IptcDirectory.TAG_CAPTION));
                 }
                 if (iptc.containsTag(IptcDirectory.TAG_CATEGORY)) {
-                    metadata.put(META_CATEGORY, iptc.getString(IptcDirectory.TAG_CATEGORY));
+                    metadata.put(META_CATEGORY,
+                            iptc.getString(IptcDirectory.TAG_CATEGORY));
                 }
                 if (iptc.containsTag(IptcDirectory.TAG_CITY)) {
-                    metadata.put(META_CITY, iptc.getString(IptcDirectory.TAG_CITY));
+                    metadata.put(META_CITY,
+                            iptc.getString(IptcDirectory.TAG_CITY));
                 }
                 if (iptc.containsTag(IptcDirectory.TAG_COUNTRY_OR_PRIMARY_LOCATION)) {
-                    metadata.put(META_COUNTRY, iptc.getString(IptcDirectory.TAG_COUNTRY_OR_PRIMARY_LOCATION));
+                    metadata.put(
+                            META_COUNTRY,
+                            iptc.getString(IptcDirectory.TAG_COUNTRY_OR_PRIMARY_LOCATION));
                 }
                 if (iptc.containsTag(IptcDirectory.TAG_CREDIT)) {
-                    metadata.put(META_CREDIT, iptc.getString(IptcDirectory.TAG_CREDIT));
+                    metadata.put(META_CREDIT,
+                            iptc.getString(IptcDirectory.TAG_CREDIT));
                 }
                 if (iptc.containsTag(IptcDirectory.TAG_DATE_CREATED)) {
                     Date date = new Date();
                     if (iptc.containsTag(IptcDirectory.TAG_TIME_CREATED)) {
-                        System.out.println("iptc.time=" + iptc.getString(IptcDirectory.TAG_TIME_CREATED));
+                        System.out.println("iptc.time="
+                                + iptc.getString(IptcDirectory.TAG_TIME_CREATED));
                     }
-                    System.out.println("iptc.date=" + iptc.getString(IptcDirectory.TAG_DATE_CREATED));
+                    System.out.println("iptc.date="
+                            + iptc.getString(IptcDirectory.TAG_DATE_CREATED));
                     metadata.put(META_DATE, date);
                 }
                 if (iptc.containsTag(IptcDirectory.TAG_HEADLINE)) {
-                    metadata.put(META_HEADLINE, iptc.getString(IptcDirectory.TAG_HEADLINE));
+                    metadata.put(META_HEADLINE,
+                            iptc.getString(IptcDirectory.TAG_HEADLINE));
                 }
                 if (iptc.containsTag(135)) {
                     metadata.put(META_LANGUAGE, iptc.getString(135));
                 }
                 if (iptc.containsTag(IptcDirectory.TAG_OBJECT_NAME)) {
-                    metadata.put(META_OBJECTNAME, iptc.getString(IptcDirectory.TAG_OBJECT_NAME));
+                    metadata.put(META_OBJECTNAME,
+                            iptc.getString(IptcDirectory.TAG_OBJECT_NAME));
                 }
                 if (iptc.containsTag(IptcDirectory.TAG_SUPPLEMENTAL_CATEGORIES)) {
-                    metadata.put(META_SUPPLEMENTALCATEGORIES, iptc.getString(IptcDirectory.TAG_SUPPLEMENTAL_CATEGORIES));
+                    metadata.put(
+                            META_SUPPLEMENTALCATEGORIES,
+                            iptc.getString(IptcDirectory.TAG_SUPPLEMENTAL_CATEGORIES));
                 }
                 if (iptc.containsTag(IptcDirectory.TAG_SOURCE)) {
-                    metadata.put(META_SOURCE, iptc.getString(IptcDirectory.TAG_SOURCE));
+                    metadata.put(META_SOURCE,
+                            iptc.getString(IptcDirectory.TAG_SOURCE));
                 }
             }
         } catch (IOException e) {
