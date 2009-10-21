@@ -13,9 +13,19 @@
                       url="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Medium:content', documentActions.currentSelection.dublincore.modified)}?conversationId=#{conversation.id}"
                       style="max-height: 350px;"
                       rendered="#{documentActions.currentSelection.hasSchema('picture')}"/>
+    <nxh:graphicImage id="theVideo"
+                      value="/icons/video_100.png"
+                      style="max-height: 350px;"
+                      rendered="#{documentActions.currentSelection.hasSchema('video')}"/>
+    <nxh:graphicImage id="theAudio"
+                      value="/icons/audio_100.png"
+                      style="max-height: 350px;"
+                      rendered="#{documentActions.currentSelection.hasSchema('audio')}"/>
     <nxh:graphicImage value="/img/file_preview.png"
                       style="max-height: 350px;"
-                      rendered="#{!documentActions.currentSelection.hasSchema('picture')}"/>
+                      rendered="#{!documentActions.currentSelection.hasSchema('picture') and 
+                                  !documentActions.currentSelection.hasSchema('video') and
+                                  !documentActions.currentSelection.hasSchema('audio') }"/>
 
     <a4j:form id="assetView">
       <div class="documentPreviewTitle">
