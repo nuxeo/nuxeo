@@ -39,7 +39,7 @@
       <fileset dir="${nxserver}/lib" includes="jsp-api*" />
       <fileset dir="${nxserver}/lib" includes="servlet-api-*" />
       <fileset dir="${nxserver}/lib" includes="el-api*" />
-      <fileset dir="${nxserver}/lib" includes="jsp-*" />      
+      <fileset dir="${nxserver}/lib" includes="jsp-*" />            
     </delete>
     
     <!-- we need el-ri impl in lib - why this is not part of jetty distrib? -->
@@ -54,13 +54,6 @@
       <fileset dir="${nxserver}/lib" includes="jsf-impl-*" />
     </move>
     
-    <copy todir="${tomcat}/lib">
-      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-tomcat-adapter:${nuxeo.runtime.version}:jar" />
-    </copy>
-    <move todir="${tomcat}/lib">
-      <fileset dir="${nxserver}/lib" includes="derby-*" />
-    </move>
-
     <echo>Running nuxeo build processor</echo>    
     <nx:preprocess src="${nxserver}" />
     
@@ -79,6 +72,19 @@ JAVA_OPTS="$JAVA_OPTS -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF
 ]]></replacevalue>
     </replace>
     
+    <copy todir="${tomcat}/lib">
+      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-tomcat-adapter:${nuxeo.runtime.version}:jar" />
+    </copy>
+    <!-- we need to move DS related jars into tomcat lib ... The move mustt be done after running the processing since this is depending on these jars -->
+    <move todir="${tomcat}/lib">
+      <fileset dir="${nxserver}/lib" includes="derby-*" />
+      <fileset dir="${nxserver}/lib" includes="h2-*" />
+      <fileset dir="${nxserver}/lib" includes="log4j-*" />
+      <fileset dir="${nxserver}/lib" includes="lucene-*" />
+      <fileset dir="${nxserver}/lib" includes="commons-logging-*" />
+      <fileset dir="${nxserver}/bundles" includes="nuxeo-core-storage-sql-extensions-*" />      
+    </move>
+
     <!-- TODO do the same for windows cmd file -->
         
     <!-- make the final zip -->

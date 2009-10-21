@@ -22,7 +22,7 @@
 
   <!-- define custom loader that is responsible to start nuxeo runtime (it extends the default one) -->
   <Loader className="org.nuxeo.runtime.tomcat.NuxeoWebappLoader" loaderClass="org.nuxeo.runtime.tomcat.NuxeoWebappClassLoader"
-          home="nxserver" classPath="bundles/.:lib/.:config" systemBundle="bundles/nuxeo-runtime-osgi-1.5.1-SNAPSHOT.jar"  />
+          home="nxserver" classPath="bundles/.:lib/.:config" systemBundle="bundles/nuxeo-runtime-osgi-1.6.0-SNAPSHOT.jar"  />
 
   <Listener className="org.nuxeo.runtime.tomcat.NuxeoLauncher" />
 
@@ -64,5 +64,10 @@
             maxActive="100" maxIdle="30" maxWait="10000"
             driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
             url="jdbc:derby:nxwebwidgets;create=true"/>
+
+  <Resource name="jdbc/nxtags" auth="Container" type="javax.sql.DataSource"
+            maxActive="100" maxIdle="30" maxWait="10000" username="sa" password="" 
+            driverClassName="org.h2.jdbcx.JdbcDataSource"
+            url="jdbc:h2:data/h2/vcsh2repo;AUTO_SERVER=true;create=true"/>
 
 </Context>
