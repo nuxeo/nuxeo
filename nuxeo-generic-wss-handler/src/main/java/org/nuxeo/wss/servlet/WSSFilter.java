@@ -22,6 +22,7 @@ import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -52,6 +53,7 @@ public class WSSFilter implements Filter {
     protected FilterConfig filterConfig;
     protected Boolean rootFilter = null;
     protected String rootFilterTarget = null;
+    protected ServletContext ctx;
     public static final String ROOT_FILTER_PARAM = "org.nuxeo.wss.rootFilter";
     public static final String BACKEND_FACTORY_PARAM = "org.nuxeo.wss.backendFactory";
     public static final String FILTER_FORWARD_PARAM = "org.nuxeo.wss.forwardedFilter";
@@ -106,8 +108,21 @@ public class WSSFilter implements Filter {
                     if (isRootFilter()) {
                         log.debug("Forward call to backend filter");
                         httpRequest.setAttribute(FILTER_FORWARD_PARAM, config);
-                        httpRequest.getSession().getServletContext().getContext(getRootFilterTarget()).getRequestDispatcher(
-                         httpRequest.getRequestURI()).forward(request, response);
+                        // To forward to the backend filter, we need to change context
+                        // but on some App Server (ex: Tomcat 6) default config prohibit this
+                        ServletContext targetContext =ctx.getContext(getRootFilterTarget());
+                        if (targetContext!=null) {
+                            targetContext.getRequestDispatcher(httpRequest.getRequestURI()).forward(request, response);
+                        } else {
+                            String newTarget = getRootFilterTarget() + httpRequest.getRequestURI() + "?" + httpRequest.getQueryString();
+                            if ("VtiHandler".equals(config.getTargetService()) || "SHtmlHandler".equals(config.getTargetService())) {
+                                handleWSSCall(httpRequest, httpResponse, config);
+                            } else {
+                                // try to redirect, but this won't work for all cases
+                                // since MS http libs don't seem to handle redirect transparently
+                                httpResponse.sendRedirect(newTarget);
+                            }
+                        }
                     } else {
                         handleWSSCall(httpRequest, httpResponse, config);
                     }
@@ -204,6 +219,10 @@ public class WSSFilter implements Filter {
     }
 
     public void  init(FilterConfig filterConfig) throws ServletException {
+
+        if (filterConfig!=null) { // For Testing
+            this.ctx = filterConfig.getServletContext();
+        }
 
         synchronized (this.getClass()) {
             simpleGetHandler = new SimpleGetHandler();
