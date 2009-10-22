@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.directory.DirectoryException;
 
 /**
  * Renderer for directory entry.
@@ -56,6 +57,13 @@ public class DirectoryEntryOutputRenderer extends Renderer {
             // get the entry information
             String keySeparator = (String) dirComponent.getAttributes().get(
                     "keySeparator");
+            String schema;
+            try {
+                schema = DirectoryHelper.getDirectoryService().getDirectory(directoryName).getSchema();
+            } catch (DirectoryException de) {
+                log.error("Unable to get directory schema for " + directoryName, de);
+                schema = keySeparator != null ? "xvocabulary" : "vocabulary";
+            }
             if (keySeparator != null) {
                 entryId = entryId.substring(
                         entryId.lastIndexOf(keySeparator) + 1, entryId.length());
@@ -72,9 +80,7 @@ public class DirectoryEntryOutputRenderer extends Renderer {
 
                 String label;
                 try {
-                    label = (String) entry.getProperty(
-                            keySeparator != null ? "xvocabulary" : "vocabulary",
-                            "label");
+                    label = (String) entry.getProperty(schema, "label");
                 } catch (ClientException e) {
                     label = null;
                 }
