@@ -228,7 +228,7 @@ function getRestletUrl() {
     if (testMode) {
         url = 'http://localhost:8080/';
     }
-    url += "nuxeo/restAPI/workflowTasks/default?format=JSON";
+    url += "nuxeo/restAPI/workflowTasks/default?mytasks=true&format=JSON";
     var ts = new Date().getTime() + "" + Math.random() * 11
     url += "&ts=" + ts;
 

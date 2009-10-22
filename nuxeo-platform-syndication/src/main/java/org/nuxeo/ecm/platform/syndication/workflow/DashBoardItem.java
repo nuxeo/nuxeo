@@ -32,4 +32,6 @@ public interface DashBoardItem extends
      */
     public String getDocumentLink();
 
+    public void prependToComment(String setOfNames);
+
 }

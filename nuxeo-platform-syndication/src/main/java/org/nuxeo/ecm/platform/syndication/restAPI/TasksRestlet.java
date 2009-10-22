@@ -20,13 +20,18 @@
 package org.nuxeo.ecm.platform.syndication.restAPI;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
+import org.jbpm.graph.exe.ProcessInstance;
+import org.jbpm.graph.exe.Token;
+import org.jbpm.taskmgmt.exe.PooledActor;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -81,6 +86,14 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
         String lang = request.getResourceRef().getQueryAsForm().getFirstValue(
                 "lang");
 
+        String myTasksRequested = request.getResourceRef().getQueryAsForm().getFirstValue(
+                "mytasks");
+        boolean wantMyTasks = true;
+        if ((myTasksRequested != null)
+                && (myTasksRequested.equalsIgnoreCase("false"))) {
+            wantMyTasks = false;
+        }
+
         // labels to translate
         List<String> labels = new LinkedList<String>();
         if (lang != null) {
@@ -99,7 +112,8 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
         List<DashBoardItem> dashboardItems = null;
         try {
             dashboardItems = getDashboardItemsForUser(
-                    (NuxeoPrincipal) getUserPrincipal(request), repo, response);
+                    (NuxeoPrincipal) getUserPrincipal(request), repo, response,
+                    wantMyTasks);
         } catch (Exception e1) {
             handleError(response, e1);
         }
@@ -116,9 +130,11 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
         }
     }
 
-    private List<DashBoardItem> getDashboardItemsForUser(NuxeoPrincipal user,
-            String repository, Response response) throws Exception {
-        List<DashBoardItem> currentUserTasks = new ArrayList<DashBoardItem>();
+    private List<DashBoardItem> getDashboardTaskItemsForUser(
+            NuxeoPrincipal user, String repository, Response response)
+            throws Exception {
+
+        List<DashBoardItem> results = new ArrayList<DashBoardItem>();
         List<TaskInstance> tasks = getJbpmService().getCurrentTaskInstances(
                 user, getFilter());
         if (tasks != null) {
@@ -126,7 +142,7 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
                 DocumentModel doc = getJbpmService().getDocumentModel(task,
                         user);
                 if (doc != null) {
-                    currentUserTasks.add(new DashBoardItemImpl(task, doc));
+                    results.add(new DashBoardItemImpl(task, doc));
                 } else {
                     log.error(String.format(
                             "User '%s' has a task of type '%s' on an "
@@ -135,6 +151,73 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
                 }
             }
         }
+        return results;
+    }
+
+    private List<DashBoardItem> getDashboardItemsManagedByUser(
+            NuxeoPrincipal user, String repository, Response response)
+            throws Exception {
+
+        List<DashBoardItem> results = new ArrayList<DashBoardItem>();
+        List<ProcessInstance> processes = getJbpmService().getCurrentProcessInstances(
+                user, getFilter());
+        if (processes != null) {
+            for (ProcessInstance process : processes) {
+                DocumentModel doc = getJbpmService().getDocumentModel(process,
+                        user);
+                if (doc != null) {
+                    Token token = process.getRootToken();
+                    Collection<TaskInstance> notDone = process.getTaskMgmtInstance().getUnfinishedTasks(
+                            token);
+                    for (TaskInstance task : notDone) {
+                        Set<PooledActor> actors = task.getPooledActors();
+                        StringBuilder names = new StringBuilder();
+                        if (actors.isEmpty()) {
+                            names.append("Workflow Not Started");
+                        } else {
+                            for (PooledActor actor : actors) {
+                                if (!names.toString().equals("")) {
+                                    names.append(",");
+                                }
+                                String id = actor.getActorId();
+                                if (id.indexOf(':') == -1) {
+                                    log.error("Unable to find to find a ':' in actor id:"
+                                            + id);
+                                    names.append(id);
+                                } else {
+                                    names.append(id.substring(id.indexOf(':') + 1));
+                                }
+                            }
+                        }
+                        DashBoardItem item = new DashBoardItemImpl(task, doc);
+                        item.prependToComment(names.toString());
+                        results.add(item);
+                    }
+                } else {
+                    log.error(String.format(
+                            "User '%s' has a process id of '%ld' on an "
+                                    + "unexisting or unvisible document",
+                            user.getName(), process.getId()));
+                }
+            }
+        }
+        return results;
+
+    }
+
+    private List<DashBoardItem> getDashboardItemsForUser(NuxeoPrincipal user,
+            String repository, Response response, boolean myTasks)
+            throws Exception {
+        List<DashBoardItem> currentUserTasks = new ArrayList<DashBoardItem>();
+        if (myTasks) {
+            currentUserTasks = getDashboardTaskItemsForUser(user, repository,
+                    response);
+        } else {
+            // people I am waiting on
+            currentUserTasks = getDashboardItemsManagedByUser(user, repository,
+                    response);
+        }
+
         return currentUserTasks;
     }
 

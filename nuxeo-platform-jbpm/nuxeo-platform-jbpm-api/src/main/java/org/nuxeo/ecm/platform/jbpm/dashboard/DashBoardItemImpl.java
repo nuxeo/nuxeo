@@ -30,30 +30,30 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService.TaskVariableName;
 
 /**
  * Dashboard item implementation.
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class DashBoardItemImpl implements DashBoardItem {
 
     private static final long serialVersionUID = 919752175741886376L;
 
-    private final Long id;
+    protected Long id;
 
-    private final String name;
+    protected String name;
 
-    private final String description;
+    protected String description;
 
-    private final Date startDate;
+    protected Date startDate;
 
-    private final Date dueDate;
+    protected Date dueDate;
 
-    private final boolean expired;
+    protected boolean expired;
 
-    private final String directive;
+    protected final String directive;
 
-    private final String comment;
+    protected String comment;
 
-    private final DocumentModel document;
+    protected DocumentModel document;
 
     @SuppressWarnings("unchecked")
     public DashBoardItemImpl(TaskInstance task, DocumentModel document) {

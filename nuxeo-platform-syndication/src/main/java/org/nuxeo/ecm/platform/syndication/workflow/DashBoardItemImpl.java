@@ -46,6 +46,15 @@ public class DashBoardItemImpl extends
      */
     public String getDocumentLink() {
         return "/nxdoc/" + getDocument().getRepositoryName() + "/"
-                + getDocument().getId() + "/view_documents";
+                + getDocument().getId()
+                + "/view_documents?tabId=TAB_CONTENT_JBPM";
+    }
+
+    public void prependToComment(String setOFNames) {
+        if (this.comment == null) {
+            this.comment = setOFNames;
+        } else {
+            this.comment = "[" + setOFNames + "]" + this.comment;
+        }
     }
 }

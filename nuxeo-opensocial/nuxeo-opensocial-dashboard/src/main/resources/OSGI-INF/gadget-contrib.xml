@@ -11,6 +11,13 @@
       <icon>tasks.png</icon>
     </internalGadget>
 
+    <internalGadget name="waitingfor">
+      <mountPoint>/waitingfor/waitingfor</mountPoint>
+      <directory>waitingfor-gadget</directory>
+      <category>Nuxeo</category>
+      <icon>tasks.png</icon>
+    </internalGadget>
+
     <internalGadget name="bbcnews">
       <mountPoint>/bbcnews/bbcnews</mountPoint>
       <directory>bbcnews-gadget</directory>
