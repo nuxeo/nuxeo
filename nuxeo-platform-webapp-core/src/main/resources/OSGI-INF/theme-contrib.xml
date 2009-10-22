@@ -6,6 +6,7 @@
   <require>org.nuxeo.theme.fragments</require>
   <require>org.nuxeo.theme.html</require>
   <require>org.nuxeo.theme.jsf</require>
+  <require>org.nuxeo.theme.webwidgets</require>
 
   <!-- perspectives -->
   <extension target="org.nuxeo.theme.services.ThemeService"
