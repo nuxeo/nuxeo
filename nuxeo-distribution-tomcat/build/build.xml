@@ -82,7 +82,10 @@ JAVA_OPTS="$JAVA_OPTS -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF
       <fileset dir="${nxserver}/lib" includes="log4j-*" />
       <fileset dir="${nxserver}/lib" includes="lucene-*" />
       <fileset dir="${nxserver}/lib" includes="commons-logging-*" />
+      <fileset dir="${nxserver}/lib" includes="commons-lang-*" />
+      <fileset dir="${nxserver}/lib" includes="freemarker-*" />
       <fileset dir="${nxserver}/bundles" includes="nuxeo-core-storage-sql-extensions-*" />      
+      <fileset dir="${nxserver}/bundles" includes="nuxeo-generic-wss-handler-*" />      
     </move>
 
     <!-- TODO do the same for windows cmd file -->
