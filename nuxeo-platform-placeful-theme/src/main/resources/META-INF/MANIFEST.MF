@@ -5,3 +5,4 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.placeful.theme;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Category: runtime
 Require-Bundle: org.nuxeo.ecm.platform.placeful.api
+Nuxeo-Component: OSGI-INF/nxplacefulservice-contrib.xml

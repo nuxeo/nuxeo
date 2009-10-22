@@ -8,5 +8,4 @@ Require-Bundle: org.nuxeo.ecm.platform.placeful.api,
   org.nuxeo.ecm.platform.placeful.core,
   org.nuxeo.ecm.platform.notification.core,
   org.nuxeo.ecm.platform.placeful.theme
-Nuxeo-Component: OSGI-INF/PlatformBindings.xml,
-  OSGI-INF/nxplacefulservice-configs-contrib.xml
+Nuxeo-Component: OSGI-INF/PlatformBindings.xml
