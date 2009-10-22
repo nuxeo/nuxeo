@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.webengine.blogs.theme">
 
-  <require>org.nuxeo.theme.webengine
-  </require>
+  <require>org.nuxeo.webengine.sites.theme</require>
 
   <!-- Perspectives -->
   <extension target="org.nuxeo.theme.services.ThemeService"
