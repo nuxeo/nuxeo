@@ -13,17 +13,6 @@ Tony) and Jean-Marc from Chalmers University in Goteborg. Many more
 people have suggested improvement, spotted issues or contributed
 bugfixes on the mailing list.
 
-Translations
-------------
-
-German: Georges Racinet
-Italian: Mirto Silvio Busico
-Russian: Jane Smorodnik
-Arabic: Taieb Felfel
-Japanese: Damien Dupraz
-Spanish: Daniel Tellez
-Vietnamese: Le Tuan Dat and Daniel Tellez
-
 Third-party libraries
 ---------------------
 
