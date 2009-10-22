@@ -128,9 +128,11 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                     log.error("Cannot set response complete: faces context is null");
                 }
             } else {
+                // do not throw an error, just log it: afterDispatch needs to be
+                // called, and sometimes the initial error is a
+                // ClientAbortException
                 log.error("Cannot forward to error page: "
                         + "response is already commited");
-                throw new ServletException(t);
             }
             parameters.getListener().afterDispatch(unwrappedException, request,
                     response);
