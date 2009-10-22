@@ -2,7 +2,7 @@
 
 <component name="org.nuxeo.theme.nuxeo.virtualnavigation">
 
-  <require>org.nuxeo.theme.jsf</require>
+  <require>org.nuxeo.theme.nuxeo.default</require>
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="views">
 
