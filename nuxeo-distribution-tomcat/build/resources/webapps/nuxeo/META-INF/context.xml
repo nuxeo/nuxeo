@@ -68,6 +68,6 @@
   <Resource name="jdbc/nxtags" auth="Container" type="javax.sql.DataSource"
             maxActive="100" maxIdle="30" maxWait="10000" username="sa" password="" 
             driverClassName="org.h2.jdbcx.JdbcDataSource"
-            url="jdbc:h2:data/h2/vcsh2repo;AUTO_SERVER=true;create=true"/>
+            url="jdbc:h2:vcsh2repo;AUTO_SERVER=true;create=true"/>
 
 </Context>
