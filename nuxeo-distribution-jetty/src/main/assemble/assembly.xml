@@ -24,7 +24,7 @@
       <artifact name="nuxeo-core-storage-sql-ra" />
       <artifact name="nuxeo-apt-extensions" />
       <artifact name="nuxeo-webengine-apt" />
-      
+
       <!-- exclude webservices -->
       <artifact name="nuxeo-platform-ws" />
 
@@ -44,6 +44,9 @@
       <artifact name="nuxeo-platform-url-facade" />
       <artifact name="nuxeo-platform-usermanager-facade" />
       <artifact name="nuxeo-platform-tag-facade" />
+      <artifact name="nuxeo-platform-annotations-facade" />
+      <artifact name="nuxeo-platform-imaging-facade" />
+      <artifact name="nuxeo-platform-userworkspace-facade" />
 
       <!-- exclude jboss dependencies -->
       <artifact name="nuxeo-runtime-jboss-adapter" />
