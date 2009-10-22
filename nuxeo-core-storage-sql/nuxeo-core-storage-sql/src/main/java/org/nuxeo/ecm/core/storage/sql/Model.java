@@ -573,7 +573,7 @@ public class Model {
         if (previous == null) {
             mergedPropertyInfos.put(propertyName, propertyInfo);
         } else {
-            log.info(String.format(
+            log.debug(String.format(
                     "Schemas '%s' and '%s' both have a property '%s', "
                             + "unqualified reference in queries will use schema '%1$s'",
                     previous.fragmentName, fragmentName, propertyName));
