@@ -133,4 +133,44 @@ Because WSS has specific URL managament, it requires additionnal reverse proxy c
  ProxyPassReverse /_vti_inf.html http://127.0.0.1:8080/_vti_inf.html
 
 
+Deployment in Tomcat 6 
+======================
+
+Update of Root WebApp
+---------------------
+
+Edit webapps/ROOT/WEB-INF/web.xml 
+  <filter>
+       <display-name>WSS ROOT Filter</display-name>
+       <filter-name>WSSROOTFilter</filter-name>
+       <filter-class>org.nuxeo.wss.servlet.WSSFilter</filter-class>
+       <init-param>
+          <param-name>org.nuxeo.wss.rootFilter</param-name>
+          <param-value>/nuxeo</param-value>
+       </init-param>
+  </filter>
+  <filter-mapping>
+        <filter-name>WSSROOTFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+Add webapps/ROOT/META-INF/context.xml
+  <?xml version="1.0" encoding="ISO-8859-1"?>
+  <Context path="/" crossContext="true">
+  </Context>
+
+Add to tomacat lib :
+ - commons-lang-2.3.jar
+ - commons-logging.jar
+ - freemarker-2.3.11.jar
+ - log4j.jar
+ - nuxeo-generic-wss-handler-5.3.0-SNAPSHOT.jar
+
+Update nuxeo webapp :
+---------------------
+Just drop the backend jar into bundles directory
+
+
+
+
 
