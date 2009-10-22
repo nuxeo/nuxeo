@@ -241,6 +241,7 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
                 for (String f : files) {
                     if (f.startsWith(prefix)) {
                         systemBundleFile = new File(dir, f);
+                        break;
                     }
                 }
                 if (systemBundleFile == null) {
