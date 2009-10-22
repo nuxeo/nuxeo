@@ -54,13 +54,14 @@
     target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService"
     point="unicity">
     <documentation>
-      Unicity Service enabled using sha-256 on field file:content.
+      Unicity Service disabled by default.
     </documentation>
 
     <unicitySettings>
       <algo>sha-256</algo>
-      <enabled>true</enabled>
       <field>file:content</field>
+      <enabled>false</enabled>
+      <computeDigest>false</computeDigest>
     </unicitySettings>
   </extension>
 </component>

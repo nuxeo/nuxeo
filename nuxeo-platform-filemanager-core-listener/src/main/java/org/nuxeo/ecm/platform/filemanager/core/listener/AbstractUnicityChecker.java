@@ -82,13 +82,13 @@ public abstract class AbstractUnicityChecker {
                 continue;
             }
             if (blob == null) {
-                log.error("No blob retrieved");
+                log.debug("No blob retrieved");
                 continue;
             }
 
             String digest = blob.getDigest();
             if (digest == null) {
-                log.debug("Blob has no disgest, can not check for unicity");
+                log.debug("Blob has no digest, can not check for unicity");
                 continue;
             }
 

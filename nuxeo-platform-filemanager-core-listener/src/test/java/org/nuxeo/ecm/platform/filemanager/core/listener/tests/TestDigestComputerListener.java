@@ -32,6 +32,8 @@ public class TestDigestComputerListener extends AbstractListener {
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");
         deployContrib("org.nuxeo.ecm.platform.filemanager.core.listener",
                 "OSGI-INF/filemanager-digestcomputer-event-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.filemanager.core.listener.test",
+                "OSGI-INF/nxfilemanager-digest-contrib.xml");
     }
 
     public void testDigest() throws Exception {
