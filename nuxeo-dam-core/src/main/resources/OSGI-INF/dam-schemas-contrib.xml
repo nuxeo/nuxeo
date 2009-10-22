@@ -35,7 +35,6 @@
     <doctype name="Picture" extends="Document">
       <schema name="picture"/>
       <schema name="dam_common"/>
-      <schema name="image_metadata"/>
       <schema name="common"/>
       <schema name="uid"/>
       <schema name="dublincore"/>
@@ -44,6 +43,7 @@
       <facet name="Publishable"/>
       <facet name="Commentable"/>
     </doctype>
+
 
     <doctype name="FilterQuery" extends="Document">
       <schema name="filter_query"/>
