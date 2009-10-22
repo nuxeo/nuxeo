@@ -49,6 +49,10 @@ public class SeamExceptionHandlingListener extends
 
     private static final Log log = LogFactory.getLog(SeamExceptionHandlingListener.class);
 
+    /**
+     * Initiates a mock faces context when needed and tries to restore current
+     * conversation
+     */
     @Override
     public void beforeSetErrorPageAttribute(Throwable t,
             HttpServletRequest request, HttpServletResponse response)
@@ -123,6 +127,11 @@ public class SeamExceptionHandlingListener extends
         }
     }
 
+    /**
+     * Cleans up context created in
+     * {@link #beforeSetErrorPageAttribute(Throwable, HttpServletRequest, HttpServletResponse)}
+     * when needed.
+     */
     @Override
     public void afterDispatch(Throwable t, HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException {
