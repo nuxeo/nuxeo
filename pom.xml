@@ -1237,7 +1237,7 @@
       <dependency>
         <groupId>org.apache.shindig</groupId>
         <artifactId>shindig-features</artifactId>
-        <version>${shindig.version}</version>
+        <version>1.0-incubating-nx1</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.guice</groupId>
