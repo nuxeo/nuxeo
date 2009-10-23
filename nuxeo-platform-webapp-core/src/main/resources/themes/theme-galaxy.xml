@@ -71,7 +71,7 @@
           <!-- breadcrumbs -->
           <fragment type="generic fragment"/>
           <!-- domain selection -->
-          <fragment perspectives="multiple_domains" type="generic fragment" />
+          <fragment perspectives="multiple_domains" type="generic fragment"/>
         </cell>
       </section>
       <section>
@@ -84,7 +84,6 @@
           <fragment type="generic fragment"/>
           <!-- user sites -->
           <fragment type="generic fragment"/>
-          <fragment type="web widget area"/>
         </cell>
         <cell>
           <!-- user documents -->
@@ -94,7 +93,6 @@
           <!-- last published document -->
           <fragment type="generic fragment"/>
           <fragment type="generic fragment"/>
-          <fragment type="web widget area"/>
         </cell>
       </section>
       <section>
@@ -126,20 +124,6 @@
     <name>body</name>
     <defaultBody/>
     <defaultSrc/>
-  </properties>
-  <properties element="page[3]/section[3]/cell[1]/fragment[5]">
-    <maxItems/>
-    <decoration>default</decoration>
-    <name>Left Panel</name>
-    <disallowDuplicates>false</disallowDuplicates>
-    <provider>persistent per user</provider>
-  </properties>
-  <properties element="page[3]/section[3]/cell[2]/fragment[5]">
-    <maxItems/>
-    <decoration>default</decoration>
-    <name>Right Panel</name>
-    <disallowDuplicates>false</disallowDuplicates>
-    <provider>persistent per user</provider>
   </properties>
   <properties element="page[4]/section[1]/cell[1]/fragment[3]">
     <name>body</name>
@@ -336,12 +320,6 @@
     </widget>
     <widget element="page[3]/section[3]/cell[1]/fragment[4]">
       <view>nuxeo5 user sites</view>
-    </widget>
-    <widget element="page[3]/section[3]/cell[1]/fragment[5]">
-      <view>web widget panel</view>
-    </widget>
-    <widget element="page[3]/section[3]/cell[2]/fragment[5]">
-      <view>web widget panel</view>
     </widget>
     <!-- buttons -->
     <style name="default buttons">
