@@ -47,7 +47,7 @@ public interface DocumentModelListSerializer {
 
     String EMPTY_LIST = "empty result";
 
-    DateFormat DATE_PARSER = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    DateFormat DATE_PARSER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     String serialize(DocumentModelList docList, List<String> columnsDefinition, HttpServletRequest req) throws ClientException;
 
