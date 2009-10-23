@@ -19,12 +19,20 @@ package org.nuxeo.ecm.platform.publisher.helper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.*;
-import org.nuxeo.ecm.core.api.tree.DefaultDocumentTreeSorter;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.Filter;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
-import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 
@@ -175,7 +183,7 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
                 }
             }
         }
-        DocumentModelList documents =  userSession.getDocuments(filtredDocRef.toArray(new DocumentRef[filtredDocRef.size()]));
+        DocumentModelList documents = userSession.getDocuments(filtredDocRef.toArray(new DocumentRef[filtredDocRef.size()]));
         return filterDocuments(documents);
     }
 

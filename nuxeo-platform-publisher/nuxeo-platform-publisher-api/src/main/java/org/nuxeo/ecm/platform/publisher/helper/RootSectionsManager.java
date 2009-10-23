@@ -17,13 +17,13 @@
 
 package org.nuxeo.ecm.platform.publisher.helper;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.ClientException;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -34,18 +34,22 @@ public class RootSectionsManager {
 
     public static final String SECTIONS_PROPERTY_NAME = "publish:sections";
 
+    protected static final String SECTION_ROOT_DOCUMENT_TYPE = "SectionRoot";
+
     protected CoreSession coreSession;
 
     public RootSectionsManager(CoreSession coreSession) {
         this.coreSession = coreSession;
     }
 
-    public boolean canAddSection(DocumentModel section, DocumentModel currentDocument)
-            throws ClientException {
+    public boolean canAddSection(DocumentModel section,
+            DocumentModel currentDocument) throws ClientException {
+        if (SECTION_ROOT_DOCUMENT_TYPE.equals(section.getType())) {
+            return false;
+        }
         String sectionId = section.getId();
         if (currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
-            String[] sectionIdsArray = (String[]) currentDocument
-                    .getPropertyValue(SECTIONS_PROPERTY_NAME);
+            String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
 
             List<String> sectionIdsList = new ArrayList<String>();
 
@@ -61,11 +65,11 @@ public class RootSectionsManager {
         return true;
     }
 
-    public String addSection(String sectionId, DocumentModel currentDocument) throws ClientException {
+    public String addSection(String sectionId, DocumentModel currentDocument)
+            throws ClientException {
 
         if (sectionId != null && currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
-            String[] sectionIdsArray = (String[]) currentDocument
-                    .getPropertyValue(SECTIONS_PROPERTY_NAME);
+            String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
 
             List<String> sectionIdsList = new ArrayList<String>();
 
@@ -87,11 +91,11 @@ public class RootSectionsManager {
         return null;
     }
 
-    public String removeSection(String sectionId, DocumentModel currentDocument) throws ClientException {
+    public String removeSection(String sectionId, DocumentModel currentDocument)
+            throws ClientException {
 
         if (sectionId != null && currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
-            String[] sectionIdsArray = (String[]) currentDocument
-                    .getPropertyValue(SECTIONS_PROPERTY_NAME);
+            String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
 
             List<String> sectionIdsList = new ArrayList<String>();
 
