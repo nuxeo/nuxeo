@@ -20,6 +20,7 @@
     <module>nuxeo-http-client</module>
     <module>nuxeo-platform-archive</module>
     <module>nuxeo-platform-archive-importer</module>
+    <module>nuxeo-platform-importer</module>
     <module>nuxeo-platform-audit-web-access</module>
     <module>nuxeo-platform-documentLink</module>
     <module>nuxeo-platform-dynsearch</module>
