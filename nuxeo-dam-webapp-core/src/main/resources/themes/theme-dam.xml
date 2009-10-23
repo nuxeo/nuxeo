@@ -36,6 +36,13 @@
         </cell>
       </section>
     </page>
+    <page name="popup">
+      <section>
+        <cell>
+          <fragment type="region fragment" />
+        </cell>
+      </section>
+    </page>
   </layout>
   <formats>
     <!-- LAYOUT -->
@@ -71,6 +78,12 @@
       <text-align>right</text-align>
     </layout>
     <layout element="page[1]/section[3]/cell[1]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[2]/section[1]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[2]/section[1]/cell[1]">
       <width>100%</width>
     </layout>
     <widget element="">
@@ -117,6 +130,18 @@
     </widget>
     <widget element="page[1]/section[3]/cell[1]/fragment[1]">
       <view>dam footer</view>
+    </widget>
+    <widget element="page[2]">
+      <view>page frame</view>
+    </widget>
+    <widget element="page[2]/section[1]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[2]/section[1]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[2]/section[1]/cell[1]/fragment[1]">
+      <view>facelet region</view>
     </widget>
     <!-- buttons -->
     <style name="default buttons">

@@ -24,7 +24,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
@@ -184,13 +183,6 @@ public class DocumentActions implements Serializable {
         } else {
             displayMode = "view";
         }
-    }
-
-    public String getPreviewURL() {
-        if (currentSelection == null) {
-            return null;
-        }
-        return PreviewHelper.getPreviewURL(currentSelection, null);
     }
 
     public void updateCurrentSelection() throws ClientException {

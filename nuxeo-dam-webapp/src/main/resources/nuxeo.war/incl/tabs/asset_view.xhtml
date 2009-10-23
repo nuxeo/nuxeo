@@ -8,15 +8,28 @@
      xmlns:nxl="http://nuxeo.org/nxforms/layout"
      xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <div class="infoTabContent">
-    <nxh:graphicImage id="theImage"
-                      url="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Medium:content', documentActions.currentSelection.dublincore.modified)}?conversationId=#{conversation.id}"
-                      style="max-height: 350px;"
-                      rendered="#{documentActions.currentSelection.hasSchema('picture')}"/>
-    <nxh:graphicImage value="/img/file_preview.png"
-                      style="max-height: 350px;"
-                      rendered="#{!documentActions.currentSelection.hasSchema('picture')}"/>
+  <script language="javascript">
+    function popupAnnotation(url) {
+      popup = window.open(url, '_annotationPopup', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, top=0, left=0, width=800, height=600');
+      if(!popup.opener) {
+        popup.opener = window;
+      }
+      return false;
+    }
+  </script>
 
+  <div class="infoTabContent">
+    <h:form>
+      <h:commandLink title="#{messages['selection.label.annotate']}" onclick="javascript:popupAnnotation('#{annotationsActions.annotationsURL}')">
+        <nxh:graphicImage id="theImage"
+                          url="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Medium:content', documentActions.currentSelection.dublincore.modified)}?conversationId=#{conversation.id}"
+                          style="max-height: 350px;"
+                          rendered="#{documentActions.currentSelection.hasSchema('picture')}"/>
+        <nxh:graphicImage value="/img/file_preview.png"
+                          style="max-height: 350px;"
+                          rendered="#{!documentActions.currentSelection.hasSchema('picture')}"/>
+      </h:commandLink>
+    </h:form>
     <a4j:form id="assetView">
       <div class="documentPreviewTitle">
         <h4>

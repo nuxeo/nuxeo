@@ -150,6 +150,10 @@
         <theme>dam/default</theme>
       </view>
 
+       <view id="/annotations_popup.xhtml">
+        <theme>dam/popup</theme>
+      </view>
+
     </application>
   </extension>
 

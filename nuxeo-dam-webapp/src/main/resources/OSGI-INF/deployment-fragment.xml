@@ -21,6 +21,14 @@
     </locale-config>
   </extension>
 
+  <extension target="faces-config#NAVIGATION">
+    <navigation-case>
+      <from-outcome>annotations_popup</from-outcome>
+      <to-view-id>/annotations_popup.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+  </extension>
+
   <install>
     <!--  unzip the war template -->
     <unzip from="${bundle.fileName}" to="/">
