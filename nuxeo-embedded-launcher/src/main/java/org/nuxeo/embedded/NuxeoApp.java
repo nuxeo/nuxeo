@@ -182,6 +182,7 @@ public class NuxeoApp {
         instance = this;
         this.cl = (URLClassLoader) cl;
         Environment env = new Environment(home);
+        env.setHostApplicationName(Environment.NXSERVER_HOST);
         Environment.setDefault(env);
         blacklist = new HashSet<String>();
     }
