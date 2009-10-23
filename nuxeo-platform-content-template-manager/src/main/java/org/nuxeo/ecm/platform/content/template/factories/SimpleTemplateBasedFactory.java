@@ -34,16 +34,26 @@ import org.nuxeo.ecm.platform.content.template.service.TemplateItemDescriptor;
 
 public class SimpleTemplateBasedFactory extends BaseContentFactory {
 
-    private List<TemplateItemDescriptor> template;
+    protected List<TemplateItemDescriptor> template;
 
-    private List<ACEDescriptor> acl;
+    protected List<ACEDescriptor> acl;
+
+    protected boolean isTargetEmpty(DocumentModel eventDoc) throws ClientException  {
+        // If we already have children : exit !!!
+        if (!session.getChildren(eventDoc.getRef()).isEmpty()) {
+            return false;
+        }
+        else {
+            return true;
+        }
+
+    }
 
     public void createContentStructure(DocumentModel eventDoc)
             throws ClientException {
         super.initSession(eventDoc);
 
-        // If we already have children : exit !!!
-        if (!session.getChildren(eventDoc.getRef()).isEmpty()) {
+        if (!isTargetEmpty(eventDoc)) {
             return;
         }
 
