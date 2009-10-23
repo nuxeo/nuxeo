@@ -83,8 +83,6 @@
       <artifact name="nuxeo-platform-ear" />
       <artifact name="nuxeo-distribution-dm" />
 
-      <!-- excluding nuxeo-theme-webwidgets not ready for two parts deployment -->
-      <artifact name="nuxeo-theme-webwidgets*" />
       <artifact group="org.nuxeo.ecm.opensocial" />
     </excludes>
   </artifactSet>

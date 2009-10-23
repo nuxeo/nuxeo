@@ -124,10 +124,6 @@
         version="${nuxeo.webengine.version}" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-theme-editor"
         version="${nuxeo.features.version}" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-theme-webwidgets"
-        version="${nuxeo.features.version}" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-theme-webwidgets-ui"
-        version="${nuxeo.features.version}" />
     </artifacts>
   </artifactSet>
 

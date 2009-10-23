@@ -84,8 +84,6 @@ xmlns:artifact="urn:nuxeo-artifact" xmlns:nx="urn:nuxeo-build">
         <artifact:file key="org.nuxeo.ecm.webengine:nuxeo-theme-webengine" />
         <artifact:file key="org.nuxeo.theme:nuxeo-theme-html" />
         <artifact:file key="org.nuxeo.ecm.platform:nuxeo-theme-editor" />
-        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-theme-webwidgets" />
-        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-theme-webwidgets-ui" />
       </copy>
       <copy todir="${stagedir}/lib">
         <artifact:file key="org.w3c:sac" />
