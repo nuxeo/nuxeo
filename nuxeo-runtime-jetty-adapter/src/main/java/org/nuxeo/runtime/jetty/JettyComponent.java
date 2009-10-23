@@ -58,6 +58,7 @@ public class JettyComponent extends DefaultComponent {
     public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.server");
     public static final String XP_WEB_APP = "webapp";
     public static final String XP_DATA_SOURCE = "datasource";
+    public static String P_SCAN_WEBDIR = "org.nuxeo.runtime.jetty.scanWebDir"; 
 
     protected Server server;
     // here we are putting all regular war contexts
@@ -132,25 +133,30 @@ public class JettyComponent extends DefaultComponent {
         
         // scan for WAR files        
         // deploy any war found in web directory
-        File web = Environment.getDefault().getWeb();
-        File[] roots = web.listFiles();
-        if (roots != null) {
-            for (File root : roots) {
-                String name = root.getName();                
-                if (name.endsWith(".war")) {
-                    name = name.substring(0, name.length()-4);
-                    boolean isRoot = "root".equals(name);
-                    String ctxPath = isRoot ? "/" : "/"+name;
-                    WebAppContext ctx = new WebAppContext(root.getAbsolutePath(), ctxPath);
-//                    File defWebXml = new File(Environment.getDefault().getConfig(), "default-web.xml");
-//                    if (defWebXml.isFile()) {
-//                      ctx.setDefaultsDescriptor(defWebXml.getAbsolutePath());
-//                    }
-                    ctx.setConfigurations(new Configuration[] {new WebInfConfiguration(), new WebXmlConfiguration()});
-                    if (isRoot) {
-                        server.addHandler(ctx);
-                    } else {
-                        warContexts.addHandler(ctx);
+        String scanWebDir = System.getProperty(P_SCAN_WEBDIR);
+        if (scanWebDir != null && scanWebDir.equals("true")) {
+            logger.info("Scanning for WARs in web directory");
+            File web = Environment.getDefault().getWeb();
+            File[] roots = web.listFiles();
+            if (roots != null) {
+                for (File root : roots) {
+                    String name = root.getName();                
+                    if (name.endsWith(".war")) {
+                        logger.info("Found war: "+name);
+                        name = name.substring(0, name.length()-4);
+                        boolean isRoot = "root".equals(name);
+                        String ctxPath = isRoot ? "/" : "/"+name;
+                        WebAppContext ctx = new WebAppContext(root.getAbsolutePath(), ctxPath);
+                        //                    File defWebXml = new File(Environment.getDefault().getConfig(), "default-web.xml");
+                        //                    if (defWebXml.isFile()) {
+                        //                      ctx.setDefaultsDescriptor(defWebXml.getAbsolutePath());
+                        //                    }
+                        ctx.setConfigurations(new Configuration[] {new WebInfConfiguration(), new WebXmlConfiguration()});
+                        if (isRoot) {
+                            server.addHandler(ctx);
+                        } else {
+                            warContexts.addHandler(ctx);
+                        }
                     }
                 }
             }
