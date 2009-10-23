@@ -180,6 +180,10 @@ public final class ComponentUtils {
                 response.setHeader("Content-Disposition", contentDisposition);
                 log.debug("Downloading with mime/type : " + blob.getMimeType());
                 response.setContentType(blob.getMimeType());
+                long fileSize = blob.getLength();
+                if (fileSize>0) {
+                    response.setContentLength((int)fileSize);
+                }
                 try {
                     blob.transferTo(response.getOutputStream());
                     response.flushBuffer();
