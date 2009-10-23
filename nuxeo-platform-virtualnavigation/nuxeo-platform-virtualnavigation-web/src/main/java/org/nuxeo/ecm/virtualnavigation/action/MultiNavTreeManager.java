@@ -35,8 +35,11 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.core.Events;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.virtualnavigation.service.NavTreeService;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeManager;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
@@ -106,6 +109,11 @@ public class MultiNavTreeManager implements Serializable {
     public void setSelectedNavigationTree(String selectedNavigationTree) {
         directoryTreeManager.setSelectedTreeName(selectedNavigationTree);
         this.selectedNavigationTree = selectedNavigationTree;
+        // raise this event in order to reset the documents lists from
+        // 'conversationDocumentsListsManager'
+        Events.instance().raiseEvent(
+                EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
+                new DocumentModelImpl("Folder"));
     }
 
     @Observer(value = { "PATH_PROCESSED" }, create = false)
