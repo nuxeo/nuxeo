@@ -483,6 +483,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                     currentUser);
             jbpmService.endTask(startTask.getId(), null, null, null,
                     transientVariables, currentUser);
+            documentManager.save(); // process invalidations from handlers' sessions
             resetCurrentData();
         }
         return null;
@@ -503,7 +504,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                     true);
             jbpmService.endTask(taskInstance.getId(), transition,
                     taskVariables, null, getTransientVariables(), currentUser);
-
+            documentManager.save(); // process invalidations from handlers' sessions
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.task.ended"));
@@ -536,6 +537,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                     false);
             jbpmService.endTask(taskInstance.getId(), transition,
                     taskVariables, null, getTransientVariables(), currentUser);
+            documentManager.save(); // process invalidations from handlers' sessions
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.task.ended"));
