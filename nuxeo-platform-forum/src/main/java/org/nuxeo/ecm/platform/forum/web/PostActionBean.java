@@ -135,6 +135,13 @@ public class PostActionBean implements PostAction {
         return false;
     }
 
+    protected void fetchInvalidationsIfNeeded() throws ClientException {
+        // fetch invalidations from unrestricted session if needed
+        if (!documentManager.isStateSharedByAllThreadSessions()) {
+            documentManager.save();
+        }
+    }
+
     /**
      * Adds the post to the thread and starts the moderation WF on the post
      * created.
@@ -201,6 +208,7 @@ public class PostActionBean implements PostAction {
                     }
                 }
             }
+            fetchInvalidationsIfNeeded();
             // NXP-1262 display the message only when about to publish
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
@@ -217,6 +225,7 @@ public class PostActionBean implements PostAction {
     public String cancelPost() throws ClientException {
         cleanContextVariables();
         commentManagerActions.cancelComment();
+        fetchInvalidationsIfNeeded();
         return navigationContext.navigateToDocument(getParentThread());
     }
 
@@ -237,6 +246,7 @@ public class PostActionBean implements PostAction {
         }
         commentManagerActions.deleteComment(deletePostId);
 
+        fetchInvalidationsIfNeeded();
         Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_ENDED);
 
         return navigationContext.navigateToDocument(getParentThread());
@@ -257,6 +267,8 @@ public class PostActionBean implements PostAction {
 
         // force comment manager to reload posts
         commentManagerActions.documentChanged();
+
+        fetchInvalidationsIfNeeded();
 
         return navigationContext.navigateToDocument(getParentThread());
     }
@@ -279,6 +291,8 @@ public class PostActionBean implements PostAction {
 
         // force comment manager to reload posts
         commentManagerActions.documentChanged();
+
+        fetchInvalidationsIfNeeded();
 
         return navigationContext.navigateToDocument(getParentThread());
     }
