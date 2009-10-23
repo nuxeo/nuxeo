@@ -29,6 +29,7 @@ import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.logging.JavaUtilLoggingHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
@@ -100,6 +101,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     public synchronized void start() throws Exception {
         if (!isStarted) {
+            JavaUtilLoggingHelper.redirectToApacheCommons();
             log.info("Starting Nuxeo Runtime service " + getName() + "; version: "
                     + getVersion());
             //NXRuntime.setInstance(this);
@@ -127,6 +129,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
             manager.shutdown();
             //NXRuntime.setRuntime(null);
             manager = null;
+            JavaUtilLoggingHelper.reset();
         }
     }
 

@@ -43,7 +43,6 @@ import org.jboss.mx.util.MBeanProxyExt;
 import org.jboss.mx.util.MBeanServerLocator;
 import org.jboss.system.ServiceControllerMBean;
 import org.nuxeo.common.collections.DependencyTree;
-import org.nuxeo.common.logging.JavaUtilLoggingHelper;
 import org.nuxeo.runtime.deployment.preprocessor.ContainerDescriptor;
 import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.deployment.preprocessor.FragmentDescriptor;
@@ -148,7 +147,6 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
     @Override
     @SuppressWarnings("unchecked")
     public void init(DeploymentInfo di) throws DeploymentException {
-        JavaUtilLoggingHelper.redirectToApacheCommons();
         if (!canPreprocess(di)) {
             super.init(di);
             return;
@@ -172,7 +170,7 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
 
             // put all jars in the classpath
             addJarsToClassPath(di);
-            
+
 //            FragmentRegistry freg = processor.getRootContainer().fragments;
 //            //freg.get("org.nuxeo.osgi");
 //            FragmentDescriptor fd = freg.get("org.nuxeo.osgi");
@@ -296,7 +294,6 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
     @Override
     public void destroy(DeploymentInfo di) throws DeploymentException {
         super.destroy(di);
-        JavaUtilLoggingHelper.reset();
     }
 
     /**
@@ -565,7 +562,7 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
     protected File getSystemDir(DeploymentInfo di) throws DeploymentException {
         return new File(getEarDirectory(di), SYSTEM_DIR);
     }
-    
+
     protected void addJarsToClassPath(DeploymentInfo di) throws DeploymentException {
         addJarsToClassPath(di, getLibDir(di));
         addJarsToClassPath(di, getSystemDir(di));
