@@ -36,13 +36,18 @@ public class ConfigBuilderHelper {
     private static final Log log = LogFactory.getLog(ConfigBuilderHelper.class);
 
     private static String UNIX_OO_EXE = "soffice";
+
     private static String WIN_OO_EXE = "soffice.exe";
-    private static String[] UNIX_OO_PATHS = {"/usr/lib/openoffice/program"};
+
+    private static String[] UNIX_OO_PATHS = { "/usr/lib/openoffice/program" };
+
+    private static String[] MAC_OO_PATHS = { "/Applications/OpenOffice.org.app/Contents/MacOS" };
+
     private static String[] WIN_OO_PATHS = {
             "C:/Program Files/OpenOffice.org 2.2",
-            "C:/Program Files/OpenOffice.org 2.3",
+            "C:/Program Fu  iles/OpenOffice.org 2.3",
             "C:/Program Files/OpenOffice.org 2.4",
-            "C:/Program Files/OpenOffice.org 2.5"};
+            "C:/Program Files/OpenOffice.org 2.5" };
 
     protected OOoServerDescriptor desc;
 
@@ -52,9 +57,15 @@ public class ConfigBuilderHelper {
 
     protected static String fileSep = System.getProperty("file.separator");
 
-
     public ConfigBuilderHelper(OOoServerDescriptor desc) {
         this.desc = desc;
+        if (desc.getJpipeLibPath() == null) {
+            if (isMac()) {
+                // we have no hope of working with this set to null, so try
+                // another value
+                this.desc.setJpipeLibPath("/Applications/OpenOffice.org.app/Contents/basis-link/ure-link/lib");
+            }
+        }
     }
 
     protected static List<String> getSystemPaths() {
@@ -68,8 +79,13 @@ public class ConfigBuilderHelper {
         return osName.toLowerCase().contains("windows");
     }
 
+    protected static boolean isMac() {
+        String osName = System.getProperty("os.name").toLowerCase();
+        return osName.toLowerCase().startsWith("mac os x");
+    }
+
     protected String getOOServerPath() {
-        String exeName = UNIX_OO_EXE;
+        String exeName = UNIX_OO_EXE; // also ok for mac
         if (isWindows()) {
             exeName = WIN_OO_EXE;
         }
@@ -86,7 +102,11 @@ public class ConfigBuilderHelper {
             if (isWindows()) {
                 paths.addAll(Arrays.asList(WIN_OO_PATHS));
             } else {
-                paths.addAll(Arrays.asList(UNIX_OO_PATHS));
+                if (isMac()) {
+                    paths.addAll(Arrays.asList(MAC_OO_PATHS));
+                } else {
+                    paths.addAll(Arrays.asList(UNIX_OO_PATHS));
+                }
             }
             paths.addAll(getSystemPaths());
 
@@ -162,8 +182,9 @@ public class ConfigBuilderHelper {
             ooServerConfig.officeProgramDirectoryPath = getOOServerPath();
             ooServerConfig.acceptor = "socket,host=" + desc.getOooListenerIP()
                     + ",port=" + desc.getOooListenerPort();
-            ooServerConfig.adminAcceptor = "socket,host=" + desc.getOooListenerIP()
-                    + ",port=" + desc.getOooDaemonListenerPort();
+            ooServerConfig.adminAcceptor = "socket,host="
+                    + desc.getOooListenerIP() + ",port="
+                    + desc.getOooDaemonListenerPort();
             ooServerConfig.maxUsageCountPerInstance = desc.getOooRecycleInterval();
             ooServerConfig.userInstallation = getUserDirs();
 
