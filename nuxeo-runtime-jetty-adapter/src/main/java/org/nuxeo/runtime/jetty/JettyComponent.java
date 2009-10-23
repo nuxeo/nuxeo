@@ -133,7 +133,7 @@ public class JettyComponent extends DefaultComponent {
         
         // scan for WAR files        
         // deploy any war found in web directory
-        String scanWebDir = System.getProperty(P_SCAN_WEBDIR);
+        String scanWebDir = Framework.getProperty(P_SCAN_WEBDIR);
         if (scanWebDir != null && scanWebDir.equals("true")) {
             logger.info("Scanning for WARs in web directory");
             File web = Environment.getDefault().getWeb();
