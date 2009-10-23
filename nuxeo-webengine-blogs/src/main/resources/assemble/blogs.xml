@@ -7,7 +7,7 @@
   </assemble>
   <zipEntrySet id="jboss">
     <artifact>
-      org.nuxeo.ecm.distribution:nuxeo-distribution-jboss:${nuxeo.distribution.version}:zip
+      org.nuxeo.ecm.distribution:nuxeo-distribution-jboss:${nuxeo.distribution.version}:zip:nuxeo-dm
     </artifact>
   </zipEntrySet>
 
