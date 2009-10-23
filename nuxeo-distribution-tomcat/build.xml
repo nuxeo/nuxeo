@@ -31,7 +31,7 @@ JAVA_OPTS="$JAVA_OPTS -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF
 
     <!-- Extract Nuxeo webapp -->
     <unzip dest="${tomcat}/webapps/nuxeo">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-jetty:${nuxeo.platform.version}:zip:nuxeo-dm" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-jetty:${nuxeo.platform.version}:zip;nuxeo-dm" />
     </unzip>
     <nx:rename from="${tomcat}/webapps/nuxeo/nuxeo-*" to="${tomcat}/webapps/nuxeo/nxserver" />
 
