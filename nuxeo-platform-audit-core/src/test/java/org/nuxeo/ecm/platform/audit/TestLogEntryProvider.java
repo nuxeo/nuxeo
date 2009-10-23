@@ -117,8 +117,9 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         assertEquals("id", fetchedEntry.getDocUUID());
     }
 
-    public void testByFilter() {
+    public void testByFilter() throws Exception {
         LogEntry one = doCreateEntryAndPersist("id");
+        Thread.sleep(1000);
         @SuppressWarnings("unused")
         LogEntry two = doCreateEntryAndPersist("id");
 
