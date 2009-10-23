@@ -21,6 +21,7 @@ import org.nuxeo.ecm.spaces.core.impl.exceptions.NoElementFoundException;
 public class DashboardSpaceProvider extends DefaultSpaceProvider {
 
     public static final String DASHBOARD_SPACE_NAME = "dashboardSpace";
+
     public static final String DASHBOARD_DEFAULT_LAYOUT = "x-2-default";
 
     private static final Log log = LogFactory.getLog(DashboardSpaceProvider.class);
@@ -70,7 +71,8 @@ public class DashboardSpaceProvider extends DefaultSpaceProvider {
                         desiredSpace.getTitle(), desiredSpace.getDescription(),
                         session, Constants.Space.TYPE);
                 // set layout
-                spaceDocument.setProperty("space", "layout", DASHBOARD_DEFAULT_LAYOUT);
+                spaceDocument.setProperty("space", "layout",
+                        DASHBOARD_DEFAULT_LAYOUT);
                 spaceDocument = session.saveDocument(spaceDocument);
                 session.save();
                 createInitialGadgets(session, spaceDocument);
@@ -88,7 +90,7 @@ public class DashboardSpaceProvider extends DefaultSpaceProvider {
 
         LocaleSelector localeSelector = (LocaleSelector) Component.getInstance("org.jboss.seam.international.localeSelector");
         String language = "en";
-        if (localeSelector!=null) {
+        if (localeSelector != null) {
             language = localeSelector.getLanguage();
         }
         String labelKey = "";
@@ -98,23 +100,22 @@ public class DashboardSpaceProvider extends DefaultSpaceProvider {
         log.debug("creating UserTasks ");
         labelKey = "title.dashboard.userTasks";
         title = TranslationHelper.getLabel(labelKey, language);
-        createGadgetForInitialDashboard(session, spaceDocument,
-                "tasks", title, COLS[0], new Integer(0));
+        createGadgetForInitialDashboard(session, spaceDocument, "tasks", title,
+                COLS[0], new Integer(0));
 
-        /*
-        log.debug("creating UserWorkflow ");
-        labelKey = "title.dashboard.userProcesses";
+        // waiting on others
+        log.debug("creating waiting for ");
+        labelKey = "title.dashboard.waitingfor";
         title = TranslationHelper.getLabel(labelKey, language);
-        createGadgetForInitialDashboard(session, spaceDocument,
-                "tasks", title, COLS[0], new Integer(0));
-                */
+        createGadgetForInitialDashboard(session, spaceDocument, "waitingfor",
+                title, COLS[0], new Integer(1));
 
         // User Sites
         log.debug("creating UserSites ");
         labelKey = "title.dashboard.userSites";
         title = TranslationHelper.getLabel(labelKey, language);
-        createGadgetForInitialDashboard(session, spaceDocument,
-                "usersites",title,  COLS[0], new Integer(0));
+        createGadgetForInitialDashboard(session, spaceDocument, "usersites",
+                title, COLS[0], new Integer(2));
 
         // UserDocuments
         log.debug("creating UserDocuments ");
@@ -128,16 +129,15 @@ public class DashboardSpaceProvider extends DefaultSpaceProvider {
         labelKey = "title.dashboard.userWorkspaces";
         title = TranslationHelper.getLabel(labelKey, language);
         createGadgetForInitialDashboard(session, spaceDocument,
-                "userworkspaces",title,  COLS[1], new Integer(0));
+                "userworkspaces", title, COLS[1], new Integer(0));
 
         session.save();
-
 
     }
 
     protected Gadget createGadgetForInitialDashboard(CoreSession session,
-            DocumentModel parent, String name, String title, String placeId, Integer position)
-            throws Exception {
+            DocumentModel parent, String name, String title, String placeId,
+            Integer position) throws Exception {
 
         DocumentModel model = DocumentHelper.createInternalDocument(parent,
                 name, title, "", session, Constants.Gadget.TYPE);
