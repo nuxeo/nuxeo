@@ -31,6 +31,7 @@ import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -100,11 +101,21 @@ public class DirectoryTreeNode {
                 queryModel.setProperty(schemaName, fieldName, values);
                 Events.instance().raiseEvent(EventNames.QUERY_MODEL_CHANGED,
                         queryModel);
+                // raise this event in order to reset the documents lists from
+                // 'conversationDocumentsListsManager'
+                Events.instance().raiseEvent(
+                         EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
+                         new DocumentModelImpl("Folder"));
             }
         } else {
             queryModel.setProperty(schemaName, fieldName, value);
             Events.instance().raiseEvent(EventNames.QUERY_MODEL_CHANGED,
                     queryModel);
+            // raise this event in order to reset the documents lists from
+            // 'conversationDocumentsListsManager'
+            Events.instance().raiseEvent(
+                    EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
+                    new DocumentModelImpl("Folder"));
         }
         pathProcessing();
         return config.getOutcome();
