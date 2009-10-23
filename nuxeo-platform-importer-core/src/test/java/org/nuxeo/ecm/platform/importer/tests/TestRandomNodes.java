@@ -44,7 +44,7 @@ public class TestRandomNodes extends TestCase {
         System.out.println("        Data Nodes : " + (nbNodes) );
         System.out.println("browsing over : " + (nbNodes+nbFolderish) + " nodes visited");
 
-        assertTrue(nbNodes >= target);
+        assertTrue(nbNodes >= target * 0.1);
     }
 
     protected void browse(SourceNode node) {
