@@ -1486,7 +1486,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-nuxeo-plugin</artifactId>
-          <version>1.0.12</version>
+          <version>1.0.13</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
