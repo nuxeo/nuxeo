@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.gadgets.GadgetSpecFactory;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
+import org.nuxeo.opensocial.servlet.GuiceContextListener;
 import org.nuxeo.opensocial.shindig.crypto.KeyDescriptor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -88,6 +89,9 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) {
         LOG.info("Activate component OpenSocial service");
+        if (injector==null) {
+            injector = GuiceContextListener.guiceInjector;
+        }
     }
 
     @Override

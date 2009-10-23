@@ -29,35 +29,52 @@ import org.nuxeo.runtime.api.Framework;
 
 import com.google.inject.Inject;
 
-
-
 public class NXSecurityTokenDecoder implements SecurityTokenDecoder {
 
     private static final String SECURITY_TOKEN_TYPE = "gadgets.securityTokenType";
 
+    private SecurityTokenDecoder decoder;
 
-      private final SecurityTokenDecoder decoder;
+    private String tokenType;
+    private ContainerConfig config;
 
-      @Inject
-      public NXSecurityTokenDecoder(ContainerConfig config) throws Exception {
-        String tokenType = config.get(ContainerConfig.DEFAULT_CONTAINER, SECURITY_TOKEN_TYPE);
-        if ("insecure".equals(tokenType)) {
-          decoder = new BasicSecurityTokenDecoder();
-        } else if ("secure".equals(tokenType)) {
-            OpenSocialService os = Framework.getService(OpenSocialService.class);
-            String key = os.getKeyForContainer(ContainerConfig.DEFAULT_CONTAINER);
-            decoder = new BlobCrypterSecurityTokenDecoder(config, key);
+    @Inject
+    public NXSecurityTokenDecoder(ContainerConfig config) throws Exception {
+        tokenType = config.get(ContainerConfig.DEFAULT_CONTAINER,
+                SECURITY_TOKEN_TYPE);
+        if ("insecure".equals(tokenType) || "secure".equals(tokenType)) {
+            this.config = config;
         } else {
-          throw new RuntimeException("Unknown security token type specified in " +
-              ContainerConfig.DEFAULT_CONTAINER + " container configuration. " +
-              SECURITY_TOKEN_TYPE + ": " + tokenType);
+            throw new RuntimeException(
+                    "Unknown security token type specified in "
+                            + ContainerConfig.DEFAULT_CONTAINER
+                            + " container configuration. "
+                            + SECURITY_TOKEN_TYPE + ": " + tokenType);
         }
-      }
+    }
 
-      public SecurityToken createToken(Map<String, String> tokenParameters)
-          throws SecurityTokenException {
-        return decoder.createToken(tokenParameters);
-      }
+    protected SecurityTokenDecoder getDecoder() throws Exception {
+        if (decoder == null) {
+            if ("insecure".equals(tokenType)) {
+                decoder = new BasicSecurityTokenDecoder();
+            } else if ("secure".equals(tokenType)) {
+                OpenSocialService os = Framework
+                        .getService(OpenSocialService.class);
+                String key = os
+                        .getKeyForContainer(ContainerConfig.DEFAULT_CONTAINER);
+                decoder = new BlobCrypterSecurityTokenDecoder(config, key);
+            }
+        }
+        return decoder;
+    }
 
+    public SecurityToken createToken(Map<String, String> tokenParameters)
+            throws SecurityTokenException {
+        try {
+            return getDecoder().createToken(tokenParameters);
+        } catch (Exception e) {
+            throw new SecurityTokenException(e);
+        }
+    }
 
 }

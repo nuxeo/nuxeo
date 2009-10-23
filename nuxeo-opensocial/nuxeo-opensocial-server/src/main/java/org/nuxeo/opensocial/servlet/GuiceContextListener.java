@@ -27,6 +27,7 @@ import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
+import org.nuxeo.opensocial.service.impl.OpenSocialServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.inject.Guice;
@@ -44,6 +45,8 @@ public class GuiceContextListener implements ServletContextListener {
 
     private static final Log log = LogFactory.getLog(GuiceContextListener.class);
 
+    public static Injector guiceInjector = null;
+
     public void contextInitialized(ServletContextEvent event) {
         log.info("GuiceContextListener contextInitialized");
         ServletContext context = event.getServletContext();
@@ -53,10 +56,15 @@ public class GuiceContextListener implements ServletContextListener {
         Injector injector = null;
         try {
 
-            OpenSocialService service = Framework.getService(OpenSocialService.class);
+
             log.info("GuiceContextListener createInjector");
             injector = Guice.createInjector(Stage.PRODUCTION, modules);
-            service.setInjector(injector);
+            OpenSocialService service = Framework.getService(OpenSocialService.class);
+            if (service!=null) {
+                service.setInjector(injector);
+            } else {
+                guiceInjector = injector;
+            }
             context.setAttribute(INJECTOR_ATTRIBUTE, injector);
 
         } catch (Exception e) {
