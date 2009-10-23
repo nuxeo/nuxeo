@@ -119,7 +119,8 @@ public abstract class UnrestrictedSessionRunner {
                         throw new ClientException(e);
                     } finally {
                         session = baseSession;
-                        if (!session.isStateSharedByAllThreadSessions()) {
+                        if (session != null
+                                && !session.isStateSharedByAllThreadSessions()) {
                             // process invalidations from unrestricted session
                             session.save();
                         }
