@@ -35,10 +35,8 @@ public class RepositoryInitializationListener  extends RepositoryInitializationH
         // This method gets called as a system user
         // so we have all needed rights to do the check and the creation
         DocumentModel root = session.getRootDocument();
-        if (session.getChildren(root.getRef()).isEmpty()) {
-            getService().executeFactoryForType(root);
-            session.save();
-        }
+        getService().executeFactoryForType(root);
+        session.save();
     }
 
     private ContentTemplateService getService() {
