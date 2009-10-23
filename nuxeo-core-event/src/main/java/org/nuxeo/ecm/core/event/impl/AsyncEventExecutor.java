@@ -175,7 +175,7 @@ public class AsyncEventExecutor {
         public Thread newThread(Runnable r) {
             String name = namePrefix + threadNumber.incrementAndGet();
             Thread t = new Thread(group, r, name);
-            t.setDaemon(false);
+            t.setDaemon(true);
             t.setPriority(Thread.NORM_PRIORITY);
             return t;
         }
