@@ -7,7 +7,7 @@
 
   <target name="build" depends="settings,clean,cleanall">
     <echo>Entering tomcat build</echo>
-    <property name="tomcat" value="${stagedir}/nuxeo-dm-tomcat" />
+    <property name="tomcat" value="${stagedir}/nuxeo-distribution-tomcat" />
     <property name="nxserver" value="${tomcat}/webapps/nuxeo/nxserver" />
 
     <mkdir dir="${stagedir}" />
@@ -31,7 +31,7 @@ JAVA_OPTS="$JAVA_OPTS -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF
 
     <!-- Extract Nuxeo webapp -->
     <unzip dest="${tomcat}/webapps/nuxeo">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-jetty:${nuxeo.platform.version}:zip" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-jetty:${nuxeo.platform.version}:zip:nuxeo-dm" />
     </unzip>
     <nx:rename from="${tomcat}/webapps/nuxeo/nuxeo-*" to="${tomcat}/webapps/nuxeo/nxserver" />
 
@@ -91,7 +91,7 @@ JAVA_OPTS="$JAVA_OPTS -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF
     <!-- TODO do the same for windows cmd file -->
 
     <!-- make the final zip -->
-    <zip destfile="${outdir}/nuxeo-dm-tomcat-${version}.zip" basedir="${stagedir}" />
+    <zip destfile="${outdir}/nuxeo-distribution-tomcat-${version}-nuxeo-dm.zip" basedir="${stagedir}" />
   </target>
 
   <target name="clean">

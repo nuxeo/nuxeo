@@ -14,10 +14,6 @@
   <name>Nuxeo Jetty Distribution</name>
   <description>Package Nuxeo EP or DM into Jetty</description>
 
-  <properties>
-    <application.version>${version}</application.version>
-  </properties>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -40,7 +36,7 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <application.name>nuxeo-dm-jetty</application.name>
+        <distribution>nuxeo-dm</distribution>
       </properties>
       <dependencies>
         <dependency>
@@ -53,7 +49,7 @@
     <profile>
       <id>nuxeo-ep-jetty</id>
       <properties>
-        <application.name>nuxeo-ep-jetty</application.name>
+        <distribution>nuxeo-ep</distribution>
       </properties>
       <dependencies>
         <dependency>
@@ -100,9 +96,9 @@
             <configuration>
               <runPreprocessor>false</runPreprocessor>
               <format>zip</format>
-              <zipRoot>${application.name}-${application.version}</zipRoot>
+              <zipRoot>${artifactId}-${version}</zipRoot>
               <outputDirectory>target</outputDirectory>
-              <targetFile>${application.name}-${application.version}</targetFile>
+              <targetFile>${artifactId}-${version}</targetFile>
               <descriptor>${basedir}/src/main/assemble/assembly.xml</descriptor>
             </configuration>
           </execution>
@@ -113,8 +109,9 @@
               <goal>attach</goal>
             </goals>
             <configuration>
-              <file>${project.build.directory}/${application.name}-${application.version}.zip</file>
+              <file>${project.build.directory}/${artifactId}-${version}.zip</file>
               <type>zip</type>
+              <classifier>${distribution}</classifier>
             </configuration>
           </execution>
         </executions>

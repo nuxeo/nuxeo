@@ -14,6 +14,10 @@
   <name>Nuxeo Tomcat Build</name>
   <description>Builds a Nuxeo as a WAR for a Tomcat server</description>
 
+  <properties>
+    <distribution>nuxeo-dm</distribution>
+  </properties>
+
   <profiles>
     <profile>
       <id>windows</id>
@@ -51,6 +55,25 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-nuxeo-plugin</artifactId>
+            <extensions>false</extensions>
+            <executions>
+              <execution>
+                <id>attach-app</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>attach</goal>
+                </goals>
+                <configuration>
+                  <file>${project.build.directory}/${artifactId}-${version}-${distribution}.zip</file>
+                  <type>zip</type>
+                  <classifier>${distribution}</classifier>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
@@ -78,6 +101,25 @@
                 <goals>
                   <goal>run</goal>
                 </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-nuxeo-plugin</artifactId>
+            <extensions>false</extensions>
+            <executions>
+              <execution>
+                <id>attach-app</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>attach</goal>
+                </goals>
+                <configuration>
+                  <file>${project.build.directory}/${artifactId}-${version}-${distribution}.zip</file>
+                  <type>zip</type>
+                  <classifier>${distribution}</classifier>
+                </configuration>
               </execution>
             </executions>
           </plugin>

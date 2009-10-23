@@ -14,10 +14,6 @@
   <name>Nuxeo JBoss Distribution</name>
   <description>Package Nuxeo EP or DM EAR with JBoss</description>
 
-  <properties>
-    <application.version>${version}</application.version>
-  </properties>
-
   <profiles>
     <profile>
       <id>nuxeo-dm-jboss</id>
@@ -25,13 +21,13 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <application.name>nuxeo-dm-jboss</application.name>
+        <distribution>nuxeo-dm</distribution>
       </properties>
     </profile>
     <profile>
       <id>nuxeo-ep-jboss</id>
       <properties>
-        <application.name>nuxeo-ep-jboss</application.name>
+        <distribution>nuxeo-ep</distribution>
       </properties>
     </profile>
   </profiles>
@@ -144,9 +140,9 @@
             <configuration>
               <runPreprocessor>false</runPreprocessor>
               <format>zip</format>
-              <zipRoot>${application.name}-${application.version}</zipRoot>
+              <zipRoot>${artifactId}-${version}</zipRoot>
               <outputDirectory>target</outputDirectory>
-              <targetFile>${application.name}-${application.version}</targetFile>
+              <targetFile>${artifactId}-${version}</targetFile>
               <descriptor>${basedir}/src/main/assemble/assembly.xml</descriptor>
             </configuration>
           </execution>
@@ -157,9 +153,9 @@
               <goal>attach</goal>
             </goals>
             <configuration>
-              <file>${project.build.directory}/${application.name}-${application.version}.zip</file>
+              <file>${project.build.directory}/${artifactId}-${version}.zip</file>
               <type>zip</type>
-              <classifier>${application.name}</classifier>
+              <classifier>${distribution}</classifier>
             </configuration>
           </execution>
         </executions>
