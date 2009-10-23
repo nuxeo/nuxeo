@@ -118,13 +118,11 @@ public abstract class UnrestrictedSessionRunner {
                     } catch (Exception e) {
                         throw new ClientException(e);
                     } finally {
-                        if (!session.isStateSharedByAllThreadSessions()) {
-                            // send invalidations to other sessions
-                            session.save();
-                            // process invalidations from unrestricted session
-                            baseSession.save();
-                        }
                         session = baseSession;
+                        if (!session.isStateSharedByAllThreadSessions()) {
+                            // process invalidations from unrestricted session
+                            session.save();
+                        }
                     }
                 }
             } finally {
