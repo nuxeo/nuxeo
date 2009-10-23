@@ -77,6 +77,7 @@ public class JavaUtilLoggingHelper {
         } catch (Exception e) {
             log.error("Handler removal failed", e);
         }
+        activeHandler = null;
     }
 
     public static class LogHandler extends Handler {
