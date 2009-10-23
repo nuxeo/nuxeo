@@ -228,6 +228,12 @@ public class DocumentManagerBean extends AbstractSession implements
         return repo.getSession(context);
     }
 
+    public boolean isStateSharedByAllThreadSessions() {
+        // we have an underlying JCA pool that shares state for all connections
+        // in the same thread
+        return true;
+    }
+
     @Override
     public boolean isSessionAlive() {
         return session != null && session.isLive();

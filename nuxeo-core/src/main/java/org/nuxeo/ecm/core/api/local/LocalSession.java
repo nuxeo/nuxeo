@@ -142,6 +142,11 @@ public class LocalSession extends AbstractSession {
         return session;
     }
 
+    public boolean isStateSharedByAllThreadSessions() {
+        // each new LocalSession has its own state even in the same thread
+        return false;
+    }
+
     @Override
     public boolean isSessionAlive() {
         return session != null && session.isLive();

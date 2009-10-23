@@ -159,6 +159,12 @@ public interface CoreSession {
     String getSessionId();
 
     /**
+     * Returns {@code true} if all sessions in the current thread share the same
+     * state.
+     */
+    boolean isStateSharedByAllThreadSessions();
+
+    /**
      * Gets the principal that created the client session.
      *
      * @return the principal
