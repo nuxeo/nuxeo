@@ -398,6 +398,9 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
     public static String fileUrl(String patternName, DocumentModel doc,
             String blobPropertyName, String filename) {
+        if (doc==null) {
+            return null;
+        }
         try {
             DocumentLocation docLoc = new DocumentLocationImpl(doc);
             Map<String, String> params = new HashMap<String, String>();
