@@ -1,0 +1,23 @@
+<project name="nuxeo-configure" xmlns:artifact="urn:nuxeo-artifact" xmlns:nx="urn:nuxeo-build">
+  <target name="settings" unless="settings">
+    <echo>Entering global configuration</echo>
+    <property name="settings" value="true" />
+    <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+    <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+    <nx:if isSet="ant.profiles">
+      <nx:profile activate="${ant.profiles}" />
+    </nx:if>
+    <artifact:settings offline="false" debug="false">
+      <repositories>
+        <repository id="public" url="http://maven.nuxeo.org/public" name="Nuxeo Public Repository" layout="default">
+          <releases enabled="true" updatePolicy="never" checksumPolicy="fail" />
+          <snapshots enabled="false" />
+        </repository>
+        <repository id="public-snapshot" url="http://maven.nuxeo.org/public-snapshot" name="Nuxeo Public Snapshot Repository" layout="default">
+          <releases enabled="false" />
+          <snapshots enabled="true" updatePolicy="always" checksumPolicy="fail" />
+        </repository>
+      </repositories>
+    </artifact:settings>
+  </target>
+</project>
