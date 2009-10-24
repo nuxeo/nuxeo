@@ -45,7 +45,7 @@
                 <phase>package</phase>
                 <configuration>
                   <tasks>
-                    <exec executable="./build.sh" failonerror="true">
+                    <exec dir="${basedir}" executable="${basedir}/build.sh" failonerror="true">
                     </exec>
                   </tasks>
                 </configuration>
@@ -94,7 +94,7 @@
                 <phase>package</phase>
                 <configuration>
                   <tasks>
-                    <exec executable="./build.sh" failonerror="true">
+                    <exec dir="${basedir}" executable="${basedir}/build.sh" failonerror="true">
                     </exec>
                   </tasks>
                 </configuration>
