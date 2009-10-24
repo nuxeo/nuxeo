@@ -6,18 +6,18 @@
 <!-- end tinyMCE -->
 
 <script type="text/javascript">
-	
-	function isTitleSet() {
-		var title = document.getElementById('titleInput');
-		if (title) {
-			if (title.value == "") {
-				alert("Please insert a valid title.");
-				return false;
-			}
-		}
 
-		return true;
-	}
+    function isTitleSet() {
+        var title = document.getElementById('titleInput');
+        if (title) {
+            if (title.value == "") {
+                alert("Please insert a valid title.");
+                return false;
+            }
+        }
+
+        return true;
+    }
 </script>
 
 <form name="blogPostCreate" method="POST" onsubmit="return isTitleSet();"
@@ -42,9 +42,9 @@
     </tr>
     <tr>
       <td>
-        <textarea name="richtextEditor" style="width: 300px;height: 400px" cols="60" rows="20" id="richtextEditor"></textarea>          
+        <textarea name="richtextEditor" style="width: 300px;height: 400px" cols="60" rows="20" id="richtextEditor"></textarea>
       </td>
-    </tr>     
+    </tr>
     <tr>
       <td colspan="2"><input type="hidden" name="isRichtext" id="wikitext" value="true"/>
     </tr>
@@ -60,7 +60,7 @@
 
 <script type="text/javascript">
 $('#richtextEditor').ready(function() {
-  
+
   document.tmceCreate = new tinymce.Editor('richtextEditor',{
   mode : "textareas",
   theme : "advanced",

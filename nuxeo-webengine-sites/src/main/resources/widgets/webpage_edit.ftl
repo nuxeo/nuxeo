@@ -30,11 +30,11 @@
       </tr>
       <tr>
         <td>
-          <#if (Document.webpage.isRichtext == true)> 
+          <#if (Document.webpage.isRichtext == true)>
             <textarea name="richtextEditorEdit" style="width: 300px;height: 400px" cols="60" rows="20" id="richtextEditorEdit">${Document.webpage.content}</textarea>
           <#else>
             <textarea name="wikitextEditorEdit" cols="60" rows="20" id="wikitextEditorEdit" >${Document.webpage.content}</textarea>
-          </#if> 
+          </#if>
         </td>
       </tr>
       <tr>
@@ -53,7 +53,7 @@
         </td>
       </tr>
     </tbody>
-  </table>  
+  </table>
 </form>
 
 <script>
@@ -90,12 +90,12 @@ function launchEditor() {
         {name:'Preview', key: 'P', call:'preview', className:'preview'}
       ]
     };
-  
+
   $('#wikitextEditorEdit').markItUp(mySitesWikiSettings);
 }
 
 $('#richtextEditorEdit').ready(function() {
-  
+
   document.tmceEdit = new tinymce.Editor('richtextEditorEdit',{
   mode : "textareas",
   theme : "advanced",

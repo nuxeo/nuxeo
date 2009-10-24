@@ -26,12 +26,12 @@
       </tr>
       <tr>
         <td>
-          <textarea name="richtextEditorEdit" style="width: 300px;height: 400px" cols="60" rows="20" id="richtextEditorEdit">${Document.webpage.content}</textarea>          
+          <textarea name="richtextEditorEdit" style="width: 300px;height: 400px" cols="60" rows="20" id="richtextEditorEdit">${Document.webpage.content}</textarea>
         </td>
-      </tr>      
+      </tr>
       <tr>
         <td colspan="2"><input type="hidden" name="isRichtext" id="wikitext" value="true"/>
-      </tr>      
+      </tr>
       <tr>
         <td colspan="2">
           <input type="submit" class="button" value="${Context.getMessage("action_save")}" /> &nbsp;
@@ -39,12 +39,12 @@
         </td>
       </tr>
     </tbody>
-  </table>  
+  </table>
 </form>
 
 <script type="text/javascript">
 $('#richtextEditorEdit').ready(function() {
-  
+
   document.tmceEdit = new tinymce.Editor('richtextEditorEdit',{
   mode : "textareas",
   theme : "advanced",

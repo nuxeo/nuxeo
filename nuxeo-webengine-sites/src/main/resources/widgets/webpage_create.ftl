@@ -11,56 +11,56 @@
 <!-- end tinyMCE -->
 
 <script type="text/javascript">
-	function onSelectRadio(obj) {
+    function onSelectRadio(obj) {
 
-		if (obj.id == "wikitext") {
-			var wiki = document.getElementById('wikitextArea');
-			if (wiki) {
-				wiki.style.display = 'block';
-				wiki.style.zIndex = '10000';
-			} else {
-				alert('Oups problem getting component !');
-			}
+        if (obj.id == "wikitext") {
+            var wiki = document.getElementById('wikitextArea');
+            if (wiki) {
+                wiki.style.display = 'block';
+                wiki.style.zIndex = '10000';
+            } else {
+                alert('Oups problem getting component !');
+            }
 
-			var rich = document.getElementById('richtextArea');
-			if (rich) {
-				rich.style.display = 'none';
-				rich.style.zIndex = '1';
-			} else {
-				alert('Oups problem getting component !');
-			}
-		}
+            var rich = document.getElementById('richtextArea');
+            if (rich) {
+                rich.style.display = 'none';
+                rich.style.zIndex = '1';
+            } else {
+                alert('Oups problem getting component !');
+            }
+        }
 
-		else {
-			var rich = document.getElementById('richtextArea');
-			if (rich) {
-				rich.style.display = 'block';
-				rich.style.zIndex = '10000';
-			} else {
-				alert('Oups problem getting component !');
-			}
+        else {
+            var rich = document.getElementById('richtextArea');
+            if (rich) {
+                rich.style.display = 'block';
+                rich.style.zIndex = '10000';
+            } else {
+                alert('Oups problem getting component !');
+            }
 
-			var wiki = document.getElementById('wikitextArea');
-			if (wiki) {
-				wiki.style.display = 'none';
-				wiki.style.zIndex = '10000';
-			} else {
-				alert('Oups problem getting component !');
-			}
-		}
-	}
+            var wiki = document.getElementById('wikitextArea');
+            if (wiki) {
+                wiki.style.display = 'none';
+                wiki.style.zIndex = '10000';
+            } else {
+                alert('Oups problem getting component !');
+            }
+        }
+    }
 
-	function isTitleSet() {
-		var title = document.getElementById('titleInput');
-		if (title) {
-			if (title.value == "") {
-				alert("Please insert a valid title.");
-				return false;
-			}
-		}
+    function isTitleSet() {
+        var title = document.getElementById('titleInput');
+        if (title) {
+            if (title.value == "") {
+                alert("Please insert a valid title.");
+                return false;
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 </script>
 
 <form name="pageCreate" method="POST" onsubmit="return isTitleSet();"
@@ -102,7 +102,7 @@
     <tr>
       <td>${Context.getMessage("label.page.push")}</td>
     </tr>
-    
+
     <tr>
       <td><input type="radio" name="pushToMenu" value="true"
         checked="true" />${Context.getMessage("label.page.push.yes")} <input
@@ -153,7 +153,7 @@ function launchEditor() {
       {name:'Preview', key: 'P', call:'preview', className:'preview'}
     ]
   };
-  
+
   $('#wiki_editor').markItUp(mySitesWikiSettings);
   document.getElementById('wikitext').checked = true;
 }
@@ -169,8 +169,8 @@ document.tmceCreate = new tinymce.Editor(
    theme : "advanced",
    editor_selector : "mceAdvanced"
   });
-  	
-  
+
+
   document.tmceCreate.render();
 });
 
