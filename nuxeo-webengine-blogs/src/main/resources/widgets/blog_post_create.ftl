@@ -1,8 +1,8 @@
 <!-- tinyMCE -->
 <script type="text/javascript" src="${skinPath}/script/jquery/jquery-1.3.2.min.js"></script>
-<script type="text/javascript" src="../../../${skinPath}/script/tiny_mce/tiny_mce.js"></script>
-<script type="text/javascript" src="../../../${skinPath}/script/tiny_mce/langs/en.js"></script>
-<script type="text/javascript" src="../../../${skinPath}/script/tiny_mce/themes/simple/editor_template.js"></script>
+<script type="text/javascript" src="${skinPath}/script/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="${skinPath}/script/tiny_mce/langs/en.js"></script>
+<script type="text/javascript" src="${skinPath}/script/tiny_mce/themes/simple/editor_template.js"></script>
 <!-- end tinyMCE -->
 
 <script type="text/javascript">
