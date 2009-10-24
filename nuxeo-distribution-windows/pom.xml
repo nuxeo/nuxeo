@@ -80,7 +80,7 @@
                 <unzip src="${nuxeo-shell}" dest="${project.build.directory}/nuxeo-shell" />
                 <ant antfile="build.xml" target="package">
                   <property name="nuxeo-jboss.dir"
-                    value="${project.build.directory}/nuxeo-jboss/nuxeo-distribution-jboss-${version}-${distribution}" />
+                    value="${project.build.directory}/nuxeo-jboss/nuxeo-distribution-jboss-${version}" />
                   <property name="nuxeo-shell.dir"
                     value="${project.build.directory}/nuxeo-shell/nxshell" />
                 </ant>
