@@ -20,8 +20,7 @@
     <!-- patch catalina.sh to add custom JAVA properties -->
     <replace file="${tomcat}/bin/catalina.sh">
       <replacetoken>#!/bin/sh</replacetoken>
-      <replacevalue>
-        <![CDATA[#!/bin/sh
+      <replacevalue><![CDATA[#!/bin/sh
 
 JAVA_OPTS="$JAVA_OPTS -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF-8"
 
