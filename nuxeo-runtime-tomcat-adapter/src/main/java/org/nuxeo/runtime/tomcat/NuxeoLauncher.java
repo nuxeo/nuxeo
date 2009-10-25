@@ -16,11 +16,15 @@
  */
 package org.nuxeo.runtime.tomcat;
 
+import java.io.File;
+
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Loader;
 import org.apache.catalina.core.ContainerBase;
+import org.nuxeo.osgi.application.FrameworkBootstrap;
+import org.nuxeo.osgi.application.MutableClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -28,6 +32,29 @@ import org.apache.catalina.core.ContainerBase;
  */
 public class NuxeoLauncher implements LifecycleListener {
 
+    protected boolean shared; //TODO
+    protected String home = "nxserver";
+    
+    protected FrameworkBootstrap bootstrap;
+    
+    
+    public void setShared(boolean shared) {
+        this.shared = shared;
+    }
+    
+    public boolean isShared() {
+        return shared;
+    }
+    
+    public void setHome(String home) {
+        this.home = home;
+    }
+    
+    public String getHome() {
+        return home;
+    }
+    
+    
     
     public void lifecycleEvent(LifecycleEvent event) {
         Lifecycle lf = event.getLifecycle();
@@ -40,20 +67,50 @@ public class NuxeoLauncher implements LifecycleListener {
     }
     
     protected void handleEvent(NuxeoWebappLoader loader, LifecycleEvent event) {
-        String type = event.getType();
-        if (type == Lifecycle.AFTER_START_EVENT) {
-            startNuxeo(loader);
-        } else if (type == Lifecycle.STOP_EVENT) {
-            stopNuxeo(loader);
+        try {
+            String type = event.getType();
+            if (type == Lifecycle.START_EVENT) {
+                File homeDir = resolveHomeDirectory(loader); 
+                bootstrap = new FrameworkBootstrap((MutableClassLoader)(loader.getClassLoader()), homeDir);
+                bootstrap.setHostName("Tomcat");
+                bootstrap.setHostVersion("6.0.20");
+                bootstrap.initialize();                
+            } else if (type == Lifecycle.AFTER_START_EVENT) {
+                bootstrap.start();
+            } else if (type == Lifecycle.STOP_EVENT) {
+                bootstrap.stop();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to handle event", e);
         }
     }
 
-    protected void startNuxeo(NuxeoWebappLoader loader) {
-        loader.startFramework();
+    
+    protected File resolveHomeDirectory(NuxeoWebappLoader loader) {
+        String path = null;
+        if (home.startsWith("/")) {
+            path = home;
+        } else if (home.startsWith("${catalina.base}")) {
+            path = getTomcatHome()+home.substring("${catalina.base}".length());
+        } else {
+            try {
+                File baseDir = loader.getBaseDir();
+                return new File(baseDir, home);
+            } catch (Throwable t) {
+                return null;
+            }
+        }
+        return new File(path);
     }
 
-    protected void stopNuxeo(NuxeoWebappLoader loader) {
-        loader.stopFramework();
+
+    public String getTomcatHome() {
+        String tomcatHome = System.getProperty("catalina.base");
+        if (tomcatHome == null) {
+            tomcatHome = System.getProperty("catalina.home");
+        }
+        return tomcatHome;
     }
 
 }

@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.runtime.tomcat;
+package org.nuxeo.osgi.application;
 
 import java.net.URL;
 
@@ -22,8 +22,10 @@ import java.net.URL;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface MutableURLClassLoader {
+public interface MutableClassLoader {
 
     void addURL(URL url);
+    
+    public ClassLoader getClassLoader();
 
 }

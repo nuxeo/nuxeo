@@ -13,46 +13,41 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.osgi.application;
 
-package org.nuxeo.runtime.tomcat;
-
+import java.lang.reflect.Method;
 import java.net.URL;
-
-import org.apache.catalina.loader.WebappClassLoader;
-import org.nuxeo.osgi.application.MutableClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class NuxeoWebappClassLoader extends WebappClassLoader implements MutableClassLoader {
+public class MutableClassLoaderDelegate implements MutableClassLoader {
 
+    protected ClassLoader cl;
+    protected Method addURL;
     
-    public NuxeoWebappClassLoader() {
-    }
-
-    public NuxeoWebappClassLoader(ClassLoader parent) {
-        super(parent);
+    public MutableClassLoaderDelegate(ClassLoader cl) throws IllegalArgumentException {
+        try {
+            addURL = cl.getClass().getDeclaredMethod("addURL", URL.class);
+            addURL.setAccessible(true);
+            this.cl = cl;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Incompatible class loader: "+cl.getClass()+". ClassLoader must provide a method: addURL(URL url)", e);
+        }
     }
     
-    @Override
     public void addURL(URL url) {
-        super.addURL(url);
-    }
-    
-    @Override
-    public void setParentClassLoader(ClassLoader pcl) {
-        super.setParentClassLoader(pcl);
-    }
-    
-    public ClassLoader getParentClassLoader() {
-        return parent;
+        try {
+            addURL.invoke(cl, url);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to add URL to class loader: "+url, e);
+        }
     }
 
     public ClassLoader getClassLoader() {
-        return this;
+        return cl;
     }
+
 }
