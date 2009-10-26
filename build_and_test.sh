@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 # Build Nuxeo DAM
-ant -f ft-build.xml make-distribution
+ant -f ft-build.xml make-distribution -Dmvn.profiles=$MAVEN_PROFILES
 
 # Start JBoss
 chmod +x nuxeo-dam-distribution/nuxeo-dam-distribution-jboss/target/nuxeo-dam-jboss/bin/jbossctl
