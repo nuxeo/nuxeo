@@ -39,6 +39,17 @@
       <newDocumentViewBinding>#{urlPatternHelper.newDocumentView}</newDocumentViewBinding>
     </urlPattern>
 
+    <urlPattern name="downloadFile" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>false</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>downloadFile</codecName>
+      <actionBinding>#{documentActions.download}</actionBinding>
+      <documentViewBinding>#{restHelper.documentView}</documentViewBinding>
+      <newDocumentViewBinding>#{restHelper.newDocumentView}</newDocumentViewBinding>
+    </urlPattern>
+    
   </extension>
 
 </component>
