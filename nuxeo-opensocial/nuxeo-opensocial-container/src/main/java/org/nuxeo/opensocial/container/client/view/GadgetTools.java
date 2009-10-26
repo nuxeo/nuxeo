@@ -6,10 +6,9 @@ import org.nuxeo.opensocial.container.client.ContainerMessages;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.gwtext.client.core.Function;
-import com.gwtext.client.widgets.MessageBox;
-import com.gwtext.client.widgets.MessageBoxConfig;
 import com.gwtext.client.widgets.Tool;
 import com.gwtext.client.widgets.portal.PortalColumn;
 
@@ -18,7 +17,6 @@ import com.gwtext.client.widgets.portal.PortalColumn;
 */
 public class GadgetTools {
 
-  private static final String BTN_YES_ID = "yes";
   private final static ContainerConstants CST = GWT.create(ContainerConstants.class);
   private final static ContainerMessages MSG = GWT.create(ContainerMessages.class);
   private GadgetForm form;
@@ -70,36 +68,23 @@ public class GadgetTools {
 
       Tool close = new Tool(Tool.CLOSE, new Function() {
         public void execute() {
-          MessageBox.show(new MessageBoxConfig() {
-            {
-              setTitle(CST.deleteGadget());
-              setMsg(MSG.askedDeleteGadget(gadget.getTitle()));
-              setButtons(MessageBox.YESNO);
-              setCallback(new MessageBox.PromptCallback() {
-                public void execute(String btnID, String text) {
-                  if (BTN_YES_ID.equals(btnID)) {
-                    ContainerEntryPoint.getService()
-                        .removeGadget(gadget,
-                            ContainerEntryPoint.getGwtParams(),
-                            new AsyncCallback<GadgetBean>() {
-                              public void onFailure(Throwable arg0) {
-                                ContainerPortal.showErrorMessage(CST.error(),
-                                    CST.deleteError());
-                              }
+          if (Window.confirm(MSG.askedDeleteGadget(gadget.getTitle()))) {
+            ContainerEntryPoint.getService()
+                .removeGadget(gadget, ContainerEntryPoint.getGwtParams(),
+                    new AsyncCallback<GadgetBean>() {
+                      public void onFailure(Throwable arg0) {
+                        ContainerPortal.showErrorMessage(CST.error(),
+                            CST.deleteError());
+                      }
 
-                              public void onSuccess(GadgetBean gadget) {
-                                ContainerEntryPoint.getContainerPortal()
-                                    .removeGadgetPortlet(portlet.getId());
-                              }
-                            });
-
-                  }
-                }
-              });
-            }
-          });
-
+                      public void onSuccess(GadgetBean gadget) {
+                        ContainerEntryPoint.getContainerPortal()
+                            .removeGadgetPortlet(portlet.getId());
+                      }
+                    });
+          }
         }
+
       });
 
       Tool max = new Tool(Tool.MAXIMIZE, new Function() {

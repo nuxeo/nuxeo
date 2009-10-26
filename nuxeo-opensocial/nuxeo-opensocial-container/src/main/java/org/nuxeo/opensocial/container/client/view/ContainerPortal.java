@@ -264,6 +264,11 @@ public class ContainerPortal extends Portal {
       loading++;
   }
 
+  private void addGadget(GadgetPortlet portlet) {
+    removeGadgetPortlet(portlet.getId());
+    addGadget(portlet.getGadgetBean());
+  }
+
   public void addGadget(GadgetBean bean) {
     bean.setPosition(new GadgetPosition(COLS[0], 0));
     addGadget(bean, null);
@@ -311,7 +316,7 @@ public class ContainerPortal extends Portal {
         if (b.getGadgetPosition()
             .getPlaceID()
             .equals(colToDelete)) {
-          addGadget(b);
+          addGadget(portlet);
         }
       }
       this.columns.remove(colToDelete);
