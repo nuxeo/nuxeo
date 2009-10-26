@@ -124,6 +124,11 @@ They contributed a lot of their work on the integration of OpenSocial in Nuxeo:
 
 - Gadget persistence API based on Nuxeo's DocumentManager
 
+Some slides about Nuxeo and OpenSocial:
+
+<object style="margin:0px" width="425" height="355"><param name="movie" value="http://static.slidesharecdn.com/swf/ssplayer2.swf?doc=12-nuxeo-opensocial-dmetzlerlm-1228289711992513-9&stripped_title=nuxeo-and-opensocial-presentation" /><param name="allowFullScreen" value="true"/><param name="allowScriptAccess" value="always"/><embed src="http://static.slidesharecdn.com/swf/ssplayer2.swf?doc=12-nuxeo-opensocial-dmetzlerlm-1228289711992513-9&stripped_title=nuxeo-and-opensocial-presentation" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="355"></embed></object>
+
+
 #### Nuxeo 5.3 integration
 
 Based on the work contributed by Damien's team, we rebuilt the Dashboard using the GWT gadget container and Nuxeo's REST API.
@@ -262,6 +267,8 @@ We will publish a demo server based on Chemistry + Nuxeo in a few weeks.
 
 Please see this [wiki page](http://doc.nuxeo.org/xwiki/bin/view/Main/CMIS) for more informations.
 
+Follow [the blog entries tagged "CMIS"](http://blogs.nuxeo.com/dev/cmis/) on the Nuxeo blogs.
+
 ### Tools
  
 #### Importer framework <a name="importer"></a>
@@ -323,7 +330,7 @@ These distributions does not include any Java EE supports (Transactions, EJB3, J
 
 These packagings are mainly targeted to development environment since startup is significantly faster than a complete JEE container (less than 40s for full startup).
 
-In the near futur (one month), we will add a Transaction Manager to the tomcat package, this will make the tomcat package completly usable in production.
+In the near future (one month), we will add a Transaction Manager to the tomcat package, this will make the tomcat package completly usable in production.
 
 ### JBoss speed-up
 
@@ -343,23 +350,23 @@ See: <http://doc.nuxeo.org/xwiki/bin/view/FAQ/SeamJSFHotReload> for more info.
 
 <img src="gwt-logo.png" align="right"/> GWT integration in Nuxeo has been improved so that you can now run GWT Application in hosted most with a bundled Nuxeo server deployed inside Eclipse as a Jetty server.
 
-It is now easier to build a GWT app that uses Nuxeo Platform :
+It is now easier to build a GWT app that uses Nuxeo Platform:
 
- - in development mode eveything is integrated into Eclipse
+ - in development mode, eveything is integrated into Eclipse
 
- - we provide a single API jar for all Nuxeo Services
+ - we provide a single API jar for all Nuxeo services
 
 ### Documentation
 
 We improved the available documentation:
 
-- single entry point for learning Nuxeo [www.nuxeo.org](http://www.nuxeo.org/)
+- Single entry point for learning Nuxeo [www.nuxeo.org](http://www.nuxeo.org/)
 
 - ["Getting started"](http://doc.nuxeo.org/xwiki/bin/view/Main/NuxeoDevGettingStarted) entry point
 
-- documents about [DB tuning and settings](http://doc.nuxeo.org/xwiki/bin/view/FAQ/PostgreSQLSettings)
+- Documents about [DB tuning and settings](http://doc.nuxeo.org/xwiki/bin/view/FAQ/PostgreSQLSettings)
 
-- documents about [data migration](http://doc.nuxeo.org/xwiki/bin/view/FAQ/ReplicateNuxeoRepository)
+- Documents about [data migration](http://doc.nuxeo.org/xwiki/bin/view/FAQ/ReplicateNuxeoRepository)
 
 ### Translations
 
