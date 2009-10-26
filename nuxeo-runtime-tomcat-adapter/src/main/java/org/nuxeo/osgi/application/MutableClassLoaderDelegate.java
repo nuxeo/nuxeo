@@ -29,13 +29,21 @@ public class MutableClassLoaderDelegate implements MutableClassLoader {
     protected Method addURL;
     
     public MutableClassLoaderDelegate(ClassLoader cl) throws IllegalArgumentException {
-        try {
-            addURL = cl.getClass().getDeclaredMethod("addURL", URL.class);
-            addURL.setAccessible(true);
-            this.cl = cl;
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Incompatible class loader: "+cl.getClass()+". ClassLoader must provide a method: addURL(URL url)", e);
+        this.cl = cl;
+        Class<?> clazz = cl.getClass();
+        do {
+            try {
+                addURL = clazz.getDeclaredMethod("addURL", URL.class);
+            } catch (NoSuchMethodException e) {
+                clazz = clazz.getSuperclass();
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Failed to adapt class loader: "+cl.getClass(), e);    
+            }
+        } while (addURL == null && clazz != null);
+        if (addURL == null) {
+            throw new IllegalArgumentException("Incompatible class loader: "+cl.getClass()+". ClassLoader must provide a method: addURL(URL url)");
         }
+        addURL.setAccessible(true);
     }
     
     public void addURL(URL url) {

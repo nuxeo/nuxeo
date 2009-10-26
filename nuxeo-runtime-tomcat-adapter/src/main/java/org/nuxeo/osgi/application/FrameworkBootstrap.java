@@ -299,6 +299,15 @@ public class FrameworkBootstrap implements LoaderConstants {
         file.delete();
     }
 
+    public static void copyFile(File src, File file) throws IOException {
+        FileInputStream in = new FileInputStream(src); 
+        try {
+            copyToFile(in, file);
+        } finally {
+            in.close();
+        }
+    }
+    
     public static void copyToFile(InputStream in, File file) throws IOException {
         OutputStream out = null;
         try {
@@ -329,6 +338,35 @@ public class FrameworkBootstrap implements LoaderConstants {
             preferredSize = MIN_BUFFER_SIZE;
         }
         return new byte[preferredSize];
+    }
+
+    public static File findFileStartingWidth(File dir, String prefix) {
+        String[] names = dir.list();
+        if (names != null) {
+            for (String name : names) {
+                if (name.startsWith(prefix)) {
+                    return new File(dir, name);
+                }
+            }
+        }
+        return null;
+    }
+
+    public static void copyTree(File src, File dst) throws IOException {
+        if (src.isFile()) {
+            copyFile(src, dst);
+        } else if (src.isDirectory()) {
+            if (dst.exists()) {
+                dst = new File(dst, src.getName());
+                dst.mkdir();
+            } else { // allows renaming dest dir
+                dst.mkdirs();
+            }
+            File[] files = src.listFiles();
+            for (File file : files) {
+                copyTree(file, dst);
+            }
+        }
     }
 
 }
