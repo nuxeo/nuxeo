@@ -17,7 +17,7 @@
   <properties>
     <application.name>nuxeo-dam-jboss</application.name>
     <application.version>${version}</application.version>
-    <nuxeo.ep.jboss>nuxeo-dm-jboss-${nuxeo.distribution.version}</nuxeo.ep.jboss>
+    <nuxeo.ep.jboss>nuxeo-distribution-jboss-${nuxeo.distribution.version}</nuxeo.ep.jboss>
   </properties>
 
   <profiles>
@@ -33,7 +33,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-jboss</artifactId>
-      <classifier>nuxeo-dm-jboss</classifier>
+      <classifier>nuxeo-dm</classifier>
       <type>zip</type>
     </dependency>
     <dependency>
@@ -54,7 +54,7 @@
             <configuration>
               <tasks>
                 <resolveArtifact groupId="org.nuxeo.ecm.distribution" artifactId="nuxeo-distribution-jboss"
-                  type="zip" property="jboss" />
+                  type="zip" property="jboss" classifier="nuxeo-dm" />
                 <unzip src="${jboss}" dest="${project.build.directory}" />
                 <delete dir="${project.build.directory}/${nuxeo.ep.jboss}/server/default/deploy/nuxeo.ear" />
                 <resolveArtifact groupId="org.nuxeo.dam" artifactId="nuxeo-dam-ear"
