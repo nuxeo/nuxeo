@@ -1,13 +1,14 @@
 #
 # we have duplicated most of the "built-in" shindig components here because
-# we don't want to use all of them and if we choose to use their list we 
-# end up with things we don't want... 
+# we don't want to use all of them and if we choose to use their list we
+# end up with things we don't want...
 #
 
 #features/analytics/feature.xml
 features/auth-refresh/feature.xml
 features/caja/feature.xml
-features/core.io/feature.xml
+#features/core.io/feature.xml
+nxfeatures/core.io/feature.xml
 features/core/feature.xml
 features/dynamic-height/feature.xml
 features/flash/feature.xml

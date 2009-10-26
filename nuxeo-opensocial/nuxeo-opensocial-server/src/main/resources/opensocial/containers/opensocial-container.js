@@ -89,7 +89,7 @@
   "core.io" : {
     // Note: /proxy is an open proxy. Be careful how you expose this!
     "proxyUrl" : "http://%host%/nuxeo/opensocial/gadgets/proxy?refresh=%refresh%&url=%url%",
-    "jsonProxyUrl" : "http://%host%/nuxeo/opensocial/gadgets/makeRequest"
+    "jsonProxyUrl" : "%protocol%//%host%/nuxeo/opensocial/gadgets/makeRequest"
   },
   "views" : {
     "profile" : {
