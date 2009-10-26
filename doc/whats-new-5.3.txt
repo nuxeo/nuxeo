@@ -103,11 +103,14 @@ It allows to include UWA JavaScript widgets containers in the Themes.
 
 WebWidgets are very close to OpenSocial gadgets (see below). In the future we will make converge these 2 javascript portlets models.
 
+Because OpenSocial and WebWidgets are providing very similar features, WebWidgets are not part of the default packaging.
+
 ### OpenSocial <a name="opensocial"></a>
 
 Contributed by the community
 
 If you were at last year's Nuxeo DevDay conference, you probably know that Damien Metzler [[video proof](http://nuxeo.blip.tv/file/1571770/)] and his team from Leroy Merlin have been working on Nuxeo WebEngine and OpenSocial for some months now.
+You can find more informations about their work on [[Damien's blog](http://dmetzler.posterous.com/)].
 
 They contributed a lot of their work on the integration of OpenSocial in Nuxeo:
 
@@ -253,12 +256,15 @@ Nuxeo DocumentManager now support CMIS queries (including JOINS).
 
 ## CMIS <a name="cmis"></a>
 
-TODO: write blurb about CMIS.
+We are actively working on Chemistry and CMIS, the public review of CMIS 1.0 has just started.
 
+We will publish a demo server based on Chemistry + Nuxeo in a few weeks.
+
+Please see this [wiki page](http://doc.nuxeo.org/xwiki/bin/view/Main/CMIS) for more informations.
 
 ### Tools
  
-#### Importer framework <a name="mail"></a>
+#### Importer framework <a name="importer"></a>
 
 A lot of projects using Nuxeo need at some point to inject documents into a Nuxeo repository:
 
@@ -292,7 +298,7 @@ It includes ready to use implementation for:
 
 - a random text injector based on dictionaries
 
-[XXX Link]
+This package is available in [mercurial](https://hg.nuxeo.org/addons/nuxeo-platform-importer/).
 
 #### JCR2VCS migration tool
 
@@ -304,8 +310,7 @@ This add-ons contains 2 parts:
 
 - one importer (VCS on 5.3)
 
-Documentation about data migration is available [here].
-
+Documentation about data migration is available [here](http://doc.nuxeo.org/xwiki/bin/view/FAQ/ReplicateNuxeoRepository).
 
 ## Improving the developer experience <a name="developer"></a>
 
@@ -317,6 +322,8 @@ Nuxeo distribution now supports deploying Nuxeo DM on Jetty and Tomcat.
 These distributions does not include any Java EE supports (Transactions, EJB3, JCA...), but provide the same ECM features.
 
 These packagings are mainly targeted to development environment since startup is significantly faster than a complete JEE container (less than 40s for full startup).
+
+In the near futur (one month), we will add a Transaction Manager to the tomcat package, this will make the tomcat package completly usable in production.
 
 ### JBoss speed-up
 
@@ -336,7 +343,11 @@ See: <http://doc.nuxeo.org/xwiki/bin/view/FAQ/SeamJSFHotReload> for more info.
 
 <img src="gwt-logo.png" align="right"/> GWT integration in Nuxeo has been improved so that you can now run GWT Application in hosted most with a bundled Nuxeo server deployed inside Eclipse as a Jetty server.
 
-(XXX See with Bogdan)
+It is now easier to build a GWT app that uses Nuxeo Platform :
+
+ - in development mode eveything is integrated into Eclipse
+
+ - we provide a single API jar for all Nuxeo Services
 
 ### Documentation
 
@@ -346,14 +357,13 @@ We improved the available documentation:
 
 - ["Getting started"](http://doc.nuxeo.org/xwiki/bin/view/Main/NuxeoDevGettingStarted) entry point
 
-- documents about DB tuning and settings [XXX link]
+- documents about [DB tuning and settings](http://doc.nuxeo.org/xwiki/bin/view/FAQ/PostgreSQLSettings)
 
-- documents about data migration [XXX link]
+- documents about [data migration](http://doc.nuxeo.org/xwiki/bin/view/FAQ/ReplicateNuxeoRepository)
 
 ### Translations
 
 Translations files have been externalized so that it will be easy for the people interested in submitting translations to do so.
-
 
 ## Your turn now!
 
