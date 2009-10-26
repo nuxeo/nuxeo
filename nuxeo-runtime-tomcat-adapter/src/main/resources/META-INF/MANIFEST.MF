@@ -12,4 +12,3 @@ Bundle-Localization: bundle
 Require-Bundle: system.bundle,
  org.nuxeo.runtime
 Export-Package: org.nuxeo.runtime.webapp
-Main-Class: org.nuxeo.runtime.tomcat.Deployer
