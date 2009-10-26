@@ -9,8 +9,7 @@
     point="trees">
 
     <directoryTree name="byCoverageFiltering" label="base.filtering.coverage"
-      querymodel="FILTERED_DOCUMENTS" field="dc_coverage" schema="filter_query"
-      outcome="coverage_virtual_filtering">
+      querymodel="FILTERED_DOCUMENTS" field="dc_coverage" schema="filter_query">
       <directory>continent</directory>
       <directory>country</directory>
     </directoryTree>

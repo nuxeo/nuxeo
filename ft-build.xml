@@ -2,6 +2,7 @@
 <project name="ft" default="usage" basedir=".">
   
   <property name="pom.file" value="${basedir}/nuxeo-dam-distribution/pom.xml" />
+  <property name="mvn.profiles" value="" />
   
   <target name="usage">
     <echo message="usage: ant" />
@@ -24,6 +25,8 @@
       <arg value="clean" />
       <arg value="package" />
       <arg value="install" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
     </exec>
   </target>
   

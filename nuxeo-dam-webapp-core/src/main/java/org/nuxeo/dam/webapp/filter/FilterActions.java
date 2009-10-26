@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.ui.web.api.SortNotSupportedException;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
+import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 import org.nuxeo.runtime.api.Framework;
 
 @Scope(CONVERSATION)
@@ -69,7 +70,11 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
 	protected static final String DOCTYPE_FIELD_XPATH = "filter_query:ecm_primaryType";
 
 	@In(create = true, required = false)
-	transient CoreSession documentManager;
+	protected transient CoreSession documentManager;
+
+    @In(create = true)
+    protected transient QueryModelActions queryModelActions;
+
 
 	@In(create = true, required = false)
 	transient ResultsProvidersCache resultsProvidersCache;
@@ -83,15 +88,7 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
 
 	public DocumentModel getFilterDocument() throws ClientException {
 		if (filterDocument == null) {
-			QueryModelDescriptor descriptor;
-			try {
-				descriptor = getQueryModelDescriptor(QUERY_MODEL_NAME);
-			} catch (Exception e) {
-				throw new ClientException("Failed to get query model: "
-						+ QUERY_MODEL_NAME, e);
-			}
-			filterDocument = documentManager.createDocumentModel(descriptor
-					.getDocType());
+            filterDocument = queryModelActions.get(QUERY_MODEL_NAME).getDocumentModel();
 		}
 		return filterDocument;
 	}
@@ -111,16 +108,12 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
 		return items;
 	}
 
-	public void setFilterDocument(DocumentModel filterDocument) {
-		this.filterDocument = filterDocument;
-	}
-
 	@SuppressWarnings("unchecked")
 	public void toggleSelectDocType() throws ClientException {
 		DocumentModel filterDocument = getFilterDocument();
 		List<String> previousSelection = filterDocument.getProperty(
 				DOCTYPE_FIELD_XPATH).getValue(List.class);
-		
+
 		if ("All".equalsIgnoreCase(docType)) {
 			previousSelection.clear();
 		} else {
@@ -156,17 +149,9 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
 			return null;
 		}
 
-		QueryModelDescriptor descriptor;
-		try {
-			descriptor = getQueryModelDescriptor(queryModelName);
-		} catch (Exception e) {
-			throw new ClientException("Failed to get query model: "
-					+ queryModelName, e);
-		}
+		QueryModel model = queryModelActions.get(queryModelName);
 
-		QueryModel model = new QueryModel(descriptor, getFilterDocument());
-
-		if (!descriptor.isSortable() && sortInfo != null) {
+		if (!model.isSortable() && sortInfo != null) {
 			throw new SortNotSupportedException();
 		}
 
@@ -188,7 +173,7 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
 	protected QueryModelDescriptor getQueryModelDescriptor(String descriptorName)
 			throws Exception {
 		if (queryModelService == null) {
-			queryModelService = (QueryModelService) Framework
+			queryModelService = Framework
 					.getService(QueryModelService.class);
 		}
 		return queryModelService.getQueryModelDescriptor(descriptorName);

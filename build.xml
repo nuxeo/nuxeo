@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <project name="nuxeo-dam" default="usage" basedir=".">
 
+  <property name="mvn.profiles" value="" />
+
   <!-- Create a build.properties file from build.properties.sample
        if you wish to override the JBoss paths -->
   <property file="build.properties" />
@@ -77,6 +79,8 @@
       <arg value="-Dmaven.test.skip=true" />
       <arg value="-f" />
       <arg value="${dam.ear.root}/pom.xml" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
       <arg value="-Ddam.ear.assembly=${assembly.name}" />
       <arg value="${mvn.opts}" />
     </exec>
@@ -91,6 +95,8 @@
       <arg value="-Dmaven.test.skip=true" />
       <arg value="-f" />
       <arg value="${dam.ear.root}/pom.xml" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
       <arg value="-Ddam.ear.assembly=${assembly.name}" />
       <arg value="${mvn.opts}" />
     </exec>
@@ -104,6 +110,8 @@
       <arg value="install" />
       <arg value="-Dmaven.test.skip=true" />
       <arg value="-Pnuxeo-dam-wo-distribution" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
@@ -115,6 +123,8 @@
       <arg value="install" />
       <arg value="-Dmaven.test.skip=true" />
       <arg value="-Pnuxeo-dam-wo-distribution" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
@@ -131,6 +141,8 @@
       <arg value="clean" />
       <arg value="${mvn.lifecycle}" />
       <arg value="-Dmaven.test.skip=true" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
@@ -141,6 +153,8 @@
       <arg value="clean" />
       <arg value="${mvn.lifecycle}" />
       <arg value="-Dmaven.test.skip=true" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>

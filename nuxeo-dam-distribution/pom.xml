@@ -69,11 +69,12 @@
         <version>${pom.version}</version>
         <type>zip</type>
       </dependency>
-      
+
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution-jboss</artifactId>
         <version>${nuxeo.distribution.version}</version>
+        <classifier>nuxeo-dm</classifier>
         <type>zip</type>
       </dependency>
     </dependencies>
