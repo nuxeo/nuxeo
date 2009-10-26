@@ -16,7 +16,6 @@
       <artifact:resolveFile key="org.apache.tomcat:apache-tomcat:6.0.20:zip" />
     </unzip>
     <nx:rename from="${stagedir}/apache-tomcat*" to="${tomcat}" />
-    <chmod dir="${tomcat}/bin" perm="750" includes="*.sh" />
     <!-- patch catalina.sh to add custom JAVA properties -->
     <replace file="${tomcat}/bin/catalina.sh">
       <replacetoken>#!/bin/sh</replacetoken>
@@ -27,6 +26,7 @@ JAVA_OPTS="$JAVA_OPTS -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF
 ]]>
       </replacevalue>
     </replace>
+    <chmod dir="${tomcat}/bin" perm="750" includes="*.sh" />
 
     <!-- Extract Nuxeo webapp -->
     <unzip dest="${tomcat}/webapps/nuxeo">

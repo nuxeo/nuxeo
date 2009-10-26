@@ -104,6 +104,7 @@
         <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
+        <module>nuxeo-distribution-jetty</module>
         <module>nuxeo-distribution-tomcat</module>
       </modules>
     </profile>
