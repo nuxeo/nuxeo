@@ -71,6 +71,7 @@ public class TestServer extends TestCase {
 
     public void testServer() throws Exception {
         Session session = Session.getDefaultInstance(props);
+        Thread.sleep(1000);
         Store store = session.getStore();
         store.connect("alex@localhost", "mdpalex");
         Folder rootFolder = store.getFolder("INBOX");
