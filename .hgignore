@@ -5,6 +5,7 @@ syntax:glob
 .metadata
 bin
 target
+*.swp
 *~
 *.orig
 *.ipr

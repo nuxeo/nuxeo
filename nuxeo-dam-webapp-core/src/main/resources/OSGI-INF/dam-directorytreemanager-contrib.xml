@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.virtualnavigation.directory.DirectoryTreeService.contrib">
+
+  <require>org.nuxeo.ecm.webapp.directory.DirectoryTreeService</require>
+
+  <extension target="org.nuxeo.ecm.webapp.directory.DirectoryTreeService"
+    point="trees">
+
+    <directoryTree name="byCoverageFiltering" label="base.filtering.coverage"
+      querymodel="FILTERED_DOCUMENTS" field="dc_coverage" schema="filter_query"
+      outcome="coverage_virtual_filtering">
+      <directory>continent</directory>
+      <directory>country</directory>
+    </directoryTree>
+
+    <directoryTree name="TAG_CLOUD">
+    </directoryTree>
+
+  </extension>
+
+</component>
+

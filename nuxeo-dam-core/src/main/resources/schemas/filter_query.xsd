@@ -13,6 +13,7 @@
 
   <xs:element name="ecm_primaryType" type="nxs:stringList" />
   <xs:element name="ecm_fulltext" type="xs:string" />
+  <xs:element name="dc_coverage" type="xs:string" />
   <xs:element name="sortColumn" type="xs:string" default="dc:title" />
   <xs:element name="sortAscending" type="xs:boolean" default="true" />
 

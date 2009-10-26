@@ -14,7 +14,8 @@ Nuxeo-Component: OSGI-INF/theme-contrib.xml,
  OSGI-INF/layouts-contrib.xml,
  OSGI-INF/ecm-types-contrib.xml,
  OSGI-INF/dam-urlservice-contrib.xml,
- OSGI-INF/dam-imaging-contrib.xml
+ OSGI-INF/dam-imaging-contrib.xml,
+ OSGI-INF/dam-directorytreemanager-contrib.xml
 Require-Bundle: org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.webapp.base,
  org.nuxeo.ecm.core,
