@@ -767,6 +767,11 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>backport-util-concurrent</groupId>
+        <artifactId>backport-util-concurrent</artifactId>
+        <version>3.1</version>
+      </dependency>
+      <dependency>
         <groupId>hsqldb</groupId>
         <artifactId>hsqldb</artifactId>
         <version>1.8.0.1</version>
@@ -825,7 +830,7 @@
       <dependency>
         <groupId>net.sf.ezmorph</groupId>
         <artifactId>ezmorph</artifactId>
-        <version>0.9</version>
+        <version>1.0.4</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -1237,7 +1242,7 @@
       <dependency>
         <groupId>org.apache.shindig</groupId>
         <artifactId>shindig-features</artifactId>
-        <version>1.0-incubating-nx1</version>
+        <version>${shindig.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.guice</groupId>
