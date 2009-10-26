@@ -32,8 +32,8 @@ import org.nuxeo.common.Environment;
 public enum J2EEContainerDescriptor {
 
 	JBOSS("java:", TransactionTypeHelper.JTA), 
-	//TOMCAT("java:comp/env/jdbc", TransactionTypeHelper.RESOURCE_LOCAL),
-	TOMCAT("java:jdbc", TransactionTypeHelper.RESOURCE_LOCAL),
+	TOMCAT("java:comp/env/jdbc", TransactionTypeHelper.RESOURCE_LOCAL),
+	//TOMCAT("java:jdbc", TransactionTypeHelper.RESOURCE_LOCAL),
 	JETTY("jdbc", TransactionTypeHelper.RESOURCE_LOCAL), 
 	GF3("jdbc", TransactionTypeHelper.RESOURCE_LOCAL);	
 
