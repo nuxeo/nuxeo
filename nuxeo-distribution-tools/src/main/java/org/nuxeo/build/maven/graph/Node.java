@@ -45,8 +45,13 @@ public class Node {
     protected List<Edge> edgesIn;
     protected List<Edge> edgesOut;
 
-    protected MavenProject pom;
     private boolean isExpanded;
+
+    /**
+     * Point to an artifact pom. When embedded in maven and using the current project pom
+     * as the root this will be set by the maven loader mojo to point to the current pom 
+     */
+    protected MavenProject pom;
 
 
     public static String createNodeId(Artifact artifact) {
@@ -182,7 +187,7 @@ public class Node {
 
     public void resolveIfNeeded() {
         try {
-                graph.getResolver().resolve(this);
+            graph.getResolver().resolve(this);
         } catch (ArtifactNotFoundException e) {
             throw new BuildException("Artifact not found: "+artifact.getId(), e);
         }

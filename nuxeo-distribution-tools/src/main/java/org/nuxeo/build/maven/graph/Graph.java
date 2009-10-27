@@ -111,6 +111,23 @@ public class Graph {
 //    }
 //
 
+    /**
+     * Add a root node given an artifact pom. This can be used by the embedder maven mojo
+     * to initialize the graph with the current pom.
+     */
+    public Node addRootNode(MavenProject pom) throws ArtifactNotFoundException {
+        Artifact artifact = pom.getArtifact();
+        String key = Node.createNodeId(artifact);
+        Node node = nodes.get(key);
+        if (node == null) {
+            //node = getResolver().resolve(artifact);
+            node = new Node(this, pom, artifact, key);
+            nodes.put(node.getId(), node);
+            roots.add(node);
+        }
+        return node;
+    }
+
     public Node addRootNode(String key) throws ArtifactNotFoundException {
         ArtifactDescriptor ad = new ArtifactDescriptor(key);
         Artifact artifact = GraphTask.readArtifact(ad);

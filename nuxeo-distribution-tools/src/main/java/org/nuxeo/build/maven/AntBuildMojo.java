@@ -38,6 +38,7 @@ import org.apache.maven.project.MavenProjectHelper;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.ant.profile.AntProfileManager;
 import org.nuxeo.build.maven.graph.Graph;
+import org.nuxeo.build.maven.graph.Node;
 
 
 /**
@@ -74,6 +75,13 @@ public class AntBuildMojo extends AbstractMojo implements MavenClient {
     protected String target;
     
 
+    /**
+     * How many levels the graph must be expanded before running ant. 
+     * 
+     * @parameter expression="${expand}" default-value="0"
+     */    
+    protected int expand;
+    
     /**
      * Location of the file.
      * 
@@ -151,7 +159,11 @@ public class AntBuildMojo extends AbstractMojo implements MavenClient {
         }
         props.put("maven.basedir", project.getBasedir().getAbsolutePath());
         props.put("maven.project.name", project.getName());
+        props.put("maven.project.artifactId", project.getArtifactId());
+        props.put("maven.project.groupId", project.getGroupId());        
         props.put("maven.project.version", project.getVersion());
+        props.put("maven.project.packaging", project.getPackaging());
+        props.put("maven.project.id", project.getId());
         props.put("maven.project.build.directory", project.getBuild().getDirectory());
         props.put("maven.project.build.outputDirectory", project.getBuild().getOutputDirectory());
         props.put("maven.project.build.finalName", project.getBuild().getFinalName());
@@ -165,6 +177,17 @@ public class AntBuildMojo extends AbstractMojo implements MavenClient {
         }
 
         ant.setGlobalProperties(props);
+        
+        // create a root into the graph to point to the current pom
+        try {
+            Node root = graph.addRootNode(project);
+            if (expand > 0) {
+                root.expand(expand, null);
+            }
+        } catch (ArtifactNotFoundException e) {
+            throw new MojoExecutionException("Failed to initialize graph", e);
+        }
+        
         if (target != null && target.length() > 0) {
             ArrayList<String> targets = new ArrayList<String>();
             targets.add(target);
