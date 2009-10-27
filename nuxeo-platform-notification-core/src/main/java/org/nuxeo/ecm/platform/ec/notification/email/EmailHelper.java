@@ -76,6 +76,8 @@ public class EmailHelper {
     // used for loading templates from strings
     private final Configuration stringCfg = new Configuration();
 
+    protected static boolean javaMailNotAvailable = false;
+
     /* Only static methods here chaps */
     public EmailHelper() {
     }
@@ -88,6 +90,11 @@ public class EmailHelper {
     public void sendmail(Map<String, Object> mail) throws Exception {
 
         Session session = getSession();
+        if (javaMailNotAvailable || session==null) {
+            log.warn("Not sending email since JavaMail is not configured");
+            return;
+        }
+
         // Construct a MimeMessage
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(session.getProperty("mail.from")));
@@ -165,16 +172,18 @@ public class EmailHelper {
      */
     private static Session getSession() {
         Session session = null;
+        if (javaMailNotAvailable) {
+            return null;
+        }
         // First, try to get the session from JNDI, as would be done under J2EE.
         try {
             NotificationService service = (NotificationService) Framework.getRuntime().getComponent(
                     NotificationService.NAME);
-
             InitialContext ic = new InitialContext();
             session = (Session) ic.lookup(service.getMailSessionJndiName());
         } catch (Exception ex) {
-            // ignore it
-            ex.printStackTrace();
+            log.warn("Unable to find Java mail API");
+            javaMailNotAvailable = true;
         }
 
         return session;
