@@ -186,6 +186,10 @@
                   <groupId>org.apache.lucene</groupId>
                   <artifactId>lucene-analyzers</artifactId>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.nuxeo.ecm.platform</groupId>
+                  <artifactId>nuxeo-generic-wss-handler</artifactId>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>../target/lib</outputDirectory>
             </configuration>

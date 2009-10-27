@@ -9,6 +9,11 @@
       <category>VIEW_ASSET_ACTION_LIST</category>
     </action>
 
+    <action id="TAB_DELIVERY" link="/incl/tabs/delivery.xhtml" order="20"
+      label="action.delivery" icon="/icons/file.gif">
+      <category>VIEW_ASSET_ACTION_LIST</category>
+    </action>
+
   </extension>
 
 </component>

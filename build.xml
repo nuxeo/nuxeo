@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="nuxeo-dam" default="usage" basedir=".">
 
-  <property name="mvn.profiles" value="" />
+  <property name="mvn.profiles" value="NXP" />
 
   <!-- Create a build.properties file from build.properties.sample
        if you wish to override the JBoss paths -->
