@@ -403,11 +403,17 @@
       <selector path=".selected">
         <background-color>#c7d3e0</background-color>
       </selector>
+      <!-- rich faces disabled icon area for the panelMenuItem that holds the tree -->
       <selector path=".hiddenMenuIcon .dr-pmenu-nowrap img">
         <display>none</display>
       </selector>
       <selector path=".hiddenMenuIcon td.dr-pmenu-nowrap">
         <width>0</width>
+      </selector>
+      <!-- rich faces tree ident (should be part of the richfaces skin) -->
+      <selector path=".dr-tree-h-ic-div">
+        <margin-left>8px</margin-left>
+        <padding-left>10px</padding-left>
       </selector>
     </style>
     <style element="page[1]/section[1]" inherit="common style">

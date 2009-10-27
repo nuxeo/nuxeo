@@ -64,7 +64,7 @@
 	      rowKeyVar="rowKey"
 	      stateVar="nodeState">
 	      <rich:recursiveTreeNodesAdaptor
-	        roots="#{directoryTreeManager.get('byCoverageFiltering')}"
+	        roots="#{filterActions.coverageTreeRoots}"
 	        nodes="#{node.children}"
 	        var="node">
 	        <rich:treeNode

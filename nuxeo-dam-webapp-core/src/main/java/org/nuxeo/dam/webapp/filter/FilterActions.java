@@ -48,6 +48,8 @@ import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDesc
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 import org.nuxeo.ecm.platform.ui.web.api.SortNotSupportedException;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
+import org.nuxeo.ecm.webapp.directory.DirectoryTreeManager;
+import org.nuxeo.ecm.webapp.directory.DirectoryTreeNode;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
@@ -57,114 +59,124 @@ import org.nuxeo.runtime.api.Framework;
 @Name("filterActions")
 public class FilterActions implements Serializable, ResultsProviderFarm {
 
-	private static final long serialVersionUID = 1L;
+    public static final String DC_COVERAGE_DIRECTORY_TREE = "dcCoverageDirectoryTree";
 
-	@SuppressWarnings("unused")
-	private static final Log log = LogFactory.getLog(FilterActions.class);
+    private static final long serialVersionUID = 1L;
 
-	public static final List<String> DAM_DOCUMENT_TYPES = Arrays.asList("File",
-			"Picture", "Video", "Audio");
+    @SuppressWarnings("unused")
+    private static final Log log = LogFactory.getLog(FilterActions.class);
 
-	protected static final String QUERY_MODEL_NAME = "FILTERED_DOCUMENTS";
+    public static final List<String> DAM_DOCUMENT_TYPES = Arrays.asList("File",
+            "Picture", "Video", "Audio");
 
-	protected static final String DOCTYPE_FIELD_XPATH = "filter_query:ecm_primaryType";
+    protected static final String QUERY_MODEL_NAME = "FILTERED_DOCUMENTS";
 
-	@In(create = true, required = false)
-	protected transient CoreSession documentManager;
+    protected static final String DOCTYPE_FIELD_XPATH = "filter_query:ecm_primaryType";
+
+    @In(create = true, required = false)
+    protected transient CoreSession documentManager;
 
     @In(create = true)
     protected transient QueryModelActions queryModelActions;
 
-	@In(create = true, required = false)
-	transient ResultsProvidersCache resultsProvidersCache;
+    @In(create = true, required = false)
+    transient ResultsProvidersCache resultsProvidersCache;
+    
+    @In(create = true)
+    protected DirectoryTreeManager directoryTreeManager;
 
-	@RequestParameter
-	protected String docType;
+    @RequestParameter
+    protected String docType;
 
-	protected DocumentModel filterDocument;
+    protected DocumentModel filterDocument;
 
-	public DocumentModel getFilterDocument() throws ClientException {
-		if (filterDocument == null) {
+    public DocumentModel getFilterDocument() throws ClientException {
+        if (filterDocument == null) {
             filterDocument = queryModelActions.get(QUERY_MODEL_NAME).getDocumentModel();
-		}
-		return filterDocument;
-	}
+        }
+        return filterDocument;
+    }
 
-	@Factory(value = "docTypeSelectItems", scope = ScopeType.EVENT)
-	public List<SelectItem> getDocTypeSelectItems() throws ClientException {
-		DocumentModel filterDocument = getFilterDocument();
-		List<String> docTypeSelection = filterDocument.getProperty(
-				DOCTYPE_FIELD_XPATH).getValue(List.class);
-		List<SelectItem> items = new ArrayList<SelectItem>();
-		items.add(new SelectItem("All", "label.type.All", "", docTypeSelection
-				.isEmpty()));
-		for (String type : DAM_DOCUMENT_TYPES) {
-			items.add(new SelectItem(type, "label.type." + type, "",
-					docTypeSelection.contains(type)));
-		}
-		return items;
-	}
+    @Factory(value = "docTypeSelectItems", scope = ScopeType.EVENT)
+    public List<SelectItem> getDocTypeSelectItems() throws ClientException {
+        DocumentModel filterDocument = getFilterDocument();
+        List<String> docTypeSelection = filterDocument.getProperty(
+                DOCTYPE_FIELD_XPATH).getValue(List.class);
+        List<SelectItem> items = new ArrayList<SelectItem>();
+        items.add(new SelectItem("All", "label.type.All", "",
+                docTypeSelection.isEmpty()));
+        for (String type : DAM_DOCUMENT_TYPES) {
+            items.add(new SelectItem(type, "label.type." + type, "",
+                    docTypeSelection.contains(type)));
+        }
+        return items;
+    }
 
-	@SuppressWarnings("unchecked")
-	public void toggleSelectDocType() throws ClientException {
-		DocumentModel filterDocument = getFilterDocument();
-		List<String> previousSelection = filterDocument.getProperty(
-				DOCTYPE_FIELD_XPATH).getValue(List.class);
+    @SuppressWarnings("unchecked")
+    public void toggleSelectDocType() throws ClientException {
+        DocumentModel filterDocument = getFilterDocument();
+        List<String> previousSelection = filterDocument.getProperty(
+                DOCTYPE_FIELD_XPATH).getValue(List.class);
 
-		if ("All".equalsIgnoreCase(docType)) {
-			previousSelection.clear();
-		} else {
-			if (previousSelection.contains(docType)) {
-				previousSelection.remove(docType);
-			} else {
-				previousSelection.add(docType);
+        if ("All".equalsIgnoreCase(docType)) {
+            previousSelection.clear();
+        } else {
+            if (previousSelection.contains(docType)) {
+                previousSelection.remove(docType);
+            } else {
+                previousSelection.add(docType);
 
-				if (previousSelection.size() == DAM_DOCUMENT_TYPES.size()) {
-					// back to empty selection which means no document type filtering:
-					previousSelection.clear();
-				}
-			}
-		}
-		filterDocument.setPropertyValue(DOCTYPE_FIELD_XPATH,
-				(Serializable) previousSelection);
-		invalidateProvider();
-	}
+                if (previousSelection.size() == DAM_DOCUMENT_TYPES.size()) {
+                    // back to empty selection which means no document type
+                    // filtering:
+                    previousSelection.clear();
+                }
+            }
+        }
+        filterDocument.setPropertyValue(DOCTYPE_FIELD_XPATH,
+                (Serializable) previousSelection);
+        invalidateProvider();
+    }
 
-	public PagedDocumentsProvider getResultsProvider(String queryModelName)
-			throws ClientException, ResultsProviderFarmUserException {
-		try {
-			return getResultsProvider(queryModelName, null);
-		} catch (SortNotSupportedException e) {
-			throw new ClientException("unexpected exception", e);
-		}
-	}
+    public List<DirectoryTreeNode> getCoverageTreeRoots() {
+        return directoryTreeManager.get(DC_COVERAGE_DIRECTORY_TREE).getChildren();
+    }
 
-	public PagedDocumentsProvider getResultsProvider(String queryModelName,
-			SortInfo sortInfo) throws ClientException,
-			ResultsProviderFarmUserException {
-		if (!QUERY_MODEL_NAME.equals(queryModelName)) {
-			return null;
-		}
+    public PagedDocumentsProvider getResultsProvider(String queryModelName)
+            throws ClientException, ResultsProviderFarmUserException {
+        try {
+            return getResultsProvider(queryModelName, null);
+        } catch (SortNotSupportedException e) {
+            throw new ClientException("unexpected exception", e);
+        }
+    }
 
-		QueryModel model = queryModelActions.get(queryModelName);
+    public PagedDocumentsProvider getResultsProvider(String queryModelName,
+            SortInfo sortInfo) throws ClientException,
+            ResultsProviderFarmUserException {
+        if (!QUERY_MODEL_NAME.equals(queryModelName)) {
+            return null;
+        }
 
-		if (!model.isSortable() && sortInfo != null) {
-			throw new SortNotSupportedException();
-		}
+        QueryModel model = queryModelActions.get(queryModelName);
 
-		PagedDocumentsProvider provider = model.getResultsProvider(
-				documentManager, null, sortInfo);
-		provider.setName(queryModelName);
-		return provider;
-	}
+        if (!model.isSortable() && sortInfo != null) {
+            throw new SortNotSupportedException();
+        }
 
-	@Observer(EventNames.QUERY_MODEL_CHANGED)
-	public void queryModelChanged(QueryModel qm) {
-		resultsProvidersCache.invalidate(qm.getDescriptor().getName());
-	}
+        PagedDocumentsProvider provider = model.getResultsProvider(
+                documentManager, null, sortInfo);
+        provider.setName(queryModelName);
+        return provider;
+    }
 
-	public void invalidateProvider() {
-		resultsProvidersCache.invalidate(QUERY_MODEL_NAME);
-	}
+    @Observer(EventNames.QUERY_MODEL_CHANGED)
+    public void queryModelChanged(QueryModel qm) {
+        resultsProvidersCache.invalidate(qm.getDescriptor().getName());
+    }
+
+    public void invalidateProvider() {
+        resultsProvidersCache.invalidate(QUERY_MODEL_NAME);
+    }
 
 }
