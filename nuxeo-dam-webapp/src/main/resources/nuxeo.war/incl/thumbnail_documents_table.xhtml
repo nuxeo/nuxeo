@@ -24,9 +24,19 @@
               style="max-height: 90px; max-width:140px;"
               rendered="#{row.data.hasSchema('picture')}"
               styleClass="thumbViewPicture"/>
+            <nxh:graphicImage id="theVideo"
+              value="/icons/video_100.png"
+              style="max-height: 90px; max-width:140px;"
+              rendered="#{row.data.hasSchema('video')}"
+              styleClass="thumbViewPicture"/>
+            <nxh:graphicImage id="theAudio"
+              value="/icons/audio_100.png"
+              style="max-height: 90px; max-width:140px;"
+              rendered="#{row.data.hasSchema('audio')}"
+              styleClass="thumbViewPicture"/>
             <nxh:graphicImage value="/img/file_preview.png"
               style="max-height: 90px; max-width:140px;"
-              rendered="#{!row.data.hasSchema('picture')}"
+              rendered="#{!row.data.hasSchema('picture') and !row.data.hasSchema('video') and !row.data.hasSchema('audio')}"
               styleClass="thumbViewPicture"/>
           </a4j:commandLink>
           <h:panelGroup>

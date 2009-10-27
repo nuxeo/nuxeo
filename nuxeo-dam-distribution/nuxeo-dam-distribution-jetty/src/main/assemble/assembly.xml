@@ -62,6 +62,9 @@
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-imaging-preview" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-imaging-convert" />
 
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-video-core" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-audio-core" />
+
     </artifacts>
   </artifactSet>
 

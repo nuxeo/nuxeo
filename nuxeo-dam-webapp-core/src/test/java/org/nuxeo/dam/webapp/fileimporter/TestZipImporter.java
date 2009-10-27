@@ -53,6 +53,8 @@ public class TestZipImporter extends SQLRepositoryTestNG {
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");
         deployBundle("org.nuxeo.ecm.platform.picture.api");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
+        deployBundle("org.nuxeo.ecm.platform.video.core");
+        deployBundle("org.nuxeo.ecm.platform.audio.core");
         deployBundle("org.nuxeo.ecm.platform.content.template");
 
         deployContrib("org.nuxeo.ecm.platform.filemanager.core",
@@ -112,12 +114,25 @@ public class TestZipImporter extends SQLRepositoryTestNG {
         DocumentModel child = session.getChild(doc.getRef(), "plain");
         assertNotNull(child);
         assertEquals("Note", child.getType());
+        
         child = session.getChild(doc.getRef(), "image");
         assertNotNull(child);
         assertEquals("Picture", child.getType());
+        
         child = session.getChild(doc.getRef(), "spreadsheet");
         assertNotNull(child);
         assertEquals("File", child.getType());
+        
+        // names are converted to lowercase
+        child = session.getChild(doc.getRef(), "samplempg");
+        assertNotNull(child);
+        assertEquals("Video", child.getType());
+        
+        child = session.getChild(doc.getRef(), "samplewav");
+        assertNotNull(child);
+        assertEquals("Audio", child.getType());
+        
+
     }
 
     @Test
@@ -144,16 +159,28 @@ public class TestZipImporter extends SQLRepositoryTestNG {
 
         DocumentModelList children = session.getChildren(importSet.getRef());
         assertNotNull(children);
-        assertEquals(3, children.size());
+        assertEquals(5, children.size());
+
         DocumentModel child = session.getChild(importSet.getRef(), "plain");
         assertNotNull(child);
         assertEquals("Note", child.getType());
+        
         child = session.getChild(importSet.getRef(), "image");
         assertNotNull(child);
         assertEquals("Picture", child.getType());
+        
         child = session.getChild(importSet.getRef(), "spreadsheet");
         assertNotNull(child);
         assertEquals("File", child.getType());
+        
+        // names are converted to lowercase
+        child = session.getChild(importSet.getRef(), "samplewav");
+        assertNotNull(child);
+        assertEquals("Audio", child.getType());
+        
+        child = session.getChild(importSet.getRef(), "samplempg");
+        assertNotNull(child);
+        assertEquals("Video", child.getType());
     }
 
 }

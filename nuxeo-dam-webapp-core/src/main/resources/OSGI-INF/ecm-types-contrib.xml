@@ -39,6 +39,8 @@
         <type>Folder</type>
         <type>File</type>
         <type>Picture</type>
+        <type>Video</type>
+        <type>Audio</type>
         <type>Note</type>
       </subtypes>
       <layouts mode="any">
@@ -48,6 +50,7 @@
       </layouts>
     </type>
 
+    <!-- At the moment we're only using this for the icons -->
     <type id="Picture">
       <label>Picture</label>
       <default-view>view_documents</default-view>
@@ -56,6 +59,28 @@
       <bigIcon>/icons/image_100.png</bigIcon>
       <category>SimpleDocument</category>
       <description>Picture.description</description>
+    </type>
+
+    <!-- At the moment we're only using this for the icons -->
+    <type id="Video">
+      <label>Video</label>
+      <default-view>view_documents</default-view>
+      <create-view>create_video</create-view>
+      <icon>/icons/video.png</icon>
+      <bigIcon>/icons/video_100.png</bigIcon>
+      <category>SimpleDocument</category>
+      <description>Video.description</description>
+    </type>
+
+    <!-- At the moment we're only using this for the icons -->
+    <type id="Audio">
+      <label>Audio</label>
+      <default-view>view_documents</default-view>
+      <create-view>create_audio</create-view>
+      <icon>/icons/audio.png</icon>
+      <bigIcon>/icons/audio_100.png</bigIcon>
+      <category>SimpleDocument</category>
+      <description>Audio.description</description>
     </type>
 
   </extension>

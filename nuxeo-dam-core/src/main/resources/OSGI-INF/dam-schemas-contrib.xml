@@ -44,6 +44,30 @@
       <facet name="Commentable"/>
     </doctype>
 
+    <doctype name="Video" extends="Document">
+      <schema name="video"/>
+      <schema name="dam_common"/>
+      <schema name="common"/>
+      <schema name="uid"/>
+      <schema name="dublincore"/>
+      <facet name="Versionable"/>
+      <facet name="Publishable"/>
+      <facet name="Commentable"/>
+      <facet name="Downloadable" />
+    </doctype>
+
+    <doctype name="Audio" extends="Document">
+      <schema name="audio"/>
+      <schema name="dam_common"/>
+      <schema name="common"/>
+      <schema name="uid"/>
+      <schema name="dublincore"/>
+      <facet name="Versionable"/>
+      <facet name="Publishable"/>
+      <facet name="Commentable"/>
+      <facet name="Downloadable" />
+    </doctype>
+
 
     <doctype name="FilterQuery" extends="Document">
       <schema name="filter_query"/>

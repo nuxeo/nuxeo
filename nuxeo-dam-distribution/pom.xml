@@ -74,7 +74,7 @@
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution-jboss</artifactId>
         <version>${nuxeo.distribution.version}</version>
-        <classifier>nuxeo-dm</classifier>
+        <classifier>nuxeo-ep</classifier>
         <type>zip</type>
       </dependency>
     </dependencies>
