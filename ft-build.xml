@@ -2,7 +2,7 @@
 <project name="ft" default="usage" basedir=".">
   
   <property name="pom.file" value="${basedir}/nuxeo-dam-distribution/pom.xml" />
-  <property name="mvn.profiles" value="" />
+  <property name="mvn.profiles" value="NXP" />
   
   <target name="usage">
     <echo message="usage: ant" />
