@@ -1,15 +1,17 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.commandline.executor.tiling">
 
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
+
   <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
     point="command">
-    
+
     <command name="converter" enabled="true">
       <commandLine>convert</commandLine>
       <parameterString>#{inputFilePath} #{outputFilePath}</parameterString>
       <installationDirective>You need to install ImageMagic.</installationDirective>
     </command>
-    
+
     <command name="multiTiler" enabled="true">
       <commandLine>convert</commandLine>
       <parameterString>#{inputFilePath}  -crop #{tileWidth}x#{tileHeight} + repage   #{outputFilePath}</parameterString>
