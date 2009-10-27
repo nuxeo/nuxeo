@@ -24,6 +24,7 @@
         <embedded.type>all</embedded.type>
         <embedded.includeNestedJars>true</embedded.includeNestedJars>
         <embedded.excludeLibs>false</embedded.excludeLibs>
+        <distribution>embedded-standalone</distribution>
       </properties>
     </profile>
     <profile>
@@ -32,6 +33,7 @@
         <embedded.type>osgi</embedded.type>
         <embedded.includeNestedJars>true</embedded.includeNestedJars>
         <embedded.excludeLibs>false</embedded.excludeLibs>
+        <distribution>embedded-osgi</distribution>
       </properties>
     </profile>
     <profile>
@@ -40,6 +42,7 @@
         <embedded.type>minmal</embedded.type>
         <embedded.includeNestedJars>false</embedded.includeNestedJars>
         <embedded.excludeLibs>true</embedded.excludeLibs>
+        <distribution>embedded-minimal</distribution>
       </properties>
     </profile>
   </profiles>
@@ -77,6 +80,7 @@
             <configuration>
               <file>${basedir}/target/${application.name}.zip</file>
               <type>zip</type>
+              <classifier>${distribution}</classifier>
             </configuration>
           </execution>
           <execution>
