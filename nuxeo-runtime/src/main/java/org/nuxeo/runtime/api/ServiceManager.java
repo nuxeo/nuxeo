@@ -116,10 +116,12 @@ public final class ServiceManager implements org.nuxeo.runtime.ServiceManager {
                     return svc;
                 }
             } catch (NameNotFoundException e) {
-                log.warn("Existing binding but unreachable service for "
-                        + serviceClass.getName()
-                        + " ! Fallback on local service...");
-                log.debug(e.getMessage()+" Check binding declaration: " + sd.toString());
+                if (J2EEContainerDescriptor.getSelected()==null || !J2EEContainerDescriptor.getSelected().preferLocalBindings) {
+                    log.warn("Existing binding but unreachable service for "
+                            + serviceClass.getName()
+                            + " ! Fallback on local service...");
+                    log.debug(e.getMessage()+" Check binding declaration: " + sd.toString());
+                }
             }
         }
         return Framework.getLocalService(serviceClass);
