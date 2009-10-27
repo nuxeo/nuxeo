@@ -150,7 +150,7 @@
         <theme>dam/default</theme>
       </view>
 
-       <view id="/annotations_popup.xhtml">
+      <view id="/annotations_popup.xhtml">
         <theme>dam/popup</theme>
       </view>
 
@@ -165,6 +165,7 @@
     <negotiation object="engine" strategy="dam">
       <scheme>org.nuxeo.theme.jsf.negotiation.engine.RequestParameter</scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.engine.CookieValue</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.engine.ViewId</scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.engine.DefaultEngine</scheme>
     </negotiation>
 
@@ -176,6 +177,7 @@
     <negotiation object="theme" strategy="dam">
       <scheme>org.nuxeo.theme.jsf.negotiation.theme.RequestParameter</scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.theme.CookieValue</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.ViewId</scheme>
       <scheme>org.nuxeo.ecm.webapp.theme.negotiation.LocalTheme</scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.theme.DefaultTheme</scheme>
     </negotiation>
@@ -185,6 +187,7 @@
         org.nuxeo.theme.jsf.negotiation.perspective.RequestParameter
       </scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.perspective.CookieValue</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.perspective.ViewId</scheme>
       <scheme>org.nuxeo.ecm.webapp.theme.negotiation.LocalPerspective</scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.perspective.DefaultPerspective

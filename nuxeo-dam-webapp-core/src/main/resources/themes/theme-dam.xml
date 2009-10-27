@@ -39,11 +39,21 @@
     <page name="popup">
       <section>
         <cell>
+          <!-- main area -->
           <fragment type="region fragment" />
+        </cell>
+        <cell>
+          <!-- Include -->
+          <fragment type="generic fragment" />
         </cell>
       </section>
     </page>
   </layout>
+  <properties element="page[2]/section[1]/cell[1]/fragment[1]">
+    <name>body</name>
+    <defaultBody />
+    <defaultSrc />
+  </properties>
   <formats>
     <!-- LAYOUT -->
     <layout element="page[1]">
@@ -80,11 +90,16 @@
     <layout element="page[1]/section[3]/cell[1]">
       <width>100%</width>
     </layout>
+    <layout element="page[2]">
+      <margin>0</margin>
+      <padding>0</padding>
+    </layout>
     <layout element="page[2]/section[1]">
       <width>100%</width>
     </layout>
-    <layout element="page[2]/section[1]/cell[1]">
-      <width>100%</width>
+    <layout element="page[2]/section[1]/cell[1]"/>
+    <layout element="page[2]/section[1]/cell[2]">
+      <width>0%</width>
     </layout>
     <widget element="">
       <view>theme view</view>
@@ -92,13 +107,13 @@
       <charset>utf-8</charset>
     </widget>
     <!-- WIDGET AFFECTATON -->
-    <widget element="page[1]">
+    <widget element="page[1]|page[2]">
       <view>page frame</view>
     </widget>
-    <widget element="page[1]/section[1]|page[1]/section[2]">
+    <widget element="page[1]/section[1]|page[1]/section[2]|page[2]/section[1]">
       <view>section frame</view>
     </widget>
-    <widget element="page[1]/section[1]/cell[1]|page[1]/section[1]/cell[2]|page[1]/section[2]/cell[1]|page[1]/section[2]/cell[2]|page[1]/section[2]/cell[3]">
+    <widget element="page[1]/section[1]/cell[1]|page[1]/section[1]/cell[2]|page[1]/section[2]/cell[1]|page[1]/section[2]/cell[2]|page[1]/section[2]/cell[3]|page[2]/section[1]/cell[1]">
       <view>cell frame</view>
     </widget>
     <widget element="page[1]/section[1]/cell[1]/fragment[1]">
@@ -131,17 +146,11 @@
     <widget element="page[1]/section[3]/cell[1]/fragment[1]">
       <view>dam footer</view>
     </widget>
-    <widget element="page[2]">
-      <view>page frame</view>
-    </widget>
-    <widget element="page[2]/section[1]">
-      <view>section frame</view>
-    </widget>
-    <widget element="page[2]/section[1]/cell[1]">
-      <view>cell frame</view>
-    </widget>
     <widget element="page[2]/section[1]/cell[1]/fragment[1]">
       <view>facelet region</view>
+    </widget>
+    <widget element="page[2]/section[1]/cell[2]/fragment[1]">
+      <view>dam includes</view>
     </widget>
     <!-- buttons -->
     <style name="default buttons">

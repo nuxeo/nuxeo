@@ -25,7 +25,6 @@
     <navigation-case>
       <from-outcome>annotations_popup</from-outcome>
       <to-view-id>/annotations_popup.xhtml</to-view-id>
-      <redirect />
     </navigation-case>
   </extension>
 

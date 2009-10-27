@@ -8,7 +8,6 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.dam.webapp.contentbrowser.DocumentActions;
@@ -103,7 +102,6 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return null;
     }
 
-    @BypassInterceptors
     public DocumentModel getCurrentDocument() {
         return documentActions.getCurrentSelection();
     }
