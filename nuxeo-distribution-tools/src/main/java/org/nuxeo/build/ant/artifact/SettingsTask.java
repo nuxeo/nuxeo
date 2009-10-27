@@ -23,7 +23,8 @@ import org.apache.maven.embedder.MavenEmbedderLogger;
 import org.apache.maven.model.RepositoryPolicy;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Sequential;
-import org.nuxeo.build.maven.MavenClient;
+import org.nuxeo.build.maven.EmbeddedMavenClient;
+import org.nuxeo.build.maven.MavenClientFactory;
 
 /**
  * TODO offline setting is not working
@@ -64,7 +65,7 @@ public class SettingsTask extends Sequential {
     @Override
     public void execute() throws BuildException {
 
-        MavenClient maven = MavenClient.getInstance();
+        EmbeddedMavenClient maven = MavenClientFactory.getEmbeddedMaven();
         maven.setOffline(offline);
         maven.setInteractiveMode(interactive);
 

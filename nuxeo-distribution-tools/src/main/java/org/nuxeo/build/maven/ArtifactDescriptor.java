@@ -98,7 +98,7 @@ public class ArtifactDescriptor {
     }
 
     public Artifact toBuildArtifact() {
-        return MavenClient.getInstance().getArtifactFactory().createBuildArtifact(
+        return MavenClientFactory.getInstance().getArtifactFactory().createBuildArtifact(
                 groupId, artifactId, version, type);
     }
 

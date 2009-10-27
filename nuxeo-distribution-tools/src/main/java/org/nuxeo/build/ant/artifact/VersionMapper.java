@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.tools.ant.util.FileNameMapper;
-import org.nuxeo.build.maven.MavenClient;
+import org.nuxeo.build.maven.MavenClientFactory;
 
 /**
  * Ant filename mapper to remove version info from filename when copying
@@ -42,7 +42,7 @@ public class VersionMapper implements FileNameMapper {
             }
         }
 
-        Artifact artifact = MavenClient.getInstance().getGraph().getArtifactByFile(sourceFileName);
+        Artifact artifact = MavenClientFactory.getInstance().getGraph().getArtifactByFile(sourceFileName);
         if (artifact != null) {
             String ext = null;
             int p = sourceFileName.lastIndexOf('.');

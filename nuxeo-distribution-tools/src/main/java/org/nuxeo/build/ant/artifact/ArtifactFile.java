@@ -21,7 +21,7 @@ import java.io.File;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.nuxeo.build.maven.ArtifactDescriptor;
-import org.nuxeo.build.maven.MavenClient;
+import org.nuxeo.build.maven.MavenClientFactory;
 import org.nuxeo.build.maven.graph.AttachmentNode;
 import org.nuxeo.build.maven.graph.Node;
 
@@ -59,9 +59,9 @@ public class ArtifactFile extends FileResource {
             if (key.indexOf(':') == -1) { // only artifact Id
                 ArtifactDescriptor ad = new ArtifactDescriptor();
                 ad.artifactId = key;
-                node = MavenClient.getInstance().getGraph().findNode(ad);
+                node = MavenClientFactory.getInstance().getGraph().findNode(ad);
             } else {
-                node = MavenClient.getInstance().getGraph().findFirst(key);
+                node = MavenClientFactory.getInstance().getGraph().findFirst(key);
             }
             if (node == null) {
                 throw new BuildException("Artifact with pattern "+key+" was not found in graph");

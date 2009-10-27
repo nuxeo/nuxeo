@@ -28,6 +28,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.MavenClient;
+import org.nuxeo.build.maven.MavenClientFactory;
 import org.nuxeo.build.maven.filter.AndFilter;
 import org.nuxeo.build.maven.filter.CompositeFilter;
 import org.nuxeo.build.maven.graph.Node;
@@ -82,7 +83,7 @@ public class GraphTask extends Task {
 
     @Override
     public void execute() throws BuildException {
-        MavenClient maven = MavenClient.getInstance();
+        MavenClient maven = MavenClientFactory.getInstance();
         if (src != null) {
             if (resolves == null) {
                 resolves = new ArrayList<ArtifactKey>();
@@ -136,6 +137,6 @@ public class GraphTask extends Task {
     }
 
     public static Artifact readArtifact(ArtifactDescriptor artifactDescriptor) {
-        return MavenClient.getInstance().getArtifactFactory().createBuildArtifact(artifactDescriptor.groupId, artifactDescriptor.artifactId, artifactDescriptor.version, artifactDescriptor.type);
+        return MavenClientFactory.getInstance().getArtifactFactory().createBuildArtifact(artifactDescriptor.groupId, artifactDescriptor.artifactId, artifactDescriptor.version, artifactDescriptor.type);
     }
 }

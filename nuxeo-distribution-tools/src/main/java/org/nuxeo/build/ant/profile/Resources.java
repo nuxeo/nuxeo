@@ -27,7 +27,7 @@ import org.apache.tools.ant.types.DataType;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
-import org.nuxeo.build.maven.MavenClient;
+import org.nuxeo.build.maven.MavenClientFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -41,7 +41,7 @@ public class Resources extends DataType  implements ResourceCollection {
     public Resources(Project project, File baseDir) {
         this.baseDir = baseDir;
         sets = new ArrayList<ResourceCollection>();
-        AntProfileManager mgr = MavenClient.getInstance().getAntProfileManager();
+        AntProfileManager mgr = MavenClientFactory.getInstance().getAntProfileManager();
         for (String name : baseDir.list()) {
             if (name.equals("default") || mgr.isProfileActive(name)) {
                 FileSet fs = new FileSet();

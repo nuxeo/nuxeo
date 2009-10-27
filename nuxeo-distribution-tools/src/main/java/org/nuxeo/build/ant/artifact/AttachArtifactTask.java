@@ -26,6 +26,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.nuxeo.build.maven.MavenClient;
+import org.nuxeo.build.maven.MavenClientFactory;
 import org.nuxeo.build.maven.graph.Node;
 
 /**
@@ -73,7 +74,7 @@ public class AttachArtifactTask extends Task {
     }
 
     public void execute() throws BuildException {
-        final MavenClient maven = MavenClient.getInstance();
+        final MavenClient maven = MavenClientFactory.getInstance();
 
         if (target == null) {
             throw new BuildException("Target artifact not set");

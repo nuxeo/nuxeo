@@ -7,7 +7,7 @@
   
   <taskdef name="if" classname="org.nuxeo.build.ant.IfTask" />
 
-  <taskdef name="regexp" classname="org.nuxeo.build.ant.tasks.PropertyRegexp" />
+  <taskdef name="regexp" classname="org.nuxeo.build.ant.PropertyRegexp" />
   
   <typedef name="preprocess" classname="org.nuxeo.build.ant.processor.NuxeoBuildProcessor" />  
 

@@ -20,8 +20,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.tools.ant.taskdefs.email.EmailAddress;
 import org.nuxeo.build.ant.AntClient;
-import org.nuxeo.build.maven.MavenClient;
+import org.nuxeo.build.maven.EmbeddedMavenClient;
+import org.nuxeo.build.maven.MavenClientFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -29,6 +31,7 @@ import org.nuxeo.build.maven.MavenClient;
 public class Main {
 
     public static void main(String[] args) throws Exception {
+        MavenClientFactory.setInstance(new EmbeddedMavenClient());
         AntClient ant = new AntClient();
 
         List<String> targets = new ArrayList<String>();
@@ -44,7 +47,7 @@ public class Main {
             }
         }
         if (profiles != null) {
-            MavenClient.getInstance().getAntProfileManager().activateProfiles(profiles);
+            MavenClientFactory.getInstance().getAntProfileManager().activateProfiles(profiles);
         }
 
         if (buildFile == null) {

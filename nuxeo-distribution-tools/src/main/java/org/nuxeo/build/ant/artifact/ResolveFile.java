@@ -24,6 +24,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.MavenClient;
+import org.nuxeo.build.maven.MavenClientFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -50,7 +51,7 @@ public class ResolveFile extends FileResource {
 
 
     protected File resolveFile() throws ArtifactNotFoundException {
-        MavenClient maven = MavenClient.getInstance();
+        MavenClient maven = MavenClientFactory.getInstance();
         ArtifactDescriptor ad = new ArtifactDescriptor(key);
         Artifact arti = null;
         if (classifier != null) {
@@ -60,7 +61,7 @@ public class ResolveFile extends FileResource {
             arti = maven.getArtifactFactory().createArtifact(
                     ad.groupId, ad.artifactId, ad.version, ad.scope, ad.type);
         }
-        MavenClient.getInstance().resolve(arti);
+        MavenClientFactory.getInstance().resolve(arti);
         return arti.getFile();
     }
     

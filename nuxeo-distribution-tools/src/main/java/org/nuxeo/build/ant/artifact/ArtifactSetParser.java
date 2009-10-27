@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.apache.tools.ant.Project;
 import org.nuxeo.build.ant.profile.AntProfileManager;
-import org.nuxeo.build.maven.MavenClient;
+import org.nuxeo.build.maven.MavenClientFactory;
 import org.nuxeo.build.maven.graph.Node;
 
 /**
@@ -40,7 +40,7 @@ public class ArtifactSetParser {
 
     public ArtifactSetParser(Project project) {
         this.project = project;
-        this.profileMgr = MavenClient.getInstance().getAntProfileManager();
+        this.profileMgr = MavenClientFactory.getInstance().getAntProfileManager();
     }
 
     public void parse(File src, Collection<Node> nodes) throws IOException {

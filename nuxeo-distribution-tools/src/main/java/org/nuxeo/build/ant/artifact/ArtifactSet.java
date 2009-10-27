@@ -29,7 +29,7 @@ import org.apache.tools.ant.types.DataType;
 import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.FileResource;
-import org.nuxeo.build.maven.MavenClient;
+import org.nuxeo.build.maven.MavenClientFactory;
 import org.nuxeo.build.maven.filter.AncestorFilter;
 import org.nuxeo.build.maven.filter.AndFilter;
 import org.nuxeo.build.maven.filter.ArtifactIdFilter;
@@ -242,7 +242,7 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
     }
 
     protected Collection<Node> computeNodes() {
-        Graph graph = MavenClient.getInstance().getGraph();
+        Graph graph = MavenClientFactory.getInstance().getGraph();
         Filter finalFilter = buildFilter();
         Collection<Node> roots = new ArrayList<Node>();
         if (src != null) {

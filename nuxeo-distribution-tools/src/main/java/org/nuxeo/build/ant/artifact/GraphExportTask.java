@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
-import org.nuxeo.build.maven.MavenClient;
+import org.nuxeo.build.maven.MavenClientFactory;
 import org.nuxeo.build.maven.graph.Graph;
 import org.nuxeo.build.maven.graph.GraphVizExporter;
 import org.nuxeo.build.maven.graph.Node;
@@ -75,7 +75,7 @@ public class GraphExportTask extends Task {
     }
 
     public void exportPng() throws Exception {
-        Graph graph = MavenClient.getInstance().getGraph();
+        Graph graph = MavenClientFactory.getInstance().getGraph();
         FileOutputStream out = new FileOutputStream(file);
         GraphVizExporter gv = GraphVizExporter.createPng(out);
         if (nodeColor != null) {

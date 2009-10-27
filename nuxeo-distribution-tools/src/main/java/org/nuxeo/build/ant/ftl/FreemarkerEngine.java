@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.nuxeo.build.maven.MavenClient;
+import org.nuxeo.build.maven.MavenClientFactory;
 
 import freemarker.cache.FileTemplateLoader;
 import freemarker.template.Configuration;
@@ -68,8 +68,8 @@ public class FreemarkerEngine {
         root.putAll(project.getProperties());
         root.put("ant", project.getProperties());
         root.put("system", System.getProperties());
-        root.put("profiles", MavenClient.getInstance().getAntProfileManager());
-        root.put("graph", MavenClient.getInstance().getGraph());
+        root.put("profiles", MavenClientFactory.getInstance().getAntProfileManager());
+        root.put("graph", MavenClientFactory.getInstance().getGraph());
         return root;
     }
 

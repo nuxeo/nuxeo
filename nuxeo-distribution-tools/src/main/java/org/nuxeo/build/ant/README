@@ -1,0 +1,20 @@
+This project is composed of various ant tasks that may be useful for nuxeo project builds.
+
+PropertyRegexp Task
+-------------------
+Task that parse a file and set the result regexp to the path.
+Example of how to use it, this script unzip a jar file, parse a manifest file that was inside and extract the value of the Bundle-Version : to the property "bundleversion.
+
+
+        <target name="use" description="Example of the task usage" depends="jar">
+                <property name="bundleversion" value="" />
+                <property name="plugin" value="" />
+                <property name="jarpath" value="target/plugins/nuxeo-core-api-1.5-SNAPSHOT.jar" />
+                <taskdef name="nuxeoregexp" classname="org.nuxeo.build.ant.tasks.PropertyRegexp" classpath="${ant.project.name}.jar" />
+                <mkdir dir="temp" />
+                <unzip src="${jarpath}" dest="temp" />
+                <nuxeoregexp property="bundleversion" input="temp${file.separator}META-INF${file.separator}MANIFEST.MF" pattern="Bundle-Version: (.*)\r" select="1" />
+                <delete dir="temp" />
+                <echo message="bundle version from manifest : ${bundleversion}" />
+        </target>
+

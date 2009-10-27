@@ -19,7 +19,7 @@ package org.nuxeo.build.ant.profile;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Sequential;
-import org.nuxeo.build.maven.MavenClient;
+import org.nuxeo.build.maven.MavenClientFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -89,12 +89,12 @@ public class ProfileTask extends Sequential {
 
     @Override
     public void execute() throws BuildException {
-        AntProfileManager mgr = MavenClient.getInstance().getAntProfileManager();
+        AntProfileManager mgr = MavenClientFactory.getInstance().getAntProfileManager();
         if (mgr.isProfileActive(name)) {
             super.execute();
         } else if (group != null) {
             String[] profiles = group.split("\\s*,\\s*");
-            MavenClient.getInstance().getAntProfileManager().addGroup(profiles, activate);
+            MavenClientFactory.getInstance().getAntProfileManager().addGroup(profiles, activate);
         } else if (activate != null) {
             mgr.activateProfiles(activate);
         }

@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.tools.ant.BuildLogger;
 import org.apache.tools.ant.DefaultLogger;
@@ -46,6 +47,7 @@ public class AntClient {
     protected ClassLoader loader;
     protected Project project;
     protected MavenClient maven;
+    Map<String, String> globalProperties;
 
     public AntClient() {
         this (null);
@@ -61,6 +63,10 @@ public class AntClient {
         this.loader = loader;
     }
 
+    public void setGlobalProperties(Map<String, String> globalProperties) {
+        this.globalProperties = globalProperties;
+    }
+    
     public void setMavenClient(MavenClient maven) {
         this.maven = maven;
     }
@@ -117,6 +123,12 @@ public class AntClient {
                 buildFile.getPath());
         project.setUserProperty("ant.version", org.apache.tools.ant.Main.getAntVersion());
 
+        if (globalProperties != null) {
+            for (Map.Entry<String, String> entry : globalProperties.entrySet()) {
+                project.setUserProperty(entry.getKey(), entry.getValue());
+            }
+        }
+        
         // add maven reference
         if (maven != null) {
             project.addReference(MAVEN_CLIENT_REF, maven);

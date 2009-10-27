@@ -47,7 +47,8 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.RepositoryPolicy;
-import org.nuxeo.build.maven.MavenClient;
+import org.nuxeo.build.maven.EmbeddedMavenClient;
+import org.nuxeo.build.maven.MavenClientFactory;
 import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Node;
 import org.nuxeo.build.util.IOUtils;
@@ -62,7 +63,7 @@ public class ArtifactTree extends JSplitPane {
 
     protected JTree tree;
     DefaultMutableTreeNode root;
-    protected MavenClient maven;
+    protected EmbeddedMavenClient maven;
 
     protected ItemProvider provider = ItemProvider.DEFAULT;
 
@@ -246,7 +247,7 @@ public class ArtifactTree extends JSplitPane {
     }
 
     public void initializeMaven() {
-        maven = MavenClient.getInstance();
+        maven = MavenClientFactory.getEmbeddedMaven();
         try {
             maven.start();
         } catch (Exception e) {
