@@ -54,44 +54,36 @@
      <rich:panelMenuGroup label="#{messages['heading.filter.coverage']}"
       expanded="true" id="coverageFilterPanel">
 
-      <rich:panelMenuItem>
-
+      <rich:panelMenuItem mode="none" disabledClass="hiddenMenuIcon" disabled="true">
+	    <rich:tree
+	      adviseNodeOpened="#{directoryTreeManager.adviseNodeOpened}"
+	      changeExpandListener="#{directoryTreeManager.changeExpandListener}"
+	      icon="#{nodeState.isExpanded(rowKey)?'/icons/yellow-folder-open.png':'/icons/yellow-folder-closed.png'}"
+	      iconExpanded="/icons/toggle_minus.png"
+	      iconCollapsed="/icons/toggle_plus.png"
+	      rowKeyVar="rowKey"
+	      stateVar="nodeState">
+	      <rich:recursiveTreeNodesAdaptor
+	        roots="#{directoryTreeManager.get('byCoverageFiltering')}"
+	        nodes="#{node.children}"
+	        var="node">
+	        <rich:treeNode
+	          highlightedClass="treeNodeHighlightedClass"
+	          selectedClass="treeNodeSelectedClass">
+	          <div class="#{nxu:test(node.selected, 'selected', '')}">
+	            <a4j:commandLink immediate="true"
+	              action="#{node.selectNode}" styleClass="treeLink"
+	               reRender="filterResultTable,filterFormPanel">
+	              <h:outputText value="#{messages[node.description]}" />
+	            </a4j:commandLink>
+	          </div>
+	        </rich:treeNode>
+	      </rich:recursiveTreeNodesAdaptor>
+	    </rich:tree>
       </rich:panelMenuItem>
 
     </rich:panelMenuGroup>
    </rich:panelMenu>
-
-
-   <a4j:region renderRegionOnly="true">
-       <h:panelGroup id="directoryTreeNav">
-       <!-- nodeState: org.richFaces.component.state.TreeState -->
-       <!-- rowKey: org.richfaces.model.TreeRowKey -->
-       <rich:tree
-         adviseNodeOpened="#{directoryTreeManager.adviseNodeOpened}"
-         changeExpandListener="#{directoryTreeManager.changeExpandListener}"
-         icon="#{nodeState.isExpanded(rowKey)?'/icons/yellow-folder-open.png':'/icons/yellow-folder-closed.png'}"
-         iconExpanded="/icons/toggle_minus.png"
-         iconCollapsed="/icons/toggle_plus.png"
-         rowKeyVar="rowKey"
-         stateVar="nodeState">
-         <rich:recursiveTreeNodesAdaptor
-           roots="#{directoryTreeManager.get('byCoverageFiltering')}"
-           nodes="#{node.children}"
-           var="node">
-           <rich:treeNode
-             highlightedClass="treeNodeHighlightedClass"
-             selectedClass="treeNodeSelectedClass">
-             <div class="#{nxu:test(node.selected, 'dropInto', '')}">
-               <a4j:commandLink immediate="true"
-                 action="#{node.selectNode}" styleClass="treeLink" reRender="filterResultTable">
-                 <h:outputText value="#{messages[node.description]}" />
-               </a4j:commandLink>
-             </div>
-           </rich:treeNode>
-         </rich:recursiveTreeNodesAdaptor>
-       </rich:tree>
-     </h:panelGroup>
- </a4j:region>
 
 
     <!-- this bit needs to be outside the rich:panelMenu -->
