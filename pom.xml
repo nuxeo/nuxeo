@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>nuxeo-features-parent</artifactId>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <version>5.3.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-video-parent</artifactId>
+  <name>Nuxeo Platform Video parent</name>
+  <packaging>pom</packaging>
+  <description>Nuxeo Platform Video provides video managment
+               to Nuxeo Web Platform and RCP. 
+  </description>
+
+  <modules>
+    <module>nuxeo-platform-video-core</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Nuxeo platform video -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-video-core</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+
+  <developers>
+    <developer>
+      <name>Olivier Grisel</name>
+      <email>ogrisel@nuxeo.com</email>
+      <organization>Nuxeo SAS</organization>
+    </developer>
+    <developer>
+      <name>Peter Di Lorenzo</name>
+      <email>pdilorenzo@nuxeo.com</email>
+      <organization>Nuxeo SAS</organization>
+    </developer>
+  </developers>
+
+<scm>
+  <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-platform-video</connection>
+  <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-platform-video</developerConnection>
+  <url>http://trac.nuxeo.org/nuxeo/browser/nuxeo_platform-video</url>
+</scm>
+
+</project>
