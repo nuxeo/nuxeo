@@ -96,6 +96,12 @@ public class NotificationService extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) throws Exception {
         notificationRegistry = new NotificationRegistryImpl();
+
+        // init default settings
+        generalSettings = new GeneralSettingsDescriptor();
+        generalSettings.serverPrefix = "http://localhost:8080/nuxeo/";
+        generalSettings.eMailSubjectPrefix = "[Nuxeo]";
+        generalSettings.mailSessionJndiName = "java:/Mail";
     }
 
     @Override
