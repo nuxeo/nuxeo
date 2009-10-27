@@ -1,7 +1,7 @@
 <assembly>
 
   <zipEntrySet id="base-template">
-    <artifact>org.nuxeo.ecm.distribution:nuxeo-distribution-server:${nuxeo.platform.version}:zip</artifact>
+    <artifact>org.nuxeo.ecm.distribution:nuxeo-distribution-server:${nuxeo.distribution.version}:zip</artifact>
   </zipEntrySet>
 
   <fileSet id="template">
@@ -147,10 +147,10 @@
       <artifact group="org.apache.poi" name="poi-scratchpad" />
       <artifact group="org.apache" name="xmlbeans" />
       <artifact group="oro" name="oro" />
-      
+
       <artifact group="net.sourceforge.cssparser" name="cssparser" />
       <artifact group="org.w3c" name="sac" />
-      
+
 
       <!-- Nuxeo DAM libs -->
       <artifact group="truezip" name="truezip"/>

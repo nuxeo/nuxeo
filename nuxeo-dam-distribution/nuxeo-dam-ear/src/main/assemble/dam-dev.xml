@@ -7,7 +7,7 @@
   </assemble>
   <zipEntrySet id="resources">
     <artifact>
-      org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.platform.version}:zip:resources-mono
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip:resources-mono
     </artifact>
   </zipEntrySet>
 
