@@ -53,9 +53,9 @@ public class HTMLView extends TemplateView {
                 }
             }
             if (!found) {
-                log.warn(String.format(
-                        "First HTML tag of view template: %s (<%s>) not one of <html>, <body>, <div>, <table>, <tr>, <td>",
-                        template, tag));
+                // log.warn(String.format(
+                // "First HTML tag of view template: %s (<%s>) not one of <html>, <body>, <div>, <table>, <tr>, <td>",
+                // template, tag));
             }
         } else {
             log.warn("First HTML tag of view template: " + template
