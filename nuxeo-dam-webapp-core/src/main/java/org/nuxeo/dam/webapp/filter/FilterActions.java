@@ -75,14 +75,11 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
     @In(create = true)
     protected transient QueryModelActions queryModelActions;
 
-
 	@In(create = true, required = false)
 	transient ResultsProvidersCache resultsProvidersCache;
 
 	@RequestParameter
 	protected String docType;
-
-	protected transient QueryModelService queryModelService;
 
 	protected DocumentModel filterDocument;
 
@@ -168,15 +165,6 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
 
 	public void invalidateProvider() {
 		resultsProvidersCache.invalidate(QUERY_MODEL_NAME);
-	}
-
-	protected QueryModelDescriptor getQueryModelDescriptor(String descriptorName)
-			throws Exception {
-		if (queryModelService == null) {
-			queryModelService = Framework
-					.getService(QueryModelService.class);
-		}
-		return queryModelService.getQueryModelDescriptor(descriptorName);
 	}
 
 }
