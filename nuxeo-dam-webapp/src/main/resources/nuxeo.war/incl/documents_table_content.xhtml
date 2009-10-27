@@ -8,6 +8,8 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
+  <ui:include src="/pagination/pageNavigationControlsTop.xhtml" />
+
   <a4j:form id="#{documents.name}">
     <a4j:region>
     <a4j:outputPanel id="documentsList">
@@ -28,6 +30,6 @@
     </a4j:region>
   </a4j:form>
   
-  <ui:include src="/pagination/pageNavigationControls.xhtml" />
+  <ui:include src="/pagination/pageNavigationControlsBottom.xhtml" />
   
 </div>
