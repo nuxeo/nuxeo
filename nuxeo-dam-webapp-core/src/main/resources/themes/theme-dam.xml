@@ -409,9 +409,23 @@
       <selector path=".deliveryBlock .dataInput .button">
         <width>auto</width>
       </selector>
-      <selector path=".waiterBlock #importsetCreationWaiter">
+      <selector path=".waiterBlock div">
         <background-color>white</background-color>
         <border>1px solid #9f9f9f</border>
+        <display>none</display>
+        <z-index>1000</z-index>
+        <position>absolute</position>
+        <top>0</top>
+        <left>0</left>
+        <right>0</right>
+        <bottom>0</bottom>
+        <height>170px</height>
+        <width>170px</width>
+        <text-align>center</text-align>
+        <margin>auto</margin>
+      </selector>
+      <selector path=".waiterParagraph">
+        <padding-top>30px</padding-top>
       </selector>
     </style>
     <style element="page[1]/section[1]" inherit="common style">
