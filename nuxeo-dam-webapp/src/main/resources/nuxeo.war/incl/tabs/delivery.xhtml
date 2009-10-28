@@ -11,6 +11,8 @@
 
   <h:form>
     <f:subview rendered="#{documentActions.currentSelection.hasSchema('picture')}">
+    <fieldset>
+      <legend><h:outputText value="#{messages['label.delivery.intro.url']}" /></legend>
       <h:panelGrid styleClass="dataInput" columns="2" columnClasses="labelColumn, fieldColumn">
 
         <h:outputText value="#{messages['label.delivery.large']}" />
@@ -24,6 +26,11 @@
         <h:outputText value="#{messages['label.delivery.small']}" />
         <h:inputText id="small_link" value="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Thumbnail:content', '')}" readonly="true"
                 onclick="javascript:this.focus();this.select();" />
+      </h:panelGrid>
+    </fieldset>
+    <fieldset>
+      <legend><h:outputText value="#{messages['label.delivery.intro.download']}" /></legend>
+      <h:panelGrid styleClass="dataInput" columns="2" columnClasses="labelColumn, fieldColumn">
 
         <h:outputText value="#{messages['label.delivery.download.size']}" />
         <h:selectOneListbox size="1" id="downloadSize" value="#{documentActions.downloadSize}">
@@ -36,16 +43,23 @@
         <h:commandButton styleClass="button" action="#{documentActions.downloadBlob}" value="#{messages['command.download']}"/>
 
       </h:panelGrid>
+    </fieldset>
     </f:subview>
 
     <f:subview rendered="#{documentActions.currentSelection.hasSchema('file')}">
+      <fieldset>
+      <legend><h:outputText value="#{messages['label.delivery.intro.download']}" /></legend>
       <h:panelGrid styleClass="dataInput" columns="2" columnClasses="labelColumn, fieldColumn">
+        
+        <h5><h:outputText value="#{messages['label.delivery.intro.download']}" /></h5>
+        
         <h:outputText value="#{messages['label.delivery.file']}" />
         <h:inputText value="#{nxd:fileUrl('downloadFile', documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}" readonly="true" />
 
         <h:outputText value="" />
         <h:commandButton styleClass="button" action="#{documentActions.downloadBlob}" value="#{messages['command.download']}"/>
       </h:panelGrid>
+      </fieldset>
     </f:subview>
 
 

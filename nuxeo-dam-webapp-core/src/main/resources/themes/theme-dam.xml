@@ -438,13 +438,22 @@
         <background-color>#c7d3e0</background-color>
       </selector>
       <selector path=".deliveryBlock .dataInput">
-        <margin-top>20px</margin-top>
+        <margin>10px 0px</margin>
       </selector>
       <selector path=".deliveryBlock .dataInput .button">
         <width>auto</width>
       </selector>
       <selector path=".deliveryBlock .dataInput input">
         <cursor>default</cursor>
+      </selector>
+      <selector path="fieldset">
+        <border>1px solid #ccc</border>
+        <margin>5px 5px 10px</margin>
+      </selector>
+      <selector path="legend">
+        <font-weight>bold</font-weight>
+        <color>#333</color>
+        <padding>0px 5px</padding>
       </selector>
       <selector path=".waiterBlock div">
         <background-color>white</background-color>
