@@ -36,14 +36,13 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
-import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.context.ServerContextBean;
-import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
 
 @Name("startupHelper")
 @Scope(SESSION)
@@ -72,6 +71,9 @@ public class StartupHelper implements Serializable {
     @In(create = true)
     protected transient LocaleSelector localeSelector;
 
+    @In(create = true)
+    protected transient NavigationContext navigationContext;
+
     /**
      * Initializes the context with the principal id, and tries to connect to
      * the default server if any then: - if the server has several domains,
@@ -95,7 +97,7 @@ public class StartupHelper implements Serializable {
 
         if (documentManager == null) {
             try {
-                documentManager = getOrCreateDocumentManager();
+                documentManager = navigationContext.getOrCreateDocumentManager();
             } catch (ClientException e) {
                 // avoid pages.xml contribution to catch exceptions silently
                 // hiding the cause of the problem to developers
@@ -120,31 +122,6 @@ public class StartupHelper implements Serializable {
     public void setupCurrentUser() {
         Principal currentUser = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
         sessionContext.set("currentUser", currentUser);
-    }
-
-    /**
-     * Returns the current documentManager if any or create a new session to the
-     * current location.
-     */
-    public CoreSession getOrCreateDocumentManager() throws ClientException {
-
-        if (documentManager != null) {
-            return documentManager;
-        }
-
-        DocumentManagerBusinessDelegate documentManagerBD = (DocumentManagerBusinessDelegate) Contexts.lookupInStatefulContexts("documentManager");
-
-        if (documentManagerBD == null) {
-            // this is the first time we select the location, create a
-            // DocumentManagerBusinessDelegate instance
-            documentManagerBD = new DocumentManagerBusinessDelegate();
-            conversationContext.set("documentManager", documentManagerBD);
-        }
-        RepositoryLocation repLoc = new RepositoryLocation(
-                repositoryManager.getRepositories().iterator().next().getName());
-
-        documentManager = documentManagerBD.getDocumentManager(repLoc);
-        return documentManager;
     }
 
 }

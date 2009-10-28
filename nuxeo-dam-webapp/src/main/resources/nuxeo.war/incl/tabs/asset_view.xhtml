@@ -8,7 +8,22 @@
      xmlns:nxl="http://nuxeo.org/nxforms/layout"
      xmlns:nxd="http://nuxeo.org/nxweb/document">
 
+  <script language="javascript">
+    function popupAnnotation(url) {
+      width = 1000;
+      height = 700;
+      top = (window.screen.height - height) / 2;
+      left = (window.screen.width - width) / 2;
+      popup = window.open(url, '_annotationPopup', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, top='+top+', left='+left+', width='+width+', height='+height);
+      if(!popup.opener) {
+        popup.opener = window;
+      }
+      return false;
+    }
+  </script>
+
   <div class="infoTabContent">
+    <a href="#" onclick="return popupAnnotation('#{annotationsActions.annotationsURL}')">
     <nxh:graphicImage id="theImage"
                       url="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Medium:content', documentActions.currentSelection.dublincore.modified)}?conversationId=#{conversation.id}"
                       style="max-height: 350px;"
@@ -26,7 +41,7 @@
                       rendered="#{!documentActions.currentSelection.hasSchema('picture') and 
                                   !documentActions.currentSelection.hasSchema('video') and
                                   !documentActions.currentSelection.hasSchema('audio') }"/>
-
+    </a>
     <a4j:form id="assetView">
       <div class="documentPreviewTitle">
         <h4>
