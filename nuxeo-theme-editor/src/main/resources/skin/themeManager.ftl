@@ -1,3 +1,5 @@
+<#setting url_escaping_charset='UTF-8'>
+
 <div>
 <#assign themeManager=This.getThemeManager()>
 <#assign themes=themeManager.getThemeDescriptors()>
@@ -72,43 +74,43 @@
       </#if>
       
       <p class="nxthemesEditor">
-        <button <#if !theme.saveable>disabled="disabled"</#if> onclick="NXThemesEditor.saveTheme('${theme.src}', 2)">
+        <button <#if !theme.saveable>disabled="disabled"</#if> onclick="NXThemesEditor.saveTheme('${theme.src?js_string}', 2)">
           <img src="${skinPath}/img/theme-save.png" width="16" height="16" />
           Save
         </button>
         
         <#if theme.exportable>  
-          <button onclick="window.location='${basePath}/nxthemes-editor/xml_export?src=${theme.src}&amp;download=1&amp;indent=2'">
+          <button onclick="window.location='${basePath}/nxthemes-editor/xml_export?src=${theme.src?url}&amp;download=1&amp;indent=2'">
             <img src="${skinPath}/img/theme-download.png" width="16" height="16" />
             Download
           </button>
-          <button onclick="window.location='${basePath}/nxthemes-editor/xml_export?src=${theme.src}'">
+          <button onclick="window.location='${basePath}/nxthemes-editor/xml_export?src=${theme.src?url}'">
             <img src="${skinPath}/img/theme-code.png" width="16" height="16" />
             Show XML
           </button>
         </#if>
       
         <#if theme.repairable>
-          <button onclick="NXThemesEditor.repairTheme('${theme.src}')">
+          <button onclick="NXThemesEditor.repairTheme('${theme.src?js_string}')">
             <img src="${skinPath}/img/cleanup-16.png" width="16" height="16" />
             Clean up
           </button>
         </#if>
         
         <#if theme.reloadable>
-          <button onclick="NXThemesEditor.loadTheme('${theme.src}')">
+          <button onclick="NXThemesEditor.loadTheme('${theme.src?js_string}')">
           <img src="${skinPath}/img/theme-reload.png" width="16" height="16" />
           Restore from file
           </button>
         </#if>
         <#if theme.loadable>
-          <button onclick="NXThemesEditor.loadTheme('${theme.src}')">
+          <button onclick="NXThemesEditor.loadTheme('${theme.src?js_string}')">
           <img src="${skinPath}/img/theme-load.png" width="16" height="16" />          
           Load from file
           </button>
         </#if>
         
-        <button <#if !theme.custom>disabled="disabled"</#if> onclick="NXThemesEditor.deleteTheme('${theme.src}')">
+        <button <#if !theme.custom>disabled="disabled"</#if> onclick="NXThemesEditor.deleteTheme('${theme.src?js_string}')">
           <img src="${skinPath}/img/theme-delete.png" width="16" height="16" />          
           Delete theme
         </button>
