@@ -35,6 +35,8 @@ public class MetadataConstants {
     public static final String META_ORIGINALDATE = "originalDate";
     public static final String META_HRESOLUTION = "horizontalResolution";
     public static final String META_VRESOLUTION = "verticalResolution";
+    public static final String META_PIXEL_XDIMENSION = "pixelXDimension";
+    public static final String META_PIXEL_YDIMENSION = "pixelYDimension";
     public static final String META_COPYRIGHT = "copyright";
     public static final String META_EXPOSURE = "exposure";
     public static final String META_ISOSPEED = "ISOspeed";
@@ -42,6 +44,8 @@ public class MetadataConstants {
     public static final String META_COLORSPACE = "colorSpace";
     public static final String META_WHITEBALANCE = "whiteBalance";
     public static final String META_ICCPROFILE = "iccProfile";
+    public static final String META_ORIENTATION = "orientation";
+    public static final String META_FNUMBER = "fNumber";
     /* IPTC */
     public static final String META_BYLINE = "byLine";
     public static final String META_CAPTION = "caption";
