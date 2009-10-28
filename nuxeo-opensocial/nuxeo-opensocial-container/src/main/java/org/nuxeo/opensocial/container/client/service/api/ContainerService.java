@@ -10,6 +10,11 @@ import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+/**
+ * ContainerService
+ *
+ * @author Guillaume Cusnieux
+ */
 @RemoteServiceRelativePath("gwtcontainer")
 public interface ContainerService extends RemoteService {
 
@@ -31,8 +36,8 @@ public interface ContainerService extends RemoteService {
    * @return
    * @throws ContainerServiceException
    */
-  Container saveLayout(Map<String, String> gwtParams,
-      String layout) throws ContainerServiceException;
+  Container saveLayout(Map<String, String> gwtParams, String layout)
+      throws ContainerServiceException;
 
   /**
    * Save preferences of gadget with form parameter

@@ -10,7 +10,7 @@ import com.google.gwt.core.client.JsArray;
 /**
  * JSNI implementation of opensocial container
  *
- * @author 10044826
+ * @author Guillaume Cusnieux
  */
 public class GadgetService {
 

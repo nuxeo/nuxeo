@@ -32,7 +32,7 @@ import com.gwtext.client.widgets.form.TextField;
 
 /**
  *
- * @author 10044826
+ * @author Guillaume Cusnieux
  *
  */
 public class GadgetForm {

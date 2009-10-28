@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
@@ -71,17 +70,10 @@ public class GadgetServiceImpl extends DefaultComponent implements
 
   }
 
-  public GadgetDeclaration getGadget(String gadgetName) {
-    String name = getRealName(gadgetName);
-    if (gadgets.containsKey(name)) {
+  public GadgetDeclaration getGadget(String name) {
+    if (gadgets.containsKey(name))
       return gadgets.get(name);
-    }
     return null;
-  }
-
-  private String getRealName(String name) {
-    StringTokenizer st = new StringTokenizer(name, ".");
-    return st.nextToken();
   }
 
   public InputStream getGadgetResource(String gadgetName, String resourcePath)

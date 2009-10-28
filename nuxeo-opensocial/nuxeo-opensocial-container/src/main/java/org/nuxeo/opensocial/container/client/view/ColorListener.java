@@ -3,7 +3,11 @@ package org.nuxeo.opensocial.container.client.view;
 import com.gwtext.client.widgets.ColorPalette;
 import com.gwtext.client.widgets.event.ColorPaletteListenerAdapter;
 import com.gwtext.client.widgets.form.Field;
-
+/**
+ * ColorListener
+ *
+ * @author Guillaume Cusnieux
+ */
 public class ColorListener extends ColorPaletteListenerAdapter {
 
   private static final String PREFIX_COLOR = "#";

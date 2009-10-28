@@ -22,7 +22,10 @@ import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.layout.ColumnLayoutData;
 import com.gwtext.client.widgets.portal.Portal;
 import com.gwtext.client.widgets.portal.PortalColumn;
-
+/**
+ *
+ * @author Guillaume Cusnieux
+ */
 public class ContainerPortal extends Portal {
 
   private static final String[] COLS = new String[] { "firstCol", "secondCol",

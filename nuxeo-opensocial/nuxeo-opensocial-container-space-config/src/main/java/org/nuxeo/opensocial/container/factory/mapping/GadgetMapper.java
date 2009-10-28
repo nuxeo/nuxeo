@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,10 +36,11 @@ public class GadgetMapper extends GadgetBean implements Gadget {
   private Integer shindigId;
   private boolean permission;
   private String name;
+  private String spaceName;
 
   /**
    * Constructor for convert GadgetBean to Gadget
-   * 
+   *
    * @param bean
    */
   public GadgetMapper(GadgetBean bean) {
@@ -57,18 +59,19 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     this.viewer = bean.getViewer();
     this.shindigId = bean.getShindigId();
     this.permission = bean.getPermission();
-    this.name = bean.getName();
+    this.name = bean.getSpaceName();
   }
 
   /**
    * Constructor for convert Gadget to GadgetBean
-   * 
+   *
    * @param bean
    */
   public GadgetMapper(Gadget gadget, String viewer, int shindigId,
       boolean permission) {
     this.title = gadget.getTitle();
-    this.name = gadget.getName();
+    this.spaceName = gadget.getName();
+    this.name = getRealName(gadget.getName());
     this.collapsed = gadget.isCollapsed();
     this.ref = gadget.getId();
     this.placeID = gadget.getPlaceID();
@@ -147,6 +150,11 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     return this.collapsed;
   }
 
+  private String getRealName(String name) {
+    StringTokenizer st = new StringTokenizer(name, ".");
+    return st.nextToken();
+  }
+
   public void setPreferences(Map<String, String> updatePrefs) throws Exception {
     preferences = updatePrefs;
     for (PreferencesBean p : userPrefs) {
@@ -196,7 +204,7 @@ public class GadgetMapper extends GadgetBean implements Gadget {
   public void createGadgetBean() {
     this.userPrefs = createUserPrefs();
     bean = new GadgetBean(shindigId, ref, title, viewer, userPrefs, permission,
-        collapsed, name);
+        collapsed, name, spaceName);
     this.renderUrl = createRenderUrl();
     bean.setRenderUrl(renderUrl);
     bean.setPosition(this.position);
@@ -205,7 +213,7 @@ public class GadgetMapper extends GadgetBean implements Gadget {
   /**
    * Use this method for get GadgetBean in GwtContainer because GadgetMapper
    * isn't serializabel
-   * 
+   *
    * @return GadgetBean
    */
   public GadgetBean getGadgetBean() {

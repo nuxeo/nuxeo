@@ -7,7 +7,9 @@ import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
+/**
+* @author Guillaume Cusnieux
+*/
 public class SavePreferenceAsyncCallback<T> implements
     AsyncCallback<GadgetBean> {
 

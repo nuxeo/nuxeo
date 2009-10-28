@@ -8,7 +8,9 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Frame;
 import com.gwtext.client.widgets.layout.FitLayout;
 import com.gwtext.client.widgets.portal.Portlet;
-
+/**
+* @author Guillaume Cusnieux
+*/
 public class GadgetPortlet extends Portlet {
 
   static final String GADGET = "gadget-";

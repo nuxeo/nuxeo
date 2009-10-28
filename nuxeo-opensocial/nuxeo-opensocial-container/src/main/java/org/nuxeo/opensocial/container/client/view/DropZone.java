@@ -16,27 +16,29 @@ import com.gwtext.client.core.EventObject;
 import com.gwtext.client.core.ExtElement;
 import com.gwtext.client.dd.DragData;
 import com.gwtext.client.dd.DragSource;
-import com.gwtext.client.dd.DropTarget;
 import com.gwtext.client.dd.DropTargetConfig;
 import com.gwtext.client.dd.ScrollManager;
 import com.gwtext.client.widgets.Component;
 import com.gwtext.client.widgets.Container;
 import com.gwtext.client.widgets.portal.PanelProxy;
 import com.gwtext.client.widgets.portal.PortalColumn;
+import com.gwtext.client.widgets.portal.PortalDropZone;
 
 /**
  * DropZone serve for catch drag and drop event and call container service for
  * save
  *
- * @author 10044826
+ * @author Guillaume Cusnieux
  *
  */
-public class DropZone extends DropTarget {
+public class DropZone extends PortalDropZone {
 
   private static final String DEFAULT = "default";
-  private ContainerPortal portal;
+  private static final String ZONE_CLASS = "x-column-possible";
+  private static final int GHOST_HEIGHT = 100;
+  private static final int GHOST_WIDTH = 140;
+  private static ContainerPortal portal;
   private int lastCW = -1;
-  // private int lastPos = -1;
   private PosGrid[] grid;
 
   private Container lastPosC;
@@ -44,12 +46,106 @@ public class DropZone extends DropTarget {
   private int[] scrollPos;
 
   public DropZone(ContainerPortal portal, DropTargetConfig config) {
-    super(portal.getBodyWrap()
-        .getDOM(), config);
+    super(portal, config);
     ScrollManager.register(portal.getBody()
         .getDOM());
-    this.portal = portal;
+    DropZone.portal = portal;
+    overrideDragDrop(GHOST_WIDTH, GHOST_HEIGHT, ZONE_CLASS);
   }
+
+  private static native void overrideDragDrop(int defaultX, int defaultY,
+      String className)
+  /*-{
+    var _W;
+    $wnd.Ext.override($wnd.Ext.Panel.DD, {
+      startDrag : function(x,y){
+        var g = this.proxy.getGhost();
+        var h = g.getWidth();
+
+        var X = x - 70;
+        g.setX(X);
+        g.setWidth(140);
+
+        if(g.getHeight() > 50)
+          g.setHeight(100);
+
+        $wnd.Ext.select("div.x-column").addClass("x-column-possible");
+        g.select("div.x-tool").setStyle("display","none");
+      },
+
+      alignElWithMouse: function(el, iPageX, iPageY) {
+        var fly = el.dom ? el : $wnd.Ext.fly(el, '_dd');
+        var X = iPageX - 70;
+        var Y = iPageY - 10;
+        fly.setLeftTop(X, Y);
+        this.cachePosition(X, Y);
+        this.autoScroll(X, Y, el.offsetHeight, el.offsetWidth);
+        _W = this.proxy.proxy.getWidth();
+        return this.getTargetCoord(X, Y);
+      },
+
+      endDrag : function(e){
+        this.proxy.hide();
+        this.panel.saveState();
+         $wnd.Ext.select("div.x-column").removeClass("x-column-possible");
+        $wnd.Ext.select("div.x-tool").setStyle("display","block");
+      }
+    });
+
+    $wnd.Ext.override($wnd.Ext.dd.PanelProxy, {
+      hide : function(){
+        if(this.ghost) {
+          var el = this.panel.el;
+          el.setStyle("margin","auto");
+          el.setStyle("margin-bottom","10px");
+          el.dom.style.display = '';
+          el.removeClass("x-portlet");
+          el.setWidth(this.ghost.getWidth());
+          var w = el.getWidth();
+          if(this.proxy) {
+            this.proxy.remove();
+            delete this.proxy;
+          }
+          el.setWidth(_W,true);
+          setTimeout(function() {
+            el.addClass("x-portlet");
+          }, 1000);
+
+          this.ghost.remove();
+          delete this.ghost;
+        }
+      }
+    });
+    
+    $wnd.Ext.override($wnd.Ext.dd.DragSource, {
+      onDragDrop : function(e, id){
+        var target = this.cachedTarget || $wnd.Ext.dd.DragDropMgr.getDDById(id);
+        if(this.beforeDragDrop(target, e, id) !== false){
+          if(target.isNotifyTarget){
+            if(target.notifyDrop(this, e, this.dragData))
+              this.onValidDrop(target, e, id);
+            else
+              this.onValidDrop(target, e, id);
+            }else
+              this.onValidDrop(target, e, id);
+            if(this.afterDragDrop)
+              this.afterDragDrop(target, e, id);
+          }
+        delete this.cachedTarget;
+      },
+      
+      onDragOut : function(e, id){
+        var target = this.cachedTarget || $wnd.Ext.dd.DragDropMgr.getDDById(id);
+        target.notifyOut(this, e, this.dragData);      
+      },
+      
+      onInvalidDrop : function(target, e, id){
+        this.onDragDrop(e,id);
+      }
+    
+    });
+    
+  }-*/;
 
   @Override
   public String notifyOver(DragSource source, EventObject e, DragData data) {
@@ -57,9 +153,9 @@ public class DropZone extends DropTarget {
     PanelProxy proxy = new PanelProxy(source.getProxy()
         .getJsObj());
 
-    if (grid == null)
+    if (grid == null) {
       grid = getGrid();
-
+    }
     int cw = portal.getBody()
         .getClientWidth();
     if (lastCW == -1) {
@@ -123,7 +219,6 @@ public class DropZone extends DropTarget {
   @Override
   public String notifyEnter(DragSource source, EventObject e, DragData data) {
     JsLibrary.showGwtContainerMask();
-    JsLibrary.reduceGhostPanel();
     return super.notifyEnter(source, e, data);
   }
 
@@ -131,6 +226,7 @@ public class DropZone extends DropTarget {
   public void notifyOut(DragSource source, EventObject e, DragData data) {
     this.grid = null;
     JsLibrary.hideGwtContainerMask();
+    this.notifyEnter(source, e, data);
   }
 
   @Override
@@ -142,22 +238,22 @@ public class DropZone extends DropTarget {
         .getPlaceID());
     PortalColumn dropCol = portal.getPortalColumn(dropPosition.getPlaceID());
     saveDropZone(bean, dropPosition, dragCol, dropCol);
-    JsLibrary.removePossibleColumn();
 
     grid = null;
-    if (lastPosC == null)
-      return false;
 
+    if (lastPosC == null) {
+      return false;
+    }
     PanelProxy proxy = new PanelProxy(source.getProxy()
         .getJsObj());
 
     proxy.getProxy()
         .remove();
-    lastPosC.remove(gp.getId());
-    lastPosC.insert(dropPosition.getPosition(), gp);
-    JsLibrary.hideAndShowGadget(gp.getId());
-    lastPosC.doLayout();
 
+    lastPosC.remove(gp.getId());
+    lastPosC.insert(bean.getGadgetPosition()
+        .getPosition(), gp);
+    lastPosC.doLayout();
     final int scrollTop = scrollPos[0];
     DeferredCommand.addCommand(new Command() {
       public void execute() {
@@ -170,6 +266,7 @@ public class DropZone extends DropTarget {
     lastPosC = null;
 
     JsLibrary.hideGwtContainerMask();
+    JsLibrary.log("insert ... end");
     return true;
   }
 
@@ -202,8 +299,8 @@ public class DropZone extends DropTarget {
     return posGrid;
   }
 
-  private void saveDropZone(GadgetBean bean, GadgetPosition dropPosition,
-      PortalColumn dragCol, PortalColumn dropCol) {
+  private static void saveDropZone(GadgetBean bean,
+      GadgetPosition dropPosition, PortalColumn dragCol, PortalColumn dropCol) {
     bean.setPosition(dropPosition);
     ArrayList<GadgetBean> beans = getOrderingAndUpdatingBeans(dragCol, bean);
     beans.addAll(getOrderingAndUpdatingBeans(dropCol, bean));
@@ -213,8 +310,8 @@ public class DropZone extends DropTarget {
             new SaveGadgetAsyncCallback());
   }
 
-  private ArrayList<GadgetBean> getOrderingAndUpdatingBeans(PortalColumn col,
-      GadgetBean bean) {
+  private static ArrayList<GadgetBean> getOrderingAndUpdatingBeans(
+      PortalColumn col, GadgetBean bean) {
     ArrayList<GadgetBean> gadgets = new ArrayList<GadgetBean>();
     NodeList<Node> childs = col.getElement()
         .getChildNodes();
@@ -234,4 +331,5 @@ public class DropZone extends DropTarget {
     }
     return gadgets;
   }
+
 }

@@ -4,6 +4,11 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/**
+ * GadgetBean
+ *
+ * @author Guillaume Cusnieux
+ */
 public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
 
   private static final long serialVersionUID = 1L;
@@ -17,6 +22,7 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
   private GadgetPosition position;
   private Boolean collapsed;
   private String name;
+  private String spaceName;
 
   /**
    * Default construcor (Specification of Gwt)
@@ -30,7 +36,7 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
 
   public GadgetBean(Integer shindigId, String ref, String title, String viewer,
       List<PreferencesBean> userPrefs, Boolean permission, Boolean collapsed,
-      String name) {
+      String name, String spaceName) {
     this.shindigId = shindigId;
     this.ref = ref;
     this.title = title;
@@ -39,6 +45,7 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
     this.permission = permission;
     this.collapsed = collapsed;
     this.name = name;
+    this.spaceName = spaceName;
   }
 
   public void setRenderUrl(String renderUrl) {
@@ -49,6 +56,10 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
     return title;
   }
 
+  public String getSpaceName() {
+    return spaceName;
+  }
+  
   public String getName() {
     return name;
   }

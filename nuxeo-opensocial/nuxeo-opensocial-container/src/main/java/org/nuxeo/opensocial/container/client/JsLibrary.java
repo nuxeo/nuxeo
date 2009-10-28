@@ -3,7 +3,7 @@ package org.nuxeo.opensocial.container.client;
 /**
  * JSNI tools for call JS function in parent application
  *
- * @author 10044826
+ * @author Guillaume Cusnieux
  */
 public class JsLibrary {
 

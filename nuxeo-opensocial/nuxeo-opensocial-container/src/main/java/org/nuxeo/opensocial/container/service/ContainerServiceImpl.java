@@ -17,7 +17,9 @@ import org.nuxeo.opensocial.container.factory.api.GadgetManager;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-
+/**
+* @author Guillaume Cusnieux
+*/
 public class ContainerServiceImpl extends RemoteServiceServlet implements
     ContainerService {
 

@@ -8,7 +8,9 @@ import com.gwtext.client.core.Function;
 import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.MessageBoxConfig;
 import com.gwtext.client.widgets.Tool;
-
+/**
+* @author Guillaume Cusnieux
+*/
 public class GadgetTools {
 
   private String ref;
@@ -51,7 +53,7 @@ public class GadgetTools {
                             new AsyncCallback<GadgetBean>() {
                               public void onFailure(Throwable arg0) {
                                 ContainerPortal.showErrorMessage("Erreur",
-                                    "La suppression du gadget a échouée");
+                                    "La suppression du gadget a ï¿½chouï¿½e");
                               }
 
                               public void onSuccess(GadgetBean gadget) {

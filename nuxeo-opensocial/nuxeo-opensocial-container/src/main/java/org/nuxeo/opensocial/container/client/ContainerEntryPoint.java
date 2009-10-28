@@ -22,6 +22,7 @@ import com.gwtext.client.widgets.layout.FitLayout;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
+ * @author Guillaume Cusnieux
  */
 public class ContainerEntryPoint implements EntryPoint {
 

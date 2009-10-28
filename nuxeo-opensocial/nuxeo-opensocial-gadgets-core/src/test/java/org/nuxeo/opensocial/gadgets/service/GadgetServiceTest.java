@@ -53,17 +53,6 @@ public class GadgetServiceTest {
     assertEquals("hello-gadget", gadget.getDirectory());
     assertEquals("testCategory", gadget.getCategory());
   }
-  
-  @Test
-  public void iCanGetTheHelloGadgetExtensionBis() throws Exception {
-    GadgetDeclaration gadget = service.getGadget("hello.12354646464");
-    assertNotNull(gadget);
-
-    assertEquals("hello", gadget.getName());
-    assertEquals("/hello/hello", gadget.getMountPoint());
-    assertEquals("hello-gadget", gadget.getDirectory());
-    assertEquals("testCategory", gadget.getCategory());
-  }
 
   @Test
   public void iCanGetTheGadgetDef() throws Exception {

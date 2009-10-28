@@ -9,8 +9,7 @@ import com.gwtext.client.widgets.event.PanelListenerAdapter;
 /**
  * Portlet Listener serve for catch portlet event's and save collapsed
  *
- * @author 10044826
- *
+ * @author Guillaume Cusnieux
  */
 public class PortletListener extends PanelListenerAdapter {
 
