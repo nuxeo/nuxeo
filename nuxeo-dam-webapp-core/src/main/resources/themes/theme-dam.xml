@@ -443,6 +443,9 @@
       <selector path=".deliveryBlock .dataInput .button">
         <width>auto</width>
       </selector>
+      <selector path=".deliveryBlock .dataInput input">
+        <cursor>default</cursor>
+      </selector>
       <selector path=".waiterBlock div">
         <background-color>white</background-color>
         <border>1px solid #9f9f9f</border>
