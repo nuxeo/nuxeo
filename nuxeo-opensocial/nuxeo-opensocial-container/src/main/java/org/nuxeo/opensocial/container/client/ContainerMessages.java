@@ -10,4 +10,5 @@ import com.google.gwt.i18n.client.Messages;
 public interface ContainerMessages extends Messages {
   String preferencesGadget(String gadgetTitle);
   String getLabel(String fieldLabel);
+  String askedDeleteGadget(String title);
 }

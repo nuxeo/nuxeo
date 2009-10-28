@@ -83,14 +83,18 @@ public class GadgetManagerImpl implements GadgetManager {
       GadgetMapper gadgetMapper = new GadgetMapper(gadget);
       if (updatePrefs != null) {
         gadgetMapper.setPreferences(updatePrefs);
-        if (updatePrefs.containsKey(TITLE_KEY_PREF)) 
+        if (updatePrefs.containsKey(TITLE_KEY_PREF)) {
+          //TODO: encode title
           gadgetMapper.setTitle(updatePrefs.get(TITLE_KEY_PREF));
+        }
       }
+      gadgetMapper.setName(gadget.getSpaceName());
       Framework.getService(SpaceManager.class)
           .updateGadget(gadgetMapper, getCoreSession(gwtParams));
 
     } catch (Exception e) {
-      log.error("GadgetManagerUImlp - savePreferences : " + e);
+      log.error("GadgetManagerUImlp - savePreferences : "
+          + e.fillInStackTrace());
     }
 
   }

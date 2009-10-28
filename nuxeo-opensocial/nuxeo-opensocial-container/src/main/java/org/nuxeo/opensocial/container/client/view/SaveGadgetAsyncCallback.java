@@ -4,6 +4,7 @@ import org.nuxeo.opensocial.container.client.ContainerEntryPoint;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
 /**
 * @author Guillaume Cusnieux
 */

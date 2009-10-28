@@ -1,34 +1,69 @@
 package org.nuxeo.opensocial.container.client.view;
 
+import org.nuxeo.opensocial.container.client.ContainerConstants;
 import org.nuxeo.opensocial.container.client.ContainerEntryPoint;
+import org.nuxeo.opensocial.container.client.ContainerMessages;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.gwtext.client.core.Function;
 import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.MessageBoxConfig;
 import com.gwtext.client.widgets.Tool;
+import com.gwtext.client.widgets.portal.PortalColumn;
+
 /**
 * @author Guillaume Cusnieux
 */
 public class GadgetTools {
 
-  private String ref;
+  private static final String BTN_YES_ID = "yes";
+  private final static ContainerConstants CST = GWT.create(ContainerConstants.class);
+  private final static ContainerMessages MSG = GWT.create(ContainerMessages.class);
   private GadgetForm form;
+  private GadgetPortlet portlet;
 
-  public GadgetTools(String ref) {
-    this.ref = ref;
+  public GadgetTools(GadgetPortlet portlet) {
+    this.portlet = portlet;
   }
 
-  public GadgetForm getGadgetForm() {
-    return form;
+  public Tool[] getButtons() {
+    if (portlet.getView()
+        .equals(GadgetPortlet.CANVAS_VIEW)) {
+      return getCanvasButtons();
+    } else {
+      return getDefaultButtons();
+    }
   }
 
-  public Tool[] getButtons(Boolean permission) {
-    if (permission) {
+  private Tool[] getCanvasButtons() {
+    final Tool min = new Tool(Tool.MINIMIZE, new Function() {
+      public void execute() {
+        ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
+        PortalColumn maximizedCol = portal.getMaximizedCol();
+        maximizedCol.remove(portlet.getId(), true);
+        showManager();
+        for (PortalColumn col : portal.getPortalColumns()) {
+          col.show();
+          col.doLayout();
+        }
+        ;
+        maximizedCol.hide();
+        maximizedCol.doLayout();
+      }
+
+    });
+    return new Tool[] { min };
+
+  }
+
+  private Tool[] getDefaultButtons() {
+    final GadgetBean gadget = portlet.getGadgetBean();
+    if (gadget.getPermission()) {
       Tool gear = new Tool(Tool.GEAR, new Function() {
         public void execute() {
-          form = new GadgetForm(ref);
+          form = new GadgetForm(portlet);
           form.showForm();
         }
       });
@@ -37,28 +72,24 @@ public class GadgetTools {
         public void execute() {
           MessageBox.show(new MessageBoxConfig() {
             {
-              final GadgetBean gadget = ContainerEntryPoint.getContainerPortal()
-                  .getGadgetPortlet(ref)
-                  .getGadgetBean();
-
-              setTitle("Suppression de gadget");
-              setMsg("Voulez-vous vraiment supprimer le gadget '"
-                  + gadget.getTitle() + "' ?");
+              setTitle(CST.deleteGadget());
+              setMsg(MSG.askedDeleteGadget(gadget.getTitle()));
               setButtons(MessageBox.YESNO);
               setCallback(new MessageBox.PromptCallback() {
                 public void execute(String btnID, String text) {
-                  if ("yes".equals(btnID)) {
+                  if (BTN_YES_ID.equals(btnID)) {
                     ContainerEntryPoint.getService()
-                        .removeGadget(gadget, ContainerEntryPoint.getGwtParams(),
+                        .removeGadget(gadget,
+                            ContainerEntryPoint.getGwtParams(),
                             new AsyncCallback<GadgetBean>() {
                               public void onFailure(Throwable arg0) {
-                                ContainerPortal.showErrorMessage("Erreur",
-                                    "La suppression du gadget a �chou�e");
+                                ContainerPortal.showErrorMessage(CST.error(),
+                                    CST.deleteError());
                               }
 
                               public void onSuccess(GadgetBean gadget) {
                                 ContainerEntryPoint.getContainerPortal()
-                                    .removeGadgetPortlet(gadget);
+                                    .removeGadgetPortlet(portlet.getId());
                               }
                             });
 
@@ -71,8 +102,49 @@ public class GadgetTools {
         }
       });
 
-      return new Tool[] { gear, close };
+      Tool max = new Tool(Tool.MAXIMIZE, new Function() {
+
+        public void execute() {
+          ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
+          final GadgetBean gadget = portlet.getGadgetBean();
+          PortalColumn maximizedCol = portal.getMaximizedCol();
+          GadgetPortlet canvas = new GadgetPortlet(gadget,
+              GadgetPortlet.CANVAS_VIEW);
+          maximizedCol.add(canvas);
+          hideManager();
+          for (PortalColumn col : portal.getPortalColumns()) {
+            col.doLayout();
+            col.hide();
+          }
+          ;
+          maximizedCol.show();
+          canvas.updateGadgetPortlet(gadget);
+          canvas.doLayout();
+          maximizedCol.doLayout();
+          if (!portal.isCollapsed())
+            canvas.unCollapseGadget();
+        }
+
+      });
+
+      return new Tool[] { max, gear, close };
     }
     return new Tool[] {};
+
   }
+
+  public GadgetForm getGadgetForm() {
+    return form;
+  }
+
+  private static native void hideManager()
+  /*-{
+    $wnd.$(".manager").slideUp("fast");
+    $wnd.$(".getManager").slideUp("fast");
+  }-*/;
+
+  private static native void showManager()
+  /*-{
+   $wnd.$(".getManager").slideDown("fast");
+  }-*/;
 }

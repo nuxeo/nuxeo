@@ -23,4 +23,6 @@ public interface ContainerConstants extends Constants {
   String modifyLayout();
   String appearance();
   String close();
+  String deleteGadget();
+  String deleteError();
 }

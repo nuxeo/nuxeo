@@ -42,7 +42,6 @@ public class GadgetPortlet extends Portlet {
     GadgetService.setRelayRpc(getIframeId(), "");
   }
 
-
   private String getGadgetId() {
     return GADGET_CONTAINER + this.gadget.getRef();
   }
@@ -79,7 +78,6 @@ public class GadgetPortlet extends Portlet {
     return tools;
   }
 
-
   @Override
   protected void afterRender() {
     if (this.gadget.isCollapse())
@@ -88,26 +86,26 @@ public class GadgetPortlet extends Portlet {
     JsLibrary.updateFrameHeight();
   }
 
+  static native void collapse(String id)
+  /*-{
+    var p = $wnd.$("#"+id);
+    $wnd.$(p).addClass("x-panel-collapsed");
+    $wnd.$(p.children()[1]).hide();
+  }-*/;
 
-
-  static native void collapse(String id) /*-{
-     var p = $wnd.$("#"+id);
-     $wnd.$(p).addClass("x-panel-collapsed");
-     $wnd.$(p.children()[1]).hide();
-   }-*/;
-
-  static native void unCollapse(String id, String idFrame, String url) /*-{
-     var p = $wnd.$("#"+id);
-     $wnd.$(p).removeClass("x-panel-collapsed");
-     var f = $wnd.$(p).children()[1];
-     $wnd.$(f).show();
-     if($wnd.$(f).height() < 20) {
-        $wnd.document.getElementById(idFrame).src = "";
-        setTimeout(function(){
-          $wnd.document.getElementById(idFrame).src = url;
-          $wnd.$($wnd.$(p).children(".x-panel-body")).attr("style","overflow-x:auto;overflow-y:auto;");
-        },50);
-     }
-   }-*/;
+  static native void unCollapse(String id, String idFrame, String url)
+  /*-{
+    var p = $wnd.$("#"+id);
+    $wnd.$(p).removeClass("x-panel-collapsed");
+    var f = $wnd.$(p).children()[1];
+    $wnd.$(f).show();
+    if($wnd.$(f).height() < 20) {
+      $wnd.document.getElementById(idFrame).src = "";
+      setTimeout(function(){
+        $wnd.document.getElementById(idFrame).src = url;
+        $wnd.$($wnd.$(p).children(".x-panel-body")).attr("style","overflow-x:auto;overflow-y:auto;");
+      },50);
+    }
+  }-*/;
 
 }

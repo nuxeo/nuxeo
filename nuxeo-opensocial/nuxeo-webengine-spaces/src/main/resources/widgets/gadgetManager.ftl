@@ -1,9 +1,9 @@
 <div>
 <#if nxthemesInfo.model.anonymous == false>
-  <div id="getGadgetManager">
+  <div id="getGadgetManager" class="getManager">
     <a href="#" id="openGadgetManager">Ajouter un gadget</a>
   </div>
-  <div id="gadgetManager" style="display:none;">
+  <div id="gadgetManager" style="display:none;" class="manager">
 
     <div id="closeGadgetManager">
       <a href="#" id="closeLinkGadgetManager">Fermer</a>

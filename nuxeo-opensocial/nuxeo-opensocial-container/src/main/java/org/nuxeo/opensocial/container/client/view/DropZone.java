@@ -10,8 +10,6 @@ import org.nuxeo.opensocial.container.client.bean.GadgetPosition;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.gwtext.client.core.EventObject;
 import com.gwtext.client.core.ExtElement;
 import com.gwtext.client.dd.DragData;
@@ -43,7 +41,6 @@ public class DropZone extends PortalDropZone {
 
   private Container lastPosC;
   private int col;
-  private int[] scrollPos;
 
   public DropZone(ContainerPortal portal, DropTargetConfig config) {
     super(portal, config);
@@ -116,7 +113,7 @@ public class DropZone extends PortalDropZone {
         }
       }
     });
-    
+
     $wnd.Ext.override($wnd.Ext.dd.DragSource, {
       onDragDrop : function(e, id){
         var target = this.cachedTarget || $wnd.Ext.dd.DragDropMgr.getDDById(id);
@@ -133,18 +130,18 @@ public class DropZone extends PortalDropZone {
           }
         delete this.cachedTarget;
       },
-      
+
       onDragOut : function(e, id){
         var target = this.cachedTarget || $wnd.Ext.dd.DragDropMgr.getDDById(id);
-        target.notifyOut(this, e, this.dragData);      
+        target.notifyOut(this, e, this.dragData);
       },
-      
+
       onInvalidDrop : function(target, e, id){
         this.onDragDrop(e,id);
       }
-    
+
     });
-    
+
   }-*/;
 
   @Override
@@ -210,9 +207,6 @@ public class DropZone extends PortalDropZone {
           .getDOM(), null);
     }
 
-    scrollPos = portal.getBody()
-        .getScroll();
-
     return "x-dd-drop-ok";
   }
 
@@ -231,7 +225,7 @@ public class DropZone extends PortalDropZone {
 
   @Override
   public boolean notifyDrop(DragSource source, EventObject e, DragData data) {
-    GadgetPortlet gp = portal.getGadgetPortletById(source.getId());
+    GadgetPortlet gp = portal.getGadgetPortlet(source.getId());
     GadgetPosition dropPosition = portal.getDropPosition();
     GadgetBean bean = gp.getGadgetBean();
     PortalColumn dragCol = portal.getPortalColumn(bean.getGadgetPosition()
@@ -254,19 +248,8 @@ public class DropZone extends PortalDropZone {
     lastPosC.insert(bean.getGadgetPosition()
         .getPosition(), gp);
     lastPosC.doLayout();
-    final int scrollTop = scrollPos[0];
-    DeferredCommand.addCommand(new Command() {
-      public void execute() {
-        if (scrollPos != null)
-          portal.getBody()
-              .setScrollTop(scrollTop);
-        portal.doLayout();
-      }
-    });
     lastPosC = null;
-
     JsLibrary.hideGwtContainerMask();
-    JsLibrary.log("insert ... end");
     return true;
   }
 
@@ -304,7 +287,6 @@ public class DropZone extends PortalDropZone {
     bean.setPosition(dropPosition);
     ArrayList<GadgetBean> beans = getOrderingAndUpdatingBeans(dragCol, bean);
     beans.addAll(getOrderingAndUpdatingBeans(dropCol, bean));
-
     ContainerEntryPoint.getService()
         .saveGadgetPosition(beans, ContainerEntryPoint.getGwtParams(),
             new SaveGadgetAsyncCallback());
@@ -316,8 +298,7 @@ public class DropZone extends PortalDropZone {
     NodeList<Node> childs = col.getElement()
         .getChildNodes();
     for (int i = 0; i < childs.getLength(); i++) {
-      GadgetPortlet p = portal.getGadgetPortletById(Element.as(
-          childs.getItem(i))
+      GadgetPortlet p = portal.getGadgetPortlet(Element.as(childs.getItem(i))
           .getId());
       if (p != null) {
         GadgetBean b = p.getGadgetBean();

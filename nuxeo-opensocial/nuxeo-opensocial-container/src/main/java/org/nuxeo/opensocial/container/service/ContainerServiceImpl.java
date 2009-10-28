@@ -58,11 +58,11 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
   public GadgetBean saveGadgetPreferences(GadgetBean gadget, String form,
       Map<String, String> gwtParams) throws ContainerServiceException {
     try {
-
       Map<String, String> updatePrefs = getParameters(form);
       Framework.getService(FactoryManager.class)
           .getGadgetFactory()
           .savePreferences(gadget, updatePrefs, gwtParams);
+
     } catch (Exception e) {
       log.error("saveGadgetPreferences " + e, e);
       throw new ContainerServiceException(e.getMessage(), e);
@@ -203,7 +203,6 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
       while (st.hasMoreTokens()) {
         value += st.nextToken();
       }
-      log.info("key : " + key + " , value " + value);
       map.put(key, value);
     }
     return map;

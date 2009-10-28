@@ -59,7 +59,7 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
   public String getSpaceName() {
     return spaceName;
   }
-  
+
   public String getName() {
     return name;
   }

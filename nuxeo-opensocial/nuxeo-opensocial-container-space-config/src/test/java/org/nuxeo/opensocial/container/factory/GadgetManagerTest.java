@@ -32,7 +32,6 @@ import org.nuxeo.opensocial.container.component.api.FactoryManager;
 import org.nuxeo.opensocial.container.factory.api.ContainerManager;
 import org.nuxeo.opensocial.container.factory.api.GadgetManager;
 import org.nuxeo.opensocial.container.factory.mapping.GadgetMapper;
-import org.nuxeo.opensocial.container.factory.utils.UrlBuilder;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
 import org.nuxeo.opensocial.service.api.OpenSocialService;

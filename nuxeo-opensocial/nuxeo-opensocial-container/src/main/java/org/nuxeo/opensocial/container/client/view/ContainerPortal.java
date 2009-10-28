@@ -1,6 +1,7 @@
 package org.nuxeo.opensocial.container.client.view;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,16 +23,21 @@ import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.layout.ColumnLayoutData;
 import com.gwtext.client.widgets.portal.Portal;
 import com.gwtext.client.widgets.portal.PortalColumn;
+
 /**
  *
  * @author Guillaume Cusnieux
  */
 public class ContainerPortal extends Portal {
 
+  private static final String PORTAL_CLASS = "containerPortal";
+
   private static final String[] COLS = new String[] { "firstCol", "secondCol",
       "thirdCol", "fourCol" };
 
+  private static final String MAXIMIZED_COL_ID = "maximizedCol";
   private static final String SPACER_CLASS = "x-panel-dd-spacer";
+  private PortalColumn maximizedCol;
 
   private Container container;
   private Map<String, PortalColumn> columns = new HashMap<String, PortalColumn>();
@@ -82,22 +88,19 @@ public class ContainerPortal extends Portal {
     return container;
   }
 
-  public GadgetPortlet getGadgetPortlet(String ref) {
-    if (portlets.containsKey(ref))
-      return portlets.get(ref);
+  public GadgetPortlet getGadgetPortlet(String id) {
+    if (portlets.containsKey(id))
+      return portlets.get(id);
     return null;
   }
 
-  public GadgetPortlet getGadgetPortletById(String id) {
-    return getGadgetPortlet(getRef(id));
-  }
-
-  private String getRef(String id) {
-    return id.substring(GadgetPortlet.GADGET_CONTAINER.length(), id.length());
+  public GadgetPortlet getGadgetPortletByRef(String ref) {
+    String portletId = GadgetPortlet.getIdWithRefAndView(ref, null);
+    return getGadgetPortlet(portletId);
   }
 
   public void buildPortal() {
-    this.addClass("containerPortal");
+    this.addClass(PORTAL_CLASS);
     this.setBorder(false);
     buildLayout();
     panel.add(this);
@@ -124,7 +127,7 @@ public class ContainerPortal extends Portal {
     } else {
       GadgetPortlet gp = new GadgetPortlet(bean);
       col.add(gp);
-      portlets.put(bean.getRef(), gp);
+      portlets.put(gp.getId(), gp);
       col.doLayout();
     }
   }
@@ -161,6 +164,10 @@ public class ContainerPortal extends Portal {
     return null;
   }
 
+  public Collection<PortalColumn> getPortalColumns() {
+    return columns.values();
+  }
+
   public void toggleGadgetsCollapse() {
     for (GadgetPortlet p : portlets.values()) {
       if (!p.isCollapsed()) {
@@ -195,6 +202,12 @@ public class ContainerPortal extends Portal {
       createLayout3Cols();
       break;
     }
+    createMaximizedCol();
+  }
+
+  private void createMaximizedCol() {
+    maximizedCol = createCol(MAXIMIZED_COL_ID, 1.00);
+    maximizedCol.hide();
   }
 
   private void createLayout1Col() {
@@ -233,13 +246,15 @@ public class ContainerPortal extends Portal {
     return panel;
   }
 
-  public void removeGadgetPortlet(GadgetBean gadget) {
-    portlets.remove(gadget.getRef());
+  public void removeGadgetPortlet(String id) {
+    GadgetBean gadget = portlets.get(id)
+        .getGadgetBean();
+    portlets.remove(id);
     GadgetPosition pos = gadget.getGadgetPosition();
     PortalColumn col = columns.get(pos.getPlaceID());
     if (col == null)
       col = columns.get(COLS[0]);
-    col.remove(GadgetPortlet.GADGET_CONTAINER + gadget.getRef(), true);
+    col.remove(id, true);
     col.doLayout();
     loader(1);
   }
@@ -303,4 +318,9 @@ public class ContainerPortal extends Portal {
       this.remove(colToDelete, true);
     }
   }
+
+  public PortalColumn getMaximizedCol() {
+    return maximizedCol;
+  }
+
 }

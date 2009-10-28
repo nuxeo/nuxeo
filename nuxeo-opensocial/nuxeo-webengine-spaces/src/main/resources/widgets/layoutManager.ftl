@@ -1,10 +1,10 @@
 <div>
 <#if nxthemesInfo.model.anonymous == false>
 
-  <div id="getLayoutManager">
+  <div id="getLayoutManager" class="getManager">
     <a href="#" id="openLayoutManager">Modifier l'apparence</a>
   </div>
-  <div id="layoutManager" style="display:none;">
+  <div id="layoutManager" style="display:none;" class="manager">
     <div id="closeLayoutManager">
       <a href="#" id="closeLinkLayoutManager">Fermer</a>
     </div>

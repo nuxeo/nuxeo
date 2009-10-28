@@ -60,7 +60,8 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     this.viewer = bean.getViewer();
     this.shindigId = bean.getShindigId();
     this.permission = bean.getPermission();
-    this.name = bean.getSpaceName();
+    this.name = bean.getName();
+    this.spaceName = bean.getSpaceName();
   }
 
   /**
@@ -99,6 +100,11 @@ public class GadgetMapper extends GadgetBean implements Gadget {
   @Override
   public Integer getShindigId() {
     return shindigId;
+  }
+  
+  @Override
+  public String getTitle() {
+    return title;
   }
 
   @Override
@@ -171,7 +177,6 @@ public class GadgetMapper extends GadgetBean implements Gadget {
         p.setValue(val);
       }
     }
-    log.info("set render url : " + UrlBuilder.buildShindigUrl(this));
     this.bean.setRenderUrl(UrlBuilder.buildShindigUrl(this));
     this.bean.setUserPrefs(userPrefs);
   }
@@ -240,6 +245,10 @@ public class GadgetMapper extends GadgetBean implements Gadget {
   public void setTitle(String title) {
     super.setTitle(title);
     this.bean.setTitle(title);
+  }
+
+  public void setName(String name) {
+    this.name = spaceName;
   }
 
 }
