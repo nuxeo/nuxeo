@@ -144,6 +144,7 @@
       <artifact group="org.apache" name="xmlbeans" />
       <artifact group="com.sun.xml" name="relaxngDatatype" />
       <artifact group="com.sun.xml" name="xsom" />
+      <artifact group="com.google.gwt" name="gwt-servlet" />
     </artifacts>
   </artifactSet>
 
