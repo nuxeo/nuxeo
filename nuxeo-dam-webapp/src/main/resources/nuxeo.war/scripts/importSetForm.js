@@ -20,3 +20,8 @@ function initImportSetForm() {
   //alert('Initialize ImportSet Form');
   document.getElementById('importset_form:importSetFormOk').disabled = true;
 }
+
+function hideWaiter() {
+  document.getElementById('importSetFormPanelDiv').style.zIndex=1; 
+  document.getElementById('importsetCreationWaiter').style.display='none';
+}

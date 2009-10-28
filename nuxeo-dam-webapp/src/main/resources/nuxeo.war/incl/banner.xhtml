@@ -25,11 +25,12 @@
     </rich:modalPanel>
 
     <h:form>
+    <a4j:region>
       <ul>
         <li>
-          <h:outputLink value="javascript:Richfaces.showModalPanel('importSetFormPanel');" id="importset_creation_button">
+          <a4j:commandLink action="#{importActions.invalidateImportContext}" onclick="javascript:Richfaces.showModalPanel('importSetFormPanel');" id="importset_creation_button" reRender="importSetPanel">
             <h:outputText class="importButton" value="${messages['label.action.createImportSet']}"/>
-          </h:outputLink>
+          </a4j:commandLink>
         </li>
         <li>
           <h:outputLink id="settings_button" action="#{documentActions.logout}">
@@ -51,6 +52,7 @@
         </li>
       </ul>
       <div style="clear:both;"></div>
+    </a4j:region>
     </h:form>
     
     <ui:include src="/incl/waiter.xhtml"/>

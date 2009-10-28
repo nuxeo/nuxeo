@@ -8,7 +8,8 @@
 
   <h3><h:outputText value="${messages['label.importset.title.select.folder']}" /></h3>
 
-  <a4j:region renderRegionOnly="true">
+  <a4j:region>
+  <a4j:outputPanel id="importSetPanel">
   <rich:fileUpload id="fileUploadForm" fileUploadListener="#{importActions.uploadListener}"
     maxFilesQuantity="1" immediateUpload="true"
     onuploadcomplete="fileUploadComplete();"
@@ -25,7 +26,7 @@
       <h:outputText value="{_KB}KB from {KB}KB uploaded --- {mm}:{ss}" />
     </f:facet>
   </rich:fileUpload>
-  </a4j:region>
+  
   
   <h3><h:outputText value="${messages['label.importset.title.select.metadatas']}" /></h3>
 
@@ -37,8 +38,9 @@
       <a4j:commandButton id="importSetFormOk" styleClass="button"
         value="#{messages['command.create']}" action="#{importActions.createImportSet}"
         onclick="processInProgress()"
-        oncomplete="processFinished()"
-        reRender="filterResultTable, importset_form, fileUploadForm"/>
+        data="#{facesContext.maximumSeverity.ordinal ge 2}"
+        oncomplete="if (data) { hideWaiter() } else { processFinished() };"
+        reRender="filterResultTable, importset_form"/>
 
       <a4j:commandButton styleClass="button"
         value="#{messages['command.cancel']}" action="#{importActions.cancel}"
@@ -47,5 +49,6 @@
         immediate="true"/>
     </p>
   </a4j:form>
-
+  </a4j:outputPanel>
+  </a4j:region>
 </div>
