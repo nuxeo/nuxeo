@@ -129,8 +129,7 @@ The project layout is as follows:
 
 - nuxeo-dam-test
 
-  TestNG wrappers for runtime test case. Might move back to NXP if we decide to
-  switch the unittest suite to JUnit4 instead.
+  JUnit4 wrappers for runtime test case.
 
 
 Continous integration
@@ -143,9 +142,9 @@ The automated build / selenium test reports are hosted there:
 
 Hudson also publishes nightly builds there:
 
-Jboss distribution: 
+Jboss distribution:
   http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots/org/nuxeo/dam/distribution/nuxeo-dam-distribution-jboss/1.0-SNAPSHOT/
-  
+
 Jetty distribution:
   http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots/org/nuxeo/dam/distribution/nuxeo-dam-distribution-jetty/1.0-SNAPSHOT/
 
@@ -164,7 +163,7 @@ We reuse the document types defined in a standard Nuxeo, but types are overridde
 
 2 new document types are defined for DAM:
 - ImportSetRoot: the root folder where the ImportSets are stored. Extends Folder type.
-- ImportSet: extends Folder type, contains the assets related to a given import. 
+- ImportSet: extends Folder type, contains the assets related to a given import.
 One ImportSet is created for each import.
 
 
@@ -176,7 +175,7 @@ Physical document hierarchy layouting
 
 As stated previously, an ImportSet document is created for each import, regardless of whether the file being imported is a
 composite file (eg. a zip file) or a single file (eg. a single jpg image).
- 
+
 They are all stored in the same ImportSetRoot: /default-domain/import-sets in the repository.
 
 See the accompanying document: import.txt for a full example.
@@ -209,8 +208,8 @@ we can set permissions on the folders (required by potential DAM client)
 Import process
 --------------
 
-2 new FileManager plugins are contributed by DAM, one to handle Office Files documents and one to handle ZIP files. 
-The ZIP plugin recursively import all documents contained in the archive file. The hierarchy of documents from 
+2 new FileManager plugins are contributed by DAM, one to handle Office Files documents and one to handle ZIP files.
+The ZIP plugin recursively import all documents contained in the archive file. The hierarchy of documents from
 the archive is maintained during the import.
 
 - the user chose a ZIP or a file to import
@@ -251,10 +250,10 @@ Thumbnails generation
 For our Picture documents, the imaging module only generate the 3 default views: Original, Medium (~540px), and Thumbnail.
 We can't use the default mechanism provided by the imaging module to create new views because
 our Picutures documents aren't stored in a PictureBook document.
-For DAM, we will need to have more generated views: at least 3 sizes of thumbnails for the content view, 
+For DAM, we will need to have more generated views: at least 3 sizes of thumbnails for the content view,
 a different thumbnail for the list view, different sizes (?) for the preview.
   => enhance the imaging module to be able to generate more views without using a PictureBook (new extension point?)
-  
+
 Thumbnails sizes to be defined:
 - Default size for the preview
 - the 3 different sizes for the thumbnails view
@@ -268,23 +267,23 @@ We will need to handle multiple preview for a same Picture document:
  - the annotation preview which should take the original size
  - maybe we want the user to chose between different preview size (?)
 
-For now, we can make a PreviewAdapterFactory for a given document type that will set the (only) blob to preview when asking for /default/, 
+For now, we can make a PreviewAdapterFactory for a given document type that will set the (only) blob to preview when asking for /default/,
 or we can set in the preview URL the xpath of the blob we want to preview which end up with URLs like:
  restAPI/preview/default/9ef9fdec-698b-4e8e-a20d-533efe825a6f/file:file/content/
 
 Enhancing the preview extension points can allow to bind a "nicer name" to a defined Blob proeprty xpath:
  medium_size => views:views[1]/content
-So we end up with something like: 
+So we end up with something like:
  restAPI/preview/default/9ef9fdec-698b-4e8e-a20d-533efe825a6f/name/medium_size
 or
  restAPI/preview/default/9ef9fdec-698b-4e8e-a20d-533efe825a6f/medium_size
 => really needed?
- 
+
 ===> Default preview size to be discussed (a fixed smaller image that fits in a 400x400 iframe?)
 
 ===> How to handle preview without annotations (for the information tab)
 
-=======> Not really needed as we decided to not use the preview for the Informations 
+=======> Not really needed as we decided to not use the preview for the Informations
 
 
 Annotations integration
@@ -294,7 +293,7 @@ Annotations integration
 
 Text and image annotations: same as in Nuxeo 5.2. Maybe some UI things to update.
 
-Video annotations: 
+Video annotations:
  - a new wrapper has to be done to handle the API of the chosen player (if not Quicktime)
  - backport the video annotation code from 5.1.6 to 5.2 => some refactoring needed to adapt to the new architecture.
 
@@ -330,12 +329,12 @@ Selected document
 - Seam component handling the current selected document for viewving / editing purposes
 
 The selected document is shown in the right column with multiple tabs:
- - informations tab: thumbnail of the current document (rezied image for a Picture document, thumbnail of the first page for an Office document 
+ - informations tab: thumbnail of the current document (rezied image for a Picture document, thumbnail of the first page for an Office document
  or a big icon representing the documenttype if the thumbnail is not available)
  - Rights
  - Transformations
  - Delivery
- 
+
 Selected documents
 ------------------
 
@@ -389,7 +388,7 @@ TODO: list them all here
 Reusing Seam components
 -----------------------
 
-We are working on our branch 'NXP-3610-webapp-cleanup': 
+We are working on our branch 'NXP-3610-webapp-cleanup':
 - to move what can be reused in DAM from nuxeo-platform-webapp-core to nuxeo-platform-webapp-base
 - to do some refactoring on Seam bean: removing dependency on InputController for the beans that don't need it
 (no more dependency on navigationContext which is not needed for DAM)

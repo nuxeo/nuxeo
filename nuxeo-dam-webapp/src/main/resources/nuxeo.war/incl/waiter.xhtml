@@ -1,18 +1,14 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:h="http://java.sun.com/jsf/html">
-  <table id="importsetCreationWaiter" class="center"
+  xmlns:h="http://java.sun.com/jsf/html" class="waiterBlock">
+  <div id="importsetCreationWaiter"
     style="display: none; z-index: 1000;
       position: absolute;  top: 0;  right: 0;  bottom: 0;
-      left: 0;  width: 50%;  height: 50%;  margin: auto;">
-    <tr>
-      <td>
+      left: 0;  width: 200px;  height: 200px; text-align:center;  margin: auto;">
+      <p>
         <h:graphicImage value="img/standard_waiter.gif"/>
-      </td>
-    </tr>
-    <tr>
-      <td>
+      </p>
+      <p>
         <h:outputText value="${messages['label.processInProgress']}"/>
-      </td>
-    </tr>
-  </table>
+      </p>
+  </div>
 </div>

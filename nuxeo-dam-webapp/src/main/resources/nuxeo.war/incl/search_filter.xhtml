@@ -9,36 +9,33 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core"  	  				 	 	 	   	 >
 
-<h3><h:outputText
-	value="#{messages['label.filterset.title.search']}" /></h3>
-
 <div class="filterContent">
   <a4j:region>
   <a4j:outputPanel id="filterFormPanel">
   <a4j:form id="filterForm">
 
-   <rich:panelMenu style="width:200px"  mode="none"
-     iconExpandedGroup="disc" iconCollapsedGroup="disc"
-     iconExpandedTopGroup="chevronUp" iconGroupTopPosition="right"
+   <rich:panelMenu mode="none"
+     iconExpandedGroup="disc" iconCollapsedGroup="disc" 
+     iconExpandedTopGroup="chevronUp" iconGroupTopPosition="right" 
      iconCollapsedTopGroup="chevronDown">
-
+     
      <rich:panelMenuGroup label="#{messages['heading.filter.fulltext']}"
        expanded="true" iconExpanded="none" id="keywords">
-
+     
        <h:inputText id="fulltextFilter" class="searchInput"
          value="#{filterActions.filterDocument.filter_query.ecm_fulltext}">
        <a4j:support event="onkeyup" reRender="filterResultTable"
          requestDelay="1000" action="#{filterActions.invalidateProvider}"
          ignoreDupResponces="true" eventsQueue="filterFormQueue" />
        </h:inputText>
-
+     
      </rich:panelMenuGroup>
-
+     
      <rich:panelMenuGroup label="#{messages['heading.filter.docType']}"
        expanded="true" id="docTypes">
-
+       
        <c:forEach varStatus="status" items="#{docTypeSelectItems}" var="item">
-
+       
          <rich:panelMenuItem label="#{messages[item.label]}" id="#{messages[item.value]}"
            styleClass="#{item.disabled ? 'selected' : ''}"
            mode="ajax" action="#{filterActions.toggleSelectDocType}"
@@ -46,7 +43,7 @@
            eventsQueue="filterFormQueue">
            <f:param name="docType" value="#{item.value}" />
          </rich:panelMenuItem>
-
+       
        </c:forEach>
 
      </rich:panelMenuGroup>
@@ -83,8 +80,8 @@
       </rich:panelMenuItem>
 
     </rich:panelMenuGroup>
-   </rich:panelMenu>
 
+   </rich:panelMenu>
 
     <!-- this bit needs to be outside the rich:panelMenu -->
     <a4j:commandButton  id="filterFormSubmit" type="submit"
@@ -95,7 +92,6 @@
   </a4j:form>
   </a4j:outputPanel>
   </a4j:region>
-
 </div>
 
 </div>

@@ -15,16 +15,7 @@
   <description>Build package distributions of Nuxeo DAM applications</description>
 
   <properties>
-    <nuxeo.common.version>1.6.0-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>1.6.0-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.core.version>1.6.0-SNAPSHOT</nuxeo.core.version>
-    <nuxeo.theme.version>5.3.0-SNAPSHOT</nuxeo.theme.version>
-    <nuxeo.features.version>5.3.0-SNAPSHOT</nuxeo.features.version>
-    <nuxeo.webengine.version>5.3.0-SNAPSHOT</nuxeo.webengine.version>
-    <nuxeo.services.version>5.3.0-SNAPSHOT</nuxeo.services.version>
-    <nuxeo.jsf.version>5.3.0-SNAPSHOT</nuxeo.jsf.version>
-    <nuxeo.dm.version>5.3.0-SNAPSHOT</nuxeo.dm.version>
-    <nuxeo.distribution.version>5.3.0-SNAPSHOT</nuxeo.distribution.version>
+    <nuxeo.distribution.version>5.3.1-SNAPSHOT</nuxeo.distribution.version>
   </properties>
 
   <profiles>
@@ -74,7 +65,7 @@
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution-jboss</artifactId>
         <version>${nuxeo.distribution.version}</version>
-        <classifier>nuxeo-dm</classifier>
+        <classifier>nuxeo-ep</classifier>
         <type>zip</type>
       </dependency>
     </dependencies>

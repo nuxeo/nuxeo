@@ -32,16 +32,8 @@
       <scope>compile</scope> <!-- override -->
     </dependency>
     <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <classifier>jdk15</classifier>
-      <scope>compile</scope>
-      <!-- override -->
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
-      <version>1.5.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

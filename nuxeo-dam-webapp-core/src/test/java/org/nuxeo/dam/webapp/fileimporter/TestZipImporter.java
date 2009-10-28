@@ -27,16 +27,17 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestNG;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryJUnit4;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.UploadEvent;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Test;
-import static org.testng.Assert.*;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
-public class TestZipImporter extends SQLRepositoryTestNG {
+public class TestZipImporter extends SQLRepositoryJUnit4 {
 
     protected FileManager service;
 
@@ -46,7 +47,7 @@ public class TestZipImporter extends SQLRepositoryTestNG {
         super("TestZipImporter");
     }
 
-    @BeforeMethod
+    @Before
     public void setUp() throws Exception {
         deployBundle("org.nuxeo.ecm.platform.types.api");
         deployBundle("org.nuxeo.ecm.platform.types.core");
@@ -77,7 +78,7 @@ public class TestZipImporter extends SQLRepositoryTestNG {
         root = session.getRootDocument();
     }
 
-    @AfterMethod
+    @After
     public void tearDown() throws Exception {
         service = null;
         root = null;
@@ -114,24 +115,24 @@ public class TestZipImporter extends SQLRepositoryTestNG {
         DocumentModel child = session.getChild(doc.getRef(), "plain");
         assertNotNull(child);
         assertEquals("Note", child.getType());
-        
+
         child = session.getChild(doc.getRef(), "image");
         assertNotNull(child);
         assertEquals("Picture", child.getType());
-        
+
         child = session.getChild(doc.getRef(), "spreadsheet");
         assertNotNull(child);
         assertEquals("File", child.getType());
-        
+
         // names are converted to lowercase
         child = session.getChild(doc.getRef(), "samplempg");
         assertNotNull(child);
         assertEquals("Video", child.getType());
-        
+
         child = session.getChild(doc.getRef(), "samplewav");
         assertNotNull(child);
         assertEquals("Audio", child.getType());
-        
+
 
     }
 
@@ -164,20 +165,20 @@ public class TestZipImporter extends SQLRepositoryTestNG {
         DocumentModel child = session.getChild(importSet.getRef(), "plain");
         assertNotNull(child);
         assertEquals("Note", child.getType());
-        
+
         child = session.getChild(importSet.getRef(), "image");
         assertNotNull(child);
         assertEquals("Picture", child.getType());
-        
+
         child = session.getChild(importSet.getRef(), "spreadsheet");
         assertNotNull(child);
         assertEquals("File", child.getType());
-        
+
         // names are converted to lowercase
         child = session.getChild(importSet.getRef(), "samplewav");
         assertNotNull(child);
         assertEquals("Audio", child.getType());
-        
+
         child = session.getChild(importSet.getRef(), "samplempg");
         assertNotNull(child);
         assertEquals("Video", child.getType());

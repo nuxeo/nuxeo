@@ -58,10 +58,10 @@
       <width>100%</width>
     </layout>
     <layout element="page[1]/section[2]/cell[1]">
-      <width>20%</width>
+      <width>18%</width>
     </layout>
     <layout element="page[1]/section[2]/cell[2]">
-      <width>40%</width>
+      <width>42%</width>
     </layout>
     <layout element="page[1]/section[2]/cell[3]">
       <width>40%</width>
@@ -203,9 +203,10 @@
       </selector>
       <selector path=".searchInput">
         <background preset="searchInput (DAM backgrounds)"/>
-        <border-width>1px</border-width>
-        <margin>0 5px 10px 0</margin>
+        <border>1px solid #CCCCCC</border>
+        <margin>0</margin>
         <padding>3px 3px 3px 20px</padding>
+        <width>100%</width>
       </selector>
       <selector path=".action_bar">
         <margin>10px 10px 10px 0</margin>
@@ -223,7 +224,6 @@
         <list-style>none</list-style>
       </selector>
       <selector path=".tabsBar li">
-        <margin-right>5px</margin-right>
         <margin>0</margin>
         <padding>0</padding>
         <float>left</float>
@@ -294,7 +294,7 @@
       </selector>
       <selector path=".searchFilter"/>
       <selector path=".filterContent">
-        <padding>10px</padding>
+        <padding>0px</padding>
       </selector>
       <selector path=".banner_actions ul">
         <padding>0</padding>
@@ -340,9 +340,8 @@
       </selector>
       <selector path=".pageNavigationControls">
         <padding>2px 5px</padding>
-        <background preset="actionbar (DAM backgrounds)"/>
+        <background preset="navigationbar (DAM backgrounds)"/>
         <text-align>center</text-align>
-        <border-bottom preset="grayneutral (DAM borders)"/>
       </selector>
       <selector path=".previousBlock">
         <float>left</float>
@@ -352,6 +351,7 @@
       <selector path=".statusBlock">
         <float>left</float>
         <width>70%</width>
+        <padding-top>1px</padding-top>
       </selector>
       <selector path=".nextBlock">
         <float>left</float>
@@ -379,9 +379,9 @@
       </selector>
       <selector path=".thumbViewElement">
         <background-color>#ebefff</background-color>
-        <padding>8px 10px</padding>
-        <width>149px</width>
-        <height>178px</height>
+        <padding>8px</padding>
+        <width>130px</width>
+        <height>155px</height>
       </selector>
       <selector path=".thumbViewElement table">
         <font-size>10px</font-size>
@@ -391,8 +391,8 @@
         <text-align>center</text-align>
         <vertical-align>middle</vertical-align>
         <padding-bottom>7px</padding-bottom>
-        <width>140px</width>
-        <height>90px</height>
+        <width>125px</width>
+        <height>80px</height>
       </selector>
       <selector path=".thumbViewTitle">
         <font-size>11px</font-size>
@@ -403,6 +403,16 @@
       <selector path=".selected">
         <background-color>#c7d3e0</background-color>
       </selector>
+      <selector path=".deliveryBlock .dataInput">
+        <margin-top>20px</margin-top>
+      </selector>
+      <selector path=".deliveryBlock .dataInput .button">
+        <width>auto</width>
+      </selector>
+      <selector path=".waiterBlock #importsetCreationWaiter">
+        <background-color>white</background-color>
+        <border>1px solid #9f9f9f</border>
+      </selector>
       <!-- rich faces disabled icon area for the panelMenuItem that holds the tree -->
       <selector path=".hiddenMenuIcon .dr-pmenu-nowrap img">
         <display>none</display>
@@ -412,6 +422,7 @@
       </selector>
       <!-- rich faces tree ident (should be part of the richfaces skin) -->
       <selector path=".dr-tree-h-ic-div">
+
         <margin-left>8px</margin-left>
         <padding-left>10px</padding-left>
       </selector>
@@ -470,7 +481,7 @@
       </selector>
       <selector path="div" view="section frame">
         <font preset="small (DAM fonts)"/>
-        <color preset="gray.light (DAM colors)"/>
+        <color>#AFAFAF</color>
       </selector>
     </style>
     <style element="page[1]/section[3]/cell[1]" inherit="common style"/>

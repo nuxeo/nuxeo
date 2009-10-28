@@ -5,19 +5,21 @@ import java.util.GregorianCalendar;
 
 import org.nuxeo.dam.api.Constants;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestNG;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Test;
-import static org.testng.Assert.*;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryJUnit4;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.After;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
-public class TestInitPropertiesListener extends SQLRepositoryTestNG {
+public class TestInitPropertiesListener extends SQLRepositoryJUnit4 {
 
     public TestInitPropertiesListener() {
         super("TestInitPropertiesListener");
     }
 
-    @BeforeMethod
+    @Before
     public void setUp() throws Exception {
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.platform.picture.api");
@@ -75,7 +77,7 @@ public class TestInitPropertiesListener extends SQLRepositoryTestNG {
         assertEquals(picture.getPropertyValue("dc:expired"), cal);
     }
 
-    @AfterMethod
+    @After
     public void tearDown() throws Exception {
         closeSession(session);
     }
