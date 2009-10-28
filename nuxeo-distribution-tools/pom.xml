@@ -2,15 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <!--parent>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven</artifactId>
-      <version>2.0.9</version>
-  </parent-->
-
   <groupId>org.nuxeo.build</groupId>
   <artifactId>nuxeo-distribution-tools</artifactId>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.3-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
   <name>Nuxeo Distribution Build</name>
   <description>Assemble Nuxeo distributions</description>
@@ -19,10 +13,56 @@
     <mavenVersion>2.0.9</mavenVersion>
   </properties>
 
-  <prerequisites>
-    <maven>${mavenVersion}</maven>
-  </prerequisites>
 
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/public</url>
+      <name>Nuxeo virtual release repository</name>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/public-snapshot</url>
+      <name>Nuxeo virtual snapshot repository</name>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
   <distributionManagement>
     <site>
@@ -39,43 +79,8 @@
     </snapshotRepository>
   </distributionManagement>
 
-  <repositories>
-    <repository>
-      <id>glassfish-repository</id>
-      <name>Java.net Repository for Glassfish</name>
-      <url>http://download.java.net/maven/glassfish</url>
-      <snapshots>
-        <updatePolicy>never</updatePolicy>
-      </snapshots>
-    </repository>
-    <repository>
-      <!-- back up glassfish maven repository in case the 'glassfish-repository' goes down -->
-      <id>glassfish-repository-wsinterop</id>
-      <name>Java.net Repository for Glassfish</name>
-      <url>http://maven.dyndns.org/glassfish/</url>
-      <snapshots>
-        <updatePolicy>never</updatePolicy>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>glassfish-repository</id>
-      <name>Java.net Repository for Glassfish</name>
-      <url>http://download.java.net/maven/glassfish</url>
-      <snapshots>
-        <updatePolicy>never</updatePolicy>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
 
   <dependencies>
-    <!--dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>2.0.9</version>
-    </dependency-->
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-project</artifactId>
@@ -113,25 +118,8 @@
     <dependency>
         <groupId>ant</groupId>
         <artifactId>ant</artifactId>
-        <!--
-          Ant 1.7 causes http://www.nabble.com/Another-V3-build-error-after-update-tt14721686.html
-          See http://jira.codehaus.org/browse/MANTRUN-68 for the cause. In the mean time,
-          falling back to 1.6.5.
-        -->
         <version>1.7.0</version>
     </dependency>
-
-    <!--dependency>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-dependency-plugin</artifactId>
-      <version>2.1</version>
-    </dependency-->
-    
-    <!--dependency>
-      <groupId>org.nuxeo.build</groupId>
-      <artifactId>nuxeo-ant-tasks</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency-->
 
   </dependencies>
 
@@ -155,14 +143,6 @@
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>
           <downloadSources>true</downloadSources>
-        </configuration>
-      </plugin>
-       <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
-          </archive>
         </configuration>
       </plugin>
       <plugin>
