@@ -174,7 +174,7 @@ public class TestRuntimeHarness {
         OSGiAdapter osgi = new OSGiAdapter(workingDir);
         bundleLoader = new StandaloneBundleLoader(osgi, classLoader);
         Thread.currentThread().setContextClassLoader(
-                bundleLoader.getSharedClassLoader());
+                bundleLoader.getSharedClassLoader().getLoader());
 
         bundleLoader.setScanForNestedJARs(false); // for now
         bundleLoader.setExtractNestedJARs(false);

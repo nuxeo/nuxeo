@@ -8,6 +8,7 @@ public class SimpleRepoFactory implements RepoFactory {
 
     public void createRepo(CoreSession session) throws ClientException {
         DocumentModel doc = session.createDocumentModel("/", "test", "Workspace");
+        doc.setPropertyValue("dublincore:title", "Mon titre");
         doc = session.createDocument(doc);
         session.saveDocument(doc);
     }

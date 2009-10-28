@@ -2,10 +2,10 @@ package com.leroymerlin.corp.fr.nuxeo.portal.testing.guice;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebEngine;
@@ -36,38 +36,17 @@ public class WebEngineProvider implements Provider<WebEngine> {
             harness.deployBundle("org.nuxeo.ecm.platform.login");
             harness.deployBundle("org.nuxeo.ecm.platform.web.common");
 
-            // TODO :Put it in the TestRuntimeHarness ?
-            Environment.setDefault(new Environment(harness.getWorkingDir()));
 
-            File dest = new File(harness.getWorkingDir(), "config");
-            dest.mkdir();
+            setupWorkingDir();
 
-            InputStream in = getResource("webengine/config/default-web.xml")
-                    .openStream();
-            dest = new File(harness.getWorkingDir() + "/config",
-                    "default-web.xml");
-            FileOutputStream out = new FileOutputStream(dest);
-            FileUtils.copy(in, out);
-
-            in = getResource("webengine/config/jetty.xml").openStream();
-            dest = new File(harness.getWorkingDir() + "/config", "jetty.xml");
-            out = new FileOutputStream(dest);
-            FileUtils.copy(in, out);
-
-            dest = new File(harness.getWorkingDir(), "web/root.war/WEB-INF/");
-            dest.mkdirs();
-
-            in = getResource("webengine/web/WEB-INF/web.xml").openStream();
-            dest = new File(harness.getWorkingDir() + "/web/root.war/WEB-INF/",
-                    "web.xml");
-            out = new FileOutputStream(dest);
-            FileUtils.copy(in, out);
-
-            harness.deployBundle("org.nuxeo.ecm.webengine.resteasy.adapter");
 
             harness.deployBundle("org.nuxeo.ecm.webengine.admin");
             harness.deployBundle("org.nuxeo.ecm.webengine.base");
             harness.deployBundle("org.nuxeo.ecm.webengine.core");
+
+            harness.deployBundle("org.nuxeo.ecm.webengine.resteasy.adapter");
+
+
             harness.deployBundle("org.nuxeo.ecm.webengine.ui");
 
             harness.deployBundle("org.nuxeo.theme.core");
@@ -88,6 +67,10 @@ public class WebEngineProvider implements Provider<WebEngine> {
 
             harness.deployBundle("org.nuxeo.runtime.jetty");
 
+            harness.deployContrib("org.nuxeo.test.util","webengine-bootstrap.xml");
+
+
+
             WebEngineComponent we = (WebEngineComponent) Framework.getRuntime()
                     .getComponent(WebEngineComponent.NAME);
             return we.getEngine();
@@ -95,6 +78,33 @@ public class WebEngineProvider implements Provider<WebEngine> {
             e.printStackTrace();
             return null;
         }
+    }
+
+
+    private void setupWorkingDir() throws IOException {
+        File dest = new File(harness.getWorkingDir(), "config");
+        dest.mkdir();
+
+        InputStream in = getResource("webengine/config/default-web.xml")
+                .openStream();
+        dest = new File(harness.getWorkingDir() + "/config",
+                "default-web.xml");
+        FileOutputStream out = new FileOutputStream(dest);
+        FileUtils.copy(in, out);
+
+        in = getResource("webengine/config/jetty.xml").openStream();
+        dest = new File(harness.getWorkingDir() + "/config", "jetty.xml");
+        out = new FileOutputStream(dest);
+        FileUtils.copy(in, out);
+
+        dest = new File(harness.getWorkingDir(), "web/root.war/WEB-INF/");
+        dest.mkdirs();
+
+        in = getResource("webengine/web/WEB-INF/web.xml").openStream();
+        dest = new File(harness.getWorkingDir() + "/web/root.war/WEB-INF/",
+                "web.xml");
+        out = new FileOutputStream(dest);
+        FileUtils.copy(in, out);
     }
 
     private static URL getResource(String resource) {
@@ -113,3 +123,4 @@ public class WebEngineProvider implements Provider<WebEngine> {
     }
 
 }
+
