@@ -1,11 +1,12 @@
 <project name="nuxeo-assembly" default="build" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
-  <property file="build.properties" />
-  <property name="outdir" value="${basedir}/target" />
-  <property name="stagedir" value="${basedir}/target/stage" />
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
 
-  <import file="settings.xml" />
+  <property name="outdir" value="${maven.project.build.directory}" />
+  <property name="stagedir" value="${outdir}/stage" />
 
-  <target name="build" depends="settings,clean,cleanall">
+
+  <target name="build">
     <echo>Entering tomcat build</echo>
     <property name="tomcat" value="${stagedir}/nuxeo-distribution-tomcat" />
     <property name="nxserver" value="${tomcat}/nxserver" />
@@ -30,7 +31,7 @@ JAVA_OPTS="$JAVA_OPTS -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF
 
     <!-- Extract Nuxeo webapp -->
     <unzip dest="${tomcat}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-jetty:${nuxeo.platform.version}:zip;nuxeo-dm" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-jetty:${nuxeo.dm.version}:zip" classifier="nuxeo-dm" />
     </unzip>
     <nx:rename from="${tomcat}/nuxeo-*" to="${nxserver}" />
 
@@ -63,8 +64,8 @@ JAVA_OPTS="$JAVA_OPTS -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF
       <fileset dir="${nxserver}/lib" includes="jsf-impl-*" />
     </move-->
 
-    <echo>Running nuxeo build processor</echo>
-    <nx:preprocess src="${nxserver}" />
+    <!--echo>Running nuxeo build processor</echo>
+    <nx:preprocess src="${nxserver}" /-->
 
     <!--echo>Copying war files</echo>
     <move todir="${tomcat}/webapps/nuxeo">
@@ -90,7 +91,7 @@ JAVA_OPTS="$JAVA_OPTS -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF
     <!-- TODO do the same for windows cmd file -->
 
     <!-- make the final zip -->
-    <zip destfile="${outdir}/nuxeo-distribution-tomcat-${version}-nuxeo-dm.zip" basedir="${stagedir}" />
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip" basedir="${stagedir}" />
   </target>
 
   <target name="clean">

@@ -16,7 +16,21 @@
 
   <properties>
     <distribution>nuxeo-dm</distribution>
+    <!--nuxeo.dm.version>${version}</nuxeo.dm.version-->
+    <!--nuxeo.runtime.version>1.6.1-SNAPSHOT</nuxeo.runtime.version-->
   </properties>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.nuxeo.build</groupId>
+          <artifactId>nuxeo-distribution-tools</artifactId>
+          <version>0.2</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
   <profiles>
     <profile>
@@ -39,18 +53,17 @@
       <build>
         <plugins>
           <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
+            <groupId>org.nuxeo.build</groupId>
+            <artifactId>nuxeo-distribution-tools</artifactId>
             <executions>
               <execution>
+                <id>antbuild</id>
                 <phase>package</phase>
                 <configuration>
-                  <tasks>
-                    <exec dir="${basedir}" executable="${basedir}/build.sh" failonerror="true">
-                    </exec>
-                  </tasks>
+                  <buildFile>${basedir}/build.xml</buildFile>
                 </configuration>
                 <goals>
-                  <goal>run</goal>
+                  <goal>build</goal>
                 </goals>
               </execution>
             </executions>
@@ -88,18 +101,17 @@
       <build>
         <plugins>
           <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
+            <groupId>org.nuxeo.build</groupId>
+            <artifactId>nuxeo-distribution-tools</artifactId>
             <executions>
               <execution>
+                <id>antbuild</id>
                 <phase>package</phase>
                 <configuration>
-                  <tasks>
-                    <exec dir="${basedir}" executable="${basedir}/build.sh" failonerror="true">
-                    </exec>
-                  </tasks>
+                  <buildFile>${basedir}/build.xml</buildFile>
                 </configuration>
                 <goals>
-                  <goal>run</goal>
+                  <goal>build</goal>
                 </goals>
               </execution>
             </executions>
