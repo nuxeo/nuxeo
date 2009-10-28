@@ -29,6 +29,8 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.contexts.Contexts;
+import org.jboss.seam.core.Manager;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 
@@ -69,4 +71,30 @@ public class RestHelper implements Serializable {
     	// since 5.3 release this method have been added don't know why (BJA)
     	return null;
     }
+
+    /**
+     * @return the Seam conversation manager.
+     */
+    public static Manager getConversationManager() {
+        if (Contexts.isEventContextActive()) {
+            return Manager.instance();
+        }
+        return null;
+    }
+
+    /**
+     * Adds current conversation request parameters to the given url.
+     *
+     * @param url
+     * @return the url with additional conversation request parameters
+     */
+    public static String addCurrentConversationParameters(String url) {
+        Manager conversationManager = getConversationManager();
+        if (conversationManager == null) {
+            return url;
+        }
+        // XXX : deprecated
+        return conversationManager.encodeConversationId(url);
+    }
+
 }
