@@ -16,12 +16,20 @@
  */
 package org.nuxeo.build.ant.artifact;
 
+import org.apache.tools.ant.types.DataType;
+import org.nuxeo.build.maven.filter.OrFilter;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Includes extends Filters {
+public class Includes extends DataType {
 
+    public OrFilter filter = new OrFilter();
+
+    public void addArtifact(ArtifactPattern f) {
+        filter.addFilter(f.filter);
+    }
 
 }

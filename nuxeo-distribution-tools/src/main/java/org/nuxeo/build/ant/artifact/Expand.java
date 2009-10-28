@@ -17,17 +17,17 @@
 package org.nuxeo.build.ant.artifact;
 
 
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class Expand extends FiltersCollection {
+    
+    public int depth = 1; // TRUE
 
-    public int level = 1; // TRUE
-
-
-    public void setLevel(String expand) {
-        level = readExpand(expand);
+    public void setDepth(String expand) {
+        depth = readExpand(expand);
     }
 
     public static int readExpand(String expand) {

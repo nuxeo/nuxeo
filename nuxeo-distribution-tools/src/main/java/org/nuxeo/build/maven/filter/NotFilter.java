@@ -43,4 +43,8 @@ public class NotFilter implements Filter  {
     public boolean accept(Artifact artifact) {
         return !filter.accept(artifact);
     }
+    
+    public Filter getFilter() {
+        return filter;
+    }
 }

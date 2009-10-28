@@ -33,43 +33,51 @@ public class ArtifactFile extends FileResource {
 
     protected Node node;
     public String key;
-    public boolean strict;
-    public String classifier;
+    public ArtifactDescriptor ad = ArtifactDescriptor.emptyDescriptor();
 
     public void setKey(String pattern) {
         int p = pattern.lastIndexOf(';');
         if (p > -1) {
             key = pattern.substring(0, p);
-            classifier = pattern.substring(p+1);
+            ad.classifier = pattern.substring(p+1);
         } else {
             key = pattern;
         }
     }
 
-    public void setClassifier(String classifier) {
-        this.classifier = classifier;
+    public void setArtifactId(String artifactId) {
+        this.ad.artifactId = artifactId;
     }
-
-    public void setStrict(boolean strict) {
-        this.strict = strict;
+    
+    public void setGroupId(String groupId) {
+        this.ad.groupId = groupId;
+    }
+    
+    public void setType(String type) {
+        this.ad.type = type;
+    }
+    
+    public void setVersion(String version) {
+        this.ad.version = version;
+    }
+    
+    public void setClassifier(String classifier) {
+        this.ad.classifier = classifier;
     }
 
     public Node getNode() {
         if (node == null) {
-            if (key.indexOf(':') == -1) { // only artifact Id
-                ArtifactDescriptor ad = new ArtifactDescriptor();
-                ad.artifactId = key;
-                node = MavenClientFactory.getInstance().getGraph().findNode(ad);
-            } else {
+            if (key != null) {
                 node = MavenClientFactory.getInstance().getGraph().findFirst(key);
+            } else {
+                node = MavenClientFactory.getInstance().getGraph().findNode(ad);
             }
             if (node == null) {
                 throw new BuildException("Artifact with pattern "+key+" was not found in graph");
-            } else {
-                if (classifier != null)  {
-                    // we need to create a virtual node that points to the attachement
-                    node = new AttachmentNode(node, classifier);
-                }
+            }
+            if (ad.classifier != null) {
+                // we need to create a virtual node that points to the attachement
+                node = new AttachmentNode(node, ad.classifier);
             }
         }
         return node;

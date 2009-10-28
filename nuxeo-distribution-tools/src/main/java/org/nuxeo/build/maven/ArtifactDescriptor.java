@@ -32,6 +32,13 @@ public class ArtifactDescriptor {
     public String classifier;
     public String scope = "compile";
 
+    public static ArtifactDescriptor emptyDescriptor() {
+        ArtifactDescriptor ad = new ArtifactDescriptor();
+        ad.scope = null;
+        ad.type = null;
+        return ad;
+    }
+    
     public ArtifactDescriptor() {
     }
 
@@ -100,6 +107,24 @@ public class ArtifactDescriptor {
     public Artifact toBuildArtifact() {
         return MavenClientFactory.getInstance().getArtifactFactory().createBuildArtifact(
                 groupId, artifactId, version, type);
+    }
+    
+    public String getNodeKeyPattern() {
+        if (groupId != null) {
+             StringBuilder buf = new StringBuilder();
+             buf.append(groupId);
+             if (artifactId != null) {
+                 buf.append(':').append(artifactId);
+                 if (version != null) {
+                     buf.append(':').append(version);
+                     if (type != null) {
+                         buf.append(':').append(type);    
+                     }
+                 }
+             }
+             return buf.toString();
+        }
+        return null;
     }
 
 }

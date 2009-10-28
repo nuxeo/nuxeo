@@ -103,6 +103,11 @@ public class Graph {
         return map.get(map.firstKey());
     }
 
+    public Collection<Node> find(String pattern) {
+        SortedMap<String, Node> map = nodes.subMap(pattern+':', pattern+((char)(':'+1)));
+        return map.values();
+    }
+
 
 //    public List<Node> getNodes(NodeFilter filter) {
 //        Node[] allNodes = getNodes();
@@ -170,7 +175,14 @@ public class Graph {
     }
 
     public Node findNode(ArtifactDescriptor ad) {
-        for (Node node : getNodes()) {
+        String key = ad.getNodeKeyPattern();
+        Collection<Node> nodes = null;
+        if (key == null) {
+            nodes = getNodes();
+        } else {
+            nodes = find(key);
+        }
+        for (Node node : nodes) {
             Artifact arti = node.getArtifact();
             if (ad.artifactId != null && !ad.artifactId.equals(arti.getArtifactId())) {
                 continue;
@@ -184,11 +196,12 @@ public class Graph {
             if (ad.type != null && !ad.type.equals(arti.getType())) {
                 continue;
             }
-            if (ad.classifier != null && !ad.classifier.equals(arti.getClassifier())) {
-                continue;
-            }
+            //            if (ad.classifier != null && !ad.classifier.equals(arti.getClassifier())) {
+            //                continue;
+            //            }
             return node;
         }
+
         return null;
     }
 

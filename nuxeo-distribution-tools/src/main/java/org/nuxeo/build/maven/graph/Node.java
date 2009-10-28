@@ -146,6 +146,10 @@ public class Node {
         return pom;
     }
 
+    public boolean isExpanded() {
+        return isExpanded;
+    }
+    
     public void expand(int recurse, Filter filter) {
         if (isExpanded) {
             return;
@@ -156,11 +160,12 @@ public class Node {
             return;
         }
         if (recurse > 0) {
-            if ("pom".equals(artifact.getType())) {
-                loadDependencies(recurse-1, (List<Dependency>)pom.getDependencyManagement().getDependencies(), filter);
-            } else {
-                loadDependencies(recurse-1, (List<Dependency>)pom.getDependencies(), filter);
-            }
+            loadDependencies(recurse-1, (List<Dependency>)pom.getDependencies(), filter);
+//            if ("pom".equals(artifact.getType())) {
+//                loadDependencies(recurse-1, (List<Dependency>)pom.getDependencyManagement().getDependencies(), filter);
+//            } else {
+//                loadDependencies(recurse-1, (List<Dependency>)pom.getDependencies(), filter);
+//            }
         }
     }
 

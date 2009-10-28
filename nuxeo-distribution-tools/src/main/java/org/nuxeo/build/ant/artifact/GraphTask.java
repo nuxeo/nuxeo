@@ -29,7 +29,6 @@ import org.apache.tools.ant.Task;
 import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.MavenClient;
 import org.nuxeo.build.maven.MavenClientFactory;
-import org.nuxeo.build.maven.filter.AndFilter;
 import org.nuxeo.build.maven.filter.CompositeFilter;
 import org.nuxeo.build.maven.graph.Node;
 
@@ -39,7 +38,6 @@ import org.nuxeo.build.maven.graph.Node;
  */
 public class GraphTask extends Task {
 
-    protected List<ArtifactKey> selects;
     protected List<ArtifactKey> resolves;
     protected String src;
     protected Expand expand;
@@ -50,13 +48,6 @@ public class GraphTask extends Task {
             resolves = new ArrayList<ArtifactKey>();
         }
         resolves.add(new ArtifactKey(resolve));
-    }
-
-    public void setSelect(String select) {
-        if (selects == null) {
-            selects = new ArrayList<ArtifactKey>();
-        }
-        selects.add(new ArtifactKey(select));
     }
 
     public void setSrc(String file) {
@@ -74,12 +65,6 @@ public class GraphTask extends Task {
         resolves.add(artifact);
     }
 
-    public void addSelect(ArtifactKey artifact) {
-        if (selects == null) {
-            selects = new ArrayList<ArtifactKey>();
-        }
-        selects.add(artifact);
-    }
 
     @Override
     public void execute() throws BuildException {
@@ -108,29 +93,13 @@ public class GraphTask extends Task {
                     Node node = maven.getGraph().getRootNode(arti);
                     if (expand != null) {
                         if (expand.filter != null) {
-                            node.expand(expand.level, CompositeFilter.compact(expand.filter));
+                            node.expand(expand.depth, CompositeFilter.compact(expand.filter));
                         } else {
-                            node.expand(expand.level, null);
+                            node.expand(expand.depth, null);
                         }
                     }
                 } catch (ArtifactNotFoundException e) {
                     throw new BuildException("Root artifact cannot be found: "+arti, e);
-                }
-            }
-        } else if (selects != null) {
-            for (ArtifactKey select : selects) {
-                ArrayList<Node> nodes = new ArrayList<Node>();
-                AndFilter andf = new AndFilter();
-                andf.addFiltersFromDescriptor(new ArtifactDescriptor(select.pattern));
-                maven.getGraph().collectNodes(nodes, andf);
-                if (expand != null) {
-                    for (Node node : nodes) {
-                        if (expand.filter != null) {
-                            node.expand(expand.level, CompositeFilter.compact(expand.filter));
-                        } else {
-                            node.expand(expand.level, null);
-                        }
-                    }
                 }
             }
         }

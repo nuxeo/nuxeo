@@ -169,7 +169,7 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
         if (isReference()) {
             throw noChildrenAllowed();
         }
-        if (includes != null) {
+        if (this.includes != null) {
             throw new BuildException("Found an Includes that is defined more than once in an artifactSet");
         }
         this.includes = includes;
@@ -179,8 +179,8 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
         if (isReference()) {
             throw noChildrenAllowed();
         }
-        if (includes != null) {
-            throw new BuildException("Found an Includes that is defined more than once in an artifactSet");
+        if (this.excludes != null) {
+            throw new BuildException("Found an Excludes that is defined more than once in an artifactSet");
         }
         this.excludes =  excludes;
     }
@@ -276,11 +276,11 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
             if (expand.filter != null) {
                 Filter filter = CompositeFilter.compact(expand.filter);
                 for (Node root : roots) {
-                    collectNodes(nodes, root, filter, expand.level);
+                    collectNodes(nodes, root, filter, expand.depth);
                 }
             } else {
                 for (Node root : roots) {
-                    collectNodes(nodes, root, expand.level);
+                    collectNodes(nodes, root, expand.depth);
                 }
             }
         }
@@ -324,7 +324,7 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
         }
     }
 
-    public class NodeFilesIterator implements Iterator<FileResource> {
+    public static class NodeFilesIterator implements Iterator<FileResource> {
         protected Iterator<Node> it;
         public NodeFilesIterator(Iterator<Node> it) {
             this.it = it;
