@@ -168,6 +168,18 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 			</plugin>
 
+    <dependency>
+      <groupId>org.nuxeo.build</groupId>
+      <artifactId>nuxeo-webengine-apt</artifactId>
+      <scope>compile</scope>
+      <!-- workaround for Mac OS X -->
+      <exclusions>
+        <exclusion>
+          <groupId>sun.jdk</groupId>
+          <artifactId>tools</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

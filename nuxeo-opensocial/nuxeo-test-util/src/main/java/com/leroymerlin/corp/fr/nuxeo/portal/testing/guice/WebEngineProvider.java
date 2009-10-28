@@ -54,11 +54,11 @@ public class WebEngineProvider implements Provider<WebEngine> {
             out = new FileOutputStream(dest);
             FileUtils.copy(in, out);
 
-            dest = new File(harness.getWorkingDir(), "web/WEB-INF/");
+            dest = new File(harness.getWorkingDir(), "web/root.war/WEB-INF/");
             dest.mkdirs();
 
             in = getResource("webengine/web/WEB-INF/web.xml").openStream();
-            dest = new File(harness.getWorkingDir() + "/web/WEB-INF/",
+            dest = new File(harness.getWorkingDir() + "/web/root.war/WEB-INF/",
                     "web.xml");
             out = new FileOutputStream(dest);
             FileUtils.copy(in, out);
