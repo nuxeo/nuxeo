@@ -18,31 +18,31 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.junit.Before;
+import org.junit.After;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  *
  */
-public abstract class SQLRepositoryTestNG {
+public abstract class SQLRepositoryJUnit4 {
 
     protected SQLRepositoryTestCase sqlRepositoryTestCase;
 
     protected CoreSession session;
 
-    public SQLRepositoryTestNG(String name) {
+    public SQLRepositoryJUnit4(String name) {
         sqlRepositoryTestCase = new SQLRepositoryTestCase(name) {
         };
     }
 
-    @BeforeMethod
-    protected final void initializeRepository() throws Exception {
+    @Before
+    public final void initializeRepository() throws Exception {
         sqlRepositoryTestCase.setUp();
     }
 
-    @AfterMethod
-    protected final void tearDownRepository() throws Exception {
+    @After
+    public final void tearDownRepository() throws Exception {
         sqlRepositoryTestCase.tearDown();
     }
 
