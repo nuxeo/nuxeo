@@ -24,10 +24,7 @@ import unittest
 from nuxeo.rest import RestAPI
 from nuxeo.testcase import NuxeoTestCase
 from random import randint
-if os.environ.get('JAVA6'):
-    from nuxeo.pagesjava6 import *
-else:
-    from nuxeo.pages import *
+from nuxeo.pages import *
 
 def getRandomLines(filename, nb_line):
     """Return a list of lines randomly taken from filename"""

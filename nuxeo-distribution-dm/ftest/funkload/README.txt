@@ -175,10 +175,9 @@ Benching
 
 
 
-Nuxeo DM running on JAVA 6
----------------------------
+Nuxeo DM running on JAVA 5
+--------------------------
 
-Changing the jvm change the html and ids of forms, to perform tests on a
-Nuxeo DM under Java 6 add the "JAVA6=true" option to any make invocation:
+Starting with Nuxeo DM 5.3.0 the default JVM is Sun Java 6.
 
-  make bench-reader JAVA6=true
+Scripts must be adapted to use JAVA5.

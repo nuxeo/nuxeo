@@ -97,6 +97,7 @@ class BasePage:
             ['langSelectForm', 'langSelectForm'],
             ['langSelectForm:langSelectMenu', 'en_GB'],
             ['langSelectForm:langSelectSubmitButton', 'Change'],
+            ['langSelectForm_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Change locale to en_US")
         fl.assert_(fl.listHref(content_pattern="Log out"),
@@ -170,6 +171,7 @@ class BasePage:
         # TODO: NXBT-77 navigate to create user form
         fl.post(fl.server_url + '/view_users.faces', params=[
             ['j_id179', 'j_id179'],
+            ['j_id179_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['j_id179:j_id181', 'j_id179:j_id181']],
                 description="View user creation form")
@@ -187,6 +189,7 @@ class BasePage:
             ['createUser:nxl_user:nxw_passwordMatcher', 'needed'],
             ['createUser:nxl_user:nxw_groups_suggest', groups],
             ['createUser:nxl_user:nxw_groups_suggestionBox_selection', '0'],
+            ['createUser_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['createUser:nxl_user:nxw_groups_suggestionBox:nxw_groups_listRegion_select', 'createUser:nxl_user:nxw_groups_suggestionBox:nxw_groups_listRegion_select'],
             ['suggestionInputSelectorId', 'nxw_groups_suggest'],
@@ -206,6 +209,7 @@ class BasePage:
             ['createUser:nxl_user:nxw_groups_suggest', ''],
             ['createUser:nxl_user:nxw_groups_suggestionBox_selection', ''],
             ['createUser:button_create', 'Save'],
+            ['createUser_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
                 description="Submit user form")
         return self
@@ -225,6 +229,7 @@ class BasePage:
             ['j_id16', 'j_id16'],
             ['j_id16:j_id18', ''],
             ['j_id16:j_id19', 'KEYWORDS'],
+            ['j_id16_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['j_id16:j_id30:1:j_id32', 'j_id16:j_id30:1:j_id32']],
                 description="View personal workspace")
@@ -248,6 +253,7 @@ class BasePage:
             ['j_id16:j_id18', query],
             ['j_id16:j_id19', 'KEYWORDS'],
             ['j_id16:j_id20', 'Search'],
+            ['j_id16_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
                     description=description)
         fl.assert_('SEARCH_DOCUMENT_LIST' in fl.getBody(),
@@ -277,7 +283,7 @@ class BasePage:
         ret = self.viewDocumentUid(self.getDocUid(), tab='TAB_RELATIONS',
                                    description="View relations tab")
         self.fl.assert_('Add a new relation' in self.fl.getBody()
-                        or 'No incoming nor outgoing relation' in self.fl.getBody())
+                        or 'No incoming or outgoing relation' in self.fl.getBody())
         return ret
 
     def workflow(self):
@@ -342,6 +348,7 @@ class FolderPage(BasePage):
         fl.post(fl.server_url + "/view_documents.faces", params=[
             # TODO: NXBT-77 navigate to create workspace form
             ['j_id235', 'j_id235'],
+            ['j_id235_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['j_id235:j_id236:j_id238:0:j_id239', 'j_id235:j_id236:j_id238:0:j_id239']],
             description="Create workspace form")
@@ -353,6 +360,7 @@ class FolderPage(BasePage):
             ['document_create:nxl_heading:nxw_title', title],
             ['document_create:nxl_heading:nxw_description', description],
             ['document_create:button_create', 'Create'],
+            ['document_create_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
                 description="Create workspace submit")
         fl.assert_('Workspace saved' in fl.getBody())
@@ -364,8 +372,9 @@ class FolderPage(BasePage):
             # TODO: NXBT-77 navigate to create folder form
             ['j_id199', 'j_id199'],
             ['j_id199:selectDocTypePanelOpenedState', ''],
+            ['j_id199_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id199:j_id205:0:j_id209:0:j_id211:2:j_id215', 'j_id199:j_id205:0:j_id209:0:j_id211:2:j_id215']],
+            ['j_id199:j_id205:1:j_id209:0:j_id211:0:j_id215', 'j_id199:j_id205:1:j_id209:0:j_id211:0:j_id215']],
             description="Create folder: New Folder")
         fl.assert_('document_create' in fl.getBody(),
                    "Folder form not found")
@@ -375,6 +384,7 @@ class FolderPage(BasePage):
             ['document_create:nxl_heading:nxw_description', description],
             #['parentDocumentPath', '/default-domain/workspaces/flnxtest-page-workspace.1237992970017'],
             ['document_create:button_create', 'Create'],
+            ['document_create_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Create folder: Submit")
         fl.assert_('Folder saved' in fl.getBody())
@@ -386,8 +396,9 @@ class FolderPage(BasePage):
             # TODO: NXBT-77 navigate to create file form
             ['j_id199', 'j_id199'],
             ['j_id199:selectDocTypePanelOpenedState', ''],
+            ['j_id199_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id199:j_id205:1:j_id209:0:j_id211:2:j_id215', 'j_id199:j_id205:1:j_id209:0:j_id211:2:j_id215']],
+            ['j_id199:j_id205:0:j_id209:0:j_id211:1:j_id215', 'j_id199:j_id205:0:j_id209:0:j_id211:1:j_id215']],
             description="Create file: New document")
         fl.assert_('document_create' in fl.getBody(),
                    "File form not found")
@@ -400,6 +411,7 @@ class FolderPage(BasePage):
             ['document_create:nxl_file:nxw_file:nxw_file_file:upload',
              Upload(file_path or '')],
             ['document_create:button_create', 'Create'],
+            ['document_create_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Create file: Sumbit")
         fl.assert_('File saved' in fl.getBody())
@@ -437,6 +449,7 @@ class FolderPage(BasePage):
             ['CHILDREN_DOCUMENT_LIST', 'CHILDREN_DOCUMENT_LIST'],
             ['CHILDREN_DOCUMENT_LIST:dataTable:0:document_checkbox_select', 'on'],
             ['CHILDREN_DOCUMENT_LIST:j_id349:1:j_id351', 'Supprimer'],
+            ['CHILDREN_DOCUMENT_LIST_SUBMIT', '1'],
             ['javax.faces.ViewState', state]],
             description='Delete document "%s"' % title)
         fl.assert_('Document(s) deleted' in fl.getBody())
@@ -466,6 +479,7 @@ class FolderPage(BasePage):
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', '0'],
             ['add_rights_form:rights_grant_select', 'Grant'],
             ['add_rights_form:rights_permission_select', 'Read'],
+            ['add_rights_form_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['suggestionInputSelectorId', 'nxw_selection_suggest'],
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:nxw_selection_listRegion_select', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:nxw_selection_listRegion_select'],
@@ -482,6 +496,7 @@ class FolderPage(BasePage):
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', '0'],
             ['add_rights_form:rights_grant_select', 'Grant'],
             ['add_rights_form:rights_permission_select', 'Read'],
+            ['add_rights_form_SUBMIT', '1'],
             ['javax.faces.ViewState', state],
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:nxw_selection_listRegion_select', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:nxw_selection_listRegion_select'],
             ['suggestionInputSelectorId', 'nxw_selection_suggest'],
@@ -496,6 +511,7 @@ class FolderPage(BasePage):
             ['add_rights_form:rights_grant_select', 'Grant'],
             ['add_rights_form:rights_permission_select', permission],
             ['add_rights_form:rights_add_button', 'Add permission'],
+            ['add_rights_form_SUBMIT', '1'],
             ['javax.faces.ViewState', state]]
         fl.post(server_url + "/view_documents.faces", params,
                   description="Grant perm %s to %s" % (permission, user))
@@ -504,6 +520,7 @@ class FolderPage(BasePage):
         params = [
             ['validate_rights', 'validate_rights'],
             ['validate_rights:document_rights_validate_button', 'Save local rights'],
+            ['validate_rights_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()]]
         fl.post(server_url + "/view_documents.faces", params,
                   description="Grant perm apply")
@@ -532,6 +549,7 @@ class FolderPage(BasePage):
         # date
         fl.post(server_url + "/view_documents.faces", params=[
             ['CHILDREN_DOCUMENT_LIST', 'CHILDREN_DOCUMENT_LIST'],
+            ['CHILDREN_DOCUMENT_LIST_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['providerName', 'CURRENT_DOC_CHILDREN']] + options[column],
                 description="Sort by " + column)

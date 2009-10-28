@@ -24,10 +24,7 @@ import random
 import unittest
 from funkload.Lipsum import Lipsum
 from funkload.utils import xmlrpc_get_credential
-if os.environ.get('JAVA6'):
-    from nuxeo.pagesjava6 import *
-else:
-    from nuxeo.pages import *
+from nuxeo.pages import *
 from nuxeo.testcase import NuxeoTestCase
 
 

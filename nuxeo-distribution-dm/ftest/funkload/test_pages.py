@@ -22,10 +22,7 @@ This suite is configured using the Pages.conf file.
 import os
 import unittest
 from funkload.Lipsum import Lipsum
-if os.environ.get('JAVA6'):
-    from nuxeo.pagesjava6 import *
-else:
-    from nuxeo.pages import *
+from nuxeo.pages import *
 from nuxeo.testcase import NuxeoTestCase
 
 class Pages(NuxeoTestCase):
