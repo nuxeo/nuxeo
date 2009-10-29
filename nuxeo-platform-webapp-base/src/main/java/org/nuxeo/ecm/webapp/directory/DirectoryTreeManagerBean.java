@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remove;
+import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
@@ -145,9 +146,33 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
     }
 
     public void changeExpandListener(NodeExpandedEvent event) {
+        
+        // Toggle the expanded/collapse state for this node: 
+        // its only used for multi-select (see DirectoryTreeNode.isOpened())
+        // Note: we can't use the internal nodeState.isExpanded() method because this is broken as of writing
+        // https://jira.jboss.org/jira/browse/RF-7273
+        //  TreeState nodeState = (TreeState) requestMap.get("nodeState");    
+        //  TreeRowKey treeRowKey = nodeState.getSelectedNode();
+        //  boolean isExpanded = nodeState.isExpanded(treeRowKey);
+        
+        UIComponent component = event.getComponent();
+        UITree treeComponent = null;
+        if (component instanceof UITree) {
+            treeComponent = (UITree) component;
+            Object value = treeComponent.getRowData();
+            if (value instanceof DirectoryTreeNode) {
+                DirectoryTreeNode treeNode = (DirectoryTreeNode) value;
+                if(treeNode.isOpen()) {
+                    treeNode.setOpen(false);
+                } else {
+                    treeNode.setOpen(true);
+                }
+            }
+        }
         FacesContext facesContext = FacesContext.getCurrentInstance();
         Map<String, Object> requestMap = facesContext.getExternalContext().getRequestMap();
         requestMap.put(NODE_SELECTED_MARKER, Boolean.TRUE);
+
     }
 
     protected Boolean isNodeExpandEvent() {
@@ -163,7 +188,9 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
     }
 
     public Boolean adviseNodeOpened(UITree treeComponent) {
+       
         if (!isNodeExpandEvent()) {
+           
             try {
                 Object value = treeComponent.getRowData();
                 if (value instanceof DirectoryTreeNode) {
@@ -175,6 +202,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
             } catch (ClientException e) {
                 log.error(e);
             }
+           
         }
         return null;
     }

@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -59,6 +58,8 @@ public class DirectoryTreeNode {
 
     protected final int level;
 
+    protected boolean open = false;
+    
     protected final DirectoryTreeDescriptor config;
 
     protected String identifier;
@@ -140,14 +141,7 @@ public class DirectoryTreeNode {
         String fieldName = config.getFieldName();
         String schemaName = config.getSchemaName();
         if (config.isMultiselect()) {
-            List<Object> values = (List<Object>) queryModel.getProperty(
-                    schemaName, fieldName);
-            for (Object value : values) {
-                if (value instanceof String
-                        && ((String) value).startsWith(path)) {
-                    return true;
-                }
-            }
+            return isOpen();
         } else {
             Object value = queryModel.getProperty(schemaName, fieldName);
             if (value instanceof String) {
@@ -345,6 +339,14 @@ public class DirectoryTreeNode {
         } else {
             Events.instance().raiseEvent("PATH_PROCESSED", "");
         }
+    }
+
+    public boolean isOpen() {
+        return open;
+    }
+
+    public void setOpen(boolean open) {
+        this.open = open;
     }
 
 }
