@@ -21,6 +21,11 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/**
+ * PreferencesBean
+ *
+ * @author Guillaume Cusnieux
+ */
 public class PreferencesBean implements IsSerializable {
 
   private String dataType;

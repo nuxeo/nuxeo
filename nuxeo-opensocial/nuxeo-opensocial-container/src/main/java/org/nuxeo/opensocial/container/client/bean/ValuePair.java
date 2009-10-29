@@ -19,6 +19,11 @@ package org.nuxeo.opensocial.container.client.bean;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/**
+ * ValuePair
+ *
+ * @author Guillaume Cusnieux
+ */
 public class ValuePair implements IsSerializable {
 
   private String value;

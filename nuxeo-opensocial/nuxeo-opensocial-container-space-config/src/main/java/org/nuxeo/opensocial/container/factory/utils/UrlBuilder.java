@@ -72,6 +72,7 @@ public class UrlBuilder {
 
   public static String buildShindigUrl(GadgetMapper gadget) throws Exception {
     String gadgetDef = getGadgetDef(gadget.getName());
+    log.info("build url "+gadget.getShindigId());
     return ServerBase.getBase() + SERVLET_PATH + "?" + getDefaultParams() + "&"
         + GADGET_ID_KEY + "=" + gadget.getShindigId() + "&" + PARENT_KEY + "="
         + ServerBase.getBase() + "&" + PERMISSION_KEY + "="

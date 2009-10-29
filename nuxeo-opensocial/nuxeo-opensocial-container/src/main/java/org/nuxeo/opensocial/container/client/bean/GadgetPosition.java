@@ -19,6 +19,11 @@ package org.nuxeo.opensocial.container.client.bean;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/**
+ * GadgetPosition
+ *
+ * @author Guillaume Cusnieux
+ */
 public class GadgetPosition implements IsSerializable {
 
   private static final long serialVersionUID = 1L;

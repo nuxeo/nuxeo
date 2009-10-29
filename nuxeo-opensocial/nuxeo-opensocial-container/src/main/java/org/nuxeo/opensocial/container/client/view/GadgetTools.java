@@ -1,93 +1,138 @@
-/*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- */
-
 package org.nuxeo.opensocial.container.client.view;
 
+import org.nuxeo.opensocial.container.client.ContainerConstants;
 import org.nuxeo.opensocial.container.client.ContainerEntryPoint;
+import org.nuxeo.opensocial.container.client.ContainerMessages;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.gwtext.client.core.Function;
-import com.gwtext.client.widgets.MessageBox;
-import com.gwtext.client.widgets.MessageBoxConfig;
 import com.gwtext.client.widgets.Tool;
+import com.gwtext.client.widgets.portal.PortalColumn;
 
+/**
+* @author Guillaume Cusnieux
+*/
 public class GadgetTools {
 
-  private String ref;
+  private final static ContainerConstants CST = GWT.create(ContainerConstants.class);
+  private final static ContainerMessages MSG = GWT.create(ContainerMessages.class);
   private GadgetForm form;
+  private GadgetPortlet portlet;
 
-  public GadgetTools(String ref) {
-    this.ref = ref;
+  public GadgetTools(GadgetPortlet portlet) {
+    this.portlet = portlet;
+  }
+
+  public Tool[] getButtons() {
+    if (portlet.getView()
+        .equals(GadgetPortlet.CANVAS_VIEW)) {
+      return getCanvasButtons();
+    } else {
+      return getDefaultButtons();
+    }
+  }
+
+  private Tool[] getCanvasButtons() {
+    final Tool min = new Tool(Tool.MINIMIZE, new Function() {
+      public void execute() {
+        ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
+        PortalColumn maximizedCol = portal.getMaximizedCol();
+        maximizedCol.remove(portlet.getId(), true);
+        showManager();
+        for (PortalColumn col : portal.getPortalColumns()) {
+          col.show();
+          col.doLayout();
+        }
+        ;
+        maximizedCol.hide();
+        maximizedCol.doLayout();
+      }
+
+    });
+    return new Tool[] { min };
+
+  }
+
+  private Tool[] getDefaultButtons() {
+    final GadgetBean gadget = portlet.getGadgetBean();
+    if (gadget.getPermission()) {
+      Tool gear = new Tool(Tool.GEAR, new Function() {
+        public void execute() {
+         launchGear();
+        }
+      });
+
+      Tool close = new Tool(Tool.CLOSE, new Function() {
+        public void execute() {
+          if (Window.confirm(MSG.askedDeleteGadget(gadget.getTitle()))) {
+            ContainerEntryPoint.getService()
+                .removeGadget(gadget, ContainerEntryPoint.getGwtParams(),
+                    new AsyncCallback<GadgetBean>() {
+                      public void onFailure(Throwable arg0) {
+                        ContainerPortal.showErrorMessage(CST.error(),
+                            CST.deleteError());
+                      }
+
+                      public void onSuccess(GadgetBean gadget) {
+                        ContainerEntryPoint.getContainerPortal()
+                            .removeGadgetPortlet(portlet.getId());
+                      }
+                    });
+          }
+        }
+
+      });
+      Tool max = new Tool(Tool.MAXIMIZE, new Function() {
+
+        public void execute() {
+          ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
+          final GadgetBean gadget = portlet.getGadgetBean();
+          PortalColumn maximizedCol = portal.getMaximizedCol();
+          GadgetPortlet canvas = new GadgetPortlet(gadget,
+              GadgetPortlet.CANVAS_VIEW);
+          maximizedCol.add(canvas);
+          hideManager();
+          for (PortalColumn col : portal.getPortalColumns()) {
+            col.doLayout();
+            col.hide();
+          }
+          ;
+          maximizedCol.show();
+          canvas.updateGadgetPortlet(gadget);
+          canvas.doLayout();
+          maximizedCol.doLayout();
+          if (!portal.isCollapsed())
+            canvas.unCollapseGadget();
+        }
+
+      });
+
+      return new Tool[] { max, gear, close };
+    }
+    return new Tool[] {};
+
   }
 
   public GadgetForm getGadgetForm() {
     return form;
   }
 
-  public Tool[] getButtons(Boolean permission) {
-    if (permission) {
-      Tool gear = new Tool(Tool.GEAR, new Function() {
-        public void execute() {
-          form = new GadgetForm(ref);
-          form.showForm();
-        }
-      });
+  private static native void hideManager()
+  /*-{
+    $wnd.jQuery(".manager").slideUp("fast");
+    $wnd.jQuery(".getManager").slideUp("fast");
+  }-*/;
 
-      Tool close = new Tool(Tool.CLOSE, new Function() {
-        public void execute() {
-          MessageBox.show(new MessageBoxConfig() {
-            {
-              final GadgetBean gadget = ContainerEntryPoint.getContainerPortal()
-                  .getGadgetPortlet(ref)
-                  .getGadgetBean();
+  private static native void showManager()
+  /*-{
+   $wnd.jQuery(".getManager").slideDown("fast");
+  }-*/;
 
-              setTitle("Delete a gadget");
-              setMsg("Are you sure you want to delete '"
-                  + gadget.getTitle() + "' gadget ?");
-              setButtons(MessageBox.YESNO);
-              setCallback(new MessageBox.PromptCallback() {
-                public void execute(String btnID, String text) {
-                  if ("yes".equals(btnID)) {
-                    ContainerEntryPoint.getService()
-                        .removeGadget(gadget, ContainerEntryPoint.getGwtParams(),
-                            new AsyncCallback<GadgetBean>() {
-                              public void onFailure(Throwable arg0) {
-                                ContainerPortal.showErrorMessage("Error",
-                                    "Error while deleting gadget");
-                              }
-
-                              public void onSuccess(GadgetBean gadget) {
-                                ContainerEntryPoint.getContainerPortal()
-                                    .removeGadgetPortlet(gadget);
-                              }
-                            });
-
-                  }
-                }
-              });
-            }
-          });
-
-        }
-      });
-
-      return new Tool[] { gear, close };
-    }
-    return new Tool[] {};
+  public void launchGear() {
+    form = new GadgetForm(portlet);
+    form.showForm();
   }
 }

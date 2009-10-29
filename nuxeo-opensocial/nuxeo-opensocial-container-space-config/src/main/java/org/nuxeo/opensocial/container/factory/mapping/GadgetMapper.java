@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,6 +30,7 @@ import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 import org.nuxeo.opensocial.container.client.bean.GadgetPosition;
 import org.nuxeo.opensocial.container.client.bean.PreferencesBean;
+import org.nuxeo.opensocial.container.factory.GadgetManagerImpl;
 import org.nuxeo.opensocial.container.factory.PreferenceManager;
 import org.nuxeo.opensocial.container.factory.utils.UrlBuilder;
 
@@ -52,10 +54,11 @@ public class GadgetMapper extends GadgetBean implements Gadget {
   private Integer shindigId;
   private boolean permission;
   private String name;
+  private String spaceName;
 
   /**
    * Constructor for convert GadgetBean to Gadget
-   * 
+   *
    * @param bean
    */
   public GadgetMapper(GadgetBean bean) {
@@ -75,17 +78,19 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     this.shindigId = bean.getShindigId();
     this.permission = bean.getPermission();
     this.name = bean.getName();
+    this.spaceName = bean.getSpaceName();
   }
 
   /**
    * Constructor for convert Gadget to GadgetBean
-   * 
+   *
    * @param bean
    */
   public GadgetMapper(Gadget gadget, String viewer, int shindigId,
       boolean permission) {
     this.title = gadget.getTitle();
-    this.name = gadget.getName();
+    this.spaceName = gadget.getName();
+    this.name = getRealName(gadget.getName());
     this.collapsed = gadget.isCollapsed();
     this.ref = gadget.getId();
     this.placeID = gadget.getPlaceID();
@@ -112,6 +117,11 @@ public class GadgetMapper extends GadgetBean implements Gadget {
   @Override
   public Integer getShindigId() {
     return shindigId;
+  }
+  
+  @Override
+  public String getTitle() {
+    return title;
   }
 
   @Override
@@ -164,6 +174,11 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     return this.collapsed;
   }
 
+  private String getRealName(String name) {
+    StringTokenizer st = new StringTokenizer(name, ".");
+    return st.nextToken();
+  }
+
   public void setPreferences(Map<String, String> updatePrefs) throws Exception {
     preferences = updatePrefs;
     for (PreferencesBean p : userPrefs) {
@@ -179,7 +194,6 @@ public class GadgetMapper extends GadgetBean implements Gadget {
         p.setValue(val);
       }
     }
-    log.info("set render url : " + UrlBuilder.buildShindigUrl(this));
     this.bean.setRenderUrl(UrlBuilder.buildShindigUrl(this));
     this.bean.setUserPrefs(userPrefs);
   }
@@ -212,17 +226,27 @@ public class GadgetMapper extends GadgetBean implements Gadget {
 
   public void createGadgetBean() {
     this.userPrefs = createUserPrefs();
+    updateTitleInPreference();
     bean = new GadgetBean(shindigId, ref, title, viewer, userPrefs, permission,
-        collapsed, name);
+        collapsed, name, spaceName);
     this.renderUrl = createRenderUrl();
     bean.setRenderUrl(renderUrl);
     bean.setPosition(this.position);
   }
 
+  private void updateTitleInPreference() {
+    for (PreferencesBean p : this.userPrefs) {
+      if (GadgetManagerImpl.TITLE_KEY_PREF.equals(p.getName())) {
+        this.title = p.getValue();
+        return;
+      }
+    }
+  }
+
   /**
    * Use this method for get GadgetBean in GwtContainer because GadgetMapper
    * isn't serializabel
-   * 
+   *
    * @return GadgetBean
    */
   public GadgetBean getGadgetBean() {
@@ -238,6 +262,10 @@ public class GadgetMapper extends GadgetBean implements Gadget {
   public void setTitle(String title) {
     super.setTitle(title);
     this.bean.setTitle(title);
+  }
+
+  public void setName(String name) {
+    this.name = spaceName;
   }
 
 }

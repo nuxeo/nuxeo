@@ -24,7 +24,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 /**
  * Global container of gadgets
  *
- * @author 10044826
+ * @author Guillaume Cusnieux
  *
  */
 public class Container implements IsSerializable {

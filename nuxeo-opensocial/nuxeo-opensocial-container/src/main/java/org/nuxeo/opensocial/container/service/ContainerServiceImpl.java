@@ -35,7 +35,9 @@ import org.nuxeo.opensocial.container.factory.api.GadgetManager;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-
+/**
+* @author Guillaume Cusnieux
+*/
 public class ContainerServiceImpl extends RemoteServiceServlet implements
     ContainerService {
 
@@ -74,11 +76,11 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
   public GadgetBean saveGadgetPreferences(GadgetBean gadget, String form,
       Map<String, String> gwtParams) throws ContainerServiceException {
     try {
-
       Map<String, String> updatePrefs = getParameters(form);
       Framework.getService(FactoryManager.class)
           .getGadgetFactory()
           .savePreferences(gadget, updatePrefs, gwtParams);
+
     } catch (Exception e) {
       log.error("saveGadgetPreferences " + e, e);
       throw new ContainerServiceException(e.getMessage(), e);

@@ -22,7 +22,7 @@ import com.google.gwt.i18n.client.Constants;
 /**
  * Internationalization of gwt container
  * ContainerConstants.properties
- * @author 10044826
+ * @author Guillaume Cusnieux
  */
 public interface ContainerConstants extends Constants {
   String error();
@@ -40,4 +40,6 @@ public interface ContainerConstants extends Constants {
   String modifyLayout();
   String appearance();
   String close();
+  String deleteGadget();
+  String deleteError();
 }

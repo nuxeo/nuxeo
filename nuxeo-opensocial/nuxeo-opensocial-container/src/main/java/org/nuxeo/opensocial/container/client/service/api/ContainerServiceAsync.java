@@ -25,7 +25,11 @@ import org.nuxeo.opensocial.container.client.bean.ContainerServiceException;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
+/**
+ * ContainerServiceAsync
+ *
+ * @author Guillaume Cusnieux
+ */
 public interface ContainerServiceAsync {
 
   /**

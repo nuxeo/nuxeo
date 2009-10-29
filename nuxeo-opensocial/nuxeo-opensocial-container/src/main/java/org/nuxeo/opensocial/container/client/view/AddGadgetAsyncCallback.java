@@ -23,7 +23,11 @@ import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
+/**
+ * AddGadgetAsyncCallback
+ *
+ * @author Guillaume Cusnieux
+ */
 public class AddGadgetAsyncCallback<T> implements AsyncCallback<GadgetBean> {
 
   private final static ContainerConstants CONSTANTS = GWT.create(ContainerConstants.class);

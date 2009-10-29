@@ -19,7 +19,9 @@ package org.nuxeo.opensocial.container.utils;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
-
+/**
+* @author Guillaume Cusnieux
+*/
 public class NuxeoGadgetFilter implements Filter {
 
 	private static final long serialVersionUID = 1L;

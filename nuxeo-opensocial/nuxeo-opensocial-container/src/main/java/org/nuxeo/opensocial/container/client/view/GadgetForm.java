@@ -49,7 +49,7 @@ import com.gwtext.client.widgets.form.TextField;
 
 /**
  *
- * @author 10044826
+ * @author Guillaume Cusnieux
  *
  */
 public class GadgetForm {
@@ -69,25 +69,23 @@ public class GadgetForm {
     STRING, HIDDEN, BOOL, ENUM, LIST, COLOR
   }
 
-  private String ref;
+  private GadgetPortlet portlet;
   private Window browserWindow;
 
-  public GadgetForm(String ref) {
-    this.ref = ref;
+  public GadgetForm(GadgetPortlet portlet) {
+    this.portlet = portlet;
   }
 
   public void showForm() {
-    showFormInWindow(ContainerEntryPoint.getContainerPortal()
-        .getGadgetPortlet(ref)
-        .getGadgetBean());
+    showFormInWindow();
   }
 
   private static final Window window = new Window();
 
-  private void showFormInWindow(GadgetBean gadget) {
+  private void showFormInWindow() {
     window.clear();
-    window.add(formGenerator(gadget));
-    window.setTitle(MESSAGES.preferencesGadget(gadget.getTitle()));
+    window.add(formGenerator());
+    window.setTitle(MESSAGES.preferencesGadget(portlet.getTitle()));
     window.setWidth(400);
     window.setModal(true);
     window.show();
@@ -101,7 +99,8 @@ public class GadgetForm {
     });
   }
 
-  private FormPanel formGenerator(GadgetBean gadget) {
+  private FormPanel formGenerator() {
+    GadgetBean gadget = portlet.getGadgetBean();
     final FormPanel form = new FormPanel();
     form.setLabelWidth(100);
     form.setPaddings(10);
@@ -149,7 +148,7 @@ public class GadgetForm {
       }
       form.add(input);
     }
-    addButtons(form, gadget.getRef());
+    addButtons(form, gadget);
     return form;
   }
 
@@ -246,13 +245,12 @@ public class GadgetForm {
     return decode;
   }
 
-  private void addButtons(final FormPanel form, final String ref) {
+  private void addButtons(final FormPanel form, final GadgetBean gadget) {
     Button save = new Button(CONSTANTS.save());
     save.addListener(new ButtonListenerAdapter() {
       public void onClick(Button button, EventObject e) {
-        savePreferences(form, ContainerEntryPoint.getContainerPortal()
-            .getGadgetPortlet(ref)
-            .getGadgetBean());
+        savePreferences(form.getForm()
+            .getValues(), gadget);
       }
     });
     form.addButton(save);
@@ -266,10 +264,10 @@ public class GadgetForm {
     form.addButton(cancel);
   }
 
-  private void savePreferences(final FormPanel form, final GadgetBean gadget) {
+  private void savePreferences(final String params, final GadgetBean gadget) {
     ContainerEntryPoint.getService()
-        .saveGadgetPreferences(gadget, form.getForm()
-            .getValues(), ContainerEntryPoint.getGwtParams(),
+        .saveGadgetPreferences(gadget, params,
+            ContainerEntryPoint.getGwtParams(),
             new SavePreferenceAsyncCallback<GadgetBean>(gadget));
     JsLibrary.loadingShow();
     window.close();

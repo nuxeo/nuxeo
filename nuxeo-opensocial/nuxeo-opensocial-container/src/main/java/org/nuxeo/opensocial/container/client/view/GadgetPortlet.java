@@ -1,20 +1,3 @@
-/*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- */
-
 package org.nuxeo.opensocial.container.client.view;
 
 import org.nuxeo.opensocial.container.client.GadgetService;
@@ -26,123 +9,143 @@ import com.google.gwt.user.client.ui.Frame;
 import com.gwtext.client.widgets.layout.FitLayout;
 import com.gwtext.client.widgets.portal.Portlet;
 
+/**
+* @author Guillaume Cusnieux
+*/
 public class GadgetPortlet extends Portlet {
 
-    static final String GADGET = "gadget-";
+  static final String GADGET = "gadget-";
+  private static final String GADGET_CONTAINER = "portlet-";
+  public static final String CANVAS_VIEW = "canvas";
+  public static final String DEFAULT_VIEW = "default";
+  private static final String VIEW_KEY = "&view=";
 
-    public static final String GADGET_CONTAINER = "gadget-container-";
+  private GadgetBean gadget;
+  private GadgetTools tools;
+  private Frame frame;
+  private String view;
 
-    public static final String FRAME_CONTAINER = "frame-container-";
+  public GadgetPortlet(GadgetBean gadget, String view) {
+    super();
+    this.gadget = gadget;
+    this.view = view;
+    buildPortlet();
+  }
 
-    private GadgetBean gadget;
+  public GadgetPortlet(GadgetBean bean) {
+    this(bean, DEFAULT_VIEW);
+  }
 
-    private final GadgetTools tools;
-
-    private Frame frame;
-
-    public GadgetPortlet(GadgetBean gadget) {
-        super();
-        this.gadget = gadget;
-        this.tools = new GadgetTools(gadget.getRef());
-        buildPortlet();
+  private void buildPortlet() {
+    this.setLayout(new FitLayout());
+    this.setTitle(this.gadget.getTitle());
+    if (this.view.equals(CANVAS_VIEW)) {
+      this.setDraggable(false);
+      this.setHideCollapseTool(true);
+    } else {
+      this.setDraggable(gadget.getPermission());
+      this.setHideCollapseTool(!this.gadget.getPermission());
     }
+    this.addListener(new PortletListener(this));
+    this.frame = buildFrame();
+    this.add(frame);
+    this.setId(getIdWithRefAndView(gadget.getRef(), view));
+    this.tools = new GadgetTools(this);
+    this.setTools(tools.getButtons());
+    GadgetService.setAuthToken(getIframeId(), this.gadget.getRef());
+    GadgetService.setRelayRpc(getIframeId(), this.gadget.getRef());
+  }
 
-    private void buildPortlet() {
-        this.setLayout(new FitLayout());
-        this.setTools(tools.getButtons(gadget.getPermission()));
-        this.setHideCollapseTool(!this.gadget.getPermission());
-        this.setTitle(this.gadget.getTitle());
-        this.setDraggable(gadget.getPermission());
-        this.addListener(new PortletListener(gadget));
-        this.frame = buildFrame();
-        this.add(frame);
-        this.setId(getGadgetId());
-        GadgetService.setAuthToken(getIframeId(), this.gadget.getRef());
-        GadgetService.setRelayRpc(getIframeId(), "");
+  public static String getIdWithRefAndView(String ref, String view) {
+    if (view == null)
+      view = DEFAULT_VIEW;
+    return GADGET_CONTAINER + ref + "-" + view;
+  }
+
+  private Frame buildFrame() {
+    Frame f = new Frame(this.gadget.getRenderUrl());
+    String urlView = gadget.getRenderUrl();
+    if (view.equals(CANVAS_VIEW)) {
+      urlView = urlView.replaceAll(VIEW_KEY + DEFAULT_VIEW, VIEW_KEY
+          + CANVAS_VIEW);
+    } else {
+      urlView = urlView.replaceAll(VIEW_KEY + CANVAS_VIEW, VIEW_KEY
+          + DEFAULT_VIEW);
     }
+    gadget.setRenderUrl(urlView);
+    f.setHeight("100%");
+    f.setWidth("100%");
+    Element elem = f.getElement();
+    elem.setId(getIframeId());
+    elem.setAttribute("overflow", "hidden");
+    return f;
+  }
 
-    private String getGadgetId() {
-        return GADGET_CONTAINER + this.gadget.getRef();
+  private String getIframeId() {
+    return GADGET + view + "-" + this.gadget.getRef();
+  }
+
+  public void updateGadgetPortlet(GadgetBean bean) {
+    JsLibrary.updateIframe(getIframeId(), bean.getRenderUrl());
+    this.setGadgetBean(bean);
+    this.frame = buildFrame();
+  }
+
+  private void setGadgetBean(GadgetBean bean) {
+    this.gadget = bean;
+  }
+
+  public GadgetBean getGadgetBean() {
+    return gadget;
+  }
+
+  @Override
+  protected void afterRender() {
+    if (this.gadget.isCollapse())
+      collapse(getIdWithRefAndView(gadget.getRef(), view));
+    super.afterRender();
+    JsLibrary.updateFrameHeight();
+  }
+
+  static native void collapse(String id)
+  /*-{
+    var p = $wnd.jQuery("#"+id);
+    $wnd.jQuery(p).addClass("x-panel-collapsed");
+    $wnd.jQuery(p.children()[1]).hide();
+  }-*/;
+
+  static native void unCollapse(String id, String idFrame, String url)
+  /*-{
+    var p = $wnd.jQuery("#"+id);
+    $wnd.jQuery(p).removeClass("x-panel-collapsed");
+    var f = $wnd.jQuery(p).children()[1];
+    $wnd.jQuery(f).show();
+    if($wnd.jQuery(f).height() < 20) {
+      $wnd.document.getElementById(idFrame).src = "";
+      setTimeout(function(){
+        $wnd.document.getElementById(idFrame).src = url;
+        $wnd.jQuery($wnd.jQuery(p).children(".x-panel-body")).attr("style","overflow-x:auto;overflow-y:auto;");
+      },50);
     }
+  }-*/;
 
-    private String getClientVirtualHostedUrl(String renderUrl) {
-        // JsLibrary.log("call getClientVirtualHostedUrl on url " + renderUrl);
-        String clientSiteBaseUrl = JsLibrary.getNuxeoClientSideUrl();
-        if (clientSiteBaseUrl == null) {
-            JsLibrary.error("unable to get Client Side url from top");
-            return renderUrl;
-        } else {
-            // XXX this is a hack : should do better than that !!!
-            String[] parts = renderUrl.split("/nuxeo/");
-            String oldServerUrl = parts[0];
-            String newServerUrl = clientSiteBaseUrl.replace("/nuxeo/", "");
-            String newurl = renderUrl.replaceAll(oldServerUrl, newServerUrl);
-            // JsLibrary.log("computed url =" + newurl);
-            return newurl;
-        }
-    }
+  public GadgetTools getTools() {
+    return tools;
+  }
 
-    private Frame buildFrame() {
-        String iFrameUrl = getClientVirtualHostedUrl(gadget.getRenderUrl());
-        Frame f = new Frame(iFrameUrl);
-        f.setHeight("100%");
-        f.setWidth("100%");
-        Element elem = f.getElement();
-        elem.setId(getIframeId());
-        elem.setAttribute("overflow", "hidden");
-        return f;
-    }
+  public void unCollapseGadget() {
+    unCollapse(this.getId(), this.getIframeId(), this.gadget.getRenderUrl());
+    this.gadget.setCollapse(false);
 
-    private String getIframeId() {
-        return GADGET + this.gadget.getRef();
-    }
+  }
 
-    public void updateGadgetPortlet(GadgetBean bean) {
-        String iFrameUrl = getClientVirtualHostedUrl(gadget.getRenderUrl());
-        JsLibrary.updateIframe(getIframeId(), iFrameUrl);
-        this.setGadgetBean(bean);
-        this.setTitle(bean.getTitle());
-        this.frame = buildFrame();
-    }
+  public void collapseGadget() {
+    collapse(this.getId());
+    this.gadget.setCollapse(true);
+  }
 
-    private void setGadgetBean(GadgetBean bean) {
-        this.gadget = bean;
-    }
-
-    public GadgetBean getGadgetBean() {
-        return gadget;
-    }
-
-    public GadgetTools getTools() {
-        return tools;
-    }
-
-    @Override
-    protected void afterRender() {
-        if (this.gadget.isCollapse())
-            collapse(GADGET_CONTAINER + this.gadget.getRef());
-        super.afterRender();
-        JsLibrary.updateFrameHeight();
-    }
-
-    static native void collapse(String id) /*-{
-           var p = $wnd.jQuery("#"+id);
-           $wnd.jQuery(p).addClass("x-panel-collapsed");
-           $wnd.jQuery(p.children()[1]).hide();
-         }-*/;
-
-    static native void unCollapse(String id, String idFrame, String url) /*-{
-           var p = $wnd.jQuery("#"+id);
-           $wnd.jQuery(p).removeClass("x-panel-collapsed");
-           var f = $wnd.jQuery(p).children()[1];
-           $wnd.jQuery(f).show();
-           if($wnd.jQuery(f).height() < 20) {
-              $wnd.document.getElementById(idFrame).src = "";
-              setTimeout(function(){
-                $wnd.document.getElementById(idFrame).src = url;
-                $wnd.jQuery($wnd.jQuery(p).children(".x-panel-body")).attr("style","overflow-x:auto;overflow-y:auto;");
-              },50);
-           }
-         }-*/;
+  public String getView() {
+    return view;
+  }
 
 }

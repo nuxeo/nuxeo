@@ -25,6 +25,9 @@ import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+/**
+* @author Guillaume Cusnieux
+*/
 public class SavePreferenceAsyncCallback<T> implements
     AsyncCallback<GadgetBean> {
 
@@ -44,7 +47,7 @@ public class SavePreferenceAsyncCallback<T> implements
 
   public void onSuccess(GadgetBean bean) {
     ContainerPortal c = ContainerEntryPoint.getContainerPortal();
-    c.getGadgetPortlet(gadget.getRef())
+    c.getGadgetPortletByRef(gadget.getRef())
         .updateGadgetPortlet(bean);
     c.loader(ContainerEntryPoint.DEFAULT_TIMEOUT);
     JsLibrary.loadingHide();

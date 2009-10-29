@@ -22,7 +22,9 @@ import org.apache.shindig.common.crypto.BasicBlobCrypter;
 import org.apache.shindig.common.util.Utf8UrlCoder;
 import org.nuxeo.opensocial.container.component.PortalComponent;
 import org.nuxeo.opensocial.container.component.PortalConfig;
-
+/**
+* @author Guillaume Cusnieux
+*/
 public class SecureTokenBuilder {
 
   public static String getSecureToken(String viewer, String owner, String gadgetUrl)

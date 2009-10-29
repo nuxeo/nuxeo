@@ -26,37 +26,33 @@ import com.gwtext.client.widgets.event.PanelListenerAdapter;
 /**
  * Portlet Listener serve for catch portlet event's and save collapsed
  *
- * @author 10044826
- *
+ * @author Guillaume Cusnieux
  */
 public class PortletListener extends PanelListenerAdapter {
 
-  private GadgetBean gadget;
+  private GadgetPortlet portlet;
 
-  public PortletListener(GadgetBean gadget) {
-    this.gadget = gadget;
+  public PortletListener(GadgetPortlet portlet) {
+    this.portlet = portlet;
   }
 
   @Override
   public boolean doBeforeCollapse(Panel panel, boolean animate) {
+    GadgetBean gadget = portlet.getGadgetBean();
     if (gadget.isCollapse()) {
-      GadgetPortlet.unCollapse(
-          GadgetPortlet.GADGET_CONTAINER + gadget.getRef(),
-          GadgetPortlet.GADGET + gadget.getRef(), gadget.getRenderUrl());
-      gadget.setCollapse(false);
+      portlet.unCollapseGadget();
     } else {
-      GadgetPortlet.collapse(GadgetPortlet.GADGET_CONTAINER + gadget.getRef());
-      gadget.setCollapse(true);
+      portlet.collapseGadget();
     }
     saveCollapsed(gadget.isCollapse());
     return false;
   }
 
   private void saveCollapsed(boolean collapsed) {
+    GadgetBean gadget = portlet.getGadgetBean();
     gadget.setCollapse(collapsed);
     ContainerEntryPoint.getService()
         .saveGadgetCollapsed(gadget, ContainerEntryPoint.getGwtParams(),
             new SaveGadgetAsyncCallback());
   }
-
 }

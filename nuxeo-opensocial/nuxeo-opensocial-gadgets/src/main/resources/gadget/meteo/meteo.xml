@@ -12,6 +12,7 @@ author_location="London, England"
 screenshot="http://www.wofrance.fr/gifs/igooglecity_screen_fr.png"
 thumbnail="http://www.wofrance.fr/gifs/igooglecity_screen_fr.png">
 <Require feature="dynamic-height" />
+<Require feature="opensocial-0.8" />
 </ModulePrefs>
 <UserPref name="WMO" display_name="City" datatype="enum" default_value="07149">
 <EnumValue display_value="Abbeville" value="07005"/>
@@ -434,7 +435,7 @@ thumbnail="http://www.wofrance.fr/gifs/igooglecity_screen_fr.png">
 <EnumValue display_value="Vosges" value="00616"/>
 <EnumValue display_value="Voyage" value="07240"/>
 </UserPref>
-  <Content type="html">
+  <Content type="html" view="default">
 <![CDATA[
 <script type="text/javascript">
   function displayWeather(){
@@ -548,5 +549,8 @@ thumbnail="http://www.wofrance.fr/gifs/igooglecity_screen_fr.png">
 
 <div style="height:100%;padding:7px;" id="content_div"></div>
   ]]>
+  </Content>
+  <Content type="html" view="canvas">
+  Vu canvas
   </Content>
   </Module>

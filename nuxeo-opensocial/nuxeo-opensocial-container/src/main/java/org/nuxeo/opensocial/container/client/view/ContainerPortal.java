@@ -18,6 +18,7 @@
 package org.nuxeo.opensocial.container.client.view;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,14 +41,24 @@ import com.gwtext.client.widgets.layout.ColumnLayoutData;
 import com.gwtext.client.widgets.portal.Portal;
 import com.gwtext.client.widgets.portal.PortalColumn;
 
+/**
+ *
+ * @author Guillaume Cusnieux
+ */
 public class ContainerPortal extends Portal {
 
-    // note that this list is duplicated in DashboardSpaceProvider.java because
-    // of linkage issues
-    private static final String[] COLS = new String[] { "firstCol",
-            "secondCol", "thirdCol", "fourCol" };
 
-    private static final String SPACER_CLASS = "x-panel-dd-spacer";
+  private static final String PORTAL_CLASS = "containerPortal";
+
+
+  // note that this list is duplicated in DashboardSpaceProvider.java because
+  // of linkage issues
+  private static final String[] COLS = new String[] { "firstCol", "secondCol",
+      "thirdCol", "fourCol" };
+
+  private static final String MAXIMIZED_COL_ID = "maximizedCol";
+  private static final String SPACER_CLASS = "x-panel-dd-spacer";
+  private PortalColumn maximizedCol;
 
     private final Container container;
 
@@ -103,21 +114,6 @@ public class ContainerPortal extends Portal {
 
     public Container getContainer() {
         return container;
-    }
-
-    public GadgetPortlet getGadgetPortlet(String ref) {
-        if (portlets.containsKey(ref))
-            return portlets.get(ref);
-        return null;
-    }
-
-    public GadgetPortlet getGadgetPortletById(String id) {
-        return getGadgetPortlet(getRef(id));
-    }
-
-    private String getRef(String id) {
-        return id.substring(GadgetPortlet.GADGET_CONTAINER.length(),
-                id.length());
     }
 
     public void buildPortal() {
@@ -181,144 +177,182 @@ public class ContainerPortal extends Portal {
             return columns.get(id);
         return null;
     }
+  public GadgetPortlet getGadgetPortlet(String id) {
+    if (portlets.containsKey(id))
+      return portlets.get(id);
+    return null;
+  }
 
-    public void toggleGadgetsCollapse() {
-        for (GadgetPortlet p : portlets.values()) {
-            if (!p.isCollapsed()) {
-                p.toggleCollapse();
-                collapsedCache.add(p);
-            }
+  public GadgetPortlet getGadgetPortletByRef(String ref) {
+    String portletId = GadgetPortlet.getIdWithRefAndView(ref, null);
+    return getGadgetPortlet(portletId);
+  }
+
+
+  public Collection<PortalColumn> getPortalColumns() {
+    return columns.values();
+  }
+
+  public void toggleGadgetsCollapse() {
+    for (GadgetPortlet p : portlets.values()) {
+      if (!p.isCollapsed()) {
+        p.toggleCollapse();
+        collapsedCache.add(p);
+      }
+    }
+
+  }
+
+  public void clearGadgetsCollapse() {
+    for (GadgetPortlet p : collapsedCache) {
+      p.toggleCollapse();
+      collapsedCache.remove(p);
+    }
+  }
+
+  private void buildLayout() {
+    switch (container.getStructure()) {
+    case 1:
+      createLayout1Col();
+      break;
+    case 2:
+      createLayout2Col();
+      break;
+    case 3:
+      createLayout3Cols();
+      break;
+    case 4:
+      createLayout4Col();
+      break;
+    default:
+      createLayout3Cols();
+      break;
+    }
+    createMaximizedCol();
+  }
+
+  private void createMaximizedCol() {
+    maximizedCol = createCol(MAXIMIZED_COL_ID, 1.00);
+    maximizedCol.hide();
+  }
+
+  private void createLayout1Col() {
+    createCol(COLS[0], 1.00);
+  }
+
+  private void createLayout2Col() {
+    createCol(COLS[0], .5);
+    createCol(COLS[1], .5);
+  }
+
+  private void createLayout3Cols() {
+    createCol(COLS[0], .33);
+    createCol(COLS[1], .33);
+    createCol(COLS[2], .33);
+  }
+
+  private void createLayout4Col() {
+    createCol(COLS[0], .25);
+    createCol(COLS[1], .25);
+    createCol(COLS[2], .25);
+    createCol(COLS[3], .25);
+  }
+
+  private PortalColumn createCol(String id, double columnWidth) {
+    PortalColumn col = new PortalColumn();
+    col.setPaddings(5, 5, 5, 0);
+    col.setId(id);
+    col.addClass(container.getLayout());
+    this.add(col, new ColumnLayoutData(columnWidth));
+    columns.put(id, col);
+    return col;
+  }
+
+  public BoxComponent getPanel() {
+    return panel;
+  }
+
+  public void removeGadgetPortlet(String id) {
+    GadgetBean gadget = portlets.get(id)
+        .getGadgetBean();
+    portlets.remove(id);
+    GadgetPosition pos = gadget.getGadgetPosition();
+    PortalColumn col = columns.get(pos.getPlaceID());
+    if (col == null)
+      col = columns.get(COLS[0]);
+    col.remove(id, true);
+    col.doLayout();
+    loader(1);
+  }
+
+  public void incrementLoading() {
+    if (loading < portlets.size())
+      loading++;
+  }
+
+  private void addGadget(GadgetPortlet portlet) {
+    removeGadgetPortlet(portlet.getId());
+    addGadget(portlet.getGadgetBean());
+  }
+
+  public void addGadget(GadgetBean bean) {
+    bean.setPosition(new GadgetPosition(COLS[0], 0));
+    addGadget(bean, null);
+    this.doLayout();
+    columns.get(COLS[0])
+        .doLayout();
+  }
+
+  public static String getDefaultColId() {
+    return COLS[0];
+  }
+
+  public static Integer getDefaultPos() {
+    return 0;
+  }
+
+  public void updateColumnClassName(String oldCls, String cls,
+      int oldStructure, int structure) {
+    container.setLayout(cls);
+    container.setStructure(structure);
+    for (PortalColumn col : columns.values()) {
+      col.removeClass(oldCls);
+      col.addClass(cls);
+      col.doLayout();
+    }
+    removeOldColumns(oldStructure, structure);
+    addNewColumns(oldStructure, structure);
+    JsLibrary.updateColumnStyle();
+    this.doLayout();
+    JsLibrary.updateFrameHeight();
+  }
+
+  private void addNewColumns(int oldStructure, int structure) {
+    for (int i = oldStructure; i < structure; i++) {
+      createCol(COLS[i], .25);
+    }
+    this.doLayout();
+  }
+
+  private void removeOldColumns(int oldStructure, int structure) {
+    for (int i = oldStructure; i > structure; i--) {
+      String colToDelete = COLS[i - 1];
+      for (GadgetPortlet portlet : portlets.values()) {
+        GadgetBean b = portlet.getGadgetBean();
+        if (b.getGadgetPosition()
+            .getPlaceID()
+            .equals(colToDelete)) {
+          addGadget(portlet);
         }
+      }
+      this.columns.remove(colToDelete);
+      this.remove(colToDelete, true);
     }
+  }
 
-    public void clearGadgetsCollapse() {
-        for (GadgetPortlet p : collapsedCache) {
-            p.toggleCollapse();
-            collapsedCache.remove(p);
-        }
-    }
+  public PortalColumn getMaximizedCol() {
+    return maximizedCol;
+  }
 
-    private void buildLayout() {
-        switch (container.getStructure()) {
-        case 1:
-            createLayout1Col();
-            break;
-        case 2:
-            createLayout2Col();
-            break;
-        case 3:
-            createLayout3Cols();
-            break;
-        case 4:
-            createLayout4Col();
-            break;
-        default:
-            createLayout3Cols();
-            break;
-        }
-    }
 
-    private void createLayout1Col() {
-        createCol(COLS[0], 1.00);
-    }
-
-    private void createLayout2Col() {
-        createCol(COLS[0], .5);
-        createCol(COLS[1], .5);
-    }
-
-    private void createLayout3Cols() {
-        createCol(COLS[0], .33);
-        createCol(COLS[1], .33);
-        createCol(COLS[2], .33);
-    }
-
-    private void createLayout4Col() {
-        createCol(COLS[0], .25);
-        createCol(COLS[1], .25);
-        createCol(COLS[2], .25);
-        createCol(COLS[3], .25);
-    }
-
-    private PortalColumn createCol(String id, double columnWidth) {
-        PortalColumn col = new PortalColumn();
-        col.setPaddings(5, 5, 5, 0);
-        col.setId(id);
-        col.addClass(container.getLayout());
-        this.add(col, new ColumnLayoutData(columnWidth));
-        columns.put(id, col);
-        return col;
-    }
-
-    public BoxComponent getPanel() {
-        return panel;
-    }
-
-    public void removeGadgetPortlet(GadgetBean gadget) {
-        portlets.remove(gadget.getRef());
-        GadgetPosition pos = gadget.getGadgetPosition();
-        PortalColumn col = columns.get(pos.getPlaceID());
-        if (col == null)
-            col = columns.get(COLS[0]);
-        col.remove(GadgetPortlet.GADGET_CONTAINER + gadget.getRef(), true);
-        col.doLayout();
-        loader(1);
-    }
-
-    public void incrementLoading() {
-        if (loading < portlets.size())
-            loading++;
-    }
-
-    public void addGadget(GadgetBean bean) {
-        bean.setPosition(new GadgetPosition(COLS[0], 0));
-        addGadget(bean, null);
-        this.doLayout();
-        columns.get(COLS[0]).doLayout();
-    }
-
-    public static String getDefaultColId() {
-        return COLS[0];
-    }
-
-    public static Integer getDefaultPos() {
-        return 0;
-    }
-
-    public void updateColumnClassName(String oldCls, String cls,
-            int oldStructure, int structure) {
-        container.setLayout(cls);
-        container.setStructure(structure);
-        for (PortalColumn col : columns.values()) {
-            col.removeClass(oldCls);
-            col.addClass(cls);
-            col.doLayout();
-        }
-        removeOldColumns(oldStructure, structure);
-        addNewColumns(oldStructure, structure);
-        JsLibrary.updateColumnStyle();
-        this.doLayout();
-        JsLibrary.updateFrameHeight();
-    }
-
-    private void addNewColumns(int oldStructure, int structure) {
-        for (int i = oldStructure; i < structure; i++) {
-            createCol(COLS[i], .25);
-        }
-        this.doLayout();
-    }
-
-    private void removeOldColumns(int oldStructure, int structure) {
-        for (int i = oldStructure; i > structure; i--) {
-            String colToDelete = COLS[i - 1];
-            for (GadgetPortlet portlet : portlets.values()) {
-                GadgetBean b = portlet.getGadgetBean();
-                if (b.getGadgetPosition().getPlaceID().equals(colToDelete)) {
-                    addGadget(b);
-                }
-            }
-            this.columns.remove(colToDelete);
-            this.remove(colToDelete, true);
-        }
-    }
 }
