@@ -58,28 +58,28 @@ public class TestVideoImporter extends SQLRepositoryTestCase {
 
         DocumentType videoType = session.getDocumentType(VIDEO_TYPE);
         assertNotNull("Does our type exist?", videoType);
-        
+
         //TODO: check get/set properties on common properties of videos
-        
+
         // Create a new DocumentModel of our type in memory
         DocumentModel docModel = session.createDocumentModel("/", "doc", VIDEO_TYPE);
         assertNotNull(docModel);
-      
+
         assertNull(docModel.getPropertyValue("common:icon"));
         assertNull(docModel.getPropertyValue("dc:title"));
         assertNull(docModel.getPropertyValue("picture:credit"));
         assertNull(docModel.getPropertyValue("uid:uid"));
         assertNull(docModel.getPropertyValue("vid:duration"));
-        
+
         docModel.setPropertyValue("common:icon", "/icons/video.png");
         docModel.setPropertyValue("dc:title", "testTitle");
         docModel.setPropertyValue("picture:credit", "testUser");
         docModel.setPropertyValue("uid:uid", "testUid");
         docModel.setPropertyValue("vid:duration", 133);
-        
+
         DocumentModel docModelResult = session.createDocument(docModel);
         assertNotNull(docModelResult);
-        
+
         assertEquals("/icons/video.png", docModelResult.getPropertyValue("common:icon"));
         assertEquals("testTitle", docModelResult.getPropertyValue("dc:title"));
         assertEquals("testUser", docModelResult.getPropertyValue("picture:credit"));
@@ -112,9 +112,13 @@ public class TestVideoImporter extends SQLRepositoryTestCase {
         assertEquals("Video", docModel.getType());
         assertEquals("sample", docModel.getTitle());
 
+        Blob contentBlob = (Blob) docModel.getProperty("file", "content");
+        assertNotNull(contentBlob);
+        assertEquals("sample.mpg", docModel.getProperty("file", "filename"));
+
         // check that we don't get PropertyExceptions when accessing the video
         // and picture schemas
-        
+
         // TODO: add duration detection
         assertNull(docModel.getPropertyValue("vid:duration"));
 
