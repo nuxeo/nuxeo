@@ -57,26 +57,26 @@ public class TestAudioImporter extends SQLRepositoryTestCase {
 
         DocumentType audioType = session.getDocumentType(AUDIO_TYPE);
         assertNotNull("Does our type exist?", audioType);
-        
+
         //TODO: check get/set properties on common properties of audios
-        
+
         // Create a new DocumentModel of our type in memory
         DocumentModel docModel = session.createDocumentModel("/", "doc", AUDIO_TYPE);
         assertNotNull(docModel);
-      
+
         assertNull(docModel.getPropertyValue("common:icon"));
         assertNull(docModel.getPropertyValue("dc:title"));
         assertNull(docModel.getPropertyValue("uid:uid"));
         assertNull(docModel.getPropertyValue("aud:duration"));
-        
+
         docModel.setPropertyValue("common:icon", "/icons/audio.png");
         docModel.setPropertyValue("dc:title", "testTitle");
         docModel.setPropertyValue("uid:uid", "testUid");
         docModel.setPropertyValue("aud:duration", 133);
-        
+
         DocumentModel docModelResult = session.createDocument(docModel);
         assertNotNull(docModelResult);
-        
+
         assertEquals("/icons/audio.png", docModelResult.getPropertyValue("common:icon"));
         assertEquals("testTitle", docModelResult.getPropertyValue("dc:title"));
         assertEquals("testUid", docModelResult.getPropertyValue("uid:uid"));
@@ -108,17 +108,18 @@ public class TestAudioImporter extends SQLRepositoryTestCase {
         assertEquals("Audio", docModel.getType());
         assertEquals("sample", docModel.getTitle());
 
+        Blob contentBlob = (Blob) docModel.getProperty("file", "content");
+        assertNotNull(contentBlob);
+        assertEquals("sample.wav", docModel.getProperty("file", "filename"));
+
         // check that we don't get PropertyExceptions when accessing the audio schema
-        
+
         // TODO: add duration detection
         assertNull(docModel.getPropertyValue("aud:duration"));
 
         // TODO: add thumbnail generation and picture metadata extraction where
-        // they make sense for audios (ie. extract these from the metadata already included in the audio 
+        // they make sense for audios (ie. extract these from the metadata already included in the audio
         // and use them to set the appropriate schema properties)
-
-        tearDown();
-
     }
 
 }

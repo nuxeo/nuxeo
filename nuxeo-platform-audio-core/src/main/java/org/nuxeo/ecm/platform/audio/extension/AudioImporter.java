@@ -34,19 +34,19 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 /**
  * This class will create a Document of type "Audio" from the uploaded file, if the uploaded file
  * matches any of the mime types listed in the filemanager-plugins.xml file.
- * 
- * If an existing document with the same title is found, it will overwrite it and increment the 
+ *
+ * If an existing document with the same title is found, it will overwrite it and increment the
  * version number if the overwrite flag is set to true;
- * Otherwise, it will generate a new title and create a new Document of type Audio with that title. 
- * 
+ * Otherwise, it will generate a new title and create a new Document of type Audio with that title.
+ *
  */
 public class AudioImporter extends AbstractFileImporter {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(AudioImporter.class);
-	
+
 	public static final String AUDIO_TYPE = "Audio";
 
 	public DocumentModel create(CoreSession documentManager, Blob content,
@@ -78,8 +78,9 @@ public class AudioImporter extends AbstractFileImporter {
 			docModel = documentManager.createDocumentModel(path, docId, AUDIO_TYPE);
             // update known attributes, format is: schema, attribute, value
             docModel.setProperty("dublincore", "title", title);
+            docModel.setProperty("file", "content", content);
             docModel.setProperty("file", "filename", filename);
-            
+
 			// updating icon
 			Type docType = typeService.getType(AUDIO_TYPE);
 			if (docType != null) {

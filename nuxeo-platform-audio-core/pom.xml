@@ -14,7 +14,7 @@
   <name>Nuxeo Platform Audio Core</name>
   <description>
     Nuxeo Platform Audio provides audio management to Nuxeo Web Platform
-    and RCP. 
+    and RCP.
   </description>
 
   <build>
@@ -55,8 +55,8 @@
         <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
