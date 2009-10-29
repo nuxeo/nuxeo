@@ -422,4 +422,32 @@ public class DocumentActions implements Serializable {
         this.downloadSize = downloadSize;
     }
 
+    public void rewind(PagedDocumentsProvider provider) {
+        provider.rewind();
+        setCurrentSelectionBasedOnProvider(provider);
+    }
+
+    public void previous(PagedDocumentsProvider provider) {
+        provider.previous();
+        setCurrentSelectionBasedOnProvider(provider);
+    }
+
+    public void next(PagedDocumentsProvider provider) {
+        provider.next();
+        setCurrentSelectionBasedOnProvider(provider);
+    }
+
+    public void last(PagedDocumentsProvider provider) {
+        provider.last();
+        setCurrentSelectionBasedOnProvider(provider);
+    }
+
+    private void setCurrentSelectionBasedOnProvider(
+            PagedDocumentsProvider provider) {
+        // CB: DAM-235 - On a page, first asset must be always selected
+        DocumentModelList currentPage = provider.getCurrentPage();
+        if (currentPage != null && !currentPage.isEmpty()) {
+            currentSelection = currentPage.get(0);
+        }
+    }
 }

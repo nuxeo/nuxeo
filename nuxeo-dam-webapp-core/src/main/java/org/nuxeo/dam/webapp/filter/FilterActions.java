@@ -37,14 +37,14 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
+import org.nuxeo.dam.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
-import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService;
-import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 import org.nuxeo.ecm.platform.ui.web.api.SortNotSupportedException;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
@@ -53,7 +53,6 @@ import org.nuxeo.ecm.webapp.directory.DirectoryTreeNode;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
-import org.nuxeo.runtime.api.Framework;
 
 @Scope(CONVERSATION)
 @Name("filterActions")
@@ -81,9 +80,12 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
 
     @In(create = true, required = false)
     transient ResultsProvidersCache resultsProvidersCache;
-    
+
     @In(create = true)
     protected DirectoryTreeManager directoryTreeManager;
+
+    @In(create = true)
+    protected DocumentActions documentActions;
 
     @RequestParameter
     protected String docType;
@@ -167,6 +169,13 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
         PagedDocumentsProvider provider = model.getResultsProvider(
                 documentManager, null, sortInfo);
         provider.setName(queryModelName);
+
+        // CB: DAM-235 - On a page, first asset must be always selected
+        DocumentModelList currentPage = provider.getCurrentPage();
+        if (currentPage != null && !currentPage.isEmpty()) {
+            documentActions.setCurrentSelection(currentPage.get(0));
+        }
+
         return provider;
     }
 

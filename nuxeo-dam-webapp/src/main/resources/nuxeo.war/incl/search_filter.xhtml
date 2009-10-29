@@ -21,10 +21,10 @@
      
      <rich:panelMenuGroup label="#{messages['heading.filter.fulltext']}"
        expanded="true" iconExpanded="none" id="keywords">
-     
+
        <h:inputText id="fulltextFilter" class="searchInput"
          value="#{filterActions.filterDocument.filter_query.ecm_fulltext}">
-       <a4j:support event="onkeyup" reRender="filterResultTable"
+       <a4j:support event="onkeyup" reRender="filterResultTable,selectionView"
          requestDelay="1000" action="#{filterActions.invalidateProvider}"
          ignoreDupResponces="true" eventsQueue="filterFormQueue" />
        </h:inputText>
@@ -39,7 +39,7 @@
          <rich:panelMenuItem label="#{messages[item.label]}" id="#{messages[item.value]}"
            styleClass="#{item.disabled ? 'selected' : ''}"
            mode="ajax" action="#{filterActions.toggleSelectDocType}"
-           reRender="filterResultTable,filterFormPanel"
+           reRender="filterResultTable,filterFormPanel,selectionView"
            eventsQueue="filterFormQueue">
            <f:param name="docType" value="#{item.value}" />
          </rich:panelMenuItem>
@@ -70,7 +70,7 @@
 	          <div class="#{nxu:test(node.selected, 'selected', '')}" id="coverageDivId">
 	            <a4j:commandLink immediate="true" id="coverageLinkId"
 	              action="#{node.selectNode}" styleClass="treeLink"
-	               reRender="filterResultTable,filterFormPanel">
+	               reRender="filterResultTable,filterFormPanel,selectionView">
 	              <h:outputText value="#{messages[node.description]}" />
 	            </a4j:commandLink>
 	          </div>
@@ -88,7 +88,7 @@
       styleClass="button" style="visibility: hidden"
       value="#{messages['label.action.filter.doFulltextSearch']}"
       action="#{filterActions.invalidateProvider}"
-      reRender="filterResultTable" eventsQueue="filterFormQueue" />
+      reRender="filterResultTable,selectionView" eventsQueue="filterFormQueue" />
   </a4j:form>
   </a4j:outputPanel>
   </a4j:region>

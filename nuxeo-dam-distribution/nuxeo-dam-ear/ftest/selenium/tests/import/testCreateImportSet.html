@@ -42,8 +42,18 @@
 	<td></td>
 </tr>
 <tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
 	<td>click</td>
 	<td>link=Import</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>20000</td>
 	<td></td>
 </tr>
 <tr>
@@ -62,7 +72,7 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
+	<td>waitForTextPresent</td>
 	<td>Done</td>
 	<td></td>
 </tr>
@@ -132,29 +142,9 @@
 	<td></td>
 </tr>
 <tr>
-	<td>storeEval</td>
-	<td>selenium.browserbot.getCurrentWindow().document.body.innerHTML</td>
-	<td>innerhtml</td>
-</tr>
-<tr>
-	<td>echo</td>
-	<td>${innerhtml}</td>
-	<td></td>
-</tr>
-<tr>
   <td>waitForTextPresent</td>
   <td>P-01</td>
   <td></td>
-</tr>
-<tr>
-	<td>storeEval</td>
-	<td>selenium.browserbot.getCurrentWindow().document.body.innerHTML</td>
-	<td>innerhtml</td>
-</tr>
-<tr>
-	<td>echo</td>
-	<td>${innerhtml}</td>
-	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
