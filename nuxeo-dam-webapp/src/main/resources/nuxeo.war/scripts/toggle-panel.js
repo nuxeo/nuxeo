@@ -7,7 +7,7 @@ function togglePanel(button) {
     parent = parent.parent();
   }
   var ele = jQuery(parent.find('.togglePanelBody')[0]);
-  ele.toggle('normal');
+  ele.toggle();
   button.toggleClass('folded').toggleClass('unfolded');
   return false;
 }

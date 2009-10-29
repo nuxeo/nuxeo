@@ -34,9 +34,6 @@
                                   !documentActions.currentSelection.hasSchema('video') and
                                   !documentActions.currentSelection.hasSchema('audio') }"/>
     </a>
-    <f:subview rendered="#{documentActions.currentSelection.hasSchema('video')}">
-
-    </f:subview>
     <nxh:graphicImage id="theVideo"
                       value="/icons/video_100.png"
                       style="max-height: 350px;"
@@ -89,12 +86,22 @@
           <div style="clear:both;"></div>
         </div>
         <div class="togglePanelBody">
-          <nxl:layout name="heading" mode="#{documentActions.displayMode}"
+          <f:subview id="viewSubView" rendered="#{documentActions.displayMode == 'view'}">
+          <nxl:layout name="heading" mode="view"
                       value="#{documentActions.currentSelection}"/>
-          <nxl:layout name="damc" mode="#{documentActions.displayMode}"
+          <nxl:layout name="damc" mode="view"
                       value="#{documentActions.currentSelection}"/>
-          <nxl:layout name="dublincore" mode="#{documentActions.displayMode}"
+          <nxl:layout name="dublincore" mode="view"
                       value="#{documentActions.currentSelection}"/>
+          </f:subview>
+          <f:subview id="editSubView" rendered="#{documentActions.displayMode == 'edit'}">
+          <nxl:layout name="heading" mode="edit"
+                      value="#{documentActions.currentSelection}"/>
+          <nxl:layout name="damc" mode="edit"
+                      value="#{documentActions.currentSelection}"/>
+          <nxl:layout name="dublincore" mode="edit"
+                      value="#{documentActions.currentSelection}"/>
+          </f:subview>
 
           <h:panelGrid class="dataOutput"
                        columnClasses="labelColumn, fieldColumn" columns="2">
