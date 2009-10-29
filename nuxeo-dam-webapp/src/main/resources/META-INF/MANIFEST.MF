@@ -6,3 +6,4 @@ Bundle-Localization: plugin
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Bundle-Category: web
+Require-Bundle: org.nuxeo.ecm.platform.ui
