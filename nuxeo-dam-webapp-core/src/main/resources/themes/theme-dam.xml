@@ -482,9 +482,11 @@
       </selector>
       <!-- rich faces tree ident (should be part of the richfaces skin) -->
       <selector path=".dr-tree-h-ic-div">
-
         <margin-left>8px</margin-left>
         <padding-left>10px</padding-left>
+      </selector>
+      <selector path=".filterBlock .dr-pmenu-top-group-div, .filterBlock .rich-pmenu-top-group-div">
+        <border>none</border>
       </selector>
     </style>
     <style element="page[1]/section[1]" inherit="common style">
