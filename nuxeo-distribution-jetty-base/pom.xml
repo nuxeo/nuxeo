@@ -24,8 +24,45 @@
         <embedded.type>all</embedded.type>
         <embedded.includeNestedJars>true</embedded.includeNestedJars>
         <embedded.excludeLibs>false</embedded.excludeLibs>
-        <distribution>embedded-standalone</distribution>
+        <distribution>embedded-standalone</distribution>        
       </properties>
+      <build>
+        <plugins>
+        <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-nuxeo-plugin</artifactId>
+        <executions>
+            <execution>
+            <id>${distribution}</id>
+            <!--phase>package</phase-->
+            <goals>
+              <goal>allinone</goal>
+            </goals>
+            <configuration>
+              <includeNestedJars>${embedded.includeNestedJars}</includeNestedJars>
+              <excludeLibs>${embedded.excludeLibs}</excludeLibs>
+              <src>${basedir}/target/${application.name}.zip</src>
+              <target>${basedir}/target/${application.name}-${embedded.type}.jar</target>
+              <launcher>org.nuxeo.ecm.distribution:nuxeo-embedded-launcher:${project.version}</launcher>
+            </configuration>
+          </execution>
+          <execution>
+            <id>attach-all</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${basedir}/target/${application.name}-${embedded.type}.jar</file>
+              <!--type>jar</type-->
+              <classifier>${embedded.type}</classifier>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+        </plugins>
+      </build>
     </profile>
     <profile>
       <id>embedded-osgi</id>
@@ -35,6 +72,43 @@
         <embedded.excludeLibs>false</embedded.excludeLibs>
         <distribution>embedded-osgi</distribution>
       </properties>
+      <build>
+        <plugins>
+        <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-nuxeo-plugin</artifactId>
+        <executions>
+            <execution>
+            <id>${distribution}</id>
+            <!--phase>package</phase-->
+            <goals>
+              <goal>allinone</goal>
+            </goals>
+            <configuration>
+              <includeNestedJars>${embedded.includeNestedJars}</includeNestedJars>
+              <excludeLibs>${embedded.excludeLibs}</excludeLibs>
+              <src>${basedir}/target/${application.name}.zip</src>
+              <target>${basedir}/target/${application.name}-${embedded.type}.jar</target>
+              <launcher>org.nuxeo.ecm.distribution:nuxeo-embedded-launcher:${project.version}</launcher>
+            </configuration>
+          </execution>
+          <execution>
+            <id>attach-all</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${basedir}/target/${application.name}-${embedded.type}.jar</file>
+              <!--type>jar</type-->
+              <classifier>${embedded.type}</classifier>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+        </plugins>
+      </build>
     </profile>
     <profile>
       <id>embedded-minimal</id>
@@ -80,12 +154,10 @@
             <configuration>
               <file>${basedir}/target/${application.name}.zip</file>
               <type>zip</type>
-              <classifier>${distribution}</classifier>
             </configuration>
           </execution>
-          <execution>
+          <!--execution>
             <id>all-in-one</id>
-            <!--phase>package</phase-->
             <goals>
               <goal>allinone</goal>
             </goals>
@@ -96,7 +168,7 @@
               <target>${basedir}/target/nuxeo-${embedded.type}-${project.version}.jar</target>
               <launcher>org.nuxeo.ecm.distribution:nuxeo-embedded-launcher:${project.version}</launcher>
             </configuration>
-          </execution>
+          </execution-->
         </executions>
       </plugin>
     </plugins>
