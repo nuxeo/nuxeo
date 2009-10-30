@@ -128,7 +128,7 @@
         <module>nuxeo-distribution-jboss</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-jetty</module>
-<!--        <module>nuxeo-distribution-tomcat</module>-->
+        <!--        <module>nuxeo-distribution-tomcat</module>-->
         <module>nuxeo-distribution-jetty-base</module>
         <module>nuxeo-distribution-gf3</module>
       </modules>
@@ -144,6 +144,18 @@
         <module>nuxeo-distribution-jboss</module>
         <module>nuxeo-distribution-windows</module>
       </modules>
+    </profile>
+
+    <!-- For use by Nuxeo internal QA -->
+    <profile>
+      <id>qa</id>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>snapshots</id>
+          <url>http://maven.in.nuxeo.com/snapshots</url>
+          <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+      </distributionManagement>
     </profile>
   </profiles>
 
@@ -1069,5 +1081,13 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>nuxeo-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/repositories/nuxeo-snapshot</url>
+      <uniqueVersion>false</uniqueVersion>
+    </snapshotRepository>
+  </distributionManagement>
 
 </project>

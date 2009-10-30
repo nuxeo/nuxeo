@@ -34,7 +34,7 @@
         <executions>
             <execution>
             <id>${distribution}</id>
-            <!--phase>package</phase-->
+            <phase>package</phase>
             <goals>
               <goal>allinone</goal>
             </goals>
@@ -54,7 +54,7 @@
             </goals>
             <configuration>
               <file>${basedir}/target/${application.name}-${embedded.type}.jar</file>
-              <!--type>jar</type-->
+              <type>jar</type>
               <classifier>${embedded.type}</classifier>
             </configuration>
           </execution>
@@ -80,7 +80,7 @@
         <executions>
             <execution>
             <id>${distribution}</id>
-            <!--phase>package</phase-->
+            <phase>package</phase>
             <goals>
               <goal>allinone</goal>
             </goals>
@@ -100,7 +100,7 @@
             </goals>
             <configuration>
               <file>${basedir}/target/${application.name}-${embedded.type}.jar</file>
-              <!--type>jar</type-->
+              <type>jar</type>
               <classifier>${embedded.type}</classifier>
             </configuration>
           </execution>
