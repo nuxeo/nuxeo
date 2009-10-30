@@ -53,7 +53,7 @@
       <li> fileUrl(String, DocumentModel, String, String): get the rest url for
            a blob.</li>
       <li> bigFileUrl(DocumentModel, String, String): get the rest url for
-           a blob using nxbigfile codec.</li>
+           a blob using nxbigfile servlet.</li>
       <li> fileDescription(DocumentModel doc, String blobPropertyPath,
            String filenamePropertyPath): get the pretty-print description of a
            blob.</li>
