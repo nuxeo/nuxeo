@@ -37,24 +37,24 @@
 
     <c:if test="#{documentActions.currentSelection.hasSchema('video')}">
       <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B' width="400" height="350" codebase='http://www.apple.com/qtactivex/qtplugin.cab'>
-        <param name='src' value="#{baseURL}nxbigfile/default/#{documentActions.currentSelection.id}/file:content/#{documentActions.currentSelection.file.filename}"/>
+        <param name='src' value="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}"/>
         <param name='autoplay' value="false"/>
         <param name='controller' value="true"/>
         <param name='loop' value="false"/>
         <param name='scale' value="aspect"/>
-        <embed src="#{baseURL}nxbigfile/default/#{documentActions.currentSelection.id}/file:content/#{documentActions.currentSelection.file.filename}" width="400" height="350" autoplay="false"
+        <embed src="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}" width="400" height="350" autoplay="false"
           controller="true" loop="false" scale="aspect" bgcolor="#6F6F6F" pluginspage='http://www.apple.com/quicktime/download/'>
         </embed>
       </object>
     </c:if>
     <c:if test="#{documentActions.currentSelection.hasSchema('audio')}">
       <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B' codebase='http://www.apple.com/qtactivex/qtplugin.cab'>
-        <param name='src' value="#{baseURL}nxbigfile/default/#{documentActions.currentSelection.id}/file:content/#{documentActions.currentSelection.file.filename}"/>
+        <param name='src' value="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}"/>
         <param name='autoplay' value="false"/>
         <param name='controller' value="true"/>
         <param name='loop' value="false"/>
         <param name='scale' value="aspect"/>
-        <embed src="#{baseURL}nxbigfile/default/#{documentActions.currentSelection.id}/file:content/#{documentActions.currentSelection.file.filename}" autoplay="false"
+        <embed src="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}" autoplay="false"
           controller="true" loop="false" scale="aspect" bgcolor="#6F6F6F" pluginspage='http://www.apple.com/quicktime/download/'>
         </embed>
       </object>

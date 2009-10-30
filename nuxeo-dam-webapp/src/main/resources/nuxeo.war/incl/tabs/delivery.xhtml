@@ -52,7 +52,7 @@
       <h:panelGrid styleClass="dataInput" columns="2" columnClasses="labelColumn, fieldColumn">
 
         <h:outputText value="#{messages['label.delivery.file']}" />
-        <h:inputText value="#{nxd:fileUrl('downloadFile', documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}" readonly="true"
+        <h:inputText value="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}" readonly="true"
                 onclick="javascript:this.focus();this.select();"/>
 
         <h:outputText value="" />
