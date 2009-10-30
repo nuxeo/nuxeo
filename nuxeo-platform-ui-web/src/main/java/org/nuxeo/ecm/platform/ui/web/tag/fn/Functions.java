@@ -325,12 +325,18 @@ public final class Functions {
         }
 
         FacesContext context = FacesContext.getCurrentInstance();
-        String bundleName = context.getApplication().getMessageBundle();
-        Locale locale = context.getViewRoot().getLocale();
-        String msg = I18NUtils.getMessageString(bundleName,
-                "label.bytes.suffix", null, locale);
-        if ("label.bytes.suffix".equals(msg)) {
-            // Set default value if no message entry found
+        String msg;
+        if (context != null) {
+            String bundleName = context.getApplication().getMessageBundle();
+            Locale locale = context.getViewRoot().getLocale();
+            msg = I18NUtils.getMessageString(bundleName, "label.bytes.suffix",
+                    null, locale);
+            if ("label.bytes.suffix".equals(msg)) {
+                // Set default value if no message entry found
+                msg = "B";
+            }
+        } else {
+            // No faces context, set default value
             msg = "B";
         }
 
