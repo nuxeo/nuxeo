@@ -49,6 +49,7 @@
       <schema name="video"/>
       <schema name="dam_common"/>
       <schema name="common"/>
+      <schema name="file" />
       <schema name="uid"/>
       <schema name="dublincore"/>
       <facet name="Versionable"/>
@@ -61,6 +62,7 @@
       <schema name="audio"/>
       <schema name="dam_common"/>
       <schema name="common"/>
+      <schema name="file" />
       <schema name="uid"/>
       <schema name="dublincore"/>
       <facet name="Versionable"/>

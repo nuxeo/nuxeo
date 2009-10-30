@@ -34,15 +34,31 @@
                                   !documentActions.currentSelection.hasSchema('video') and
                                   !documentActions.currentSelection.hasSchema('audio') }"/>
     </a>
-    <nxh:graphicImage id="theVideo"
-                      value="/icons/video_100.png"
-                      style="max-height: 350px;"
-                      rendered="#{documentActions.currentSelection.hasSchema('video')}"/>
-    <nxh:graphicImage id="theAudio"
-                      value="/icons/audio_100.png"
-                      style="max-height: 350px;"
-                      rendered="#{documentActions.currentSelection.hasSchema('audio')}"/>
 
+    <c:if test="#{documentActions.currentSelection.hasSchema('video')}">
+      <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B' width="400" height="350" codebase='http://www.apple.com/qtactivex/qtplugin.cab'>
+        <param name='src' value="#{baseURL}nxbigfile/default/#{documentActions.currentSelection.id}/file:content/#{documentActions.currentSelection.file.filename}"/>
+        <param name='autoplay' value="false"/>
+        <param name='controller' value="true"/>
+        <param name='loop' value="false"/>
+        <param name='scale' value="aspect"/>
+        <embed src="#{baseURL}nxbigfile/default/#{documentActions.currentSelection.id}/file:content/#{documentActions.currentSelection.file.filename}" width="400" height="350" autoplay="false"
+          controller="true" loop="false" scale="aspect" bgcolor="#6F6F6F" pluginspage='http://www.apple.com/quicktime/download/'>
+        </embed>
+      </object>
+    </c:if>
+    <c:if test="#{documentActions.currentSelection.hasSchema('audio')}">
+      <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B' codebase='http://www.apple.com/qtactivex/qtplugin.cab'>
+        <param name='src' value="#{baseURL}nxbigfile/default/#{documentActions.currentSelection.id}/file:content/#{documentActions.currentSelection.file.filename}"/>
+        <param name='autoplay' value="false"/>
+        <param name='controller' value="true"/>
+        <param name='loop' value="false"/>
+        <param name='scale' value="aspect"/>
+        <embed src="#{baseURL}nxbigfile/default/#{documentActions.currentSelection.id}/file:content/#{documentActions.currentSelection.file.filename}" autoplay="false"
+          controller="true" loop="false" scale="aspect" bgcolor="#6F6F6F" pluginspage='http://www.apple.com/quicktime/download/'>
+        </embed>
+      </object>
+    </c:if>
 
     <a4j:form id="assetView">
       <div class="documentPreviewTitle">

@@ -51,8 +51,6 @@
       <legend><h:outputText value="#{messages['label.delivery.intro.download']}" /></legend>
       <h:panelGrid styleClass="dataInput" columns="2" columnClasses="labelColumn, fieldColumn">
 
-        <h5><h:outputText value="#{messages['label.delivery.intro.download']}" /></h5>
-
         <h:outputText value="#{messages['label.delivery.file']}" />
         <h:inputText value="#{nxd:fileUrl('downloadFile', documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}" readonly="true"
                 onclick="javascript:this.focus();this.select();"/>
