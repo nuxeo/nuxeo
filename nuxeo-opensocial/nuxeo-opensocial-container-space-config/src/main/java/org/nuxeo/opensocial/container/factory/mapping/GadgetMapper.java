@@ -36,236 +36,234 @@ import org.nuxeo.opensocial.container.factory.utils.UrlBuilder;
 
 public class GadgetMapper extends GadgetBean implements Gadget {
 
-  private Map<String, String> preferences = new HashMap<String, String>();
-  private static final Log log = LogFactory.getLog(GadgetMapper.class);
-  private static final String BOOL = "BOOL";
+	private Map<String, String> preferences = new HashMap<String, String>();
+	private static final Log log = LogFactory.getLog(GadgetMapper.class);
+	private static final String BOOL = "BOOL";
 
-  private Integer pos;
-  private String placeID;
-  private String owner;
-  private GadgetBean bean;
-  private String title;
-  private Boolean collapsed;
-  private String ref;
-  private GadgetPosition position;
-  private List<PreferencesBean> userPrefs;
-  private String renderUrl;
-  private String viewer;
-  private Integer shindigId;
-  private boolean permission;
-  private String name;
-  private String spaceName;
+	private Integer pos;
+	private String placeID;
+	private String owner;
+	private GadgetBean bean;
+	private String title;
+	private Boolean collapsed;
+	private String ref;
+	private GadgetPosition position;
+	private List<PreferencesBean> userPrefs;
+	private String renderUrl;
+	private String viewer;
+	private Integer shindigId;
+	private boolean permission;
+	private String name;
+	private String spaceName;
 
-  /**
-   * Constructor for convert GadgetBean to Gadget
-   *
-   * @param bean
-   */
-  public GadgetMapper(GadgetBean bean) {
-    this.bean = bean;
-    this.title = bean.getTitle();
-    this.collapsed = bean.isCollapse();
-    this.ref = bean.getRef();
-    this.position = bean.getGadgetPosition();
-    if (this.position != null) {
-      this.placeID = this.position.getPlaceID();
-      this.pos = this.position.getPosition();
-    }
-    this.preferences = createPreferences(bean);
-    this.userPrefs = bean.getUserPrefs();
-    this.renderUrl = bean.getRenderUrl();
-    this.viewer = bean.getViewer();
-    this.shindigId = bean.getShindigId();
-    this.permission = bean.getPermission();
-    this.name = bean.getName();
-    this.spaceName = bean.getSpaceName();
-  }
+	/**
+	 * Constructor for convert GadgetBean to Gadget
+	 * 
+	 * @param bean
+	 */
+	public GadgetMapper(GadgetBean bean) {
+		this.bean = bean;
+		this.title = bean.getTitle();
+		this.collapsed = bean.isCollapse();
+		this.ref = bean.getRef();
+		this.position = bean.getGadgetPosition();
+		if (this.position != null) {
+			this.placeID = this.position.getPlaceID();
+			this.pos = this.position.getPosition();
+		}
+		this.preferences = createPreferences(bean);
+		this.userPrefs = bean.getUserPrefs();
+		this.renderUrl = bean.getRenderUrl();
+		this.viewer = bean.getViewer();
+		this.shindigId = bean.getShindigId();
+		this.permission = bean.getPermission();
+		this.name = bean.getName();
+		this.spaceName = bean.getSpaceName();
+	}
 
-  /**
-   * Constructor for convert Gadget to GadgetBean
-   *
-   * @param bean
-   */
-  public GadgetMapper(Gadget gadget, String viewer, int shindigId,
-      boolean permission) {
-    this.title = gadget.getTitle();
-    this.spaceName = gadget.getName();
-    this.name = getRealName(gadget.getName());
-    this.collapsed = gadget.isCollapsed();
-    this.ref = gadget.getId();
-    this.placeID = gadget.getPlaceID();
-    this.pos = gadget.getPosition();
-    this.position = new GadgetPosition(placeID, pos);
-    this.preferences = gadget.getPreferences();
-    this.owner = gadget.getOwner();
-    this.viewer = viewer;
-    this.shindigId = shindigId;
-    this.permission = permission;
-    createGadgetBean();
-  }
+	/**
+	 * Constructor for convert Gadget to GadgetBean
+	 * 
+	 * @param bean
+	 */
+	public GadgetMapper(Gadget gadget, String viewer, int shindigId,
+			boolean permission) {
+		this.title = gadget.getTitle();
+		this.spaceName = gadget.getName();
+		this.name = getRealName(gadget.getName());
+		this.collapsed = gadget.isCollapsed();
+		this.ref = gadget.getId();
+		this.placeID = gadget.getPlaceID();
+		this.pos = gadget.getPosition();
+		this.position = new GadgetPosition(placeID, pos);
+		this.preferences = gadget.getPreferences();
+		this.owner = gadget.getOwner();
+		this.viewer = viewer;
+		this.shindigId = shindigId;
+		this.permission = permission;
+		createGadgetBean();
+	}
 
-  @Override
-  public Boolean getPermission() {
-    return true;
-  }
+	@Override
+	public Boolean getPermission() {
+		return true;
+	}
 
-  @Override
-  public String getRenderUrl() {
-    return renderUrl;
-  }
+	@Override
+	public String getRenderUrl() {
+		return renderUrl;
+	}
 
-  @Override
-  public Integer getShindigId() {
-    return shindigId;
-  }
-  
-  @Override
-  public String getTitle() {
-    return title;
-  }
+	@Override
+	public Integer getShindigId() {
+		return shindigId;
+	}
 
-  @Override
-  public List<PreferencesBean> getUserPrefs() {
-    return userPrefs;
-  }
+	@Override
+	public String getTitle() {
+		return title;
+	}
 
-  @Override
-  public String getViewer() {
-    return viewer;
-  }
+	@Override
+	public List<PreferencesBean> getUserPrefs() {
+		return userPrefs;
+	}
 
-  public String getOwner() {
-    return owner;
-  }
+	@Override
+	public String getViewer() {
+		return viewer;
+	}
 
-  public String getCategory() {
-    return null;
-  }
+	public String getOwner() {
+		return owner;
+	}
 
-  public String getDescription() {
-    return null;
-  }
+	public String getCategory() {
+		return null;
+	}
 
-  public String getId() {
-    return this.ref;
-  }
+	public String getDescription() {
+		return null;
+	}
 
-  public String getName() {
-    return name;
-  }
+	public String getId() {
+		return this.ref;
+	}
 
-  public String getPlaceID() {
-    return placeID;
-  }
+	public String getName() {
+		return name;
+	}
 
-  public int getPosition() {
-    return pos;
-  }
+	public String getPlaceID() {
+		return placeID;
+	}
 
-  public Map<String, String> getPreferences() {
-    return preferences;
-  }
+	public int getPosition() {
+		return pos;
+	}
 
-  public String getType() {
-    return null;
-  }
+	public Map<String, String> getPreferences() {
+		return preferences;
+	}
 
-  public boolean isCollapsed() {
-    return this.collapsed;
-  }
+	public String getType() {
+		return null;
+	}
 
-  private String getRealName(String name) {
-    StringTokenizer st = new StringTokenizer(name, ".");
-    return st.nextToken();
-  }
+	public boolean isCollapsed() {
+		return this.collapsed;
+	}
 
-  public void setPreferences(Map<String, String> updatePrefs) throws Exception {
-    preferences = updatePrefs;
-    for (PreferencesBean p : userPrefs) {
-      if (updatePrefs.containsKey(p.getName())) {
-        String val = URLDecoder.decode(updatePrefs.get(p.getName()), "UTF-8");
-        if (p.getDataType()
-            .equals(BOOL)) {
-          val = "true";
-        } else if (p.getDataType()
-            .equals(BOOL)) {
-          val = "false";
-        }
-        p.setValue(val);
-      }
-    }
-    this.bean.setRenderUrl(UrlBuilder.buildShindigUrl(this));
-    this.bean.setUserPrefs(userPrefs);
-  }
+	private String getRealName(String name) {
+		StringTokenizer st = new StringTokenizer(name, ".");
+		return st.nextToken();
+	}
 
-  private String createRenderUrl() {
-    try {
-      return UrlBuilder.buildShindigUrl(this);
-    } catch (Exception e) {
-      log.error(e);
-    }
-    return null;
-  }
+	public void setPreferences(Map<String, String> updatePrefs)
+			throws Exception {
+		preferences = updatePrefs;
+		for (PreferencesBean p : userPrefs) {
+			if (updatePrefs.containsKey(p.getName())) {
+				String val = URLDecoder.decode(updatePrefs.get(p.getName()),
+						"UTF-8");
+				if (p.getDataType().equals(BOOL)) {
+					val = "true";
+				} else if (p.getDataType().equals(BOOL)) {
+					val = "false";
+				}
+				p.setValue(val);
+			}
+		}
+		this.bean.setRenderUrl(UrlBuilder.buildShindigUrl(this));
+		this.bean.setUserPrefs(userPrefs);
+	}
 
-  private ArrayList<PreferencesBean> createUserPrefs() {
-    return PreferenceManager.getUserPreferences(this);
-  }
+	private String createRenderUrl() {
+		try {
+			return UrlBuilder.buildShindigUrl(this);
+		} catch (Exception e) {
+			log.error(e);
+		}
+		return null;
+	}
 
-  private HashMap<String, String> createPreferences(GadgetBean bean) {
-    HashMap<String, String> prefs = new HashMap<String, String>();
-    List<PreferencesBean> uPrefs = bean.getUserPrefs();
-    if (uPrefs != null) {
-      for (int i = 0; i < uPrefs.size(); i++) {
-        PreferencesBean p = bean.getUserPrefs()
-            .get(i);
-        prefs.put(p.getName(), p.getValue());
-      }
-    }
-    return prefs;
-  }
+	private ArrayList<PreferencesBean> createUserPrefs() {
+		return PreferenceManager.getUserPreferences(this);
+	}
 
-  public void createGadgetBean() {
-    this.userPrefs = createUserPrefs();
-    updateTitleInPreference();
-    bean = new GadgetBean(shindigId, ref, title, viewer, userPrefs, permission,
-        collapsed, name, spaceName);
-    this.renderUrl = createRenderUrl();
-    bean.setRenderUrl(renderUrl);
-    bean.setPosition(this.position);
-  }
+	private HashMap<String, String> createPreferences(GadgetBean bean) {
+		HashMap<String, String> prefs = new HashMap<String, String>();
+		List<PreferencesBean> uPrefs = bean.getUserPrefs();
+		if (uPrefs != null) {
+			for (int i = 0; i < uPrefs.size(); i++) {
+				PreferencesBean p = bean.getUserPrefs().get(i);
+				prefs.put(p.getName(), p.getValue());
+			}
+		}
+		return prefs;
+	}
 
-  private void updateTitleInPreference() {
-    for (PreferencesBean p : this.userPrefs) {
-      if (GadgetManagerImpl.TITLE_KEY_PREF.equals(p.getName())) {
-        this.title = p.getValue();
-        return;
-      }
-    }
-  }
+	public void createGadgetBean() {
+		this.userPrefs = createUserPrefs();
+		updateTitleInPreference();
+		bean = new GadgetBean(shindigId, ref, title, viewer, userPrefs,
+				permission, collapsed, name, spaceName);
+		this.renderUrl = createRenderUrl();
+		bean.setRenderUrl(renderUrl);
+		bean.setPosition(this.position);
+	}
 
-  /**
-   * Use this method for get GadgetBean in GwtContainer because GadgetMapper
-   * isn't serializabel
-   *
-   * @return GadgetBean
-   */
-  public GadgetBean getGadgetBean() {
-    return bean;
-  }
+	private void updateTitleInPreference() {
+		for (PreferencesBean p : this.userPrefs) {
+			if (GadgetManagerImpl.TITLE_KEY_PREF.equals(p.getName())) {
+				this.title = p.getValue();
+				return;
+			}
+		}
+	}
 
-  public boolean isEqualTo(Gadget gadget) {
-    return gadget.getId() != null && gadget.getId()
-        .equals(getId());
-  }
+	/**
+	 * Use this method for get GadgetBean in GwtContainer because GadgetMapper
+	 * isn't serializabel
+	 * 
+	 * @return GadgetBean
+	 */
+	public GadgetBean getGadgetBean() {
+		return bean;
+	}
 
-  @Override
-  public void setTitle(String title) {
-    super.setTitle(title);
-    this.bean.setTitle(title);
-  }
+	public boolean isEqualTo(Gadget gadget) {
+		return gadget.getId() != null && gadget.getId().equals(getId());
+	}
 
-  public void setName(String name) {
-    this.name = spaceName;
-  }
+	@Override
+	public void setTitle(String title) {
+		super.setTitle(title);
+		this.bean.setTitle(title);
+	}
+
+	public void setName(String name) {
+		this.name = spaceName;
+	}
 
 }

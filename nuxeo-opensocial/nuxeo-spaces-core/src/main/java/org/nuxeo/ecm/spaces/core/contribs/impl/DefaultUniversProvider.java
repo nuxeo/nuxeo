@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.spaces.api.Univers;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceSecurityException;
-import org.nuxeo.ecm.spaces.api.exceptions.UniversNotFoundException;
 import org.nuxeo.ecm.spaces.core.contribs.api.UniversProvider;
 import org.nuxeo.ecm.spaces.core.impl.Constants;
 import org.nuxeo.ecm.spaces.core.impl.DocumentHelper;

@@ -19,6 +19,7 @@
   <stylesheet src="js/ext/resources/css/ext-all.css" />
   <script src="js/ext/adapter/ext/ext-base.js" />
   <script src="js/ext/ext-all.js" />
+  <!-- script src="js/ext/ext-all-debug.js" / -->
 
 
     <!-- Specify the application specific style sheet.              -->
