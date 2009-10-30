@@ -9,7 +9,7 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   class="deliveryBlock">
 
-  <h:form>
+  <a4j:form>
     <c:if test="#{documentActions.currentSelection.hasSchema('picture')}">
     <fieldset>
       <legend><h:outputText value="#{messages['label.delivery.intro.url']}" /></legend>
@@ -40,7 +40,7 @@
         </h:selectOneListbox>
 
         <h:outputText value="" />
-        <h:commandButton styleClass="button" action="#{documentActions.downloadBlob}" value="#{messages['command.download']}"/>
+        <a4j:commandButton styleClass="button" action="#{documentActions.downloadBlob}" value="#{messages['command.download']}"/>
 
       </h:panelGrid>
     </fieldset>
@@ -56,12 +56,12 @@
                 onclick="javascript:this.focus();this.select();"/>
 
         <h:outputText value="" />
-        <h:commandButton styleClass="button" action="#{documentActions.downloadBlob}" value="#{messages['command.download']}"/>
+        <a4j:commandButton styleClass="button" action="#{documentActions.downloadBlob}" value="#{messages['command.download']}"/>
       </h:panelGrid>
       </fieldset>
     </c:if>
 
 
-  </h:form>
+  </a4j:form>
 
 </div>
