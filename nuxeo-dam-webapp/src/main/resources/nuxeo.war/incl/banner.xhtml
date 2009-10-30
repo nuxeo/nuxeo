@@ -33,7 +33,7 @@
           </a4j:commandLink>
         </li>
         <li>
-          <h:outputLink id="settings_button" action="#{documentActions.logout}">
+          <h:outputLink id="settings_button" action="#{logoutActions.logout}">
             <h:outputText class="settingsButton" value="${messages['label.action.settings']}"/>
           </h:outputLink>
         </li>
@@ -41,7 +41,7 @@
           <h:outputText class="separator" value=" | " />
         </li>
         <li>
-          <h:commandLink action="#{documentActions.logout}">
+          <h:commandLink action="#{logoutActions.logout}">
             <h:outputText class="logOutButton" value="#{messages['command.logout']}" />
           </h:commandLink>
         </li>
@@ -49,7 +49,7 @@
       <div style="clear:both;"></div>
     </a4j:region>
     </h:form>
-    
+
     <ui:include src="/incl/waiter.xhtml"/>
 </div>
 

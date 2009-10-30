@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,9 +32,8 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
-import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -57,6 +55,8 @@ public class DocumentActions implements Serializable {
     private static final Log log = LogFactory.getLog(DocumentActions.class);
 
     protected static final long BIG_FILE_SIZE_LIMIT = 1024 * 1024 * 5;
+
+    protected static final String DEFAULT_PICTURE_DOWNLOAD_PROPERTY = "Original:content";
 
     @In(create = true)
     protected transient ResultsProvidersCache resultsProvidersCache;
@@ -90,9 +90,9 @@ public class DocumentActions implements Serializable {
      */
     protected String currentSelectionLink;
 
-    protected String displayMode = "view";
+    protected String displayMode = BuiltinModes.VIEW;
 
-    protected String downloadSize = "Original:content";
+    protected String downloadSize = DEFAULT_PICTURE_DOWNLOAD_PROPERTY;
 
     @WebRemote
     public String processSelectRow(String docRef, String providerName,
@@ -173,7 +173,7 @@ public class DocumentActions implements Serializable {
     public void setCurrentSelection(DocumentModel selection) {
         // Reset the tabs list and the display mode
         webActions.resetTabList();
-        displayMode = "view";
+        displayMode = BuiltinModes.VIEW;
 
         currentSelection = selection;
 
@@ -205,10 +205,10 @@ public class DocumentActions implements Serializable {
     }
 
     public void toggleDisplayMode() {
-        if ("view".equals(displayMode)) {
-            displayMode = "edit";
+        if (BuiltinModes.VIEW.equals(displayMode)) {
+            displayMode = BuiltinModes.EDIT;
         } else {
-            displayMode = "view";
+            displayMode = BuiltinModes.VIEW;
         }
     }
 
@@ -218,40 +218,8 @@ public class DocumentActions implements Serializable {
             documentManager.save();
 
             // Switch to view mode
-            displayMode = "view";
+            displayMode = BuiltinModes.VIEW;
         }
-    }
-
-    /**
-     * Logs the user out. Invalidates the HTTP session so that it cannot be used
-     * anymore.
-     *
-     * @return the next page that is going to be displayed
-     * @throws IOException
-     */
-    public static String logout() throws IOException {
-        FacesContext context = FacesContext.getCurrentInstance();
-        ExternalContext eContext = context.getExternalContext();
-        Object req = eContext.getRequest();
-        Object resp = eContext.getResponse();
-        HttpServletRequest request = null;
-        if (req instanceof HttpServletRequest) {
-            request = (HttpServletRequest) req;
-        }
-        HttpServletResponse response = null;
-        if (resp instanceof HttpServletResponse) {
-            response = (HttpServletResponse) resp;
-        }
-
-        if (response != null && request != null
-                && !context.getResponseComplete()) {
-            String baseURL = BaseURL.getBaseURL(request);
-            request.setAttribute(URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY,
-                    true);
-            response.sendRedirect(baseURL + NXAuthConstants.LOGOUT_PAGE);
-            context.responseComplete();
-        }
-        return null;
     }
 
     /**
@@ -271,15 +239,10 @@ public class DocumentActions implements Serializable {
      *         characters
      */
     public String getTitleCropped(DocumentModel document, int maxLength) {
-
-        String title = null;
-        String beginningChars = null;
-        int nbrBeginningChars = -1;
-        String endChars = null;
-        int nbrEndChars = -1;
         int nbrEllipses = 3;
         int minLength = 5;
 
+        String title;
         title = DocumentModelFunctions.titleOrId(document);
 
         int length = title.length();
@@ -303,16 +266,17 @@ public class DocumentActions implements Serializable {
         // length is more than maxLength characters: construct the new title
 
         // get the first (maxLength-3)/2 characters:
+        int nbrBeginningChars;
         if ((maxLength - nbrEllipses) % 2 == 0) {
             nbrBeginningChars = (maxLength - nbrEllipses) / 2;
         } else {
             nbrBeginningChars = (maxLength - nbrEllipses) / 2 + 1;
         }
 
-        beginningChars = title.substring(0, nbrBeginningChars);
+        String beginningChars = title.substring(0, nbrBeginningChars);
         // get the last n characters:
-        nbrEndChars = maxLength - nbrBeginningChars - nbrEllipses;
-        endChars = title.substring(length - nbrEndChars, length);
+        int nbrEndChars = maxLength - nbrBeginningChars - nbrEllipses;
+        String endChars = title.substring(length - nbrEndChars, length);
 
         String croppedTitle = beginningChars + "..." + endChars;
         return croppedTitle;
@@ -411,7 +375,7 @@ public class DocumentActions implements Serializable {
 
     private void resetData() {
         // Data to reset on asset selection is changed
-        downloadSize = "Original:content";
+        downloadSize = DEFAULT_PICTURE_DOWNLOAD_PROPERTY;
     }
 
     public String getDownloadSize() {
@@ -450,4 +414,5 @@ public class DocumentActions implements Serializable {
             currentSelection = currentPage.get(0);
         }
     }
+
 }

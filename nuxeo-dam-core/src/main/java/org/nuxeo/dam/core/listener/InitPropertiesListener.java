@@ -1,7 +1,6 @@
 package org.nuxeo.dam.core.listener;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.nuxeo.dam.api.Constants;
@@ -15,6 +14,12 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 public class InitPropertiesListener implements EventListener {
 
+    protected static final String DUBLINCORE_DESCRIPTION = "dc:description";
+
+    protected static final String DUBLINCORE_COVERAGE = "dc:coverage";
+
+    protected static final String DUBLINCORE_EXPIRED = "dc:expired";
+
     public void handleEvent(Event event) throws ClientException {
         EventContext ctx = event.getContext();
 
@@ -23,36 +28,34 @@ public class InitPropertiesListener implements EventListener {
             DocumentModel doc = docCtx.getSourceDocument();
             CoreSession coreSession = docCtx.getCoreSession();
 
-            Map<String,Object> damMap = null;
-
-            Map<String,Object> dublincoreMap = null;
-            Map<String,Object> importSetMap = new HashMap<String,Object>();
-
-            if (doc.hasSchema(Constants.DAM_COMMON_SCHEMA) && !Constants.IMPORT_SET_TYPE.equals(doc.getType())) {
+            if (doc.hasSchema(Constants.DAM_COMMON_SCHEMA)
+                    && !Constants.IMPORT_SET_TYPE.equals(doc.getType())) {
 
                 DocumentModel parent = coreSession.getDocument(doc.getParentRef());
-                DocumentModel importSet = docCtx.getCoreSession().getSuperSpace(parent);
+                DocumentModel importSet = docCtx.getCoreSession().getSuperSpace(
+                        parent);
 
-                damMap = importSet.getDataModel(Constants.DAM_COMMON_SCHEMA).getMap();
+                Map<String, Object> damMap = importSet.getDataModel(
+                        Constants.DAM_COMMON_SCHEMA).getMap();
                 doc.getDataModel((Constants.DAM_COMMON_SCHEMA)).setMap(damMap);
 
-                dublincoreMap = importSet.getDataModel(Constants.DUBLINCORE_SCHEMA).getMap();
+                Map<String, Object> dublincoreMap = importSet.getDataModel(
+                        Constants.DUBLINCORE_SCHEMA).getMap();
 
-                Iterator<Map.Entry<String,Object>> iterator = dublincoreMap.entrySet().iterator();
-                while (iterator.hasNext()) {
-                  Map.Entry<String,Object> pairs = (Map.Entry<String,Object>)iterator.next();
-                  String key =  pairs.getKey();
-                  Object value = pairs.getValue();
-                  if("dc:description".equals(key)) {
-                	  importSetMap.put(key, value);
-                  } else  if("dc:coverage".equals(key)) {
-                	  importSetMap.put(key, value);
-                  } else if("dc:expired".equals(key)) {
-                	  importSetMap.put(key, value);
-                  }
-
+                Map<String, Object> importSetMap = new HashMap<String, Object>();
+                for (Map.Entry<String, Object> entry : dublincoreMap.entrySet()) {
+                    String key = entry.getKey();
+                    Object value = entry.getValue();
+                    if (DUBLINCORE_DESCRIPTION.equals(key)) {
+                        importSetMap.put(key, value);
+                    } else if (DUBLINCORE_COVERAGE.equals(key)) {
+                        importSetMap.put(key, value);
+                    } else if (DUBLINCORE_EXPIRED.equals(key)) {
+                        importSetMap.put(key, value);
+                    }
                 }
-                doc.getDataModel((Constants.DUBLINCORE_SCHEMA)).setMap(importSetMap);
+                doc.getDataModel((Constants.DUBLINCORE_SCHEMA)).setMap(
+                        importSetMap);
             }
         }
     }
