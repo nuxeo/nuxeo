@@ -31,6 +31,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -322,9 +323,25 @@ public final class Functions {
             ex++;
             size /= base;
         }
-        return "" + size + " " + suffix[ex] + "B";
-    }
 
+        FacesContext context = FacesContext.getCurrentInstance();
+        String msg;
+        if (context != null) {
+            String bundleName = context.getApplication().getMessageBundle();
+            Locale locale = context.getViewRoot().getLocale();
+            msg = I18NUtils.getMessageString(bundleName, "label.bytes.suffix",
+                    null, locale);
+            if ("label.bytes.suffix".equals(msg)) {
+                // Set default value if no message entry found
+                msg = "B";
+            }
+        } else {
+            // No faces context, set default value
+            msg = "B";
+        }
+
+        return "" + size + " " + suffix[ex] + msg;
+    }
 
     public static Integer integerDivision(Integer x, Integer y) {
         return x / y;

@@ -398,7 +398,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
     public static String fileUrl(String patternName, DocumentModel doc,
             String blobPropertyName, String filename) {
-        if (doc==null) {
+        if (doc == null) {
             return null;
         }
         try {
@@ -422,6 +422,20 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         }
 
         return null;
+    }
+
+    public static String bigFileUrl(DocumentModel doc, String blobPropertyName,
+            String filename) {
+        if (doc == null) {
+            return null;
+        }
+        String bigDownloadURL = BaseURL.getBaseURL();
+        bigDownloadURL += "nxbigfile" + "/";
+        bigDownloadURL += doc.getRepositoryName() + "/";
+        bigDownloadURL += doc.getRef().toString() + "/";
+        bigDownloadURL += blobPropertyName + "/";
+        bigDownloadURL += filename;
+        return bigDownloadURL;
     }
 
     public static String fileDescription(DocumentModel document,
@@ -476,6 +490,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
     /**
      * Get the REST URL for a blob inside a list of complex type. For instance,
+     *
      * <code>http://localhost/nuxeo/nxfile/server/docId/files:files%5B0%5D/file/image.png</code>
      * for the blob property 'file' of the first element inside the
      * 'files:files' list.
