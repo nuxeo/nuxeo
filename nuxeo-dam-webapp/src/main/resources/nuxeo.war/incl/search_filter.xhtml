@@ -67,7 +67,7 @@
 	        <rich:treeNode id="coverageTreeNodeId"
 	          highlightedClass="treeNodeHighlightedClass"
 	          selectedClass="treeNodeSelectedClass">
-	          <div class="#{nxu:test(node.selected, 'selected', '')}" id="coverageDivId">
+	          <div class="#{nxu:test(node.selected, 'selected', '')}" id="#{node.path}">
 	            <a4j:commandLink immediate="true" id="coverageLinkId"
 	              action="#{node.selectNode}" styleClass="treeLink"
 	               reRender="filterResultTable,filterFormPanel,selectionView">

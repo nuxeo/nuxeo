@@ -161,7 +161,14 @@
 	<td>No documents match your search criteria</td>
 	<td></td>
 </tr>
+<!-- make sure the 'Europe' tree didn't expand -->
+<tr>
+        <td>verifyNotVisible</td>
+        <td>filterForm:coverageRichTreeId:coverageRecursiveTreeNodesAdaptorId:0::coverageTreeNodeId:childs</td>
+        <td></td>
+</tr>
 <!-- Add coverage 'Algeria' -->
+<!-- Expand the 'Africa' tree -->
 <tr>
 	<td>watchA4jRequests</td>
 	<td></td>
@@ -341,6 +348,90 @@
 	<td>No documents match your search criteria</td>
 	<td></td>
 </tr>
+<!-- Reselect coverage 'Algeria' -->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>filterForm:coverageRichTreeId:coverageRecursiveTreeNodesAdaptorId:1:coverageRecursiveTreeNodesAdaptorId:0::coverageLinkId</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>2200</td>
+	<td></td>
+</tr>
+<!-- close the 'Africa' folder -->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>filterForm:coverageRichTreeId:coverageRecursiveTreeNodesAdaptorId:1::coverageTreeNodeId:handle:img:collapsed</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>2200</td>
+	<td></td>
+</tr>
+<tr>
+        <td>verifyAttribute</td>
+        <td>filterForm:coverageRichTreeId:coverageRecursiveTreeNodesAdaptorId:1::coverageTreeNodeId:childs@style</td>
+        <td>*display:*none*</td>
+</tr>
+<!-- open the 'Antarctica' tree -->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>filterForm:coverageRichTreeId:coverageRecursiveTreeNodesAdaptorId:6::coverageTreeNodeId:handle:img:collapsed</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>2200</td>
+	<td></td>
+</tr>
+<tr>
+        <td>verifyTextPresent</td>
+        <td>French Southern Territories</td>
+        <td></td>
+</tr>
+<!-- Select 'French Southern Territories -->
+<tr>
+        <td>watchA4jRequests</td>
+        <td></td>
+        <td></td>
+</tr>
+<tr>
+        <td>click</td>
+        <td>filterForm:coverageRichTreeId:coverageRecursiveTreeNodesAdaptorId:6:coverageRecursiveTreeNodesAdaptorId:2::coverageLinkId</td>
+        <td></td>
+</tr>
+<tr>
+        <td>waitForA4jRequest</td>
+        <td>2200</td>
+        <td></td>
+</tr>
+<!-- Make sure the 'Africa' tree didn't expand (open) when we selected 'French Southern Territories' in the 'Antarctica' tree -->
+<!-- make sure the 'Europe' tree didn't expand -->
+<tr>
+        <td>verifyAttribute</td>
+        <td>filterForm:coverageRichTreeId:coverageRecursiveTreeNodesAdaptorId:1::coverageTreeNodeId:childs@style</td>
+        <td>*display:*none*</td>
+</tr>
+
+
+
 
 </tbody></table>
 </body>
