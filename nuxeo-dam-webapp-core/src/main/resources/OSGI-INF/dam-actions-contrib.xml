@@ -1,4 +1,5 @@
-<component name="org.nuxeo.ecm.platform.actions">
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.dam.actions">
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">

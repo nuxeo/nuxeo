@@ -6,17 +6,18 @@ Bundle-Version: 1.0.0
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: web
-Nuxeo-Component: OSGI-INF/theme-contrib.xml,
- OSGI-INF/querymodel-contrib.xml,
+Nuxeo-Component: OSGI-INF/dam-theme-contrib.xml,
+ OSGI-INF/dam-querymodel-contrib.xml,
  OSGI-INF/dam-actions-contrib.xml,
- OSGI-INF/resultsprovider-contrib.xml,
- OSGI-INF/nxfilemanager-plugins-contrib.xml,
- OSGI-INF/layouts-contrib.xml,
- OSGI-INF/ecm-types-contrib.xml,
+ OSGI-INF/dam-resultsprovider-contrib.xml,
+ OSGI-INF/dam-filemanager-plugins-contrib.xml,
+ OSGI-INF/dam-layouts-contrib.xml,
+ OSGI-INF/dam-ecm-types-contrib.xml,
  OSGI-INF/dam-urlservice-contrib.xml,
  OSGI-INF/dam-imaging-contrib.xml,
  OSGI-INF/dam-directorytreemanager-contrib.xml
-Require-Bundle: org.nuxeo.ecm.platform.ui,
+Require-Bundle: org.nuxeo.runtime,
+ org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.webapp.base,
  org.nuxeo.ecm.core,
  org.nuxeo.ecm.platform.types.api,
