@@ -61,7 +61,7 @@ public class TestZipImporter extends SQLRepositoryJUnit4 {
         deployContrib("org.nuxeo.ecm.platform.filemanager.core",
                 "OSGI-INF/nxfilemanager-service.xml");
         deployContrib("org.nuxeo.ecm.platform.filemanager.core",
-                "OSGI-INF/dam-filemanager-plugins-contrib.xml");
+                "OSGI-INF/nxfilemanager-plugins-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.picture.web",
                 "OSGI-INF/picturebook-types-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.picture.web",
@@ -90,7 +90,7 @@ public class TestZipImporter extends SQLRepositoryJUnit4 {
         undeployContrib("org.nuxeo.ecm.platform.picture.web",
                 "OSGI-INF/picturebook-types-contrib.xml");
         undeployContrib("org.nuxeo.ecm.platform.filemanager.core",
-                "OSGI-INF/dam-filemanager-plugins-contrib.xml");
+                "OSGI-INF/nxfilemanager-plugins-contrib.xml");
         undeployContrib("org.nuxeo.ecm.platform.filemanager.core",
                 "OSGI-INF/nxfilemanager-service.xml");
         undeployContrib("org.nuxeo.dam.core",
