@@ -5,7 +5,7 @@
 	     http://java.sun.com/xml/ns/javaee/application_5.xsd" version="5">
 
 
-  <display-name>Nuxeo DAM</display-name>
+  <display-name>Nuxeo EP</display-name>
 
 
   %{MODULE}%

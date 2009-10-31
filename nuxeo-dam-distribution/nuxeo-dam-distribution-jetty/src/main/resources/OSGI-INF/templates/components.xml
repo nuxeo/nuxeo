@@ -11,8 +11,10 @@
   <component name="org.jboss.seam.core.manager">
     <!-- 30 min conversation timeout -->
     <property name="conversationTimeout">1800000</property>
-    <!-- 10s concurrent request timeout -->
-    <property name="concurrentRequestTimeout">10000</property>
+    <!-- 1s concurrent request timeout -->
+    <!-- 
+      <property name="concurrentRequestTimeout">1000</property>
+    -->
   </component>
 
   <!--

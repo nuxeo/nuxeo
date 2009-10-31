@@ -62,6 +62,13 @@
       </dependency>
 
       <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-ear</artifactId>
+        <version>${pom.version}</version>
+        <type>pom</type>
+      </dependency>
+
+      <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution-jboss</artifactId>
         <version>${nuxeo.distribution.version}</version>

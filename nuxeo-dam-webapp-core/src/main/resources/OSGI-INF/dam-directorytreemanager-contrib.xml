@@ -1,16 +1,19 @@
 <?xml version="1.0"?>
 
 <component
-  name="org.nuxeo.ecm.virtualnavigation.directory.DirectoryTreeService.contrib">
+    name="org.nuxeo.dam.DirectoryTreeService.contrib">
 
   <require>org.nuxeo.ecm.webapp.directory.DirectoryTreeService</require>
+  <require>org.nuxeo.runtime.started</require>
 
   <extension target="org.nuxeo.ecm.webapp.directory.DirectoryTreeService"
-    point="trees">
+             point="trees">
 
-    <directoryTree name="dcCoverageDirectoryTree" label="base.filtering.coverage"
-      querymodel="FILTERED_DOCUMENTS" field="dc_coverage" schema="filter_query"
-      multiselect="true">
+    <directoryTree name="dcCoverageDirectoryTree"
+                   label="base.filtering.coverage"
+                   querymodel="FILTERED_DOCUMENTS" field="dc_coverage"
+                   schema="filter_query"
+                   multiselect="true">
       <directory>continent</directory>
       <directory>country</directory>
     </directoryTree>

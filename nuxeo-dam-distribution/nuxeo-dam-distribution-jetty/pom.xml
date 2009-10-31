@@ -1,5 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -12,11 +13,52 @@
   <artifactId>nuxeo-dam-distribution-jetty</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo DAM Jetty Distribution</name>
-  <description>Defines the skeleton of a jetty Nuxeo DAM application</description>
+  <description>Defines the skeleton of a jetty Nuxeo DAM application
+  </description>
 
   <properties>
-    <application.name>${project.artifactId}-${project.version}</application.name>
+    <application.name>${project.artifactId}-${project.version}
+    </application.name>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>jboss</groupId>
+        <artifactId>javassist</artifactId>
+        <version>4.2.3.GA</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.dam</groupId>
+      <artifactId>nuxeo-dam-ear</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-jetty-adapter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-deploy</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
@@ -33,14 +75,11 @@
             </goals>
             <configuration>
               <runPreprocessor>false</runPreprocessor>
-              <!--format>directory</format-->
               <format>zip</format>
-              <zipRoot>nxserver</zipRoot>
+              <zipRoot>${artifactId}-${version}</zipRoot>
               <outputDirectory>target</outputDirectory>
-              <targetFile>${application.name}</targetFile>
-              <descriptor>
-                ${basedir}/src/main/assemble/assembly.xml
-              </descriptor>
+              <targetFile>${artifactId}-${version}</targetFile>
+              <descriptor>${basedir}/src/main/assemble/assembly.xml</descriptor>
             </configuration>
           </execution>
           <execution>
