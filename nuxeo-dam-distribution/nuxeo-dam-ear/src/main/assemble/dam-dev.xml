@@ -98,9 +98,6 @@
       <artifact group="org.w3c" name="sac" />
       <artifact group="net.sf.ehcache" name="ehcache" />
       <artifact group="net.sf.ezmorph" name="ezmorph" />
-      <artifact group="org.hibernate" name="hibernate" />
-      <artifact group="org.hibernate" name="hibernate-annotations" />
-      <artifact group="org.hibernate" name="hibernate-entitymanager" />
       <artifact group="jboss" name="jboss-cache-jdk50" />
       <artifact group="org.jboss.seam" name="jboss-seam" />
       <artifact group="org.jboss.seam" name="jboss-seam-remoting" />
