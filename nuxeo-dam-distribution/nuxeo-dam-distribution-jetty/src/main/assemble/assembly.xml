@@ -118,6 +118,7 @@
       <artifact group="com.artofsolving" name="jodconverter" />
       <artifact group="com.thoughtworks.xstream" name="xstream" />
       <artifact group="pdfbox" name="pdfbox" />
+      <artifact group="org.fontbox" name="fontbox" />
 
       <artifact group="org.richfaces.framework" name="richfaces-api" />
       <artifact group="org.richfaces.framework" name="richfaces-impl" />

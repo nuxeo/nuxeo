@@ -89,7 +89,7 @@
               <goal>attach</goal>
             </goals>
             <configuration>
-              <file>${basedir}/target/${application.name}.zip</file>
+              <file>${project.build.directory}/${artifactId}-${version}.zip</file>
               <type>zip</type>
             </configuration>
           </execution>

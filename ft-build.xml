@@ -1,24 +1,32 @@
 <?xml version="1.0"?>
 <project name="ft" default="usage" basedir=".">
-  
+
   <property name="pom.file" value="${basedir}/nuxeo-dam-distribution/pom.xml" />
   <property name="mvn.profiles" value="NXP" />
-  
+
   <target name="usage">
     <echo message="usage: ant" />
-    <echo message="run-ft                 => run all" />
-    <echo message="make-distribution      => make Nuxeo DAM distribution" />
-    <echo message="start-jboss            => start JBoss server" />
-    <echo message="run-selenium           => run the selenium test" />
-    <echo message="stop-jboss             => stop the JBoss server" />
+    <echo message="run-ft                        => run all" />
+    <echo message="make-distribution             => make Nuxeo DAM JBoss distribution" />
+    <echo message="make-tomcat-distribution      => make Nuxeo DAM Tomcat distribution" />
+    <echo message="start-jboss                   => start JBoss server" />
+    <echo message="start-tomcat                  => start Tomcat server" />
+    <echo message="run-selenium                  => run the selenium test" />
+    <echo message="stop-jboss                    => stop the JBoss server" />
+    <echo message="stop-tomcat                   => stop the Tomcat server" />
   </target>
-  
+
   <target name="run-ft"
     depends="start-jboss,run-selenium,stop-jboss"
     description="start JBoss, run functional tests, stop JBoss.">
   </target>
 
-  <target name="make-distribution">  
+  <target name="run-ft-tomcat"
+    depends="start-jboss,run-selenium,stop-jboss"
+    description="start JBoss, run functional tests, stop JBoss.">
+  </target>
+
+  <target name="make-distribution">
     <exec executable="mvn" failonerror="true">
       <arg value="-f" />
       <arg value="${pom.file}" />
@@ -29,7 +37,21 @@
       <arg value="${mvn.profiles}" />
     </exec>
   </target>
-  
+
+  <target name="make-tomcat-distribution">
+    <exec executable="mvn" failonerror="true">
+      <arg value="-f" />
+      <arg value="${pom.file}" />
+      <arg value="clean" />
+      <arg value="package" />
+      <arg value="install" />
+      <arg value="-P" />
+      <arg value="nuxeo-dam-tomcat" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
+    </exec>
+  </target>
+
   <target name="start-jboss">
     <chmod perm="+x"
       file="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-jboss/target/nuxeo-dam-jboss/bin/jbossctl" />
@@ -41,11 +63,7 @@
       <http url="http://localhost:8080/nuxeo/login.jsp" />
     </waitfor>
   </target>
-  
-  <target name="run-selenium">
-    <exec executable=".${basedir}/nuxeo-dam-distribution/nuxeo-dam-ear/ftest/selenium/run.sh" />
-  </target>
-  
+
   <target name="stop-jboss">
     <chmod perm="+x"
       file="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-jboss/target/nuxeo-dam-jboss/bin/jbossctl" />
@@ -54,5 +72,26 @@
       <arg value="stop" />
     </exec>
   </target>
-  
+
+  <target name="start-tomcat">
+    <chmod perm="+x"
+      dir="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-tomcat/target/stage/nuxeo-dam-distribution-tomcat/bin" includes="**/*.sh"/>
+    <exec
+      executable="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-tomcat/target/stage/nuxeo-dam-distribution-tomcat/bin/startup.sh">
+    </exec>
+    <waitfor>
+      <http url="http://localhost:8080/nuxeo/login.jsp" />
+    </waitfor>
+  </target>
+
+  <target name="stop-tomcat">
+    <exec
+      executable="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-tomcat/target/stage/nuxeo-dam-distribution-tomcat/bin/shutdown.sh">
+    </exec>
+  </target>
+
+  <target name="run-selenium">
+    <exec executable=".${basedir}/nuxeo-dam-distribution/nuxeo-dam-ear/ftest/selenium/run.sh" />
+  </target>
+
 </project>

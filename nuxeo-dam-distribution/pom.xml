@@ -41,6 +41,13 @@
         <module>nuxeo-dam-distribution-jetty</module>
       </modules>
     </profile>
+    <profile>
+      <id>nuxeo-dam-tomcat</id>
+      <modules>
+        <module>nuxeo-dam-distribution-jetty</module>
+        <module>nuxeo-dam-distribution-tomcat</module>
+      </modules>
+    </profile>
     <!-- for deployment purpose -->
     <profile>
       <id>all-distributions</id>
@@ -48,6 +55,7 @@
         <module>nuxeo-dam-ear</module>
         <module>nuxeo-dam-distribution-jboss</module>
         <module>nuxeo-dam-distribution-jetty</module>
+        <module>nuxeo-dam-distribution-tomcat</module>
       </modules>
     </profile>
   </profiles>

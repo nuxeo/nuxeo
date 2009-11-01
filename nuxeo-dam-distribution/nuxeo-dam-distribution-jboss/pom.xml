@@ -15,8 +15,6 @@
   <description>Packages Nuxeo DAM EAR with JBoss</description>
 
   <properties>
-    <application.name>nuxeo-dam-jboss</application.name>
-    <application.version>${version}</application.version>
     <nuxeo.ep.jboss>nuxeo-distribution-jboss-${nuxeo.distribution.version}</nuxeo.ep.jboss>
   </properties>
 
@@ -85,9 +83,9 @@
             <configuration>
               <runPreprocessor>false</runPreprocessor>
               <format>zip</format>
-              <zipRoot>${application.name}-${application.version}</zipRoot>
+              <zipRoot>${artifactId}-${version}</zipRoot>
               <outputDirectory>target</outputDirectory>
-              <targetFile>${application.name}-${application.version}</targetFile>
+              <targetFile>${artifactId}-${version}</targetFile>
               <descriptor>${basedir}/src/main/assemble/assembly.xml</descriptor>
             </configuration>
           </execution>
@@ -98,7 +96,7 @@
               <goal>attach</goal>
             </goals>
             <configuration>
-              <file>${project.build.directory}/${application.name}-${application.version}.zip</file>
+              <file>${project.build.directory}/${artifactId}-${version}.zip</file>
               <type>zip</type>
             </configuration>
           </execution>
