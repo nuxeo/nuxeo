@@ -104,7 +104,7 @@
       <artifact group="org.jboss.seam" name="jboss-seam-ui" />
       <artifact group="org.jboss.seam" name="jboss-seam-mail" />
       <artifact group="org.jboss.seam" name="jboss-seam-debug" />
-      <artifact group="javax.efl" name="el-ri" />
+      <artifact group="javax.el" name="el-ri" />
       <artifact group="org.jboss.el" name="jboss-el" />
       <artifact group="org.jbpm.jbpm3" name="jbpm-jpdl" />
       <artifact group="jboss" name="jgroups" />
