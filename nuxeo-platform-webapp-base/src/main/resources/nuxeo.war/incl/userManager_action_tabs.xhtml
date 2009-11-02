@@ -1,0 +1,21 @@
+<div class="tabsBar"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<h:form>
+  <ul>
+    <li class="#{nxu:test(currentUserTab == 'users', 'selected', '')}">
+      <h:commandLink action="#{userManagerActions.viewUsers}" immediate="true">
+        <h:outputText value="#{messages['label.userManager.users']}" />
+      </h:commandLink>
+    </li>
+  
+    <li class="#{nxu:test(currentUserTab == 'groups', 'selected', '')}">
+      <h:commandLink action="view_groups" immediate="true">
+        <h:outputText value="#{messages['label.groupManager.groups']}" />
+      </h:commandLink>
+    </li>
+  </ul>
+  </h:form>
+
+</div>
