@@ -79,6 +79,12 @@
       <redirect />
     </navigation-case>
 
+    <navigation-case>
+      <from-outcome>home</from-outcome>
+      <to-view-id>/nxstartup.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
   </extension>
 
   <extension target="pages#PAGES">

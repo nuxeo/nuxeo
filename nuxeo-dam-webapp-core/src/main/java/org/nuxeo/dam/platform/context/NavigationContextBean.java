@@ -194,8 +194,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     }
 
     public String goHome() {
-        // TODO Auto-generated method stub
-        return null;
+        return "home";
     }
 
     public void init() {

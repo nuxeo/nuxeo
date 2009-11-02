@@ -153,6 +153,46 @@
         <theme>dam/popup</theme>
       </view>
 
+      <view id="/view_users.xhtml">
+        <theme>dam/settings</theme>
+      </view>
+
+      <view id="/view_many_users.xhtml">
+        <theme>dam/settings</theme>
+      </view>
+
+      <view id="/edit_user.xhtml">
+        <theme>dam/settings</theme>
+      </view>
+
+      <view id="/edit_user_password.xhtml">
+        <theme>dam/settings</theme>
+      </view>
+
+      <view id="/view_user.xhtml">
+        <theme>dam/settings</theme>
+      </view>
+
+      <view id="/create_user.xhtml">
+        <theme>dam/settings</theme>
+      </view>
+
+      <view id="/view_groups.xhtml">
+        <theme>dam/settings</theme>
+      </view>
+
+      <view id="/view_group.xhtml">
+        <theme>dam/settings</theme>
+      </view>
+
+      <view id="/edit_group.xhtml">
+        <theme>dam/settings</theme>
+      </view>
+
+      <view id="/create_group.xhtml">
+        <theme>dam/settings</theme>
+      </view>
+
     </application>
   </extension>
 

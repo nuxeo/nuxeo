@@ -31,8 +31,6 @@
       <section>
         <cell>
           <fragment type="generic fragment"/>
-          <!-- dam language -->
-          <fragment type="generic fragment"/>
         </cell>
       </section>
     </page>
@@ -48,8 +46,38 @@
         </cell>
       </section>
     </page>
+    <page name="settings">
+      <section>
+        <cell>
+          <!-- dam logo -->
+          <fragment type="generic fragment"/>
+        </cell>
+        <cell>
+          <!-- dam banner -->
+          <fragment type="generic fragment"/>
+          <!-- Include -->
+          <fragment type="generic fragment"/>
+        </cell>
+      </section>
+      <section>
+        <cell>
+          <!-- main area -->
+          <fragment type="region fragment" />
+        </cell>
+      </section>
+      <section>
+        <cell>
+          <fragment type="generic fragment"/>
+        </cell>
+      </section>
+    </page>
   </layout>
   <properties element="page[2]/section[1]/cell[1]/fragment[1]">
+    <name>body</name>
+    <defaultBody />
+    <defaultSrc />
+  </properties>
+  <properties element="page[3]/section[2]/cell[1]/fragment[1]">
     <name>body</name>
     <defaultBody />
     <defaultSrc />
@@ -101,31 +129,56 @@
     <layout element="page[2]/section[1]/cell[2]">
       <width>0%</width>
     </layout>
+    <layout element="page[3]">
+      <margin>0</margin>
+      <padding>0</padding>
+    </layout>
+    <layout element="page[3]/section[1]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[3]/section[1]/cell[1]">
+      <width>18%</width>
+      <text-align>center</text-align>
+    </layout>
+    <layout element="page[3]/section[1]/cell[2]">
+      <width>82%</width>
+    </layout>
+    <layout element="page[3]/section[2]">
+      <height>100%</height>
+      <width>100%</width>
+    </layout>
+    <layout element="page[3]/section[2]/cell[1]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[3]/section[3]">
+      <width>100%</width>
+      <text-align>right</text-align>
+    </layout>
+    <layout element="page[3]/section[3]/cell[1]">
+      <width>100%</width>
+    </layout>
     <widget element="">
       <view>theme view</view>
       <icon>/nuxeo/icons/favicon.png</icon>
       <charset>utf-8</charset>
     </widget>
     <!-- WIDGET AFFECTATON -->
-    <widget element="page[1]|page[2]">
+    <widget element="page[1]|page[2]|page[3]">
       <view>page frame</view>
     </widget>
-    <widget element="page[1]/section[1]|page[1]/section[2]|page[2]/section[1]">
+    <widget element="page[1]/section[1]|page[1]/section[2]|page[1]/section[3]|page[2]/section[1]|page[3]/section[1]|page[3]/section[2]|page[3]/section[3]">
       <view>section frame</view>
     </widget>
-    <widget element="page[1]/section[1]/cell[1]|page[1]/section[1]/cell[2]|page[1]/section[2]/cell[1]|page[1]/section[2]/cell[2]|page[1]/section[2]/cell[3]|page[2]/section[1]/cell[1]">
+    <widget element="page[1]/section[1]/cell[1]|page[1]/section[1]/cell[2]|page[1]/section[2]/cell[1]|page[1]/section[2]/cell[2]|page[1]/section[2]/cell[3]|page[1]/section[3]/cell[1]|page[2]/section[1]/cell[1]|page[3]/section[1]/cell[1]|page[3]/section[1]/cell[2]|page[3]/section[2]/cell[1]|page[3]/section[3]/cell[1]">
       <view>cell frame</view>
     </widget>
-    <widget element="page[1]/section[1]/cell[1]/fragment[1]">
+    <widget element="page[1]/section[1]/cell[1]/fragment[1]|page[3]/section[1]/cell[1]/fragment[1]">
       <view>dam logo</view>
     </widget>
-    <widget element="page[1]/section[1]/cell[2]/fragment[1]">
+    <widget element="page[1]/section[1]/cell[2]/fragment[1]|page[3]/section[1]/cell[2]/fragment[1]">
       <view>dam banner</view>
     </widget>
-    <widget element="page[1]/section[3]/cell[1]/fragment[2]">
-      <view>dam language</view>
-    </widget>
-    <widget element="page[1]/section[1]/cell[2]/fragment[2]">
+    <widget element="page[1]/section[1]/cell[2]/fragment[2]|page[2]/section[1]/cell[2]/fragment[1]|page[3]/section[1]/cell[2]/fragment[2]">
       <view>dam includes</view>
     </widget>
     <widget element="page[1]/section[2]/cell[1]/fragment[1]">
@@ -137,20 +190,11 @@
     <widget element="page[1]/section[2]/cell[3]/fragment[1]">
       <view>dam selection view</view>
     </widget>
-    <widget element="page[1]/section[3]">
-      <view>section frame</view>
-    </widget>
-    <widget element="page[1]/section[3]/cell[1]">
-      <view>cell frame</view>
-    </widget>
-    <widget element="page[1]/section[3]/cell[1]/fragment[1]">
+    <widget element="page[1]/section[3]/cell[1]/fragment[1]|page[3]/section[3]/cell[1]/fragment[1]">
       <view>dam footer</view>
     </widget>
-    <widget element="page[2]/section[1]/cell[1]/fragment[1]">
+    <widget element="page[2]/section[1]/cell[1]/fragment[1]|page[3]/section[2]/cell[1]/fragment[1]">
       <view>facelet region</view>
-    </widget>
-    <widget element="page[2]/section[1]/cell[2]/fragment[1]">
-      <view>dam includes</view>
     </widget>
     <!-- buttons -->
     <style name="default buttons">
@@ -489,14 +533,14 @@
         <border>none</border>
       </selector>
     </style>
-    <style element="page[1]/section[1]" inherit="common style">
+    <style element="page[1]/section[1]|page[3]/section[1]" inherit="common style">
       <selector path="" view="section frame">
         <border-bottom preset="black (DAM borders)"/>
         <background preset="banner (DAM backgrounds)"/>
       </selector>
     </style>
-    <style element="page[1]/section[1]/cell[2]" inherit="common style"/>
-        <style element="page[1]/section[1]/cell[2]/fragment[1]" inherit="common style">
+    <style element="page[1]/section[1]/cell[2]|page[3]/section[1]/cell[2]" inherit="common style"/>
+        <style element="page[1]/section[1]/cell[2]/fragment[1]|page[3]/section[1]/cell[2]/fragment[1]" inherit="common style">
       <selector path=".banner_actions" view="dam banner">
         <margin>0</margin>
         <padding>0px 10px 0px 0px</padding>
@@ -535,7 +579,7 @@
         <padding>2px 5px 1px 10px</padding>
       </selector>
     </style>
-    <style element="page[1]/section[3]" inherit="common style">
+    <style element="page[1]/section[3]|page[3]/section[3]" inherit="common style">
       <selector path="" view="section frame">
         <padding>10px</padding>
         <background preset="footer (DAM backgrounds)"/>
@@ -546,8 +590,8 @@
         <color>#AFAFAF</color>
       </selector>
     </style>
-    <style element="page[1]/section[3]/cell[1]" inherit="common style"/>
-    <style element="page[1]/section[3]/cell[1]/fragment[1]" inherit="common style">
+    <style element="page[1]/section[3]/cell[1]|page[3]/section[3]/cell[1]" inherit="common style"/>
+    <style element="page[1]/section[3]/cell[1]/fragment[1]|page[3]/section[3]/cell[1]/fragment[1]" inherit="common style">
       <selector path="a, a:link, a:active, a:visited" view="dam footer">
         <color preset="white (DAM colors)"/>
         <text-decoration>none</text-decoration>
@@ -555,11 +599,6 @@
       <selector path="a:hover">
         <color preset="white (DAM colors)" view="dam footer"/>
         <text-decoration>underline</text-decoration>
-      </selector>
-    </style>
-    <style element="page[1]/section[3]/cell[1]/fragment[2]" inherit="common style">
-      <selector path="#dam_language" view="dam language">
-        <margin>8px 10px 0px 0px</margin>
       </selector>
     </style>
   </formats>

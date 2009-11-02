@@ -33,9 +33,9 @@
           </a4j:commandLink>
         </li>
         <li>
-          <h:outputLink id="settings_button" action="#{logoutActions.logout}">
+          <h:commandLink id="settings_button" action="#{userManagerActions.viewUsers}">
             <h:outputText class="settingsButton" value="${messages['label.action.settings']}"/>
-          </h:outputLink>
+          </h:commandLink>
         </li>
         <li>
           <h:outputText class="separator" value=" | " />
