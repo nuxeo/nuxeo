@@ -1,6 +1,5 @@
 package org.nuxeo.dam.webapp.contentbrowser;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,8 +18,8 @@ import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.dam.webapp.PictureActions;
+import org.nuxeo.dam.webapp.helper.DownloadHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -35,12 +32,11 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
-import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -56,7 +52,7 @@ public class DocumentActions implements Serializable {
 
     protected static final long BIG_FILE_SIZE_LIMIT = 1024 * 1024 * 5;
 
-    protected static final String DEFAULT_PICTURE_DOWNLOAD_PROPERTY = "Original:content";
+    protected static final String DEFAULT_PICTURE_DOWNLOAD_PROPERTY = "Original";
 
     @In(create = true)
     protected transient ResultsProvidersCache resultsProvidersCache;
@@ -298,28 +294,11 @@ public class DocumentActions implements Serializable {
                 String filename = DocumentFileCodec.getFilename(doc, docView);
                 // download
                 FacesContext context = FacesContext.getCurrentInstance();
-                if (blob.getLength() > BIG_FILE_SIZE_LIMIT) {
-                    HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
-                    HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-
-                    String bigDownloadURL = BaseURL.getBaseURL(request);
-                    bigDownloadURL += "nxbigfile" + "/";
-                    bigDownloadURL += doc.getRepositoryName() + "/";
-                    bigDownloadURL += doc.getRef().toString() + "/";
-                    bigDownloadURL += docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY)
-                            + "/";
-                    bigDownloadURL += URIUtils.quoteURIPathComponent(filename,
-                            true);
-                    try {
-                        response.sendRedirect(bigDownloadURL);
-                    } catch (IOException e) {
-                        log.error(
-                                "Error while redirecting for big file downloader",
-                                e);
-                    }
-                } else {
-                    ComponentUtils.download(context, blob, filename);
-                }
+                DownloadHelper.download(
+                        context,
+                        doc,
+                        docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY),
+                        filename);
             }
         }
     }
@@ -358,15 +337,12 @@ public class DocumentActions implements Serializable {
             }
 
             if (currentSelection.hasSchema("picture")) {
-                DocumentLocation docLoc = new DocumentLocationImpl(
-                        currentSelection);
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY,
-                        downloadSize);
-                DocumentView docView = new DocumentViewImpl(docLoc, null,
-                        params);
-
-                pictureActions.downloadPicture(docView);
+                PictureResourceAdapter pra = currentSelection.getAdapter(PictureResourceAdapter.class);
+                String xpath = pra.getViewXPath(downloadSize);
+                String filename = (String) currentSelection.getPropertyValue(xpath + "filename");
+                String blobXpath = xpath + "content";
+                FacesContext context = FacesContext.getCurrentInstance();
+                DownloadHelper.download(context, currentSelection, blobXpath, filename);
             }
         }
 

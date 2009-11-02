@@ -73,6 +73,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-imaging-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-mimetype-api</artifactId>
     </dependency>
     <dependency>
@@ -132,7 +136,7 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-webapp-base</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.nuxeo.dam</groupId>
       <artifactId>nuxeo-dam-test</artifactId>
