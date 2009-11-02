@@ -40,6 +40,10 @@ public interface TypeInfo {
 
     String getIconExpanded();
 
+    String getBigIcon();
+
+    String getBigIconExpanded();
+
     String getLabel();
 
     String getId();

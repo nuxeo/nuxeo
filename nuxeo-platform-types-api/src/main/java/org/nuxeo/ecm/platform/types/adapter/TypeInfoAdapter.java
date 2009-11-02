@@ -113,6 +113,20 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    public String getBigIcon() {
+        if (type != null) {
+            return type.getBigIcon();
+        }
+        return null;
+    }
+
+    public String getBigIconExpanded() {
+        if (type != null) {
+            return type.getBigIconExpanded();
+        }
+        return null;
+    }
+
     public String getId() {
         if (type != null) {
             return type.getId();
