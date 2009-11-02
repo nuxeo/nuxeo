@@ -533,6 +533,76 @@
         <border>none</border>
       </selector>
     </style>
+    <style name="settings style" inherit="common style">
+      <selector path=".tabsBar">
+        <width>100%</width>
+        <margin-top>5px</margin-top>
+        <line-height>normal</line-height>
+        <float>left</float>
+        <border-bottom>none</border-bottom>
+      </selector>
+      <selector path=".tabsBar ul">
+        <margin>0</margin>
+        <padding>0px 10px 0 0</padding>
+        <list-style>none</list-style>
+        <border-bottom preset="tabselected (DAM borders)"/>
+        <height>20px</height>
+      </selector>
+      <selector path=".tabsBar li">
+        <margin-right>5px</margin-right>
+        <margin>0</margin>
+        <padding>0</padding>
+        <float>left</float>
+      </selector>
+      <selector path=".tabsBar a, .tabsBar a:hover, .tabsBar a:visited">
+        <color>#ffffff</color>
+        <border-right>none</border-right>
+        <background preset="tabnotselected (DAM backgrounds)"/>
+        <text-decoration>none</text-decoration>
+        <font-weight>normal</font-weight>
+        <display>block</display>
+        <padding>3px 7px</padding>
+        <float>left</float>
+      </selector>
+      <selector path=".tabsBar li.selected a, .tabsBar li.selected a:hover, .tabsBar li.selected a:visited">
+        <color>#333333</color>
+        <border-top preset="tabselected (DAM borders)"/>
+        <border-left preset="tabselected (DAM borders)"/>
+        <border-right preset="tabselected (DAM borders)"/>
+        <background preset="tabselected (DAM backgrounds)"/>
+      </selector>
+      <selector path=".tabsBar li a:hover">
+        <color>#333</color>
+        <background preset="tabselected (DAM backgrounds)"/>
+      </selector>
+      <selector path=".tabsContent">
+        <background preset="white (DAM backgrounds)"/>
+      </selector>
+      <selector path=".tabsContent .tabsContent">
+        <margin>10px 0px 0px</margin>
+      </selector>
+      <selector path="h3">
+        <margin>10px 0px 15px</margin>
+      </selector>
+      <selector path=".action_bar ul">
+        <list-style>none</list-style>
+        <margin>10px 0px 15px</margin>
+        <padding>0px 5px</padding>
+      </selector>
+      <selector path=".action_bar li.selected">
+        <background-color>transparent</background-color>
+      </selector>
+      <selector path=".action_bar ul li a img">
+        <margin-right>4px</margin-right>
+      </selector>
+      <selector path=".directoryFilter">
+        <margin-right>10px</margin-right>
+      </selector>
+      <selector path=".directoryBack">
+        <background>url(/nuxeo/icons/arrow_left.gif) 3px 1px no-repeat</background>
+        <padding>2px 2px 2px 20px</padding>
+      </selector>
+    </style>
     <style element="page[1]/section[1]|page[3]/section[1]" inherit="common style">
       <selector path="" view="section frame">
         <border-bottom preset="black (DAM borders)"/>
@@ -601,5 +671,12 @@
         <text-decoration>underline</text-decoration>
       </selector>
     </style>
+    <style element="page[3]/section[2]/cell[1]" inherit="common style">
+      <selector path="" view="cell frame">
+        <padding>10px</padding>
+        <background preset="scroll (DAM backgrounds)"/>
+      </selector>
+    </style>
+    <style element="page[3]/section[2]/cell[1]/fragment[1]" inherit="settings style" />
   </formats>
 </theme>
