@@ -217,6 +217,32 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return iconPath;
     }
 
+    public static String bigIconPath(DocumentModel document) {
+        String iconPath = "";
+        if (document != null) {
+            TypeInfo typeInfo = document.getAdapter(TypeInfo.class);
+            if (typeInfo != null) {
+                iconPath = typeInfo.getIcon();
+            }
+        }
+        return iconPath;
+    }
+
+    public static String bigIconExpandedPath(DocumentModel document) {
+        String iconPath = "";
+        if (document != null) {
+            TypeInfo typeInfo = document.getAdapter(TypeInfo.class);
+            if (typeInfo != null) {
+                iconPath = typeInfo.getIconExpanded();
+                // Set to default icon if expanded is not set
+                if (iconPath == null || iconPath.equals("")) {
+                    iconPath = bigIconPath(document);
+                }
+            }
+        }
+        return iconPath;
+    }
+
     public static String fileIconPath(Blob blob) {
         String iconPath = "";
         if (blob != null) {
