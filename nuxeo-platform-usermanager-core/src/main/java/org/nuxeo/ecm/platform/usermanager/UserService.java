@@ -131,7 +131,7 @@ public class UserService extends DefaultComponent {
             String extensionPoint, ComponentInstance contributor)
             throws ClientException {
         descriptors.remove(contribution);
-        recomputeUserManager(true);
+        // recomputeUserManager(true);
     }
 
 }
