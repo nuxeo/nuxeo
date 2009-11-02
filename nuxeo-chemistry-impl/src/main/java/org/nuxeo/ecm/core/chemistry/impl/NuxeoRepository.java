@@ -284,6 +284,10 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
         return false;
     }
 
+    public boolean hasGetFolderTree() {
+        return false;
+    }
+
     public boolean isContentStreamUpdatableAnytime() {
         return true;
     }

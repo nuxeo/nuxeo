@@ -41,6 +41,8 @@ import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.ws.CmisException;
+import org.apache.chemistry.ws.CmisExtensionType;
+import org.apache.chemistry.ws.CmisObjectListType;
 import org.apache.chemistry.ws.CmisObjectType;
 import org.apache.chemistry.ws.CmisPropertiesType;
 import org.apache.chemistry.ws.CmisProperty;
@@ -52,7 +54,6 @@ import org.apache.chemistry.ws.CmisPropertyId;
 import org.apache.chemistry.ws.CmisPropertyInteger;
 import org.apache.chemistry.ws.CmisPropertyString;
 import org.apache.chemistry.ws.CmisPropertyUri;
-import org.apache.chemistry.ws.CmisPropertyXml;
 import org.apache.chemistry.ws.DiscoveryServicePort;
 import org.apache.chemistry.ws.Query;
 import org.apache.chemistry.ws.QueryResponse;
@@ -62,16 +63,17 @@ import org.nuxeo.ecm.core.chemistry.impl.NuxeoRepository;
  * @author Florent Guillaume
  */
 @WebService(name = "DiscoveryServicePort", //
-targetNamespace = "http://docs.oasis-open.org/ns/cmis/ws/200901", //
+targetNamespace = "http://docs.oasis-open.org/ns/cmis/ws/200908/", //
 serviceName = "DiscoveryService", //
 portName = "DiscoveryServicePort", //
 endpointInterface = "org.apache.chemistry.ws.DiscoveryServicePort")
 public class DiscoveryServicePortImpl implements DiscoveryServicePort {
 
     public void getContentChanges(String repositoryId,
-            Holder<String> changeToken, BigInteger maxItems,
-            Boolean includeACL, Boolean includeProperties, String filter,
-            Holder<List<CmisObjectType>> changedObject) throws CmisException {
+            Holder<String> changeLogToken, Boolean includeProperties,
+            String filter, Boolean includePolicyIds, Boolean includeACL,
+            BigInteger maxItems, CmisExtensionType extension,
+            Holder<CmisObjectListType> objects) throws CmisException {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -80,21 +82,25 @@ public class DiscoveryServicePortImpl implements DiscoveryServicePort {
         // parameters
         String repositoryName = parameters.getRepositoryId();
         String statement = parameters.getStatement();
-        Boolean searchAllVersionsB = parameters.isSearchAllVersions();
+        JAXBElement<Boolean> searchAllVersionsB = parameters.getSearchAllVersions();
         boolean searchAllVersions = searchAllVersionsB == null ? false
-                : searchAllVersionsB.booleanValue();
-        BigInteger maxItemsBI = parameters.getMaxItems();
-        int maxItems = maxItemsBI == null || maxItemsBI.longValue() < 0 ? 0
-                : maxItemsBI.intValue();
-        BigInteger skipCountBI = parameters.getSkipCount();
-        int skipCount = skipCountBI == null || skipCountBI.longValue() < 0 ? 0
-                : skipCountBI.intValue();
+                : searchAllVersionsB.getValue().booleanValue();
+        JAXBElement<BigInteger> maxItemsBI = parameters.getMaxItems();
+        int maxItems = maxItemsBI == null
+                || maxItemsBI.getValue().intValue() < 0 ? 0
+                : maxItemsBI.getValue().intValue();
+        JAXBElement<BigInteger> skipCountBI = parameters.getSkipCount();
+        int skipCount = skipCountBI == null
+                || skipCountBI.getValue().intValue() < 0 ? 0
+                : skipCountBI.getValue().intValue();
         JAXBElement<Boolean> includeAllowableActionsB = parameters.getIncludeAllowableActions();
         boolean includeAllowableActions = includeAllowableActionsB == null ? false
                 : includeAllowableActionsB.getValue().booleanValue();
 
         // response
         QueryResponse response = new QueryResponse();
+        CmisObjectListType objects = new CmisObjectListType();
+        response.setObjects(objects);
 
         // call chemistry implementation
         Repository repository = new NuxeoRepository(repositoryName);
@@ -108,11 +114,11 @@ public class DiscoveryServicePortImpl implements DiscoveryServicePort {
                     searchAllVersions, includeAllowableActions,
                     includeRelationships, includeRenditions, maxItems,
                     skipCount, hasMoreItems);
-            response.setHasMoreItems(hasMoreItems[0]);
+            objects.setHasMoreItems(hasMoreItems[0]);
             for (ObjectEntry entry : res) {
                 CmisObjectType object = new CmisObjectType();
                 chemistryToWS(entry, object);
-                response.getObject().add(object);
+                objects.getObjects().add(object);
             }
         } finally {
             connection.close();
@@ -184,10 +190,6 @@ public class DiscoveryServicePortImpl implements DiscoveryServicePort {
             p = new CmisPropertyId();
             ((CmisPropertyId) p).getValue().add((String) value);
             break;
-        case PropertyType.XML_ORD:
-            p = new CmisPropertyXml();
-            // ((CmisPropertyXml) property).getAny().add(element);
-            break;
         case PropertyType.HTML_ORD:
             p = new CmisPropertyHtml();
             // ((CmisPropertyHtml)property).getAny().add(element);
@@ -195,7 +197,7 @@ public class DiscoveryServicePortImpl implements DiscoveryServicePort {
         default:
             throw new AssertionError();
         }
-        p.setPdid(key);
+        p.setPropertyDefinitionId(key);
         return p;
 
     }
