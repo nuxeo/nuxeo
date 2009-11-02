@@ -76,6 +76,12 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
 
     private static final Log log = LogFactory.getLog(AbstractSiteDocumentObject.class);
 
+    public static final int NO_WELCOME_MEDIA = -1;
+
+    public static final int IMAGE_WELCOME_MEDIA = 0;
+
+    public static final int FLASH_WELCOME_MEDIA = 1;
+
     /**
      * Executes the GET requests on the current web object
      */
@@ -141,6 +147,26 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
                     + "/images/logo.gif");
         }
         return resp;
+    }
+
+    public int getWelcomeMediaWidth() {
+        return 200;
+    }
+
+    public int getWelcomeMediaHeight() {
+        return 100;
+    }
+
+    public int getWelcomeMediaIsImage() throws Exception {
+        DocumentModel parentWebSite = getParentWebSite(ctx.getCoreSession());
+        Blob blob = SiteUtils.getBlob(parentWebSite, WEBCONTAINER_WELCOMEMEDIA);
+        if (blob == null || blob.getMimeType() == null) {
+            return NO_WELCOME_MEDIA;
+        } else if (blob.getMimeType().startsWith("image/")) {
+            return IMAGE_WELCOME_MEDIA;
+        } else {
+            return FLASH_WELCOME_MEDIA;
+        }
     }
 
     /**
