@@ -815,7 +815,7 @@
 
     <filter id="not_readonly">
       <rule grant="true">
-        <condition>#{documentActions.notReadOnly}</condition>
+        <condition>#{notReadOnly}</condition>
       </rule>
     </filter>
   </extension>

@@ -81,12 +81,6 @@
       breadcrumb=command.user_dashboard
     </page>
 
-    <page view-id="/view_users.xhtml">breadcrumb=command.manageMembers</page>
-
-    <page view-id="/view_many_users.xhtml">
-      breadcrumb=command.manageMembers
-    </page>
-
     <page view-id="/view_vocabularies.xhtml">
       breadcrumb=title.vocabularies
     </page>
@@ -220,74 +214,6 @@
     <navigation-case>
       <from-outcome>edit_workspace</from-outcome>
       <to-view-id>/edit_workspace.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <!-- users ang groups -->
-
-    <navigation-case>
-      <from-outcome>members_management</from-outcome>
-      <to-view-id>/members_management.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>view_users</from-outcome>
-      <to-view-id>/view_users.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>view_many_users</from-outcome>
-      <to-view-id>/view_many_users.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>edit_user</from-outcome>
-      <to-view-id>/edit_user.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>edit_user_password</from-outcome>
-      <to-view-id>/edit_user_password.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>view_user</from-outcome>
-      <to-view-id>/view_user.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>create_user</from-outcome>
-      <to-view-id>/create_user.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>view_groups</from-outcome>
-      <to-view-id>/view_groups.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>view_group</from-outcome>
-      <to-view-id>/view_group.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>edit_group</from-outcome>
-      <to-view-id>/edit_group.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>create_group</from-outcome>
-      <to-view-id>/create_group.xhtml</to-view-id>
       <redirect />
     </navigation-case>
 

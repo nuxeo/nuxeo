@@ -81,7 +81,6 @@ import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
@@ -673,10 +672,6 @@ public class DocumentActionsBean extends InputController implements
             return true;
         }
         return false;
-    }
-
-    public boolean isNotReadOnly() {
-        return !"true".equals(Framework.getProperty("org.nuxeo.ecm.webapp.readonly.mode", "false"));
     }
 
 }
