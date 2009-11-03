@@ -1,4 +1,9 @@
 <#assign documentType = Document.type />
+<#if documentType == "BlogSite">
+<div style="padding: 10px">
+${Document.webcontainer.welcomeText}
+</div>
+</#if>      
 
 <div class="recentBlogPost">
 <div>
