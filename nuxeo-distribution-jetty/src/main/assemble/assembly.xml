@@ -97,6 +97,10 @@
       <artifact group="com.artofsolving" name="jodconverter" />
       <artifact group="com.thoughtworks.xstream" name="xstream" />
       <artifact group="pdfbox" name="pdfbox" />
+      <artifact group="org.fontbox" name="fontbox" />
+      <artifact group="org.jempbox" name="jempbox" />
+      <artifact group="bouncycastle" name="bcmail-jdk14" />
+      <artifact group="bouncycastle" name="bcprov-jdk14" />
 
       <artifact group="org.richfaces.framework" name="richfaces-api" />
       <artifact group="org.richfaces.framework" name="richfaces-impl" />
