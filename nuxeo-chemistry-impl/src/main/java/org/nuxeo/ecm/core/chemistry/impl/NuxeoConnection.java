@@ -27,10 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
@@ -45,6 +42,7 @@ import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Policy;
+import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
@@ -58,6 +56,8 @@ import org.apache.chemistry.impl.base.BaseRepository;
 import org.apache.chemistry.impl.simple.SimpleData;
 import org.apache.chemistry.impl.simple.SimpleObjectEntry;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -67,8 +67,13 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.security.SecurityPolicyService;
+import org.nuxeo.runtime.api.Framework;
 
 public class NuxeoConnection implements Connection, SPI {
+
+    private static final Log log = LogFactory.getLog(NuxeoConnection.class);
 
     protected final NuxeoRepository repository;
 
@@ -89,7 +94,12 @@ public class NuxeoConnection implements Connection, SPI {
         // TODO map parameters
         // TODO authentication
         Map<String, Serializable> context = new HashMap<String, Serializable>();
-        context.put("username", "Administrator");
+        if (parameters != null) {
+            context.putAll(parameters);
+        }
+        if (!context.containsKey("username")) {
+            context.put("username", "Administrator");
+        }
         try {
             session = CoreInstance.getInstance().open(
                     repository.repositoryName, context);
@@ -448,6 +458,7 @@ public class NuxeoConnection implements Connection, SPI {
             boolean searchAllVersions, boolean includeAllowableActions,
             boolean includeRelationships, boolean includeRenditions,
             int maxItems, int skipCount, boolean[] hasMoreItems) {
+
         IterableQueryResult iterable;
         try {
             iterable = session.queryAndFetch(statement, CMISQLQueryMaker.TYPE,
@@ -455,13 +466,16 @@ public class NuxeoConnection implements Connection, SPI {
         } catch (ClientException e) {
             throw new RuntimeException(e.toString(), e);
         }
-        List<ObjectEntry> entries = new ArrayList<ObjectEntry>();
+
+        iterable = getPolicyFilteredMaps(iterable);
+
         if (skipCount > 0) {
             iterable.skipTo(skipCount);
         }
         if (maxItems == 0) {
             maxItems = -1;
         }
+        List<ObjectEntry> entries = new ArrayList<ObjectEntry>();
         for (Map<String, Serializable> next : iterable) {
             SimpleData data = new SimpleData(null, null);
             // don't use putAll, null values are forbidden
@@ -479,137 +493,146 @@ public class NuxeoConnection implements Connection, SPI {
         return entries;
     }
 
-    public Collection<ObjectEntry> queryOLD(String statement,
-            boolean searchAllVersions, boolean includeAllowableActions,
-            boolean includeRelationships, boolean includeRenditions,
-            int maxItems, int skipCount, boolean[] hasMoreItems) {
-        DocumentModelList docs;
-        try {
-            docs = session.query(cmisSqlToNXQL(statement), null, maxItems,
-                    skipCount, true);
-        } catch (ClientException e) {
-            throw new RuntimeException(e.toString(), e);
-        }
-        hasMoreItems[0] = maxItems == 0 ? false
-                : docs.totalSize() > (long) (skipCount + maxItems);
-        List<ObjectEntry> results = new ArrayList<ObjectEntry>(docs.size());
-        for (DocumentModel doc : docs) {
-            results.add(new NuxeoObjectEntry(doc, this));
-        }
-        return results;
-    }
-
     public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
-        DocumentModelList docs;
-        String nxql = cmisSqlToNXQL(statement);
+        IterableQueryResult iterable;
         try {
-            docs = session.query(nxql, null, 0, 0, true);
+            iterable = session.queryAndFetch(statement, CMISQLQueryMaker.TYPE,
+                    this);
         } catch (ClientException e) {
             throw new RuntimeException(e.toString(), e);
         }
-        List<CMISObject> results = new ArrayList<CMISObject>(docs.size());
-        for (DocumentModel doc : docs) {
+
+        List<String> ids = getPolicyFilteredIds(iterable);
+        List<CMISObject> results = new ArrayList<CMISObject>(ids.size());
+        for (String id : ids) {
+            DocumentModel doc;
+            try {
+                doc = session.getDocument(new IdRef(id));
+            } catch (ClientException e) {
+                log.error("Cannot fetch document: " + id, e);
+                continue;
+            }
             results.add(NuxeoObject.construct(doc, this));
         }
         return results;
     }
 
-    protected String cmisSqlToNXQL(String q) {
-        Matcher matcher = Pattern.compile(
-                "SELECT\\s+([*\\w, ]+)\\s+FROM\\s+([\\w:]+)\\s+WHERE\\s+(.*)",
-                Pattern.CASE_INSENSITIVE).matcher(q);
-        String type;
-        String where;
-        if (matcher.matches()) {
-            type = matcher.group(2);
-            where = matcher.group(3);
-        } else {
-            matcher = Pattern.compile(
-                    "SELECT\\s+([*\\w, ]+)\\s+FROM\\s+([\\w:]+)",
-                    Pattern.CASE_INSENSITIVE).matcher(q);
-            if (!matcher.matches())
-                throw new RuntimeException("Invalid query: " + q);
-            type = matcher.group(2);
-            where = null;
+    /**
+     * Restricts through policies and returns a list of ids.
+     */
+    protected List<String> getPolicyFilteredIds(IterableQueryResult iterable) {
+        SecurityPolicyService service;
+        try {
+            service = Framework.getService(SecurityPolicyService.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e.toString(), e);
         }
-        // canonicalize case for NXQL
-        type = type.toLowerCase();
-        if (queryTypeNames.containsKey(type)) {
-            type = queryTypeNames.get(type);
-        }
-        if (where != null) {
-            // potentially long but we'll rewrite this code anyway
-            for (Entry<String, String> entry : queryPropNames.entrySet()) {
-                String cmisName = entry.getKey();
-                String nxqlName = entry.getValue();
-                where = Pattern.compile("\\b" + cmisName + "\\b", // word
-                        // boundary
-                        Pattern.CASE_INSENSITIVE).matcher(where).replaceAll(
-                        Matcher.quoteReplacement(nxqlName));
-            }
-            // ANY
-            where = Pattern.compile(
-                    "('[^']*')\\s*=\\s*ANY\\s*([a-z][a-z0-9_:]*)",
-                    Pattern.CASE_INSENSITIVE).matcher(where).replaceAll(
-                    "$2 = $1");
-            // CONTAINS
-            where = Pattern.compile("CONTAINS\\s*\\(\\s*,?\\s*([^)]*)\\)",
-                    Pattern.CASE_INSENSITIVE).matcher(where).replaceAll(
-                    "ecm:fulltext = $1");
-            // IN_FOLDER
-            where = Pattern.compile("IN_FOLDER\\s*\\(\\s*,?\\s*([^)]*)\\)",
-                    Pattern.CASE_INSENSITIVE).matcher(where).replaceAll(
-                    "ecm:parentId = $1");
-            // IN_TREE
-            matcher = Pattern.compile(
-                    "IN_TREE\\s*\\(\\s*,?\\s*'([^)']*)'\\s*\\)",
-                    Pattern.CASE_INSENSITIVE).matcher(where);
-            if (matcher.matches()) {
-                matcher.reset();
-                StringBuffer buf = new StringBuffer();
-                while (matcher.find()) {
-                    DocumentRef docRef = new IdRef(matcher.group(1));
-                    DocumentModel doc;
-                    try {
-                        if (!session.exists(docRef)) {
-                            doc = null;
-                        } else {
-                            doc = session.getDocument(docRef);
+        // restrict through policies
+        String permission = SecurityConstants.BROWSE;
+        boolean filterPolicies = service.arePoliciesRestrictingPermission(permission);
+        List<String> ids = new ArrayList<String>();
+        row: //
+        for (Map<String, Serializable> map : iterable) {
+            boolean gotId = false;
+            for (Entry<String, Serializable> entry : map.entrySet()) {
+                String key = entry.getKey(); // was canonicalized
+                if (key.equals(Property.ID) || key.endsWith('.' + Property.ID)) {
+                    // check security on all objects
+                    // TODO don't check relations
+                    String id = (String) entry.getValue();
+                    if (filterPolicies) {
+                        boolean ok;
+                        try {
+                            ok = session.hasPermission(new IdRef(id),
+                                    permission);
+                        } catch (ClientException e) {
+                            log.error("Cannot fetch document: " + id, e);
+                            ok = false;
                         }
-                    } catch (ClientException e) {
-                        throw new RuntimeException("Invalid query: " + q
-                                + " : " + e.toString());
+                        if (!ok) {
+                            // skip document for which policy restricts access
+                            continue row;
+                        }
                     }
-                    String repl;
-                    if (doc == null) {
-                        repl = "1 = 0";
-                    } else {
-                        repl = String.format("ecm:path STARTSWITH '%s'",
-                                doc.getPathAsString());
+                    if (!gotId) {
+                        ids.add(id);
+                        gotId = true;
                     }
-                    matcher.appendReplacement(buf, repl);
                 }
-                matcher.appendTail(buf);
-                where = buf.toString();
             }
         }
-        // treat Document specially, it's the root type in Nuxeo
-        if ("Document".equals(type)) {
-            String added = "ecm:mixinType <> 'Folderish'";
-            if (where == null) {
-                where = added;
-            } else {
-                where = String.format("(%s) AND %s", where, added);
+        return ids;
+    }
+
+    /**
+     * Restricts through policies and returns an iterable of maps.
+     */
+    protected IterableQueryResult getPolicyFilteredMaps(
+            IterableQueryResult iterable) {
+        SecurityPolicyService service;
+        try {
+            service = Framework.getService(SecurityPolicyService.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e.toString(), e);
+        }
+        String permission = SecurityConstants.BROWSE;
+        boolean filterPolicies = service.arePoliciesRestrictingPermission(permission);
+        if (!filterPolicies) {
+            return iterable;
+        }
+        List<Map<String, Serializable>> list = new ArrayList<Map<String, Serializable>>();
+        row: //
+        for (Map<String, Serializable> map : iterable) {
+            for (Entry<String, Serializable> entry : map.entrySet()) {
+                String key = entry.getKey(); // was canonicalized
+                if (key.equals(Property.ID) || key.endsWith('.' + Property.ID)) {
+                    // check security on all objects
+                    // TODO don't check relations
+                    String id = (String) entry.getValue();
+                    boolean ok;
+                    try {
+                        ok = session.hasPermission(new IdRef(id), permission);
+                    } catch (ClientException e) {
+                        log.error("Cannot fetch document: " + id, e);
+                        ok = false;
+                    }
+                    if (!ok) {
+                        // skip document for which policy restricts access
+                        continue row;
+                    }
+                }
+            }
+            list.add(map);
+        }
+        return new ListQueryResult(list);
+    }
+
+    /**
+     * IterableQueryResult backed by a simple list.
+     */
+    public static class ListQueryResult implements IterableQueryResult {
+        public final Iterator<Map<String, Serializable>> it;
+
+        public ListQueryResult(List<Map<String, Serializable>> list) {
+            it = list.iterator();
+        }
+
+        public Iterator<Map<String, Serializable>> iterator() {
+            return it;
+        }
+
+        public void skipTo(long skipCount) {
+            for (int i = 0; i < skipCount; i++) {
+                if (!it.hasNext()) {
+                    break;
+                }
+                it.next();
             }
         }
-        String res;
-        if (where == null) {
-            res = String.format("SELECT * FROM %s", type);
-        } else {
-            res = String.format("SELECT * FROM %s WHERE %s", type, where);
+
+        public void close() {
         }
-        return res;
     }
 
     public Iterator<ObjectEntry> getChangeLog(String changeLogToken,

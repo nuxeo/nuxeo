@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.chemistry.impl;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,12 +37,15 @@ import org.antlr.runtime.TokenSource;
 import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.cmissql.CmisSqlLexer;
 import org.apache.chemistry.cmissql.CmisSqlParser;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.chemistry.impl.NuxeoCmisWalker.Join;
 import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.QueryMaker;
@@ -76,45 +80,19 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     public static final String DC_MODIFIED_KEY = "modified";
 
-    protected SQLInfo sqlInfo;
-
     protected Database database;
 
     protected Dialect dialect;
 
     protected Model model;
 
-    protected Session session;
-
-    /** true if the proxies table is used (not excluded by toplevel clause). */
-    protected boolean considerProxies;
-
-    /**
-     * The hierarchy table, which may be an alias table.
-     */
     protected Table hierTable;
-
-    /**
-     * Quoted id in the hierarchy. This is the id returned by the query.
-     */
-    protected String hierId;
-
-    /**
-     * The hierarchy table of the data.
-     */
-    protected Table joinedHierTable;
-
-    /**
-     * Quoted id attached to the data that matches.
-     */
-    protected String joinedHierId;
 
     /** propertyInfos uppercased names mapped to normal name. */
     protected Map<String, String> propertyInfoNames;
 
     /** propertyInfoNames + specialPropNames */
     protected Map<String, String> allPropNames;
-
 
     private static class QueryMakerException extends RuntimeException {
         private static final long serialVersionUID = 1L;
@@ -135,11 +113,9 @@ public class CMISQLQueryMaker implements QueryMaker {
     public Query buildQuery(SQLInfo sqlInfo, Model model, Session session,
             String query, QueryFilter queryFilter, Object... params)
             throws StorageException {
-        this.sqlInfo = sqlInfo;
         database = sqlInfo.database;
         dialect = sqlInfo.dialect;
         this.model = model;
-        this.session = session;
         // TODO precompute this only once
         propertyInfoNames = new HashMap<String, String>();
         for (String name : model.getPropertyInfoNames()) {
@@ -149,9 +125,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         allPropNames.putAll(systemPropNames);
 
         hierTable = database.getTable(model.hierTableName);
-        hierId = hierTable.getColumn(model.MAIN_KEY).getFullQuotedName();
 
-        // NuxeoConnection connection = (NuxeoConnection) params[0];
         NuxeoCmisWalker walker;
         try {
             CharStream input = new ANTLRInputStream(new ByteArrayInputStream(
@@ -168,6 +142,22 @@ public class CMISQLQueryMaker implements QueryMaker {
         } catch (RecognitionException e) {
             throw new StorageException("Cannot parse query: " + query, e);
         }
+        if (!walker.errorMessages.isEmpty()) {
+            throw new StorageException("Cannot parse query: " + query + " ("
+                    + StringUtils.join(walker.errorMessages, ", ") + ")");
+        }
+
+        /*
+         * Find info about fragments needed.
+         */
+
+        // add main id to all qualifiers
+        for (String qual : new ArrayList<String>(walker.columnsPerQual.keySet())) {
+            String col = walker.referToColumn(Property.ID, qual);
+            if (!walker.select_what.contains(col)) {
+                walker.select_what.add(col);
+            }
+        }
 
         // per qualifier, find all tables (fragments)
         Map<String, Map<String, Table>> tablesPerQual = new HashMap<String, Map<String, Table>>();
@@ -182,30 +172,38 @@ public class CMISQLQueryMaker implements QueryMaker {
                 tables.put(col.getTable().getName(), col.getTable());
             }
         }
-        // per qualifier, include hier first in fragments
+        // per qualifier, include hier in fragments
         Map<String, List<Table>> qualTables = new HashMap<String, List<Table>>();
         for (Entry<String, Map<String, Table>> entry : tablesPerQual.entrySet()) {
             String qual = entry.getKey();
             Map<String, Table> tableMap = entry.getValue();
             // add hier as well in fragments
-            String hierAlias = getAlias(hierTable, qual);
-            Table hierAliasTable = findTable(hierTable, hierAlias);
-            tableMap.remove(hierAlias);
+            tableMap.remove(getTableAlias(hierTable, qual));
             List<Table> tables = new LinkedList<Table>(tableMap.values());
-            tables.add(hierAliasTable);
+            tables.add(getTable(hierTable, qual));
             qualTables.put(qual, tables);
         }
 
-        // walk joins
+        Query q = new Query();
+        List<String> whereClauses = new LinkedList<String>();
+
+        /*
+         * Walk joins.
+         */
+
         boolean first = true;
         StringBuilder buf = new StringBuilder();
+        int njoin = 0;
         for (Join j : walker.from_joins) {
+
+            // table this join is about
+
             String qual = j.corr;
-            Table table = null; // table this join is about
+            njoin++;
+            Table table = null;
             if (first) {
                 // start with hier
-                String hierAlias = getAlias(hierTable, qual);
-                table = findTable(hierTable, hierAlias);
+                table = getTable(hierTable, qual);
             } else {
                 // do requested join
                 if (j.kind.equals("LEFT") || j.kind.equals("RIGHT")) {
@@ -227,8 +225,10 @@ public class CMISQLQueryMaker implements QueryMaker {
                             "Bad query, qualifier not found: " + qual);
                 }
             }
+            String tableMainId = table.getColumn(model.MAIN_KEY).getFullQuotedName();
 
             // join requested table
+
             String name;
             if (table.isAlias()) {
                 name = table.getRealTable().getQuotedName() + " "
@@ -247,6 +247,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
 
             // join other fragments for qualifier
+
             for (Table t : qualTables.get(qual)) {
                 if (t.getName().equals(table.getName())) {
                     // this one was the first, already done
@@ -264,38 +265,111 @@ public class CMISQLQueryMaker implements QueryMaker {
                 buf.append(" ON ");
                 buf.append(t.getColumn(model.MAIN_KEY).getFullQuotedName());
                 buf.append(" = ");
-                buf.append(table.getColumn(model.MAIN_KEY).getFullQuotedName());
+                buf.append(tableMainId);
+            }
+
+            // restrict to relevant primary types
+
+            String nuxeoType;
+            boolean skipFolderish;
+            if (j.table.equalsIgnoreCase(BaseType.DOCUMENT.getId())) {
+                nuxeoType = TypeConstants.DOCUMENT;
+                skipFolderish = true;
+            } else if (j.table.equalsIgnoreCase(BaseType.FOLDER.getId())) {
+                nuxeoType = "Folder"; // TODO extract constant
+                skipFolderish = false;
+            } else {
+                nuxeoType = j.table;
+                skipFolderish = false;
+            }
+            Set<String> subTypes = model.getDocumentSubTypes(nuxeoType);
+            if (subTypes == null) {
+                throw new QueryMakerException("Unknown type: " + j.table);
+            }
+            List<String> types = new ArrayList<String>();
+            List<String> qms = new ArrayList<String>();
+            for (String type : subTypes) {
+                if (skipFolderish
+                        && model.getDocumentTypeFacets(type).contains(
+                                FacetNames.FOLDERISH)) {
+                    continue;
+                }
+                if (type.equals(model.ROOT_TYPE)) {
+                    continue;
+                }
+                types.add(type);
+                qms.add("?");
+            }
+            if (types.isEmpty()) {
+                types.add("__NOSUCHTYPE__");
+                qms.add("?");
+            }
+            whereClauses.add(String.format("%s IN (%s)", table.getColumn(
+                    model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
+                    StringUtils.join(qms, ", ")));
+            for (String type : types) {
+                q.selectParams.add(type);
+            }
+
+            // security check
+
+            if (queryFilter != null && queryFilter.getPrincipals() != null) {
+                Serializable principals;
+                Serializable permissions;
+                if (dialect.supportsArrays()) {
+                    principals = queryFilter.getPrincipals();
+                    permissions = queryFilter.getPermissions();
+                } else {
+                    principals = StringUtils.join(queryFilter.getPrincipals(),
+                            '|');
+                    permissions = StringUtils.join(
+                            queryFilter.getPermissions(), '|');
+                }
+                if (dialect.supportsReadAcl()) {
+                    /* optimized read acl */
+                    String readAclTable;
+                    String readAclIdCol;
+                    String readAclAclIdCol;
+                    if (walker.from_joins.size() == 1) {
+                        readAclTable = model.HIER_READ_ACL_TABLE_NAME;
+                        readAclIdCol = model.HIER_READ_ACL_TABLE_NAME + '.'
+                                + model.HIER_READ_ACL_ID;
+                        readAclAclIdCol = model.HIER_READ_ACL_TABLE_NAME + '.'
+                                + model.HIER_READ_ACL_ACL_ID;
+                    } else {
+                        String alias = "nxr" + njoin;
+                        readAclTable = model.HIER_READ_ACL_TABLE_NAME + " "
+                                + alias; // TODO dialect
+                        readAclIdCol = alias + '.' + model.HIER_READ_ACL_ID;
+                        readAclAclIdCol = alias + '.'
+                                + model.HIER_READ_ACL_ACL_ID;
+                    }
+                    whereClauses.add(dialect.getReadAclsCheckSql(readAclAclIdCol));
+                    q.selectParams.add(principals);
+                    buf.append(String.format(" JOIN %s ON %s = %s",
+                            readAclTable, tableMainId, readAclIdCol));
+                } else {
+                    whereClauses.add(dialect.getSecurityCheckSql(tableMainId));
+                    q.selectParams.add(principals);
+                    q.selectParams.add(permissions);
+                }
             }
 
             first = false;
         }
 
-        List<String> whereClauses = new LinkedList<String>();
+        /*
+         * Where clause.
+         */
+
         if (walker.select_where != null) {
             whereClauses.add('(' + walker.select_where + ')');
         }
 
-        Query q = new Query();
+        /*
+         * What we select.
+         */
 
-        // Security check
-        queryFilter = null;
-        if (queryFilter != null && queryFilter.getPrincipals() != null) {
-            whereClauses.add(dialect.getSecurityCheckSql(hierId));
-            Serializable principals;
-            Serializable permissions;
-            if (dialect.supportsArrays()) {
-                principals = queryFilter.getPrincipals();
-                permissions = queryFilter.getPermissions();
-            } else {
-                principals = StringUtils.join(queryFilter.getPrincipals(), '|');
-                permissions = StringUtils.join(queryFilter.getPermissions(),
-                        '|');
-            }
-            q.selectParams.add(principals);
-            q.selectParams.add(permissions);
-        }
-
-        // what we select
         List<Column> whatColumns = new LinkedList<Column>();
         List<String> whatColumnsAliases = new LinkedList<String>();
         for (String col : walker.select_what) {
@@ -307,6 +381,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         /*
          * Create the whole select.
          */
+
         Select select = new Select(null);
         select.setWhat(what);
         select.setFrom(buf.toString());
@@ -318,9 +393,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         return q;
     }
 
-    protected Column findColumn(String name, String qualifier) {
-        boolean allowArray = false;
-        boolean inOrderBy = false;
+    protected Column findColumn(String name, String qualifier, boolean multi) {
         Column column;
         name = name.toUpperCase();
         if (name.startsWith(CMIS_PREFIX.toUpperCase())) {
@@ -332,35 +405,34 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
             PropertyInfo propertyInfo = model.getPropertyInfo(propertyName);
             Table table = database.getTable(propertyInfo.fragmentName);
-            if (propertyInfo.propertyType.isArray()) {
-                if (!allowArray) {
-                    String msg = inOrderBy ? "Cannot use multi-valued property %s in ORDER BY clause"
-                            : "Cannot use multi-valued property %s";
-                    throw new QueryMakerException(String.format(msg, name));
-                }
+            if (multi != propertyInfo.propertyType.isArray()) {
+                String msg = multi ? "Must use multi-valued property instead of %s"
+                        : "Cannot use multi-valued property %s";
+                throw new QueryMakerException(String.format(msg, name));
+            }
+            if (multi) {
                 column = table.getColumn(model.COLL_TABLE_VALUE_KEY);
             } else {
                 column = table.getColumn(propertyInfo.fragmentKey);
             }
         }
         if (qualifier != null) {
-            String alias = getAlias(column.getTable(), qualifier);
-            column = findTable(column.getTable(), alias).getColumn(
+            column = getTable(column.getTable(), qualifier).getColumn(
                     column.getKey());
             // TODO ensure key == name, or add getName()
         }
         return column;
     }
 
-    protected Table findTable(Table table, String alias) {
-        if (alias == null) {
+    protected Table getTable(Table table, String qualifier) {
+        if (qualifier == null) {
             return table;
         } else {
-            return new TableAlias(table, alias);
+            return new TableAlias(table, getTableAlias(table, qualifier));
         }
     }
 
-    protected String getAlias(Table table, String qualifier) {
+    protected String getTableAlias(Table table, String qualifier) {
         if (qualifier == null) {
             return null;
         } else {
