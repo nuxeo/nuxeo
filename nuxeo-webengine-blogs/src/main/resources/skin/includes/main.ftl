@@ -1,5 +1,4 @@
 <div>
-MAIN
 <#list entries as entry>
 <div class="post">
   <h2><a class="title" href="${entry.url}"

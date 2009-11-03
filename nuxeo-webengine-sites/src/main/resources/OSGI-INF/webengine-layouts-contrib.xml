@@ -139,7 +139,10 @@
         </row>
         <row>
           <widget>content</widget>
-        </row>        
+        </row> 
+        <row>
+          <widget>richEdited</widget>
+        </row>   
       </rows>
 
       <widget name="pushtomenu" type="template">
@@ -160,6 +163,18 @@
         <fields>
           <field>webp:content</field>
         </fields>
+      </widget>
+      
+      <widget name="richEdited" type="hidden">
+        <labels>
+          <label mode="any"></label>
+        </labels>        
+        <fields>
+          <field>webp:isRichtext</field>
+        </fields>
+        <properties mode="any">
+         <property name="value">true</property>
+         </properties>
       </widget>
 
     </layout>
