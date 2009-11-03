@@ -134,7 +134,7 @@
       <artifactId>nuxeo-platform-default-config</artifactId>
     </dependency>
     <dependency>
-      <groupId>truezip</groupId>
+      <groupId>de.schlichtherle.io</groupId>
       <artifactId>truezip</artifactId>
     </dependency>
   </dependencies>

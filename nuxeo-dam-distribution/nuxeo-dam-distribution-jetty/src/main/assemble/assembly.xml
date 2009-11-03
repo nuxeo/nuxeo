@@ -168,7 +168,7 @@
       <artifact group="backport-util-concurrent" name="backport-util-concurrent" />
 
       <!-- Nuxeo DAM libs -->
-      <artifact group="truezip" name="truezip"/>
+      <artifact group="de.schlichtherle.io" name="truezip"/>
     </artifacts>
   </artifactSet>
 

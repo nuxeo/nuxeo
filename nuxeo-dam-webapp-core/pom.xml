@@ -259,7 +259,7 @@
       <artifactId>hibernate-annotations</artifactId>
     </dependency>
     <dependency>
-      <groupId>truezip</groupId>
+      <groupId>de.schlichtherle.io</groupId>
       <artifactId>truezip</artifactId>
     </dependency>
   </dependencies>
