@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.dam.contentTemplate">
 
+  <!-- overriding the DM folder structure (workspaces, sections, templates) -->
+  <require>org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib</require>
+
   <extension
     target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
     point="factoryBinding">
