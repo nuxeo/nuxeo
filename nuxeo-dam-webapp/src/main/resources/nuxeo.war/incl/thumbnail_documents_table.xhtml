@@ -52,11 +52,11 @@
               </a4j:commandLink>
             </span>
           </h:panelGroup>
-          <h:panelGroup>
+          <h:panelGroup rendered="#{!empty row.data.dam_common.author}" id="damcAuthor">
             <h:outputText class="thumbViewlabel" value="#{messages['label.content.thumbnail.by']} " />
-	    <h:outputText value="#{nxu:userFullName(row.data.dam_common.author)}" />
+	        <h:outputText value="#{row.data.dam_common.author}" />
           </h:panelGroup>
-          <h:panelGroup>
+          <h:panelGroup rendered="#{!empty row.data.dam_common.authoringDate}" id="damcAuthoringDate">
             <h:outputText class="thumbViewlabel" value="#{messages['label.content.thumbnail.creation']} " />
             <h:outputText value="#{row.data.dam_common.authoringDate}">
               <f:convertDateTime pattern="#{nxu:basicDateFormater()}"

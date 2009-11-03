@@ -120,19 +120,19 @@
 </tr>
 <!-- test schema inherited for a video file -->
 <tr>
-        <td>watchA4jRequests</td>
-        <td></td>
-        <td></td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
 </tr>
 <tr>
-        <td>click</td>
-        <td>iconfilterForm:Video</td>
-        <td></td>
+	<td>click</td>
+	<td>iconfilterForm:Video</td>
+	<td></td>
 </tr>
 <tr>
-        <td>waitForA4jRequest</td>
-        <td>1200</td>
-        <td></td>
+	<td>waitForA4jRequest</td>
+	<td>1200</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
@@ -176,19 +176,19 @@
 </tr>
 <!-- test schema inherited for an audio file -->
 <tr>
-        <td>watchA4jRequests</td>
-        <td></td>
-        <td></td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
 </tr>
 <tr>
-        <td>click</td>
-        <td>iconfilterForm:Video</td>
-        <td></td>
+	<td>click</td>
+	<td>iconfilterForm:Video</td>
+	<td></td>
 </tr>
 <tr>
-        <td>waitForA4jRequest</td>
-        <td>1200</td>
-        <td></td>
+	<td>waitForA4jRequest</td>
+	<td>1200</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
@@ -196,19 +196,19 @@
 	<td></td>
 </tr>
 <tr>
-        <td>watchA4jRequests</td>
-        <td></td>
-        <td></td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
 </tr>
 <tr>
-        <td>click</td>
-        <td>iconfilterForm:Audio</td>
-        <td></td>
+	<td>click</td>
+	<td>iconfilterForm:Audio</td>
+	<td></td>
 </tr>
 <tr>
-        <td>waitForA4jRequest</td>
-        <td>1200</td>
-        <td></td>
+	<td>waitForA4jRequest</td>
+	<td>1200</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
@@ -252,25 +252,139 @@
 </tr>
 <!-- to back to showing all documents -->
 <tr>
-        <td>watchA4jRequests</td>
-        <td></td>
-        <td></td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
 </tr>
 <tr>
-        <td>click</td>
-        <td>iconfilterForm:Audio</td>
-        <td></td>
+	<td>click</td>
+	<td>iconfilterForm:Audio</td>
+	<td></td>
 </tr>
 <tr>
-        <td>waitForA4jRequest</td>
-        <td>1200</td>
-        <td></td>
+	<td>waitForA4jRequest</td>
+	<td>1200</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
 	<td>P-01</td>
 	<td></td>
 </tr>
+<!-- now edit a document removing the author and authoringDate and make sure they aren't shown -->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=P-06</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>1200</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Edit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>7000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;navigation:assetView:editSubView:nxl_damc_2:nxw_author_2&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//*[@id=&quot;navigation:assetView:editSubView:nxl_damc_2:nxw_authoringDate_2&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Save</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>//*[@id=&quot;navigation:assetView:editSubView:nxl_damc_1:nxw_author_1&quot;]</td>
+	<td>John Do</td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>//*[@id=&quot;navigation:assetView:editSubView:nxl_damc_1:nxw_authoringDate_1&quot;]</td>
+	<td>6/8/09</td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//*[@id=&quot;SEARCH_DOCUMENT_LIST:showListThumbnail:dataTable:7:damcAuthor&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//*[@id=&quot;SEARCH_DOCUMENT_LIST:showListThumbnail:dataTable:7:damcAuthoringDate&quot;]</td>
+	<td></td>
+</tr>
+<!-- now check that they (author and authoringDate) are blank on the list view -->
+<!-- switch to list view -->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>toggleList:showList</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>1200</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id=&quot;SEARCH_DOCUMENT_LIST:showListSubview:dataTable:7:damcAuthor&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//*[@id=&quot;SEARCH_DOCUMENT_LIST:showListSubview:dataTable:7:damcAuthor&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//*[@id=&quot;SEARCH_DOCUMENT_LIST:showListSubview:dataTable:7:damcAuthoringDate&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//*[@id=&quot;SEARCH_DOCUMENT_LIST:showListSubview:dataTable:7:damcAuthoringDate&quot;]</td>
+	<td></td>
+</tr>
+
 </tbody></table>
 </body>
 </html>

@@ -92,7 +92,7 @@
           rendered="#{!provider.sortable}" />
         </h:panelGroup>
       </f:facet>
-      <h:outputText value="#{nxu:userFullName(row.data.dam_common.author)}" />
+      <h:outputText value="#{row.data.dam_common.author}" id="damcAuthor" />
     </nxu:column>
 
     <!-- import date -->
@@ -116,7 +116,7 @@
           rendered="#{!provider.sortable}" />
         </h:panelGroup>
       </f:facet>
-      <h:outputText value="#{row.data.dam_common.authoringDate}">
+      <h:outputText value="#{row.data.dam_common.authoringDate}" id="damcAuthoringDate">
         <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
           timeZone="#{timeZone}" />
       </h:outputText>
