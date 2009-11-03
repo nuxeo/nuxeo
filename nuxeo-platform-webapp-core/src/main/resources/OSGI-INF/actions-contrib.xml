@@ -211,6 +211,7 @@
       <filter-id>edit</filter-id>
       <filter-id>mutable_document</filter-id>
       <filter-id>hasAttachedFiles</filter-id>
+      <filter-id>denyFilesTab</filter-id>
     </action>
 
     <action id="TAB_RIGHTS" link="/incl/tabs/document_rights.xhtml" order="50"
@@ -796,6 +797,15 @@
     <filter id="type_section">
       <rule grant="false">
         <type>Section</type>
+      </rule>
+    </filter>
+    
+    <filter id="denyFilesTab">
+      <rule grant="false">
+        <type>WebSite</type>
+        <type>WebPage</type>
+        <type>BlogSite</type>
+        <type>BlogPost</type>
       </rule>
     </filter>
 
