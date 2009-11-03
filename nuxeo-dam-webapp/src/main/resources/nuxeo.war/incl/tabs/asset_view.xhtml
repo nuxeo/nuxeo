@@ -159,23 +159,21 @@
         </div>
       </f:subview>
 
-      <!--
       <f:subview rendered="#{documentActions.currentSelection.hasSchema('picture')}">
-      <div class="togglePanel">
-        <div class="togglePanelTitleBox">
-          <h3>
-            <a href="#" class="folded" onclick="return togglePanel(this)">
-              <h:outputText value="#{messages['label.header.info.iptc']}"/>
-            </a>
-          </h3>
-          <div style="clear:both;"></div>
+        <div class="togglePanel">
+          <div class="togglePanelTitleBox">
+            <h3>
+              <a href="#" class="folded" onclick="return togglePanel(this)">
+                <h:outputText value="#{messages['label.header.info.iptc']}"/>
+              </a>
+            </h3>
+            <div style="clear:both;"></div>
+          </div>
+          <div class="togglePanelBody" style="display:none">
+            <nxl:layout name="iptc_info" mode="view" value="#{documentActions.currentSelection}"/>
+          </div>
         </div>
-        <div class="togglePanelBody" style="display:none">
-          <h:outputText value="#{messages['label.header.info.iptc']}"/>
-        </div>
-      </div>
       </f:subview>
-      -->
 
     </a4j:form>
   </div>

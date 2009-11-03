@@ -36,6 +36,7 @@
       <schema name="picture"/>
       <schema name="dam_common"/>
       <schema name="image_metadata"/>
+      <schema name="iptc"/>
       <schema name="common"/>
       <schema name="uid"/>
       <schema name="dublincore"/>
