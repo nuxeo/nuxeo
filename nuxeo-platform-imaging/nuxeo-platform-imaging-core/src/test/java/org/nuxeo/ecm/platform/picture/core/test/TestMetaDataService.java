@@ -66,19 +66,18 @@ public class TestMetaDataService extends NXRuntimeTestCase {
         Map<String, Object> map = service.getImageMetadata(blob);
         assertNotNull(map);
         assertFalse(map.isEmpty());
-        assertNotNull(map.get(MetadataConstants.META_BYLINE));
+        assertNotNull(map.get(MetadataConstants.META_BY_LINE));
         assertNotNull(map.get(MetadataConstants.META_CAPTION));
         assertNotNull(map.get(MetadataConstants.META_CATEGORY));
         assertNotNull(map.get(MetadataConstants.META_CITY));
-        assertNotNull(map.get(MetadataConstants.META_COUNTRY));
+        assertNotNull(map.get(MetadataConstants.META_COUNTRY_OR_PRIMARY_LOCATION));
         assertNotNull(map.get(MetadataConstants.META_CREDIT));
-        assertNotNull(map.get(MetadataConstants.META_DATE));
+        assertNotNull(map.get(MetadataConstants.META_DATE_CREATED));
         assertNotNull(map.get(MetadataConstants.META_HEADLINE));
         assertNotNull(map.get(MetadataConstants.META_HEIGHT));
-        assertNotNull(map.get(MetadataConstants.META_OBJECTNAME));
-        assertNotNull(map.get(MetadataConstants.META_ORIGINALDATE));
+        assertNotNull(map.get(MetadataConstants.META_OBJECT_NAME));
         assertNotNull(map.get(MetadataConstants.META_SOURCE));
-        assertNotNull(map.get(MetadataConstants.META_SUPPLEMENTALCATEGORIES));
+        assertNotNull(map.get(MetadataConstants.META_SUPPLEMENTAL_CATEGORIES));
         assertNotNull(map.get(MetadataConstants.META_WIDTH));
 
 //      those metadata are not found by the parser

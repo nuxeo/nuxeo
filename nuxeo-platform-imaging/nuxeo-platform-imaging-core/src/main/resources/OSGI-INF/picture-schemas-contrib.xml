@@ -8,6 +8,7 @@
              point="schema">
     <schema name="picture" src="schema/picture.xsd"/>
     <schema name="image_metadata" src="schema/image_metadata.xsd" prefix="imd"/>
+    <schema name="iptc" src="schema/iptc.xsd" prefix="iptc"/>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
@@ -16,6 +17,7 @@
     <doctype name="Picture" extends="Document">
       <schema name="picture"/>
       <schema name="image_metadata"/>
+      <schema name="iptc"/>
       <schema name="common"/>
       <schema name="uid"/>
       <schema name="dublincore"/>

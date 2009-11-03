@@ -150,21 +150,21 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         height = (Integer) metadata.get(META_HEIGHT);
 
         doc.setPropertyValue("picture:" + FIELD_BYLINE,
-                (String) metadata.get(META_BYLINE));
+                (String) metadata.get(META_BY_LINE));
         doc.setPropertyValue("picture:" + FIELD_CAPTION,
                 (String) metadata.get(META_CAPTION));
         doc.setPropertyValue("picture:" + FIELD_CREDIT,
                 (String) metadata.get(META_CREDIT));
-        if (metadata.containsKey(META_DATE)) {
+        if (metadata.containsKey(META_DATE_CREATED)) {
             doc.setPropertyValue("picture:" + FIELD_DATELINE, metadata.get(
-                    META_DATE).toString());
+                    META_DATE_CREATED).toString());
         }
         doc.setPropertyValue("picture:" + FIELD_HEADLINE,
                 (String) metadata.get(META_HEADLINE));
         doc.setPropertyValue("picture:" + FIELD_LANGUAGE,
                 (String) metadata.get(META_LANGUAGE));
         doc.setPropertyValue("picture:" + FIELD_ORIGIN,
-                (String) metadata.get(META_OBJECTNAME));
+                (String) metadata.get(META_OBJECT_NAME));
         doc.setPropertyValue("picture:" + FIELD_SOURCE,
                 (String) metadata.get(META_SOURCE));
 
@@ -207,8 +207,63 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         }
         doc.setPropertyValue("imd:orientation",
                 (String) metadata.get(META_ORIENTATION));
-        doc.setPropertyValue("imd:fnumber",
-                (Double) metadata.get(META_FNUMBER));
+        doc.setPropertyValue("imd:fnumber", (Double) metadata.get(META_FNUMBER));
+
+        // Set IPTC info
+        doc.setPropertyValue("iptc:by_line",
+                (String) metadata.get(META_BY_LINE));
+        doc.setPropertyValue("iptc:by_line_title",
+                (String) metadata.get(META_BY_LINE_TITLE));
+        doc.setPropertyValue("iptc:caption",
+                (String) metadata.get(META_CAPTION));
+        doc.setPropertyValue("iptc:category",
+                (String) metadata.get(META_CATEGORY));
+        doc.setPropertyValue("iptc:city", (String) metadata.get(META_CITY));
+        doc.setPropertyValue("iptc:copyright_notice",
+                (String) metadata.get(META_COPYRIGHT_NOTICE));
+        doc.setPropertyValue("iptc:country_or_primary_location",
+                (String) metadata.get(META_COUNTRY_OR_PRIMARY_LOCATION));
+        doc.setPropertyValue("iptc:credit", (String) metadata.get(META_CREDIT));
+        Date dateCreated = (Date) metadata.get(META_DATE_CREATED);
+        if (dateCreated != null) {
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTime(dateCreated);
+            doc.setPropertyValue("iptc:date_created", calendar);
+        }
+        doc.setPropertyValue("iptc:headline",
+                (String) metadata.get(META_HEADLINE));
+        doc.setPropertyValue("iptc:keywords",
+                (String) metadata.get(META_KEYWORDS));
+        doc.setPropertyValue("iptc:language",
+                (String) metadata.get(META_LANGUAGE));
+        doc.setPropertyValue("iptc:object_name",
+                (String) metadata.get(META_OBJECT_NAME));
+        doc.setPropertyValue("iptc:original_transmission_reference",
+                (String) metadata.get(META_ORIGINAL_TRANSMISSION_REFERENCE));
+        doc.setPropertyValue("iptc:originating_program",
+                (String) metadata.get(META_ORIGINATING_PROGRAM));
+        doc.setPropertyValue("iptc:province_or_state",
+                (String) metadata.get(META_PROVINCE_OR_STATE));
+        doc.setPropertyValue("iptc:record_version",
+                (String) metadata.get(META_RECORD_VERSION));
+        Date releaseDate = (Date) metadata.get(META_RELEASE_DATE);
+        if (releaseDate != null) {
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTime(releaseDate);
+            doc.setPropertyValue("iptc:release_date", calendar);
+        }
+        doc.setPropertyValue("iptc:release_time",
+                (String) metadata.get(META_RELEASE_TIME));
+        doc.setPropertyValue("iptc:source", (String) metadata.get(META_SOURCE));
+        doc.setPropertyValue("iptc:special_instructions",
+                (String) metadata.get(META_SPECIAL_INSTRUCTIONS));
+        doc.setPropertyValue("iptc:supplemental_categories",
+                (String) metadata.get(META_SUPPLEMENTAL_CATEGORIES));
+        doc.setPropertyValue("iptc:time_created",
+                (String) metadata.get(META_TIME_CREATED));
+        doc.setPropertyValue("iptc:urgency",
+                (String) metadata.get(META_URGENCY));
+        doc.setPropertyValue("iptc:writer", (String) metadata.get(META_WRITER));
     }
 
     protected void addViews(List<Map<String, Object>> pictureTemplates,
