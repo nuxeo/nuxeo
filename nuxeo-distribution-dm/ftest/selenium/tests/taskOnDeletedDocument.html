@@ -56,7 +56,7 @@
 	<td>verifyTextPresent</td>
 	<td>You are logged as jdoe</td>
 	<td></td>
-</tr>
+    </tr>
 <!--lancement de la revue en parallele-->
 <tr>
 	<td>clickAndWait</td>
@@ -374,12 +374,7 @@
 </tr>
 <tr>
 	<td>waitForEditable</td>
-	<td>//input[@name=&quot;CHILDREN_DOCUMENT_LIST:j_id366:1:j_id368&quot;]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>chooseOkOnNextConfirmation</td>
-	<td></td>
+	<td>//input[@value=&quot;Delete&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -538,29 +533,34 @@
 	<td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//input[@name=&quot;CHILDREN_DOCUMENT_LIST:dataTable:0:j_id234&quot;]</td>
-	<td></td>
+    <td>click</td>
+    <td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/tbody/tr[1]/td[1]//input</td>
+    <td></td>
 </tr>
 <tr>
-	<td>waitForEditable</td>
-	<td>//input[@value=&quot;Restore&quot;]</td>
-	<td></td>
+    <td>verifyChecked</td>
+    <td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/tbody/tr[1]/td[1]//input</td>
+    <td></td>
 </tr>
 <tr>
-	<td>chooseOkOnNextConfirmation</td>
-	<td></td>
-	<td></td>
+    <td>waitForEditable</td>
+    <td>//span[@id="CURRENT_SELECTION_UNDELETE"]/input</td>
+    <td>12000</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@value=&quot;Restore&quot;]</td>
-	<td></td>
+    <td>clickAndWait</td>
+    <td>//input[@value="Restore"]</td>
+    <td></td>
 </tr>
 <tr>
-	<td>assertConfirmation</td>
-	<td>Undelete selected document(s)?</td>
-	<td></td>
+    <td>assertConfirmation</td>
+    <td>Undelete selected document(s)?</td>
+    <td></td>
+</tr>
+<tr>
+    <td>verifyTextPresent</td>
+    <td>1 Document(s) restored</td>
+    <td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
