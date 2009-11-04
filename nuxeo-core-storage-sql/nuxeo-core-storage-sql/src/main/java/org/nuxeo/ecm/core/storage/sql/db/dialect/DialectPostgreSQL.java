@@ -1015,11 +1015,13 @@ public class DialectPostgreSQL extends Dialect {
                         + "DECLARE\n" //
                         + "  doc_id varchar(36);\n" //
                         + "BEGIN\n" //
-                        + "  IF (TG_OP = 'INSERT' AND NEW.isproperty = 'f') THEN\n" //
-                        + "    -- New document\n" //
-                        + "    INSERT INTO hierarchy_modified_acl VALUES(NEW.id, 't');\n" //
-                        + "  ELSEIF (TG_OP = 'UPDATE' AND NEW.isproperty = 'f') THEN\n" //
-                        + "    IF (NEW.parentid != OLD.parentid) THEN\n" //
+                        + "  IF (TG_OP = 'INSERT') THEN\n" //
+                        + "    IF (NEW.isproperty = 'f') THEN\n" //
+                        + "      -- New document\n" //
+                        + "      INSERT INTO hierarchy_modified_acl VALUES(NEW.id, 't');\n" //
+                        + "    END IF;\n" //
+                        + "  ELSEIF (TG_OP = 'UPDATE') THEN\n" //
+                        + "    IF (NEW.isproperty = 'f' AND NEW.parentid != OLD.parentid) THEN\n" //
                         + "      -- New container\n" //
                         + "      INSERT INTO hierarchy_modified_acl VALUES(NEW.id, 'f');\n" //
                         + "    END IF;\n" //
