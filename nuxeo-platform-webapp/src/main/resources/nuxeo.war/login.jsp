@@ -211,7 +211,7 @@ nxthemes css is not used in login.jsp */
                     <li><a href="http://www.nuxeo.org/sections/community/">
                       <fmt:message bundle="${messages}" key="label.login.joinTheCommunity" />
                     </a></li>
-                    <li><a href="http://doc.nuxeo.org/xwiki/bin/view/Main/QuickStart-5.2">
+                    <li><a href="http://doc.nuxeo.org/xwiki/bin/view/Main/QuickStart/">
                       <fmt:message bundle="${messages}" key="label.login.quickStart" />
                     </a></li>
                 </ul>
@@ -293,7 +293,7 @@ nxthemes css is not used in login.jsp */
       <td class="news_container" align="right" valign="center">
         <iframe class="block_container" style="display:none"
           onload="javascript:this.style.display='block';"
-          src="http://www.nuxeo.com/var/storage/nuxeo_dm/news.html"></iframe>
+          src="http://www.nuxeo.com/layout/set/newslist"></iframe>
       </td>
     </tr>
       <tr class="footer">
