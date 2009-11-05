@@ -80,6 +80,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.platform.picture.ExifHelper;
 import org.nuxeo.ecm.platform.picture.core.MetadataUtils;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
@@ -154,7 +155,7 @@ public class MistralMetadataUtils implements MetadataUtils {
             }
 
             if (exif.isUserCommentAvailable()) {
-                String comment = new String(exif.getUserComment()).trim();
+                String comment = ExifHelper.decodeUndefined(exif.getUserComment()).trim();
                 if (comment.length() > 0) {
                     metadata.put(META_COMMENT, comment);
                 }
