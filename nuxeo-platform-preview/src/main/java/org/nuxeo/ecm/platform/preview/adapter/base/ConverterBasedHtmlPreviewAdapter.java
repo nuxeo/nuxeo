@@ -129,7 +129,7 @@ public class ConverterBasedHtmlPreviewAdapter extends
             throw new PreviewException("Error while getting blob", e);
         }
 
-        if (blobHolder2preview == null) {
+        if (blob2Preview == null) {
             throw new PreviewException(
                     "can not preview a document without blob");
         }
