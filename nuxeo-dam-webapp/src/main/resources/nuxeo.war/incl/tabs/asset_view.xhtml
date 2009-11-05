@@ -123,7 +123,7 @@
                        columnClasses="labelColumn, fieldColumn" columns="2">
             <h:outputText value="#{messages['label.content.size']}"/>
             <h:panelGroup>
-              <h:outputText
+              <h:outputText id="imgSize"
                       value="#{nxu:printFormatedFileSize(documentActions.currentSelection.picture.views[1].content.length, 'JEDEC', true)}"
                       rendered="#{documentActions.currentSelection.hasSchema('picture') and !empty documentActions.currentSelection.picture.views}"/>
               <h:outputText
@@ -135,10 +135,10 @@
                        columnClasses="labelColumn, fieldColumn" columns="2"
                        rendered="#{documentActions.currentSelection.hasSchema('picture') and !empty documentActions.currentSelection.picture.views}">
             <h:outputText value="#{messages['label.content.height']}"/>
-            <h:outputText value="#{currentSelection.picture.views[1].height}"/>
+            <h:outputText id="imgHeight" value="#{documentActions.currentSelection.picture.views[1].height}"/>
 
             <h:outputText value="#{messages['label.content.width']}"/>
-            <h:outputText value="#{currentSelection.picture.views[1].width}"/>
+            <h:outputText id="imgWidth" value="#{documentActions.currentSelection.picture.views[1].width}"/>
           </h:panelGrid>
         </div>
       </div>
