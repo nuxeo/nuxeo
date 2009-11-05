@@ -58,7 +58,11 @@ public class HtmlEditorPluginServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor) {
         if (PLUGINS_EXTENSION_POINT.equals(extensionPoint)) {
             final HtmlEditorPluginDescriptor descriptor = (HtmlEditorPluginDescriptor) contribution;
-            pluginsDescriptors.put(descriptor.getPluginName(), descriptor);
+            if (descriptor.getRemove() && pluginsDescriptors.containsKey(descriptor.getPluginName())) {
+                pluginsDescriptors.remove(descriptor.getPluginName());
+            } else {
+                pluginsDescriptors.put(descriptor.getPluginName(), descriptor);
+            }
         }
     }
 

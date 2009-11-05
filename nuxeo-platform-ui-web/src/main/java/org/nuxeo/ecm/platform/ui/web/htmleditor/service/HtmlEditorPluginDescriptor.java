@@ -40,6 +40,9 @@ public class HtmlEditorPluginDescriptor {
     @XNode("@toolbarName")
     private String toolbarName;
 
+    @XNode("@remove")
+    private boolean remove = false;
+
     public String getPluginName() {
         return pluginName;
     }
@@ -62,6 +65,14 @@ public class HtmlEditorPluginDescriptor {
 
     public void setToolbarName(final String toolbarName) {
         this.toolbarName = toolbarName;
+    }
+
+    public Boolean getRemove() {
+        return remove;
+    }
+
+    public void setRemove(final boolean remove) {
+        this.remove = remove;
     }
 
 }
