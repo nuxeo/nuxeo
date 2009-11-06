@@ -231,13 +231,13 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         it = col.iterator();
         ob = it.next();
         assertEquals("testfile1_description", ob.getValue("dc:description"));
-        assertEquals(file1.getId(), ob.getValue("cmis:ObjectId"));
+        assertEquals(file1.getId(), ob.getValue("cmis:objectId"));
 
         // JOIN query through SPI
 
         query = "SELECT A.dc:title, B.cmis:OBJECTID, B.dc:title" //
                 + " FROM cmis:folder A" //
-                + " JOIN cmis:document B ON A.cmis:ObjectId = B.cmis:ParentId" //
+                + " JOIN cmis:document B ON A.cmis:objectId = B.cmis:parentId" //
                 + " WHERE A.dc:title = 'testfolder1_Title'" //
                 + " ORDER BY B.dc:title";
         col = spi.query(query, false, false, false, false, 0, 0, hasMoreItems);
@@ -246,15 +246,15 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         ob = it.next();
         assertEquals("testfolder1_Title", ob.getValue("A.dc:title"));
         assertEquals("testfile1_Title", ob.getValue("B.dc:title"));
-        assertEquals(file1.getId(), ob.getValue("B.cmis:ObjectId"));
+        assertEquals(file1.getId(), ob.getValue("B.cmis:objectId"));
         ob = it.next();
         assertEquals("testfolder1_Title", ob.getValue("A.dc:title"));
         assertEquals("testfile2_Title", ob.getValue("B.dc:title"));
-        assertEquals(file2.getId(), ob.getValue("B.cmis:ObjectId"));
+        assertEquals(file2.getId(), ob.getValue("B.cmis:objectId"));
         ob = it.next();
         assertEquals("testfolder1_Title", ob.getValue("A.dc:title"));
         assertEquals("testfile3_Title", ob.getValue("B.dc:title"));
-        assertEquals(file3.getId(), ob.getValue("B.cmis:ObjectId"));
+        assertEquals(file3.getId(), ob.getValue("B.cmis:objectId"));
 
         res = conn.query("SELECT * FROM cmis:document", false);
         assertNotNull(res);
@@ -313,19 +313,19 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         Connection conn = repository.getConnection(null);
         Collection<CMISObject> res;
         res = conn.query(String.format(
-                "SELECT * FROM cmis:document WHERE cmis:ObjectId = '%s'",
+                "SELECT * FROM cmis:document WHERE cmis:objectId = '%s'",
                 file4id), false);
         assertEquals(1, res.size());
         res = conn.query(String.format(
-                "SELECT * FROM cmis:document WHERE cmis:ParentId = '%s'",
+                "SELECT * FROM cmis:document WHERE cmis:parentId = '%s'",
                 folder1id), false);
         assertEquals(3, res.size());
         res = conn.query(
-                "SELECT * FROM cmis:document WHERE cmis:ObjectTypeId = 'File'",
+                "SELECT * FROM cmis:document WHERE cmis:objectTypeId = 'File'",
                 false);
         assertEquals(3, res.size());
         res = conn.query(
-                "SELECT * FROM cmis:document WHERE cmis:Name = 'testfile4'",
+                "SELECT * FROM cmis:document WHERE cmis:name = 'testfile4'",
                 false);
         assertEquals(1, res.size());
     }
