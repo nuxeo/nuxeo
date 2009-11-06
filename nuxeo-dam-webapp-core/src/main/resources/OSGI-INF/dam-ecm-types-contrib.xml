@@ -65,8 +65,8 @@
       <label>Video</label>
       <default-view>view_documents</default-view>
       <create-view>create_video</create-view>
-      <icon>/icons/video.png</icon>
-      <bigIcon>/icons/video_100.png</bigIcon>
+      <icon>/icons/video_small.png</icon>
+      <bigIcon>/icons/video_big.png</bigIcon>
       <category>SimpleDocument</category>
       <description>Video.description</description>
     </type>
@@ -76,8 +76,8 @@
       <label>Audio</label>
       <default-view>view_documents</default-view>
       <create-view>create_audio</create-view>
-      <icon>/icons/audio.png</icon>
-      <bigIcon>/icons/audio_100.png</bigIcon>
+      <icon>/icons/audio_small.png</icon>
+      <bigIcon>/icons/audio_big.png</bigIcon>
       <category>SimpleDocument</category>
       <description>Audio.description</description>
     </type>

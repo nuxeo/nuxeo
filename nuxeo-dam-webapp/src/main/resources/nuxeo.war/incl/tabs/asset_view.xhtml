@@ -28,7 +28,7 @@
                       url="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Medium:content', documentActions.currentSelection.dublincore.modified)}?conversationId=#{conversation.id}"
                       style="max-height: 350px;"
                       rendered="#{documentActions.currentSelection.hasSchema('picture')}"/>
-    <nxh:graphicImage value="/img/file_preview.png"
+    <nxh:graphicImage value="/icons/office_big.png"
                       style="max-height: 350px;"
                       rendered="#{!documentActions.currentSelection.hasSchema('picture') and
                                   !documentActions.currentSelection.hasSchema('video') and
