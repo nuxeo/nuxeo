@@ -189,6 +189,10 @@ public class Children {
      * @param id the id to remove
      */
     public void remove(Serializable id) {
+        if (created != null && created.remove(id)) {
+            // don't add to deleted
+            return;
+        }
         if (existing != null) {
             existing.remove(id);
         }
