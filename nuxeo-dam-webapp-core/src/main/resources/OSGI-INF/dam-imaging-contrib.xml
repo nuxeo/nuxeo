@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.dam.imaging">
 
+  <require>org.nuxeo.ecm.platform.url.service.DocumentViewCodecService</require>
+  <require>org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService</require>
+  <require>org.nuxeo.ecm.platform.ui.web.rest.URLService</require>
+
   <extension
       target="org.nuxeo.ecm.platform.url.service.DocumentViewCodecService"
       point="codecs">
