@@ -27,9 +27,6 @@
     </profile>
     <profile>
       <id>nuxeo-dam-jboss</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
       <modules>
         <module>nuxeo-dam-ear</module>
         <module>nuxeo-dam-distribution-jboss</module>
