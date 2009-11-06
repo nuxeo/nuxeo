@@ -56,8 +56,11 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.chemistry.Property;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
+import org.nuxeo.ecm.core.storage.sql.db.Table;
 }
 
 @members {
@@ -87,7 +90,7 @@ import org.nuxeo.ecm.core.storage.sql.db.Column;
     public List<String> select_orderby = new LinkedList<String>();
 
     public String referToColumn(String c, String qual) {
-        Column col = queryMaker.findColumn(c, qual);
+        Column col = queryMaker.findColumn(c, qual, false);
         String fqn = col.getFullQuotedName();
         columns.put(fqn, col);
         columnsSpecified.put(fqn, queryMaker.getCanonicalColumnName(c, qual));
@@ -97,6 +100,16 @@ import org.nuxeo.ecm.core.storage.sql.db.Column;
         }
         set.add(fqn);
         return fqn;
+    }
+
+    public int multiref = 1;
+
+    public List<String> errorMessages = new LinkedList<String>();
+
+    @Override
+    public void displayRecognitionError(String[] tokenNames,
+            RecognitionException e) {
+        errorMessages.add(getErrorMessage(e, tokenNames));
     }
 }
 
@@ -113,7 +126,7 @@ select_list
 }:
       STAR
         {
-            select_what.add(referToColumn("cmis:ObjectId", null)); // TODO
+            select_what.add(referToColumn(Property.ID, null)); // TODO
         }
     | ^(LIST (select_sublist { select_what.add($select_sublist.sql); })+)
     ;
@@ -125,7 +138,7 @@ select_sublist returns [String sql]:
         }
     | qualifier DOT STAR
         {
-            $sql = referToColumn("cmis:ObjectId", $qualifier.qual); // TODO
+            $sql = referToColumn(Property.ID, $qualifier.qual); // TODO
         }
     ;
 
@@ -144,6 +157,17 @@ column_reference returns [String sql]:
           String c = $column_name.start.getText();
           String qual = $qualifier.qual;
           $sql = referToColumn(c, qual);
+      }
+    ;
+
+multi_valued_column_reference returns [Column col, String qual, String mqual]:
+    ^(COL qualifier? column_name)
+      {
+          String c = $column_name.start.getText();
+          String mqual = "nxm" + multiref++;
+          $col = queryMaker.findColumn(c, mqual, true);
+          $qual = $qualifier.qual; // qualifier in original query, for join with hier
+          $mqual = mqual; // qualifier generated internally for subselect table
       }
     ;
 
@@ -288,10 +312,68 @@ predicate returns [String sql]:
                 case NEQ:
                     op = "<>";
                     break;
+                case LT:
+                    op = "<";
+                    break;
+                case LTEQ:
+                    op = "<=";
+                    break;
+                case GT:
+                    op = ">";
+                    break;
+                case GTEQ:
+                    op = ">=";
+                    break;
+                case LIKE:
+                    op = "LIKE";
+                    break;
+                case NOT_LIKE:
+                    op = "NOT LIKE";
+                    break;
                 default:
                     throw new UnwantedTokenException(token, input);
             }
             $sql = "(" + $arg1.sql + " " + op + " " + $arg2.sql + ")";
+        }
+    | ^(BIN_OP_ANY bin_op_any bin_arg mvc=multi_valued_column_reference)
+        {
+            int token = $bin_op_any.start.getType();
+            String op;
+            boolean neg;
+            switch (token) {
+                case EQ:
+                    op = "=";
+                    neg = false;
+                    break;
+                case NEQ:
+                    op = "=";
+                    neg = true;
+                    break;
+                case IN:
+                    op = "IN";
+                    neg = false;
+                    break;
+                case NOT_IN:
+                    op = "IN";
+                    neg = true;
+                    break;
+                default:
+                    throw new UnwantedTokenException(token, input);
+            }
+            Column col = $mvc.col;
+            String qual = $mvc.qual;
+            String mqual = $mvc.mqual;
+            String realTableName = col.getTable().getRealTable().getQuotedName();
+            String tableAlias = col.getTable().getQuotedName();
+            Table hierTable = queryMaker.getTable(queryMaker.hierTable, qual);
+            String hierMainId = hierTable.getColumn(Model.MAIN_KEY).getFullQuotedName();
+            String multiMainId = col.getTable().getColumn(Model.MAIN_KEY).getFullQuotedName();
+            $sql = String.format("\%sEXISTS (SELECT 1 FROM \%s \%s WHERE"
+                + " \%s = \%s AND \%s \%s \%s)",
+                neg ? "NOT " : "",
+                realTableName, tableAlias,
+                hierMainId, multiMainId,
+                col.getFullQuotedName(), op, $bin_arg.sql);
         }
 //    | text_search_predicate
 //    | folder_predicate
@@ -309,6 +391,9 @@ un_arg returns [String sql]:
 
 bin_op:
     EQ | NEQ | LT | GT | LTEQ | GTEQ | LIKE | NOT_LIKE;
+
+bin_op_any:
+    EQ | NEQ | IN | NOT_IN;
 
 bin_arg returns [String sql]
 @init {
