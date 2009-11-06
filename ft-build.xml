@@ -34,6 +34,8 @@
       <arg value="package" />
       <arg value="install" />
       <arg value="-P" />
+      <arg value="nuxeo-dam-jboss" />
+      <arg value="-P" />
       <arg value="${mvn.profiles}" />
     </exec>
   </target>

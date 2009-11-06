@@ -43,6 +43,9 @@
     </profile>
     <profile>
       <id>nuxeo-dam-tomcat</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
       <modules>
         <module>nuxeo-dam-distribution-jetty</module>
         <module>nuxeo-dam-distribution-tomcat</module>
