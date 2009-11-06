@@ -238,7 +238,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
                 (String) metadata.get(META_LANGUAGE));
         doc.setPropertyValue("iptc:object_name",
                 (String) metadata.get(META_OBJECT_NAME));
-        doc.setPropertyValue("iptc:original_transmission_reference",
+        doc.setPropertyValue("iptc:original_transmission_ref",
                 (String) metadata.get(META_ORIGINAL_TRANSMISSION_REFERENCE));
         doc.setPropertyValue("iptc:originating_program",
                 (String) metadata.get(META_ORIGINATING_PROGRAM));

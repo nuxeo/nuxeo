@@ -16,7 +16,7 @@
   <xs:element name="keywords" type="xs:string" />
   <xs:element name="language" type="xs:string" />
   <xs:element name="object_name" type="xs:string" />
-  <xs:element name="original_transmission_reference" type="xs:string" />
+  <xs:element name="original_transmission_ref" type="xs:string" />
   <xs:element name="originating_program" type="xs:string" />
   <xs:element name="province_or_state" type="xs:string" />
   <xs:element name="record_version" type="xs:string" />
