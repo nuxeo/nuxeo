@@ -139,11 +139,11 @@
           <widget>pushtomenu</widget>
         </row>
         <row>
-          <widget>content</widget>
+          <widget>contentWiki</widget>
         </row> 
         <row>
-          <widget>richEdited</widget>
-        </row>   
+          <widget>contentRich</widget>
+        </row> 
       </rows>
 
       <widget name="pushtomenu" type="template">
@@ -159,24 +159,32 @@
          </properties>
       </widget>
 
-      <widget name="content" type="htmltext">
+      <widget name="contentRich" type="htmltext">
         <translated>true</translated>
         <fields>
           <field>webp:content</field>
         </fields>
+        <widgetModes>
+          <mode value="any">
+            #{layoutValue.webpage.isRichtext ? 'edit' : 'hidden'}
+          </mode>
+          <mode value="create">create</mode>
+        </widgetModes>
+      </widget>
+
+      <widget name="contentWiki" type="textarea">
+        <translated>true</translated>
+        <fields>
+          <field>webp:content</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{layoutValue.webpage.isRichtext ? 'hidden' : 'edit'}
+          </mode>
+          <mode value="create">hidden</mode>
+        </widgetModes>
       </widget>
       
-      <widget name="richEdited" type="hidden">
-        <labels>
-          <label mode="any"></label>
-        </labels>        
-        <fields>
-          <field>webp:isRichtext</field>
-        </fields>
-        <properties mode="any">
-         <property name="value">true</property>
-         </properties>
-      </widget>
 
     </layout>
     
