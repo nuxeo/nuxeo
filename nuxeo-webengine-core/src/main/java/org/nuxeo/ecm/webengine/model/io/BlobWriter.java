@@ -34,9 +34,9 @@ import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
-@Produces({"text/html", "*/*"})
+@Produces( { "*/*", "text/plain" })
 public class BlobWriter implements MessageBodyWriter<Blob> {
 
     public void writeTo(Blob t, Class<?> type, Type genericType,
@@ -51,8 +51,8 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
         }
     }
 
-    public long getSize(Blob arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(Blob arg0, Class<?> arg1, Type arg2, Annotation[] arg3,
+            MediaType arg4) {
         long n = arg0.getLength();
         return n <= 0 ? -1 : n;
     }
