@@ -50,10 +50,10 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
  * <p>
  * Accepts the following methods:
  * <ul>
- * <li> GET - get the attached file
- * <li> POST - create an attachment
+ * <li>GET - get the attached file
+ * <li>POST - create an attachment
  * </ul>
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @WebAdapter(name = "file", type = "FileService", targetType = "Document")
@@ -76,12 +76,14 @@ public class FileService extends DefaultAdapter {
             Property p = doc.getProperty(xpath);
             Blob blob = (Blob) p.getValue();
             if (blob == null) {
-                throw new WebResourceNotFoundException("No attached file at " + xpath);
+                throw new WebResourceNotFoundException("No attached file at "
+                        + xpath);
             }
             String fileName = blob.getFilename();
             if (fileName == null) {
                 p = p.getParent();
-                if (p.isComplex()) { // special handling for file and files schema
+                if (p.isComplex()) { // special handling for file and files
+                    // schema
                     try {
                         fileName = (String) p.getValue("filename");
                     } catch (PropertyException e) {
@@ -89,10 +91,8 @@ public class FileService extends DefaultAdapter {
                     }
                 }
             }
-            return Response.ok(blob)
-                    .header("Content-Disposition", "inline; filename=" + fileName)
-                    .type(blob.getMimeType())
-                    .build();
+            return Response.ok(blob).header("Content-Disposition",
+                    "attachment;filename=" + fileName).type(blob.getMimeType()).build();
         } catch (Exception e) {
             throw WebException.wrap("Failed to get the attached file", e);
         }
@@ -111,18 +111,21 @@ public class FileService extends DefaultAdapter {
                 xpath = "files:files";
             } else {
                 throw new IllegalArgumentException(
-                        "Missing request parameter named 'property' that specifies " +
-                        "the blob property xpath to fetch");
+                        "Missing request parameter named 'property' that specifies "
+                                + "the blob property xpath to fetch");
             }
         }
         Blob blob = form.getFirstBlob();
         if (blob == null) {
-            throw new IllegalArgumentException("Could not find any uploaded file");
+            throw new IllegalArgumentException(
+                    "Could not find any uploaded file");
         }
         try {
             Property p = doc.getProperty(xpath);
             if (p.isList()) { // add the file to the list
-                if ("files".equals(p.getSchema().getName())) { // treat the files schema separately
+                if ("files".equals(p.getSchema().getName())) { // treat the
+                    // files schema
+                    // separately
                     Map<String, Serializable> map = new HashMap<String, Serializable>();
                     map.put("filename", blob.getFilename());
                     map.put("file", (Serializable) blob);
@@ -131,7 +134,10 @@ public class FileService extends DefaultAdapter {
                     p.add(blob);
                 }
             } else {
-                if ("file".equals(p.getSchema().getName())) { // for compatibility with deprecated filename
+                if ("file".equals(p.getSchema().getName())) { // for
+                    // compatibility
+                    // with deprecated
+                    // filename
                     p.getParent().get("filename").setValue(blob.getFilename());
                 }
                 p.setValue(blob);
@@ -142,7 +148,8 @@ public class FileService extends DefaultAdapter {
                 ScopedMap ctxData = doc.getContextData();
                 ctxData.putScopedValue(ScopeType.REQUEST,
                         VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
-                ctxData.putScopedValue(ScopeType.REQUEST, VersioningActions.KEY_FOR_INC_OPTION, va);
+                ctxData.putScopedValue(ScopeType.REQUEST,
+                        VersioningActions.KEY_FOR_INC_OPTION, va);
             } else {
                 ScopedMap ctxData = doc.getContextData();
                 ctxData.putScopedValue(ScopeType.REQUEST,
@@ -177,7 +184,7 @@ public class FileService extends DefaultAdapter {
             } else {
                 throw new IllegalArgumentException(
                         "Missing request parameter named 'property' that specifies "
-                        + "the blob property xpath to fetch");
+                                + "the blob property xpath to fetch");
             }
         }
         try {
