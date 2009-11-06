@@ -183,6 +183,22 @@ Generic advice when writing tests
 	<td>//input[@id="dashboardDocumentProcessTable:j_id130"]</td>
 	<td></td>
 
+- when trying to debug what's happening on the server, it may be useful to
+  print out the rendered HTML in the page. The following command can be
+  used:
+
+  <tr>
+    <td>storeEval</td>
+    <td>selenium.browserbot.getCurrentWindow().document.body.innerHTML</td>
+    <td>innerhtml</td>
+  </tr>
+  <tr>
+    <td>echo</td>
+    <td>${innerhtml}</td>
+    <td></td>
+  </tr>
+
+
 Test suites description
 =======================
 
