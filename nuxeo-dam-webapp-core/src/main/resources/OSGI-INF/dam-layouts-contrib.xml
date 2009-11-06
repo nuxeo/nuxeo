@@ -277,7 +277,7 @@
           <widget>object_name</widget>
         </row>
         <row>
-          <widget>original_transmission_reference</widget>
+          <widget>original_transmission_ref</widget>
         </row>
         <row>
           <widget>originating_program</widget>
@@ -418,10 +418,10 @@
           <property name="styleClass">dataInputText</property>
         </properties>
       </widget>
-      <widget name="original_transmission_reference" type="text">
+      <widget name="original_transmission_ref" type="text">
         <translated>true</translated>
         <fields>
-          <field>iptc:original_transmission_reference</field>
+          <field>iptc:original_transmission_ref</field>
         </fields>
         <properties widgetMode="edit">
           <property name="styleClass">dataInputText</property>
