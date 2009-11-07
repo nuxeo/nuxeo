@@ -20,7 +20,6 @@ package org.nuxeo.wss;
  * Holds Const values and configuration used for WSS
  *
  * @author Thierry Delprat
- *
  */
 public class WSSConfig {
 
@@ -42,7 +41,7 @@ public class WSSConfig {
     protected boolean hostFPExtensionAtRoot = true;
 
     public synchronized static WSSConfig instance() {
-        if (instance==null) {
+        if (instance == null) {
             instance = new WSSConfig();
         }
         return instance;
@@ -100,7 +99,7 @@ public class WSSConfig {
         return "+0200";
     }
 
-    public String getLang(){
+    public String getLang() {
         return "1033";
     }
 
@@ -120,17 +119,17 @@ public class WSSConfig {
         return "webresources/";
     }
 
-    public String getContextPath(){
+    public String getContextPath() {
         return contextPath;
     }
 
-    public void setContextPath(String path){
-        contextPath=path;
+    public void setContextPath(String path) {
+        contextPath = path;
         if (!contextPath.endsWith("/")) {
-            contextPath=contextPath + "/";
+            contextPath = contextPath + "/";
         }
         if (contextPath.startsWith("/")) {
-            contextPath=contextPath.substring(1);
+            contextPath = contextPath.substring(1);
         }
     }
 
@@ -145,7 +144,5 @@ public class WSSConfig {
     public void setHostFPExtensionAtRoot(boolean hostFPExtensionAtRoot) {
         this.hostFPExtensionAtRoot = hostFPExtensionAtRoot;
     }
-
-
 
 }

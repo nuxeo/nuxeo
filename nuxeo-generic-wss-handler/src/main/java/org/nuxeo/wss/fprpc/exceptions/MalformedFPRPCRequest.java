@@ -20,9 +20,6 @@ import org.nuxeo.wss.WSSException;
 
 public class MalformedFPRPCRequest extends WSSException {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     public MalformedFPRPCRequest(String message) {
@@ -30,7 +27,7 @@ public class MalformedFPRPCRequest extends WSSException {
     }
 
     public MalformedFPRPCRequest(String message, Throwable t) {
-        super(message,t);
+        super(message, t);
     }
 
 }

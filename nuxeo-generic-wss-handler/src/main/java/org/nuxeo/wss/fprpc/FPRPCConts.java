@@ -17,10 +17,9 @@
 package org.nuxeo.wss.fprpc;
 
 /**
- * Contants for FP-RPC protocol
+ * Constants for FP-RPC protocol.
  *
  * @author Thierry Delprat
- *
  */
 public class FPRPCConts {
 

@@ -44,9 +44,8 @@ import org.nuxeo.wss.spi.dws.User;
  * Uses FreeMarker to render responses.
  *
  * @author Thierry Delprat
- *
  */
-public class FakeDWS  implements FakeWSHandler {
+public class FakeDWS implements FakeWSHandler {
 
     public static final String document_TAG = "document";
     public static final String url_TAG = "url";
@@ -54,146 +53,142 @@ public class FakeDWS  implements FakeWSHandler {
     public void handleRequest(FakeWSRequest request, WSSResponse response)
             throws WSSException {
 
-          response.addRenderingParameter("siteRoot", request.getSitePath());
-          response.addRenderingParameter("request", request);
+        response.addRenderingParameter("siteRoot", request.getSitePath());
+        response.addRenderingParameter("request", request);
 
-          if ("http://schemas.microsoft.com/sharepoint/soap/dws/GetDwsMetaData".equals(request.getAction()) ||
-              "http://schemas.microsoft.com/sharepoint/soap/dws/GetDwsData".equals(request.getAction())) {
+        if ("http://schemas.microsoft.com/sharepoint/soap/dws/GetDwsMetaData".equals(request.getAction()) ||
+                "http://schemas.microsoft.com/sharepoint/soap/dws/GetDwsData".equals(request.getAction())) {
 
-              boolean withMeta = true;
-              if ("http://schemas.microsoft.com/sharepoint/soap/dws/GetDwsData".equals(request.getAction())) {
-                  withMeta=false;
-              }
+            boolean withMeta = true;
+            if ("http://schemas.microsoft.com/sharepoint/soap/dws/GetDwsData".equals(request.getAction())) {
+                withMeta = false;
+            }
 
-              String documentUrl=null;
+            String documentUrl = null;
 
-              try {
-                  documentUrl =new FakeWSCmdParser(document_TAG).getParameter(request);
-                  documentUrl = URLDecoder.decode(documentUrl, "UTF-8");
-              } catch (Exception e) {
-                  throw new WSSException("Error parsing envelope", e);
-              }
+            try {
+                documentUrl = new FakeWSCmdParser(document_TAG).getParameter(request);
+                documentUrl = URLDecoder.decode(documentUrl, "UTF-8");
+            } catch (Exception e) {
+                throw new WSSException("Error parsing envelope", e);
+            }
 
-              response.setContentType("text/xml");
+            response.setContentType("text/xml");
 
-              String subPath = documentUrl.replace(request.getBaseUrl(), "");
+            String subPath = documentUrl.replace(request.getBaseUrl(), "");
 
-              WSSBackend backend = Backend.get(request);
-              WSSListItem  item = backend.getItem(subPath);
+            WSSBackend backend = Backend.get(request);
+            WSSListItem item = backend.getItem(subPath);
 
-              DWSMetaData metadata = backend.getMetaData(subPath, request);
-              List<User> users = metadata.getUsers();
-              List<Task> tasks = metadata.getTasks();
-              List<Link> links = metadata.getLinks();
-              List<User> assignees = new ArrayList<User>();
-              List<DWSDocument> docs = new ArrayList<DWSDocument>();
-              for (Task task : tasks) {
-                  String login = task.getAssigneeLogin();
-                  for (User user : users) {
-                      if (user.getLogin().equals(login)) {
-                          assignees.add(user);
-                          break;
-                      }
-                  }
-              }
-              for (Task task : tasks) {
-                  task.updateReferences(users, assignees);
-              }
-              for (Link link : links) {
-                  link.updateReferences(users);
-              }
-              int docIdx = 1;
-              String siteRoot = "/nuxeo"; // XXXX
-              for (WSSListItem doc : metadata.getDocuments()) {
-                  DWSDocument dwsd = new DWSDocument(doc, siteRoot);
-                  dwsd.updateReferences(users);
-                  dwsd.setId(String.valueOf(docIdx));
-                  docs.add(dwsd);
-                  docIdx++;
-              }
+            DWSMetaData metadata = backend.getMetaData(subPath, request);
+            List<User> users = metadata.getUsers();
+            List<Task> tasks = metadata.getTasks();
+            List<Link> links = metadata.getLinks();
+            List<User> assignees = new ArrayList<User>();
+            List<DWSDocument> docs = new ArrayList<DWSDocument>();
+            for (Task task : tasks) {
+                String login = task.getAssigneeLogin();
+                for (User user : users) {
+                    if (user.getLogin().equals(login)) {
+                        assignees.add(user);
+                        break;
+                    }
+                }
+            }
+            for (Task task : tasks) {
+                task.updateReferences(users, assignees);
+            }
+            for (Link link : links) {
+                link.updateReferences(users);
+            }
+            int docIdx = 1;
+            String siteRoot = "/nuxeo"; // XXXX
+            for (WSSListItem doc : metadata.getDocuments()) {
+                DWSDocument dwsd = new DWSDocument(doc, siteRoot);
+                dwsd.updateReferences(users);
+                dwsd.setId(String.valueOf(docIdx));
+                docs.add(dwsd);
+                docIdx++;
+            }
 
-              String siteUrl =metadata.getSite().getItem().getRelativeSubPath(siteRoot);
+            String siteUrl = metadata.getSite().getItem().getRelativeSubPath(siteRoot);
 
-              Map<String, Object> renderingContext = new HashMap<String, Object>();
-              renderingContext.put("doc", item);
-              renderingContext.put("request", request);
-              renderingContext.put("tasks", tasks);
-              renderingContext.put("docs", docs);
-              renderingContext.put("links", links);
-              renderingContext.put("users", users);
-              renderingContext.put("assignees", assignees);
-              renderingContext.put("currentUser", metadata.getCurrentUser());
-              renderingContext.put("site", metadata.getSite());
-              renderingContext.put("updateTS", System.currentTimeMillis()+"");
-              renderingContext.put("siteRoot", siteRoot);
-              renderingContext.put("siteUrl", siteUrl);
+            Map<String, Object> renderingContext = new HashMap<String, Object>();
+            renderingContext.put("doc", item);
+            renderingContext.put("request", request);
+            renderingContext.put("tasks", tasks);
+            renderingContext.put("docs", docs);
+            renderingContext.put("links", links);
+            renderingContext.put("users", users);
+            renderingContext.put("assignees", assignees);
+            renderingContext.put("currentUser", metadata.getCurrentUser());
+            renderingContext.put("site", metadata.getSite());
+            renderingContext.put("updateTS", System.currentTimeMillis() + "");
+            renderingContext.put("siteRoot", siteRoot);
+            renderingContext.put("siteUrl", siteUrl);
 
-              try {
-                 String xmlMetaData = "";
-                 if (withMeta) {
-                     xmlMetaData = renderSubTemplate("GetDwsMetaDataBody.ftl", renderingContext);
-                 } else {
-                     xmlMetaData = renderSubTemplate("GetDwsDataBody.ftl", renderingContext);
-                 }
+            try {
+                String xmlMetaData = "";
+                if (withMeta) {
+                    xmlMetaData = renderSubTemplate("GetDwsMetaDataBody.ftl", renderingContext);
+                } else {
+                    xmlMetaData = renderSubTemplate("GetDwsDataBody.ftl", renderingContext);
+                }
 
                 xmlMetaData = StringEscapeUtils.escapeXml(xmlMetaData);
                 response.addRenderingParameter("doc", item);
                 response.addRenderingParameter("xmlMetaData", xmlMetaData);
                 if (withMeta) {
                     response.setRenderingTemplateName("GetDwsMetaData.ftl");
-                }
-                else {
+                } else {
                     response.setRenderingTemplateName("GetDwsData.ftl");
                 }
 
             } catch (Exception e) {
                 throw new WSSException("Error while rendering sub template", e);
             }
-          }
-          else if ("http://schemas.microsoft.com/sharepoint/soap/dws/CreateFolder".equals(request.getAction())) {
+        } else if ("http://schemas.microsoft.com/sharepoint/soap/dws/CreateFolder".equals(request.getAction())) {
 
-              String documentUrl=null;
+            String documentUrl;
 
-              try {
-                  documentUrl =new FakeWSCmdParser(url_TAG).getParameter(request);
-                  documentUrl = URLDecoder.decode(documentUrl, "UTF-8");
-              } catch (Exception e) {
-                  throw new WSSException("Error parsing envelope", e);
-              }
+            try {
+                documentUrl = new FakeWSCmdParser(url_TAG).getParameter(request);
+                documentUrl = URLDecoder.decode(documentUrl, "UTF-8");
+            } catch (Exception e) {
+                throw new WSSException("Error parsing envelope", e);
+            }
 
-              response.setContentType("text/xml");
-              String siteRoot = "/nuxeo"; // XXXX
-              String folderName = null;
-              String targetPath = null;
-              int idx = documentUrl.lastIndexOf("/");
-              if (idx>0) {
-                  folderName = documentUrl.substring(idx+1);
-                  targetPath = siteRoot + "/" + documentUrl.substring(0, idx);
-              } else {
-                  folderName = documentUrl;
-                  targetPath = siteRoot;
-              }
+            response.setContentType("text/xml");
+            String siteRoot = "/nuxeo"; // XXXX
+            String folderName;
+            String targetPath;
+            int idx = documentUrl.lastIndexOf("/");
+            if (idx > 0) {
+                folderName = documentUrl.substring(idx + 1);
+                targetPath = siteRoot + "/" + documentUrl.substring(0, idx);
+            } else {
+                folderName = documentUrl;
+                targetPath = siteRoot;
+            }
 
-              WSSBackend backend = Backend.get(request);
-              backend.createFolder(targetPath, folderName);
+            WSSBackend backend = Backend.get(request);
+            backend.createFolder(targetPath, folderName);
 
-              response.setRenderingTemplateName("CreateFolderResponse.ftl");
-          }
-          else {
-              throw new WSSException("no FakeWS implemented for action " + request.getAction());
-          }
+            response.setRenderingTemplateName("CreateFolderResponse.ftl");
+        } else {
+            throw new WSSException("no FakeWS implemented for action " + request.getAction());
+        }
     }
 
-
     protected String renderSubTemplate(String renderingTemplateName, Map<String, Object> renderingContext) throws Exception {
-         Writer writer = null;
-         ByteArrayOutputStream bufferedOs = null;
-         bufferedOs = new ByteArrayOutputStream();
-         writer = new BufferedWriter(new OutputStreamWriter(bufferedOs));
-         FreeMarkerRenderer.instance().render(renderingTemplateName, renderingContext, writer);
-         writer.flush();
-         writer.close();
-         return bufferedOs.toString("UTF-8");
+        Writer writer;
+        ByteArrayOutputStream bufferedOs;
+        bufferedOs = new ByteArrayOutputStream();
+        writer = new BufferedWriter(new OutputStreamWriter(bufferedOs));
+        FreeMarkerRenderer.instance().render(renderingTemplateName, renderingContext, writer);
+        writer.flush();
+        writer.close();
+        return bufferedOs.toString("UTF-8");
     }
 
 }

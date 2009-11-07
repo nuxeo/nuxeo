@@ -16,6 +16,7 @@
  */
 
 package org.nuxeo.wss.handlers.fprpc;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -49,17 +50,16 @@ public class OWSSvrHandler extends AbstractFPRPCHandler implements FPRPCHandler 
 
         if ("FileOpen".equals(call.getMethodName())) {
             handleFileDialog(request, fpResponse, call, backend, false);
-        }
-        else if ("FileSave".equals(call.getMethodName())) {
+        } else if ("FileSave".equals(call.getMethodName())) {
             try {
-                fpResponse.getHttpResponse().sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, "Please use list-document API for save as");
+                fpResponse.getHttpResponse().sendError(
+                        HttpServletResponse.SC_NOT_ACCEPTABLE, "Please use list-document API for save as");
                 return;
             } catch (IOException e) {
                 throw new WSSException("Error while sending error!", e);
             }
             //handleFileDialog(request, fpResponse, call, backend, true);
-        }
-        else if ("SaveForm".equals(call.getMethodName())) {
+        } else if ("SaveForm".equals(call.getMethodName())) {
 
             if ("HEAD".equals(request.getHttpRequest().getMethod())) {
                 fpResponse.setContentType("text/html");
@@ -69,8 +69,7 @@ public class OWSSvrHandler extends AbstractFPRPCHandler implements FPRPCHandler 
         }
     }
 
-    protected void handleFileDialog(FPRPCRequest request, FPRPCResponse response , FPRPCCall call, WSSBackend backend, boolean save) throws WSSException
-    {
+    protected void handleFileDialog(FPRPCRequest request, FPRPCResponse response, FPRPCCall call, WSSBackend backend, boolean save) throws WSSException {
         if ("HEAD".equals(request.getHttpRequest().getMethod())) {
             response.setContentType("text/html");
             return;
@@ -85,7 +84,7 @@ public class OWSSvrHandler extends AbstractFPRPCHandler implements FPRPCHandler 
         response.addRenderingParameter("items", items);
         response.setContentType("text/html");
 
-        Cookie MSOWebPartCookie = new Cookie("MSOWebPartPage_AnonymousAccessCookie","80");
+        Cookie MSOWebPartCookie = new Cookie("MSOWebPartPage_AnonymousAccessCookie", "80");
         MSOWebPartCookie.setPath("/");
         MSOWebPartCookie.setMaxAge(3600);
 
@@ -95,8 +94,7 @@ public class OWSSvrHandler extends AbstractFPRPCHandler implements FPRPCHandler 
         if (save) {
             //response.setRenderingTemplateName("FileSave.ftl");
             response.setRenderingTemplateName("FileOpen.ftl");
-        }
-        else {
+        } else {
             response.setRenderingTemplateName("FileOpen.ftl");
         }
     }

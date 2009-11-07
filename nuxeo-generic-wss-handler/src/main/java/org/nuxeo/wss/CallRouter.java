@@ -23,7 +23,6 @@ import java.util.Map;
  * Manages cache for Call Handlers
  *
  * @author Thierry Delprat
- *
  */
 public class CallRouter {
 
@@ -32,20 +31,21 @@ public class CallRouter {
     protected static <T> T getHandler(Class<T> handlerClass, String handlerName)
             throws Exception {
 
-                Object handler = handlers.get(handlerName);
+        Object handler = handlers.get(handlerName);
 
-                if (handler==null) {
-                    Class klass;
-                    try {
-                        String pkg_prefix = handlerClass.getPackage().getName();
-                        klass = Class.forName(pkg_prefix + "." + handlerName);
-                        handler = klass.newInstance();
-                        handlers.put(handlerName, handler);
-                    } catch (Exception e) {
-                        throw new Exception("Unable to find handler", e);
+        if (handler == null) {
+            Class klass;
+            try {
+                String pkg_prefix = handlerClass.getPackage().getName();
+                klass = Class.forName(pkg_prefix + "." + handlerName);
+                handler = klass.newInstance();
+                handlers.put(handlerName, handler);
+            } catch (Exception e) {
+                throw new Exception("Unable to find handler", e);
 
-                    }
-                }
-                return handlerClass.cast(handler);
             }
+        }
+        return handlerClass.cast(handler);
+    }
+
 }

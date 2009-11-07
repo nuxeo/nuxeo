@@ -26,7 +26,7 @@ import org.nuxeo.wss.spi.WSSListItem;
 
 public class DummyMemoryTree {
 
-    protected WSSListItem root ;
+    protected WSSListItem root;
     protected Map<String, List<WSSListItem>> allitems = new HashMap<String, List<WSSListItem>>();
 
     public static final int DEPTH = 3;
@@ -34,7 +34,7 @@ public class DummyMemoryTree {
     protected static DummyMemoryTree instance = null;
 
     public synchronized static DummyMemoryTree instance() {
-        if (instance==null) {
+        if (instance == null) {
             instance = new DummyMemoryTree();
             instance.init();
         }
@@ -46,8 +46,8 @@ public class DummyMemoryTree {
     }
 
     public WSSListItem getItem(String location) {
-
-        if (location==null || location=="" || location == "/") {
+        // FIXME: '==' or '.equals' ?
+        if (location == null || location == "" || location == "/") {
             return root;
         }
         if (location.startsWith("/")) {
@@ -62,14 +62,13 @@ public class DummyMemoryTree {
                 }
             }
         }
-
         return null;
     }
 
     public List<WSSListItem> listItems(String location) {
 
         List<WSSListItem> items = allitems.get(location);
-        if (items==null) {
+        if (items == null) {
             if (location.startsWith("/")) {
                 items = allitems.get(location.substring(1));
             }
@@ -81,28 +80,28 @@ public class DummyMemoryTree {
         int depth = basePath.split("/").length;
 
         List<WSSListItem> items = new ArrayList<WSSListItem>();
-        if (depth==0) {
-             for (int i= 0; i<5; i++) {
-                 items.add(new DummyWSSListItem("DocLib" + i , "This is Dummy Document Libray " + i, null));
-             }
+        if (depth == 0) {
+            for (int i = 0; i < 5; i++) {
+                items.add(new DummyWSSListItem("DocLib" + i, "This is Dummy Document Libray " + i, null));
+            }
         } else {
-            if (depth<=DEPTH) {
-                for (int i= 0; i<5; i++) {
-                    items.add(new DummyWSSListItem("Workspace-" + depth + "-" + i , "This is Dummy Workspace " + i, basePath, null));
+            if (depth <= DEPTH) {
+                for (int i = 0; i < 5; i++) {
+                    items.add(new DummyWSSListItem("Workspace-" + depth + "-" + i, "This is Dummy Workspace " + i, basePath, null));
                 }
             }
-            for (int i= 0; i<5; i++) {
-                String data = "FakeContent"+i;
+            for (int i = 0; i < 5; i++) {
+                String data = "FakeContent" + i;
                 //ByteArrayInputStream is = new ByteArrayInputStream(data.getBytes());
                 //InputStream is = DummyMemoryTree.class.getClassLoader().getResourceAsStream("sampledoc/hello.doc");
                 //InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("sampledoc/hello.doc");
-                DummyWSSListItem item =new DummyWSSListItem("Document" + "-" + depth  + "-" + i + ".doc" , "This is Dummy File " + i, basePath, null);
+                DummyWSSListItem item = new DummyWSSListItem("Document" + "-" + depth + "-" + i + ".doc", "This is Dummy File " + i, basePath, null);
                 item.setBinaryResourcePath("sampledoc/hello.doc");
                 item.setSize(7680);
                 items.add(item);
             }
 
-            DummyWSSListItem item =new DummyWSSListItem("ShellError.txt" , "Simple text file", basePath, null);
+            DummyWSSListItem item = new DummyWSSListItem("ShellError.txt", "Simple text file", basePath, null);
             item.setBinaryResourcePath("sampledoc/ShellError.txt");
             item.setSize(1123);
             items.add(item);
@@ -110,7 +109,7 @@ public class DummyMemoryTree {
         }
         allitems.put(basePath, items);
 
-        if (depth<=DEPTH) {
+        if (depth <= DEPTH) {
             for (WSSListItem item : items) {
                 if (item.isFolderish()) {
                     generateChildren(item.getSubPath());
@@ -120,11 +119,8 @@ public class DummyMemoryTree {
     }
 
     protected void init() {
-        root = new DummyWSSListItem("/", "Root node",null);
+        root = new DummyWSSListItem("/", "Root node", null);
         generateChildren("/");
     }
-
-
-
 
 }

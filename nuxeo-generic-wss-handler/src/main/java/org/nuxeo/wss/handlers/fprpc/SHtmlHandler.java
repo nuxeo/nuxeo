@@ -40,6 +40,7 @@ public class SHtmlHandler extends AbstractFPRPCHandler implements FPRPCHandler {
         if ("server version".equals(call.getMethodName())) {
             fpResponse.addRenderingParameter("request", request);
             fpResponse.setRenderingTemplateName("server-version.ftl");
+
         } else if ("url to web url".equals(call.getMethodName())) {
             // http://msdn.microsoft.com/fr-fr/library/ms460544.aspx
 

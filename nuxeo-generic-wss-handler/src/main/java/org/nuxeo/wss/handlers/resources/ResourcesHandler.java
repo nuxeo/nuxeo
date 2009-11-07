@@ -57,7 +57,6 @@ public class ResourcesHandler {
 
 
     protected void addCacheHeaders(HttpServletResponse response, int cacheTime) {
-
         response.addHeader("Cache-Control", "max-age=" + cacheTime);
         response.addHeader("Cache-Control", "public");
 
@@ -67,27 +66,21 @@ public class ResourcesHandler {
 
         response.setHeader("Expires",
                 HTTP_EXPIRES_DATE_FORMAT.format(date));
-
     }
 
     public void handleResource(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         String uri = request.getRequestURI();
-
         log.debug("Handling resource call on uri = " + uri);
 
         String[] parts = uri.split(WSSConfig.instance().getResourcesUrlPattern());
-
-        String resourceSubPath = parts[parts.length-1];
-
+        String resourceSubPath = parts[parts.length - 1];
         InputStream is = getResourceAsStream(resourceSubPath);
 
-        if (is==null && resourceSubPath.contains("icons/")) {
+        if (is == null && resourceSubPath.contains("icons/")) {
             is = getResourceAsStream("icons/file.gif");
         }
 
-        if (is==null)
-        {
+        if (is == null) {
             log.warn("Resource not found for uri " + uri);
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
@@ -115,4 +108,5 @@ public class ResourcesHandler {
             }
         }
     }
+
 }

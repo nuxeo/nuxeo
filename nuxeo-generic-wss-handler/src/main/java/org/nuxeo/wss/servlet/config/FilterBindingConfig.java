@@ -43,14 +43,12 @@ public class FilterBindingConfig {
      */
     protected String targetService;
 
-
     protected Pattern urlPattern;
 
     /**
      * target URL for WebService endpoints
      */
     protected String redirectURL;
-
 
     protected String siteName;
 
@@ -59,9 +57,7 @@ public class FilterBindingConfig {
         //
     }
 
-
     public FilterBindingConfig(FilterBindingConfig binding, String siteName) {
-
         this.requestType = binding.requestType;
         this.redirectURL = binding.redirectURL;
         this.targetService = binding.targetService;
@@ -74,57 +70,45 @@ public class FilterBindingConfig {
         return url;
     }
 
-
     public void setUrl(String url) {
         this.url = url;
         urlPattern = Pattern.compile(url);
     }
 
-
     public String getRequestType() {
         return requestType;
     }
-
 
     public void setRequestType(String requestType) {
         this.requestType = requestType;
     }
 
-
     public String getTargetService() {
         return targetService;
     }
-
 
     public void setTargetService(String targetService) {
         this.targetService = targetService;
     }
 
-
     public String getRedirectURL() {
         return redirectURL;
     }
-
 
     public void setRedirectURL(String redirectURL) {
         this.redirectURL = redirectURL;
     }
 
-
     public Pattern getUrlPattern() {
         return urlPattern;
     }
-
 
     public String getSiteName() {
         return siteName;
     }
 
-
     public void setSiteName(String siteName) {
         this.siteName = siteName;
     }
-
-
 
 }

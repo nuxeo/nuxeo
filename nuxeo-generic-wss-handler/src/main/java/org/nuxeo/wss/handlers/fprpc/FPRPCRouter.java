@@ -31,10 +31,9 @@ public class FPRPCRouter extends CallRouter {
     //public static final String PKG_PREFIX = "org.nuxeo.wss.handlers.fprpc";
 
     public static void handleFPRCPRequest(FPRPCRequest fpRequest, FPRPCResponse fpResponse, FilterBindingConfig config) throws Exception {
-
-        FPRPCHandler handler = getHandler(FPRPCHandler.class,config.getTargetService());
-        if (handler==null) {
-            log.error("Can not find handler for service " +  config.getTargetService());
+        FPRPCHandler handler = getHandler(FPRPCHandler.class, config.getTargetService());
+        if (handler == null) {
+            log.error("Can not find handler for service " + config.getTargetService());
             throw new Exception("No handler found for " + config.getTargetService());
         }
         log.debug("Handle FPRPC request with handler" + handler.getClass().getSimpleName());

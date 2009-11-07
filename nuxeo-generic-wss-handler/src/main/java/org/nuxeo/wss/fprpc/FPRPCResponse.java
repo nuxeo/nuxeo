@@ -21,14 +21,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.nuxeo.wss.servlet.WSSResponse;
 
 /**
- * Simple wraper for FP-RPC responses.
+ * Simple wrapper for FP-RPC responses.
  *
  * @author Thierry Delprat
- *
  */
 public class FPRPCResponse extends WSSResponse {
-
-
 
     public FPRPCResponse(HttpServletResponse httpResponse) {
         super(httpResponse);
@@ -40,15 +37,13 @@ public class FPRPCResponse extends WSSResponse {
         return FPRPCConts.VERMEER_CT;
     }
 
-
     public void sendFPError(FPRPCRequest request, String errorCode, String errorMessage) {
-
         String method = request.getCalls().get(0).getMethodName();
         this.addRenderingParameter("request", request);
         this.addRenderingParameter("method", method);
         this.addRenderingParameter("errorCode", errorCode);
         this.addRenderingParameter("errorMessage", errorMessage);
         this.setRenderingTemplateName("fp-error.ftl");
-
     }
+
 }

@@ -61,22 +61,21 @@ public class DummyWSSListItem extends AbstractWSSListItem implements WSSListItem
     protected String checkoutUser;
 
     public DummyWSSListItem(String name, String description, InputStream is) {
-        this(name,description,null,is);
+        this(name, description, null, is);
     }
 
     public DummyWSSListItem(String name, String description, String basePath, InputStream is) {
-        this.name=name;
-        this.description=description;
-        creationDate= Calendar.getInstance();
-        if (basePath!=null) {
+        this.name = name;
+        this.description = description;
+        creationDate = Calendar.getInstance();
+        if (basePath != null) {
             if (basePath.endsWith("/")) {
-                this.subPath=basePath + name;
-            }
-            else {
-                this.subPath=basePath + "/" + name;
+                this.subPath = basePath + name;
+            } else {
+                this.subPath = basePath + "/" + name;
             }
         } else {
-            this.subPath= name;
+            this.subPath = name;
         }
         try {
             setStream(is, null);
@@ -103,20 +102,20 @@ public class DummyWSSListItem extends AbstractWSSListItem implements WSSListItem
     }
 
     public InputStream getStream() {
-        if (stream==null && byteArray!=null) {
+        if (stream == null && byteArray != null) {
             return new ByteArrayInputStream(byteArray);
         }
-        if (stream==null && binaryResourcePath!=null) {
+        if (stream == null && binaryResourcePath != null) {
             return DummyMemoryTree.class.getClassLoader().getResourceAsStream(binaryResourcePath);
         }
         return stream;
     }
 
-    public void setStream(InputStream stream, String fileName) throws WSSException{
-        if (stream==null) {
-            type="folder";
+    public void setStream(InputStream stream, String fileName) throws WSSException {
+        if (stream == null) {
+            type = "folder";
         } else {
-            type ="file";
+            type = "file";
             try {
                 copyStreamToBA(stream);
             } catch (IOException e) {
@@ -124,8 +123,6 @@ public class DummyWSSListItem extends AbstractWSSListItem implements WSSListItem
             }
         }
         update();
-
-
     }
 
     protected void update() {
@@ -133,17 +130,17 @@ public class DummyWSSListItem extends AbstractWSSListItem implements WSSListItem
     }
 
     protected void copyStreamToBA(InputStream is) throws IOException {
-        byte[] tmp_buffer = new byte[512*1024];
-        byte[] read_buffer = new byte [3];
+        byte[] tmp_buffer = new byte[512 * 1024];
+        byte[] read_buffer = new byte[3];
         int i = 0;
-        int idx=0;
-        while ((i=is.read(read_buffer))>0) {
-            System.arraycopy(read_buffer,0, tmp_buffer, idx, i);
-            idx=idx+i;
+        int idx = 0;
+        while ((i = is.read(read_buffer)) > 0) {
+            System.arraycopy(read_buffer, 0, tmp_buffer, idx, i);
+            idx = idx + i;
         }
 
         byteArray = new byte[idx];
-        System.arraycopy(tmp_buffer,0, byteArray, 0, idx);
+        System.arraycopy(tmp_buffer, 0, byteArray, 0, idx);
         size = idx;
     }
 
@@ -156,12 +153,11 @@ public class DummyWSSListItem extends AbstractWSSListItem implements WSSListItem
     }
 
     public String getEtag() {
-        if (uuid==null) {
+        if (uuid == null) {
             uuid = UUID.randomUUID().toString();
         }
         return uuid;
     }
-
 
     public String getType() {
         return type;
@@ -179,13 +175,12 @@ public class DummyWSSListItem extends AbstractWSSListItem implements WSSListItem
         this.type = type;
     }
 
-
     public Date getCreationDate() {
         return creationDate.getTime();
     }
 
     public Date getModificationDate() {
-        if (modificationDate==null) {
+        if (modificationDate == null) {
             return getCreationDate();
         }
         return modificationDate.getTime();
@@ -193,24 +188,24 @@ public class DummyWSSListItem extends AbstractWSSListItem implements WSSListItem
 
     public void setBinaryResourcePath(String binaryResourcePath) {
         this.binaryResourcePath = binaryResourcePath;
-        this.type="file";
+        this.type = "file";
     }
 
     public String getLastModificator() {
         return "someone";
     }
 
-    public void checkOut(String userName) throws WSSException{
-        if (checkoutUser==null || checkoutUser.equals(userName)) {
-            checkoutUser =userName;
+    public void checkOut(String userName) throws WSSException {
+        if (checkoutUser == null || checkoutUser.equals(userName)) {
+            checkoutUser = userName;
         } else {
             throw new WSSException("Document is already checkedout");
         }
     }
 
-    public void uncheckOut(String userName) throws WSSException{
-        if (checkoutUser==null || checkoutUser.equals(userName)) {
-            checkoutUser =null;
+    public void uncheckOut(String userName) throws WSSException {
+        if (checkoutUser == null || checkoutUser.equals(userName)) {
+            checkoutUser = null;
         } else {
             throw new WSSException("Document is checkedout by another user");
         }
@@ -218,8 +213,9 @@ public class DummyWSSListItem extends AbstractWSSListItem implements WSSListItem
 
     @Override
     protected Date getCheckoutDate() {
-        if (checkoutDate==null) {
-            checkoutDate = Calendar.getInstance();;
+        if (checkoutDate == null) {
+            checkoutDate = Calendar.getInstance();
+            ;
         }
         return checkoutDate.getTime();
     }
@@ -243,4 +239,5 @@ public class DummyWSSListItem extends AbstractWSSListItem implements WSSListItem
     public String getAuthor() {
         return "me";
     }
+
 }

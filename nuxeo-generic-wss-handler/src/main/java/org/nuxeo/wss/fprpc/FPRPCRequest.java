@@ -33,13 +33,11 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 /**
- *
- * Wraps {@link HttpServletRequest} to provide FP-RPC specific parsing
+ * Wraps {@link HttpServletRequest} to provide FP-RPC specific parsing.
  *
  * @author Thierry Delprat
- *
  */
-public class FPRPCRequest extends WSSRequest{
+public class FPRPCRequest extends WSSRequest {
 
     public static final int FPRPC_GET_REQUEST = 0;
     public static final int FPRPC_POST_REQUEST = 1;
@@ -51,7 +49,7 @@ public class FPRPCRequest extends WSSRequest{
 
     protected int requestMode = FPRPC_GET_REQUEST;
 
-    protected InputStream vermeerBinary= null;
+    protected InputStream vermeerBinary = null;
 
     public FPRPCRequest(HttpServletRequest httpRequest, String sitePath) throws MalformedFPRPCRequest {
         super(httpRequest, sitePath);
@@ -70,8 +68,7 @@ public class FPRPCRequest extends WSSRequest{
             if (FPRPCConts.FORM_ENCODED_CONTENT_TYPE.equals(ct)) {
                 requestMode = FPRPC_POST_REQUEST;
                 parsePOSTRequest();
-            }
-            else if (FPRPCConts.VERMEER_ENCODED_CONTENT_TYPE.equals(ct)) {
+            } else if (FPRPCConts.VERMEER_ENCODED_CONTENT_TYPE.equals(ct)) {
                 requestMode = FPRPC_POST_REQUEST;
                 parsePOSTRequest();
             } else {
@@ -84,7 +81,6 @@ public class FPRPCRequest extends WSSRequest{
         }
     }
 
-
     protected void parseGETRequest() throws MalformedFPRPCRequest {
         parseSimpleParameters(FPRPCConts.CMD_PARAM);
     }
@@ -93,22 +89,19 @@ public class FPRPCRequest extends WSSRequest{
         parseSimpleParameters(FPRPCConts.METHOD_PARAM);
     }
 
-
-
-
-    protected Map<String,String> extractVermeerEncodedParameters(HttpServletRequest httpRequest) throws IOException {
+    protected Map<String, String> extractVermeerEncodedParameters(HttpServletRequest httpRequest) throws IOException {
         Map<String, String> parameters = new HashMap<String, String>();
 
         InputStream input = httpRequest.getInputStream();
 
         int byt = input.read();
         boolean beginBinary = false;
-        byte[] stringData = new byte [httpRequest.getContentLength()];
-        int idx=0;
+        byte[] stringData = new byte[httpRequest.getContentLength()];
+        int idx = 0;
         while (byt > 0 && !beginBinary) {
             stringData[idx] = (byte) byt;
-            if (byt==10) {
-                beginBinary=true;
+            if (byt == 10) {
+                beginBinary = true;
             } else {
                 byt = input.read();
             }
@@ -116,21 +109,21 @@ public class FPRPCRequest extends WSSRequest{
         }
 
         String paramData = new String(stringData, "utf-8");
-        paramData = URLDecoder.decode(paramData,"utf-8");
+        paramData = URLDecoder.decode(paramData, "utf-8");
         String[] parts = paramData.split("\\&");
         for (String part : parts) {
             int idx2 = part.indexOf("=");
-            if (idx2 > 0 ) {
+            if (idx2 > 0) {
                 String k = part.substring(0, idx2).trim();
-                String v = part.substring(idx2+1).trim();
+                String v = part.substring(idx2 + 1).trim();
                 if (v.startsWith("[")) {
-                     Map<String, String> uParams = unpackParameters(v);
-                     for (String sk : uParams.keySet()) {
-                         parameters.put(k + "/" + sk, uParams.get(sk));
-                     }
-                 } else {
-                     parameters.put(k,v);
-                 }
+                    Map<String, String> uParams = unpackParameters(v);
+                    for (String sk : uParams.keySet()) {
+                        parameters.put(k + "/" + sk, uParams.get(sk));
+                    }
+                } else {
+                    parameters.put(k, v);
+                }
             }
         }
         vermeerBinary = input;
@@ -139,11 +132,11 @@ public class FPRPCRequest extends WSSRequest{
 
     protected Map<String, String> unpackParameters(String packedParams) {
         Map<String, String> params = new HashMap<String, String>();
-        packedParams = packedParams.substring(1,packedParams.length()-1);
+        packedParams = packedParams.substring(1, packedParams.length() - 1);
         String[] parts = packedParams.split("\\;");
         for (String part : parts) {
             String p[] = part.split("=");
-            if (p.length==2) {
+            if (p.length == 2) {
                 params.put(p[0].trim(), p[1].trim());
             } else {
                 params.put(p[0].trim(), "");
@@ -151,7 +144,8 @@ public class FPRPCRequest extends WSSRequest{
         }
         return params;
     }
-    protected Map<String,String> extractUrlEncodedParameters(HttpServletRequest httpRequest) {
+
+    protected Map<String, String> extractUrlEncodedParameters(HttpServletRequest httpRequest) {
 
         Map<String, String> parameters = new HashMap<String, String>();
 
@@ -165,16 +159,11 @@ public class FPRPCRequest extends WSSRequest{
         return parameters;
     }
 
-
-
-
-
-
     protected void parseSimpleParameters(String cmdName) throws MalformedFPRPCRequest {
 
-        Map<String, String> parameters = null;
+        Map<String, String> parameters;
 
-        if(FPRPCConts.VERMEER_ENCODED_CONTENT_TYPE.equals(httpRequest.getContentType())) {
+        if (FPRPCConts.VERMEER_ENCODED_CONTENT_TYPE.equals(httpRequest.getContentType())) {
             try {
                 parameters = extractVermeerEncodedParameters(httpRequest);
             } catch (IOException e) {
@@ -185,9 +174,9 @@ public class FPRPCRequest extends WSSRequest{
         }
 
         String cmd = parameters.get(cmdName);
-        if (cmd==null) {
+        if (cmd == null) {
             cmd = parameters.get("dialogview");
-            if (cmd==null) {
+            if (cmd == null) {
                 throw new MalformedFPRPCRequest("No Cmd parameter was found");
             }
         }
@@ -200,7 +189,7 @@ public class FPRPCRequest extends WSSRequest{
         }
 
         parameters.remove(cmdName);
-        FPRPCCall call = new FPRPCCall(cmd,parameters);
+        FPRPCCall call = new FPRPCCall(cmd, parameters);
         calls = new ArrayList<FPRPCCall>();
         calls.add(call);
     }
@@ -211,7 +200,7 @@ public class FPRPCRequest extends WSSRequest{
         try {
             reader = CAMLHandler.getXMLReader();
             reader.parse(new InputSource(httpRequest.getInputStream()));
-            calls=((CAMLHandler)reader.getContentHandler()).getParsedCalls();
+            calls = ((CAMLHandler) reader.getContentHandler()).getParsedCalls();
         } catch (Exception e) {
             throw new MalformedFPRPCRequest("Unable to parse CAML Request");
         }
@@ -233,20 +222,19 @@ public class FPRPCRequest extends WSSRequest{
         return vermeerBinary;
     }
 
-
     @Override
     public String getBaseUrl(String fpDir) {
 
         StringBuffer sb = new StringBuffer();
         sb.append(super.getBaseUrl(fpDir));
 
-        if (fpDir!=null) {
-            String sp =this.getSitePath();
+        if (fpDir != null) {
+            String sp = this.getSitePath();
             if (sp.startsWith("/")) {
                 sp = sp.substring(1);
             }
             if (sp.endsWith("/")) {
-                sp = sp.substring(0, sp.length()-1);
+                sp = sp.substring(0, sp.length() - 1);
             }
             if ("catalogs".equals(fpDir)) {
                 if (!"".equals(sp)) {
@@ -255,8 +243,7 @@ public class FPRPCRequest extends WSSRequest{
                 }
                 sb.append("_catalogs");
                 sb.append("/");
-            }
-            else if ("layouts".equals(fpDir)) {
+            } else if ("layouts".equals(fpDir)) {
                 if (!"".equals(sp)) {
                     sb.append(sp);
                     sb.append("/");
@@ -267,4 +254,5 @@ public class FPRPCRequest extends WSSRequest{
         }
         return sb.toString();
     }
+
 }

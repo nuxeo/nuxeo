@@ -116,5 +116,4 @@ public abstract class AbstractDWSItem implements DWSItem {
         return fileRef;
     }
 
-
 }

@@ -19,27 +19,28 @@ package org.nuxeo.wss.url;
 
 public class WSSUrlMapping {
 
-     protected String siteUrl;
-     protected String resourceUrl;
+    protected String siteUrl;
+    protected String resourceUrl;
 
-     public WSSUrlMapping(String siteUrl,String resourceUrl) {
-         this.siteUrl=siteUrl;
-         this.resourceUrl=resourceUrl;
-     }
+    public WSSUrlMapping(String siteUrl, String resourceUrl) {
+        this.siteUrl = siteUrl;
+        this.resourceUrl = resourceUrl;
+    }
 
-     public String getSiteUrl() {
-         return siteUrl;
-     }
+    public String getSiteUrl() {
+        return siteUrl;
+    }
 
-     public void setSiteUrl(String siteUrl) {
-         this.siteUrl = siteUrl;
-     }
+    public void setSiteUrl(String siteUrl) {
+        this.siteUrl = siteUrl;
+    }
 
-     public String getResourceUrl() {
-         return resourceUrl;
-     }
+    public String getResourceUrl() {
+        return resourceUrl;
+    }
 
-     public void setResourceUrl(String resourceUrl) {
-         this.resourceUrl = resourceUrl;
-     }
+    public void setResourceUrl(String resourceUrl) {
+        this.resourceUrl = resourceUrl;
+    }
+
 }

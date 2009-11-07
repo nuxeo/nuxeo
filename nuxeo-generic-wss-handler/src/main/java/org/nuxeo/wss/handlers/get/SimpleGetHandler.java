@@ -90,8 +90,10 @@ public class SimpleGetHandler {
             }
 
             response.addRenderingParameter("prefix", prefix);
-            response.getHttpResponse().setHeader("Public-Extension", "http://schemas.microsoft.com/repl-2");
+            response.getHttpResponse().setHeader(
+                    "Public-Extension", "http://schemas.microsoft.com/repl-2");
             response.setRenderingTemplateName(lastSegment);
         }
     }
+
 }

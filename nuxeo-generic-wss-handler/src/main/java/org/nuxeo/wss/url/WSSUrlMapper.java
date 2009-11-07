@@ -22,11 +22,11 @@ import org.nuxeo.wss.servlet.WSSRequest;
 public class WSSUrlMapper {
 
     public static String getLocationFromFullUrl(WSSRequest request, String url) {
-        if (url==null) {
+        if (url == null) {
             return null;
         }
         if (url.startsWith("[")) {
-            url = url.substring(1,url.length()-2);
+            url = url.substring(1, url.length() - 2);
         }
         String location = url.replace(request.getBaseUrl(), "");
 
@@ -36,7 +36,7 @@ public class WSSUrlMapper {
     public static WSSUrlMapping getWebMapping(WSSRequest request, String location) {
 
         String siteUrl = "/";
-        String resourceUrl = location ;
+        String resourceUrl = location;
 
         if (location.startsWith("http")) {
             siteUrl = request.getBaseUrl();
@@ -46,25 +46,25 @@ public class WSSUrlMapper {
             String ctxPath = getFirstSegment(WSSConfig.instance().getContextPath());
             String resourcePath = getFirstSegment(resourceUrl);
 
-            if (ctxPath !=null && ctxPath.equals(resourcePath)) {
+            if (ctxPath != null && ctxPath.equals(resourcePath)) {
                 resourceUrl = resourceUrl.replace(resourcePath, "");
                 siteUrl = resourcePath;
             }
             if (!siteUrl.startsWith("/")) {
                 siteUrl = "/" + siteUrl;
             }
-            while(resourceUrl.startsWith("/")) {
+            while (resourceUrl.startsWith("/")) {
                 resourceUrl = resourceUrl.substring(1);
             }
         }
-        return new WSSUrlMapping(siteUrl,resourceUrl);
+        return new WSSUrlMapping(siteUrl, resourceUrl);
     }
 
     public static String getUrlWithSitePath(WSSRequest request, String location) {
 
         String sitePath = request.getSitePath();
         //location = getCleanUrl(location);
-        if (sitePath!=null && !"".equals(sitePath)) {
+        if (sitePath != null && !"".equals(sitePath)) {
             String fullPath = sitePath;
             if (location.startsWith("/")) {
                 fullPath = fullPath + location;
@@ -79,7 +79,7 @@ public class WSSUrlMapper {
 
     private static String getCleanUrl(String location) {
 
-        if ("".equals(location) ||location ==null ) {
+        if ("".equals(location) || location == null) {
             return "/";
         }
 
@@ -92,7 +92,7 @@ public class WSSUrlMapper {
     }
 
     public static String getFirstSegment(String path) {
-        if (path==null) {
+        if (path == null) {
             return null;
         }
         if (path.trim().equals("")) {
@@ -105,6 +105,5 @@ public class WSSUrlMapper {
         }
         return parts[1];
     }
-
 
 }

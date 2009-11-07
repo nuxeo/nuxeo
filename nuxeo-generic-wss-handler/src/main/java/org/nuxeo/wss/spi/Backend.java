@@ -29,23 +29,21 @@ public class Backend {
     private static final Log log = LogFactory.getLog(Backend.class);
 
     public static WSSBackendFactory getFactory() {
-        if (factory==null) {
+        if (factory == null) {
             factory = loadFactory();
         }
         return factory;
     }
 
-
     protected synchronized static WSSBackendFactory loadFactory() {
         String factoryClass = WSSConfig.instance().getWssBackendFactoryClassName();
         try {
-            factory = (WSSBackendFactory) Class.forName(factoryClass,true, Thread.currentThread().getContextClassLoader()).newInstance();
+            factory = (WSSBackendFactory) Class.forName(factoryClass, true, Thread.currentThread().getContextClassLoader()).newInstance();
         } catch (Exception e) {
             log.error("Unable to create backend factory", e);
         }
         return factory;
     }
-
 
     public static WSSBackend get(WSSRequest request) {
         return getFactory().getBackend(request);

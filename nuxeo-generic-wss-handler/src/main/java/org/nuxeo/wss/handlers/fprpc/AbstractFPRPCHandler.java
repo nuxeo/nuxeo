@@ -43,7 +43,6 @@ public abstract class AbstractFPRPCHandler implements FPRPCHandler {
 
         WSSBackend backend = Backend.get(request);
         processCall(request, fpResponse, 0, backend);
-
     }
 
     protected abstract void processCall(FPRPCRequest request, FPRPCResponse fpResponse, int callIndex, WSSBackend backend) throws WSSException;

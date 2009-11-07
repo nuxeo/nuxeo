@@ -33,11 +33,9 @@ import freemarker.template.Template;
 import freemarker.template.TemplateModelException;
 
 /**
- *
- * Singleton helper class used to encapsulate FreeMarker engine
+ * Singleton helper class used to encapsulate FreeMarker engine.
  *
  * @author Thierry Delprat
- *
  */
 public class FreeMarkerRenderer {
 
@@ -52,39 +50,34 @@ public class FreeMarkerRenderer {
     private static final Log log = LogFactory.getLog(FreeMarkerRenderer.class);
 
     public static FreeMarkerRenderer instance() {
-
-        if (instance==null) {
-            instance  = new FreeMarkerRenderer();
+        if (instance == null) {
+            instance = new FreeMarkerRenderer();
         }
         return instance;
     }
 
-
     protected TemplateLoader getLoader() {
-        if (loader==null) {
-            ClassTemplateLoader defaultLoader = new ClassTemplateLoader(this.getClass(),FM_TEMPLATE_PATH);
+        if (loader == null) {
+            ClassTemplateLoader defaultLoader = new ClassTemplateLoader(this.getClass(), FM_TEMPLATE_PATH);
             loader = new PluggableTemplareLoader(defaultLoader);
-            if (addLoader!=null) {
+            if (addLoader != null) {
                 loader.setAdditionnalLoader(addLoader);
             }
         }
         return loader;
     }
 
-
     public static void addLoader(Class klass) {
         addLoader(klass, null);
     }
 
     public static void addLoader(Class klass, String path) {
-        if (path==null) {
+        if (path == null) {
             path = FM_TEMPLATE_PATH;
         }
-        addLoader = new ClassTemplateLoader(klass,path);
-        instance=null;
+        addLoader = new ClassTemplateLoader(klass, path);
+        instance = null;
     }
-
-
 
     public FreeMarkerRenderer() {
         fmConfig = new Configuration();
@@ -93,7 +86,7 @@ public class FreeMarkerRenderer {
         fmConfig.setClassicCompatible(true);
         fmConfig.setNumberFormat("0.######");
         try {
-            fmConfig.setSharedVariable("config",WSSConfig.instance());
+            fmConfig.setSharedVariable("config", WSSConfig.instance());
             fmConfig.setSharedVariable("MSWSSConsts", new MSWSSConsts());
             fmConfig.setSharedVariable("FPRPCConts", new FPRPCConts());
         } catch (TemplateModelException e) {
@@ -108,13 +101,10 @@ public class FreeMarkerRenderer {
         fmConfig.setTemplateLoader(getLoader());
     }
 
-
     public void render(String templateName, Map<String, Object> params, Writer writer) throws Exception {
         Template template = fmConfig.getTemplate(templateName);
         Environment env = template.createProcessingEnvironment(params, writer);
         env.process();
     }
-
-
 
 }

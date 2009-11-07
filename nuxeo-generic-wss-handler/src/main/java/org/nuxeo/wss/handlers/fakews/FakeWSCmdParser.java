@@ -35,7 +35,7 @@ public class FakeWSCmdParser extends DefaultHandler {
 
     protected static FakeWSCmdParser instance;
 
-    protected boolean readString=false;
+    protected boolean readString = false;
 
     public String paramValue;
 
@@ -43,12 +43,11 @@ public class FakeWSCmdParser extends DefaultHandler {
         this.paramNameTag = paramNameTag;
     }
 
-
     @Override
     public void startElement(String uri, String localName, String name,
             Attributes attributes) throws SAXException {
         if (paramNameTag.equalsIgnoreCase(name)) {
-            readString=true;
+            readString = true;
         }
     }
 
@@ -56,20 +55,20 @@ public class FakeWSCmdParser extends DefaultHandler {
     public void endElement(String uri, String localName, String name)
             throws SAXException {
         if (paramNameTag.equalsIgnoreCase(name)) {
-            readString=false;
+            readString = false;
         }
     }
 
 
     @Override
     public void characters(char[] ch, int start, int length)
-           throws SAXException {
+            throws SAXException {
         if (readString) {
-           if (paramValue==null) {
-               paramValue = String.valueOf(ch, start, length);
-           } else {
-               paramValue = paramValue + String.valueOf(ch, start, length);
-           }
+            if (paramValue == null) {
+                paramValue = String.valueOf(ch, start, length);
+            } else {
+                paramValue = paramValue + String.valueOf(ch, start, length);
+            }
         }
     }
 
@@ -77,13 +76,13 @@ public class FakeWSCmdParser extends DefaultHandler {
         InputStream in = null;
 
         BufferedReader httpReader = request.getHttpRequest().getReader();
-        if (httpReader==null) {
+        if (httpReader == null) {
             // for unit tests
             in = request.getHttpRequest().getInputStream();
         } else {
             StringBuffer sb = new StringBuffer();
             String line = httpReader.readLine();
-            while (line !=null) {
+            while (line != null) {
                 sb.append(line);
                 line = httpReader.readLine();
             }
@@ -98,4 +97,5 @@ public class FakeWSCmdParser extends DefaultHandler {
         reader.parse(new InputSource(in));
         return paramValue;
     }
+
 }

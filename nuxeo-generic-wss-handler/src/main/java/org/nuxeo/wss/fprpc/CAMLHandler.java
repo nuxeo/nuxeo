@@ -26,76 +26,71 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
- * SAX ContentHandler to parse CAML Batch requests
- *
+ * SAX ContentHandler to parse CAML Batch requests.
+ * <p/>
  * References :
- *  - http://msdn.microsoft.com/en-us/library/dd586422(office.11).aspx
+ * - http://msdn.microsoft.com/en-us/library/dd586422(office.11).aspx
  *
  * @author Thierry Delprat
- *
  */
 public class CAMLHandler extends DefaultHandler {
 
+    protected List<FPRPCCall> calls = new ArrayList<FPRPCCall>();
 
-      protected List<FPRPCCall> calls = new ArrayList<FPRPCCall>();
+    protected FPRPCCall currentCall = null;
+    protected String currentParameterName = null;
+    protected String currentParameterValue = null;
 
-     protected FPRPCCall currentCall= null;
-     protected String currentParameterName=null;
-     protected String currentParameterValue=null;
+    public static final String METHOD_TAG = "Method";
+    public static final String SETVAR_TAG = "SetVar";
+    public static final String ID_ATTRIBUTE = "ID";
+    public static final String NAME_ATTRIBUTE = "Name";
 
-     public static final String METHOD_TAG ="Method";
-     public static final String SETVAR_TAG ="SetVar";
-     public static final String ID_ATTRIBUTE ="ID";
-     public static final String NAME_ATTRIBUTE ="Name";
+    @Override
+    public void startElement(String uri, String localName, String name,
+            Attributes attributes) throws SAXException {
+        if (METHOD_TAG.equalsIgnoreCase(name)) {
+            currentCall = new FPRPCCall();
+            String id = attributes.getValue(ID_ATTRIBUTE);
+            currentCall.setId(id);
+        } else if (SETVAR_TAG.equalsIgnoreCase(name)) {
+            currentParameterName = attributes.getValue(NAME_ATTRIBUTE);
+            currentParameterValue = null;
+        }
+    }
 
-     @Override
-     public void startElement(String uri, String localName, String name,
-             Attributes attributes) throws SAXException {
-         if (METHOD_TAG.equalsIgnoreCase(name)) {
-             currentCall = new FPRPCCall();
-             String id = attributes.getValue(ID_ATTRIBUTE);
-             currentCall.setId(id);
-         } else if (SETVAR_TAG.equalsIgnoreCase(name)) {
-             currentParameterName = attributes.getValue(NAME_ATTRIBUTE);
-             currentParameterValue=null;
-         }
-     }
+    @Override
+    public void characters(char[] ch, int start, int length)
+            throws SAXException {
+        if (currentParameterName != null) {
+            if (currentParameterValue == null) {
+                currentParameterValue = String.valueOf(ch, start, length);
+            } else {
+                currentParameterValue = currentParameterValue + String.valueOf(ch, start, length);
+            }
+        }
+    }
 
-     @Override
-      public void characters(char[] ch, int start, int length)
-             throws SAXException {
-         if (currentParameterName!=null) {
-             if (currentParameterValue==null) {
-                 currentParameterValue = String.valueOf(ch, start, length);
-             } else {
-                 currentParameterValue = currentParameterValue + String.valueOf(ch, start, length);
-             }
-         }
-      }
-
-
-     @Override
-     public void endElement(String uri, String localName, String name)
-             throws SAXException {
-         if (METHOD_TAG.equalsIgnoreCase(name)) {
-             calls.add(currentCall);
-             currentCall = null;
-         } else if (SETVAR_TAG.equalsIgnoreCase(name)) {
-             if (FPRPCConts.CMD_PARAM.equalsIgnoreCase(currentParameterName)) {
-                 currentCall.setMethodName(currentParameterValue);
-             } else {
-                 currentCall.addParameter(currentParameterName, currentParameterValue);
-             }
-             currentParameterName=null;
-             currentParameterValue=null;
-         }
-     }
+    @Override
+    public void endElement(String uri, String localName, String name)
+            throws SAXException {
+        if (METHOD_TAG.equalsIgnoreCase(name)) {
+            calls.add(currentCall);
+            currentCall = null;
+        } else if (SETVAR_TAG.equalsIgnoreCase(name)) {
+            if (FPRPCConts.CMD_PARAM.equalsIgnoreCase(currentParameterName)) {
+                currentCall.setMethodName(currentParameterValue);
+            } else {
+                currentCall.addParameter(currentParameterName, currentParameterValue);
+            }
+            currentParameterName = null;
+            currentParameterValue = null;
+        }
+    }
 
     public List<FPRPCCall> getParsedCalls() {
         return calls;
     }
-
-
 
     public static XMLReader getXMLReader() throws SAXException {
         XMLReader reader;

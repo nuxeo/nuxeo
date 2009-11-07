@@ -27,20 +27,16 @@ public class UserImpl implements User {
     protected boolean siteAdmin = false;
 
     public UserImpl(String id, String login, String name, String email) {
-        this.id=id;
-        this.login=login;
-        this.name=name;
-        this.email=email;
+        this.id = id;
+        this.login = login;
+        this.name = name;
+        this.email = email;
     }
+
     public UserImpl(String id, String name) {
-        this.id=id;
-        this.name=name;
-        this.login="";
-        this.email="";
-        this.domainGroup=true;
+        this(id, "", name, "");
+        this.domainGroup = true;
     }
-
-
 
     public void setDomainGroup(boolean domainGroup) {
         this.domainGroup = domainGroup;

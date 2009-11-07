@@ -29,10 +29,9 @@ public class FakeWSRouter extends CallRouter {
     private static final Log log = LogFactory.getLog(FakeWSRouter.class);
 
     public static void handleFakeWSRequest(FakeWSRequest wsRequest, WSSResponse wsResponse, FilterBindingConfig config) throws Exception {
-
-        FakeWSHandler handler = getHandler(FakeWSHandler.class,config.getTargetService());
-        if (handler==null) {
-            log.error("Can not find handler for service " +  config.getTargetService());
+        FakeWSHandler handler = getHandler(FakeWSHandler.class, config.getTargetService());
+        if (handler == null) {
+            log.error("Can not find handler for service " + config.getTargetService());
             throw new Exception("No handler found for " + config.getTargetService());
         }
         log.debug("Handle Fake WS request with handler" + handler.getClass().getSimpleName());

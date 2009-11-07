@@ -27,7 +27,7 @@ public abstract class AbstractWSSListItem implements WSSListItem {
 
     protected String icon;
 
-    protected boolean isSiteItem=false;
+    protected boolean isSiteItem = false;
 
     public boolean isFolderish() {
         return "folder".equals(getType());
@@ -75,10 +75,10 @@ public abstract class AbstractWSSListItem implements WSSListItem {
             String ext = getExtension();
             if (ext != null) {
                 if (ext.toLowerCase().equals("gif") ||
-                    ext.toLowerCase().equals("jpg") ||
-                    ext.toLowerCase().equals("png") ||
-                    ext.toLowerCase().equals("jpeg") ||
-                    ext.toLowerCase().equals("tif")) {
+                        ext.toLowerCase().equals("jpg") ||
+                        ext.toLowerCase().equals("png") ||
+                        ext.toLowerCase().equals("jpeg") ||
+                        ext.toLowerCase().equals("tif")) {
                     ext = "image";
                 }
                 return ext + ".gif";
@@ -95,7 +95,7 @@ public abstract class AbstractWSSListItem implements WSSListItem {
     }
 
     public String getSizeAsString() {
-        return ""+getSize();
+        return "" + getSize();
     }
 
 
@@ -106,8 +106,8 @@ public abstract class AbstractWSSListItem implements WSSListItem {
     public String getRelativeSubPath(String siteRootPath) {
 
         String subPath = getSubPath();
-        if (siteRootPath!=null && !"".equals(siteRootPath)) {
-            if(subPath.startsWith("/")) {
+        if (siteRootPath != null && !"".equals(siteRootPath)) {
+            if (subPath.startsWith("/")) {
                 subPath = subPath.substring(1);
             }
             if (siteRootPath.startsWith("/")) {
@@ -132,7 +132,7 @@ public abstract class AbstractWSSListItem implements WSSListItem {
 
     public boolean isCheckOut() {
         String lockingUser = getCheckoutUser();
-        if (lockingUser!=null) {
+        if (lockingUser != null) {
             return true;
         }
         return false;
@@ -140,7 +140,7 @@ public abstract class AbstractWSSListItem implements WSSListItem {
 
     public boolean canCheckOut(String userName) {
         String lockingUser = getCheckoutUser();
-        if (lockingUser==null) {
+        if (lockingUser == null) {
             return true;
         } else {
             if (lockingUser.equals(userName)) {
@@ -152,7 +152,7 @@ public abstract class AbstractWSSListItem implements WSSListItem {
 
     public boolean canUnCheckOut(String userName) {
         String lockingUser = getCheckoutUser();
-        if (lockingUser==null) {
+        if (lockingUser == null) {
             return false;
         } else {
             if (lockingUser.equals(userName)) {
@@ -160,7 +160,6 @@ public abstract class AbstractWSSListItem implements WSSListItem {
             }
         }
         return false;
-
     }
 
 }

@@ -37,12 +37,11 @@ public class FakeWebS implements FakeWSHandler {
         response.addRenderingParameter("siteRoot", request.getSitePath());
         response.addRenderingParameter("request", request);
 
-        if ("http://schemas.microsoft.com/sharepoint/soap/WebUrlFromPageUrl".equals(request.getAction())) {
-
-            String pageUrl=null;
-
+        String action = request.getAction();
+        if ("http://schemas.microsoft.com/sharepoint/soap/WebUrlFromPageUrl".equals(action)) {
+            String pageUrl;
             try {
-                pageUrl =new FakeWSCmdParser(pageUrl_TAG).getParameter(request);
+                pageUrl = new FakeWSCmdParser(pageUrl_TAG).getParameter(request);
             } catch (Exception e) {
                 throw new WSSException("Error parsing envelope", e);
             }
@@ -56,9 +55,8 @@ public class FakeWebS implements FakeWSHandler {
 
             response.addRenderingParameter("siteUrl", siteUrl);
             response.setRenderingTemplateName("WebUrlFromPageUrlResponse.ftl");
-        }
-        else if ("http://schemas.microsoft.com/sharepoint/soap/GetWebCollection".equals(request.getAction()))
-        {
+
+        } else if ("http://schemas.microsoft.com/sharepoint/soap/GetWebCollection".equals(action)) {
             response.setContentType("text/xml");
             WSSBackend backend = Backend.get(request);
             List<WSSListItem> items = backend.listItems("/");
@@ -66,12 +64,10 @@ public class FakeWebS implements FakeWSHandler {
             response.addRenderingParameter("sites", items);
             response.setRenderingTemplateName("GetWebCollection.ftl");
 
-        }
-        else {
-            throw new WSSException("no FakeWS implemented for action " + request.getAction());
+        } else {
+            throw new WSSException("no FakeWS implemented for action " + action);
         }
     }
-
 
     protected String getSiteUrl(WSSRequest request, String pageUrl) {
         // only one site

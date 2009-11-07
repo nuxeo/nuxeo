@@ -50,12 +50,9 @@ public class XmlConfigHandler extends DefaultHandler {
             currentConfig = new FilterBindingConfig();
 
             currentConfig.setUrl(attributes.getValue(URL_ATTRIBUTE));
-            currentConfig.setRedirectURL(attributes
-                    .getValue(REDIRECT_ATTRIBUTE));
-            currentConfig.setTargetService(attributes
-                    .getValue(SERVICE_ATTRIBUTE));
+            currentConfig.setRedirectURL(attributes .getValue(REDIRECT_ATTRIBUTE));
+            currentConfig.setTargetService(attributes.getValue(SERVICE_ATTRIBUTE));
             currentConfig.setRequestType(attributes.getValue(TYPE_ATTRIBUTE));
-
         }
     }
 
@@ -63,7 +60,7 @@ public class XmlConfigHandler extends DefaultHandler {
     public void endElement(String uri, String localName, String name)
             throws SAXException {
         if (FILTERMAPPING_TAG.equalsIgnoreCase(name)) {
-            if (configEntries==null) {
+            if (configEntries == null) {
                 configEntries = new ArrayList<FilterBindingConfig>();
             }
             configEntries.add(currentConfig);
@@ -84,7 +81,7 @@ public class XmlConfigHandler extends DefaultHandler {
     }
 
     protected static XmlConfigHandler getInstance() {
-        if (instance==null) {
+        if (instance == null) {
             instance = new XmlConfigHandler();
         }
         return instance;
@@ -100,22 +97,20 @@ public class XmlConfigHandler extends DefaultHandler {
         reader.setFeature("http://xml.org/sax/features/namespaces", false);
         reader.setFeature("http://xml.org/sax/features/validation", false);
         reader.parse(new InputSource(in));
-
     }
 
     public static List<FilterBindingConfig> getConfigEntries() throws Exception {
         List<FilterBindingConfig> entries = getInstance().getParsedConfigEntries();
 
-        if (entries==null) {
+        if (entries == null) {
             loadConfig();
             entries = getInstance().getParsedConfigEntries();
         }
-           return entries;
+        return entries;
     }
 
     protected List<FilterBindingConfig> getParsedConfigEntries() {
         return configEntries;
     }
-
 
 }

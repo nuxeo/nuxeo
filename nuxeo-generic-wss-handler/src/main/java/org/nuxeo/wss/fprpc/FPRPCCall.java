@@ -21,10 +21,10 @@ import java.util.Map;
 
 /**
  * Represents a FrontPage RPC Call.
+ * <p>
  * Because of CAML, a single {@link FPRPCRequest} can contains several {@link FPRPCCall}
  *
  * @author Thierry Delprat
- *
  */
 public class FPRPCCall {
 
@@ -33,15 +33,14 @@ public class FPRPCCall {
     protected String id;
     protected Map<String, String> parameters;
 
-    public FPRPCCall()
-    {
-        this.id=DEFAULT_ID;
+    public FPRPCCall() {
+        this.id = DEFAULT_ID;
     }
 
-    public FPRPCCall(String methodName, Map<String, String> parameters ){
+    public FPRPCCall(String methodName, Map<String, String> parameters) {
         this();
-        this.methodName=methodName;
-        this.parameters=parameters;
+        this.methodName = methodName;
+        this.parameters = parameters;
     }
 
     public String getMethodName() {
@@ -65,7 +64,7 @@ public class FPRPCCall {
     }
 
     public void addParameter(String name, String value) {
-        if (parameters==null) {
+        if (parameters == null) {
             parameters = new HashMap<String, String>();
         }
         parameters.put(name, value);

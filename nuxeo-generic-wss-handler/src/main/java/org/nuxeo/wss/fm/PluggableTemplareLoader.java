@@ -23,11 +23,12 @@ import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.TemplateLoader;
 
 /**
- * {@link TemplateLoader} implementation that deletgates work to several underlaying {@link ClassTemplateLoader}.
- * using the class allow to have buil-in templates that can be overwritten by the backend implementation.
+ * {@link TemplateLoader} implementation that deletgates work to several underlaying
+ * {@link ClassTemplateLoader}.
+ * <p>
+ * Using the class allow to have buil-in templates that can be overwritten by the backend implementation.
  *
  * @author Thierry Delprat
- *
  */
 public class PluggableTemplareLoader implements TemplateLoader {
 
@@ -35,7 +36,7 @@ public class PluggableTemplareLoader implements TemplateLoader {
     protected ClassTemplateLoader additionnalLoader;
 
     public PluggableTemplareLoader(ClassTemplateLoader defaultLoader) {
-        this.defaultLoader= defaultLoader;
+        this.defaultLoader = defaultLoader;
     }
 
     public void closeTemplateSource(Object templateSource) throws IOException {
@@ -44,14 +45,14 @@ public class PluggableTemplareLoader implements TemplateLoader {
 
     public Object findTemplateSource(String name) throws IOException {
         Object template = null;
-        if (additionnalLoader!=null) {
+        if (additionnalLoader != null) {
             try {
                 template = additionnalLoader.findTemplateSource(name);
             } catch (Exception e) {
                 //
             }
         }
-        if (template==null) {
+        if (template == null) {
             template = defaultLoader.findTemplateSource(name);
         }
         return template;
@@ -61,8 +62,7 @@ public class PluggableTemplareLoader implements TemplateLoader {
         return defaultLoader.getLastModified(templateSource);
     }
 
-    public Reader getReader(Object templateSource, String encoding)
-            throws IOException {
+    public Reader getReader(Object templateSource, String encoding) throws IOException {
         return defaultLoader.getReader(templateSource, encoding);
     }
 
