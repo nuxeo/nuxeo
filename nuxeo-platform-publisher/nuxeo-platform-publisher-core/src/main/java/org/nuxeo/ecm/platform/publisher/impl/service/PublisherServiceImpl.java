@@ -53,8 +53,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Pojo implementation of the publisher service Implements both
- * {@link PublisherService} and {@link RemotePublicationTreeManager}
+ * POJO implementation of the publisher service Implements both
+ * {@link PublisherService} and {@link RemotePublicationTreeManager}.
  *
  * @author tiry
  */

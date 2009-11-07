@@ -30,17 +30,18 @@ package org.nuxeo.ecm.platform.tag;
  * <p>
  * Let's have an example:
  * <p>
- *  - have domain WorkspaceA with 2 documents Doc1 and Doc2. The tag tagX is
+ * - have domain WorkspaceA with 2 documents Doc1 and Doc2. The tag tagX is
  * applied by 3 different users on Doc1, tagY is applied by 5 different users
  * on Doc2, tagZ is applied once on Doc1 and once on Doc2. Also, tagX was
  * applied twice on WorkspaceA. The tag clouds would be:
- *  <p>"vote" on Doc1: tagX - 3, tagZ - 1
- *  <p>"popularity" on Doc1: tagX - 1, tagZ - 1
- *  <p>"vote" on Doc2: tagY - 5, tagZ - 1
- *  <p>"popularity" on Doc2: tagY - 1, tagZ - 1
- *  <p>"vote" on WorkspaceA: tagX - 2
- *  <p>"popularity" on WorkspaceA: tagX - 2, tagZ - 2, tagY - 1
- * <p>
+ * <ul>
+ * <li>"vote" on Doc1: tagX - 3, tagZ - 1
+ * <li>"popularity" on Doc1: tagX - 1, tagZ - 1
+ * <li>"vote" on Doc2: tagY - 5, tagZ - 1
+ * <li>"popularity" on Doc2: tagY - 1, tagZ - 1
+ * <li>"vote" on WorkspaceA: tagX - 2
+ * <li>"popularity" on WorkspaceA: tagX - 2, tagZ - 2, tagY - 1
+ * </ul>
  * There is a third less used tag cloud: the number of times the tag appears in
  * the content of an item. This would be harder to implement (the content needs
  * to be interpreted) and apparently less used. Indeed, to apply a tag like

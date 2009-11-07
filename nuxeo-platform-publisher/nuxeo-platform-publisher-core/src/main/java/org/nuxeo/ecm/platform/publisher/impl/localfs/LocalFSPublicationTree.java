@@ -303,4 +303,5 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
     protected boolean accept(PublishedDocument publishedDocument) {
         return publishedDocument instanceof FSPublishedDocument;
     }
+
 }

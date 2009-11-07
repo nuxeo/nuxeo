@@ -23,11 +23,9 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePub
 import java.util.List;
 
 /**
- * 
- * Interface for remote invocation of publishing
- * 
+ * Interface for remote invocation of publishing.
+ *
  * @author tiry
- * 
  */
 public interface RemotePublicationInvoker {
 

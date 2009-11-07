@@ -43,12 +43,13 @@ import java.util.List;
 import java.util.Set;
 
 /**
- *
- * Helper class to manage : - unrestricted fetch of Sections - filtering
- * according to user rights
+ * Helper class to manage:
+ * <ul>
+ * <li>unrestricted fetch of Sections
+ * <li>filtering according to user rights
+ * </ul>
  *
  * @author tiry
- *
  */
 public class RootSectionsFinder extends UnrestrictedSessionRunner {
 
@@ -304,4 +305,5 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
     public void run() throws ClientException {
         computeUnrestrictedRoots(session);
     }
+
 }

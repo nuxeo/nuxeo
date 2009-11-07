@@ -36,12 +36,10 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 /**
- * 
- * Dummy test invoker : does all marshaling work but directly calls the
- * {@link TestInvokationHandler} without any network
- * 
+ * Dummy test invoker: does all marshaling work but directly calls the
+ * {@link TestInvokationHandler} without any network.
+ *
  * @author tiry
- * 
  */
 public class DefaultRemotePublicationInvoker implements
         RemotePublicationInvoker {

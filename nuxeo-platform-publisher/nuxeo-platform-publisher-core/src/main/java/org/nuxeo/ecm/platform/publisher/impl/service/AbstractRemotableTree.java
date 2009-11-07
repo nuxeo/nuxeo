@@ -29,12 +29,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
- * Abstract class for {@link PublicationTree} that delegate method calls to a
- * remote service
+ * Abstract class for {@link PublicationTree} that delegates method calls to a
+ * remote service.
  *
  * @author tiry
- *
  */
 public abstract class AbstractRemotableTree implements PublicationTree {
 
@@ -92,7 +90,7 @@ public abstract class AbstractRemotableTree implements PublicationTree {
 
     protected abstract PublicationNode switchToServerNode(PublicationNode node);
 
-    protected List<PublicationNode> sitchToClientNodes(
+    protected List<PublicationNode> switchToClientNodes(
             List<PublicationNode> nodes) throws ClientException {
         List<PublicationNode> wrappedNodes = new ArrayList<PublicationNode>();
 

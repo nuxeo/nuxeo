@@ -35,12 +35,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
- * Http facade for the {@link RemotePublicationTreeManager} service. This facade
+ * HTTP facade for the {@link RemotePublicationTreeManager} service. This facade
  * uses a invoker to do the actual calls to the remote backend.
  *
  * @author tiry
- *
  */
 public class RemotePublicationTreeManagerRestProxy implements
         RemotePublicationTreeManager {

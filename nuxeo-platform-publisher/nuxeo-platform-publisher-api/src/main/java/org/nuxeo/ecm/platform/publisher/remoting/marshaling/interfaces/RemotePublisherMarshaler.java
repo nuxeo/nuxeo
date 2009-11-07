@@ -23,11 +23,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 
- * Interface for the Marshaler
- * 
+ * Interface for the Marshaller.
+ *
  * @author tiry
- * 
  */
 public interface RemotePublisherMarshaler {
 

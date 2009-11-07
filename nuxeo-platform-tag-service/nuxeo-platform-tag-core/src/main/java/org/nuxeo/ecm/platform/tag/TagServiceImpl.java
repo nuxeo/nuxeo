@@ -110,7 +110,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
             enabled = false;
             log.error("Unable to test repository for Tag feature.", e);
         } finally {
-            if (lc!=null) {
+            if (lc != null) {
                 try {
                     lc.logout();
                 } catch (LoginException e) {
@@ -313,13 +313,13 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
     }
 
     public List<WeightedTag> getPopularCloudOnAllDocuments(final CoreSession session) throws ClientException {
-         return getOrCreatePersistenceProvider().run(false,
-                 new RunCallback<List<WeightedTag>>() {
-                     public List<WeightedTag> runWith(EntityManager em)
-                             throws ClientException {
-                         return getPopularCloudOnAllDocuments(em, session);
-                     }
-                 });
+        return getOrCreatePersistenceProvider().run(false,
+                new RunCallback<List<WeightedTag>>() {
+                    public List<WeightedTag> runWith(EntityManager em)
+                            throws ClientException {
+                        return getPopularCloudOnAllDocuments(em, session);
+                    }
+                });
     }
 
 
@@ -731,7 +731,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
         tagDocument.setPropertyValue("dc:creator", user);
         tagDocument.setPropertyValue(TagConstants.TAG_LABEL_FIELD, label);
         tagDocument.setPropertyValue(TagConstants.TAG_IS_PRIVATE_FIELD,
-                privateFlag?1:0);
+                privateFlag ? 1 : 0);
         tagDocument = session.saveDocument(tagDocument);
         session.save();
         return tagDocument;
@@ -764,7 +764,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
     }
 
     public boolean isEnabled() {
-        if (enabled==null) {
+        if (enabled == null) {
             checkEnable();
         }
         return enabled;

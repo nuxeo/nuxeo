@@ -52,7 +52,7 @@ import org.restlet.data.Response;
 import org.restlet.resource.OutputRepresentation;
 
 /**
- * Provide REST API to retrieve the preview of a document
+ * Provides REST API to retrieve the preview of a document.
  *
  * @author tiry
  */
@@ -72,7 +72,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
     @In(create = true)
     protected transient LocaleSelector localeSelector;
 
-    // cache duration in secondes
+    // cache duration in seconds
     //protected static int MAX_CACHE_LIFE = 60 * 10;
 
     //protected static final Map<String, PreviewCacheEntry> cachedAdapters = new ConcurrentHashMap<String, PreviewCacheEntry>();
@@ -111,9 +111,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         try {
             navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
             documentManager = navigationContext.getOrCreateDocumentManager();
-            if (docid != null) {
-                targetDocument = documentManager.getDocument(new IdRef(docid));
-            }
+            targetDocument = documentManager.getDocument(new IdRef(docid));
         } catch (ClientException e) {
             handleError(res, e);
             return;
@@ -211,7 +209,6 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         HttpServletResponse response = getHttpResponse(res);
 
         response.setHeader("Content-Disposition", "inline");
-
     }
 
     protected void handlePreview(Response res, Blob previewBlob, String mimeType)

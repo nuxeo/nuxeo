@@ -23,20 +23,15 @@ import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * 
  * Remotable implementation of the {@link PublicationNode} interface. Because
  * some {@link PublicationNode} implementation may be bound to local resources
  * (network connexions, local filesystem ...) all {@link PublicationNode}
  * returned by the service are wrapped into this RemotablePublicationNode.
- * 
+ *
  * @author tiry
- * 
  */
 public class ProxyNode extends AbstractRemotableNode implements PublicationNode {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     protected String nodeType;

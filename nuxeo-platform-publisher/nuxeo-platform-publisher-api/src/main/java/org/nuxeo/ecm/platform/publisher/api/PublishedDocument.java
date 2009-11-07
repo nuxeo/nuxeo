@@ -22,11 +22,9 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import java.io.Serializable;
 
 /**
- *
- * Interface of a Document that was published into a PublicationNode
+ * Interface of a Document that was published into a PublicationNode.
  *
  * @author tiry
- *
  */
 public interface PublishedDocument extends Serializable {
 

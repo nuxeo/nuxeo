@@ -21,10 +21,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePublisherMarshaler;
 
 /**
- * Generic invoker interface
- * 
+ * Generic invoker interface.
+ *
  * @author tiry
- * 
  */
 public interface PublicationInvokationHandler {
 

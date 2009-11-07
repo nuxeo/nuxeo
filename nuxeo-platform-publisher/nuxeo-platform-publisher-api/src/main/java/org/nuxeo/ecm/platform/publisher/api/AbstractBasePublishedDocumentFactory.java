@@ -87,11 +87,9 @@ public abstract class AbstractBasePublishedDocumentFactory implements
     }
 
     protected boolean needToVersionDocument(DocumentModel doc) {
-
         if (!doc.isVersion() && doc.isVersionable()) {
             return true;
         }
-
         return false;
     }
 

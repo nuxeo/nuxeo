@@ -43,11 +43,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- *
- * Implementation of the {@link PublicationNode} for Simple Core Folders
+ * Implementation of the {@link PublicationNode} for Simple Core Folders.
  *
  * @author tiry
- *
  */
 public class CoreFolderPublicationNode extends AbstractPublicationNode
         implements PublicationNode {

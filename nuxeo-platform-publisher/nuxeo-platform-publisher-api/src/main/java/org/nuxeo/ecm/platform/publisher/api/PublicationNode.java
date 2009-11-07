@@ -23,30 +23,16 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 
  * Interface for a Node inside the publication tree. The Node is abstract, the
- * implemenation could be : a Core Folder, a FileSystem directory, a Folder on a
+ * implementation could be : a Core Folder, a FileSystem directory, a Folder on a
  * remote core ...
- * 
+ *
  * @author tiry
- * 
  */
 public interface PublicationNode extends Serializable {
 
-    /**
-     * get Title of the Node
-     * 
-     * @return
-     * @throws ClientException
-     */
     String getTitle() throws ClientException;
 
-    /**
-     * get the name of the Node
-     * 
-     * @return
-     * @throws ClientException
-     */
     String getName() throws ClientException;
 
     PublicationNode getParent();

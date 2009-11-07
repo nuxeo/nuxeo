@@ -32,13 +32,9 @@ import java.util.Map;
  * returned by the service are wrapped into this RemotablePublicationTree.
  *
  * @author tiry
- *
  */
 public class ProxyTree extends AbstractRemotableTree implements PublicationTree {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     protected String name;
@@ -62,7 +58,7 @@ public class ProxyTree extends AbstractRemotableTree implements PublicationTree 
     }
 
     @Override
-    protected List<PublicationNode> sitchToClientNodes(
+    protected List<PublicationNode> switchToClientNodes(
             List<PublicationNode> nodes) {
         return nodes;
     }
@@ -179,4 +175,5 @@ public class ProxyTree extends AbstractRemotableTree implements PublicationTree 
     public String getIconCollapsed() {
         return iconCollapsed;
     }
+
 }

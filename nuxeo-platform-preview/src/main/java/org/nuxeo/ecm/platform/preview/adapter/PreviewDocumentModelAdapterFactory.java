@@ -20,13 +20,13 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  *
- * Factory for the DocumentModelAdapter service
+ * Factory for the DocumentModelAdapter service.
+ * <p>
  * Delegates the calls to a service dedicated to Preview Adapter
  * that finds the right adapter implementation according to
- * document type and to registred custom adapters
+ * document type and to registered custom adapters.
  *
  * @author tiry
- *
  */
 public class PreviewDocumentModelAdapterFactory implements
         DocumentAdapterFactory {

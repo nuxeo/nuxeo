@@ -37,7 +37,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @WebObject(type = "User")
-@Produces("text/html; charset=UTF-8")
+@Produces("text/html;charset=UTF-8")
 public class User extends DefaultObject {
 
     NuxeoPrincipal principal;

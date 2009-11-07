@@ -54,12 +54,11 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
     public NuxeoListItem(DocumentModel doc, String corePathPrefix, String urlRoot) {
         this.doc = doc;
         this.corePathPrefix = corePathPrefix;
-        this.urlRoot=urlRoot;
+        this.urlRoot = urlRoot;
     }
 
     @Override
     protected Date getCheckoutDate() {
-
         String existingLock = null;
         try {
             existingLock = getSession().getLock(doc.getRef());
@@ -68,7 +67,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
         }
         if (existingLock != null) {
             String[] info = existingLock.split(":");
-            if (info.length==2) {
+            if (info.length == 2) {
                 String dateStr = info[1];
                 try {
                     return DateFormat.getDateInstance(DateFormat.MEDIUM).parse(
@@ -92,7 +91,6 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
         }
         return Calendar.getInstance().getTime();
     }
-
 
     public Date getCreationDate() {
         try {
@@ -121,12 +119,11 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
     public void checkOut(String userName) throws WSSException {
         try {
             String lock = getSession().getLock(doc.getRef());
-            if (lock==null) {
+            if (lock == null) {
                 String lockDate = DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
                 String lockToken = userName + ":" + lockDate;
                 getSession().setLock(doc.getRef(), lockToken);
-            }
-            else {
+            } else {
                 if (!userName.equals(getCheckoutUser())) {
                     throw new WSSException("Document is already locked by another user");
                 }
@@ -169,7 +166,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
     }
 
     public String getName() {
-        if (virtualName!=null) {
+        if (virtualName != null) {
             return virtualName;
         }
         return doc.getName();
@@ -182,7 +179,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
             if (bh != null) {
                 try {
                     Blob blob = bh.getBlob();
-                    if (blob!=null) {
+                    if (blob != null) {
                         size = (int) blob.getLength();
                     }
                 } catch (ClientException e) {
@@ -199,7 +196,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
             try {
                 return bh.getBlob().getStream();
             } catch (Exception e) {
-                log.error("Unable to get Stream",e);
+                log.error("Unable to get Stream", e);
             }
         }
         return null;
@@ -208,14 +205,14 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
     public String getSubPath() {
 
         String path = doc.getPathAsString();
-        if (corePathPrefix!=null) {
+        if (corePathPrefix != null) {
             path = path.replace(corePathPrefix, "");
         }
-        if (virtualName!=null) {
+        if (virtualName != null) {
             Path vPath = new Path(path);
             vPath = vPath.removeFirstSegments(1);
             path = new Path(virtualName).append(vPath).toString();
-        } else if (virtualRootNodeName!=null) {
+        } else if (virtualRootNodeName != null) {
             path = new Path(virtualRootNodeName).append(path).toString();
         }
         Path completePath = new Path(urlRoot);
@@ -232,7 +229,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
         String path = getRelativeSubPath(siteRootPath);
         if (!doc.isFolder()) {
             String filename = getFileName();
-            if (filename!=null) {
+            if (filename != null) {
                 // XXX : check for duplicated names
                 path = new Path(path).removeLastSegments(1).append(filename).toString();
             }
@@ -245,7 +242,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
         if (bh != null) {
             try {
                 Blob blob = bh.getBlob();
-                if (blob!=null) {
+                if (blob != null) {
                     return blob.getFilename();
                 }
             } catch (ClientException e) {
@@ -274,12 +271,12 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
         if (doc.hasSchema("file")) {
             //Blob blob = new InputStreamBlob(is);
             Blob blob = StreamingBlob.createFromStream(is);
-            if (fileName!=null) {
+            if (fileName != null) {
                 blob.setFilename(fileName);
             }
             try {
                 Blob oldBlob = (Blob) doc.getProperty("file", "content");
-                if (oldBlob==null) {
+                if (oldBlob == null) {
                     // force to recompute icon
                     if (doc.hasSchema("common")) {
                         doc.setProperty("common", "icon", null);
@@ -288,7 +285,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
                 doc.setProperty("file", "content", blob);
                 doc.setProperty("file", "filename", fileName);
                 doc = getSession().saveDocument(doc);
-                } catch (ClientException e) {
+            } catch (ClientException e) {
                 log.error("Error while setting stream", e);
             }
         } else {
@@ -300,11 +297,10 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
     public void uncheckOut(String userName) throws WSSException {
         try {
             String lock = getSession().getLock(doc.getRef());
-            if (lock!=null) {
+            if (lock != null) {
                 if (userName.equals(getCheckoutUser())) {
                     getSession().unlock(doc.getRef());
-                }
-                else {
+                } else {
                     throw new WSSException("Document is locked by another user");
                 }
             }
@@ -323,7 +319,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
             }
         } else {
             String fileName = getFileName();
-            if (fileName==null) {
+            if (fileName == null) {
                 fileName = getName();
             }
             return fileName;
@@ -333,7 +329,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
     @Override
     protected String getExtension() {
         String fileName = getFileName();
-        if (fileName==null) {
+        if (fileName == null) {
             return super.getExtension();
         } else {
             return new Path(fileName).getFileExtension();

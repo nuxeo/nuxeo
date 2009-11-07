@@ -26,12 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
  * Abstract class for {@link PublicationNode} that delegate method calls to a
- * remote service
- * 
+ * remote service.
+ *
  * @author tiry
- * 
  */
 public abstract class AbstractRemotableNode implements PublicationNode {
 

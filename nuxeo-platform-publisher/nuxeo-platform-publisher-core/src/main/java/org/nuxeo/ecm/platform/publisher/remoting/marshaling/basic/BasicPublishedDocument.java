@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 
 /**
- * Java implementation for the marshalled {@link PublishedDocument}
+ * Java implementation for the marshalled {@link PublishedDocument}.
  *
  * @author tiry
  */

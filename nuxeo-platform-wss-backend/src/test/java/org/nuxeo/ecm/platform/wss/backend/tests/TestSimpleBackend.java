@@ -115,7 +115,6 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         doc4 = session.createDocument(doc4);
 
         session.save();
-
     }
 
     public void testSimpleBackendBrowse() throws Exception {
@@ -182,7 +181,6 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         assertEquals("workspaces/ws1/doc1", item.getRelativeSubPath("nuxeo"));
         assertEquals("workspaces/ws1/document1.doc",
                 item.getRelativeFilePath("nuxeo"));
-
     }
 
     public void testSimpleBackendOperations() throws Exception {
@@ -239,7 +237,6 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         session.save(); // for cache invalidation
         assertFalse(session.exists(new PathRef(
                 "/default-domain/workspaces/ws1/testMe3")));
-
     }
 
     public void testSearchBackendBrowse() throws Exception {
@@ -320,7 +317,6 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         assertEquals("ws2-1", item.getRelativeSubPath("nuxeo"));
         assertEquals("ws2-1", item.getRelativeFilePath("nuxeo"));
         assertEquals("Ws2", item.getDisplayName());
-
     }
 
     public void testSearchBackendOperations() throws Exception {
@@ -384,7 +380,6 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         session.save(); // for cache invalidation
         assertFalse(session.exists(new PathRef(
                 "/default-domain/workspaces/ws1/folder/ws2/testMe3")));
-
     }
 
 }

@@ -89,7 +89,6 @@ public class VirtualRootedBackend extends AbstractWSSBackend implements
         newLocation = getRealBackEndPath(newLocation);
 
         return realBackend.moveItem(oldLocation, newLocation);
-
     }
 
     public void removeItem(String location) throws WSSException {
@@ -156,4 +155,5 @@ public class VirtualRootedBackend extends AbstractWSSBackend implements
     public Site getSite(String location) throws WSSException {
         return realBackend.getSite(getRealBackEndPath(location));
     }
+
 }

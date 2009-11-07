@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
  * PublicationTreeConfigDescriptor} according to the new Domain, if at least one
  * descriptor is pending. Unregister {@code PublicationTreeConfigDescriptor}
  * associated to the Domain when it is removed or if its lifecycle has changed
- * (ie. to delete state)
+ * (ie. to delete state).
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */

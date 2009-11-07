@@ -26,12 +26,10 @@ import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
 import java.util.Map;
 
 /**
- *
  * Interface of the pluggable factory used to create a PublishedDocument in a
- * give PublicationTree
+ * give PublicationTree.
  *
  * @author tiry
- *
  */
 public interface PublishedDocumentFactory {
 

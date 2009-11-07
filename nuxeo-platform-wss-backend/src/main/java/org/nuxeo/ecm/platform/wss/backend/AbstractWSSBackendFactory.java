@@ -30,7 +30,7 @@ public abstract class AbstractWSSBackendFactory implements WSSBackendFactory {
 
     public WSSBackend getBackend(WSSRequest request) {
 
-        if (request==null) {
+        if (request == null) {
             return createBackend(null); // for tests
         }
 
@@ -38,15 +38,14 @@ public abstract class AbstractWSSBackendFactory implements WSSBackendFactory {
         request.getHttpRequest().getSession(true);
 
         Object object = request.getHttpRequest().getAttribute(BACKEND_KEY);
-        if (object !=null) {
-            return (WSSBackend) object ;
+        if (object != null) {
+            return (WSSBackend) object;
         } else {
             WSSBackend backend = createBackend(request);
             request.getHttpRequest().setAttribute(BACKEND_KEY, backend);
             return backend;
         }
     }
-
 
     protected abstract WSSBackend createBackend(WSSRequest request);
 

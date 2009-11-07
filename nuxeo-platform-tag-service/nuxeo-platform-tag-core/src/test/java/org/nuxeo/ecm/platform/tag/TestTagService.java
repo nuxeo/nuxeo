@@ -155,4 +155,5 @@ public class TestTagService extends SQLRepositoryTestCase {
         TagService tagService = getTagService();
         assertTrue(tagService.isEnabled());
     }
+
 }

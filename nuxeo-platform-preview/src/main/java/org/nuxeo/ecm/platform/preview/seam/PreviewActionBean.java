@@ -36,7 +36,7 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
- * Seam Action bean to handle the preview tabs and associated actions
+ * Seam Action bean to handle the preview tabs and associated actions.
  *
  * @author <a href="mailto:enriqueperez@yerbabuena.es">Enrique Pérez</a>
  * @author tiry

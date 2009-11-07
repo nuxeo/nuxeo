@@ -56,4 +56,5 @@ public class PlainTextPreviewer extends AbstractPreviewer implements
         blobResults.add(mainBlob);
         return blobResults;
     }
+
 }

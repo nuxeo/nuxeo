@@ -27,7 +27,7 @@ import org.nuxeo.ecm.platform.publisher.helper.VersioningHelper;
 
 /**
  * Implementations of the {@link PublishedDocument} on top of the Core, using
- * simple proxies
+ * simple proxies.
  *
  * @author tiry
  */

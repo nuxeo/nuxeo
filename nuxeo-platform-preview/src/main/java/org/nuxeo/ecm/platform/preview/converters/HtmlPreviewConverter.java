@@ -102,7 +102,7 @@ public class HtmlPreviewConverter implements ExternalConverter {
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
-        Blob sourceBlob = null;
+        Blob sourceBlob;
 
         try {
             sourceBlob = blobHolder.getBlob();

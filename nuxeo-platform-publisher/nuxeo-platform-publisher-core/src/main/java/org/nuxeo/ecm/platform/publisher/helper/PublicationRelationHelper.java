@@ -67,11 +67,6 @@ public class PublicationRelationHelper {
         rm.add(PUBLICATION_GRAPH_NAME, Collections.singletonList(stmt));
     }
 
-    /**
-     *
-     * @param documentModel
-     * @throws ClientException
-     */
     public static void removePublicationRelation(DocumentModel documentModel)
             throws ClientException {
         List<Statement> stmts = RelationHelper.getStatements(
@@ -82,23 +77,12 @@ public class PublicationRelationHelper {
         }
     }
 
-    /**
-     *
-     * @param documentModel
-     * @return
-     */
     public static boolean isPublished(DocumentModel documentModel) {
         List<Statement> stmts = RelationHelper.getStatements(
                 PUBLICATION_GRAPH_NAME, documentModel, PUBLISHED_BY);
         return stmts != null && !stmts.isEmpty();
     }
 
-    /**
-     *
-     * @param documentModel
-     * @return
-     * @throws ClientException
-     */
     public static PublicationTree getPublicationTreeUsedForPublishing(
             DocumentModel documentModel, CoreSession coreSession)
             throws ClientException {

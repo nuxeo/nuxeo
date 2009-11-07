@@ -41,7 +41,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @WebObject(type = "UserManager")
-@Produces("text/html; charset=UTF-8")
+@Produces("text/html;charset=UTF-8")
 public class UserService extends DefaultObject {
 
     @GET

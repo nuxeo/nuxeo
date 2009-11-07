@@ -37,9 +37,7 @@ import org.nuxeo.runtime.api.Framework;
  * Stateless bean allowing to query the tags.
  *
  * @author rux
- *
  */
-
 @Stateless
 @Local(TagServiceLocal.class)
 @Remote(TagServiceRemote.class)
@@ -49,7 +47,7 @@ public class TagServiceBean implements TagService {
 
     protected TagService tagService;
 
-    @PersistenceContext(unitName="nxtags")
+    @PersistenceContext(unitName = "nxtags")
     protected EntityManager em;
 
 
@@ -65,12 +63,12 @@ public class TagServiceBean implements TagService {
         if (null == tagService) {
             throw new ClientException("Tag Service not available");
         }
-        return (TagServiceImpl)tagService;
+        return (TagServiceImpl) tagService;
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public DocumentModel getRootTag(CoreSession session) throws ClientException {
-        return getLocalTagService().getRootTag(em,session);
+        return getLocalTagService().getRootTag(em, session);
     }
 
     public DocumentModelList listTagsInGroup(CoreSession session,
@@ -125,7 +123,7 @@ public class TagServiceBean implements TagService {
 
     public List<Tag> listTagsAppliedOnDocument(CoreSession session,
             DocumentModel document) throws ClientException {
-        return getLocalTagService().listTagsAppliedOnDocument(em,session,document);
+        return getLocalTagService().listTagsAppliedOnDocument(em, session, document);
     }
 
     public List<Tag> listTagsAppliedOnDocumentByUser(CoreSession session,

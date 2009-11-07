@@ -31,7 +31,7 @@ import javax.ws.rs.*;
 import java.util.Map;
 
 //@Consumes("nuxeo/remotepub")
-@Produces("nuxeo/remotepub; charset=UTF-8")
+@Produces("nuxeo/remotepub;charset=UTF-8")
 public class RestPublishingHandler extends DefaultObject {
 
     // Yeurk !!

@@ -32,12 +32,10 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import java.util.Map;
 
 /**
- * 
  * {@link PublishedDocumentFactory} implementation that creates
- * {@link DocumentModel} instead of simple proxies
- * 
+ * {@link DocumentModel} instead of simple proxies.
+ *
  * @author tiry
- * 
  */
 public class SimpleExternalDocumentModelFactory extends
         AbstractBasePublishedDocumentFactory implements

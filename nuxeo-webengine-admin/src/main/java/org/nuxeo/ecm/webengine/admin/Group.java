@@ -34,7 +34,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 @WebObject(type = "Group")
-@Produces("text/html; charset=UTF-8")
+@Produces("text/html;charset=UTF-8")
 public class Group extends DefaultObject {
 
     NuxeoGroup group;

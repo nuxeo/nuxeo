@@ -61,11 +61,8 @@ public class PreviewHelper {
         }
 
         String[] urlParts = url.split(PREVIEWURL_PREFIX);
-
         String[] parts = urlParts[1].split("/");
-
         String strRef = parts[1];
-
         return new IdRef(strRef);
     }
 

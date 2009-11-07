@@ -20,11 +20,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- *
- * Interface for the Preview DocumentModel adapter
+ * Interface for the Preview DocumentModel adapter.
  *
  * @author tiry
- *
  */
 public interface HtmlPreviewAdapter {
 
@@ -45,4 +43,5 @@ public interface HtmlPreviewAdapter {
     void setAdaptedDocument(DocumentModel doc);
 
     void cleanup();
+
 }

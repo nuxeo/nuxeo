@@ -17,32 +17,23 @@ package org.nuxeo.ecm.platform.preview.api;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * preview exception
+ * Preview exception.
  *
  * @author tiry
- *
  */
 public class PreviewException extends ClientException {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-
-    public PreviewException(Throwable cause)
-    {
+    public PreviewException(Throwable cause) {
         super(cause);
     }
 
-
-    public PreviewException(String message, Throwable cause)
-    {
-        super(message,cause);
+    public PreviewException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public PreviewException(String message)
-    {
+    public PreviewException(String message) {
         super(message);
     }
 

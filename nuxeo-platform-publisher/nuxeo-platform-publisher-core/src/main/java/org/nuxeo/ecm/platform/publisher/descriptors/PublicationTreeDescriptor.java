@@ -24,18 +24,13 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import java.io.Serializable;
 
 /**
- * 
- * Descriptor of a PublicationTree
- * 
+ * Descriptor of a PublicationTree.
+ *
  * @author tiry
- * 
  */
 @XObject("publicationTree")
 public class PublicationTreeDescriptor implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     @XNode("@name")

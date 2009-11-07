@@ -20,13 +20,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 
 /**
- * Interface of the service that is reponsible for managing PreviewAdapters
+ * Interface of the service that is responsible for managing PreviewAdapters.
  *
  * @author tiry
- *
  */
 public interface PreviewAdapterManager {
-
 
     HtmlPreviewAdapter getAdapter(DocumentModel doc);
 
@@ -35,4 +33,5 @@ public interface PreviewAdapterManager {
     MimeTypePreviewer getPreviewer(String mimeType);
 
     List<BlobPostProcessor> getBlobPostProcessors();
+
 }

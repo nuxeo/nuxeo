@@ -39,11 +39,11 @@ public class TestJCRDeploy extends RepositoryOSGITestCase {
 
         openRepository();
 
-        tagService = (TagServiceImpl) Framework
-                .getLocalService(TagService.class);
+        tagService = (TagServiceImpl) Framework.getLocalService(TagService.class);
     }
 
-    public void testTagServiceUnabled() throws Exception {
+    public void testTagServiceEnabled() throws Exception {
         assertFalse(tagService.isEnabled());
     }
+
 }

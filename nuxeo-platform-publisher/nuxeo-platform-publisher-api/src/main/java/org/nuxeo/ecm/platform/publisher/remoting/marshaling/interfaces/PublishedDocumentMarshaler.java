@@ -21,9 +21,8 @@ import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 
 /**
  * Interface for {@link PublishedDocument} marshaler
- * 
+ *
  * @author tiry
- * 
  */
 public interface PublishedDocumentMarshaler {
 

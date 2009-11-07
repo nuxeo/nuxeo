@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Descriptor for a PublicationTree configuration
+ * Descriptor for a PublicationTree configuration.
  *
  * @author tiry
  */

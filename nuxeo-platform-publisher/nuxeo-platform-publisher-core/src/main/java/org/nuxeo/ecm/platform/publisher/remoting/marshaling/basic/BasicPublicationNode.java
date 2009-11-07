@@ -25,11 +25,9 @@ import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import java.util.List;
 
 /**
- * 
- * Java implementation for the marshaled {@link PublicationNode}
- * 
+ * Java implementation for the marshaled {@link PublicationNode}.
+ *
  * @author tiry
- * 
  */
 public class BasicPublicationNode implements PublicationNode {
 

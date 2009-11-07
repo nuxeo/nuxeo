@@ -25,11 +25,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
- * Remote interface used by PublicationService to communicate with each others
+ * Remote interface used by PublicationService to communicate with each others.
  *
  * @author tiry
- *
  */
 public interface RemotePublicationTreeManager {
 
@@ -132,11 +130,10 @@ public interface RemotePublicationTreeManager {
     boolean isPublicationNode(String sid, DocumentModel documentModel) throws ClientException;
 
     /**
-     * Returns a PublicationNode for the current tree built on the given {@code documentModel}. Throws an exception if
-     * the given documentModel cannot be a PublicationNode.
+     * Returns a PublicationNode for the current tree built on the given {@code documentModel}.
      * @param documentModel
      * @return
-     * @throws ClientException
+     * @throws ClientException if the given documentModel cannot be a PublicationNode.
      */
     PublicationNode wrapToPublicationNode(String sid, DocumentModel documentModel) throws ClientException;
 

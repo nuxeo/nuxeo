@@ -33,22 +33,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
  * {@link PublicationTree} implementation that supports having plain Documents
  * directly inside the sections. This is typically used for Remote
  * {@link PublicationTree} implementation that will store proxies for locally
- * published documents and complete {@link DocumentModel} for remote plublished
+ * published documents and complete {@link DocumentModel} for remote published
  * Documents.
  *
  * @author tiry
- *
  */
 public class CoreTreeWithExternalDocs extends SectionPublicationTree implements
         PublicationTree {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -61,21 +56,17 @@ public class CoreTreeWithExternalDocs extends SectionPublicationTree implements
             // remote proxy management
             ExtendedDocumentLocation xDocLoc = (ExtendedDocumentLocation) docLoc;
 
-            if (xDocLoc != null) {
-                String xsrv = xDocLoc.getOriginalServer();
-                // String source = xDocLoc.getServerName() + "@" + srv + ":" +
-                // xDocLoc.getDocRef().toString();
-                String source = xDocLoc.toString();
-                List<DocumentModel> foundDocs = findDocumentsCommingFromExternalRef(
-                        treeRoot, source);
+            String xsrv = xDocLoc.getOriginalServer();
+            // String source = xDocLoc.getServerName() + "@" + srv + ":" +
+            // xDocLoc.getDocRef().toString();
+            String source = xDocLoc.toString();
+            List<DocumentModel> foundDocs = findDocumentsCommingFromExternalRef(
+                    treeRoot, source);
 
-                for (DocumentModel doc : foundDocs) {
-                    // publishedDocs.add(new
-                    // ExternalCorePublishedDocument(doc));
-                    publishedDocs.add(factory.wrapDocumentModel(doc));
-                }
-            } else {
-                // What !?
+            for (DocumentModel doc : foundDocs) {
+                // publishedDocs.add(new
+                // ExternalCorePublishedDocument(doc));
+                publishedDocs.add(factory.wrapDocumentModel(doc));
             }
         } else {
             // std proxy management
@@ -170,5 +161,5 @@ public class CoreTreeWithExternalDocs extends SectionPublicationTree implements
     public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException {
         return new ExternalCorePublishedDocument(documentModel);
     }
-    
+
 }

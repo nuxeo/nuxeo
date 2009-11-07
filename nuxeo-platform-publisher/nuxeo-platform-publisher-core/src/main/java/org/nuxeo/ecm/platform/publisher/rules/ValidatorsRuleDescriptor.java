@@ -29,9 +29,9 @@ import java.io.Serializable;
  * <p>
  * Mostly references the underlying <code>ValidatorRule</code> implementation.
  * It might be useful in the future to extend the members of this object to hold
- * other informations about the way we should apply this validator.
+ * other information about the way we should apply this validator.
  * (placefulness for instance).
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @XObject("validatorsRule")

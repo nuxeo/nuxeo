@@ -58,9 +58,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  * on the current document.
  *
  * @author btatar
- *
  */
-
 @Name("tagActions")
 @Scope(CONVERSATION)
 public class TagActionsBean implements Serializable {
@@ -94,7 +92,7 @@ public class TagActionsBean implements Serializable {
     private String tagsLabel;
 
     /**
-     * Used for controlling the presence of the tagging text field in UI.
+     * Controls the presence of the tagging text field in UI.
      */
     private Boolean addTag;
 
@@ -109,7 +107,6 @@ public class TagActionsBean implements Serializable {
         log.debug("Removing 'tagActions' Seam component...");
     }
 
-
     @Factory(value = "tagServiceEnabled", scope = ScopeType.APPLICATION)
     public boolean isTagServiceEnabled() throws ClientException {
         return taggingHelper.isTagServiceEnabled();
@@ -118,14 +115,11 @@ public class TagActionsBean implements Serializable {
     /**
      * Returns the list with distinct public tags (or owned by user) that are
      * applied on the current document.
-     *
-     * @return
-     * @throws ClientException
      */
-    @Factory(value = "currentDocumentTags", scope=ScopeType.EVENT)
+    @Factory(value = "currentDocumentTags", scope = ScopeType.EVENT)
     public List<Tag> getDocumentTags() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (currentDocument==null) {
+        if (currentDocument == null) {
             return new ArrayList<Tag>();
         } else {
             if (currentDocument.isProxy()) {
@@ -134,16 +128,13 @@ public class TagActionsBean implements Serializable {
                         targetDocument);
             } else {
                 return taggingHelper.listDocumentTags(documentManager,
-                currentDocument);
+                        currentDocument);
             }
         }
     }
 
     /**
      * Performs the tagging on the current document.
-     *
-     * @return
-     * @throws ClientException
      */
     public String addTagging() throws ClientException {
         String messageKey = null;
@@ -166,16 +157,13 @@ public class TagActionsBean implements Serializable {
 
     /**
      * Removes a tagging from the current document.
-     *
-     * @return
-     * @throws ClientException
      */
     public String removeTagging(String taggingId) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String deletedTagLabel = taggingId;
         try {
             DocumentModel tagToDelete = documentManager.getDocument(new IdRef(taggingId));
-            deletedTagLabel = (String)tagToDelete.getPropertyValue("tag:label");
+            deletedTagLabel = (String) tagToDelete.getPropertyValue("tag:label");
         }
         catch (Exception e) {
             log.warn("Unable to find deleted tag label", e);
@@ -195,10 +183,7 @@ public class TagActionsBean implements Serializable {
 
     /**
      * Returns the details about the tag cloud that have been created under the
-     * current document, which should be a Workspace
-     *
-     * @return
-     * @throws ClientException
+     * current document, which should be a Workspace.
      */
     public List<WeightedTag> getPopularCloud() throws ClientException {
         List<WeightedTag> tagCloud = new ArrayList<WeightedTag>();
@@ -226,13 +211,10 @@ public class TagActionsBean implements Serializable {
     }
 
     /**
-     * Returns tag cloud infor for the whole repository
+     * Returns tag cloud info for the whole repository.
      * For performance reasons, the security on underlying documents is not tested.
-     *
-     * @return
-     * @throws ClientException
      */
-    @Factory(value="tagCloudOnAllDocuments", scope=ScopeType.EVENT)
+    @Factory(value = "tagCloudOnAllDocuments", scope = ScopeType.EVENT)
     public List<WeightedTag> getPopularCloudOnAllDocuments() throws ClientException {
         List<WeightedTag> tagCloud = new ArrayList<WeightedTag>();
         int min, max;
@@ -255,13 +237,11 @@ public class TagActionsBean implements Serializable {
         return tagCloud;
     }
 
-
     public String listDocumentsForTag(String tagDocumentId)
             throws ClientException {
         this.tagDocumentId = tagDocumentId;
         return TAG_SEARCH_RESULT_PAGE;
     }
-
 
     @Factory(value = "taggedDocuments", scope = EVENT)
     public DocumentModelList getChildrenSelectModel() throws ClientException {
@@ -276,10 +256,6 @@ public class TagActionsBean implements Serializable {
     /**
      * Returns <b>true</b> if the current logged user has permission to modify a
      * tag that is applied on the current document.
-     *
-     * @param tag
-     * @return
-     * @throws ClientException
      */
     public boolean canModifyTag(Tag tag) throws ClientException {
         return taggingHelper.canModifyTag(documentManager,
@@ -295,8 +271,6 @@ public class TagActionsBean implements Serializable {
 
     /**
      * Used to decide whether the tagging UI field is shown or not.
-     *
-     * @param event
      */
     public void showAddTag(ActionEvent event) {
         if (addTag == null) {
@@ -321,10 +295,8 @@ public class TagActionsBean implements Serializable {
         this.addTag = addTag;
     }
 
-
     // Suggestion
     public Object getSuggestions(Object input) throws ClientException {
-
         String searchPattern = (String) input;
         searchPattern = cleanTag(searchPattern);
         List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
@@ -359,10 +331,10 @@ public class TagActionsBean implements Serializable {
         return tag;
     }
 
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
+    @Observer(value = {EventNames.DOCUMENT_SELECTION_CHANGED}, create = false, inject = false)
     @BypassInterceptors
     public void documentChanged() {
-        addTag=false;
+        addTag = false;
     }
 
 }

@@ -35,9 +35,8 @@ import java.util.Map;
 /**
  * {@link PublicationInvokationHandler} implementation. Could be called by a
  * Restlet, a WebEngine module or a TestInvoker
- * 
+ *
  * @author tiry
- * 
  */
 public class TestInvokationHandler implements PublicationInvokationHandler {
 
@@ -132,7 +131,6 @@ public class TestInvokationHandler implements PublicationInvokationHandler {
         } finally {
 
         }
-
     }
 
 }

@@ -27,8 +27,8 @@ import java.io.Serializable;
  * Validators rule API.
  * <p>
  * Object aiming at being responsible of computing the validators of a just
- * puglished document
- * 
+ * published document.
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public interface ValidatorsRule extends Serializable {
@@ -36,7 +36,7 @@ public interface ValidatorsRule extends Serializable {
     /**
      * Computes the list of publishing validators given the document model of
      * the document just published.
-     * 
+     *
      * @param dm a Nuxeo Core document model. (the document that just has been
      *            published)
      * @return a list of principal names.

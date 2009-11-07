@@ -18,19 +18,15 @@ import java.io.Serializable;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+
 /**
- *
- * Descriptor for contributed Preview Adapter factories
+ * Descriptor for contributed Preview Adapter factories.
  *
  * @author tiry
- *
  */
 @XObject(value = "previewAdapter")
 public class AdapterFactoryDescriptor implements Serializable{
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     @XNode("@name")

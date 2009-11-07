@@ -65,8 +65,9 @@ public interface PublicationTree extends PublicationNode {
             String configName, String title) throws ClientException;
 
     /**
-     * Set the current document on which the tree will be based, if needed. Can be useful for
-     * some implementations that need to know on which document the user is.
+     * Sets the current document on which the tree will be based, if needed.
+     * <p>
+     * Can be useful for some implementations that need to know on which document the user is.
      * @param currentDocument the current document
      */
     void setCurrentDocument(DocumentModel currentDocument) throws ClientException;
@@ -127,7 +128,8 @@ public interface PublicationTree extends PublicationNode {
     PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException;
 
     /**
-     * Returns {@code true} if the given {@code documentModel} is a PublicationNode of the current tree, {@code false} otherwise.
+     * Returns {@code true} if the given {@code documentModel} is a PublicationNode of the current tree,
+     * {@code false} otherwise.
      * @param documentModel
      * @return
      * @throws ClientException
@@ -135,11 +137,11 @@ public interface PublicationTree extends PublicationNode {
     boolean isPublicationNode(DocumentModel documentModel) throws ClientException;
 
     /**
-     * Returns a PublicationNode for the current tree built on the given {@code documentModel}. Throws an exception if
-     * the given documentModel cannot be a PublicationNode.
+     * Returns a PublicationNode for the current tree built on the given {@code documentModel}.
+     *
      * @param documentModel
      * @return
-     * @throws ClientException
+     * @throws ClientException if the given documentModel cannot be a PublicationNode
      */
     PublicationNode wrapToPublicationNode(DocumentModel documentModel) throws ClientException;
 

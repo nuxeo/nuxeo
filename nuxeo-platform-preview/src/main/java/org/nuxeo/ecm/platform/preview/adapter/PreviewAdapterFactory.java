@@ -18,10 +18,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 
 /**
- * Interface that should be implemented by contributed code to manage custom preview adapters
+ * Interface that should be implemented by contributed code to manage custom preview adapters.
  *
  * @author tiry
- *
  */
 public interface PreviewAdapterFactory {
 

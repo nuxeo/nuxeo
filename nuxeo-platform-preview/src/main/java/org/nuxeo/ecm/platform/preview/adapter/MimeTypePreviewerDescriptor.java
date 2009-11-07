@@ -49,4 +49,5 @@ public class MimeTypePreviewerDescriptor {
     public void setKlass(Class<? extends MimeTypePreviewer> klass) {
         this.klass = klass;
     }
+
 }

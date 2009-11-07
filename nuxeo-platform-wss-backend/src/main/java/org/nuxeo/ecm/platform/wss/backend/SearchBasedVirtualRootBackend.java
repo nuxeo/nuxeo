@@ -52,20 +52,20 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
 
     public SearchBasedVirtualRootBackend(String urlRoot, String query) {
         this.urlRoot = urlRoot;
-        if (query!=null) {
-            this.query=query;
+        if (query != null) {
+            this.query = query;
         }
     }
 
     protected SimpleNuxeoBackend getBackend(String name) throws WSSException {
         try {
-            SimpleNuxeoBackend backend =name2backend.get(name);
-            if (backend==null) {
+            SimpleNuxeoBackend backend = name2backend.get(name);
+            if (backend == null) {
                 String path = getName2path().get(name);
-                if (path==null) {
+                if (path == null) {
                     throw new WSSException("unable to resolve path");
                 }
-                backend = new SimpleNuxeoBackend(path,urlRoot, getCoreSession());
+                backend = new SimpleNuxeoBackend(path, urlRoot, getCoreSession());
                 name2backend.put(name, backend);
             }
             return backend;
@@ -75,28 +75,26 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
         }
     }
 
-
     protected WSSListItem createNode(String parentPath, String name, boolean folderish) throws WSSException {
 
-        WSSListItem item = null;
+        WSSListItem item;
         Path containerPath = new Path(parentPath);
-        if (containerPath.segmentCount()==0) {
+        if (containerPath.segmentCount() == 0) {
             throw new WSSException("Can not create item at root");
         }
 
         String base = containerPath.segment(0);
 
         if (folderish) {
-            item = getBackend(base).createFolder(containerPath.removeFirstSegments(1).toString(),name);
+            item = getBackend(base).createFolder(containerPath.removeFirstSegments(1).toString(), name);
         } else {
-            item = getBackend(base).createFileItem(containerPath.removeFirstSegments(1).toString(),name);
+            item = getBackend(base).createFileItem(containerPath.removeFirstSegments(1).toString(), name);
         }
 
-        ((NuxeoListItem)item).setVirtualRootNodeName(base);
+        ((NuxeoListItem) item).setVirtualRootNodeName(base);
 
         return item;
     }
-
 
 
     public WSSListItem createFileItem(String location, String name)
@@ -110,14 +108,13 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
     }
 
     public WSSListItem getItem(String location) throws WSSException {
-
         Path path = new Path(location);
         String base = path.segment(0);
-        if (path.segmentCount()==1) {
+        if (path.segmentCount() == 1) {
             try {
                 String corePath = getName2path().get(base);
                 DocumentModel doc = getCoreSession().getDocument(new PathRef(corePath));
-                NuxeoListItem item = new NuxeoListItem(doc, new Path(corePath).removeLastSegments(1).toString(),urlRoot);
+                NuxeoListItem item = new NuxeoListItem(doc, new Path(corePath).removeLastSegments(1).toString(), urlRoot);
                 item.setVirtualName(base);
                 return item;
             } catch (Exception e) {
@@ -125,7 +122,7 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
             }
         } else {
             WSSListItem item = getBackend(base).getItem(path.removeFirstSegments(1).toString());
-            ((NuxeoListItem)item).setVirtualRootNodeName(base);
+            ((NuxeoListItem) item).setVirtualRootNodeName(base);
             return item;
         }
     }
@@ -144,7 +141,7 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
                     // XXX !!!
                     String corePath = getName2path().get(name);
                     DocumentModel doc = getCoreSession().getDocument(new PathRef(corePath));
-                    NuxeoListItem item = new NuxeoListItem(doc, new Path(corePath).removeLastSegments(1).toString(),urlRoot);
+                    NuxeoListItem item = new NuxeoListItem(doc, new Path(corePath).removeLastSegments(1).toString(), urlRoot);
                     item.setVirtualName(name);
                     items.add(item);
                 }
@@ -164,22 +161,21 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
     public WSSListItem moveItem(String oldLocation, String newLocation) throws WSSException {
         Path path = new Path(oldLocation);
         String base = path.segment(0);
-        if (path.segmentCount()==1) {
+        if (path.segmentCount() == 1) {
             throw new WSSException("can not move this item");
         } else {
             String baseDest = new Path(newLocation).segment(0);
             if (base.equals(baseDest)) {
                 // move within the same workspace
-                WSSListItem item =  getBackend(base).moveItem(path.removeFirstSegments(1).toString(), new Path(newLocation).removeFirstSegments(1).toString());
-                ((NuxeoListItem)item).setVirtualRootNodeName(base);
+                WSSListItem item = getBackend(base).moveItem(path.removeFirstSegments(1).toString(), new Path(newLocation).removeFirstSegments(1).toString());
+                ((NuxeoListItem) item).setVirtualRootNodeName(base);
                 return item;
-            }
-            else {
+            } else {
                 // move from one workspace to an other
-                NuxeoListItem sourceItem  = (NuxeoListItem)getBackend(base).getItem(path.removeFirstSegments(1).toString());
+                NuxeoListItem sourceItem = (NuxeoListItem) getBackend(base).getItem(path.removeFirstSegments(1).toString());
                 DocumentModel sourceDocument = sourceItem.getDoc();
                 WSSListItem item = getBackend(baseDest).moveDocument(sourceDocument, new Path(newLocation).removeFirstSegments(1).toString());
-                ((NuxeoListItem)item).setVirtualRootNodeName(baseDest);
+                ((NuxeoListItem) item).setVirtualRootNodeName(baseDest);
                 return item;
             }
         }
@@ -188,7 +184,7 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
     public void removeItem(String location) throws WSSException {
         Path path = new Path(location);
         String base = path.segment(0);
-        if (path.segmentCount()==1) {
+        if (path.segmentCount() == 1) {
             throw new WSSException("can not move this item");
         } else {
             getBackend(base).removeItem(path.removeFirstSegments(1).toString());
@@ -196,13 +192,12 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
     }
 
     private boolean isHead(String path, List<String> paths, int idx) {
-
         int level = new Path(path).segmentCount();
 
-        for (int i = idx; i>=0; i--) {
+        for (int i = idx; i >= 0; i--) {
             String other = paths.get(i);
             if (path.contains(other)) {
-                if (new Path(other).segmentCount()==level-1) {
+                if (new Path(other).segmentCount() == level - 1) {
                     return false;
                 }
             }
@@ -211,16 +206,16 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
     }
 
     public Map<String, String> getName2path() throws ClientException, Exception {
-        if (name2path==null) {
+        if (name2path == null) {
             name2path = new HashMap<String, String>();
-            DocumentModelList docs =  getCoreSession().query(query);
+            DocumentModelList docs = getCoreSession().query(query);
             List<String> paths = new ArrayList<String>();
             for (DocumentModel doc : docs) {
                 paths.add(doc.getPathAsString());
             }
 
             List<String> heads = new ArrayList<String>();
-            for (int idx = 0; idx<paths.size(); idx++) {
+            for (int idx = 0; idx < paths.size(); idx++) {
                 String path = paths.get(idx);
                 if (isHead(path, paths, idx)) {
                     heads.add(path);
@@ -230,10 +225,10 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
             for (String head : heads) {
                 String headName = new Path(head).lastSegment();
                 String name = headName;
-                int idx=1;
+                int idx = 1;
                 while (name2path.containsKey(name)) {
                     name = headName + "-" + idx;
-                    idx=idx+1;
+                    idx = idx + 1;
                 }
                 name2path.put(name, head);
             }
@@ -249,18 +244,18 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
             throws WSSException {
         Path path = new Path(url);
         String base = path.segment(0);
-        if (path.segmentCount()==1) {
+        if (path.segmentCount() == 1) {
             throw new WSSException("unable to resolve path");
         } else {
 
             DWSMetaDataImpl metadata = (DWSMetaDataImpl) getBackend(base).getMetaData(path.removeFirstSegments(1).toString(), request);
             List<WSSListItem> docs = metadata.getDocuments();
             for (WSSListItem item : docs) {
-                ((NuxeoListItem)item).setVirtualRootNodeName(base);
+                ((NuxeoListItem) item).setVirtualRootNodeName(base);
             }
 
             WSSListItem siteItem = metadata.getSite().getItem();
-            ((NuxeoListItem)siteItem).setVirtualRootNodeName(base);
+            ((NuxeoListItem) siteItem).setVirtualRootNodeName(base);
 
             return metadata;
         }
@@ -269,10 +264,11 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
     public Site getSite(String location) throws WSSException {
         Path path = new Path(location);
         String base = path.segment(0);
-        if (path.segmentCount()==1) {
+        if (path.segmentCount() == 1) {
             throw new WSSException("unable to resolve path");
         } else {
             return getBackend(base).getSite(path.removeFirstSegments(1).toString());
         }
     }
+
 }

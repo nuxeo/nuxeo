@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.api.ClientException;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 public class PublicationTreeNotAvailable extends ClientException {
+
     private static final long serialVersionUID = 1L;
 
     public PublicationTreeNotAvailable() {

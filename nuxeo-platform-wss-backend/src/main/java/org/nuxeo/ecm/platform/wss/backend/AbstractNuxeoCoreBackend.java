@@ -25,7 +25,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.spi.AbstractWSSBackend;
 
-public abstract class AbstractNuxeoCoreBackend extends AbstractWSSBackend implements NuxeoWSSBackend{
+public abstract class AbstractNuxeoCoreBackend extends AbstractWSSBackend implements NuxeoWSSBackend {
 
     protected CoreSession session;
 
@@ -34,19 +34,18 @@ public abstract class AbstractNuxeoCoreBackend extends AbstractWSSBackend implem
     }
 
     protected CoreSession getCoreSession() throws Exception {
-
-         if (session==null) {
-             RepositoryManager rm;
-             rm = Framework.getService(RepositoryManager.class);
-             session = rm.getDefaultRepository().open();
-         }
+        if (session == null) {
+            RepositoryManager rm;
+            rm = Framework.getService(RepositoryManager.class);
+            session = rm.getDefaultRepository().open();
+        }
         return session;
     }
 
     protected void close() {
-        if (session!=null) {
+        if (session != null) {
             CoreInstance.getInstance().close(session);
-            session=null;
+            session = null;
         }
     }
 
@@ -55,7 +54,7 @@ public abstract class AbstractNuxeoCoreBackend extends AbstractWSSBackend implem
     }
 
     public void discardChanges(boolean release) throws WSSException {
-        if (session!=null) {
+        if (session != null) {
             try {
                 session.cancel();
                 if (release) {
@@ -67,13 +66,12 @@ public abstract class AbstractNuxeoCoreBackend extends AbstractWSSBackend implem
         }
     }
 
-
     public void saveChanges() throws WSSException {
         saveChanges(true);
     }
 
     public void saveChanges(boolean release) throws WSSException {
-        if (session!=null) {
+        if (session != null) {
             try {
                 session.save();
                 if (release) {

@@ -18,10 +18,9 @@
 package org.nuxeo.ecm.platform.publisher.remoting.marshaling;
 
 /**
- * Base class for XML marshalers
- * 
+ * Base class for XML marshalers.
+ *
  * @author tiry
- * 
  */
 public abstract class AbstractDefaultXMLMarshaler {
 
@@ -37,4 +36,5 @@ public abstract class AbstractDefaultXMLMarshaler {
                     "");
         return data;
     }
+
 }

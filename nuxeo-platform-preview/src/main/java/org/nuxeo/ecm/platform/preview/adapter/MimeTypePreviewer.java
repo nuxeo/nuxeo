@@ -30,5 +30,7 @@ import org.nuxeo.ecm.platform.preview.api.PreviewException;
  *
  */
 public interface MimeTypePreviewer {
+
     List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException;
+
 }

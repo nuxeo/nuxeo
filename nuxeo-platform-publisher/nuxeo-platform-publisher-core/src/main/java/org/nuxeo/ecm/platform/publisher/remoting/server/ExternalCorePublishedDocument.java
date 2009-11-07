@@ -33,9 +33,6 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.ExtendedDocumentLoca
  */
 public class ExternalCorePublishedDocument implements PublishedDocument {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     protected String sourceServer;

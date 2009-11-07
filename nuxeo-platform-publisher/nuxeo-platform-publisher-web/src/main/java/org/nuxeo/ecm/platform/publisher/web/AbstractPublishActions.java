@@ -81,4 +81,5 @@ public abstract class AbstractPublishActions {
             getPathFragments(parentDocument, pathFragments);
         }
     }
+
 }

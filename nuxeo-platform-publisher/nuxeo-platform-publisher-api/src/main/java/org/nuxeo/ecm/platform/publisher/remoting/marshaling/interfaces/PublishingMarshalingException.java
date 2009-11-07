@@ -21,15 +21,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Exception for Marshaling errors
- * 
+ *
  * @author tiry
- * 
  */
 public class PublishingMarshalingException extends ClientException {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     public PublishingMarshalingException(Throwable t) {

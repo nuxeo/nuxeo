@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Main publication Service *
+ * Main publication Service.
  *
  * @author tiry
  */
@@ -37,9 +37,8 @@ public interface PublisherService {
 
     /**
      * Returns a {@code Map} with tree name as key and tree title as value.
-     * @return
      */
-    Map<String ,String> getAvailablePublicationTrees();
+    Map<String, String> getAvailablePublicationTrees();
 
     PublicationTree getPublicationTree(String treeName,
             CoreSession coreSession, Map<String, String> params)

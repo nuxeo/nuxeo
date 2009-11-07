@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.tag.persistence.TagSchemaUpdater;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.com>"
- *
  */
 public class TestSchemaUpdater extends SQLRepositoryTestCase {
 
@@ -48,7 +47,7 @@ public class TestSchemaUpdater extends SQLRepositoryTestCase {
         updater.connectionProperties.clear();
         updater.connectionProperties.setProperty(Environment.DIALECT, H2WithNoSequencesSupportDialect.class.getCanonicalName());
         Map<String, String> repositoryProperties = database.getRepositoryDescriptor().properties;
-        updater.connectionProperties.setProperty(Environment.DRIVER, "org.h2.Driver" );
+        updater.connectionProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
         String connectionURL = repositoryProperties.get("URL").replace("${nuxeo.test.vcs.url}", System.getProperty("nuxeo.test.vcs.url"));
         updater.connectionProperties.setProperty(Environment.URL, connectionURL);
         updater.connectionProperties.setProperty(Environment.USER, repositoryProperties.get("User"));
