@@ -21,10 +21,10 @@ import org.nuxeo.theme.models.AbstractModel;
  * been created under a webpage, in the fragment initialization mechanism.
  *
  * @author rux
- *
  */
 public class TagListModel extends AbstractModel {
 
     public TagListModel() {
     }
+
 }

@@ -26,9 +26,10 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 /**
  * Web Comment Service - extension of base's Comment Service with specifics
  * of sites module.
+ *
  * @author rux
  */
-@WebAdapter(name = "webcomments", type = "WebCommentService", targetType = "Document", targetFacets = { "Commentable" })
+@WebAdapter(name = "webcomments", type = "WebCommentService", targetType = "Document", targetFacets = {"Commentable"})
 public class WebCommentService extends CommentService {
 
     @Override
@@ -48,7 +49,7 @@ public class WebCommentService extends CommentService {
             DocumentModel comment) throws Exception {
         //CommentsModerationService commentsModerationService = getCommentsModerationService();
         if (SiteUtils.isCurrentModerated(session, target)
-                && (!SiteUtils.isModeratedByCurrentUser(session, target))){
+                && (!SiteUtils.isModeratedByCurrentUser(session, target))) {
             // if current page is moderated
             // get all moderators
             ArrayList<String> moderators = SiteUtils.getModerators(

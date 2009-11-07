@@ -74,4 +74,5 @@ public class BlogActionListener implements EventListener {
             doc.setPropertyValue(SiteConstants.WEBPAGE_THEMEPAGE, "post");
         }
     }
+
 }

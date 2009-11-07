@@ -20,7 +20,6 @@
 package org.nuxeo.webengine.sites.wiki.rendering;
 
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.platform.rendering.wiki.WikiFilter;
 import org.nuxeo.ecm.webengine.WebEngine;
@@ -42,14 +41,14 @@ public class WikiSitesPageLinkResolver implements WikiFilter {
         }
         do {
             String s = m.group();
-            String link = builsLinks(s);
+            String link = buildLinks(s);
             m.appendReplacement(sb, link);
         } while (m.find());
         m.appendTail(sb);
         return sb.toString();
     }
 
-    protected String builsLinks(String pageName) {
+    protected String buildLinks(String pageName) {
         String basePath;
 
         WebContext ctx = WebEngine.getActiveContext();

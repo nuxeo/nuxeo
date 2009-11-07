@@ -20,10 +20,9 @@ import org.nuxeo.theme.models.AbstractModel;
 
 /**
  * Model related to the <b>WebPage</b>-s in the fragment initialization
- * mechanism
+ * mechanism.
  *
  * @author rux
- *
  */
 public class WebpageModel extends AbstractModel {
 

@@ -42,7 +42,7 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  * @author mcedica
  */
 @WebAdapter(name = "tag", type = "TagAdapter", targetType = "Document")
-@Produces("text/html; charset=UTF-8")
+@Produces("text/html;charset=UTF-8")
 public class TagAdapter extends DefaultAdapter {
 
     @GET
@@ -109,7 +109,6 @@ public class TagAdapter extends DefaultAdapter {
     public Object removeTagging() {
 
         try {
-
             DocumentObject documentObject = (DocumentObject) getTarget();
             DocumentModel doc = documentObject.getDocument();
 
@@ -133,4 +132,5 @@ public class TagAdapter extends DefaultAdapter {
             throw WebException.wrap(e);
         }
     }
+
 }

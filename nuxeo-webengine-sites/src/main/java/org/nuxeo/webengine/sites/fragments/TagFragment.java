@@ -58,9 +58,10 @@ public class TagFragment extends AbstractFragment {
                 CoreSession session = ctx.getCoreSession();
                 DocumentModel documentModel = ctx.getTargetObject().getAdapter(
                         DocumentModel.class);
-                TagModel tagModel = null;
-                String label = null;
-                Boolean isPrivate = null;
+
+                TagModel tagModel;
+                String label;
+                Boolean isPrivate;
                 List<Tag> tags = tagService.listTagsAppliedOnDocument(session,
                         documentModel);
                 if (tags != null && !tags.isEmpty()) {

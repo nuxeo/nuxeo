@@ -53,7 +53,7 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  * @author stan
  */
 @WebObject(type = WEBPAGE, superType = "AbstractSiteDocumentObject")
-@Produces("text/html; charset=UTF-8")
+@Produces("text/html;charset=UTF-8")
 public class Page extends AbstractSiteDocumentObject {
 
     private static final Log log = LogFactory.getLog(Page.class);
@@ -91,7 +91,7 @@ public class Page extends AbstractSiteDocumentObject {
     @POST
     @Path("modifyWebPage")
     public Object modifyWebPage() {
-        log.debug("Modifing web page ...");
+        log.debug("Modifying web page ...");
         try {
             CoreSession session = ctx.getCoreSession();
             HttpServletRequest request = ctx.getRequest();
@@ -159,4 +159,5 @@ public class Page extends AbstractSiteDocumentObject {
     protected String getSearchThemePage() {
         return SEARCH_THEME_PAGE;
     }
+
 }

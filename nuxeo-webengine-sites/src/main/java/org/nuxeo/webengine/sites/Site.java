@@ -52,7 +52,7 @@ import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
  */
 
 @WebObject(type = WEBSITE, superType = "AbstractSiteDocumentObject", facets = { WEBSITE })
-@Produces("text/html; charset=UTF-8")
+@Produces("text/html;charset=UTF-8")
 public class Site extends AbstractSiteDocumentObject {
 
     private static final Log log = LogFactory.getLog(Site.class);
@@ -94,7 +94,7 @@ public class Site extends AbstractSiteDocumentObject {
                 return list.get(0);
             }
         } catch (ClientException e) {
-            log.error("Unable to retrive the webcontainer ", e);
+            log.error("Unable to retrieve the webcontainer ", e);
         }
         return null;
     }

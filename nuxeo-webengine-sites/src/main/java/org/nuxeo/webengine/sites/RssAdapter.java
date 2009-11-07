@@ -50,11 +50,10 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  * @author mcedica
  */
 @WebAdapter(name = "rss", type = "RssAdapter", targetType = "Document")
-@Produces("application/rss+xml; charset=UTF-8")
+@Produces("application/rss+xml;charset=UTF-8")
 public class RssAdapter extends DefaultAdapter {
 
     public static final int NO_PAGES = 15;
-
     public static final int NO_COMMENTS = 15;
 
     /**
@@ -113,10 +112,10 @@ public class RssAdapter extends DefaultAdapter {
             Template rssEntryTpl = getTemplate("includes/rss_comment_item.ftl");
             CoreSession session = ctx.getCoreSession();
 
-            CommentModel commentModel = null;
-            String creationDate = null;
-            String author = null;
-            String commentText = null;
+            CommentModel commentModel;
+            String creationDate;
+            String author;
+            String commentText;
             DocumentModelList comments = null;
 
             String docId = ctx.getRequest().getParameter("docId");

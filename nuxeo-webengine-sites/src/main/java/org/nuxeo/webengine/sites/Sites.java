@@ -53,7 +53,7 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  * Web object implementation corresponding to module root.
  */
 @WebObject(type = "sites", facets = { "Sites" })
-@Produces("text/html; charset=UTF-8")
+@Produces("text/html;charset=UTF-8")
 public class Sites extends DefaultObject {
 
     private static final Log log = LogFactory.getLog(Sites.class);

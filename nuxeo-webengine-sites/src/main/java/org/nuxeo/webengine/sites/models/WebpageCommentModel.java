@@ -20,10 +20,9 @@ import org.nuxeo.theme.models.AbstractModel;
 
 /**
  * Model related to the comments that are last added under a <b>WebPage</b>
- * under a <b>WebSite</b>, in the fragment initialization mechanism
+ * under a <b>WebSite</b>, in the fragment initialization mechanism.
  *
  * @author rux
- *
  */
 public class WebpageCommentModel extends AbstractModel {
 

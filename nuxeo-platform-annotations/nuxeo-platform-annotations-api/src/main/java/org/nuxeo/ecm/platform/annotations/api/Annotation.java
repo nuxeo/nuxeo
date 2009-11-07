@@ -30,6 +30,7 @@ import org.nuxeo.ecm.platform.relations.api.Statement;
  *
  */
 public interface Annotation {
+
     Resource getSubject();
 
     String getId();
@@ -57,4 +58,5 @@ public interface Annotation {
     String getCreator();
 
     void addMetadata(String predicate, String value);
+
 }

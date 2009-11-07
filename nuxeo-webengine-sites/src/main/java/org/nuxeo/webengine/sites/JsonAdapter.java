@@ -71,7 +71,7 @@ public class JsonAdapter extends DefaultAdapter {
             SiteDocumentTree tree = new SiteDocumentTree(ctx, rootDoc);
             String result = "";
             if (root == null || "source".equals(root)) {
-                Path relPath = getRelativPath(rootDoc, currentDoc);
+                Path relPath = getRelativePath(rootDoc, currentDoc);
                 tree.enter(ctx, relPath.toString());
                 result = tree.getTreeAsJSONArray(ctx);
             } else {
@@ -82,7 +82,7 @@ public class JsonAdapter extends DefaultAdapter {
         return null;
     }
 
-    public static Path getRelativPath(DocumentModel rootDoc, DocumentModel doc) {
+    public static Path getRelativePath(DocumentModel rootDoc, DocumentModel doc) {
         Path rootPath = rootDoc.getPath();
         Path docPath = doc.getPath();
         int n = rootPath.segmentCount();

@@ -66,8 +66,8 @@ public class SiteUtils {
     }
 
     /**
-     * Get the first mini-site parent
-     * */
+     * Gets the first mini-site parent.
+     */
     public static DocumentModel getFirstWebSiteParent(CoreSession session,
             DocumentModel doc) throws Exception {
         List<DocumentModel> parents = session.getParentDocuments(doc.getRef());
@@ -154,7 +154,7 @@ public class SiteUtils {
         StringBuilder path = new StringBuilder(getWebContainersPath()).append("/");
         path.append(ws.getPath().segment(ws.getPath().segmentCount() - 1)).append(
                 "/");
-        path.append(JsonAdapter.getRelativPath(ws, documentModel));
+        path.append(JsonAdapter.getRelativePath(ws, documentModel));
         return path.toString();
     }
 
@@ -423,7 +423,7 @@ public class SiteUtils {
     }
 
     /**
-     * Computes the arguments for rss feed
+     * Computes the arguments for rss feed.
      *
      * @return
      * @throws Exception
@@ -436,4 +436,5 @@ public class SiteUtils {
         root.put("description", " ");
         return root;
     }
+
 }

@@ -31,10 +31,9 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Action fragment for initializing the fragment related to the <b>WebPage</b>-s
- * that are direct children of the received document
+ * that are direct children of the received document.
  *
  * @author rux
- *
  */
 public class AllWebpageFragment extends AbstractFragment {
 
@@ -51,9 +50,9 @@ public class AllWebpageFragment extends AbstractFragment {
             DocumentModel documentModel = ctx.getTargetObject().getAdapter(
                     DocumentModel.class);
 
-            WebpageModel webpageModel = null;
-            String name = null;
-            String path = null;
+            WebpageModel webpageModel;
+            String name;
+            String path;
 
             try {
                 for (DocumentModel webPage : session.getChildren(
@@ -62,7 +61,7 @@ public class AllWebpageFragment extends AbstractFragment {
                             SiteConstants.DELETED)) {
 
                         name = SiteUtils.getString(webPage, "dc:title");
-                        path = JsonAdapter.getRelativPath(documentModel,
+                        path = JsonAdapter.getRelativePath(documentModel,
                                 webPage).toString();
                         webpageModel = new WebpageModel(name, path);
                         model.addItem(webpageModel);

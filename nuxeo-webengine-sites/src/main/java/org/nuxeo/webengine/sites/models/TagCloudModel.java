@@ -21,7 +21,6 @@ import org.nuxeo.theme.models.AbstractModel;
  * Model related to the details about the tag cloud.
  *
  * @author rux
- *
  */
 public class TagCloudModel extends AbstractModel {
 
@@ -61,4 +60,5 @@ public class TagCloudModel extends AbstractModel {
     public void setWeight(int weight) {
         this.weight = weight;
     }
+
 }

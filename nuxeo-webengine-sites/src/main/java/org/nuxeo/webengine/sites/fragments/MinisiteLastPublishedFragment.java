@@ -42,7 +42,6 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  * that are made under an <b>WebSite</b> or <b>WebPage</b>
  *
  * @author rux
- *
  */
 public class MinisiteLastPublishedFragment extends AbstractFragment {
 
@@ -64,13 +63,13 @@ public class MinisiteLastPublishedFragment extends AbstractFragment {
             DocumentModel documentModel = ctx.getTargetObject().getAdapter(
                     DocumentModel.class);
 
-            WebpageModel webpageModel = null;
-            String name = null;
-            String path = null;
-            String description = null;
-            String content = null;
-            String author = null;
-            String numberComments = null;
+            WebpageModel webpageModel;
+            String name;
+            String path;
+            String description;
+            String content;
+            String author;
+            String numberComments;
 
             try {
                 DocumentModel ws = SiteUtils.getFirstWebSiteParent(session,
@@ -96,17 +95,16 @@ public class MinisiteLastPublishedFragment extends AbstractFragment {
                                 "dd MMMM",
                                 WebEngine.getActiveContext().getLocale());
                         String formattedString = simpleDateFormat.format(modificationDate.getTime());
-                        String[] splittedFormatterdString = formattedString.split(" ");
+                        String[] splitFormattedString = formattedString.split(" ");
                         numberComments = Integer.toString(SiteUtils.getNumberCommentsForPage(
                                 session, webPage));
 
                         webpageModel = new WebpageModel(name, path,
                                 description, content, author,
-                                splittedFormatterdString[0],
-                                splittedFormatterdString[1], numberComments);
+                                splitFormattedString[0],
+                                splitFormattedString[1], numberComments);
 
                         model.addItem(webpageModel);
-
                     }
                 }
             } catch (Exception e) {

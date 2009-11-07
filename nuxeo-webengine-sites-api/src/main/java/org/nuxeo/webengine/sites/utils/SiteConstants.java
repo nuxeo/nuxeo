@@ -28,7 +28,7 @@ public final class SiteConstants {
     private SiteConstants() {
     }
 
-    /**
+    /*
      * Nuxeo document type names
      */
     public static final String CONTEXTUAL_LINK = "ContextualLink";
@@ -37,7 +37,7 @@ public final class SiteConstants {
     public static final String WEBPAGE = "WebPage";
     public static final String WEB_VIEW_FACET = "WebView";
 
-    /**
+    /*
      * Schemes and fields.
      */
     public static final String WEBCONTAINER_SCHEMA = "webcontainer";
@@ -56,7 +56,6 @@ public final class SiteConstants {
     public static final String WEBSITE_THEMEPAGE = "webc:themePage";
     public static final String DEFAULT_WEBSITE_THEMEPAGE_VALUE = "workspace";
 
-
     public static final String WEBPAGE_SCHEMA_THEME = "webp:theme";
     public static final String WEBPAGE_THEMEPAGE = "webp:themePage";
 
@@ -69,7 +68,7 @@ public final class SiteConstants {
     public static final String WEBPAGE_DESCRIPTION = "dc:description";
 
 
-    /**
+    /*
      * Arguments in FreeMarker
      */
     public static final String PAGE_NAME = "name";
@@ -78,14 +77,14 @@ public final class SiteConstants {
     public static final String SEARCH_PARAM_DOC_TYPE = "searchParamDocType";
     public static final String EMAIL = "siteCreatorEmail";
 
-    /**
+    /*
      * LifeCycle
      * @deprecated use {@link LifeCycleConstants#DELETED_STATE}
      */
     @Deprecated
     public static final String DELETED = "deleted";
 
-    /**
+    /*
      * Permission constants used for Comments
      */
     public static final String PERMISSION_COMMENT = "Comment";
@@ -95,7 +94,7 @@ public final class SiteConstants {
 
     public static final String PERMISSION_ADD_CHILDREN = "AddChildren";
 
-    /**
+    /*
      * Themes&Perspectives
      */
     public static final String THEME_BUNDLE = "org.nuxeo.theme.theme";
@@ -107,12 +106,12 @@ public final class SiteConstants {
     public static final String SEARCH_THEME_PAGE = "sites/search";
     public static final String SITES_THEME_PAGE = "sites/default";
 
-    /**
+    /*
      * Tags&Tag Clouds
      */
     public static final String TAG_DOCUMENT="tag_document";
 
-    /**
+    /*
      * Themes&Perspectives
      */
     public static final String PAGE_NAME_ATTRIBUTE = "pageName";
@@ -120,16 +119,13 @@ public final class SiteConstants {
     public static final String DATE_AFTER = "dateAfter";
     public static final String DATE_BEFORE = "dateBefore";
 
-    /**
+    /*
      * MimeType
-     * */
+     */
     public static final String MIME_TYPE_RSS_FEED = "application/rss+xml";
 
-
-    /**
-     *
+    /*
      * Wiki pages
-     *
      */
     public static final String PATTERN = "(\\.)?([A-Z]+[a-z]+[A-Z][A-Za-z]*\\.)*([A-Z]+[a-z]+[A-Z][A-Za-z]*)";
     public static final Pattern PAGE_LINK_PATTERN = Pattern.compile(PATTERN);

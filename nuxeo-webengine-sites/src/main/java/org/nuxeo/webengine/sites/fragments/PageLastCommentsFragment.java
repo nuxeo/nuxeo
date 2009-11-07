@@ -33,10 +33,9 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Action fragment for initializing the fragment related to retrieving the
- * comments that are bounded to a <b>WebPage</b>
+ * comments that are bounded to a <b>WebPage</b>.
  *
  * @author rux
- *
  */
 public class PageLastCommentsFragment extends AbstractFragment {
 
@@ -51,10 +50,10 @@ public class PageLastCommentsFragment extends AbstractFragment {
             DocumentModel documentModel = ctx.getTargetObject().getAdapter(
                     DocumentModel.class);
 
-            CommentModel commentModel = null;
-            String creationDate = null;
-            String author = null;
-            String commentText = null;
+            CommentModel commentModel;
+            String creationDate;
+            String author;
+            String commentText;
 
             try {
                 CommentManager commentManager = SiteUtils.getCommentManager();
@@ -93,7 +92,6 @@ public class PageLastCommentsFragment extends AbstractFragment {
                         model.addItem(commentModel);
 
                     }
-
                 }
             } catch (Exception e) {
                 throw new ModelException(e);
@@ -102,4 +100,5 @@ public class PageLastCommentsFragment extends AbstractFragment {
         }
         return model;
     }
+
 }

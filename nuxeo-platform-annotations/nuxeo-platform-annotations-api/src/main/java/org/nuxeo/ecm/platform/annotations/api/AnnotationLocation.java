@@ -39,5 +39,4 @@ public class AnnotationLocation implements Serializable {
         XPointer = pointer;
     }
 
-
 }

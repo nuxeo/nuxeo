@@ -27,13 +27,12 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.webengine.sites.utils.SiteConstants;
 
 /**
- *
  * Adapter used to change theme perspectives.
  *
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
  */
 @WebAdapter(name = "perspective", type = "PerspectiveAdapter", targetType = "Document")
-@Produces("text/html; charset=UTF-8")
+@Produces("text/html;charset=UTF-8")
 public class PerspectiveAdapter extends DefaultAdapter {
 
     @POST

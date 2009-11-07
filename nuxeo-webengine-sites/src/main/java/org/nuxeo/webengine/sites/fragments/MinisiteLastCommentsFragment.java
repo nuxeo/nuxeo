@@ -35,20 +35,18 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 /**
  * Action fragment for initializing the fragment related to retrieving a certain
  * number of comments that are last added under a <b>WebPage</b> under a
- * <b>WebSite</b>
+ * <b>WebSite</b>.
  *
  * @author rux
- *
  */
 public class MinisiteLastCommentsFragment extends AbstractFragment {
 
     private int noComments = 5;
-
     private int noWordsFromContent = 50;
 
     /**
      * Retrieves a certain number of comments that are last added under a
-     * <b>WebPage</b> under a <b>WebSite</b>
+     * <b>WebPage</b> under a <b>WebSite</b>.
      */
     @Override
     public Model getModel() throws ModelException {
@@ -59,13 +57,13 @@ public class MinisiteLastCommentsFragment extends AbstractFragment {
             DocumentModel documentModel = ctx.getTargetObject().getAdapter(
                     DocumentModel.class);
 
-            WebpageCommentModel webpageCommentModel = null;
-            DocumentModel parentPage = null;
-            SimpleDateFormat simpleDateFormat = null;
+            WebpageCommentModel webpageCommentModel;
+            DocumentModel parentPage;
+            SimpleDateFormat simpleDateFormat;
             String pageTitle = null;
             String pagePath = null;
-            String content = null;
-            String author = null;
+            String content;
+            String author;
 
             try {
                 DocumentModel ws = SiteUtils.getFirstWebSiteParent(session,
@@ -75,13 +73,12 @@ public class MinisiteLastCommentsFragment extends AbstractFragment {
                         SiteUtils.isCurrentModerated(session, ws));
 
                 for (DocumentModel comment : comments) {
-
                     parentPage = SiteUtils.getPageForComment(comment);
                     author = SiteUtils.getUserDetails(SiteUtils.getString(
                             comment, "comment:author"));
                     if (parentPage != null) {
                         pageTitle = parentPage.getTitle();
-                        pagePath = JsonAdapter.getRelativPath(ws, parentPage).toString();
+                        pagePath = JsonAdapter.getRelativePath(ws, parentPage).toString();
                     }
                     content = SiteUtils.getFistNWordsFromString(
                             SiteUtils.getString(comment, "comment:text"),
@@ -91,15 +88,14 @@ public class MinisiteLastCommentsFragment extends AbstractFragment {
                             WebEngine.getActiveContext().getLocale());
                     String formattedString = simpleDateFormat.format(SiteUtils.getGregorianCalendar(
                             comment, "comment:creationDate").getTime());
-                    String[] splittedFormatterdString = formattedString.split(" ");
+                    String[] splitFormattedString = formattedString.split(" ");
 
                     webpageCommentModel = new WebpageCommentModel(pageTitle,
                             pagePath, content, author,
-                            splittedFormatterdString[0],
-                            splittedFormatterdString[1]);
+                            splitFormattedString[0],
+                            splitFormattedString[1]);
 
                     model.addItem(webpageCommentModel);
-
                 }
             } catch (Exception e) {
                 throw new ModelException(e);
@@ -108,4 +104,5 @@ public class MinisiteLastCommentsFragment extends AbstractFragment {
         }
         return model;
     }
+
 }

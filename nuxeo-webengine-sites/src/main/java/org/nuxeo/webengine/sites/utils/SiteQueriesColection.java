@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
  * place to ease the reading of the code.
  *
  * @author rux
- *
  */
 public class SiteQueriesColection {
 
@@ -50,7 +49,7 @@ public class SiteQueriesColection {
                 + "AND ecm:currentLifeCycleState != 'deleted' "
                 + "AND webc:isWebContainer = 1", documentType, url);
 
-        DocumentModelList list =session.query(queryString);
+        DocumentModelList list = session.query(queryString);
 
         return list;
     }
@@ -156,4 +155,5 @@ public class SiteQueriesColection {
         }
         return session.query(queryString.toString());
     }
+
 }

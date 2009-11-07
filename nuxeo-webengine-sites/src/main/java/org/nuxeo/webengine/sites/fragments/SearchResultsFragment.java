@@ -49,10 +49,9 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  * Action fragment for initializing the fragment : related to searching a
  * certain webPage between all the pages under a <b>WebSite</b> that contains in
  * title, description , main content or attached files the given searchParam, or
- * related to searching all the documents for a certain tag
+ * related to searching all the documents for a certain tag.
  *
  * @author rux
- *
  */
 public class SearchResultsFragment extends AbstractFragment {
 
@@ -62,7 +61,6 @@ public class SearchResultsFragment extends AbstractFragment {
      * Searches a certain webPage between all the pages under a <b>WebSite</b>
      * that contains in title, description , main content or attached files the
      * given searchParam.
-     *
      */
     @Override
     public Model getModel() throws ModelException {
@@ -82,15 +80,15 @@ public class SearchResultsFragment extends AbstractFragment {
                 String dateBefore = (String) ctx.getProperty(DATE_BEFORE);
 
                 TagService tagService = Framework.getService(TagService.class);
-                SearchModel searchModel = null;
-                GregorianCalendar date = null;
-                SimpleDateFormat simpleDateFormat = null;
-                String created = null;
-                String modified = null;
-                String author = null;
-                String path = null;
-                String name = null;
-                String description = null;
+                SearchModel searchModel;
+                GregorianCalendar date;
+                SimpleDateFormat simpleDateFormat;
+                String created;
+                String modified;
+                String author;
+                String path;
+                String name;
+                String description;
 
                 // get first workspace parent
                 DocumentModel ws = SiteUtils.getFirstWebSiteParent(session,
@@ -121,8 +119,8 @@ public class SearchResultsFragment extends AbstractFragment {
                         }
                     }
                 }
-                for (DocumentModel document : results) {
 
+                for (DocumentModel document : results) {
                     date = SiteUtils.getGregorianCalendar(document,
                             "dc:created");
                     simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy",
@@ -144,7 +142,6 @@ public class SearchResultsFragment extends AbstractFragment {
                     searchModel = new SearchModel(name, description, path,
                             author, created, modified);
                     model.addItem(searchModel);
-
                 }
 
             }

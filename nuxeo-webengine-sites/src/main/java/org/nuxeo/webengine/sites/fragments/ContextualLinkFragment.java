@@ -34,7 +34,6 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  * <b>WebSite</b> or <b>Webpage</b> document type.
  *
  * @author rux
- *
  */
 public class ContextualLinkFragment extends AbstractFragment {
 
@@ -42,7 +41,6 @@ public class ContextualLinkFragment extends AbstractFragment {
      * Returns the list with the details about the <b>Contextual Link</b>-s that
      * have been created under a <b>WebSite</b> or <b>Webpage</b> document
      * type.
-     *
      */
     @Override
     public Model getModel() throws ModelException {
@@ -56,10 +54,10 @@ public class ContextualLinkFragment extends AbstractFragment {
             if (documentModel.hasFacet(SiteConstants.WEB_VIEW_FACET)
                     || SiteConstants.WEBPAGE.equals(documentModel.getType())) {
                 // Is WebSite (has 'WebView' facet) or WebPage.
-                ContextualLinkModel linkModel = null;
-                String title = null;
-                String description = null;
-                String link = null;
+                ContextualLinkModel linkModel;
+                String title;
+                String description;
+                String link;
 
                 try {
                     for (DocumentModel document : session.getChildren(
@@ -75,7 +73,6 @@ public class ContextualLinkFragment extends AbstractFragment {
                             linkModel = new ContextualLinkModel(title,
                                     description, link);
                             model.addItem(linkModel);
-
                         }
                     }
                 } catch (Exception e) {

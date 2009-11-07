@@ -71,7 +71,7 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  * @author rux
  */
 @WebObject(type = "AbstractSiteDocumentObject", superType = "Document", facets = { "AbstractSiteDocumentObject" })
-@Produces("text/html; charset=UTF-8")
+@Produces("text/html;charset=UTF-8")
 public abstract class AbstractSiteDocumentObject extends DocumentObject {
 
     private static final Log log = LogFactory.getLog(AbstractSiteDocumentObject.class);
@@ -371,7 +371,7 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
 
     /**
      * Returns the map with the arguments that will be used to generate the
-     * error template page
+     * error template page.
      */
     protected abstract Map<String, Object> getErrorArguments();
 
