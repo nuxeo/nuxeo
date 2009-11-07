@@ -228,7 +228,7 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public List<NuxeoPrincipal> searchPrincipals(String name)
+    public List<NuxeoPrincipal> searchPrincipals(String pattern)
             throws ClientException {
         throw new UnsupportedOperationException();
     }
@@ -304,7 +304,7 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteUser(String userName) throws ClientException {
+    public void deleteUser(String userId) throws ClientException {
         throw new UnsupportedOperationException();
     }
 

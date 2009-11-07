@@ -59,9 +59,9 @@ public class DirectoryFieldMapper {
     }
 
     // Direct Mapping for a set
-    public Set<String> getBackendFields(Set<String> fieldsName) {
+    public Set<String> getBackendFields(Set<String> fieldNames) {
         Set<String> mappedFields = new HashSet<String>();
-        for (String fieldName : fieldsName) {
+        for (String fieldName : fieldNames) {
             mappedFields.add(getBackendField(fieldName));
         }
         return mappedFields;

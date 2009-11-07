@@ -77,9 +77,11 @@ public class TestDirectoryUIManager extends NXRuntimeTestCase {
         assertEquals("vocabulary", continent.getLayout());
         assertEquals("label", continent.getSortField());
         assertNull(continent.getView());
+
         List<DirectoryUIDeleteConstraint> constraints = continent.getDeleteConstraints();
         assertNotNull(constraints);
         assertEquals(1, constraints.size());
+
         DirectoryUIDeleteConstraint constraint = constraints.get(0);
         assertTrue(constraint instanceof HierarchicalDirectoryUIDeleteConstraint);
 
@@ -89,6 +91,7 @@ public class TestDirectoryUIManager extends NXRuntimeTestCase {
         assertEquals("country_vocabulary", country.getLayout());
         assertEquals("parent", country.getSortField());
         assertNull(country.getView());
+
         constraints = country.getDeleteConstraints();
         assertNotNull(constraints);
         assertEquals(0, constraints.size());
@@ -119,8 +122,8 @@ public class TestDirectoryUIManager extends NXRuntimeTestCase {
             assertTrue(constraint instanceof HierarchicalDirectoryUIDeleteConstraint);
 
             // test can delete when there a dep in child dir
-            assertEquals(false, constraint.canDelete(dirService, "asia"));
-            assertEquals(true, constraint.canDelete(dirService, "antartica"));
+            assertFalse(constraint.canDelete(dirService, "asia"));
+            assertTrue(constraint.canDelete(dirService, "antartica"));
 
         } finally {
             if (continentSession != null) {

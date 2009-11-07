@@ -42,7 +42,7 @@ public interface OOoDaemonService {
     int getNbWorkers();
 
     /**
-     * Starts the daemon and returns immediatly.
+     * Starts the daemon and returns immediately.
      */
     int startDaemon();
 

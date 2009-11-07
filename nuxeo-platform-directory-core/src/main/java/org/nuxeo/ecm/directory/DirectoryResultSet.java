@@ -25,9 +25,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * executing a query on a Directory.
  *
  * @author glefter@nuxeo.com
- *
+ * @Deprecated
  */
 //FIXME: not used, remove?
+@Deprecated
 public interface DirectoryResultSet {
 
     /**

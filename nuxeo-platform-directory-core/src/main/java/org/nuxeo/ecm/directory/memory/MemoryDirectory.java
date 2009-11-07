@@ -63,7 +63,7 @@ public class MemoryDirectory extends AbstractDirectory {
             throw new DirectoryException("Unknown schema :" + schema);
         }
         Collection<Field> fields = sch.getFields();
-        for (Field f: fields) {
+        for (Field f : fields) {
             schemaSet.add(f.getName().getLocalName());
         }
     }

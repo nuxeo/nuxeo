@@ -34,27 +34,23 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
  * Base session class with helper methods common to all kinds of directory
  * sessions.
  *
- * @since 5.2M4
  * @author Anahide Tchertchian
+ * @since 5.2M4
  */
 public abstract class BaseSession implements Session {
 
     /**
      * Returns a bare document model for this directory.
-     * <p>
+     * <p/>
      * Can be used for creation screen
      *
      * @since 5.2M4
      */
-    public static DocumentModel createEntryModel(String sessionId,
-            String schema, String id, Map<String, Object> values)
-            throws PropertyException {
-        DocumentModelImpl entry = new DocumentModelImpl(sessionId, schema, id,
-                null, null, null, new String[] { schema }, null);
+    public static DocumentModel createEntryModel(String sessionId, String schema, String id, Map<String, Object> values) throws PropertyException {
+        DocumentModelImpl entry = new DocumentModelImpl(sessionId, schema, id, null, null, null, new String[]{schema}, null);
         DataModel dataModel;
         if (values == null) {
-            dataModel = new DataModelImpl(schema,
-                    Collections.<String, Object> emptyMap());
+            dataModel = new DataModelImpl(schema, Collections.<String, Object>emptyMap());
         } else {
             dataModel = new DataModelImpl(schema);
             dataModel.setMap(values); // makes fields dirty
@@ -65,26 +61,25 @@ public abstract class BaseSession implements Session {
 
 
     protected static Map<String, Serializable> mkSerializableMap(Map<String, Object> map) {
-         Map<String, Serializable> serializableMap = null;
-         if (map !=null) {
-             serializableMap = new HashMap<String, Serializable>();
-             for (String key : map.keySet()) {
-                 serializableMap.put(key, (Serializable) map.get(key));
-             }
-         }
-         return serializableMap;
+        Map<String, Serializable> serializableMap = null;
+        if (map != null) {
+            serializableMap = new HashMap<String, Serializable>();
+            for (String key : map.keySet()) {
+                serializableMap.put(key, (Serializable) map.get(key));
+            }
+        }
+        return serializableMap;
     }
 
     protected static Map<String, Object> mkObjectMap(Map<String, Serializable> map) {
         Map<String, Object> objectMap = null;
-        if (map !=null) {
+        if (map != null) {
             objectMap = new HashMap<String, Object>();
             for (String key : map.keySet()) {
                 objectMap.put(key, map.get(key));
             }
         }
         return objectMap;
-   }
-
+    }
 
 }

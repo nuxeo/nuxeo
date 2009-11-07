@@ -45,7 +45,7 @@ public class ConfigBuilderHelper {
 
     private static String[] WIN_OO_PATHS = {
             "C:/Program Files/OpenOffice.org 2.2",
-            "C:/Program Fu  iles/OpenOffice.org 2.3",
+            "C:/Program Files/OpenOffice.org 2.3",
             "C:/Program Files/OpenOffice.org 2.4",
             "C:/Program Files/OpenOffice.org 2.5" };
 

@@ -846,7 +846,7 @@ public class UserManagerImpl implements UserManager {
 
     public DocumentModelList searchUsers(String pattern) throws ClientException {
         DocumentModelList entries = new DocumentModelListImpl();
-        if (pattern == null || pattern.equals("")) {
+        if (pattern == null || pattern.length() == 0) {
             entries = searchUsers(
                     Collections.<String, Serializable> emptyMap(), null);
         } else {

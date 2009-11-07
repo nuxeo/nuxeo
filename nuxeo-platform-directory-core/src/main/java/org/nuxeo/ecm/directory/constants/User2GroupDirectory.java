@@ -22,6 +22,7 @@ package org.nuxeo.ecm.directory.constants;
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  *
  */
+@Deprecated
 public class User2GroupDirectory {
     public static final String DIRECTORY_NAME = "user2groupDirectory";
     public static final String USERID_COLUMN = "userId";

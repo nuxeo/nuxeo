@@ -51,9 +51,7 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(OOoDaemonManagerComponent.class);
 
-    /**
-     * Component impl *
-     */
+    // Component impl
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
@@ -67,6 +65,7 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
         context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(this);
     }
 
+    @Override
     public void registerContribution(Object contribution, String extensionPoint,
             ComponentInstance contributor) throws Exception {
         if (SERVER_CONFIG_EP.equals(extensionPoint)) {
@@ -76,13 +75,14 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
         }
     }
 
+    @Override
     public void unregisterContribution(Object contribution, String extensionPoint,
             ComponentInstance contributor) throws Exception {
     }
 
-    /* Service interface */
+    // Service interface
 
-    protected Config getOrBuildConfig() {
+    protected static Config getOrBuildConfig() {
         if (daemonConfig == null) {
             ConfigBuilderHelper helper = new ConfigBuilderHelper(
                     serverDescriptor);
@@ -142,8 +142,7 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
             runner.setUncaughtExceptionHandler(new ThreadExceptionHandler());
             runner.start();
             log.debug("Daemon thread started");
-        }
-        else {
+        } else {
             log.debug("Daemon is already running");
         }
         //runner.run();

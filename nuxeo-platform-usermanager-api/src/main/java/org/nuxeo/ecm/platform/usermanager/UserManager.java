@@ -147,7 +147,7 @@ public interface UserManager extends Serializable {
     /**
      * Returns users matching given pattern
      * <p>
-     * Pattern is used to field a filter and fulltext map according to users
+     * Pattern is used to fill a filter and fulltext map according to users
      * search fields configuration. Search is performed on each of these fields
      * (OR).
      *
