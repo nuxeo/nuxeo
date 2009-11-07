@@ -33,6 +33,8 @@ public class UIButton extends UIOutput {
     private String switchTo;
 
     private String link;
+    
+    private String menu;
 
     private String label;
 
@@ -48,6 +50,7 @@ public class UIButton extends UIOutput {
         params.put("switchTo", (String) attributes.get("switchTo"));
         params.put("link", (String) attributes.get("link"));
         params.put("label", (String) attributes.get("label"));
+        params.put("menu", (String) attributes.get("menu"));
         params.put("classNames", (String) attributes.get("classNames"));
         writer.write(Button.render(params));
     }
@@ -82,6 +85,14 @@ public class UIButton extends UIOutput {
 
     public void setLink(final String link) {
         this.link = link;
+    }
+    
+    public String getMenu() {
+        return menu;
+    }
+
+    public void setMenu(final String menu) {
+        this.menu = menu;
     }
 
     public String getSwitchTo() {
