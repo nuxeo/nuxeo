@@ -3,10 +3,13 @@ Introduction
 
 Please read:
 
+http://doc.nuxeo.org/xwiki/bin/view/Main/NuxeoWebEngine
 http://www.nuxeo.org/webengine
 
 Installing
 ----------
+
+[FIXME: this is not true anymore.]
 
 Installing and starting Nuxeo WebEngine is easy as 1, 2, 3:
 
