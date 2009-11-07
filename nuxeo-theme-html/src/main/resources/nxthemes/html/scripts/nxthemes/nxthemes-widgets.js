@@ -642,7 +642,13 @@ NXThemes.Button.prototype = Object.extend(new NXThemes.View(), {
   setup: function() {
     this.render();
     var clickEvent = this.clickEvent.bindAsEventListener(this);
+	this.mouseOverEvent = this.mouseOverEvent.bindAsEventListener(this);
+	this.mouseOutEvent = this.mouseOutEvent.bindAsEventListener(this);
+	this.menuClickEvent = this.menuClickEvent.bindAsEventListener(this);
+	this.escapeEvent = this.escapeEvent.bindAsEventListener(this);
     Event.observe(this.widget, "click", clickEvent);
+	Event.observe(this.widget, "mouseover", this.mouseOverEvent);
+	Event.observe(this.widget, "mouseout", this.mouseOutEvent);
   },
 
   inspect: function() {
@@ -662,12 +668,8 @@ NXThemes.Button.prototype = Object.extend(new NXThemes.View(), {
     if (link == null) {
       link = 'javascript:void(0)';
     }
-    var mouseover = '';
-    var hover = this.def.hover;
-    if (hover != null) {
-    	mouseover = ' onmouseover="' + hover + '"';
-    }
-    widget.innerHTML = '<b>&nbsp;</b><a href="' + link + '"' + mouseover + '>' + label + '</a>';
+    widget.innerHTML = '<b>&nbsp;</b><a href="' + link + '">' + label + '</a>';
+
     this.ready();
   },
 
@@ -678,7 +680,35 @@ NXThemes.Button.prototype = Object.extend(new NXThemes.View(), {
       NXThemes.getControllerById(controller).switchTo(perspective);
     }
   },
+  
+  mouseOverEvent: function(e) {
+	this.highlight();
+	if (this.def.menu) {
+	  var menu = $(this.def.menu);
+	  menu.makePositioned();
+      var pos = $(this.widget).positionedOffset();
+      menu.moveTo({x: pos[0], y: pos[1]});
+      menu.show();
+      Event.observe(menu, "click", this.menuClickEvent);
+      document.observe('keyup', this.escapeEvent); 
+    }
+  },
+  
+  mouseOutEvent: function(e) {
+	this.dehighlight();
+  },
 
+  menuClickEvent: function(e) {
+    $(this.def.menu).hide();
+  },
+  
+  escapeEvent: function(e) {
+    if (Event.KEY_ESC == e.keyCode) {
+      $(this.def.menu).hide();
+      document.stopObserving('keyup', this.escapeEvent); 
+    }
+  },
+  
   select: function() {
    $(this.widget).addClassName("selected");
   },

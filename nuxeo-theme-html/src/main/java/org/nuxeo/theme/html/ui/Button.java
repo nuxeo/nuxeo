@@ -28,7 +28,7 @@ public class Button {
         String controlledBy = params.get("controlledBy");
         String switchTo = params.get("switchTo");
         String link = params.get("link");
-        String hover = params.get("hover");
+        String menu = params.get("menu");
         String label = params.get("label");
         String classNames = params.get("classNames");
 
@@ -51,8 +51,8 @@ public class Button {
         if (null != link) {
             view.put("link", link);
         }
-        if (null != hover) {
-            view.put("hover", hover);
+        if (null != menu) {
+            view.put("menu", menu);
         }
         if (null != classNames) {
             view.put("classNames", classNames);

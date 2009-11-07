@@ -118,6 +118,11 @@
 
 /* Buttons */
 
+.nxthemesButton {
+  float: left;
+  display: block;
+}
+
 .nxthemesButton b, .nxthemesButton a {
   font: 12px arial;
   color: #000;
@@ -138,19 +143,19 @@
   padding-right: 15px;
 }
 
-.nxthemesButton.selected b {
+.nxthemesButton.highlighted b {
   background-position: 0 -25px;
 }
 
-.nxthemesButton.selected a {
+.nxthemesButton.highlighted a {
   background-position: 100% -25px;
 }
 
-.nxthemesButton.highlighted b {
+.nxthemesButton.selected b {
   background-position: 0 -50px;
 }
 
-.nxthemesButton.highlighted a {
+.nxthemesButton.selected a {
   background-position: 100% -50px;
 }
 
@@ -160,6 +165,7 @@
 
 .nxthemesButton.dropList a {
   background-position: 100% -75px;
+  padding-right: 20px;
 }
 
 
