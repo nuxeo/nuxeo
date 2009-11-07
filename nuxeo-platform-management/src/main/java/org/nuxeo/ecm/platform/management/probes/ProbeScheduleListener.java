@@ -27,7 +27,7 @@ public class ProbeScheduleListener implements EventListener {
 
     public void handleEvent(Event event)  {
         if (service == null) {
-            service = (ProbeSchedulerService)Framework.getLocalService(ProbeScheduler.class);
+            service = (ProbeSchedulerService) Framework.getLocalService(ProbeScheduler.class);
         }
         service.runnerRegistry.doRun();
     }

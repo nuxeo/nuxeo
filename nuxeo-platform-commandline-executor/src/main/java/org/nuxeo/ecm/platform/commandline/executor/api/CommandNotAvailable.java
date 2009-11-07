@@ -23,8 +23,8 @@ package org.nuxeo.ecm.platform.commandline.executor.api;
 /**
  * Exception indicating that the target command is not available:
  * <ul>
- * <li>because it was never registred
- * <li>becasue it was disabled
+ * <li>because it was never registered
+ * <li>because it was disabled
  * <li>because the target command is not installed on the server *
  * </ul>
  *

@@ -111,7 +111,7 @@ public class ProbeContext implements ProbeMBean {
         return true;
     }
 
-    protected Long doGetDuration(Date fromDate, Date toDate) {
+    protected static Long doGetDuration(Date fromDate, Date toDate) {
         return toDate.getTime() - fromDate.getTime();
     }
 

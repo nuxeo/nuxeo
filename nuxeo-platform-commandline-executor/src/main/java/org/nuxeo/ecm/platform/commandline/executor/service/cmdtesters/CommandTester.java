@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor
  * if a command is installed on the target server OS.
  *
  * @author tiry
-
  */
 public interface CommandTester {
 

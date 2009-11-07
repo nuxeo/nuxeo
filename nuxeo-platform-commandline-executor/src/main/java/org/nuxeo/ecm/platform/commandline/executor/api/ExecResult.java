@@ -24,7 +24,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Wraps result of the commandline execution:
+ * Wraps result of the command-line execution:
  * <ul>
  * <li>output buffer
  * <li>return code

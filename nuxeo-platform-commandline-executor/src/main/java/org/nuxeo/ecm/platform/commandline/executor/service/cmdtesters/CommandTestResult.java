@@ -31,21 +31,21 @@ public class CommandTestResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected final boolean testSucces;
+    protected final boolean testSuccess;
 
     protected String errorMessage;
 
     public CommandTestResult() {
-        testSucces = true;
+        testSuccess = true;
     }
 
     public CommandTestResult(String error) {
         errorMessage = error;
-        testSucces = false;
+        testSuccess = false;
     }
 
     public boolean succeed() {
-        return testSucces;
+        return testSuccess;
     }
 
     public String getErrorMessage() {

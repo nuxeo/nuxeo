@@ -29,8 +29,8 @@ public class HttpSessionMetricFactory extends AbstractResourceFactory {
             new HttpSessionMetricAdapter();
 
     public void registerResources() {
-        String qualifiedName =
-                ObjectNameFactory.formatMetricQualifiedName(new ComponentName("httpSessionListener"), "http-session");
+        String qualifiedName = ObjectNameFactory.formatMetricQualifiedName(
+                new ComponentName("httpSessionListener"), "http-session");
         service.registerResource("http-session-metric", qualifiedName,
                 HttpSessionMetricMBean.class, mbeanAdapter);
     }
