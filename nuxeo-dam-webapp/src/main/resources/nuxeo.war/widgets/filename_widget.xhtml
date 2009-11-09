@@ -14,9 +14,9 @@
       rendered="#{layoutValue.hasSchema('picture') and !empty layoutValue.picture.views}"/>
     <h:outputText
       value="#{field_1}"
-      rendered="#{layoutValue.hasSchema('picture')}"/>
+      rendered="#{layoutValue.hasSchema('file')}"/>
   </c:if>
-
+  
   <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
 
     <h:inputText
@@ -24,7 +24,7 @@
       rendered="#{layoutValue.hasSchema('picture') and !empty layoutValue.picture.views}"/>
     <h:inputText
       value="#{field_1}"
-      rendered="#{layoutValue.hasSchema('picture')}"/>    
+      rendered="#{layoutValue.hasSchema('file')}"/>    
 
   </c:if>
 

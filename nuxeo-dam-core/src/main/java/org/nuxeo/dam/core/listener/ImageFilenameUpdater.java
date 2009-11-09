@@ -40,57 +40,54 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  */
 public class ImageFilenameUpdater implements EventListener {
 
-	public static final String FILENAME = "filename";
+    public static final String FILENAME = "filename";
 
-	public static final String TITLE = "title";
+    public static final String TITLE = "title";
 
-	private static final Log log = LogFactory
-			.getLog(ImageFilenameUpdater.class);
+    private static final Log log = LogFactory.getLog(ImageFilenameUpdater.class);
 
-	public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) throws ClientException {
 
-		DocumentEventContext docCtx = null;
-		if (event.getContext() instanceof DocumentEventContext) {
-			docCtx = (DocumentEventContext) event.getContext();
-		} else {
-			return;
-		}
-		String eventId = event.getName();
-		if (!eventId.equals(BEFORE_DOC_UPDATE)) {
-			return;
-		}
-		DocumentModel doc = docCtx.getSourceDocument();
-		if (!doc.hasSchema(PICTURE_SCHEMA)) {
-			return;
-		}
+        DocumentEventContext docCtx = null;
+        if (event.getContext() instanceof DocumentEventContext) {
+            docCtx = (DocumentEventContext) event.getContext();
+        } else {
+            return;
+        }
+        String eventId = event.getName();
+        if (!eventId.equals(BEFORE_DOC_UPDATE)) {
+            return;
+        }
+        DocumentModel doc = docCtx.getSourceDocument();
+        if (!doc.hasSchema(PICTURE_SCHEMA)) {
+            return;
+        }
 
-		Map<String, Object> pictureMap = doc.getDataModel(PICTURE_SCHEMA)
-				.getMap();
+        Map<String, Object> pictureMap = doc.getDataModel(PICTURE_SCHEMA).getMap();
 
-		List<Map<String, Object>> viewsList = (List<Map<String, Object>>) pictureMap
-				.get("views");
-		if (viewsList == null || viewsList.isEmpty()) {
-			return;
-		}
-		String filenameUpdated = (String) viewsList.get(0).get(FILENAME);
-		boolean differenceFound = false;
-		for (int i = 1; i < viewsList.size(); i++) {
-			if (!filenameUpdated.equals(viewsList.get(i).get(FILENAME))) {
-				differenceFound = true;
-				break;
-			}
-		}
-		if (!differenceFound) {
-			return;
-		}
-		String title = (String) viewsList.get(0).get(TITLE);
-		Blob fileBlob = null;
-		for (Map<String, Object> view : viewsList) {
-			view.put(FILENAME, filenameUpdated);
-			fileBlob = (Blob) view.get("content");
-			fileBlob.setFilename(title + "_" + filenameUpdated);
-		}
+        List<Map<String, Object>> viewsList = (List<Map<String, Object>>) pictureMap.get("views");
+        if (viewsList == null || viewsList.isEmpty()) {
+            return;
+        }
+        String filenameUpdated = (String) viewsList.get(0).get(FILENAME);
+        boolean differenceFound = false;
+        for (int i = 1; i < viewsList.size(); i++) {
+            if (!filenameUpdated.equals(viewsList.get(i).get(FILENAME))) {
+                differenceFound = true;
+                break;
+            }
+        }
+        if (!differenceFound) {
+            return;
+        }
+        String title = (String) viewsList.get(0).get(TITLE);
+        Blob fileBlob = null;
+        for (Map<String, Object> view : viewsList) {
+            view.put(FILENAME, filenameUpdated);
+            fileBlob = (Blob) view.get("content");
+            fileBlob.setFilename(title + "_" + filenameUpdated);
+        }
 
-		doc.getDataModel((PICTURE_SCHEMA)).setMap(pictureMap);
-	}
+        doc.getDataModel((PICTURE_SCHEMA)).setMap(pictureMap);
+    }
 }
