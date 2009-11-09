@@ -64,10 +64,10 @@
       <div class="documentPreviewTitle">
         <h4>
           <h:outputText
-                  value="#{documentActions.currentSelection.picture.views[1].filename}"
+                  value="#{documentActions.currentSelection.dublincore.title}"
                   rendered="#{documentActions.currentSelection.hasSchema('picture') and !empty documentActions.currentSelection.picture.views}"/>
           <h:outputText
-                  value="#{documentActions.currentSelection.file.filename}"
+                  value="#{documentActions.currentSelection.dublincore.title}"
                   rendered="#{documentActions.currentSelection.hasSchema('file')}"/>
         </h4>
       </div>

@@ -8,6 +8,10 @@
     <listener name="damInitPropertiesListener" async="false" postCommit="false" class="org.nuxeo.dam.core.listener.InitPropertiesListener" priority="10">
       <event>aboutToCreate</event>
     </listener>
+    
+    <listener name="imageFilenameUpdater" async="false" postCommit="false" class="org.nuxeo.dam.core.listener.ImageFilenameUpdater" priority="20">
+      <event>beforeDocumentModification</event>
+    </listener>    
 
   </extension>
 
