@@ -16,7 +16,16 @@ package org.nuxeo.theme.models;
 
 public class Navigation extends AbstractModel {
 
+    private String title;
+
     public Navigation() {
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }
