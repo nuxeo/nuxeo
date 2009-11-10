@@ -80,16 +80,7 @@
 	    </rich:tree>
       </rich:panelMenuItem>
 
-    </rich:panelMenuGroup>     
-     
-     
-     
-     
-     
-     
-     
-     
-     
+    </rich:panelMenuGroup>            
 
      <rich:panelMenuGroup label="#{messages['heading.filter.coverage']}"
       expanded="true" id="coverageFilterPanel">
@@ -125,7 +116,8 @@
     </rich:panelMenuGroup>
 
    </rich:panelMenu>
-
+   
+   <div class="actionBar">
     <a4j:commandButton id="filterFormClear"
       type="button"
       styleClass="button"
@@ -139,6 +131,7 @@
       value="#{messages['label.action.filter.doFulltextSearch']}"
       action="#{filterActions.invalidateProvider}"
       reRender="filterResultTable,selectionView" eventsQueue="filterFormQueue" />
+  </div>
   </a4j:form>
   </a4j:outputPanel>
   </a4j:region>

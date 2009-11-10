@@ -448,6 +448,13 @@
         <background-color>#6F6F6F</background-color>
         <min-height>200px</min-height>
       </selector>
+      <selector path=".infoTabContent .viewObject a">
+        <text-align>center</text-align>
+        <vertical-align>middle</vertical-align>
+        <height>350px</height>
+        <width>470px</width>
+        <display>table-cell</display>
+      </selector>
       <selector path=".actionPanelViews">
         <background-color>#D0D1D8</background-color>
         <padding>2px 5px</padding>
@@ -632,6 +639,18 @@
         <padding>2px 10px</padding>
         <font preset="small (DAM fonts)"/>
         <background preset="filterstitle (DAM backgrounds)"/>
+      </selector>
+      <selector path=".actionBar">
+        <background-color>#a0a8b4</background-color>
+        <border-top>1px solid #7e848c</border-top>
+        <border-bottom>1px solid #7e848c</border-bottom>
+        <margin-top>3px</margin-top>
+        <text-align>center</text-align>
+      </selector>
+      <selector path=".actionBar .button">
+        <font preset="small (DAM fonts)"/>
+        <padding>1px 5px</padding>
+        <margin>4px 5px</margin>
       </selector>
     </style>
     <style element="page[1]/section[2]/cell[2]" inherit="common style">
