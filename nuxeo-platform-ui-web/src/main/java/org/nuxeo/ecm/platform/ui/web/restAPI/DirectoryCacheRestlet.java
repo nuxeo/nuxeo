@@ -30,10 +30,13 @@ import org.dom4j.dom.DOMDocumentFactory;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 
 /**
  * Restlet to invalidate the cache of directories from an external application.
@@ -89,6 +92,9 @@ public class DirectoryCacheRestlet extends BaseNuxeoRestlet {
             handleError(res, e);
             return;
         }
-        res.setEntity(result.asXML(), MediaType.TEXT_XML);
+        Representation rep = new StringRepresentation(result.asXML(),
+                MediaType.APPLICATION_XML);
+        rep.setCharacterSet(CharacterSet.UTF_8);
+        res.setEntity(rep);
     }
 }
