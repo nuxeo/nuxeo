@@ -111,6 +111,9 @@ public abstract class AbstractDocumentModelSerializer implements
         } else if (colDef.contains(pathField)) {
             String path = doc.getPath().toString();
             return new ResultField(pathField, path);
+        } else if (colDef.equals(typeField)) {
+            String type = doc.getType();
+            return new ResultField(typeField, type);
         } else if (colDef.contains(authorField)) {
             String authorLogin = (String)doc.getProperty("dublincore", "creator");
             try {

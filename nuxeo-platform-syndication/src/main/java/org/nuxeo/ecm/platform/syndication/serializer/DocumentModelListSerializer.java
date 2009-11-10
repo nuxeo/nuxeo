@@ -43,6 +43,8 @@ public interface DocumentModelListSerializer {
 
     String pathField = "path";
 
+    String typeField = "type";
+
     String authorField = "author";
 
     String EMPTY_LIST = "empty result";
