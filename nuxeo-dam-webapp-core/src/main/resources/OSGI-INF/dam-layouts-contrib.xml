@@ -50,12 +50,25 @@
       </templates>
       <rows>
         <row>
+          <widget>topic</widget>
+        </row>      
+        <row>
           <widget>coverage</widget>
         </row>
         <row>
           <widget>expired</widget>
         </row>
       </rows>
+      <widget name="topic" type="template">
+        <translated>true</translated>
+        <fields>
+          <field>damc:topic</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">/widgets/topic_widget.xhtml</property>
+        </properties>
+      </widget>
+            
       <widget name="coverage" type="template">
         <labels>
           <label mode="any">label.dublincore.coverage</label>

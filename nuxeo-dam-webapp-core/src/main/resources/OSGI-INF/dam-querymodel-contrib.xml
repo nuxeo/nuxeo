@@ -23,6 +23,10 @@
         <predicate parameter="dc:coverage" operator="STARTSWITH">
           <field schema="filter_query" name="dc_coverage" />
         </predicate>
+        
+        <predicate parameter="damc:topic" operator="STARTSWITH">
+          <field schema="filter_query" name="topic" />
+        </predicate>        
 
         <fixedPart>
           ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:mixinType != 'Folderish'
