@@ -103,13 +103,13 @@
       <width>100%</width>
     </layout>
     <layout element="page[1]/section[2]/cell[1]">
-      <width>18%</width>
+      <width>210px</width>
     </layout>
     <layout element="page[1]/section[2]/cell[2]">
-      <width>42%</width>
+      <height>100%</height>
     </layout>
     <layout element="page[1]/section[2]/cell[3]">
-      <width>40%</width>
+      <width>470px</width>
     </layout>
     <layout element="page[1]/section[3]">
       <width>100%</width>
@@ -460,6 +460,10 @@
         <padding>2px 5px</padding>
         <height>18px</height>
       </selector>
+      <!-- style for Rich Faces thumb panel -->
+      <selector path=".dr-pnl">
+        <border>none</border>
+      </selector>
       <selector path=".ListViewIcon, .ThumbViewIcon">
         <margin>0 5px 0 0</margin>
       </selector>
@@ -468,6 +472,7 @@
         <padding>8px</padding>
         <width>130px</width>
         <height>155px</height>
+        <border>1px solid #BED6F8</border>
       </selector>
       <selector path=".thumbViewElement table">
         <font-size>10px</font-size>
