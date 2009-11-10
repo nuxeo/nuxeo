@@ -194,4 +194,11 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
         resultsProvidersCache.invalidate(QUERY_MODEL_NAME);
     }
 
+    public void clearFilters() throws ClientException {
+        //CB: DAM-281 - Clear filters
+        filterDocument = null;
+        queryModelActions.get(QUERY_MODEL_NAME).reset();
+        invalidateProvider();
+    }
+
 }
