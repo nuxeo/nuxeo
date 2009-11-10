@@ -267,7 +267,7 @@
         <padding>5px 3px</padding>
       </selector>
       <selector path=".labelColumn">
-        <width>120px</width>
+        <width>125px</width>
         <vertical-align>top</vertical-align>
         <color preset="gray.medium (DAM colors)"/>
       </selector>
@@ -443,9 +443,10 @@
         <text-align>center</text-align>
         <border-bottom preset="grayneutral (DAM borders)"/>
       </selector>
-      <selector path=".infoTabContent">
+      <selector path=".infoTabContent .viewObject">
         <text-align>center</text-align>
         <background-color>#6F6F6F</background-color>
+        <min-height>200px</min-height>
       </selector>
       <selector path=".actionPanelViews">
         <background-color>#D0D1D8</background-color>
@@ -647,6 +648,14 @@
       <selector path="td.fieldColumn" view="cell frame">
         <vertical-align>top</vertical-align>
         <padding>2px 5px 1px 10px</padding>
+      </selector>
+      <selector path="td.fieldColumn input">
+        <width>285px</width>
+        <border>1px solid #dedede</border>
+      </selector>
+      <selector path="td.fieldColumn input.dataInputTextDate">
+        <width>250px</width>
+        <margin>0 5px 0 0</margin>
       </selector>
     </style>
     <style element="page[1]/section[3]|page[3]/section[3]" inherit="common style">

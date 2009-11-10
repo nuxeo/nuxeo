@@ -38,6 +38,7 @@
         </properties>
         <properties widgetMode="edit">
           <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="styleClass">dataInputTextDate</property>
         </properties>
       </widget>
 
@@ -94,6 +95,7 @@
         </properties>
         <properties widgetMode="edit">
           <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="styleClass">dataInputTextDate</property>
         </properties>
       </widget>
 
@@ -200,6 +202,7 @@
         </properties>
         <properties widgetMode="edit">
           <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="styleClass">dataInputTextDate</property>
         </properties>
       </widget>
       <widget name="pixel_xdimension" type="text">
@@ -424,6 +427,7 @@
         </properties>
         <properties widgetMode="edit">
           <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="styleClass">dataInputTextDate</property>
         </properties>
       </widget>
       <widget name="headline" type="text">
@@ -481,6 +485,7 @@
         </properties>
         <properties widgetMode="edit">
           <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="styleClass">dataInputTextDate</property>
         </properties>
       </widget>
       <widget name="source" type="text">

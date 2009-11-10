@@ -24,10 +24,15 @@
   margin: 10px;
 }
 
-.fieldColumn input{
+.fieldColumn input {
   font:normal 11px "Lucida Grande", Verdana, sans-serif;
   margin:0 5px 0 0;
-  width:305px;
+  width:285px;
+  border:1px solid #dedede;
+}
+
+.fieldColumn .dataInputTextDate {
+  width:250px;
 }
 
 .fieldColumn button{
@@ -36,13 +41,14 @@
 
 .fieldColumn textarea{
   font:normal 11px "Lucida Grande", Verdana, sans-serif;
-  width:310px;
+  width:285px;
+  border:1px solid #dedede;
 }
 
 .fieldColumn select{
   font:normal 11px "Lucida Grande", Verdana, sans-serif;
   margin:0 0 5px;
-  width:310px;
+  width:290px;
 }
 
 .buttonsGadget{
@@ -93,4 +99,3 @@ h3 {
   height: 50%;
   margin: auto;
 }
-

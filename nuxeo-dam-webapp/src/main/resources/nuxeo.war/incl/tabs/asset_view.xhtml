@@ -23,6 +23,7 @@
   </script>
 
   <div class="infoTabContent">
+    <div class="viewObject">
     <a href="#" onclick="return popupAnnotation('#{annotationsActions.annotationsURL}')">
     <nxh:graphicImage id="theImage"
                       url="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Medium:content', documentActions.currentSelection.dublincore.modified)}?conversationId=#{conversation.id}"
@@ -34,6 +35,7 @@
                                   !documentActions.currentSelection.hasSchema('video') and
                                   !documentActions.currentSelection.hasSchema('audio') }"/>
     </a>
+    </div>
 
     <c:if test="#{documentActions.currentSelection.hasSchema('video')}">
       <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B' width="400" height="350" codebase='http://www.apple.com/qtactivex/qtplugin.cab'>
