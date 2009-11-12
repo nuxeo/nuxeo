@@ -1032,11 +1032,16 @@ public class Model {
         for (Entry<Serializable, String> e : idType.entrySet()) {
             Serializable id = e.getKey();
             String type = e.getValue();
-            for (String fragmentName : getTypeFragments(type)) {
+            Set<String> fragmentNames = getTypeFragments(type);
+            if (fragmentNames == null) {
+                // unknown type left in the database, ignore
+                continue;
+            }
+            for (String fragmentName : fragmentNames) {
                 Set<Serializable> fragmentIds = allFragmentIds.get(fragmentName);
                 if (fragmentIds == null) {
-                    fragmentIds = new HashSet<Serializable>();
-                    allFragmentIds.put(fragmentName, fragmentIds);
+                    allFragmentIds.put(fragmentName,
+                            fragmentIds = new HashSet<Serializable>());
                 }
                 fragmentIds.add(id);
             }
