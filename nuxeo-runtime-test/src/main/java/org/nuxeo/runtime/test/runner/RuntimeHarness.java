@@ -55,6 +55,7 @@ import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.nuxeo.runtime.test.RootRuntimeBundle;
 import org.nuxeo.runtime.test.TestRuntime;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkEvent;
 
 public class RuntimeHarness {
 
@@ -76,6 +77,9 @@ public class RuntimeHarness {
 
 
     private ClassLoader classLoader = RuntimeHarness.class.getClassLoader();
+
+    private OSGiAdapter osgi;
+    private RootRuntimeBundle runtimeBundle;
 
     public RuntimeHarness() {
         super();
@@ -125,7 +129,7 @@ public class RuntimeHarness {
             log.error("Could not init working directory", e);
             throw e;
         }
-        OSGiAdapter osgi = new OSGiAdapter(workingDir);
+        osgi = new OSGiAdapter(workingDir);
         bundleLoader = new StandaloneBundleLoader(osgi, classLoader);
         Thread.currentThread().setContextClassLoader(
                 bundleLoader.getSharedClassLoader().getLoader());
@@ -134,9 +138,9 @@ public class RuntimeHarness {
         bundleLoader.setExtractNestedJARs(false);
 
         BundleFile bundleFile = lookupBundle("org.nuxeo.runtime");
-        Bundle bundle = new RootRuntimeBundle(osgi, bundleFile, bundleLoader
+        runtimeBundle = new RootRuntimeBundle(osgi, bundleFile, bundleLoader
                 .getClass().getClassLoader(), true);
-        bundle.start();
+        runtimeBundle.start();
         runtime = Framework.getRuntime();
         assertNotNull(runtime);
 
@@ -425,6 +429,14 @@ public class RuntimeHarness {
             throws IOException {
         copyFileFromResource(resourcePath, "config", FileUtils
                 .getFileName(resourcePath));
+    }
+
+    /**
+     * Fire the event {@code FrameworkEvent.STARTED}.
+     * @throws Exception
+     */
+    public void fireFrameworkStarted() throws Exception {
+        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, runtimeBundle, null));
     }
 
     public boolean isStarted() {
