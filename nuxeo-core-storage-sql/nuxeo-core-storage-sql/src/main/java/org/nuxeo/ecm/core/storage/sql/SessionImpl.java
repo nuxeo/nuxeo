@@ -368,23 +368,15 @@ public class SessionImpl implements Session {
             Serializable parentId, String name) throws StorageException {
         // TODO get all non-cached fragments at once using join / union
         FragmentsMap fragments = new FragmentsMap();
-        Iterable<String> fragmentNames = model.getTypeSimpleFragments(typeName);
-        if (fragmentNames == null) {
-            // don't crash if the database refers to an unknown type
-            log.error(String.format("Node %s (%s) has unknown type: %s", id,
-                    name, typeName));
-            return fragments;
-        }
-        for (String fragmentName : fragmentNames) {
-            Fragment fragment = context.get(fragmentName, id, true);
-            fragments.put(fragmentName, fragment);
-        }
-        // check version too
-        if (parentId == null && name != null && name.length() > 0) {
-            // this is a version, fetch the version fragment too
-            String fragmentName = model.VERSION_TABLE_NAME;
-            Fragment fragment = context.get(fragmentName, id, true);
-            fragments.put(fragmentName, fragment);
+        Set<String> fragmentNames = model.getTypePrefetchedFragments(typeName);
+        if (fragmentNames != null) {
+            if (parentId != null) {
+                // not a version
+                fragmentNames.remove(model.VERSION_TABLE_NAME);
+            }
+            for (String fragmentName : fragmentNames) {
+                fragments.put(fragmentName, context.get(fragmentName, id, true));
+            }
         }
         return fragments;
     }
