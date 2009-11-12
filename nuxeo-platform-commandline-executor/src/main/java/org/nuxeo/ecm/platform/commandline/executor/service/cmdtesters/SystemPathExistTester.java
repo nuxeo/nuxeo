@@ -39,7 +39,7 @@ public class SystemPathExistTester implements CommandTester {
         try {
             Runtime.getRuntime().exec(cmd);
         } catch (Exception e) {
-            new CommandTestResult("command " + cmd
+            return new CommandTestResult("command " + cmd
                     + " not found in system path");
         }
 
