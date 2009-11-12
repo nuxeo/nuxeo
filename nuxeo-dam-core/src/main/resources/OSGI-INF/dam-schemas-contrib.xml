@@ -30,6 +30,7 @@
       <schema name="uid" />
       <facet name="Downloadable" />
       <facet name="Versionable" />
+      <facet name="Commentable"/>
     </doctype>
 
     <doctype name="Picture" extends="Document">

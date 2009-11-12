@@ -1,0 +1,30 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
+
+  <nxu:dataList var="comment" value="#{commentActions.comments}" styleClass="dataOutput" rowIndexVar="rowIndex">
+    <div>
+      <h:outputText value="#{comment.comment.creationDate}" >
+        <f:convertDateTime pattern="#{nxu:basicDateFormater()}" timeZone="#{timeZone}" />
+      </h:outputText>
+      <h:outputText value=" - #{nxu:userFullName(comment.comment.author)} #{messages['label.comment.wrote']}: "/>
+
+      <br />      
+
+      <h:outputText value="#{comment.comment.text}"/>
+      <f:subview id="deleteComment" rendered="#{comment.comment.author == currentUser.name or currentUser.administrator}">
+        (<a4j:commandLink action="#{commentActions.deleteComment(comment)}"
+          value="#{messages['command.delete']}"
+          ajaxSingle="true"
+          reRender="commentTitlePanel, commentPanel"/>)
+      </f:subview>
+      <br /><br />
+    </div>
+  </nxu:dataList>
+
+</div>

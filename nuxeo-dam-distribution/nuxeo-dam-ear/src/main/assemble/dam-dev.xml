@@ -52,7 +52,7 @@
       <artifact name="nuxeo-platform-forum*" />
       <artifact name="nuxeo-platform-syndication" />
       <artifact name="nuxeo-platform-publish*" />
-      <artifact name="nuxeo-platform-comment*" />
+      <artifact name="nuxeo-platform-comment-web" />
       <artifact name="nuxeo-platform-workflow*" />
 
       <artifact name="nuxeo-platform-audit-facade" />
@@ -186,7 +186,6 @@
   <assemble>
     <delete>true</delete>
     <outputFile>config</outputFile>
-    <file>commentService-config-bundle.xml</file>
     <file>nxrelations-default-jena-bundle.xml</file>
     <file>nxmail-scheduler-config.xml</file>
   </assemble>

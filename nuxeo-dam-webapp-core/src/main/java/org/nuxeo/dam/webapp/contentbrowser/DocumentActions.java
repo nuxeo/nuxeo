@@ -17,6 +17,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
+import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.dam.webapp.PictureActions;
 import org.nuxeo.dam.webapp.helper.DownloadHelper;
@@ -39,6 +40,7 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 
@@ -182,6 +184,8 @@ public class DocumentActions implements Serializable {
         }
 
         resetData();
+
+        raiseEvents(currentSelection);
     }
 
     public String getCurrentSelectionLink() {
@@ -339,10 +343,12 @@ public class DocumentActions implements Serializable {
             if (currentSelection.hasSchema("picture")) {
                 PictureResourceAdapter pra = currentSelection.getAdapter(PictureResourceAdapter.class);
                 String xpath = pra.getViewXPath(downloadSize);
-                String filename = (String) currentSelection.getPropertyValue(xpath + "filename");
+                String filename = (String) currentSelection.getPropertyValue(xpath
+                        + "filename");
                 String blobXpath = xpath + "content";
                 FacesContext context = FacesContext.getCurrentInstance();
-                DownloadHelper.download(context, currentSelection, blobXpath, filename);
+                DownloadHelper.download(context, currentSelection, blobXpath,
+                        filename);
             }
         }
 
@@ -389,6 +395,11 @@ public class DocumentActions implements Serializable {
         if (currentPage != null && !currentPage.isEmpty()) {
             currentSelection = currentPage.get(0);
         }
+    }
+
+    public static void raiseEvents(DocumentModel document) {
+        Events eventManager = Events.instance();
+        eventManager.raiseEvent(EventNames.DOCUMENT_SELECTION_CHANGED, document);
     }
 
 }
