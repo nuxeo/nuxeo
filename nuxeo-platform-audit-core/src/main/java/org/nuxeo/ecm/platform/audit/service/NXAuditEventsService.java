@@ -637,7 +637,9 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         LogEntry entry = new LogEntry();
         entry.setEventId(eventName);
         entry.setEventDate(eventDate);
-        entry.setPrincipalName(principal.getName());
+        if (principal != null) {
+            entry.setPrincipalName(principal.getName());
+        }
         entry.setComment((String) properties.get("comment"));
 
         String category = (String) properties.get("category");

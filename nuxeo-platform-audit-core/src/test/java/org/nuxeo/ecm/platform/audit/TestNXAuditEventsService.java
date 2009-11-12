@@ -29,6 +29,9 @@ import javax.management.ObjectName;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -89,6 +92,19 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         assertEquals("File", entry.getDocType());
         assertEquals("documentCreated", entry.getEventId());
         assertEquals("Administrator", entry.getPrincipalName());
+    }
+
+    public void testLogMiscMessage() throws ClientException {
+        EventContextImpl ctx = new EventContextImpl(); // not:DocumentEventContext
+        Event event = ctx.newEvent("documentModified"); // auditable
+        event.setInline(false);
+        event.setImmediate(true);
+        Framework.getLocalService(EventService.class).fireEvent(event);
+        waitForEventsDispatched();
+
+        List<String> eventIds = serviceUnderTest.getLoggedEventIds();
+        assertEquals(1, eventIds.size());
+        assertEquals("documentModified", eventIds.get(0));
     }
 
     public void testsyncLogCreation() throws AuditException, ClientException {
