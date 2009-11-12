@@ -645,6 +645,7 @@ NXThemes.Button.prototype = Object.extend(new NXThemes.View(), {
 	this.mouseOverEvent = this.mouseOverEvent.bindAsEventListener(this);
 	this.mouseOutEvent = this.mouseOutEvent.bindAsEventListener(this);
 	this.menuClickEvent = this.menuClickEvent.bindAsEventListener(this);
+    this.menuMouseOutEvent = this.menuMouseOutEvent.bindAsEventListener(this);
 	this.escapeEvent = this.escapeEvent.bindAsEventListener(this);
     Event.observe(this.widget, "click", clickEvent);
 	Event.observe(this.widget, "mouseover", this.mouseOverEvent);
@@ -669,7 +670,6 @@ NXThemes.Button.prototype = Object.extend(new NXThemes.View(), {
       link = 'javascript:void(0)';
     }
     widget.innerHTML = '<b>&nbsp;</b><a href="' + link + '">' + label + '</a>';
-
     this.ready();
   },
 
@@ -690,6 +690,8 @@ NXThemes.Button.prototype = Object.extend(new NXThemes.View(), {
       menu.moveTo({x: pos[0], y: pos[1]});
       menu.show();
       Event.observe(menu, "click", this.menuClickEvent);
+      Event.observe(menu, "mouseout", this.menuMouseOutEvent);
+      Event.observe(this.widget, "mouseout", this.menuMouseOutEvent);
       document.observe('keyup', this.escapeEvent); 
     }
   },
@@ -702,10 +704,22 @@ NXThemes.Button.prototype = Object.extend(new NXThemes.View(), {
     $(this.def.menu).hide();
   },
   
+  menuMouseOutEvent: function(e) {
+    var x = e.pointerX();
+    var y = e.pointerY();
+    var menu = $(this.def.menu);
+    if (!menu.within(x, y)) {
+      Event.stopObserving(menu, "click", this.menuClickEvent);
+      Event.stopObserving(menu, "mouseout", this.menuMouseOutEvent);
+      Event.stopObserving(this.widget, "mouseout", this.menuMouseOutEvent);
+      menu.hide();      
+    }
+  },
+  
   escapeEvent: function(e) {
     if (Event.KEY_ESC == e.keyCode) {
       $(this.def.menu).hide();
-      document.stopObserving('keyup', this.escapeEvent); 
+      document.stopObserving('keyup', this.escapeEvent);
     }
   },
   
