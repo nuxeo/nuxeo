@@ -84,10 +84,10 @@ class Dam(FunkLoadTestCase):
             #upload_uid = '0.2156772209657476'
 
             self.post(server_url + "/view_documents.faces", params=[
-                ['AJAXREQUEST', 'j_id82:j_id83'],
-                ['j_id82_SUBMIT', '1'],
+                ['AJAXREQUEST', 'j_id91:j_id92'],
+                ['j_id91', 'j_id91'],
                 ['javax.faces.ViewState', self.getLastJsfState()],
-                ['j_id82:importset_creation_button', 'j_id82:importset_creation_button']],
+                ['j_id91:importset_creation_button', 'j_id91:importset_creation_button']],
                       description="Import form")
             self.assert_('importSetPanel' in self.getBody())
 
@@ -119,6 +119,8 @@ class Dam(FunkLoadTestCase):
                 ['importset_form_link_hidden_', 'importset_form:nxl_dublincore:nxw_expired:trigger'],
                 ['importset_form:nxl_dublincore:nxw_coverage:nxw_coverage_continent', 'africa'],
                 ['importset_form:nxl_dublincore:nxw_coverage:nxw_coverage_country', ''],
+                ['importset_form:nxl_dublincore:nxw_topic:nxw_topic_topic', 'art'],
+                ['importset_form:nxl_dublincore:nxw_topic:nxw_topic_subtopic', ''],
                 ['importset_form:nxl_dublincore:nxw_expired', ''],
                 ['importset_form', 'importset_form'],
                 ['autoScroll', ''],
@@ -135,6 +137,8 @@ class Dam(FunkLoadTestCase):
                 ['importset_form:nxl_damc:nxw_authoringDate', today],
                 ['importset_form_link_hidden_', 'importset_form:nxl_damc:nxw_authoringDate:trigger'],
                 ['importset_form_link_hidden_', 'importset_form:nxl_dublincore:nxw_expired:trigger'],
+                ['importset_form:nxl_dublincore:nxw_topic:nxw_topic_topic', 'art'],
+                ['importset_form:nxl_dublincore:nxw_topic:nxw_topic_subtopic', 'cinema'],
                 ['importset_form:nxl_dublincore:nxw_coverage:nxw_coverage_continent', 'africa'],
                 ['importset_form:nxl_dublincore:nxw_coverage:nxw_coverage_country', country],
                 ['importset_form:nxl_dublincore:nxw_expired', '11/18/10'],
