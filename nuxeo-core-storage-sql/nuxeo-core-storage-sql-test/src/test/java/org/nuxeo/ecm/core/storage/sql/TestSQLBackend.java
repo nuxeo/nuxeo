@@ -1222,6 +1222,74 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 nodea.getSimpleProperty("ecm:wfIncOption").getValue());
     }
 
+    public void testBulkFetch() throws Exception {
+        Session session = repository.getConnection();
+
+        // check computed prefetch info
+        Model model = ((SessionImpl) session).getModel();
+        assertEquals(new HashSet<String>(Arrays.asList("testschema",
+                "tst:subjects", "tst:tags", //
+                "acls", "versions", "misc", "locks")),
+                model.getTypePrefetchedFragments("TestDoc"));
+        assertEquals(new HashSet<String>(Arrays.asList("testschema2", //
+                "acls", "versions", "misc", "locks")),
+                model.getTypePrefetchedFragments("TestDoc2"));
+        assertEquals(new HashSet<String>(Arrays.asList("tst:subjects", //
+                "acls", "versions", "misc", "locks")),
+                model.getTypePrefetchedFragments("TestDoc3"));
+
+        Node root = session.getRootNode();
+
+        Node node1 = session.addChildNode(root, "n1", null, "TestDoc", false);
+        node1.setSingleProperty("tst:title", "one");
+        node1.setCollectionProperty("tst:subjects", new String[] { "a", "b" });
+        node1.setCollectionProperty("tst:tags", new String[] { "foo" });
+        node1.setSingleProperty("tst:count", Long.valueOf(123));
+        node1.setSingleProperty("tst:rate", Double.valueOf(3.14));
+        CollectionProperty aclProp = node1.getCollectionProperty(Model.ACL_PROP);
+        ACLRow acl = new ACLRow(1, "test", true, "Write", "steve", null);
+        aclProp.setValue(new ACLRow[] { acl });
+
+        Node node2 = session.addChildNode(root, "n2", null, "TestDoc2", false);
+        node2.setSingleProperty("tst2:title", "two");
+        aclProp = node2.getCollectionProperty(Model.ACL_PROP);
+        acl = new ACLRow(0, "test", true, "Read", null, "Members");
+        aclProp.setValue(new ACLRow[] { acl });
+
+        session.save();
+        session.close();
+        session = repository.getConnection();
+
+        List<Node> nodes = session.getNodesByIds(Arrays.asList(node1.getId(),
+                node2.getId()));
+
+        assertEquals(2, nodes.size());
+        node1 = nodes.get(0);
+        node2 = nodes.get(1);
+        if (node1.getName().equals("n2")) {
+            // swap
+            Node n = node1;
+            node1 = node2;
+            node2 = n;
+        }
+        assertEquals(
+                Arrays.asList("a", "b"),
+                Arrays.asList(node1.getCollectionProperty("tst:subjects").getStrings()));
+        assertEquals(
+                Arrays.asList("foo"),
+                Arrays.asList(node1.getCollectionProperty("tst:tags").getStrings()));
+        aclProp = node1.getCollectionProperty(Model.ACL_PROP);
+        ACLRow[] acls = (ACLRow[]) aclProp.getValue();
+        assertEquals(1, acls.length);
+        assertEquals("Write", acls[0].permission);
+
+        assertEquals("two", node2.getSimpleProperty("tst2:title").getString());
+        aclProp = node2.getCollectionProperty(Model.ACL_PROP);
+        acls = (ACLRow[]) aclProp.getValue();
+        assertEquals(1, acls.length);
+        assertEquals("Read", acls[0].permission);
+    }
+
 }
 
 class DummyXid implements Xid {

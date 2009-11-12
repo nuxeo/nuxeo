@@ -10,9 +10,15 @@
     <doctype name="Root" extends="Document" />
     <doctype name="TestDoc" extends="Document">
       <schema name="testschema" />
+      <prefetch>testschema</prefetch>
     </doctype>
     <doctype name="TestDoc2" extends="Document">
       <schema name="testschema2" />
+      <prefetch>tst2:title</prefetch>
+    </doctype>
+    <doctype name="TestDoc3" extends="Document">
+      <schema name="testschema" />
+      <prefetch>tst:subjects</prefetch>
     </doctype>
   </extension>
 

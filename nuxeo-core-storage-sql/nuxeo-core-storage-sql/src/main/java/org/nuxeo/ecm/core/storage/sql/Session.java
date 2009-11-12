@@ -84,6 +84,15 @@ public interface Session extends Connection {
     Node getNodeById(Serializable id) throws StorageException;
 
     /**
+     * Gets several nodes given their ids.
+     *
+     * @param ids the ids
+     * @return the nodes, with elements being {@code null} if not found
+     * @throws StorageException
+     */
+    List<Node> getNodesByIds(List<Serializable> ids) throws StorageException;
+
+    /**
      * Gets a node given its absolute path, or given an existing node and a
      * relative path.
      *

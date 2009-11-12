@@ -22,7 +22,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
@@ -88,7 +90,7 @@ public class ArrayFragment extends CollectionFragment {
         buf.append(getState());
         buf.append(", ");
         buf.append('[');
-        for (int i=0; i < array.length; i++) {
+        for (int i = 0; i < array.length; i++) {
             if (i > 0) {
                 buf.append(", ");
             }
@@ -109,9 +111,8 @@ public class ArrayFragment extends CollectionFragment {
 
     protected static final CollectionMaker MAKER = new CollectionMaker() {
 
-        public Serializable[] makeArray(Serializable id, ResultSet rs,
-                List<Column> columns, Context context, Model model)
-                throws SQLException {
+        public Serializable[] makeArray(ResultSet rs, List<Column> columns,
+                Context context, Model model) throws SQLException {
             // find the column containing the value
             // (the pos column is ignored, results are ordered)
             Column column = null;
@@ -136,6 +137,56 @@ public class ArrayFragment extends CollectionFragment {
                 list.add(value);
             }
             return column.listToArray(list);
+        }
+
+        public Map<Serializable, Serializable[]> makeArrays(ResultSet rs,
+                List<Column> columns, Context context, Model model)
+                throws SQLException {
+            // find the column containing the value
+            // (the pos column is ignored, results are ordered by id then pos)
+            Column valueColumn = null;
+            Column idColumn = null;
+            for (Column column : columns) {
+                String key = column.getKey();
+                if (key.equals(model.MAIN_KEY)) {
+                    idColumn = column;
+                } else if (key.equals(model.COLL_TABLE_VALUE_KEY)) {
+                    valueColumn = column;
+                }
+            }
+            if (valueColumn == null || idColumn == null) {
+                throw new RuntimeException(columns.toString());
+            }
+            Map<Serializable, Serializable[]> res = new HashMap<Serializable, Serializable[]>();
+            Serializable id = null;
+            List<Serializable> list = null;
+            while (rs.next()) {
+                int i = 1;
+                Serializable newId = null;
+                Serializable value = null;
+                for (Column column : columns) {
+                    Serializable v = column.getFromResultSet(rs, i++);
+                    if (column == idColumn) {
+                        newId = v;
+                    } else if (column == valueColumn) {
+                        value = v;
+                    }
+                }
+                if (newId != null && !newId.equals(id)) {
+                    // flush old list
+                    if (list != null) {
+                        res.put(id, valueColumn.listToArray(list));
+                    }
+                    id = newId;
+                    list = new ArrayList<Serializable>();
+                }
+                list.add(value);
+            }
+            if (id != null && list != null) {
+                // flush last list
+                res.put(id, valueColumn.listToArray(list));
+            }
+            return res;
         }
 
         public CollectionFragment makeCollection(Serializable id,

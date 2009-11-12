@@ -166,6 +166,11 @@ public class ConnectionImpl implements Session {
         return getSession().getNodeById(id);
     }
 
+    public List<Node> getNodesByIds(List<Serializable> ids)
+            throws StorageException {
+        return getSession().getNodesByIds(ids);
+    }
+
     public Node getNodeByPath(String path, Node node) throws StorageException {
         return getSession().getNodeByPath(path, node);
     }

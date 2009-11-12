@@ -542,6 +542,24 @@ public class SQLSession implements Session {
         }
     }
 
+    // called by SQLQueryResult iterator
+    protected List<Document> getDocumentsById(List<Serializable> ids)
+            throws DocumentException {
+        List<Document> docs = new ArrayList<Document>(ids.size());
+        try {
+            List<Node> nodes = session.getNodesByIds(ids);
+            for (Node node : nodes) {
+                if (node == null) {
+                    continue;
+                }
+                docs.add(newDocument(node));
+            }
+        } catch (StorageException e) {
+            throw new DocumentException(e.toString(), e);
+        }
+        return docs;
+    }
+
     // called by SQLContentProperty
     protected Binary getBinary(InputStream in) throws DocumentException {
         try {

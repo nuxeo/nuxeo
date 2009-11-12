@@ -423,6 +423,25 @@ public class PersistenceContext {
     }
 
     /**
+     * Gets a list of fragments given a table name and their ids.
+     * <p>
+     * If the fragment is not in the context, fetch it from the mapper. If it's
+     * not in the database, uses {@code null} or an absent fragment.
+     *
+     * @param tableName the fragment table name
+     * @param ids the fragment ids (not empty)
+     * @param allowAbsent {@code true} to return an absent fragment as an object
+     *            instead of {@code null}
+     * @return the fragments, with a fragment being {@code null} if none is
+     *         found and {@value allowAbsent} was {@code false}
+     * @throws StorageException
+     */
+    public List<Fragment> getMulti(String tableName, List<Serializable> ids,
+            boolean allowAbsent) throws StorageException {
+        return getContext(tableName).getMulti(ids, allowAbsent);
+    }
+
+    /**
      * Finds a row in the hierarchy table given its parent id and name. If the
      * row is not in the context, fetch it from the mapper.
      *

@@ -37,11 +37,13 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.PrefetchInfo;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.SchemaImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
@@ -252,6 +254,11 @@ public class Model {
     /** Special (non-schema-based) collection fragments present in all types. */
     public static final String[] COMMON_COLLECTION_FRAGMENTS = { ACL_TABLE_NAME };
 
+    /** Fragments that are always prefetched. */
+    public static final String[] ALWAYS_PREFETCHED_FRAGMENTS = {
+            ACL_TABLE_NAME, VERSION_TABLE_NAME, LOCK_TABLE_NAME,
+            MISC_TABLE_NAME };
+
     public static class PropertyInfo {
 
         public final PropertyType propertyType;
@@ -400,6 +407,9 @@ public class Model {
     /** Maps schema to simple+collection fragments. */
     protected final Map<String, Set<String>> typeFragments;
 
+    /** Maps document type or schema to prefetched fragments. */
+    protected final Map<String, Set<String>> typePrefetchedFragments;
+
     /** Map of doc types to facets, for search. */
     protected final Map<String, Set<String>> documentTypesFacets;
 
@@ -408,6 +418,9 @@ public class Model {
 
     /** Map of doc type to its subtypes (including itself), for search. */
     protected final Map<String, Set<String>> documentSubTypes;
+
+    /** Map of field name to fragments holding them */
+    protected final Map<String, Set<String>> fieldFragments;
 
     protected final FulltextInfo fulltextInfo;
 
@@ -439,6 +452,8 @@ public class Model {
         typeFragments = new HashMap<String, Set<String>>();
         typeSimpleFragments = new HashMap<String, Set<String>>();
         typeCollectionFragments = new HashMap<String, Set<String>>();
+        typePrefetchedFragments = new HashMap<String, Set<String>>();
+        fieldFragments = new HashMap<String, Set<String>>();
 
         documentTypesFacets = new HashMap<String, Set<String>>();
         documentSuperTypes = new HashMap<String, String>();
@@ -880,16 +895,22 @@ public class Model {
         return fragmentsKeys.get(fragmentName);
     }
 
-    /**
-     * Create a collection fragment according to the factories registered.
-     */
-    public Serializable[] newCollectionArray(Serializable id, ResultSet rs,
+    public Serializable[] newCollectionArray(ResultSet rs,
             List<Column> columns, Context context) throws SQLException {
         CollectionMaker maker = collectionMakers.get(context.getTableName());
         if (maker == null) {
             throw new IllegalArgumentException(context.getTableName());
         }
-        return maker.makeArray(id, rs, columns, context, this);
+        return maker.makeArray(rs, columns, context, this);
+    }
+
+    public Map<Serializable, Serializable[]> newCollectionArrays(ResultSet rs,
+            List<Column> columns, Context context) throws SQLException {
+        CollectionMaker maker = collectionMakers.get(context.getTableName());
+        if (maker == null) {
+            throw new IllegalArgumentException(context.getTableName());
+        }
+        return maker.makeArrays(rs, columns, context, this);
     }
 
     public CollectionFragment newCollectionFragment(Serializable id,
@@ -946,12 +967,39 @@ public class Model {
         }
     }
 
+    protected void addFieldFragment(Field field, String fragmentName) {
+        String fieldName = field.getName().toString();
+        Set<String> fragments = fieldFragments.get(fieldName);
+        if (fragments == null) {
+            fieldFragments.put(fieldName, fragments = new HashSet<String>());
+        }
+        fragments.add(fragmentName);
+    }
+
+    protected void addTypePrefetchedFragment(String typeName,
+            String fragmentName) {
+        Set<String> fragments = typePrefetchedFragments.get(typeName);
+        if (fragments == null) {
+            typePrefetchedFragments.put(typeName,
+                    fragments = new HashSet<String>());
+        }
+        fragments.add(fragmentName);
+    }
+
     public Set<String> getTypeSimpleFragments(String typeName) {
         return typeSimpleFragments.get(typeName);
     }
 
     public Set<String> getTypeFragments(String typeName) {
         return typeFragments.get(typeName);
+    }
+
+    protected Set<String> getFieldFragments(Field field) {
+        return fieldFragments.get(field.getName().toString());
+    }
+
+    public Set<String> getTypePrefetchedFragments(String typeName) {
+        return typePrefetchedFragments.get(typeName);
     }
 
     public boolean isType(String typeName) {
@@ -1015,6 +1063,7 @@ public class Model {
         for (DocumentType documentType : schemaManager.getDocumentTypes()) {
             String typeName = documentType.getName();
             addTypeSimpleFragment(typeName, null); // create entry
+
             for (Schema schema : documentType.getSchemas()) {
                 if (schema == null) {
                     // happens when a type refers to a nonexistent schema
@@ -1039,8 +1088,43 @@ public class Model {
             for (String fragmentName : COMMON_COLLECTION_FRAGMENTS) {
                 addTypeCollectionFragment(typeName, fragmentName);
             }
+
+            // find fragments to prefetch
+            PrefetchInfo prefetch = documentType.getPrefetchInfo();
+            if (prefetch != null) {
+                Set<String> typeFragments = getTypeFragments(typeName);
+                for (Field field : prefetch.getFields()) {
+                    // prefetch all the relevant fragments
+                    Set<String> fragments = getFieldFragments(field);
+                    if (fragments != null) {
+                        for (String fragment : fragments) {
+                            if (typeFragments.contains(fragment)) {
+                                addTypePrefetchedFragment(typeName, fragment);
+                            }
+                        }
+                    }
+                }
+                for (Schema schema : prefetch.getSchemas()) {
+                    String fragment = schemaFragment.get(schema.getName());
+                    if (fragment != null) {
+                        addTypePrefetchedFragment(typeName, fragment);
+                    }
+                    Set<String> collectionFragments = typeCollectionFragments.get(typeName);
+                    if (collectionFragments != null) {
+                        for (String fragmentName : collectionFragments) {
+                            addTypePrefetchedFragment(typeName, fragmentName);
+                        }
+                    }
+                }
+            }
+            // always prefetch ACLs, versions, misc (for lifecycle), locks
+            for (String fragmentName : ALWAYS_PREFETCHED_FRAGMENTS) {
+                addTypePrefetchedFragment(typeName, fragmentName);
+            }
+
             log.debug("Fragments for " + typeName + ": "
-                    + getTypeFragments(typeName));
+                    + getTypeFragments(typeName) + ", prefetch: "
+                    + getTypePrefetchedFragments(typeName));
 
             // record doc type and facets, super type, sub types
             documentTypesFacets.put(typeName, new HashSet<String>(
@@ -1051,6 +1135,7 @@ public class Model {
                 documentSuperTypes.put(typeName, superTypeName);
             }
         }
+
         // compute subtypes for all types
         for (String type : documentTypesFacets.keySet()) {
             String superType = type;
@@ -1064,6 +1149,7 @@ public class Model {
                 superType = documentSuperTypes.get(superType);
             } while (superType != null);
         }
+
         // infer fulltext info
         inferFulltextInfo();
     }
@@ -1199,7 +1285,6 @@ public class Model {
                 null, false, null, null);
     }
 
-
     /**
      * Creates the model for one schema or complex type.
      *
@@ -1251,6 +1336,7 @@ public class Model {
                                 keysType);
 
                         addTypeCollectionFragment(typeName, fragmentName);
+                        addFieldFragment(field, fragmentName);
                     } else {
                         /*
                          * Complex list.
@@ -1292,6 +1378,7 @@ public class Model {
                         // note that this type has a fragment
                         thisFragmentName = fragmentName;
                     }
+                    addFieldFragment(field, fragmentName);
                 }
             }
         }

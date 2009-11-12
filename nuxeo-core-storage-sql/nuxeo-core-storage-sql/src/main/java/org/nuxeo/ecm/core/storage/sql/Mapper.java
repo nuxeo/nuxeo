@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.net.SocketException;
 import java.security.MessageDigest;
 import java.sql.Array;
 import java.sql.Connection;
@@ -1021,9 +1020,20 @@ public class Mapper {
                 if (v == null) {
                     throw new StorageException("Null value for key: " + key);
                 }
-                column.setToPreparedStatement(ps, i++, v);
-                if (debugValues != null) {
-                    debugValues.add(v);
+                if (v instanceof List<?>) {
+                    // allow insert of several values, for the IN (...) case
+                    for (Object vv : (List<?>) v) {
+                        column.setToPreparedStatement(ps, i++,
+                                (Serializable) vv);
+                        if (debugValues != null) {
+                            debugValues.add((Serializable) vv);
+                        }
+                    }
+                } else {
+                    column.setToPreparedStatement(ps, i++, v);
+                    if (debugValues != null) {
+                        debugValues.add(v);
+                    }
                 }
             }
             if (debugValues != null) {
@@ -1093,6 +1103,34 @@ public class Mapper {
         List<Map<String, Serializable>> maps = getSelectMaps(select,
                 criteriaMap, null, true, context);
         return maps == null ? null : maps.get(0);
+    }
+
+    /**
+     * Gets the states for a list of {@link SimpleFragment}s from the database,
+     * given the table name and their ids.
+     *
+     * @param tableName the type name
+     * @param ids the ids
+     * @param context the persistence context to which the read rows are tied
+     * @return the map of fragment id to fragment values map
+     */
+    public Map<Serializable, Map<String, Serializable>> readMultipleRowMaps(
+            String tableName, List<Serializable> ids, Context context)
+            throws StorageException {
+        if (ids.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        SQLInfoSelect select = sqlInfo.getSelectFragmentsByIds(tableName,
+                ids.size());
+        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
+        criteriaMap.put(model.MAIN_KEY, (Serializable) ids);
+        List<Map<String, Serializable>> maps = getSelectMaps(select,
+                criteriaMap, null, false, context);
+        Map<Serializable, Map<String, Serializable>> res = new HashMap<Serializable, Map<String, Serializable>>();
+        for (Map<String, Serializable> map : maps) {
+            res.put(map.get(model.MAIN_KEY), map);
+        }
+        return res;
     }
 
     /**
@@ -1261,12 +1299,73 @@ public class Mapper {
                 ResultSet rs = ps.executeQuery();
 
                 // construct the resulting collection using each row
-                Serializable[] array = model.newCollectionArray(id, rs,
-                        columns, context);
+                Serializable[] array = model.newCollectionArray(rs, columns,
+                        context);
                 if (isLogEnabled()) {
                     log("  -> " + Arrays.asList(array));
                 }
                 return array;
+            } finally {
+                closePreparedStatement(ps);
+            }
+        } catch (SQLException e) {
+            checkConnectionReset(e);
+            throw new StorageException("Could not select: " + sql, e);
+        }
+    }
+
+    /**
+     * Gets a per-id map of arrays for {@link CollectionFragment}s from the
+     * database, given a table name and the ids.
+     *
+     * @param ids the ids
+     * @param context the persistence context to which the read collection is
+     *            tied
+     * @return the map of id to array
+     */
+    public Map<Serializable, Serializable[]> readCollectionsArrays(
+            List<Serializable> ids, Context context) throws StorageException {
+        if (ids.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        String tableName = context.getTableName();
+        String[] orderBys = new String[] { model.MAIN_KEY,
+                model.COLL_TABLE_POS_KEY }; // clusters results
+        Set<String> skipColumns = new HashSet<String>(
+                Arrays.asList(model.COLL_TABLE_POS_KEY));
+        SQLInfoSelect select = sqlInfo.getSelectFragmentsByIds(tableName,
+                ids.size(), orderBys, skipColumns);
+
+        String sql = select.sql;
+        try {
+            if (isLogEnabled()) {
+                logSQL(sql, ids);
+            }
+            PreparedStatement ps = connection.prepareStatement(sql);
+            try {
+                int i = 1;
+                for (Serializable id : ids) {
+                    ps.setObject(i++, id);
+                }
+                ResultSet rs = ps.executeQuery();
+
+                Map<Serializable, Serializable[]> res = model.newCollectionArrays(
+                        rs, select.whatColumns, context);
+                // fill empty ones
+                for (Serializable id : ids) {
+                    if (!res.containsKey(id)) {
+                        Serializable[] array = model.getCollectionFragmentType(
+                                tableName).getEmptyArray();
+                        res.put(id, array);
+                    }
+                }
+                if (isLogEnabled()) {
+                    for (Entry<Serializable, Serializable[]> entry : res.entrySet()) {
+                        log("  -> " + entry.getKey() + " = "
+                                + Arrays.asList(entry.getValue()));
+                    }
+                }
+                return res;
             } finally {
                 closePreparedStatement(ps);
             }

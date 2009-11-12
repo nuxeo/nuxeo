@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
@@ -61,7 +62,14 @@ public abstract class CollectionFragment extends Fragment {
      */
     protected interface CollectionMaker {
 
-        Serializable[] makeArray(Serializable id, ResultSet rs,
+        Serializable[] makeArray(ResultSet rs, List<Column> columns,
+                Context context, Model model) throws SQLException;
+
+        /**
+         * Makes arrays for multiple fragments. The result sets have to contain
+         * values for the id column, and be ordered by id, pos.
+         */
+        Map<Serializable, Serializable[]> makeArrays(ResultSet rs,
                 List<Column> columns, Context context, Model model)
                 throws SQLException;
 

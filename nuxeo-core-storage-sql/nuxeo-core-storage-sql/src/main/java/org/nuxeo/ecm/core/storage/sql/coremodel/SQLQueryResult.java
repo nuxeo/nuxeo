@@ -86,19 +86,33 @@ public class SQLQueryResult implements QueryResult {
     }
 
     public DocumentModelList getDocumentModels() throws QueryException {
+        // get ids
+        List<Serializable> ids = new ArrayList<Serializable>((int) size);
+        while (it.hasNext()) {
+            ids.add(it.next());
+        }
+
+        // get Documents in bulk
+        List<Document> docs;
+        try {
+            docs = session.getDocumentsById(ids);
+        } catch (DocumentException e) {
+            log.error("Could not fetch documents for ids: " + ids, e);
+            docs = Collections.emptyList();
+        }
+
+        // build DocumentModels from Documents
         String[] schemas = { "common" };
         List<DocumentModel> list = new ArrayList<DocumentModel>((int) size);
-        while (it.hasNext()) {
-            currentId = it.next();
+        for (Document doc : docs) {
             try {
-                // TODO skip root
-                Document doc = session.getDocumentById(currentId);
                 list.add(DocumentModelFactory.createDocumentModel(doc, schemas));
             } catch (DocumentException e) {
-                log.error("Could not create document model for doc: "
-                        + currentId + ": " + e.getMessage());
+                log.error("Could not create document model for doc: " + doc, e);
             }
         }
+
+        // order / limit
         if (orderByPath != null) {
             Collections.sort(list, new PathComparator(
                     orderByPath.booleanValue()));

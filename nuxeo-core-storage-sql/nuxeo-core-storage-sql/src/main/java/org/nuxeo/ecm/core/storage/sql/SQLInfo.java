@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -357,6 +358,58 @@ public class SQLInfo {
         return update;
     }
 
+    /**
+     * Select by ids for all values of several fragments.
+     */
+    public SQLInfoSelect getSelectFragmentsByIds(String tableName, int nids) {
+        return getSelectFragmentsByIds(tableName, nids, null, null);
+    }
+
+    /**
+     * Select by ids for all values of several fragments (maybe ordered along
+     * columns -- for collection fragments retrieval).
+     */
+    public SQLInfoSelect getSelectFragmentsByIds(String tableName, int nids,
+            String[] orderBys, Set<String> skipColumns) {
+        Table table = database.getTable(tableName);
+        List<Column> whatColumns = new LinkedList<Column>();
+        List<String> whats = new LinkedList<String>();
+        List<Column> opaqueColumns = new LinkedList<Column>();
+        for (Column column : table.getColumns()) {
+            if (column.isOpaque()) {
+                opaqueColumns.add(column);
+            } else if (skipColumns == null
+                    || !skipColumns.contains(column.getKey())) {
+                whatColumns.add(column);
+                whats.add(column.getQuotedName());
+            }
+        }
+        Column whereColumn = table.getColumn(model.MAIN_KEY);
+        StringBuilder wherebuf = new StringBuilder(whereColumn.getQuotedName());
+        wherebuf.append(" IN (");
+        for (int i = 0; i < nids; i++) {
+            if (i != 0) {
+                wherebuf.append(", ");
+            }
+            wherebuf.append('?');
+        }
+        wherebuf.append(')');
+        Select select = new Select(table);
+        select.setWhat(StringUtils.join(whats, ", "));
+        select.setFrom(table.getQuotedName());
+        select.setWhere(wherebuf.toString());
+        if (orderBys != null) {
+            List<String> orders = new LinkedList<String>();
+            for (int i = 0; i < orderBys.length; i++) {
+                orders.add(table.getColumn(orderBys[i]).getQuotedName());
+            }
+            select.setOrderBy(StringUtils.join(orders, ", "));
+        }
+        return new SQLInfoSelect(select.getStatement(), whatColumns,
+                Collections.singletonList(whereColumn),
+                opaqueColumns.isEmpty() ? null : opaqueColumns);
+    }
+
     // ----- delete -----
 
     /**
@@ -559,7 +612,8 @@ public class SQLInfo {
     protected void initDescendantsSQL() {
         TableMaker maker = new TableMaker(model.DESCENDANTS_TABLE_NAME);
         maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFKMUL);
-        maker.newColumn(model.DESCENDANTS_DESCENDANT_KEY, ColumnType.NODEIDFKMUL);
+        maker.newColumn(model.DESCENDANTS_DESCENDANT_KEY,
+                ColumnType.NODEIDFKMUL);
         maker.table.addIndex(model.MAIN_KEY, model.DESCENDANTS_DESCENDANT_KEY);
     }
 

@@ -23,9 +23,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionMetaData;
@@ -296,6 +299,69 @@ public class SessionImpl implements Session {
                 childFragments);
 
         return new Node(this, context, childGroup);
+    }
+
+    public List<Node> getNodesByIds(List<Serializable> ids)
+            throws StorageException {
+        checkThread();
+        checkLive();
+
+        // get main fragments
+        List<Fragment> mainFragments = context.getMulti(model.mainTableName,
+                ids, false);
+
+        // find what type names we have and the associated fragments
+        Set<String> fragmentNames = new HashSet<String>();
+        Set<String> typesDone = new HashSet<String>();
+        List<FragmentsMap> maps = new ArrayList<FragmentsMap>(ids.size());
+        for (Fragment fragment : mainFragments) {
+            if (fragment == null) {
+                maps.add(null);
+                continue;
+            }
+            FragmentsMap fragmentsMap = new FragmentsMap();
+            fragmentsMap.put(model.mainTableName, fragment);
+            maps.add(fragmentsMap);
+
+            String typeName = (String) ((SimpleFragment) fragment).get(model.MAIN_PRIMARY_TYPE_KEY);
+            if (typesDone.add(typeName)) {
+                Set<String> f = model.getTypePrefetchedFragments(typeName);
+                if (f != null) {
+                    fragmentNames.addAll(f);
+                }
+            }
+        }
+        fragmentNames.remove(model.mainTableName);
+
+        // fetch all the fragments, in bulk for each table
+        for (String fragmentName : fragmentNames) {
+            List<Fragment> fragments = context.getMulti(fragmentName, ids, true);
+            Iterator<FragmentsMap> mapsit = maps.iterator();
+            for (Fragment fragment : fragments) {
+                FragmentsMap fragmentsMap = mapsit.next();
+                if (fragment != null && fragmentsMap != null) {
+                    fragmentsMap.put(fragmentName, fragment);
+                }
+            }
+        }
+
+        // assemble nodes from the fragments fetched
+        List<Node> nodes = new ArrayList<Node>(ids.size());
+        Iterator<FragmentsMap> mapsit = maps.iterator();
+        for (Fragment main : mainFragments) {
+            FragmentsMap fragmentsMap = mapsit.next();
+            Node node;
+            if (main == null) {
+                node = null;
+            } else {
+                FragmentGroup childGroup = new FragmentGroup(
+                        (SimpleFragment) main, null, fragmentsMap);
+                node = new Node(this, context, childGroup);
+            }
+            nodes.add(node);
+        }
+
+        return nodes;
     }
 
     protected FragmentsMap getFragments(Serializable id, String typeName,

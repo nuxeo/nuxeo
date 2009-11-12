@@ -22,7 +22,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 
@@ -49,49 +51,76 @@ public class ACLsFragment extends ArrayFragment {
         super(id, state, context, acls);
     }
 
-    @SuppressWarnings("hiding")
     protected static final CollectionMaker MAKER = new CollectionMaker() {
 
-        public Serializable[] makeArray(Serializable id, ResultSet rs,
-                List<Column> columns, Context context, Model model)
-                throws SQLException {
-
+        public Serializable[] makeArray(ResultSet rs, List<Column> columns,
+                Context context, Model model) throws SQLException {
             ArrayList<ACLRow> list = new ArrayList<ACLRow>();
             while (rs.next()) {
-                int pos = 0;
-                String name = null;
-                boolean grant = false;
-                String permission = null;
-                String user = null;
-                String group = null;
-                int i = 0;
-                for (Column column : columns) {
-                    i++;
-                    String key = column.getKey();
-                    Serializable v = column.getFromResultSet(rs, i);
-                    if (key.equals(model.ACL_POS_KEY)) {
-                        pos = v == null ? 0 : ((Long) v).intValue();
-                    } else if (key.equals(model.ACL_NAME_KEY)) {
-                        name = (String) v;
-                    } else if (key.equals(model.ACL_GRANT_KEY)) {
-                        grant = v == null ? false : (Boolean) v;
-                    } else if (key.equals(model.ACL_PERMISSION_KEY)) {
-                        permission = (String) v;
-                    } else if (key.equals(model.ACL_USER_KEY)) {
-                        user = (String) v;
-                    } else if (key.equals(model.ACL_GROUP_KEY)) {
-                        group = (String) v;
-                    } else if (key.equals(model.MAIN_KEY)) {
-                        // skip
-                    } else {
-                        throw new RuntimeException(key);
-                    }
-                }
-                ACLRow acl = new ACLRow(pos, name, grant, permission, user,
-                        group);
-                list.add(acl);
+                list.add(getValue(rs, columns, model, null));
             }
             return list.toArray(new ACLRow[list.size()]);
+        }
+
+        public Map<Serializable, Serializable[]> makeArrays(ResultSet rs,
+                List<Column> columns, Context context, Model model)
+                throws SQLException {
+            Map<Serializable, Serializable[]> res = new HashMap<Serializable, Serializable[]>();
+            Serializable id = null;
+            List<Serializable> list = null;
+            Serializable[] returnId = new Serializable[1];
+            while (rs.next()) {
+                ACLRow value = getValue(rs, columns, model, returnId);
+                Serializable newId = returnId[0];
+                if (newId != null && !newId.equals(id)) {
+                    // flush old list
+                    if (list != null) {
+                        res.put(id, list.toArray(new ACLRow[list.size()]));
+                    }
+                    id = newId;
+                    list = new ArrayList<Serializable>();
+                }
+                list.add(value);
+            }
+            if (id != null && list != null) {
+                // flush last list
+                res.put(id, list.toArray(new ACLRow[list.size()]));
+            }
+            return res;
+        }
+
+        protected ACLRow getValue(ResultSet rs, List<Column> columns,
+                Model model, Serializable[] returnId) throws SQLException {
+            int pos = 0;
+            String name = null;
+            boolean grant = false;
+            String permission = null;
+            String user = null;
+            String group = null;
+            int i = 0;
+            for (Column column : columns) {
+                i++;
+                String key = column.getKey();
+                Serializable v = column.getFromResultSet(rs, i);
+                if (key.equals(model.ACL_POS_KEY)) {
+                    pos = v == null ? 0 : ((Long) v).intValue();
+                } else if (key.equals(model.ACL_NAME_KEY)) {
+                    name = (String) v;
+                } else if (key.equals(model.ACL_GRANT_KEY)) {
+                    grant = v == null ? false : (Boolean) v;
+                } else if (key.equals(model.ACL_PERMISSION_KEY)) {
+                    permission = (String) v;
+                } else if (key.equals(model.ACL_USER_KEY)) {
+                    user = (String) v;
+                } else if (key.equals(model.ACL_GROUP_KEY)) {
+                    group = (String) v;
+                } else if (key.equals(model.MAIN_KEY) && returnId != null) {
+                    returnId[0] = v;
+                } else {
+                    throw new RuntimeException(key);
+                }
+            }
+            return new ACLRow(pos, name, grant, permission, user, group);
         }
 
         public CollectionFragment makeCollection(Serializable id,
