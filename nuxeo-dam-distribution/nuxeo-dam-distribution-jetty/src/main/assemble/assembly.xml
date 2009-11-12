@@ -61,7 +61,7 @@
       <artifact name="nuxeo-platform-forum*" />
       <artifact name="nuxeo-platform-syndication" />
       <artifact name="nuxeo-platform-publish*" />
-      <artifact name="nuxeo-platform-comment*" />
+      <artifact name="nuxeo-platform-comment-web" />
       <artifact name="nuxeo-platform-workflow*" />
 
       <artifact name="nuxeo-platform-lang" />
@@ -222,9 +222,7 @@
     <file>nuxeo-webengine-admin-${nuxeo.webengine.version}.jar</file>
     <file>nuxeo-webengine-ui-${nuxeo.webengine.version}.jar</file>
     <file>nuxeo-webengine-sites-${nuxeo.webengine.version}.jar</file>
-    <file>nuxeo-platform-comment-${nuxeo.features.version}.jar</file>
-    <file>nuxeo-platform-comment-api-${nuxeo.features.version}.jar</file>
-    <file>nuxeo-platform-comment-core-${nuxeo.features.version}.jar</file>
+    <file>nuxeo-platform-comment-web-${nuxeo.features.version}.jar</file>
   </assemble>
 
 </assembly>
