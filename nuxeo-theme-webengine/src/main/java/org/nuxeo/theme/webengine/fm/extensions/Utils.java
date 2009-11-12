@@ -22,6 +22,8 @@ package org.nuxeo.theme.webengine.fm.extensions;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import freemarker.template.TemplateModel;
 
 /**
@@ -44,4 +46,10 @@ public class Utils {
         return attributes;
     }
 
+    public static boolean isWebEngineVirtualHosting(final HttpServletRequest request) {
+        if (request.getHeader("nuxeo-webengine-base-path") != null) {
+            return true;
+        }
+        return false;
+    }
 }

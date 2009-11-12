@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.html.ui.ThemeStyles;
 import org.nuxeo.theme.themes.ThemeManager;
 
@@ -42,7 +41,7 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- * 
+ *
  */
 public class NXThemesThemeStylesDirective implements TemplateDirectiveModel {
 
@@ -79,7 +78,7 @@ public class NXThemesThemeStylesDirective implements TemplateDirectiveModel {
         attributes.put("path", context.getModulePath());
         attributes.put("basepath", context.getBasePath());
 
-        Boolean virtualHosting = Utils.isVirtualHosting(request);
+        Boolean virtualHosting = Utils.isWebEngineVirtualHosting(request);
         writer.write(ThemeStyles.render(attributes, cache, inline,
                 virtualHosting));
     }

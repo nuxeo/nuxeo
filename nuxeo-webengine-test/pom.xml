@@ -5,13 +5,18 @@
   <parent>
     <groupId>org.nuxeo.ecm.webengine</groupId>
     <artifactId>nuxeo-webengine-parent</artifactId>
-    <version>5.2.1-SNAPSHOT</version>
+    <version>5.3.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-webengine-test</artifactId>
   <name>Nuxeo WebEngine Test Framework</name>
   <description>Test framework to test webengine apss</description>
   <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-test</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-test</artifactId>

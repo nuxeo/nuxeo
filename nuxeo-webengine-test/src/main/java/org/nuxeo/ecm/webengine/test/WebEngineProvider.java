@@ -67,6 +67,8 @@ public class WebEngineProvider implements Provider<WebEngine> {
 
             harness.deployBundle("org.nuxeo.runtime.jetty");
 
+            harness.deployContrib("org.nuxeo.ecm.webengine.test","runtimeserver-contrib.xml");
+
             WebEngineComponent we = (WebEngineComponent) Framework.getRuntime()
                     .getComponent(WebEngineComponent.NAME);
             return we.getEngine();

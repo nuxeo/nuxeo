@@ -9,16 +9,15 @@ import org.nuxeo.runtime.test.runner.RuntimeModule;
 import com.google.inject.Module;
 
 public class NuxeoWebengineRunner extends NuxeoPlatformRunner {
-     public NuxeoWebengineRunner(Class<?> classToRun) throws InitializationError {
-            //FIXME: There's surely a better way to inherit from parent modules...
-            this(classToRun, new RuntimeModule(), new CoreModule(), new PlatformModule(), new WebengineModule());
-        }
+    public NuxeoWebengineRunner(Class<?> classToRun) throws InitializationError {
+        // FIXME: There's surely a better way to inherit from parent modules...
+        this(classToRun, new RuntimeModule(), new CoreModule(),
+                new PlatformModule(), new WebengineModule());
+    }
 
-        public NuxeoWebengineRunner(Class<?> classToRun, Module... modules)
-                throws InitializationError {
-            super(classToRun, modules);
-        }
-
-
+    public NuxeoWebengineRunner(Class<?> classToRun, Module... modules)
+            throws InitializationError {
+        super(classToRun, modules);
+    }
 
 }
