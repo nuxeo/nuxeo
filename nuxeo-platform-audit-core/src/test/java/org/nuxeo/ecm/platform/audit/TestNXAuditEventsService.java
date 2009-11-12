@@ -47,7 +47,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
 
     private NXAuditEventsService serviceUnderTest;
 
-     protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+    protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
     @Override
     public void setUp() throws Exception {
@@ -61,7 +61,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
 
         deployTestContrib("org.nuxeo.ecm.platform.audit", "nxaudit-tests.xml");
 
-        serviceUnderTest = (NXAuditEventsService)Framework.getLocalService(NXAuditEvents.class);
+        serviceUnderTest = (NXAuditEventsService) Framework.getLocalService(NXAuditEvents.class);
         assertNotNull(serviceUnderTest);
         openRepository();
     }
@@ -111,25 +111,24 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         assertEquals("system", entry.getPrincipalName());
     }
 
-     protected Set<ObjectName> doQuery(String name) {
-     String qualifiedName = ObjectNameFactory.getQualifiedName(name);
-     ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
-     return mbeanServer.queryNames(objectName, null);
-     }
+    protected Set<ObjectName> doQuery(String name) {
+        String qualifiedName = ObjectNameFactory.getQualifiedName(name);
+        ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
+        return mbeanServer.queryNames(objectName, null);
+    }
 
     public void TODOtestCount() throws Exception {
-         CoreSession session = getCoreSession();
-         DocumentModel rootDocument = getCoreSession().getRootDocument();
-         DocumentModel model = session.createDocumentModel(
-         rootDocument.getPathAsString(), "youps", "File");
-         model.setProperty("dublincore", "title", "huum");
-         session.createDocument(model);
-         session.save();
-         waitForEventsDispatched();
-         ObjectName objectName =
-         AuditEventMetricFactory.getObjectName("documentCreated");
-         Long count = (Long) mbeanServer.getAttribute(objectName, "count");
-         assertEquals(new Long(1L), count);
+        CoreSession session = getCoreSession();
+        DocumentModel rootDocument = getCoreSession().getRootDocument();
+        DocumentModel model = session.createDocumentModel(
+                rootDocument.getPathAsString(), "youps", "File");
+        model.setProperty("dublincore", "title", "huum");
+        session.createDocument(model);
+        session.save();
+        waitForEventsDispatched();
+        ObjectName objectName = AuditEventMetricFactory.getObjectName("documentCreated");
+        Long count = (Long) mbeanServer.getAttribute(objectName, "count");
+        assertEquals(new Long(1L), count);
     }
 
 }
