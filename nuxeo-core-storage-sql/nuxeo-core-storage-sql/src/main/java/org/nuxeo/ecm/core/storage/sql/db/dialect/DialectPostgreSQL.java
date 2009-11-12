@@ -936,6 +936,9 @@ public class DialectPostgreSQL extends Dialect {
                         + "    first := false;\n" //
                         + "    curid := newid;\n" //
                         + "  END LOOP;\n" //
+                        + "  IF (ret is NULL) THEN\n" //
+                        + "    ret = '_empty';\n" //
+                        + "  END IF;\n" //
                         + "  RETURN ret;\n" //
                         + "END $$\n" //
                         + "LANGUAGE plpgsql STABLE;"));
@@ -1013,10 +1016,12 @@ public class DialectPostgreSQL extends Dialect {
                         + "  doc_id varchar(36);\n" //
                         + "BEGIN\n" //
                         + "  IF (TG_OP = 'INSERT') THEN\n" //
-                        + "    -- New document\n" //
-                        + "    INSERT INTO hierarchy_modified_acl VALUES(NEW.id, 't');\n" //
+                        + "    IF (NEW.isproperty = 'f') THEN\n" //
+                        + "      -- New document\n" //
+                        + "      INSERT INTO hierarchy_modified_acl VALUES(NEW.id, 't');\n" //
+                        + "    END IF;\n" //
                         + "  ELSEIF (TG_OP = 'UPDATE') THEN\n" //
-                        + "    IF (NEW.parentid != OLD.parentid) THEN\n" //
+                        + "    IF (NEW.isproperty = 'f' AND NEW.parentid != OLD.parentid) THEN\n" //
                         + "      -- New container\n" //
                         + "      INSERT INTO hierarchy_modified_acl VALUES(NEW.id, 'f');\n" //
                         + "    END IF;\n" //
@@ -1045,7 +1050,7 @@ public class DialectPostgreSQL extends Dialect {
                         + "  RAISE INFO 'nx_rebuild_read_acls update acl map';\n" //
                         + "  INSERT INTO hierarchy_read_acl\n" //
                         + "    SELECT id, md5(nx_get_read_acl(id))\n" //
-                        + "    FROM (SELECT DISTINCT(id) AS id FROM hierarchy) AS uids;\n" //
+                        + "    FROM (SELECT id FROM hierarchy WHERE isproperty='f') AS uids;\n" //
                         + "  RAISE INFO 'nx_rebuild_read_acls truncate read_acls';\n" //
                         + "  TRUNCATE TABLE read_acls;\n" //
                         + "  INSERT INTO read_acls\n" //
@@ -1101,7 +1106,7 @@ public class DialectPostgreSQL extends Dialect {
                         + "    UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (\n" //
                         + "      SELECT h.id\n" //
                         + "      FROM hierarchy AS h\n" //
-                        + "      LEFT JOIN hierarchy_read_acl AS r ON h.id = r.id\n" //
+                        + "      JOIN hierarchy_read_acl AS r ON h.id = r.id\n" //
                         + "      WHERE r.acl_id IS NOT NULL\n" //
                         + "        AND h.parentid IN (SELECT id FROM hierarchy_read_acl WHERE acl_id IS NULL));\n" //
                         + "    GET DIAGNOSTICS update_count = ROW_COUNT;\n" //

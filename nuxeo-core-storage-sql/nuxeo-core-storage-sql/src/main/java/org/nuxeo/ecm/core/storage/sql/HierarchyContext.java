@@ -388,7 +388,8 @@ public class HierarchyContext extends Context {
         for (Serializable id : createdIds) {
             SimpleFragment row = (SimpleFragment) modified.remove(id);
             if (row == null) {
-                throw new RuntimeException("Missing: " + id);
+                // was created and deleted before save
+                continue;
             }
             if (idMap != null) {
                 remapFragmentOnSave(row, idMap);

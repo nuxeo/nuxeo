@@ -171,6 +171,29 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
     }
 
+    public void testChildrenRemoval2() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node foo = session.addChildNode(root, "foo", null, "TestDoc", false);
+        session.removeNode(foo);
+        List<Node> children = session.getChildren(root, null, false);
+        assertEquals(0, children.size());
+        session.save(); // important for the test
+    }
+
+    public void TODOtestChildrenRemoval3() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node foo = session.addChildNode(root, "foo", null, "TestDoc", false);
+        session.addChildNode(foo, "bar", null, "TestDoc", false);
+        session.removeNode(foo);
+        // we remove foo but bar is still marked "created" and will be saved
+        // with a nonexistent parent...
+        List<Node> children = session.getChildren(root, null, false);
+        assertEquals(0, children.size());
+        session.save(); // important for the test
+    }
+
     public void testRecursiveRemoval() throws Exception {
         int depth = DatabaseHelper.DATABASE.getRecursiveRemovalDepthLimit();
         if (depth == 0) {

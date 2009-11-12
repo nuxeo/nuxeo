@@ -49,7 +49,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Default implementation for an {@link EventBundle} that need to be reconnected
  * to a usable Session
- *
+ * 
  * @author tiry
  */
 public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
@@ -83,8 +83,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
             }
 
             try {
-                RepositoryManager mgr = Framework
-                        .getService(RepositoryManager.class);
+                RepositoryManager mgr = Framework.getService(RepositoryManager.class);
                 Repository repo;
                 if (repoName != null) {
                     repo = mgr.getRepository(repoName);
@@ -95,7 +94,8 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
                 reconnectedCoreSession = repo.open();
             } catch (Exception e) {
-                log.error("Error while openning core session on repo " + repoName, e);
+                log.error("Error while openning core session on repo "
+                        + repoName, e);
                 return null;
             }
         } else {
@@ -121,7 +121,8 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                 List<Object> newArgs = new ArrayList<Object>();
                 for (Object arg : ctx.getArguments()) {
                     Object newArg = arg;
-                    if (arg instanceof DocumentModel && session != null) {
+                    if (arg instanceof DocumentModel && session != null
+                            && session.getPrincipal() != null) {
                         DocumentModel oldDoc = (DocumentModel) arg;
                         DocumentRef ref = oldDoc.getRef();
                         if (ref != null) {
@@ -144,8 +145,8 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
                 EventContext newCtx = null;
                 if (ctx instanceof DocumentEventContext) {
-                    newCtx = new DocumentEventContext(session, ctx
-                            .getPrincipal(), (DocumentModel) newArgs.get(0),
+                    newCtx = new DocumentEventContext(session,
+                            ctx.getPrincipal(), (DocumentModel) newArgs.get(0),
                             (DocumentRef) newArgs.get(1));
                 } else {
                     newCtx = new EventContextImpl(session, ctx.getPrincipal());
@@ -153,8 +154,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                 }
 
                 Map<String, Serializable> newProps = new HashMap<String, Serializable>();
-                for (Entry<String, Serializable> prop : ctx.getProperties()
-                        .entrySet()) {
+                for (Entry<String, Serializable> prop : ctx.getProperties().entrySet()) {
                     Serializable propValue = prop.getValue();
                     if (propValue instanceof DocumentModel && session != null) {
                         DocumentModel oldDoc = (DocumentModel) propValue;
@@ -169,8 +169,8 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                     newProps.put(prop.getKey(), propValue);
                 }
                 newCtx.setProperties(newProps);
-                Event newEvt = new EventImpl(event.getName(), newCtx, event
-                        .getFlags(), event.getTime());
+                Event newEvt = new EventImpl(event.getName(), newCtx,
+                        event.getFlags(), event.getTime());
                 reconnectedEvents.add(newEvt);
             }
         }
