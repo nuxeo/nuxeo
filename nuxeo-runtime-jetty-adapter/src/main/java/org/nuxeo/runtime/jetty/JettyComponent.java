@@ -41,6 +41,8 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 /**
  * Contexts are registered like this:
@@ -48,23 +50,23 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * If there is no jetty.config a log context will be create programatically and registered first
  * Second an empty collection context is registered. Here will be registered all regular war contexts.
  * Third a the root collection is registered. This way all requests not handled by regular wars are directed to the root war
- * which usually is the webengine war in a nxserver application.  
- * 
+ * which usually is the webengine war in a nxserver application.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class JettyComponent extends DefaultComponent {
+public class JettyComponent extends DefaultComponent implements FrameworkListener {
 
     public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.server");
     public static final String XP_WEB_APP = "webapp";
     public static final String XP_DATA_SOURCE = "datasource";
-    public static String P_SCAN_WEBDIR = "org.nuxeo.runtime.jetty.scanWebDir"; 
+    public static String P_SCAN_WEBDIR = "org.nuxeo.runtime.jetty.scanWebDir";
 
     protected Server server;
     // here we are putting all regular war contexts
     // the root context will be appended after this context collection to be sure the regular contexts are checked first
-    // This is because the root context is bound to / so if it is checked first it will consume 
-    // all requests even if there is a context that is the target of the request  
+    // This is because the root context is bound to / so if it is checked first it will consume
+    // all requests even if there is a context that is the target of the request
     protected ContextHandlerCollection warContexts;
     protected File config;
     protected File log;
@@ -77,6 +79,9 @@ public class JettyComponent extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) throws Exception {
+
+        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(this);
+
         // apply bundled configuration
         URL cfg = null;
 
@@ -113,7 +118,7 @@ public class JettyComponent extends DefaultComponent {
             }
             server = new Server(p);
         }
-        
+
         // if a jetty.xml is present we don't configure logging - this should be done in that file.
         if (!hasConfigFile) {
             RequestLogHandler requestLogHandler = new RequestLogHandler();
@@ -125,13 +130,13 @@ public class JettyComponent extends DefaultComponent {
             //handlers = new Handler[] {contexts, new DefaultHandler(), requestLogHandler};
             server.addHandler(requestLogHandler);
             server.setSendServerVersion(true);
-            server.setStopAtShutdown(true);            
+            server.setStopAtShutdown(true);
         }
         // create the war context
         warContexts = new ContextHandlerCollection();
         server.addHandler(warContexts);
-        
-        // scan for WAR files        
+
+        // scan for WAR files
         // deploy any war found in web directory
         String scanWebDir = Framework.getProperty(P_SCAN_WEBDIR);
         if (scanWebDir != null && scanWebDir.equals("true")) {
@@ -140,7 +145,7 @@ public class JettyComponent extends DefaultComponent {
             File[] roots = web.listFiles();
             if (roots != null) {
                 for (File root : roots) {
-                    String name = root.getName();                
+                    String name = root.getName();
                     if (name.endsWith(".war")) {
                         logger.info("Found war: "+name);
                         name = name.substring(0, name.length()-4);
@@ -162,8 +167,8 @@ public class JettyComponent extends DefaultComponent {
             }
         }
         // start the server
-        server.start();
-        
+        //server.start(); -> server will be start after frameworks starts to be asure all services used by web.xml filters are registered.
+
     }
 
     @Override
@@ -204,13 +209,13 @@ public class JettyComponent extends DefaultComponent {
             if (defWebXml.isFile()) {
               ctx.setDefaultsDescriptor(defWebXml.getAbsolutePath());
             }
-            if ("/".equals(app.getContextPath())) { // the root context must be put at the end               
+            if ("/".equals(app.getContextPath())) { // the root context must be put at the end
                 server.addHandler(ctx);
             } else {
                 warContexts.addHandler(ctx);
             }
             org.mortbay.log.Log.setLog(new Log4JLogger(logger));
-            ctx.start();
+            //ctx.start();
             //HandlerWrapper wrapper = (HandlerWrapper)ctx.getHandler();
             //wrapper = (HandlerWrapper)wrapper.getHandler();
             //wrapper.setHandler(new NuxeoServletHandler());
@@ -241,6 +246,18 @@ public class JettyComponent extends DefaultComponent {
             return adapter.cast(server);
         }
         return null;
+    }
+
+    public void frameworkEvent(FrameworkEvent event) {
+        if (event.getType() == FrameworkEvent.STARTED) {
+            if (server != null) {
+                try {
+                    server.start();
+                } catch (Exception e) {
+                    logger.error("Failed to start Jetty server", e);
+                }
+            }
+        }
     }
 
 }
