@@ -23,12 +23,12 @@ import java.io.File;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageConverter;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageCropper;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageCropperAndResizer;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageIdentifier;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageInfo;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.JpegSimplifier;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageConverter;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropper;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropperAndResizer;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
+import org.nuxeo.ecm.platform.picture.magick.utils.JpegSimplifier;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.MultiTiler;
 
 public class TestMagickExecutors extends RepositoryOSGITestCase {

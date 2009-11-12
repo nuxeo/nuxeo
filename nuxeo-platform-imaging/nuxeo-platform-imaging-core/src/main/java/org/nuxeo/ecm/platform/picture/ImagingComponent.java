@@ -27,8 +27,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.core.libraryselector.LibrarySelector;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -167,5 +169,20 @@ public class ImagingComponent extends DefaultComponent implements
         return librarySelector;
     }
 
+    public ImageInfo getImageInfo(Blob blob) {
+        ImageInfo imageInfo = null;
+        File tmpFile = new File(System.getProperty("java.io.tmpdir"),
+                blob.getFilename() + ".tmp");
+        try {
+            blob.transferTo(tmpFile);
+            imageInfo = ImageIdentifier.getInfo(tmpFile.getAbsolutePath());
+        } catch (Exception e) {
+            log.error("Failed to get the ImageInfo for file"
+                    + blob.getFilename(), e);
+        } finally {
+            tmpFile.delete();
+        }        
+        return imageInfo;
+    }
 
 }

@@ -30,11 +30,11 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
+import org.nuxeo.ecm.platform.picture.magick.utils.JpegSimplifier;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 import org.nuxeo.ecm.platform.pictures.tiles.helpers.StringMaker;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageIdentifier;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageInfo;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.JpegSimplifier;
 
 /**
  * Wraps the needed information about tiling a picture in order to manage cache.

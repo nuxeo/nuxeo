@@ -17,7 +17,7 @@
  * $Id$
  *
  */
-package org.nuxeo.ecm.platform.pictures.tiles.magick.utils;
+package org.nuxeo.ecm.platform.picture.api;
 
 import java.io.File;
 

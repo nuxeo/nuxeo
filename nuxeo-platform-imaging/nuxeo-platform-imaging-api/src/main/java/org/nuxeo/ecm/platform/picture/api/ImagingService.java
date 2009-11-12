@@ -81,4 +81,16 @@ public interface ImagingService {
      */
     String getImageMimeType(File file);
     String getImageMimeType(InputStream in);
+    
+    /**
+     * Retrieves the <b>ImageInfo</b> of the blob that is received as parameter.
+     * The information provided by the <b>ImageInfo</b>, like width, height or
+     * format, is obtained using ImageMagick(see
+     * http://www.imagemagick.org/script/index.php for more details on
+     * ImageMagick)
+     * 
+     * @param blob - the blob of a picture
+     * @return - the <b>ImageInfo</b> of a blob
+     */
+    ImageInfo getImageInfo(Blob blob);    
 }

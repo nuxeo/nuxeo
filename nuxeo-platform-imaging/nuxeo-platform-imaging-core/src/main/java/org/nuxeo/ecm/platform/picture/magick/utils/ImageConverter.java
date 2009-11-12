@@ -17,10 +17,11 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.pictures.tiles.magick.utils;
+package org.nuxeo.ecm.platform.picture.magick.utils;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.MagickExecutor;
+import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
+
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>

@@ -17,35 +17,31 @@
  * $Id$
  *
  */
-package org.nuxeo.ecm.platform.pictures.tiles.magick.utils;
-
-import java.io.File;
+package org.nuxeo.ecm.platform.picture.magick.utils;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.MagickExecutor;
+import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 
 /**
- * Unit command to extract a simplified view of a JPEG file using ImageMagick =
- * extract the needed picture information to reach the target definition level
+ * Unit command to crop and resize an picture
  *
  * @author tiry
+ *
  */
-public class JpegSimplifier extends MagickExecutor {
+public class ImageCropperAndResizer extends MagickExecutor {
 
-    public static ImageInfo simplify(String inputFile, String outputFile,
-            int targetWidth, int targetHeight) throws Exception {
+    public static void cropAndResize(String inputFilePath,
+            String outputFilePath, int tileWidth, int tileHeight, int offsetX,
+            int offsetY, int targetWidth, int targetHeight) throws Exception {
         CmdParameters params = new CmdParameters();
+        params.addNamedParameter("tileWidth", String.valueOf(tileWidth));
+        params.addNamedParameter("tileHeight", String.valueOf(tileHeight));
+        params.addNamedParameter("offsetX", String.valueOf(offsetX));
+        params.addNamedParameter("offsetY", String.valueOf(offsetY));
         params.addNamedParameter("targetWidth", String.valueOf(targetWidth));
         params.addNamedParameter("targetHeight", String.valueOf(targetHeight));
-        params.addNamedParameter("inputFilePath", formatFilePath(inputFile));
-        params.addNamedParameter("outputFilePath", formatFilePath(outputFile));
-        execCommand("resizer", params);
-
-        if (new File(outputFile).exists()) {
-            return ImageIdentifier.getInfo(outputFile);
-        } else {
-            return null;
-        }
+        params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
+        params.addNamedParameter("outputFilePath", formatFilePath(outputFilePath));
+        execCommand("cropAndResize", params);
     }
-
 }

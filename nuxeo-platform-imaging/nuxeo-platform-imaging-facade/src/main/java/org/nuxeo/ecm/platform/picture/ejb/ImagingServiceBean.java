@@ -28,6 +28,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -85,6 +86,10 @@ public class ImagingServiceBean implements ImagingService {
 
     public String getImageMimeType(InputStream in) {
         return service.getImageMimeType(in);
+    }
+
+    public ImageInfo getImageInfo(Blob blob) {
+        return service.getImageInfo(blob);
     }
 
 }

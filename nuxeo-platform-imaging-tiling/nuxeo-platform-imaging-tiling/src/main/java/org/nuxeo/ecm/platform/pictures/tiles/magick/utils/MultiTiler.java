@@ -20,9 +20,7 @@
 package org.nuxeo.ecm.platform.pictures.tiles.magick.utils;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.MagickExecutor;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 
 /**
  * Unit command to generate several tiles at once using ImageMagick

@@ -20,8 +20,8 @@
 package org.nuxeo.ecm.platform.pictures.tiles.tilers;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageInfo;
 
 /**
  *
