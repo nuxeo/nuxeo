@@ -3,6 +3,9 @@
 
   <require>org.nuxeo.ecm.core.schema.TypeService</require>
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
+  <require>org.nuxeo.ecm.platform.picture.coreTypes</require>
+  <require>org.nuxeo.nuxeo.ecm.platform.audio.doctype</require>
+  <require>org.nuxeo.nuxeo.ecm.platform.video.doctype</require>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="dam_common" prefix="damc" src="schemas/dam_common.xsd" />
