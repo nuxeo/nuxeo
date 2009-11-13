@@ -2119,9 +2119,16 @@ public abstract class AbstractSession implements CoreSession,
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, READ);
+            String docPath = doc.getPath();
             doc = doc.getVersion(version.getLabel());
+            if (doc == null) {
+                // SQL Storage uses to return null if version not found
+                log.debug("Version " + version.getLabel()
+                        + " does not exist for " + docPath);
+                return null;
+            }
             log.debug("Retrieved the version " + version.getLabel()
-                    + " of the document " + doc.getPath());
+                    + " of the document " + docPath);
             return readModel(doc, null);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get version for " + docRef, e);

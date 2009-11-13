@@ -1323,6 +1323,47 @@ public abstract class TestAPI extends TestConnection {
         assertNull(versions2.get(1).getDescription());
     }
 
+    public void testRetreiveVersion() throws ClientException {
+        DocumentModel root = getRootDocument();
+
+        String name2 = "file#" + generateUnique();
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
+                name2, "File");
+        childFile = createChildDocument(childFile);
+
+        VersionModel version = new VersionModelImpl();
+        version.setLabel("v1");
+        version.setDescription("d1");
+
+        session.save();
+        session.checkIn(childFile.getRef(), version);
+
+        session.checkOut(childFile.getRef());
+        VersionModel version2 = new VersionModelImpl();
+        version2.setLabel("v2");
+
+        session.save();
+        session.checkIn(childFile.getRef(), version2);
+
+        //see if you can get version v1
+        VersionModel versionModel = new VersionModelImpl();
+        versionModel.setLabel("v1");
+        DocumentModel versionDoc = session.getDocumentWithVersion(childFile.getRef(), versionModel);
+        assertNotNull("Couldn't find version v1?", versionDoc);
+        versionModel.setLabel("v2");
+        versionDoc = session.getDocumentWithVersion(childFile.getRef(), versionModel);
+        assertNotNull("Couldn't find version v2?", versionDoc);
+        versionModel.setLabel("v3");
+        versionDoc = null;
+        try {
+            versionDoc = session.getDocumentWithVersion(childFile.getRef(), versionModel);
+        } catch (ClientException ce) {
+            //SQL repo returns null as simple as is
+            //JCR repo throws exception
+        }
+        assertNull("Could find version v3?", versionDoc);
+    }
+
     // TODO: fix and reenable SF 2007/05/23
     public void XXXtestRestoreToVersion() throws ClientException {
         DocumentModel root = getRootDocument();
