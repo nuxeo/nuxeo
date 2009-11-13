@@ -223,6 +223,12 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
             DocumentRef docRef = navigationContext.getCurrentDocument().getRef();
             DocumentModel docVersion = documentManager.getDocumentWithVersion(
                     docRef, selectedVersion);
+            if (docVersion == null) {
+                // it doesn't exist? don't remove. Still it is a problem
+                log.warn("Unexpectedly couldn't find the version "
+                        + selectedVersion.getLabel());
+                return false;
+            }
             return documentManager.canRemoveDocument(docVersion.getRef());
         } catch (ClientException e) {
             log.debug("ClientException in canRemoveArchivedVersion: "
@@ -236,6 +242,12 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
         DocumentRef docRef = navigationContext.getCurrentDocument().getRef();
         DocumentModel docVersion = documentManager.getDocumentWithVersion(
                 docRef, selectedVersion);
+        if (docVersion == null) {
+            // it doesn't exist? consider removed
+            log.warn("Unexpectedly couldn't find the version "
+                    + selectedVersion.getLabel());
+            return null;
+        }
         documentManager.removeDocument(docVersion.getRef());
         documentManager.save();
         resetVersions();
