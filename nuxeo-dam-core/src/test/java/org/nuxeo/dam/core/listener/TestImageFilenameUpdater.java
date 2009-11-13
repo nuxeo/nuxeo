@@ -38,7 +38,7 @@ import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 
 /**
  * @author btatar
- * 
+ *
  */
 public class TestImageFilenameUpdater extends SQLRepositoryJUnit4 {
 
@@ -51,6 +51,8 @@ public class TestImageFilenameUpdater extends SQLRepositoryJUnit4 {
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.platform.picture.api");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
+        deployBundle("org.nuxeo.ecm.platform.video.core");
+        deployBundle("org.nuxeo.ecm.platform.audio.core");
         deployBundle("org.nuxeo.dam.core");
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
@@ -140,8 +142,8 @@ public class TestImageFilenameUpdater extends SQLRepositoryJUnit4 {
 
         picture = session.getChildren(importSet.getRef()).get(0);
         viewsList = (List<Map<String, Object>>) picture.getPropertyValue("picture:views");
-        String title = (String) (String) viewsList.get(0).get("title");
-        Blob fileBlob = null;
+        String title = (String) viewsList.get(0).get("title");
+        Blob fileBlob;
         for (Map<String, Object> el : viewsList) {
             assertTrue("big_nuxeo_logo edit.jpg".equals(el.get("filename")));
             fileBlob = (Blob) el.get("content");

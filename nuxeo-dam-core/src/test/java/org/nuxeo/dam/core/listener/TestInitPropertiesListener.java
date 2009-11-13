@@ -24,6 +24,8 @@ public class TestInitPropertiesListener extends SQLRepositoryJUnit4 {
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.platform.picture.api");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
+        deployBundle("org.nuxeo.ecm.platform.video.core");
+        deployBundle("org.nuxeo.ecm.platform.audio.core");
         deployBundle("org.nuxeo.dam.core");
 
         openSession();
