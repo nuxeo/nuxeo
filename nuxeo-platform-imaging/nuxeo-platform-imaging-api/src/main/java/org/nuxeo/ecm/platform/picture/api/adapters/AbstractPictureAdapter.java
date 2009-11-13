@@ -144,18 +144,20 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
     }
 
     protected void setMetadata() throws IOException, ClientException {
-        Map<String, Object> metadata = getImagingService().getImageMetadata(
-                fileContent);
-        description = (String) metadata.get(META_DESCRIPTION);
+        boolean imageInfoUsed = false;
         ImageInfo imageInfo = getImagingService().getImageInfo(fileContent);
         if (imageInfo != null) {
             width = imageInfo.getWidth();
             height = imageInfo.getHeight();
-        } else {
+            imageInfoUsed = true;
+        }
+        Map<String, Object> metadata = getImagingService().getImageMetadata(
+                fileContent);
+        description = (String) metadata.get(META_DESCRIPTION);
+        if (!imageInfoUsed) {
             width = (Integer) metadata.get(META_WIDTH);
             height = (Integer) metadata.get(META_HEIGHT);
-        }       
-
+        }
         doc.setPropertyValue("picture:" + FIELD_BYLINE,
                 (String) metadata.get(META_BY_LINE));
         doc.setPropertyValue("picture:" + FIELD_CAPTION,

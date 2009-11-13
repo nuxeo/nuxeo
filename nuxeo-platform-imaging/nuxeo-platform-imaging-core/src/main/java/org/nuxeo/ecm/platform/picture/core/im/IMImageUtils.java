@@ -83,7 +83,7 @@ public class IMImageUtils implements ImageUtils {
     public InputStream resize(InputStream in, int width, int height) {
         try {
             CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
-            CommandAvailability commandAvailability = cles.getCommandAvailability("resize");
+            CommandAvailability commandAvailability = cles.getCommandAvailability("resizer");
             if (commandAvailability.isAvailable()) {
                 FileBlob fb = new FileBlob(in);
                 String path = fb.getFile().getAbsolutePath();

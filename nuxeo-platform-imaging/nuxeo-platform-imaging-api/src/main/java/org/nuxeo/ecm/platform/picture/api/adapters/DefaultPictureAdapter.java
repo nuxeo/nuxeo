@@ -74,9 +74,10 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         } catch (Exception e) {
             log.debug("An error occured while trying to set metadata for "
                     + filename, e);
-            return false;
         }
-        addViews(pictureTemplates, filename, title);
+        if (width != null && height != null) {            
+            addViews(pictureTemplates, filename, title);
+        }
         return true;
     }
 
