@@ -81,6 +81,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.platform.picture.ExifHelper;
+import org.nuxeo.ecm.platform.picture.IPTCHelper;
 import org.nuxeo.ecm.platform.picture.core.MetadataUtils;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
@@ -245,48 +246,51 @@ public class MistralMetadataUtils implements MetadataUtils {
                 Directory iptc = md.getDirectory(IptcDirectory.class);
 
                 if (iptc.containsTag(IptcDirectory.TAG_BY_LINE)) {
-                    metadata.put(META_BY_LINE, iptc.getString(
-                            IptcDirectory.TAG_BY_LINE).replace("\u0000", ""));
+                    metadata.put(
+                            META_BY_LINE,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_BY_LINE)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_BY_LINE_TITLE)) {
-                    metadata.put(META_BY_LINE_TITLE, iptc.getString(
-                            IptcDirectory.TAG_BY_LINE_TITLE).replace("\u0000",
-                            ""));
+                    metadata.put(
+                            META_BY_LINE_TITLE,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_BY_LINE_TITLE)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_CAPTION)) {
-                    metadata.put(META_CAPTION, iptc.getString(
-                            IptcDirectory.TAG_CAPTION).replace("\u0000", ""));
+                    metadata.put(
+                            META_CAPTION,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_CAPTION)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_CATEGORY)) {
-                    metadata.put(META_CATEGORY, iptc.getString(
-                            IptcDirectory.TAG_CATEGORY).replace("\u0000", ""));
+                    metadata.put(
+                            META_CATEGORY,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_CATEGORY)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_CITY)) {
-                    metadata.put(META_CITY, iptc.getString(
-                            IptcDirectory.TAG_CITY).replace("\u0000", ""));
+                    metadata.put(
+                            META_CITY,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_CITY)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_COPYRIGHT_NOTICE)) {
-                    metadata.put(META_COPYRIGHT_NOTICE, iptc.getString(
-                            IptcDirectory.TAG_COPYRIGHT_NOTICE).replace(
-                            "\u0000", ""));
+                    metadata.put(
+                            META_COPYRIGHT_NOTICE,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_COPYRIGHT_NOTICE)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_COUNTRY_OR_PRIMARY_LOCATION)) {
                     metadata.put(
                             META_COUNTRY_OR_PRIMARY_LOCATION,
-                            iptc.getString(
-                                    IptcDirectory.TAG_COUNTRY_OR_PRIMARY_LOCATION).replace(
-                                    "\u0000", ""));
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_COUNTRY_OR_PRIMARY_LOCATION)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_CREDIT)) {
-                    metadata.put(META_CREDIT, iptc.getString(
-                            IptcDirectory.TAG_CREDIT).replace("\u0000", ""));
+                    metadata.put(
+                            META_CREDIT,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_CREDIT)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_DATE_CREATED)) {
@@ -299,57 +303,56 @@ public class MistralMetadataUtils implements MetadataUtils {
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_HEADLINE)) {
-                    metadata.put(META_HEADLINE, iptc.getString(
-                            IptcDirectory.TAG_HEADLINE).replace("\u0000", ""));
+                    metadata.put(
+                            META_HEADLINE,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_HEADLINE)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_KEYWORDS)) {
-                    metadata.put(META_KEYWORDS, iptc.getString(
-                            IptcDirectory.TAG_KEYWORDS).replace("\u0000", ""));
+                    metadata.put(
+                            META_KEYWORDS,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_KEYWORDS)));
                 }
 
                 if (iptc.containsTag(135)) {
-                    metadata.put(META_LANGUAGE, iptc.getString(135).replace(
-                            "\u0000", ""));
+                    metadata.put(META_LANGUAGE,
+                            IPTCHelper.cleanupData(iptc.getString(135)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_OBJECT_NAME)) {
                     metadata.put(
                             META_OBJECT_NAME,
-                            iptc.getString(IptcDirectory.TAG_OBJECT_NAME).replace(
-                                    "\u0000", ""));
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_OBJECT_NAME)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_ORIGINAL_TRANSMISSION_REFERENCE)) {
                     metadata.put(
                             META_ORIGINAL_TRANSMISSION_REFERENCE,
-                            iptc.getString(
-                                    IptcDirectory.TAG_ORIGINAL_TRANSMISSION_REFERENCE).replace(
-                                    "\u0000", ""));
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_ORIGINAL_TRANSMISSION_REFERENCE)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_ORIGINATING_PROGRAM)) {
-                    metadata.put(META_ORIGINATING_PROGRAM, iptc.getString(
-                            IptcDirectory.TAG_ORIGINATING_PROGRAM).replace(
-                            "\u0000", ""));
+                    metadata.put(
+                            META_ORIGINATING_PROGRAM,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_ORIGINATING_PROGRAM)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_PROVINCE_OR_STATE)) {
-                    metadata.put(META_PROVINCE_OR_STATE, iptc.getString(
-                            IptcDirectory.TAG_PROVINCE_OR_STATE).replace(
-                            "\u0000", ""));
+                    metadata.put(
+                            META_PROVINCE_OR_STATE,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_PROVINCE_OR_STATE)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_PROVINCE_OR_STATE)) {
-                    metadata.put(META_PROVINCE_OR_STATE, iptc.getString(
-                            IptcDirectory.TAG_PROVINCE_OR_STATE).replace(
-                            "\u0000", ""));
+                    metadata.put(
+                            META_PROVINCE_OR_STATE,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_PROVINCE_OR_STATE)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_RECORD_VERSION)) {
-                    metadata.put(META_RECORD_VERSION, iptc.getString(
-                            IptcDirectory.TAG_RECORD_VERSION).replace("\u0000",
-                            ""));
+                    metadata.put(
+                            META_RECORD_VERSION,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_RECORD_VERSION)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_RELEASE_DATE)) {
@@ -362,42 +365,45 @@ public class MistralMetadataUtils implements MetadataUtils {
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_RELEASE_TIME)) {
-                    metadata.put(META_RELEASE_TIME, iptc.getString(
-                            IptcDirectory.TAG_RELEASE_TIME).replace("\u0000",
-                            ""));
+                    metadata.put(
+                            META_RELEASE_TIME,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_RELEASE_TIME)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_SOURCE)) {
-                    metadata.put(META_SOURCE, iptc.getString(
-                            IptcDirectory.TAG_SOURCE).replace("\u0000", ""));
+                    metadata.put(
+                            META_SOURCE,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_SOURCE)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_SPECIAL_INSTRUCTIONS)) {
-                    metadata.put(META_SPECIAL_INSTRUCTIONS, iptc.getString(
-                            IptcDirectory.TAG_SPECIAL_INSTRUCTIONS).replace(
-                            "\u0000", ""));
+                    metadata.put(
+                            META_SPECIAL_INSTRUCTIONS,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_SPECIAL_INSTRUCTIONS)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_SUPPLEMENTAL_CATEGORIES)) {
-                    metadata.put(META_SUPPLEMENTAL_CATEGORIES, iptc.getString(
-                            IptcDirectory.TAG_SUPPLEMENTAL_CATEGORIES).replace(
-                            "\u0000", ""));
+                    metadata.put(
+                            META_SUPPLEMENTAL_CATEGORIES,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_SUPPLEMENTAL_CATEGORIES)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_TIME_CREATED)) {
-                    metadata.put(META_TIME_CREATED, iptc.getString(
-                            IptcDirectory.TAG_TIME_CREATED).replace("\u0000",
-                            ""));
+                    metadata.put(
+                            META_TIME_CREATED,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_TIME_CREATED)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_URGENCY)) {
-                    metadata.put(META_URGENCY, iptc.getString(
-                            IptcDirectory.TAG_URGENCY).replace("\u0000", ""));
+                    metadata.put(
+                            META_URGENCY,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_URGENCY)));
                 }
 
                 if (iptc.containsTag(IptcDirectory.TAG_WRITER)) {
-                    metadata.put(META_WRITER, iptc.getString(
-                            IptcDirectory.TAG_WRITER).replace("\u0000", ""));
+                    metadata.put(
+                            META_WRITER,
+                            IPTCHelper.cleanupData(iptc.getString(IptcDirectory.TAG_WRITER)));
                 }
             }
         } catch (IOException e) {
