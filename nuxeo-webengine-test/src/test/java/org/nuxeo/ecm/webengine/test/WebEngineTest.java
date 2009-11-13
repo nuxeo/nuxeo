@@ -12,7 +12,6 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.test.web.BrowserConfig;
 import org.nuxeo.ecm.webengine.test.web.BrowserRunner;
 import org.nuxeo.ecm.webengine.test.web.pages.WebEngineHomePage;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.openqa.selenium.WebDriver;
 
 import com.google.inject.Inject;
