@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.runtime.api.Framework;
@@ -146,8 +147,14 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         Map<String, Object> metadata = getImagingService().getImageMetadata(
                 fileContent);
         description = (String) metadata.get(META_DESCRIPTION);
-        width = (Integer) metadata.get(META_WIDTH);
-        height = (Integer) metadata.get(META_HEIGHT);
+        ImageInfo imageInfo = getImagingService().getImageInfo(fileContent);
+        if (imageInfo != null) {
+            width = imageInfo.getWidth();
+            height = imageInfo.getHeight();
+        } else {
+            width = (Integer) metadata.get(META_WIDTH);
+            height = (Integer) metadata.get(META_HEIGHT);
+        }       
 
         doc.setPropertyValue("picture:" + FIELD_BYLINE,
                 (String) metadata.get(META_BY_LINE));
