@@ -7,6 +7,8 @@
             <ejb>${bundle.fileName}</ejb>
         </module>
     </extension>
+    <extension target="components#CONVERSATION_TIMEOUT" mode="replace">180000</extension>
+    <extension target="components#CONCURRENT_REQUEST_TIMEOUT" mode="replace">1000</extension>
     <extension target="web#EXCEPTION-FILTER">
 
         <filter>
