@@ -212,12 +212,6 @@
 
   <assemble>
     <delete>true</delete>
-    <outputFile>config</outputFile>
-    <file>commentService-config-bundle.xml</file>
-  </assemble>
-
-  <assemble>
-    <delete>true</delete>
     <outputFile>bundles</outputFile>
     <file>nuxeo-webengine-admin-${nuxeo.webengine.version}.jar</file>
     <file>nuxeo-webengine-ui-${nuxeo.webengine.version}.jar</file>
