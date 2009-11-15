@@ -87,7 +87,9 @@ public class NuxeoLauncher implements LifecycleListener {
 
     protected File resolveHomeDirectory(NuxeoWebappLoader loader) {
         String path = null;
-        if (home.startsWith("/")) {
+        if (home.startsWith("/") || home.startsWith("\\")
+                || home.contains(":/") || home.contains(":\\")) {
+            // absolute
             path = home;
         } else if (home.startsWith("${catalina.base}")) {
             path = getTomcatHome()
