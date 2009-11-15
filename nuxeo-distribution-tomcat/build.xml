@@ -27,6 +27,15 @@ JAVA_OPTS="$JAVA_OPTS -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF
 ]]>
       </replacevalue>
     </replace>
+    <replace file="${tomcat}/bin/catalina.bat">
+      <replacetoken>@echo off</replacetoken>
+      <replacevalue><![CDATA[@echo off
+
+set JAVA_OPTS=%JAVA_OPTS% -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF-8
+
+]]>
+      </replacevalue>
+    </replace>
     <chmod dir="${tomcat}/bin" perm="750" includes="*.sh" />
 
     <!-- Extract Nuxeo webapp -->
