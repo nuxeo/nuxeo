@@ -24,7 +24,7 @@
         <embedded.type>all</embedded.type>
         <embedded.includeNestedJars>true</embedded.includeNestedJars>
         <embedded.excludeLibs>false</embedded.excludeLibs>
-        <distribution>embedded-standalone</distribution>        
+        <distribution>embedded-standalone</distribution>
       </properties>
       <build>
         <plugins>

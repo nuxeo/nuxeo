@@ -60,7 +60,7 @@
       </dependencies>
     </profile>
   </profiles>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
