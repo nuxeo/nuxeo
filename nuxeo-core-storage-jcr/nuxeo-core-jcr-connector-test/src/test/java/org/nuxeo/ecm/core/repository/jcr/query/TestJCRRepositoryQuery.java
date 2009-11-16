@@ -61,6 +61,19 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
     }
 
     @Override
+    public void testQueryBasic() throws Exception {
+        // 7 Documents created
+        super.testQueryBasic();
+        DocumentModelList dml;
+
+        dml = session.query("SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-01-01' AND DATE '2008-01-01'");
+        assertEquals(5, dml.size()); // 2 Documents match the BETWEEN query
+
+        dml = session.query("SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-03-15' AND DATE '2008-01-01'");
+        assertEquals(6, dml.size()); // 1 Document matches the BETWEEN query
+    }
+
+    @Override
     public void testFulltextExpressionSyntax() {
         // no fulltext expressions for JCR
     }

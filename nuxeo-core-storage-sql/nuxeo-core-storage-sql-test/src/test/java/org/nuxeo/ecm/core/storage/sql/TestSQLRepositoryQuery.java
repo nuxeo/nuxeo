@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.test.QueryTestCase;
 
@@ -78,6 +79,23 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
             l.add(x);
         }
         assertEquals(3, l.size());
+    }
+
+    @Override
+    public void testQueryBasic() throws Exception {
+        // Documents without creation date don't match any DATE query
+        // 2 documents with creation date
+        super.testQueryBasic();
+        DocumentModelList dml;
+
+        dml = session.query("SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-01-01' AND DATE '2008-01-01'");
+        assertEquals(0, dml.size()); // 2 Documents match the BETWEEN query
+
+        dml = session.query("SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-03-15' AND DATE '2008-01-01'");
+        assertEquals(1, dml.size()); // 1 Document matches the BETWEEN query
+
+        dml = session.query("SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2009-03-15' AND DATE '2009-01-01'");
+        assertEquals(2, dml.size()); // 0 Document matches the BETWEEN query
     }
 
 }

@@ -1084,7 +1084,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     // use normal processing
                     super.visitExpression(node);
                 }
-            } else if (node.operator == Operator.BETWEEN) {
+            } else if (node.operator == Operator.BETWEEN || node.operator == Operator.NOTBETWEEN) {
                 LiteralList l = (LiteralList) node.rvalue;
                 node.lvalue.accept(this);
                 buf.append(' ');
