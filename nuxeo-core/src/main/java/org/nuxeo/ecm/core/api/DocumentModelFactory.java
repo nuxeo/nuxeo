@@ -263,12 +263,15 @@ public class DocumentModelFactory {
      */
     public static DocumentModelImpl createDocumentModel(String sessionId,
             DocumentType docType) throws DocumentException {
+        Set<String> facets = docType.getFacets();
+        String[] schemas = docType.getSchemaNames();
         DocumentModelImpl docModel = new DocumentModelImpl(sessionId,
-                docType.getName());
+                docType.getName(), null, null, null, null, schemas, facets);
         for (Schema schema : docType.getSchemas()) {
             DataModel dataModel = exportSchema(null, null, null, schema);
             docModel.addDataModel(dataModel);
         }
+
         return docModel;
     }
 
