@@ -26,12 +26,15 @@ import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
-import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
 import org.nuxeo.ecm.platform.picture.core.mistral.MistralImageUtils;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropper;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageResizer;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageRotater;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -48,25 +51,11 @@ public class IMImageUtils implements ImageUtils {
             if (commandAvailability.isAvailable()) {
                 FileBlob fb = new FileBlob(in);
                 String path = fb.getFile().getAbsolutePath();
-
-                CmdParameters params = new CmdParameters();
-                params.addNamedParameter("inputFilePath", path);
-                ExecResult result = cles.execCommand("identify", params);
-                String out = result.getOutput().get(0);
-                String res[] = out.split(" ");
-                File img2 = File.createTempFile("target", "." + res[0]);
-
-                params = new CmdParameters();
-                params.addNamedParameter("tileWidth", String.valueOf(width));
-                params.addNamedParameter("tileHeight", String.valueOf(height));
-                params.addNamedParameter("offsetX", String.valueOf(x));
-                params.addNamedParameter("offsetY", String.valueOf(y));
-                params.addNamedParameter("targetWidth", String.valueOf(width));
-                params.addNamedParameter("targetHeight", String.valueOf(height));
-                params.addNamedParameter("inputFilePath", path);
-                params.addNamedParameter("outputFilePath", img2);
-
-                cles.execCommand("crop", params);
+                ImageInfo imageInfo = ImageIdentifier.getInfo(path);
+                File img2 = File.createTempFile("target", "."
+                        + imageInfo.getFormat());
+                ImageCropper.crop(path, img2.getAbsolutePath(), width, height,
+                        x, y);
                 InputStream is = new FileInputStream(img2);
                 img2.delete();
                 return is;
@@ -88,21 +77,11 @@ public class IMImageUtils implements ImageUtils {
                 FileBlob fb = new FileBlob(in);
                 String path = fb.getFile().getAbsolutePath();
 
-                CmdParameters params = new CmdParameters();
-                params.addNamedParameter("inputFilePath", path);
-                ExecResult result = cles.execCommand("identify", params);
-                String out = result.getOutput().get(0);
-                String res[] = out.split(" ");
-                File img2 = File.createTempFile("target", "." + res[0]);
+                ImageInfo imageInfo = ImageIdentifier.getInfo(path);
+                File img2 = File.createTempFile("target", "."
+                        + imageInfo.getFormat());
+                ImageResizer.resize(path, img2.getAbsolutePath(), width, height);
 
-                params = new CmdParameters();
-                params.addNamedParameter("targetWidth", String.valueOf(width));
-                params.addNamedParameter("targetHeight", String.valueOf(height));
-                params.addNamedParameter("inputFilePath", path);
-                params.addNamedParameter("outputFilePath", img2);
-                params.addNamedParameter("targetDepth", res[3]);
-
-                cles.execCommand("resizer", params);
                 InputStream is = new FileInputStream(img2);
                 img2.delete();
 
@@ -124,23 +103,12 @@ public class IMImageUtils implements ImageUtils {
             if (commandAvailability.isAvailable()) {
                 FileBlob fb = new FileBlob(in);
                 String path = fb.getFile().getAbsolutePath();
-
-                CmdParameters params = new CmdParameters();
-                params.addNamedParameter("inputFilePath", path);
-                ExecResult result = cles.execCommand("identify", params);
-                String out = result.getOutput().get(0);
-                String res[] = out.split(" ");
-                File img2 = File.createTempFile("target", "." + res[0]);
-
-                params = new CmdParameters();
-                params.addNamedParameter("angle", String.valueOf(angle));
-                params.addNamedParameter("inputFilePath", path);
-                params.addNamedParameter("outputFilePath", img2);
-
-                cles.execCommand("rotate", params);
+                ImageInfo imageInfo = ImageIdentifier.getInfo(path);
+                File img2 = File.createTempFile("target", "."
+                        + imageInfo.getFormat());
+                ImageRotater.rotate(path, img2.getAbsolutePath(), angle);
                 InputStream is = new FileInputStream(img2);
                 img2.delete();
-
                 return is;
             } else {
                 MistralImageUtils miu = new MistralImageUtils();

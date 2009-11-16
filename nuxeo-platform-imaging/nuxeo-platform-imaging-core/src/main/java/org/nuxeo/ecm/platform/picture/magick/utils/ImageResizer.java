@@ -31,9 +31,9 @@ import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
  *
  * @author tiry
  */
-public class JpegSimplifier extends MagickExecutor {
+public class ImageResizer extends MagickExecutor {
 
-    public static ImageInfo simplify(String inputFile, String outputFile,
+    public static ImageInfo resize(String inputFile, String outputFile,
             int targetWidth, int targetHeight) throws Exception {
         
         // find the depth of the image first

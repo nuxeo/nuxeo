@@ -28,7 +28,7 @@ import org.nuxeo.ecm.platform.picture.magick.utils.ImageConverter;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropper;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropperAndResizer;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
-import org.nuxeo.ecm.platform.picture.magick.utils.JpegSimplifier;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageResizer;
 
 public class TestMagickExecutors extends RepositoryOSGITestCase {
 
@@ -59,7 +59,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
 
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
-        ImageInfo info = JpegSimplifier.simplify(file.getAbsolutePath(),
+        ImageInfo info = ImageResizer.resize(file.getAbsolutePath(),
                 outputFile, 20, 20);
         assertNotNull(info);
 

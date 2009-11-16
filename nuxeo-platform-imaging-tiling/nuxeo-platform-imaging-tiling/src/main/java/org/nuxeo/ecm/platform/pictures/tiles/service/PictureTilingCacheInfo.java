@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
-import org.nuxeo.ecm.platform.picture.magick.utils.JpegSimplifier;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageResizer;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 import org.nuxeo.ecm.platform.pictures.tiles.helpers.StringMaker;
 
@@ -190,7 +190,7 @@ public class PictureTilingCacheInfo {
                                 "reduced-" + neededWidth + "x" + neededHeight
                                         + ".jpg").toString();
                         try {
-                            ImageInfo shrinked = JpegSimplifier.simplify(
+                            ImageInfo shrinked = ImageResizer.resize(
                                     originalPictureInfos.getFilePath(),
                                     shrinkedImagePath, neededWidth,
                                     neededHeight);
