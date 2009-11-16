@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.dam.URLService">
 
-  <require>org.nuxeo.ecm.platform.ui.web.rest.URLService</require>
+  <require>org.nuxeo.ecm.platform.ui.web.rest.URLService.contrib</require>
 
   <documentation>
     Contributions for DAM basic rest navigation through the application.
