@@ -41,7 +41,13 @@
       <commandLine>convert</commandLine>
       <parameterString>#{inputFilePath} #{outputFilePath}</parameterString>
       <installationDirective>You need to install ImageMagic.</installationDirective>
-    </command>        
+    </command>  
+    
+    <command name="multiTiler" enabled="true">
+      <commandLine>convert</commandLine>
+      <parameterString>#{inputFilePath}  -crop #{tileWidth}x#{tileHeight} + repage   #{outputFilePath}</parameterString>
+      <installationDirective>You need to install ImageMagic.</installationDirective>
+    </command>          
 
   </extension>
 

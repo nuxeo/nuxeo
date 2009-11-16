@@ -51,8 +51,6 @@ public class TestService extends NXRuntimeTestCase {
 
         deployContrib("org.nuxeo.ecm.platform.picture.core",
         "OSGI-INF/commandline-imagemagick-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
-        "OSGI-INF/commandline-imagemagick-contrib.xml");
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         PictureTilingComponent.endGC();
     }

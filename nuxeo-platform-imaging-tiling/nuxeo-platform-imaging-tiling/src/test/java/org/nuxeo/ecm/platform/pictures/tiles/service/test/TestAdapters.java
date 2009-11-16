@@ -40,8 +40,6 @@ public class TestAdapters extends RepositoryOSGITestCase {
         deployContrib("org.nuxeo.ecm.platform.picture.core",
         "OSGI-INF/commandline-imagemagick-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
-        "OSGI-INF/commandline-imagemagick-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
                 "OSGI-INF/pictures-tiles-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
                 "OSGI-INF/pictures-tiles-adapter-contrib.xml");
