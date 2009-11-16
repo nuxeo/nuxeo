@@ -95,6 +95,9 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
     }
 
     public void testLogMiscMessage() throws ClientException {
+        List<String> eventIds = serviceUnderTest.getLoggedEventIds();
+        int n = eventIds.size();
+
         EventContextImpl ctx = new EventContextImpl(); // not:DocumentEventContext
         Event event = ctx.newEvent("documentModified"); // auditable
         event.setInline(false);
@@ -102,9 +105,8 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         Framework.getLocalService(EventService.class).fireEvent(event);
         waitForEventsDispatched();
 
-        List<String> eventIds = serviceUnderTest.getLoggedEventIds();
-        assertEquals(1, eventIds.size());
-        assertEquals("documentModified", eventIds.get(0));
+        eventIds = serviceUnderTest.getLoggedEventIds();
+        assertEquals(1, eventIds.size() - n);
     }
 
     public void testsyncLogCreation() throws AuditException, ClientException {
