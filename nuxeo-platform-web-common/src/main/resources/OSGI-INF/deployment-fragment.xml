@@ -7,8 +7,12 @@
             <ejb>${bundle.fileName}</ejb>
         </module>
     </extension>
-    <extension target="components#CONVERSATION_TIMEOUT" mode="replace">180000</extension>
-    <extension target="components#CONCURRENT_REQUEST_TIMEOUT" mode="replace">1000</extension>
+
+    <extension target="components#SEAM_CORE_MANAGER" mode="replace">
+      <property name="conversationTimeout">180000</property> <!-- 30 min -->
+      <property name="concurrentRequestTimeout">1000</property> <!-- 1s -->
+    </extension> 
+
     <extension target="web#EXCEPTION-FILTER">
 
         <filter>
