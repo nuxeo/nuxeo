@@ -8,13 +8,9 @@
     <property name="jndiPattern">nuxeo/#{ejbName}/local</property>
   </component>
 
+
   <component name="org.jboss.seam.core.manager">
-    <!-- default 30 min conversation timeout is to be found in
-         nuxeo-platform-web-common deployment fragment -->
-    <property name="conversationTimeout">%{CONVERSATION_TIMEOUT}%</property>
-    <!-- default 1s concurrent request timeout is to be found in
-         nuxeo-platform-web-common deployment fragment -->
-    <property name="concurrentRequestTimeout">%{CONCURRENT_REQUEST_TIMEOUT}%</property>
+    %{SEAM_CORE_MANAGER}%
   </component>
 
   <!--
