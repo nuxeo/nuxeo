@@ -43,9 +43,9 @@
           to "view_directory" if not set.
         </li>
         <li>
-          enabled: boolean stating if the declaration is enabled. This is useful
-          to disable some preceding declaration, as long as the same directory
-          name is used. Defaults to "false" if not set.
+          enabled: boolean stating if the declaration is enabled. This is
+          useful to disable some preceding declaration, as long as the same
+          directory name is used. Defaults to "false" if not set.
         </li>
       </ul>
       <p />
@@ -60,13 +60,14 @@
           directory).
         </li>
         <li>
-          targetDirectoryField: the field specifying the parent id in the chield
-          directory.
+          targetDirectoryField: the field specifying the parent id in the
+          child directory.
         </li>
       </ul>
       Any other delete constraint can be set, taking other specific parameters,
       provided it follows the
-      <em>org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint</em>
+      <em>org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint
+      </em>
       interface.
     </documentation>
 
