@@ -24,7 +24,7 @@
 
   <div class="infoTabContent">
     <div class="viewObject">
-      <c:if test="#{!documentActions.currentSelection.hasSchema('video') and !documentActions.currentSelection.hasSchema('audio')">
+      <c:if test="#{!documentActions.currentSelection.hasSchema('video') and !documentActions.currentSelection.hasSchema('audio')}">
       <a href="#" onclick="return popupAnnotation('#{annotationsActions.annotationsURL}')">
         <nxh:graphicImage id="theImage"
                           url="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Medium:content', documentActions.currentSelection.dublincore.modified)}?conversationId=#{conversation.id}"
