@@ -107,7 +107,16 @@ public class XSDLoader {
         initParser();
         // TODO: after fixing schema loading remove this and put it in the ctor
         // since we may improve schema loading speed by reusing already parsed schemas
-        parser.parse(file);
+        String systemId = file.toURL().toExternalForm();
+        if (file.getPath().startsWith("\\\\")) { // Windows UNC share
+            // work around a bug in Xerces due to
+            // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5086147
+            // (xsom passes a systemId of the form file://server/share/...
+            // but this is not parsed correctly when turned back into
+            // a File object inside Xerces)
+            systemId = systemId.replace("file://", "file:////");
+        }
+        parser.parse(systemId);
         XSSchemaSet schemaSet = parser.getResult();
         if (schemaSet != null) {
             XSSchema schema = getUserSchema(schemaSet);
