@@ -550,6 +550,9 @@
       <selector path=".filterBlock .dr-pmenu-top-group-div, .filterBlock .rich-pmenu-top-group-div">
         <border>none</border>
       </selector>
+      <selector path="#rightIconfilterForm\00003AtopicRichPanelMenuItem, #rightIconfilterForm\00003AcoverageRichPanelMenuItem">
+        <width>0</width>
+      </selector>
     </style>
     <style name="settings style" inherit="common style">
       <selector path=".tabsBar">
