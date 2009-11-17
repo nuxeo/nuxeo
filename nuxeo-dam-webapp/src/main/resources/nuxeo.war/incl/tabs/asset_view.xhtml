@@ -146,29 +146,29 @@
             <h:outputText value="#{messages['label.content.width']}"/>
             <h:outputText id="imgWidth" value="#{documentActions.currentSelection.picture.views[1].width}"/>
           </h:panelGrid>
+          <!-- Save and cancel buttons appear above comments when in edit mode -->
+	      <c:if test="#{documentActions.displayMode == 'edit'}">
+	        <div class="buttonsBar">
+	      	  <span>
+	           <a4j:commandLink styleClass="button"
+	                            action="#{documentActions.updateCurrentSelection}"
+	                            rendered="#{documentActions.displayMode == 'edit'}"
+	                            reRender="assetView, documentsList">
+	             <h:outputText value="#{messages['command.save']}"/>
+	           </a4j:commandLink>
+	         </span>
+	         <span>
+	           <a4j:commandLink styleClass="button"
+	                            action="#{documentActions.toggleDisplayMode}"
+	                            immediate="true" reRender="assetView">
+	             <h:outputText value="#{messages['command.cancel']}"
+	                           rendered="#{documentActions.displayMode == 'edit'}"/>
+	           </a4j:commandLink>
+	         </span>
+	        </div>
+	      </c:if>
         </div>
-      </div>
-      <!-- Save and cancel buttons appear above comments when in edit mode -->
-      <c:if test="#{documentActions.displayMode == 'edit'}">
-      <div>
-      	<span>
-         <a4j:commandLink styleClass="button"
-                          action="#{documentActions.updateCurrentSelection}"
-                          rendered="#{documentActions.displayMode == 'edit'}"
-                          reRender="assetView, documentsList">
-           <h:outputText value="#{messages['command.save']}"/>
-         </a4j:commandLink>
-       </span>
-       <span>
-         <a4j:commandLink styleClass="button"
-                          action="#{documentActions.toggleDisplayMode}"
-                          immediate="true" reRender="assetView">
-           <h:outputText value="#{messages['command.cancel']}"
-                         rendered="#{documentActions.displayMode == 'edit'}"/>
-         </a4j:commandLink>
-       </span>
-      </div>
-      </c:if>
+	  </div>
       <div class="togglePanel">
         <div class="togglePanelTitleBox">
           <h3>

@@ -360,6 +360,7 @@
       <selector path=".togglePanel .togglePanelBody">
         <background>#ffffff</background>
         <padding>8px 10px</padding>
+        <border-bottom>1px solid #ccc</border-bottom>
       </selector>
       <selector path=".dataRowEven">
         <background preset="white (DAM backgrounds)"/>
@@ -533,6 +534,7 @@
       <!-- rich faces disabled icon area for the panelMenuItem that holds the tree -->
       <selector path=".hiddenMenuIcon .dr-pmenu-nowrap img">
         <display>none</display>
+        <width>0</width>
       </selector>
       <selector path=".hiddenMenuIcon td.dr-pmenu-nowrap">
         <width>0</width>
@@ -541,6 +543,9 @@
       <selector path=".dr-tree-h-ic-div">
         <margin-left>8px</margin-left>
         <padding-left>10px</padding-left>
+      </selector>
+      <selector path=".dr-tree-h-text">
+        <padding>1px 0px 1px 4px</padding>
       </selector>
       <selector path=".filterBlock .dr-pmenu-top-group-div, .filterBlock .rich-pmenu-top-group-div">
         <border>none</border>
@@ -649,13 +654,14 @@
         <background-color>#a0a8b4</background-color>
         <border-top>1px solid #7e848c</border-top>
         <border-bottom>1px solid #7e848c</border-bottom>
-        <margin-top>3px</margin-top>
-        <text-align>center</text-align>
       </selector>
       <selector path=".actionBar .button">
         <font preset="small (DAM fonts)"/>
         <padding>1px 5px</padding>
         <margin>4px 5px</margin>
+      </selector>
+      <selector path=".selected">
+        <background-color>#d9e3ef</background-color>
       </selector>
     </style>
     <style element="page[1]/section[2]/cell[2]" inherit="common style">
@@ -680,6 +686,13 @@
       <selector path="td.fieldColumn input.dataInputTextDate">
         <width>250px</width>
         <margin>0 5px 0 0</margin>
+      </selector>
+      <selector path=".buttonsBar">
+        <padding-left>150px</padding-left>
+        <margin>10px 0px 5px</margin>
+      </selector>
+      <selector path=".buttonsBar .button">
+        <margin>0px 10px 0px 0px</margin>
       </selector>
     </style>
     <style element="page[1]/section[3]|page[3]/section[3]" inherit="common style">

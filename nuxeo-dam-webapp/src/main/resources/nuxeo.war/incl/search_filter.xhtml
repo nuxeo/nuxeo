@@ -13,6 +13,22 @@
   <a4j:region>
   <a4j:outputPanel id="filterFormPanel">
   <a4j:form id="filterForm">
+  
+  <div class="actionBar">
+    <a4j:commandButton id="filterFormClear"
+      type="button"
+      styleClass="button"
+      value="#{messages['label.action.filter.clear']}"
+      action="#{filterActions.clearFilters}"
+      reRender="filterFormPanel,filterResultTable,selectionView" eventsQueue="filterFormQueue" />
+      
+    <!-- this bit needs to be outside the rich:panelMenu -->
+    <a4j:commandButton id="filterFormSubmit" type="submit"
+      styleClass="button" style="visibility: hidden"
+      value="#{messages['label.action.filter.doFulltextSearch']}"
+      action="#{filterActions.invalidateProvider}"
+      reRender="filterResultTable,selectionView" eventsQueue="filterFormQueue" />
+  </div>
 
    <rich:panelMenu mode="none"
      iconExpandedGroup="disc" iconCollapsedGroup="disc" 
@@ -116,22 +132,7 @@
     </rich:panelMenuGroup>
 
    </rich:panelMenu>
-   
-   <div class="actionBar">
-    <a4j:commandButton id="filterFormClear"
-      type="button"
-      styleClass="button"
-      value="#{messages['label.action.filter.clear']}"
-      action="#{filterActions.clearFilters}"
-      reRender="filterFormPanel,filterResultTable,selectionView" eventsQueue="filterFormQueue" />
-      
-    <!-- this bit needs to be outside the rich:panelMenu -->
-    <a4j:commandButton id="filterFormSubmit" type="submit"
-      styleClass="button" style="visibility: hidden"
-      value="#{messages['label.action.filter.doFulltextSearch']}"
-      action="#{filterActions.invalidateProvider}"
-      reRender="filterResultTable,selectionView" eventsQueue="filterFormQueue" />
-  </div>
+
   </a4j:form>
   </a4j:outputPanel>
   </a4j:region>
