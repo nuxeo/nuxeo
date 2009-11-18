@@ -42,12 +42,16 @@
   background-color: green;
 }
 
-.x-panel-dd-spacer,.x-panel-tl {
-  border-color: #60a524;
+.x-panel-tl {
+  border:0;
+}
+
+.x-panel-dd-spacer {
+  border-color:#808080;
 }
 
 .x-panel-ghost {
-  background: #7cb71d;
+  background: #FFFFFF;
 }
 
 .x-panel-header {
@@ -111,14 +115,18 @@
 
 .x-color-palette-label {
   float: left;
-  margin-top: 37px;
-  font-size: 12px;
+  width: 105px;
 }
 
-.x-color-palette-pickr {
+.x-panel-palette {
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+
+.x-color-palette {
   float: left;
-  margin-left: 25px;
   width: 190px;
+  height:100%;
 }
 
 .x-column-possible {
@@ -145,8 +153,8 @@
 }
 
 .x-1-default {
-  min-width: 98%;
-  width: 98%
+  min-width: 99%;
+  width: 99%
 }
 
 .x-1-default>.x-portlet {

@@ -243,6 +243,7 @@ public class DropZone extends PortalDropZone {
   @Override
   public boolean notifyDrop(DragSource source, EventObject e, DragData data) {
     GadgetPortlet gp = portal.getGadgetPortlet(source.getId());
+    gp.reloadRenderUrl();
     GadgetPosition dropPosition = portal.getDropPosition();
     GadgetBean bean = gp.getGadgetBean();
     PortalColumn dragCol = portal.getPortalColumn(bean.getGadgetPosition()
@@ -252,9 +253,9 @@ public class DropZone extends PortalDropZone {
 
     grid = null;
 
-    if (lastPosC == null) {
+    if (lastPosC == null)
       return false;
-    }
+
     PanelProxy proxy = new PanelProxy(source.getProxy()
         .getJsObj());
 

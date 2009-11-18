@@ -1,5 +1,5 @@
 <div>
-<#if nxthemesInfo.model.anonymous == false>
+<#if nxthemesInfo.model.anonymous == false && Session.hasPermission(Document.ref, "WRITE")>
 
   <div id="getLayoutManager" class="getManager">
     <a href="#" id="openLayoutManager">Modifier l'apparence</a>
@@ -32,6 +32,12 @@
             <a href="#_" id="x-2-default" name="x-2-default" class="typeLayout" box="2"></a>
           </li>
           <li class="invisible">
+            <a href="#_" id="x-2-66-33" name="x-2-66-33" class="typeLayout" box="2"></a>
+          </li>
+          <li class="invisible">
+            <a href="#_" id="x-2-33-66" name="x-2-33-66" class="typeLayout" box="2"></a>
+          </li>
+          <li class="invisible">
             <a href="#_" id="x-3-default" name="x-3-default" class="typeLayout" box="3"></a>
           </li>
           <li class="invisible">
@@ -39,6 +45,21 @@
           </li>
           <li class="invisible">
             <a href="#_" id="x-4-footer3cols" name="x-4-footer3cols" class="typeLayout" box="4"></a>
+          </li>
+          <li class="invisible">
+            <a href="#_" id="x-4-header3cols" name="x-4-header3cols" class="typeLayout" box="4"></a>
+          </li>
+          <li class="invisible">
+            <a href="#_" id="x-4-66-33-50-50" name="x-4-66-33-50-50" class="typeLayout" box="4"></a>
+          </li>
+          <li class="invisible">
+            <a href="#_" id="x-4-50-50-66-33" name="x-4-50-50-66-33" class="typeLayout" box="4"></a>
+          </li>
+          <li class="invisible">
+            <a href="#_" id="x-4-100-66-33-100" name="x-4-100-66-33-100" class="typeLayout" box="4"></a>
+          </li>
+          <li class="invisible">
+            <a href="#_" id="x-4-100-33-66-100" name="x-4-100-33-66-100" class="typeLayout" box="4"></a>
           </li>
         </ul>
       </div>

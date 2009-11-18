@@ -8,7 +8,7 @@
     <!-- Jetty server -->
     <application root="/spaces" template-engine="freemarker">
       <negotiation>
-        <strategy>web-spaces</strategy>
+        <strategy>web</strategy>
         <default-engine>default</default-engine>
         <default-theme>default/default</default-theme>
         <default-perspective>default</default-perspective>
@@ -17,12 +17,17 @@
   </extension>
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="negotiations">
-    <negotiation object="theme" strategy="web-spaces">
+    <negotiation object="theme" strategy="web">
       <scheme> org.nuxeo.theme.webengine.negotiation.theme.RequestParameter
       </scheme>
       <scheme> org.nuxeo.theme.webengine.negotiation.theme.CookieValue
       </scheme>
       <scheme> org.nuxeo.theme.webengine.negotiation.theme.ViewId</scheme>
+
+       <scheme>
+        org.nuxeo.opensocial.spaces.webobject.themestrategy.ThemeResolverScheme
+      </scheme>
+
       <scheme> org.nuxeo.theme.webengine.negotiation.theme.DefaultTheme
       </scheme>
     </negotiation>

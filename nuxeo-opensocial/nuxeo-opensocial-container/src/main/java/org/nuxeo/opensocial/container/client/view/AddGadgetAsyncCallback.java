@@ -23,6 +23,7 @@ import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
 /**
  * AddGadgetAsyncCallback
  *
@@ -38,7 +39,11 @@ public class AddGadgetAsyncCallback<T> implements AsyncCallback<GadgetBean> {
   }
 
   public void onSuccess(GadgetBean bean) {
-    ContainerEntryPoint.getContainerPortal().addGadget(bean);
+    ContainerPortal p = ContainerEntryPoint.getContainerPortal();
+    p.addGadget(bean);
+    GadgetPortlet portlet = p.getGadgetPortletByRef(bean.getRef());
+    portlet.getTools()
+        .launchGear();
   }
 
 }

@@ -1,5 +1,5 @@
 <div>
-<#if nxthemesInfo.model.anonymous == false>
+<#if nxthemesInfo.model.anonymous == false && Session.hasPermission(Document.ref, "Write")>
   <div id="getGadgetManager" class="getManager">
     <a href="#" id="openGadgetManager">Ajouter un gadget</a>
   </div>

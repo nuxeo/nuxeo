@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="default-preferences" category="utils" author="Guillaume Cusnieux" directory_title="" singleton="true">
+  </ModulePrefs>
+  <UserPref name="COLOR_header" display_name="Encadre" default_value="99CC00" datatype="enum">
+  	<EnumValue display_value="gray" value="D6D5D3"/>
+  	<EnumValue display_value="blue" value="006092"/>
+  	<EnumValue display_value="green" value="99CC00"/>
+  	<EnumValue display_value="orange" value="FF6600"/>
+  </UserPref>
+  <UserPref name="COLOR_font" display_name="Police" default_value="FFFFFF" datatype="hidden" />
+  <UserPref name="COLOR_border" display_name="Bordure" default_value="FFFFFF" datatype="hidden" />
+  
+  <Content type="html"></Content>
+</Module>

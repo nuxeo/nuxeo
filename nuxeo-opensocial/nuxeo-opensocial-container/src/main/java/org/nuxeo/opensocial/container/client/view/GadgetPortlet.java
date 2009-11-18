@@ -3,7 +3,10 @@ package org.nuxeo.opensocial.container.client.view;
 import org.nuxeo.opensocial.container.client.GadgetService;
 import org.nuxeo.opensocial.container.client.JsLibrary;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
+import org.nuxeo.opensocial.container.client.bean.GadgetView;
+import org.nuxeo.opensocial.container.client.bean.PreferencesBean;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Frame;
 import com.gwtext.client.widgets.layout.FitLayout;
@@ -23,6 +26,7 @@ public class GadgetPortlet extends Portlet {
   private GadgetBean gadget;
   private GadgetTools tools;
   private Frame frame;
+  private GadgetForm form;
   private String view;
 
   public GadgetPortlet(GadgetBean gadget, String view) {
@@ -30,6 +34,8 @@ public class GadgetPortlet extends Portlet {
     this.gadget = gadget;
     this.view = view;
     buildPortlet();
+    this.form = new GadgetForm(this);
+    this.tools.setGadgetForm(form);
   }
 
   public GadgetPortlet(GadgetBean bean) {
@@ -52,27 +58,66 @@ public class GadgetPortlet extends Portlet {
     this.setId(getIdWithRefAndView(gadget.getRef(), view));
     this.tools = new GadgetTools(this);
     this.setTools(tools.getButtons());
+
     GadgetService.setAuthToken(getIframeId(), this.gadget.getRef());
     GadgetService.setRelayRpc(getIframeId(), this.gadget.getRef());
   }
 
-  public static String getIdWithRefAndView(String ref, String view) {
+  static enum DEFAULT_PREFS {
+    COLOR_header, COLOR_font, COLOR_border;
+
+    public static boolean isHeader(String name) {
+      return COLOR_header.name()
+          .equals(name);
+    }
+
+    public static boolean isFont(String name) {
+      return COLOR_font.name()
+          .equals(name);
+    }
+
+    public static boolean isBorder(String name) {
+      return COLOR_border.name()
+          .equals(name);
+    }
+
+  }
+
+  void renderDefaultPreferences() {
+    for (PreferencesBean p : this.gadget.getDefaultPrefs()) {
+      renderPreference(p.getName(), p.getValue());
+    }
+  }
+
+  public void renderPreference(String name, String value) {
+    if (value == null)
+      return;
+    else if (DEFAULT_PREFS.isBorder(name)) {
+      if ("FFFFFF".equals(value))
+        removeBorder(this.getId());
+      else
+        changeBorderColor(this.getId(), value);
+    } else if (DEFAULT_PREFS.isFont(name))
+      changeTitleColor(this.getId(), value);
+    else if (DEFAULT_PREFS.isHeader(name)) {
+      changeHeaderColor(this.getId(), buildImageUrl("bg_", value, ".jpg"));
+      changeToolsColor(this.getId(), buildImageUrl("tools_", value, ".gif"));
+    }
+  }
+
+  private String buildImageUrl(String prefix, String value, String extension) {
+    return GWT.getModuleBaseURL() + "images/" + prefix + value + extension;
+  }
+
+  static String getIdWithRefAndView(String ref, String view) {
     if (view == null)
       view = DEFAULT_VIEW;
     return GADGET_CONTAINER + ref + "-" + view;
   }
 
   private Frame buildFrame() {
+    reloadRenderUrl();
     Frame f = new Frame(this.gadget.getRenderUrl());
-    String urlView = gadget.getRenderUrl();
-    if (view.equals(CANVAS_VIEW)) {
-      urlView = urlView.replaceAll(VIEW_KEY + DEFAULT_VIEW, VIEW_KEY
-          + CANVAS_VIEW);
-    } else {
-      urlView = urlView.replaceAll(VIEW_KEY + CANVAS_VIEW, VIEW_KEY
-          + DEFAULT_VIEW);
-    }
-    gadget.setRenderUrl(urlView);
     f.setHeight("100%");
     f.setWidth("100%");
     Element elem = f.getElement();
@@ -81,18 +126,46 @@ public class GadgetPortlet extends Portlet {
     return f;
   }
 
+  @Override
+  public void setTitle(String title) {
+    if (title != null) {
+      super.setTitle(title);
+      if (this.form != null)
+        this.form.setTitle(title);
+      if (this.tools != null)
+        this.tools.setTitle(title);
+    }
+  }
+
+  public void reloadRenderUrl() {
+    String url = gadget.getRenderUrl();
+    if (url == null) {
+      JsLibrary.error("Render url of " + gadget.getName() + " is null");
+      return;
+    } else if (view.equals(CANVAS_VIEW))
+      url = url.replaceAll(VIEW_KEY + DEFAULT_VIEW, VIEW_KEY + CANVAS_VIEW);
+    else
+      url = url.replaceAll(VIEW_KEY + CANVAS_VIEW, VIEW_KEY + DEFAULT_VIEW);
+    gadget.setRenderUrl(url);
+  }
+
   private String getIframeId() {
     return GADGET + view + "-" + this.gadget.getRef();
   }
 
-  public void updateGadgetPortlet(GadgetBean bean) {
-    JsLibrary.updateIframe(getIframeId(), bean.getRenderUrl());
-    this.setGadgetBean(bean);
+  public void doLayoutFrame() {
+    JsLibrary.updateIframe(getIframeId(), this.gadget.getRenderUrl());
+  }
+
+  public void updateGadgetPortlet() {
+    reloadRenderUrl();
+    this.setGadgetBean(gadget);
     this.frame = buildFrame();
   }
 
-  private void setGadgetBean(GadgetBean bean) {
+  void setGadgetBean(GadgetBean bean) {
     this.gadget = bean;
+    this.form.setGadget(bean);
   }
 
   public GadgetBean getGadgetBean() {
@@ -104,7 +177,15 @@ public class GadgetPortlet extends Portlet {
     if (this.gadget.isCollapse())
       collapse(getIdWithRefAndView(gadget.getRef(), view));
     super.afterRender();
-    JsLibrary.updateFrameHeight();
+    JsLibrary.updateFrameWidth();
+    renderDefaultPreferences();
+    updateFrameHeightIfContentTypeIsUrl();
+  }
+
+  private void updateFrameHeightIfContentTypeIsUrl() {
+    GadgetView v = this.gadget.getView(view);
+    if (v != null && "URL".equals(v.getContentType()))
+      this.setHeight(1000);
   }
 
   static native void collapse(String id)
@@ -147,5 +228,40 @@ public class GadgetPortlet extends Portlet {
   public String getView() {
     return view;
   }
+
+  public GadgetForm getGadgetForm() {
+    return form;
+  }
+
+  public void setView(String view) {
+    this.view = view;
+  }
+
+  static native void changeHeaderColor(String id, String url)
+  /*-{
+    $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background-image","url("+url+")");
+    $wnd.jQuery("#"+id).find("div.x-panel-tr").css("background-image","url("+url+")");
+    $wnd.jQuery("#"+id).find("div.x-panel-tc").css("background-image","url("+url+")");
+  }-*/;
+
+  static native void changeToolsColor(String id, String url)
+  /*-{
+    $wnd.jQuery("#"+id).find("div.x-tool").css("background-image","url("+url+")");
+  }-*/;
+
+  static native void changeBorderColor(String id, String color)
+  /*-{
+    $wnd.jQuery("#"+id).find("div.x-panel-bwrap").css("border","2px solid #"+color);
+  }-*/;
+
+  static native void removeBorder(String id)
+  /*-{
+    $wnd.jQuery("#"+id).find("div.x-panel-bwrap").css("border","0px");
+  }-*/;
+
+  static native void changeTitleColor(String id, String color)
+  /*-{
+    $wnd.jQuery("#"+id).find("span.x-panel-header-text").css("color","#"+color);
+  }-*/;
 
 }
