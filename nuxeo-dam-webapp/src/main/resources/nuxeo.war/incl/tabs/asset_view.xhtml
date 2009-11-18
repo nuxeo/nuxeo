@@ -90,7 +90,7 @@
             <a4j:commandLink styleClass="button"
                              action="#{documentActions.updateCurrentSelection}"
                              rendered="#{documentActions.displayMode == 'edit'}"
-                             reRender="assetView, documentsList">
+                             reRender="assetView">
               <h:outputText value="#{messages['command.save']}"/>
             </a4j:commandLink>
           </span>
@@ -153,7 +153,7 @@
 	           <a4j:commandLink styleClass="button"
 	                            action="#{documentActions.updateCurrentSelection}"
 	                            rendered="#{documentActions.displayMode == 'edit'}"
-	                            reRender="assetView, documentsList">
+	                            reRender="assetView">
 	             <h:outputText value="#{messages['command.save']}"/>
 	           </a4j:commandLink>
 	         </span>
