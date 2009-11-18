@@ -83,6 +83,9 @@
         </properties>
       </widget>
       <widget name="expired" type="datetime">
+        <widgetModes>
+          <mode value="create">hidden</mode>
+        </widgetModes>       
         <labels>
           <label mode="any">label.dublincore.expired</label>
         </labels>
