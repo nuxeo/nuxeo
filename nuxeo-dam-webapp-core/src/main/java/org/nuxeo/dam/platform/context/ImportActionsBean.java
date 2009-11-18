@@ -92,7 +92,8 @@ public class ImportActionsBean implements Serializable {
             getFileManagerService().createDocumentFromBlob(documentManager,
                     blob, newImportSet.getPathAsString(), true, blob.getFilename());
         }
-
+        // delete the temporary file that was made by the richface
+        ((FileBlob)blob).getFile().delete();
         documentManager.save();
         sendImportSetCreationEvent();
         invalidateImportContext();

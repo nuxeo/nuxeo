@@ -9,7 +9,7 @@
 
     <plugin name="ArchiveImporter"
       class="org.nuxeo.dam.webapp.fileimporter.ArchiveImporter"
-      order="20">
+      order="9">
       <filter>application/zip</filter>
     </plugin>
 
