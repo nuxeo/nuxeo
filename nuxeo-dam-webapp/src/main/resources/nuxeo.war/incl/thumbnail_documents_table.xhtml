@@ -40,10 +40,6 @@
               styleClass="thumbViewPicture"/>
           </a4j:commandLink>
           <h:panelGroup>
-            <h:selectBooleanCheckbox
-              value="#{row.selected}"
-              onclick="selectDataTableRow('#{row.data.ref}', '#{providerName}', this)">
-            </h:selectBooleanCheckbox>
             <span id="title_#{row.data.ref}" class="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
               <a4j:commandLink id="titleLink" action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
                 <nxh:outputText value="#{documentActions.getTitleCropped(row.data, 15)}"
