@@ -39,7 +39,7 @@
     
     <command name="converter" enabled="true">
       <commandLine>convert</commandLine>
-      <parameterString>#{inputFilePath} #{outputFilePath}</parameterString>
+      <parameterString>-colorspace rgb #{inputFilePath} #{outputFilePath}</parameterString>
       <installationDirective>You need to install ImageMagic.</installationDirective>
     </command>  
     
