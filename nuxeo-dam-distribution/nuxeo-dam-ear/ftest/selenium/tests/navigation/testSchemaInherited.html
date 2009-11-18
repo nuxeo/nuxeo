@@ -60,6 +60,7 @@
 <tr>
 	<td>verifyText</td>
 	<td>Extra Wide With Extra Wide File Name That Has Spaces And Never Seems To End</td>
+	</td></td>
 </tr>
 <tr>
 	<td>verifyText</td>
@@ -106,7 +107,7 @@
 	<td>navigation:assetView:viewSubView:nxl_damc_1:nxw_authoringDate_1</td>
 	<td>6/8/09</td>
 </tr>
-<!-- test schema inherited for a video file -->
+<!-- test schema inherited for an image file -->
 <tr>
 	<td>watchA4jRequests</td>
 	<td></td>
@@ -303,6 +304,7 @@
 	<td>10000</td>
 	<td></td>
 </tr>
+<!-- check that the author details have disappeared from the asset view after they've been saved -->
 <tr>
 	<td>verifyTextNotPresent</td>
 	<td>//*[@id=&quot;navigation:assetView:editSubView:nxl_damc_1:nxw_author_1&quot;]</td>
@@ -313,18 +315,18 @@
 	<td>//*[@id=&quot;navigation:assetView:editSubView:nxl_damc_1:nxw_authoringDate_1&quot;]</td>
 	<td>6/8/09</td>
 </tr>
-<!-- comment out and fix later: need to commit before dam demo -->
-<!--tr>
-	<td>verifyElementNotPresent</td>
+<!-- since DAM-317: they should now not be updated on the main pane after clicking save -->
+<tr>
+	<td>verifyElementPresent</td>
 	<td>//*[@id=&quot;SEARCH_DOCUMENT_LIST:showListThumbnail:dataTable:7:damcAuthor&quot;]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementNotPresent</td>
+	<td>verifyElementPresent</td>
 	<td>//*[@id=&quot;SEARCH_DOCUMENT_LIST:showListThumbnail:dataTable:7:damcAuthoringDate&quot;]</td>
 	<td></td>
-</tr-->
-<!-- now check that they (author and authoringDate) are blank on the list view -->
+</tr>
+<!-- but if we now switch from thumbnail to list view, the author details should be updated on the main pane and be blank -->
 <!-- switch to list view -->
 <tr>
 	<td>watchA4jRequests</td>
