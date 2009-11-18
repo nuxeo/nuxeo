@@ -59,7 +59,7 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 public class FilterActions implements Serializable, ResultsProviderFarm {
 
     public static final String DC_COVERAGE_DIRECTORY_TREE = "dcCoverageDirectoryTree";
-    
+
     public static final String TOPIC_DIRECTORY_TREE = "topicDirectoryTree";
 
     private static final long serialVersionUID = 1L;
@@ -145,10 +145,10 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
     public List<DirectoryTreeNode> getCoverageTreeRoots() {
         return directoryTreeManager.get(DC_COVERAGE_DIRECTORY_TREE).getChildren();
     }
-    
+
     public List<DirectoryTreeNode> getTopicTreeRoots() {
         return directoryTreeManager.get(TOPIC_DIRECTORY_TREE).getChildren();
-    }    
+    }
 
     public PagedDocumentsProvider getResultsProvider(String queryModelName)
             throws ClientException, ResultsProviderFarmUserException {
@@ -180,6 +180,9 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
         DocumentModelList currentPage = provider.getCurrentPage();
         if (currentPage != null && !currentPage.isEmpty()) {
             documentActions.setCurrentSelection(currentPage.get(0));
+        } else {
+            // Nothing selected
+            documentActions.setCurrentSelection(null);
         }
 
         return provider;
