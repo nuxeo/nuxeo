@@ -22,6 +22,7 @@ public class GadgetPortlet extends Portlet {
   private static final String GADGET_CONTAINER = "portlet-";
   public static final String CANVAS_VIEW = "canvas";
   public static final String DEFAULT_VIEW = "default";
+
   private static final String VIEW_KEY = "&view=";
 
   private GadgetBean gadget;
@@ -246,6 +247,11 @@ public class GadgetPortlet extends Portlet {
     this.view = view;
   }
 
+  public native String getHeaderColor()
+  /*-{
+    return $wnd.jQuery("#"+this.id).find("div.x-panel-tl").css("background-color");
+  }-*/;
+
   private static native void changeHeaderColor(String id, String color)
   /*-{
     $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background-color","#"+color);
@@ -256,6 +262,7 @@ public class GadgetPortlet extends Portlet {
     $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background-image","url("+url+")");
     $wnd.jQuery("#"+id).find("div.x-panel-tr").css("background-image","url("+url+")");
     $wnd.jQuery("#"+id).find("div.x-panel-tc").css("background-image","url("+url+")");
+    $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background-color","#"+color);
   }-*/;
 
   static native void changeToolsColor(String id, String url)
@@ -265,7 +272,7 @@ public class GadgetPortlet extends Portlet {
 
   static native void changeBorderColor(String id, String color)
   /*-{
-    $wnd.jQuery("#"+id).find("div.x-panel-bwrap").css("border","2px solid #"+color);
+    $wnd.jQuery("#"+id).find("div.x-panel-ml").css("border","1px solid #"+color);
   }-*/;
 
   static native void removeBorder(String id)

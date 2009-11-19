@@ -112,7 +112,6 @@ public class InputFactory {
       palette = new ColorPalette();
       palette.addListener(new ColorListener(gp, bean.getName(), fieldHidden));
       palette.setTitle(CONSTANTS.colorChoice());
-      palette.setValue(fieldHidden.getValueAsString());
       label.setCls(CSS_CLS.COLOR_LBL.toString());
       palette.setCls(CSS_CLS.COLOR.toString());
       this.add(fieldHidden);
@@ -120,7 +119,6 @@ public class InputFactory {
       this.add(palette);
       this.addClass(CSS_CLS.COLOR_PAN.toString());
     }
-
   }
 
   private class NXFieldColorCombo extends NXFieldColor {

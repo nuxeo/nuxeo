@@ -67,7 +67,7 @@ public class GadgetForm {
 
     window.clear();
     window.add(form);
-    window.setTitle(MESSAGES.preferencesGadget(title));
+    window.setTitle(MESSAGES.preferencesGadget((title != null) ? title : ""));
     window.setWidth(400);
     window.setModal(true);
     window.show();
@@ -90,7 +90,7 @@ public class GadgetForm {
   private void addFields(FormPanel form, List<PreferencesBean> prefs) {
     for (PreferencesBean b : prefs) {
       form.add(InputFactory.getInstance()
-          .createField(portlet,b));
+          .createField(portlet, b));
     }
   }
 

@@ -54,11 +54,11 @@ public class GadgetTools {
 
       private native void updateLayoutSizeForMin(String width)
       /*-{
-      $wnd.jQuery("#containerPortal").width(width);
-      $wnd.jQuery(".containerPortal").width(width);
-      $wnd.jQuery(".x-column-inner").width(width);
-      $wnd.jQuery("#containerPanel").width(width);
-      }-*/;
+    $wnd.jQuery("#containerPortal").width(width);
+    $wnd.jQuery(".containerPortal").width(width);
+    $wnd.jQuery(".x-column-inner").width(width);
+    $wnd.jQuery("#containerPanel").width(width);
+  }-*/;
 
     });
     return new Tool[] { min };
@@ -76,7 +76,7 @@ public class GadgetTools {
 
       Tool close = new Tool(Tool.CLOSE, new Function() {
         public void execute() {
-          if (Window.confirm(MSG.askedDeleteGadget(title))) {
+          if (Window.confirm(MSG.askedDeleteGadget((title != null) ? title : ""))) {
             ContainerEntryPoint.getService()
                 .removeGadget(gadget, ContainerEntryPoint.getGwtParams(),
                     new AsyncCallback<GadgetBean>() {
@@ -120,13 +120,13 @@ public class GadgetTools {
 
         private native void updateLayoutSizeForMax(String id)
         /*-{
-        $wnd.jQuery("#containerPortal").width("100%");
-        $wnd.jQuery(".containerPortal").width("100%");
-        $wnd.jQuery("#containerPanel").width("100%");
-        $wnd.jQuery(".x-column-inner").width("100%");
-        $wnd.jQuery("#maximizedCol").attr("style","width:100%;padding:0;margin:0;");
-        $wnd.jQuery("#"+id).attr("style","width:100%;paddinf:0;");
-        }-*/;
+    $wnd.jQuery("#containerPortal").width("100%");
+    $wnd.jQuery(".containerPortal").width("100%");
+    $wnd.jQuery("#containerPanel").width("100%");
+    $wnd.jQuery(".x-column-inner").width("100%");
+    $wnd.jQuery("#maximizedCol").attr("style","width:100%;padding:0;margin:0;");
+    $wnd.jQuery("#"+id).attr("style","width:100%;paddinf:0;");
+  }-*/;
 
       });
 
@@ -148,7 +148,7 @@ public class GadgetTools {
 
   private static native void showManager()
   /*-{
-   $wnd.jQuery(".getManager").slideDown("fast");
+    $wnd.jQuery(".getManager").slideDown("fast");
   }-*/;
 
   public void launchGear() {

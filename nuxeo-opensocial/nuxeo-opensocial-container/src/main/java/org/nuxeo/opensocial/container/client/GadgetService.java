@@ -103,11 +103,13 @@ public class GadgetService {
   }-*/;
 
   public static void setTitleToGadget(String ref, String title) {
-    GadgetPortlet p = ContainerEntryPoint.getContainerPortal()
-        .getGadgetPortletByRef(ref);
-    p.setTitle(title);
-    p.getGadgetForm()
-        .setTitle(title);
+    if (title != null) {
+      GadgetPortlet p = ContainerEntryPoint.getContainerPortal()
+          .getGadgetPortletByRef(ref);
+      p.setTitle(title);
+      p.getGadgetForm()
+          .setTitle(title);
+    }
   };
 
   /**

@@ -116,6 +116,7 @@
 .x-color-palette-label {
   float: left;
   width: 105px;
+  margin-top:0px;
 }
 
 .x-panel-palette {
