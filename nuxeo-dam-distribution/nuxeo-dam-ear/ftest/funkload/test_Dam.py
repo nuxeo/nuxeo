@@ -84,12 +84,13 @@ class Dam(FunkLoadTestCase):
             #upload_uid = '0.2156772209657476'
 
             self.post(server_url + "/view_documents.faces", params=[
-                ['AJAXREQUEST', 'j_id91:j_id92'],
-                ['j_id91', 'j_id91'],
+                ['AJAXREQUEST', 'j_id84:j_id85'],
+                ['j_id84', 'j_id84'],
                 ['javax.faces.ViewState', self.getLastJsfState()],
-                ['j_id91:importset_creation_button', 'j_id91:importset_creation_button']],
+                ['j_id84:importset_creation_button',
+                 'j_id84:importset_creation_button']],
                       description="Import form")
-            self.assert_('importSetPanel' in self.getBody())
+            self.assert_('importset_form' in self.getBody())
 
             self.post(server_url + "/view_documents.faces?_richfaces_upload_uid=" + upload_uid + "&fileUploadForm=fileUploadForm&_richfaces_upload_file_indicator=true&AJAXREQUEST=j_id23", params=[
                 ['fileUploadForm:file', Upload(filepath)],
@@ -116,12 +117,10 @@ class Dam(FunkLoadTestCase):
                 ['importset_form:nxl_damc:nxw_author', 'auth'],
                 ['importset_form:nxl_damc:nxw_authoringDate', today],
                 ['importset_form_link_hidden_', 'importset_form:nxl_damc:nxw_authoringDate:trigger'],
-                ['importset_form_link_hidden_', 'importset_form:nxl_dublincore:nxw_expired:trigger'],
                 ['importset_form:nxl_dublincore:nxw_coverage:nxw_coverage_continent', 'africa'],
                 ['importset_form:nxl_dublincore:nxw_coverage:nxw_coverage_country', ''],
                 ['importset_form:nxl_dublincore:nxw_topic:nxw_topic_topic', 'art'],
                 ['importset_form:nxl_dublincore:nxw_topic:nxw_topic_subtopic', ''],
-                ['importset_form:nxl_dublincore:nxw_expired', ''],
                 ['importset_form', 'importset_form'],
                 ['autoScroll', ''],
                 ['javax.faces.ViewState',  state],
@@ -136,12 +135,10 @@ class Dam(FunkLoadTestCase):
                 ['importset_form:nxl_damc:nxw_author', author],
                 ['importset_form:nxl_damc:nxw_authoringDate', today],
                 ['importset_form_link_hidden_', 'importset_form:nxl_damc:nxw_authoringDate:trigger'],
-                ['importset_form_link_hidden_', 'importset_form:nxl_dublincore:nxw_expired:trigger'],
                 ['importset_form:nxl_dublincore:nxw_topic:nxw_topic_topic', 'art'],
                 ['importset_form:nxl_dublincore:nxw_topic:nxw_topic_subtopic', 'cinema'],
                 ['importset_form:nxl_dublincore:nxw_coverage:nxw_coverage_continent', 'africa'],
                 ['importset_form:nxl_dublincore:nxw_coverage:nxw_coverage_country', country],
-                ['importset_form:nxl_dublincore:nxw_expired', '11/18/10'],
                 ['importset_form', 'importset_form'],
                 ['autoScroll', ''],
                 ['javax.faces.ViewState',  state],
