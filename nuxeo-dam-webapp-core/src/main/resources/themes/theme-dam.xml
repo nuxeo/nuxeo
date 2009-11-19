@@ -227,7 +227,7 @@
       </selector>
       <selector path="body, div">
         <font preset="default (DAM fonts)"/>
-        <color preset="black (DAM colors)"/>
+        <color preset="blackfonts (DAM colors)"/>
         <line-height>1.25em</line-height>
       </selector>
       <selector path="img">
@@ -361,6 +361,11 @@
         <background>#ffffff</background>
         <padding>8px 10px</padding>
         <border-bottom>1px solid #ccc</border-bottom>
+      </selector>
+      <selector path=".togglePanel .togglePanelBody textarea">
+        <padding>5px</padding>
+        <font preset="default (DAM fonts)"/>
+        <border>1px solid #E0E0E0</border>
       </selector>
       <selector path=".dataRowEven">
         <background preset="white (DAM backgrounds)"/>
@@ -659,9 +664,9 @@
         <border-bottom>1px solid #7e848c</border-bottom>
       </selector>
       <selector path=".actionBar .button">
-        <font preset="small (DAM fonts)"/>
+        <font preset="tiny (DAM fonts)"/>
         <padding>1px 5px</padding>
-        <margin>4px 5px</margin>
+        <margin>1px 5px 2px</margin>
       </selector>
       <selector path=".selected">
         <background-color>#d9e3ef</background-color>
