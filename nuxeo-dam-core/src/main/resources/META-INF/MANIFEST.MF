@@ -15,4 +15,5 @@ Require-Bundle: org.nuxeo.dam.api,
 Nuxeo-component: OSGI-INF/dam-content-template-contrib.xml,
  OSGI-INF/dam-schemas-contrib.xml,
  OSGI-INF/dam-listeners-contrib.xml,
+ OSGI-INF/watermark-service-contrib.xml
  OSGI-INF/dam-directories-contrib.xml

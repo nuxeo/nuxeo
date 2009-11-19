@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.platform.prisma.commandline.executor.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+    point="command">
+    
+  <command name="watermark" enabled="true">
+      <commandLine>convert</commandLine>
+      <parameterString>#{watermarkFilePath} -resize #{watermarkWidth}x#{watermarkHeight} - | composite -dissolve 40 -gravity center - #{inputFilePath} #{outputFilePath}</parameterString>
+      <installationDirective>You need to install ImageMagic.</installationDirective>
+    </command>
+   
+  </extension>
+
+</component>
