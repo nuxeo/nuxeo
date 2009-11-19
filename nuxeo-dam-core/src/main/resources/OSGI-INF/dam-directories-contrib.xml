@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.dam.directories">
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+    
+    <directory name="dam_media_type">
+      <schema>vocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>media_type</table>
+      <idField>id</idField>
+      <dataFile>directories/dam_media_type.csv</dataFile>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+    
+    <directory name="dam_geo_broadcast">
+      <schema>vocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>geo_broadcast</table>
+      <idField>id</idField>
+      <dataFile>directories/dam_geo_broadcast.csv</dataFile>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+    
+    <directory name="dam_licence">
+      <schema>vocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>licence</table>
+      <idField>id</idField>
+      <dataFile>directories/dam_licence.csv</dataFile>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+  </extension>
+
+</component>

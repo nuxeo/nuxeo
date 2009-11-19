@@ -1,0 +1,50 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:a4j="http://richfaces.org/a4j"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:nxh="http://nuxeo.org/nxweb/html"
+     xmlns:nxl="http://nuxeo.org/nxforms/layout"
+     xmlns:nxd="http://nuxeo.org/nxweb/document"
+     class="infoTabContent">
+
+  <a4j:form id="assetView">
+    <div class="togglePanel">
+      <div class="togglePanelTitleBox">
+        <h3>
+          <h:outputText value="#{messages['label.header.ip.rights']}"/>
+        </h3>
+        <div class="dataBlockActions">
+          <span>
+            <a4j:commandLink styleClass="button"
+                             action="#{documentActions.updateCurrentSelection}"
+                             rendered="#{documentActions.displayMode == 'edit'}"
+                             reRender="assetView">
+              <h:outputText value="#{messages['command.save']}"/>
+            </a4j:commandLink>
+          </span>
+          <span>
+            <a4j:commandLink styleClass="button"
+                             action="#{documentActions.toggleDisplayMode}"
+                             immediate="true" reRender="assetView">
+              <h:outputText value="#{messages['command.cancel']}"
+                            rendered="#{documentActions.displayMode == 'edit'}"/>
+              <h:outputText value="#{messages['command.edit']}"
+                            rendered="#{documentActions.displayMode == 'view'}"/>
+            </a4j:commandLink>
+          </span>
+        </div>
+        <div style="clear:both;"></div>
+      </div>
+      
+      <f:subview id="viewIRights" rendered="#{documentActions.displayMode == 'view'}">
+        <nxl:layout name="ip_rights" mode="view" value="#{documentActions.currentSelection}"/>
+      </f:subview>
+      <f:subview id="editIPRights" rendered="#{documentActions.displayMode == 'edit'}">
+        <nxl:layout name="ip_rights" mode="edit" value="#{documentActions.currentSelection}"/>
+      </f:subview>
+    </div>
+  </a4j:form>
+
+</div>

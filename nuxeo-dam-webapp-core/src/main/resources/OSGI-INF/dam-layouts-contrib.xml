@@ -529,6 +529,110 @@
       </widget>
     </layout>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <layout name="ip_rights">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>media_type</widget>
+        </row>      
+        <row>
+          <widget>geo_broadcast</widget>
+        </row>
+        <row>
+          <widget>licence</widget>
+        </row>
+        <row>
+          <widget>embargo_date</widget>
+        </row>
+        <row>
+          <widget>expiration_date</widget>
+        </row>
+      </rows>
+
+      <widget name="media_type" type="selectOneDirectory">
+        <translated>true</translated>
+        <fields>
+          <field>ipr:media_type</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="directoryName">dam_media_type</property>
+          <property name="localize">true</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="ordering">label</property>
+          <property name="cssStyleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="geo_broadcast" type="selectOneDirectory">
+        <translated>true</translated>
+        <fields>
+          <field>ipr:geo_broadcast</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="directoryName">dam_geo_broadcast</property>
+          <property name="localize">true</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="ordering">label</property>
+          <property name="cssStyleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="licence" type="selectOneDirectory">
+        <translated>true</translated>
+        <fields>
+          <field>ipr:licence</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="directoryName">dam_licence</property>
+          <property name="localize">true</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="ordering">label</property>
+          <property name="cssStyleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="embargo_date" type="datetime">     
+        <translated>true</translated>
+        <fields>
+          <field>ipr:embargo_date</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateFormater()}</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="format">#{nxu:basicDateFormater()}</property>
+        </properties>
+      </widget>
+      <widget name="expiration_date" type="datetime">     
+        <translated>true</translated>
+        <fields>
+          <field>ipr:expiration_date</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateFormater()}</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="format">#{nxu:basicDateFormater()}</property>
+        </properties>
+      </widget>
+    </layout>
   </extension>
 
 </component>

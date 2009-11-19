@@ -17,6 +17,11 @@
       <category>VIEW_ASSET_ACTION_LIST</category>
     </action>
 
+    <action id="TAB_IP_RIGHTS" link="/incl/tabs/ip_rights.xhtml" order="30"
+      label="action.ip.rights" icon="/icons/file.gif">
+      <category>VIEW_ASSET_ACTION_LIST</category>
+    </action>
+
   </extension>
 
 </component>
