@@ -92,27 +92,6 @@ public class ExifHelper {
             result[count++] = bytes[i];
         }
         return result;
+    }
 
-	/**
-	 * Extracts the bytes from the received byte array.The first argument
-	 * represents the starting location (zero-based) and the second argument
-	 * represent the ending location which is mot zero based.
-	 * 
-	 * @param bytes
-	 *            - the byte array
-	 * @param beginIndex
-	 *            - the begin index which is zero based
-	 * @param endIndex
-	 *            - the end index which is not zero based
-	 * @return
-	 */
-	public static byte[] extractBytes(byte[] bytes, int beginIndex, int endIndex) {
-		byte[] result = new byte[endIndex - beginIndex];
-		int count = 0;
-		for (int i = beginIndex; i < endIndex; i++) {
-			result[count++] = bytes[i];
-		}
-		return result;
-
-	}
 }
