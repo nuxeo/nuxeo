@@ -14,6 +14,24 @@ import org.nuxeo.ecm.webengine.model.*;
 @Produces(["text/html", "*/*"])
 public class User extends DefaultObject {
 
+  String displayName;
+
+  /**
+   * Initialize the object.
+   * args values are the one passed to the method newObject(String type, Object ... args)
+   */
+  protected void initialize(Object... args) {
+    displayName = args[0];
+  }
+
+  /**
+   * Getter the variable displayName. Would be accessible from views with ${This.displayName}
+   */
+  public String getDisplayName() {
+    return displayName;
+  }
+
+
   /**
    * Get the index view of the User object.
    * The view file is located in <code>skin/views/User</code> so that it can be easily extended
