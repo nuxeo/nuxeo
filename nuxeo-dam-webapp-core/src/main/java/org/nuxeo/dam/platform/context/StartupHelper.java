@@ -51,6 +51,8 @@ public class StartupHelper implements Serializable {
 
     private static final long serialVersionUID = 3248972387619873245L;
 
+    protected String localeStr;
+
     protected static final Log log = LogFactory.getLog(StartupHelper.class);
 
     @In(create = true)
@@ -82,7 +84,7 @@ public class StartupHelper implements Serializable {
      * domain with title 'domainTitle' and redirect to it on viewId.
      * <p>
      * If several servers are available, let the user choose.
-     *
+     * 
      * @return the view id of the contextually computed startup page
      * @throws ClientException
      */
@@ -112,7 +114,10 @@ public class StartupHelper implements Serializable {
 
         // DAM-173 - Set locale from login page.
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        String localeStr = request.getParameter("language");
+
+        if (request.getParameter("language") != null) {
+            localeStr = request.getParameter("language");
+        }
         localeSelector.selectLanguage(localeStr);
 
         // TODO : REMOVE
