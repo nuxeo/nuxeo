@@ -16,16 +16,30 @@ $(document).ready( function() {
     $(this).addClass("selected");
     return false
   });
-
-  $("#openLayoutManager").click(function(){
-    $("#getLayoutManager").hide();
-    $("#layoutManager").slideDown();
-    return false
+	
+  $("#openTabsManager").click(function(){
+  	  $("#tabManagerOpen").slideDown();
+  	  $("#tabManager").hide();
+  	  $(".manager").hide();
+  	  $($("li.active > a").attr("id")).show();
+  	   return false;
   });
 
   $("#closeLinkLayoutManager").click(function(){
-    $("#getLayoutManager").show();
-    $("#layoutManager").slideUp();
-    return false;
+  	  $("#tabManagerOpen").hide();
+  	  $("#tabManager").show();
+  	  return false;
   });
+  
+  $(".tabManage").click(function(){
+  		$(".manager").hide();
+  		$("li.active").removeClass("active");
+  		$("a.selected").removeClass("selected");
+  		$($(this).parent().get(0)).addClass("active");
+  		$(this).addClass("selected");
+		$($(this).attr("id")).show();  
+		return false;
+  });
+
+
 });
