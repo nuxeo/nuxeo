@@ -101,6 +101,8 @@
     <profile>
       <id>tomcat</id>
       <modules>
+        <module>nuxeo-platform-ear</module>
+        <module>nuxeo-distribution-dm</module>
         <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
