@@ -20,6 +20,9 @@
   <profiles>
     <profile>
       <id>embedded-standalone</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
       <properties>
         <embedded.type>all</embedded.type>
         <embedded.includeNestedJars>true</embedded.includeNestedJars>
@@ -28,39 +31,39 @@
       </properties>
       <build>
         <plugins>
-        <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-nuxeo-plugin</artifactId>
-        <executions>
-            <execution>
-            <id>${distribution}</id>
-            <phase>package</phase>
-            <goals>
-              <goal>allinone</goal>
-            </goals>
-            <configuration>
-              <includeNestedJars>${embedded.includeNestedJars}</includeNestedJars>
-              <excludeLibs>${embedded.excludeLibs}</excludeLibs>
-              <src>${basedir}/target/${application.name}.zip</src>
-              <target>${basedir}/target/${application.name}-${embedded.type}.jar</target>
-              <launcher>org.nuxeo.ecm.distribution:nuxeo-embedded-launcher:${project.version}</launcher>
-            </configuration>
-          </execution>
-          <execution>
-            <id>attach-all</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach</goal>
-            </goals>
-            <configuration>
-              <file>${basedir}/target/${application.name}-${embedded.type}.jar</file>
-              <type>jar</type>
-              <classifier>${embedded.type}</classifier>
-            </configuration>
-          </execution>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-nuxeo-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>${distribution}</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>allinone</goal>
+                </goals>
+                <configuration>
+                  <includeNestedJars>${embedded.includeNestedJars}</includeNestedJars>
+                  <excludeLibs>${embedded.excludeLibs}</excludeLibs>
+                  <src>${basedir}/target/${application.name}.zip</src>
+                  <target>${basedir}/target/${application.name}-${embedded.type}.jar</target>
+                  <launcher>org.nuxeo.ecm.distribution:nuxeo-embedded-launcher:${project.version}</launcher>
+                </configuration>
+              </execution>
+              <execution>
+                <id>attach-all</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>attach</goal>
+                </goals>
+                <configuration>
+                  <file>${basedir}/target/${application.name}-${embedded.type}.jar</file>
+                  <type>jar</type>
+                  <classifier>${embedded.type}</classifier>
+                </configuration>
+              </execution>
 
-        </executions>
-      </plugin>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
@@ -74,39 +77,39 @@
       </properties>
       <build>
         <plugins>
-        <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-nuxeo-plugin</artifactId>
-        <executions>
-            <execution>
-            <id>${distribution}</id>
-            <phase>package</phase>
-            <goals>
-              <goal>allinone</goal>
-            </goals>
-            <configuration>
-              <includeNestedJars>${embedded.includeNestedJars}</includeNestedJars>
-              <excludeLibs>${embedded.excludeLibs}</excludeLibs>
-              <src>${basedir}/target/${application.name}.zip</src>
-              <target>${basedir}/target/${application.name}-${embedded.type}.jar</target>
-              <launcher>org.nuxeo.ecm.distribution:nuxeo-embedded-launcher:${project.version}</launcher>
-            </configuration>
-          </execution>
-          <execution>
-            <id>attach-all</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach</goal>
-            </goals>
-            <configuration>
-              <file>${basedir}/target/${application.name}-${embedded.type}.jar</file>
-              <type>jar</type>
-              <classifier>${embedded.type}</classifier>
-            </configuration>
-          </execution>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-nuxeo-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>${distribution}</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>allinone</goal>
+                </goals>
+                <configuration>
+                  <includeNestedJars>${embedded.includeNestedJars}</includeNestedJars>
+                  <excludeLibs>${embedded.excludeLibs}</excludeLibs>
+                  <src>${basedir}/target/${application.name}.zip</src>
+                  <target>${basedir}/target/${application.name}-${embedded.type}.jar</target>
+                  <launcher>org.nuxeo.ecm.distribution:nuxeo-embedded-launcher:${project.version}</launcher>
+                </configuration>
+              </execution>
+              <execution>
+                <id>attach-all</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>attach</goal>
+                </goals>
+                <configuration>
+                  <file>${basedir}/target/${application.name}-${embedded.type}.jar</file>
+                  <type>jar</type>
+                  <classifier>${embedded.type}</classifier>
+                </configuration>
+              </execution>
 
-        </executions>
-      </plugin>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
@@ -156,19 +159,16 @@
               <type>zip</type>
             </configuration>
           </execution>
-          <!--execution>
-            <id>all-in-one</id>
-            <goals>
-              <goal>allinone</goal>
-            </goals>
-            <configuration>
-              <includeNestedJars>${embedded.includeNestedJars}</includeNestedJars>
-              <excludeLibs>${embedded.excludeLibs}</excludeLibs>
-              <src>${basedir}/target/${application.name}.zip</src>
-              <target>${basedir}/target/nuxeo-${embedded.type}-${project.version}.jar</target>
-              <launcher>org.nuxeo.ecm.distribution:nuxeo-embedded-launcher:${project.version}</launcher>
-            </configuration>
-          </execution-->
+          <!--
+            execution> <id>all-in-one</id> <goals> <goal>allinone</goal>
+            </goals> <configuration>
+            <includeNestedJars>${embedded.includeNestedJars}</includeNestedJars>
+            <excludeLibs>${embedded.excludeLibs}</excludeLibs>
+            <src>${basedir}/target/${application.name}.zip</src>
+            <target>${basedir}/target/nuxeo-${embedded.type}-${project.version}.jar</target>
+            <launcher>org.nuxeo.ecm.distribution:nuxeo-embedded-launcher:${project.version}</launcher>
+            </configuration> </execution
+          -->
         </executions>
       </plugin>
     </plugins>
