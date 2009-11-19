@@ -353,6 +353,9 @@
       <selector path=".togglePanel h3 a,.togglePanel h3 a:link, .togglePanel h3 a:visited, .togglePanel h3 a:hover, .togglePanel h3 a:visited:hover">
         <color>#4B4D68</color>
       </selector>
+      <selector path=".togglePanel h3.noIcon">
+        <padding>4px 0px 4px 10px</padding>
+      </selector>
       <selector path=".dataBlockActions">
         <float>right</float>
         <padding>3px 0px</padding>
@@ -557,6 +560,21 @@
       </selector>
       <selector path="#rightIconfilterForm\00003AtopicRichPanelMenuItem, #rightIconfilterForm\00003AcoverageRichPanelMenuItem">
         <width>0</width>
+      </selector>
+      <selector path=".comments">
+        <padding>10px 5px 0px</padding>
+      </selector>
+      <selector path=".commentBlock">
+        <margin>0px 0px 15px</margin>
+      </selector>
+      <selector path=".commentInfo">
+        <margin>0px 0px 3px</margin>
+      </selector>
+      <selector path=".commentInfo .date">
+        <color>#727272</color>
+      </selector>
+      <selector path=".commentInfo .author">
+        <color>#4b4d68</color>
       </selector>
     </style>
     <style name="settings style" inherit="common style">

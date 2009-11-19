@@ -12,7 +12,7 @@
   <a4j:form id="assetView">
     <div class="togglePanel">
       <div class="togglePanelTitleBox">
-        <h3>
+        <h3 class="noIcon">
           <h:outputText value="#{messages['label.header.ip.rights']}"/>
         </h3>
         <div class="dataBlockActions">
@@ -37,13 +37,14 @@
         </div>
         <div style="clear:both;"></div>
       </div>
-      
-      <f:subview id="viewIRights" rendered="#{documentActions.displayMode == 'view'}">
-        <nxl:layout name="ip_rights" mode="view" value="#{documentActions.currentSelection}"/>
-      </f:subview>
-      <f:subview id="editIPRights" rendered="#{documentActions.displayMode == 'edit'}">
-        <nxl:layout name="ip_rights" mode="edit" value="#{documentActions.currentSelection}"/>
-      </f:subview>
+      <div class="togglePanelBody">
+        <f:subview id="viewIRights" rendered="#{documentActions.displayMode == 'view'}">
+          <nxl:layout name="ip_rights" mode="view" value="#{documentActions.currentSelection}"/>
+        </f:subview>
+        <f:subview id="editIPRights" rendered="#{documentActions.displayMode == 'edit'}">
+          <nxl:layout name="ip_rights" mode="edit" value="#{documentActions.currentSelection}"/>
+        </f:subview>
+      </div>
     </div>
   </a4j:form>
 

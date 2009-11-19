@@ -618,6 +618,7 @@
         </properties>
         <properties widgetMode="edit">
           <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="styleClass">dataInputTextDate</property>
         </properties>
       </widget>
       <widget name="expiration_date" type="datetime">     
@@ -630,6 +631,7 @@
         </properties>
         <properties widgetMode="edit">
           <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="styleClass">dataInputTextDate</property>
         </properties>
       </widget>
     </layout>
