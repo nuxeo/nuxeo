@@ -55,7 +55,7 @@ public class GadgetService {
 
   public static void setHeight(String ref, int height) {
     ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
-    portal.getGadgetPortlet(ref)
+    portal.getGadgetPortletByRef(ref)
         .setHeight(height + 20);
     portal.incrementLoading();
   };

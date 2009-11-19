@@ -260,9 +260,8 @@
 
 .x-panel-tl {
     background-image: none;
-    background-color: #4E9AE1;
     border-style: none;
-    }
+}
 
 .x-panel-tc {
     background-image: none;
@@ -276,7 +275,7 @@
  }
 
 .x-panel-ml {
-   border:1px solid #C0DCF5;
+   border:none;
 }
 
 .gwt-Frame {
@@ -289,11 +288,6 @@
 .x-panel-mc {
  background-color: transparent;
 }
-
-#gwtContainer {
- background-color: white;
-}
-
 
 #closeLinkLayoutManager
 {background-image:url(close.gif);background-repeat:no-repeat;color:rgb(0, 0, 0);margin-right:10px;padding-left:15px;}
