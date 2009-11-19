@@ -1,5 +1,6 @@
 package org.nuxeo.opensocial.container.client.view;
 
+import org.nuxeo.opensocial.container.client.ContainerEntryPoint;
 import org.nuxeo.opensocial.container.client.GadgetService;
 import org.nuxeo.opensocial.container.client.JsLibrary;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
@@ -100,8 +101,16 @@ public class GadgetPortlet extends Portlet {
     } else if (DEFAULT_PREFS.isFont(name))
       changeTitleColor(this.getId(), value);
     else if (DEFAULT_PREFS.isHeader(name)) {
-      changeHeaderColor(this.getId(), buildImageUrl("bg_", value, ".jpg"));
+      changePortletTheme(value);
+    }
+  }
+
+  private void changePortletTheme(String value) {
+    if (ContainerEntryPoint.imagesGadget) {
+      changeHeaderImage(this.getId(), buildImageUrl("bg_", value, ".jpg"));
       changeToolsColor(this.getId(), buildImageUrl("tools_", value, ".gif"));
+    } else {
+      changeHeaderColor(this.getId(), value);
     }
   }
 
@@ -237,7 +246,12 @@ public class GadgetPortlet extends Portlet {
     this.view = view;
   }
 
-  static native void changeHeaderColor(String id, String url)
+  private static native void changeHeaderColor(String id, String color)
+  /*-{
+    $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background-color","#"+color);
+  }-*/;
+
+  private static native void changeHeaderImage(String id, String url)
   /*-{
     $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background-image","url("+url+")");
     $wnd.jQuery("#"+id).find("div.x-panel-tr").css("background-image","url("+url+")");

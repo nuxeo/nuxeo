@@ -17,8 +17,6 @@
 
 package org.nuxeo.opensocial.container.client.view;
 
-import org.nuxeo.opensocial.container.client.JsLibrary;
-
 import com.gwtext.client.widgets.ColorPalette;
 import com.gwtext.client.widgets.event.ColorPaletteListenerAdapter;
 import com.gwtext.client.widgets.form.Field;
@@ -42,7 +40,6 @@ public class ColorListener extends ColorPaletteListenerAdapter {
 
   @Override
   public void onSelect(ColorPalette colorPalette, String color) {
-    JsLibrary.log("color is " + color + " " + this.name);
     super.onSelect(colorPalette, color);
     this.input.setValue(color);
     portlet.renderPreference(this.name, color);

@@ -28,9 +28,11 @@ import org.nuxeo.opensocial.container.client.view.ContainerPortal;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.json.client.JSONBoolean;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -45,6 +47,9 @@ import com.gwtext.client.widgets.layout.FitLayout;
 public class ContainerEntryPoint implements EntryPoint {
 
   private static final String GWT_WINDOW_WIDTH = "windowWidth";
+  private static final String GWT_IMAGES_GADGET = "imagesGadget";
+
+  public static boolean imagesGadget = false;
 
   private static final String SERVICE_ENTRY_POINT = "/nuxeo/gwtcontainer";
 
@@ -77,19 +82,12 @@ public class ContainerEntryPoint implements EntryPoint {
     endpoint.setServiceEntryPoint(SERVICE_ENTRY_POINT);
     JSONObject objects = JSONParser.parse(getInitialisationParams())
         .isObject();
-    for (String key : objects.keySet())
+    for (String key : objects.keySet()) {
       GWT_PARAMS.put(key, getGwtParam(objects, key));
-
-    JSONNumber number = objects.get(GWT_WINDOW_WIDTH)
-        .isNumber();
-
-    if (number != null) {
-      windowWidth = (int) objects.get(GWT_WINDOW_WIDTH)
-          .isNumber()
-          .doubleValue();
-      // we want a little border
-      windowWidth -= MARGIN_FROM_FULL_WIDTH;
     }
+
+    windowWidth = getWindowWidth(objects);
+    imagesGadget = hasImagesForGadget(objects);
 
     SERVICE.getContainer(GWT_PARAMS, new AsyncCallback<Container>() {
       public void onFailure(Throwable object) {
@@ -127,6 +125,30 @@ public class ContainerEntryPoint implements EntryPoint {
 
       }
     });
+  }
+
+  private boolean hasImagesForGadget(JSONObject objects) {
+    JSONValue value = objects.get(GWT_IMAGES_GADGET);
+    if (value != null) {
+      JSONBoolean bool = value.isBoolean();
+      if (bool != null) {
+        imagesGadget = (boolean) bool.booleanValue();
+      }
+    }
+    return imagesGadget;
+  }
+
+  private int getWindowWidth(JSONObject objects) {
+    JSONValue value = objects.get(GWT_WINDOW_WIDTH);
+    if (value != null) {
+      JSONNumber width = value.isNumber();
+      if (width != null) {
+        windowWidth = (int) width.doubleValue();
+        // we want a little border
+        windowWidth -= MARGIN_FROM_FULL_WIDTH;
+      }
+    }
+    return windowWidth;
   }
 
   private static String getGwtParam(JSONObject object, String key) {
