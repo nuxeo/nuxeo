@@ -29,9 +29,11 @@
         <nxh:graphicImage id="theImage"
                           url="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Medium:content', documentActions.currentSelection.dublincore.modified)}?conversationId=#{conversation.id}"
                           style="max-height: 350px;"
+                          title="#{messages['label.click.annotate']}"
                           rendered="#{documentActions.currentSelection.hasSchema('picture')}"/>
         <nxh:graphicImage value="/icons/office_big.png"
                         style="max-height: 350px;"
+                        title="#{messages['label.click.annotate']}"
                         rendered="#{!documentActions.currentSelection.hasSchema('picture') and
                                     !documentActions.currentSelection.hasSchema('video') and
                                     !documentActions.currentSelection.hasSchema('audio') }"/>
