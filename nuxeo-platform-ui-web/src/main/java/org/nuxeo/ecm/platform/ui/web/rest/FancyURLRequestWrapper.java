@@ -57,6 +57,10 @@ public class FancyURLRequestWrapper extends HttpServletRequestWrapper {
         Map<String, String> result = super.getParameterMap();
         if (result == null) {
             result = new HashMap<String, String>();
+        } else {
+            // copy parameter map from parent class to avoid modifying the
+            // original
+            result = new HashMap<String, String>(result);
         }
         if (docView != null) {
             result.putAll(docView.getParameters());
@@ -69,7 +73,7 @@ public class FancyURLRequestWrapper extends HttpServletRequestWrapper {
         if (docView != null) {
             String value = docView.getParameter(name);
             if (value != null) {
-                return new String[]{ value };
+                return new String[] { value };
             }
         }
         return super.getParameterValues(name);
