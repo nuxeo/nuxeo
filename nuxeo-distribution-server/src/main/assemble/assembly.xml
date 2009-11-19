@@ -162,6 +162,7 @@
       <artifact group="org.apache" name="xmlbeans" />
       <artifact group="com.sun.xml" name="relaxngDatatype" />
       <artifact group="org.wikimodel" name="wem" />
+      <artifact group="com.hp.hpl.jena" name="jena" />
     </artifacts>
   </artifactSet>
 
