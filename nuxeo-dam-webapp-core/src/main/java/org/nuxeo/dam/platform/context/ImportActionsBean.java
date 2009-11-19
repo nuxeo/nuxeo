@@ -85,15 +85,19 @@ public class ImportActionsBean implements Serializable {
         String name = IdUtils.generateId(title);
         // set parent path and name for document model
         newImportSet.setPathInfo(IMPORTSET_ROOT_PATH, name);
-
-        newImportSet = documentManager.createDocument(newImportSet);
-
-        if (blob != null) {
-            getFileManagerService().createDocumentFromBlob(documentManager,
-                    blob, newImportSet.getPathAsString(), true, blob.getFilename());
+        try {
+            newImportSet = documentManager.createDocument(newImportSet);
+            if (blob != null) {
+                getFileManagerService().createDocumentFromBlob(documentManager,
+                        blob, newImportSet.getPathAsString(), true,
+                        blob.getFilename());
+            }
+        } catch (Exception e) {
+            log.error(e, e);
+        } finally {
+            // delete the temporary file that was made by the richface
+            ((FileBlob) blob).getFile().delete();
         }
-        // delete the temporary file that was made by the richface
-        ((FileBlob)blob).getFile().delete();
         documentManager.save();
         sendImportSetCreationEvent();
         invalidateImportContext();
