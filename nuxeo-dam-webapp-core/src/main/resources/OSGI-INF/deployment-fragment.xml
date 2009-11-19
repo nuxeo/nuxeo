@@ -9,7 +9,7 @@
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
   </extension>
-  
+
   <extension target="application#MODULE">
     <module>
       <ejb>${bundle.fileName}</ejb>
@@ -23,6 +23,19 @@
     </module>
   </extension>
 
+  <extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>Image Watermarker</servlet-name>
+      <servlet-class>
+        org.nuxeo.dam.webapp.watermark.WaterMarkServlet
+      </servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Image Watermarker</servlet-name>
+      <url-pattern>/watermark/*</url-pattern>
+    </servlet-mapping>
+  </extension>
+
   <extension target="web#FILTER-MAPPING">
     <filter>
       <display-name>Ajax4jsf Filter</display-name>
@@ -33,8 +46,10 @@
 
 
   <extension target="web#FILTER-MAPPING">
-    <!-- Seam Context Filter is declared in org.nuxeo.ecm.platform.ui.web
-      deployment fragment -->
+    <!--
+      Seam Context Filter is declared in org.nuxeo.ecm.platform.ui.web
+      deployment fragment
+    -->
     <filter-mapping>
       <filter-name>Seam Context Filter</filter-name>
       <url-pattern>/DocumentManagerWS</url-pattern>
@@ -46,7 +61,7 @@
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
       <dispatcher>INCLUDE</dispatcher>
-        <init-param>
+      <init-param>
         <param-name>maxRequestSize</param-name>
         <param-value>1000000</param-value>
       </init-param>
@@ -90,8 +105,7 @@
   <extension target="pages#PAGES">
 
     <!-- Post login and 'home' view handler -->
-    <page view-id="/nxstartup.xhtml"
-      action="#{startupHelper.initDomainAndFindStartupPage()}"/>
+    <page view-id="/nxstartup.xhtml" action="#{startupHelper.initDomainAndFindStartupPage()}" />
 
   </extension>
 
