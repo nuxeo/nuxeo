@@ -5,25 +5,29 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxh="http://nuxeo.org/nxweb/html">
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  class="comments">
 
   <nxu:dataList var="comment" value="#{commentActions.comments}" styleClass="dataOutput" rowIndexVar="rowIndex">
-    <div>
-      <h:outputText value="#{comment.comment.creationDate}" >
-        <f:convertDateTime pattern="#{nxu:basicDateFormater()}" timeZone="#{timeZone}" />
-      </h:outputText>
-      <h:outputText value=" - #{nxu:userFullName(comment.comment.author)} #{messages['label.comment.wrote']}: "/>
-
-      <br />      
-
-      <h:outputText value="#{comment.comment.text}"/>
-      <f:subview id="deleteComment" rendered="#{comment.comment.author == currentUser.name or currentUser.administrator}">
-        (<a4j:commandLink action="#{commentActions.deleteComment(comment)}"
-          value="#{messages['command.delete']}"
-          ajaxSingle="true"
-          reRender="commentTitlePanel, commentPanel"/>)
+    <div class="commentBlock">
+      <div class="commentInfo">
+        <h:outputText styleClass="date" value="#{comment.comment.creationDate}" >
+          <f:convertDateTime pattern="#{nxu:basicDateFormater()}" timeZone="#{timeZone}" />
+        </h:outputText>
+        <h:outputText value=" - "/>
+        <h:outputText styleClass="author" value="#{nxu:userFullName(comment.comment.author)}"/>
+        <h:outputText value=" #{messages['label.comment.wrote']}: "/>
+      </div>
+      
+      <div class="commentContent">
+        <h:outputText value="#{comment.comment.text}"/>
+        <f:subview id="deleteComment" rendered="#{comment.comment.author == currentUser.name or currentUser.administrator}">
+          (<a4j:commandLink action="#{commentActions.deleteComment(comment)}"
+                            value="#{messages['command.delete']}"
+                            ajaxSingle="true"
+                            reRender="commentTitlePanel, commentPanel"/>)
       </f:subview>
-      <br /><br />
+      </div>
     </div>
   </nxu:dataList>
 
