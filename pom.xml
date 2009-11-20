@@ -130,7 +130,7 @@
         <module>nuxeo-distribution-jboss</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-jetty</module>
-        <!--        <module>nuxeo-distribution-tomcat</module>-->
+        <module>nuxeo-distribution-tomcat</module>
         <module>nuxeo-distribution-jetty-base</module>
         <module>nuxeo-distribution-gf3</module>
       </modules>
