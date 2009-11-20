@@ -59,6 +59,8 @@ public class CommentActions implements Serializable {
 
     protected boolean showCreateForm;
 
+    protected boolean showCommentsArea;
+
     protected CommentableDocument commentableDoc;
 
     protected List<DocumentModel> comments;
@@ -74,7 +76,10 @@ public class CommentActions implements Serializable {
                     Calendar.getInstance());
             myComment = addComment(myComment);
 
-            cleanContextVariable();
+            // Reset comments list and 'add comment' field & flag
+            showCreateForm = false;
+            newContent = null;
+            comments = null;
         }
     }
 
@@ -186,13 +191,15 @@ public class CommentActions implements Serializable {
             throw ClientException.wrap(t);
         }
 
-        cleanContextVariable();
+        // Reset comments list
+        comments = null;
     }
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
     @BypassInterceptors
     public void cleanContextVariable() {
         showCreateForm = false;
+        showCommentsArea = false;
         newContent = null;
         comments = null;
     }
@@ -215,5 +222,22 @@ public class CommentActions implements Serializable {
 
     public void toggleCreateForm(ActionEvent event) {
         showCreateForm = !showCreateForm;
+        showCommentsArea = true;
     }
+
+    public boolean isShowCommentsArea() {
+        return showCommentsArea;
+    }
+
+    public void setShowCommentsArea(boolean showCommentsArea) {
+        this.showCommentsArea = showCommentsArea;
+    }
+
+    public void toggleCommentsArea(ActionEvent event) {
+        showCommentsArea = !showCommentsArea;
+        if (!showCommentsArea) {
+            showCreateForm = false;
+        }
+    }
+
 }
