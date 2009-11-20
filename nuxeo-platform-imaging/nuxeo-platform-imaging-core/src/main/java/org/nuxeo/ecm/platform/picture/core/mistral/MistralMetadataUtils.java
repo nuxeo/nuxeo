@@ -129,25 +129,16 @@ public class MistralMetadataUtils implements MetadataUtils {
         Map<String, Object> metadata = new HashMap<String, Object>();
 
         try {
-            /* EXIF */
             EditableImage image = EditableImage.create(new ReadOp(
                     blob.getStream(), ReadOp.Type.METADATA));
             EXIFDirectory exif = image.getEXIFDirectory();
 
-            int width;
-            int height;
-            if (exif.isPixelXDimensionAvailable()
-                    && exif.isPixelYDimensionAvailable()) {
-                width = exif.getPixelXDimension();
-                height = exif.getPixelYDimension();
-            } else {
-                image = EditableImage.create(new ReadOp(blob.getStream()));
-                width = image.getWidth();
-                height = image.getHeight();
-            }
-            metadata.put(META_WIDTH, width);
-            metadata.put(META_HEIGHT, height);
+            // CB: NXP-4348 - Return correct values for image width/height
+            image = EditableImage.create(new ReadOp(blob.getStream()));
+            metadata.put(META_WIDTH, image.getWidth());
+            metadata.put(META_HEIGHT, image.getHeight());
 
+            /* EXIF */
             if (exif.isImageDescriptionAvailable()) {
                 String description = exif.getImageDescription().trim();
                 if (description.length() > 0) {
