@@ -61,8 +61,7 @@ public class WaterMarkResponse extends HttpServletResponseWrapper {
 
         try {
 
-            Map<String, Object> imageMetadata = getImagingService().getImageMetadata(
-                    new FileBlob(tmpFile));
+            Map<String, Object> imageMetadata = getImageMetadata(tmpFile);
             Integer width = (Integer) imageMetadata.get(META_WIDTH);
             Integer height = (Integer) imageMetadata.get(META_HEIGHT);
 
@@ -71,6 +70,10 @@ public class WaterMarkResponse extends HttpServletResponseWrapper {
 
             wtmkdFile = ImageWatermarker.watermark(watermarkFile.getPath(),
                     width, height, tmpFile.getPath(), result.getPath());
+            if (wtmkdFile == null) {
+                throw new IOException("Watermark failed.");
+            }
+
             FileInputStream fis = new FileInputStream(wtmkdFile);
             OutputStream os = getResponse().getOutputStream();
 
@@ -83,6 +86,9 @@ public class WaterMarkResponse extends HttpServletResponseWrapper {
         }
 
         catch (Exception e) {
+            if (e instanceof IOException) {
+                throw (IOException) e;
+            }
             throw new IOException(e.getMessage());
         }
 
@@ -95,6 +101,20 @@ public class WaterMarkResponse extends HttpServletResponseWrapper {
                 wtmkdFile.delete();
             }
         }
+    }
+
+    protected Map<String, Object> getImageMetadata(File image)
+            throws ClientException {
+        Map<String, Object> imageMetadata = getImagingService().getImageMetadata(
+                new FileBlob(image));
+
+        /*
+         * ImageIcon img = new ImageIcon(image.getPath()); Map<String, Object>
+         * imageMetadata = new HashMap<String, Object>();
+         * imageMetadata.put(META_WIDTH, img.getIconWidth());
+         * imageMetadata.put(META_HEIGHT, img.getIconHeight());
+         */
+        return imageMetadata;
     }
 
     protected ImagingService getImagingService() throws ClientException {

@@ -20,15 +20,18 @@ package org.nuxeo.dam.webapp.watermark;
 
 import java.io.File;
 
+import org.apache.log4j.Logger;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.MagickExecutor;
 
 /**
  * Unit command to watermark a picture using ImageMagick
- *
+ * 
  * @author btatar
  */
 public class ImageWatermarker extends MagickExecutor {
+    private static Logger log = Logger.getLogger(ImageWatermarker.class);
 
     public static File watermark(String watermarkFilePath,
             Integer watermarkWidth, Integer watermarkHeight,
@@ -43,8 +46,9 @@ public class ImageWatermarker extends MagickExecutor {
         params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
         params.addNamedParameter("outputFilePath",
                 formatFilePath(outputFilePath));
-        execCommand("watermark", params);
-        return new File(outputFilePath);
-    }
+        ExecResult result = execCommand("watermark", params);
 
+        log.error("Error apply watermark", result.getError());
+        return result.isSuccessful() ? new File(outputFilePath) : null;
+    }
 }
