@@ -556,6 +556,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             // re-fetch the document, it might have change during the process
             currentDocument = navigationContext.getCurrentDocument();
             currentDocument = documentManager.getDocument(currentDocument.getRef());
+            navigationContext.setCurrentDocument(null);
             return navigationContext.navigateToDocument(currentDocument);
         } catch (DocumentSecurityException e) {
             navigationContext.setCurrentDocument(null);
