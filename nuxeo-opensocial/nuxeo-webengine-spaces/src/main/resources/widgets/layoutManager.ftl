@@ -2,57 +2,57 @@
 <#if nxthemesInfo.model.anonymous == false && Session.hasPermission(Document.ref, "WRITE")>
   <style>
   #tabnav {
-		border-bottom:1px solid grey;
-		margin:0;
-		padding:0 0 10px 10px;
-		background-color:#D6D5D3;
-	}
+    border-bottom:1px solid grey;
+    margin:0;
+    padding:0 0 10px 10px;
+    background-color:#D6D5D3;
+  }
 
-	#tabManager{
-		background-color:#D6D5D3;
-	}
-	#tabnav li {
-		display:inline;
-		list-style-type:none;
-		margin:0;
-		padding:0;
-	}
-	.tabManage {
-		font-size:10px;
-		font-weight:bold;
-		line-height:14px;
-		margin:0 10px 4px;
-		text-decoration:none;
-	}
-	#tabnav li.active a:link, #tabnav li.active a:visited, #tabnav a:hover {
-		background:transparent none repeat scroll 0 0;
-		border-bottom: 2px solid #B0C830;
-		color:white;
-		cursor:pointer;
-	}
-	
-	.selected{
-		background:transparent none repeat scroll 0 0;
-		color:white;
-		cursor:pointer;
-	}
-	
-	#tabnav a:hover {
-		color:#B0C830;
-	}
+  #tabManager{
+    background-color:#D6D5D3;
+  }
+  #tabnav li {
+    display:inline;
+    list-style-type:none;
+    margin:0;
+    padding:0;
+  }
+  .tabManage {
+    font-size:10px;
+    font-weight:bold;
+    line-height:14px;
+    margin:0 10px 4px;
+    text-decoration:none;
+  }
+  #tabnav li.active a:link, #tabnav li.active a:visited, #tabnav a:hover {
+    background:transparent none repeat scroll 0 0;
+    border-bottom: 2px solid #B0C830;
+    color:white;
+    cursor:pointer;
+  }
+
+  .selected{
+    background:transparent none repeat scroll 0 0;
+    color:white;
+    cursor:pointer;
+  }
+
+  #tabnav a:hover {
+    color:#B0C830;
+  }
   </style>
   <div id="tabManager"><a href="#" id="openTabsManager">Modifier l'onglet</a></div>
-  
+
   <div id="tabManagerOpen" style="display:none;">
-  <div id="closeLayoutManager">
-      <a href="#" id="closeLinkLayoutManager">Fermer</a>
-  </div>
-  
-  <ul id="tabnav">
-     <li class="active"><a class="tabManage selected" id="#layoutManager">Modifier l'apparence</a></li>
-     <li><a class="tabManage" id="#gadgetManager">Ajouter un gadget</a></li>
-     <li><a class="tabManage" id="#ThemeManager">Modifier le th&egrave;me</a></li>
-  </ul>
+    <div id="closeLayoutManager">
+        <a href="#" id="closeLinkLayoutManager">Fermer</a>
+    </div>
+
+    <ul id="tabnav">
+       <li class="active"><a class="tabManage selected" id="#layoutManager">Modifier l'apparence</a></li>
+       <li><a class="tabManage" id="#gadgetManager">Ajouter un gadget</a></li>
+       <li><a class="tabManage" id="#ThemeManager">Modifier le th&egrave;me</a></li>
+    </ul>
 
   <div id="layoutManager" style="display:none;" class="manager">
     <div id="layoutManagerContainer">
@@ -111,7 +111,6 @@
         </ul>
       </div>
     </div>
-
   </div>
  </#if>
 </div>
