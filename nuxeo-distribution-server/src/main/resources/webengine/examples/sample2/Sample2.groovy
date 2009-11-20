@@ -88,7 +88,7 @@ public class Sample2 extends ModuleRoot {
   @GET
   @Path("redirect/{whereToRedirect}")
   public Response doRedirect(@PathParam("whereToRedirect") String path) {
-    return redirect(path);
+    return redirect(ctx.getModulePath() + "/"+ path);
   }
 
   /**

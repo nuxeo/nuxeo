@@ -43,8 +43,8 @@ public class UserManager extends DefaultObject {
   @Path("user/{name}")
   public Object getUser(@PathParam("name") String name) {
     // create a new instance of a WebObject which type is "User" and push this object on the request chain
-    // the User object is intialized with the user name
-    return newObject("User", name);
+    // the User object is intialized with the String "Username: name"
+    return newObject("User", "Username: "+name);
   }
 
   /**
