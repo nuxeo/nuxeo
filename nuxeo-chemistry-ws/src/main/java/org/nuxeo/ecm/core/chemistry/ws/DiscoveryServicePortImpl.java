@@ -23,7 +23,6 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map.Entry;
@@ -36,7 +35,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.Holder;
 
 import org.apache.chemistry.Connection;
+import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Repository;
@@ -104,21 +105,22 @@ public class DiscoveryServicePortImpl implements DiscoveryServicePort {
 
         // call chemistry implementation
         Repository repository = new NuxeoRepository(repositoryName);
-        boolean[] hasMoreItems = new boolean[1];
 
         Connection connection = repository.getConnection(null);
         try {
             boolean includeRelationships = false; // TODO
             boolean includeRenditions = false; // TODO
-            Collection<ObjectEntry> res = connection.getSPI().query(statement,
+            ListPage<ObjectEntry> res = connection.getSPI().query(statement,
                     searchAllVersions, includeAllowableActions,
-                    includeRelationships, includeRenditions, maxItems,
-                    skipCount, hasMoreItems);
-            objects.setHasMoreItems(hasMoreItems[0]);
+                    includeRelationships, includeRenditions,
+                    new Paging(maxItems, skipCount));
+            objects.setHasMoreItems(res.getHasMoreItems());
+            objects.setNumItems(BigInteger.valueOf(res.getNumItems()));
+            List<CmisObjectType> objectList = objects.getObjects();
             for (ObjectEntry entry : res) {
                 CmisObjectType object = new CmisObjectType();
                 chemistryToWS(entry, object);
-                objects.getObjects().add(object);
+                objectList.add(object);
             }
         } finally {
             connection.close();

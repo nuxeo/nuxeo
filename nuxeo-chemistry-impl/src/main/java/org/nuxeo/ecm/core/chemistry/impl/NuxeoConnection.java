@@ -39,8 +39,10 @@ import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
@@ -53,7 +55,9 @@ import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.impl.base.BaseRepository;
+import org.apache.chemistry.impl.simple.SimpleConnection;
 import org.apache.chemistry.impl.simple.SimpleData;
+import org.apache.chemistry.impl.simple.SimpleListPage;
 import org.apache.chemistry.impl.simple.SimpleObjectEntry;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
 import org.apache.commons.logging.Log;
@@ -227,10 +231,9 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public List<ObjectEntry> getChildren(ObjectId folder, String filter,
+    public ListPage<ObjectEntry> getChildren(ObjectId folder, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
-            boolean includeRenditions, int maxItems, int skipCount,
-            String orderBy, boolean[] hasMoreItems) {
+            boolean includeRenditions, String orderBy, Paging paging) {
         // TODO orderBy
         DocumentModelList docs;
         try {
@@ -245,21 +248,7 @@ public class NuxeoConnection implements Connection, SPI {
         for (DocumentModel child : docs) {
             all.add(new NuxeoObjectEntry(child, this));
         }
-
-        int fromIndex = skipCount;
-        if (fromIndex < 0 || fromIndex > all.size()) {
-            hasMoreItems[0] = false;
-            return Collections.emptyList();
-        }
-        if (maxItems == 0) {
-            maxItems = all.size();
-        }
-        int toIndex = skipCount + maxItems;
-        if (toIndex > all.size()) {
-            toIndex = all.size();
-        }
-        hasMoreItems[0] = toIndex < all.size();
-        return all.subList(fromIndex, toIndex);
+        return SimpleConnection.getListPage(all, paging);
     }
 
     public ObjectEntry getFolderParent(ObjectId folder, String filter) {
@@ -273,10 +262,9 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
+    public ListPage<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
             String filter, boolean includeAllowableActions,
-            boolean includeRelationships, int maxItems, int skipCount,
-            boolean[] hasMoreItems) {
+            boolean includeRelationships, Paging paging) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -366,9 +354,9 @@ public class NuxeoConnection implements Connection, SPI {
         }
     }
 
-    public List<Rendition> getRenditions(ObjectId object, String filter,
-            int maxItems, int skipCount) {
-        return Collections.emptyList();
+    public ListPage<Rendition> getRenditions(ObjectId object, String filter,
+            Paging paging) {
+        return SimpleListPage.emptyList();
     }
 
     public boolean hasContentStream(ObjectId document) {
@@ -454,10 +442,10 @@ public class NuxeoConnection implements Connection, SPI {
      * ----- Discovery Services -----
      */
 
-    public Collection<ObjectEntry> query(String statement,
+    public ListPage<ObjectEntry> query(String statement,
             boolean searchAllVersions, boolean includeAllowableActions,
             boolean includeRelationships, boolean includeRenditions,
-            int maxItems, int skipCount, boolean[] hasMoreItems) {
+            Paging paging) {
 
         IterableQueryResult iterable;
         try {
@@ -469,14 +457,16 @@ public class NuxeoConnection implements Connection, SPI {
 
         iterable = getPolicyFilteredMaps(iterable);
 
-        if (skipCount > 0) {
-            iterable.skipTo(skipCount);
+        if (paging != null && paging.skipCount > 0) {
+            iterable.skipTo(paging.skipCount);
         }
-        if (maxItems == 0) {
-            maxItems = -1;
-        }
-        List<ObjectEntry> entries = new ArrayList<ObjectEntry>();
-        for (Map<String, Serializable> next : iterable) {
+        Iterator<Map<String, Serializable>> it = iterable.iterator();
+
+        int maxItems = paging == null || paging.maxItems == 0 ? -1
+                : paging.maxItems;
+        SimpleListPage<ObjectEntry> page = new SimpleListPage<ObjectEntry>();
+        while (it.hasNext()) {
+            Map<String, Serializable> next = it.next();
             SimpleData data = new SimpleData(null, null);
             // don't use putAll, null values are forbidden
             for (Entry<String, Serializable> entry : next.entrySet()) {
@@ -485,12 +475,18 @@ public class NuxeoConnection implements Connection, SPI {
                     data.put(entry.getKey(), value);
                 }
             }
-            entries.add(new SimpleObjectEntry(data, this));
+            page.add(new SimpleObjectEntry(data, this));
             if (--maxItems == 0) {
                 break;
             }
         }
-        return entries;
+        page.setHasMoreItems(it.hasNext());
+        if (iterable instanceof ListQueryResult) {
+            page.setNumItems(((ListQueryResult) iterable).size);
+        } else {
+            page.setNumItems(-1);
+        }
+        return page;
     }
 
     public Collection<CMISObject> query(String statement,
@@ -614,8 +610,11 @@ public class NuxeoConnection implements Connection, SPI {
     public static class ListQueryResult implements IterableQueryResult {
         public final Iterator<Map<String, Serializable>> it;
 
+        public final int size;
+
         public ListQueryResult(List<Map<String, Serializable>> list) {
             it = list.iterator();
+            size = list.size();
         }
 
         public Iterator<Map<String, Serializable>> iterator() {
@@ -635,12 +634,11 @@ public class NuxeoConnection implements Connection, SPI {
         }
     }
 
-    public Iterator<ObjectEntry> getChangeLog(String changeLogToken,
-            boolean includeProperties, int maxItems, boolean[] hasMoreItems,
+    public ListPage<ObjectEntry> getChangeLog(String changeLogToken,
+            boolean includeProperties, Paging paging,
             String[] lastChangeLogToken) {
-        hasMoreItems[0] = false;
         lastChangeLogToken[0] = null;
-        return Collections.<ObjectEntry> emptyList().iterator();
+        return SimpleListPage.emptyList();
     }
 
     /*
@@ -680,11 +678,10 @@ public class NuxeoConnection implements Connection, SPI {
      * ----- Relationship Services -----
      */
 
-    public List<ObjectEntry> getRelationships(ObjectId object,
+    public ListPage<ObjectEntry> getRelationships(ObjectId object,
             RelationshipDirection direction, String typeId,
             boolean includeSubRelationshipTypes, String filter,
-            String includeAllowableActions, int maxItems, int skipCount,
-            boolean[] hasMoreItems) {
+            String includeAllowableActions, Paging paging) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

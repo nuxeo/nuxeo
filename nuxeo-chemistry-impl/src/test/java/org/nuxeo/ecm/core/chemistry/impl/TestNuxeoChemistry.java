@@ -199,7 +199,6 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
     public void testQuery() throws Exception {
         Connection conn = repository.getConnection(null);
         SPI spi = conn.getSPI();
-        boolean[] hasMoreItems = new boolean[1];
         String query;
         Collection<CMISObject> res;
         Collection<ObjectEntry> col;
@@ -217,16 +216,16 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         // simple query through SPI
 
         query = "SELECT * FROM cmis:document";
-        col = spi.query(query, false, false, false, false, 0, 0, hasMoreItems);
+        col = spi.query(query, false, false, false, false, null);
         assertEquals(4, col.size());
         query = "SELECT * FROM cmis:folder";
-        col = spi.query(query, false, false, false, false, 0, 0, hasMoreItems);
+        col = spi.query(query, false, false, false, false, null);
         assertEquals(3, col.size());
 
         query = "SELECT cmis:objectId, dc:DESCRIPTION" //
                 + " FROM cmis:document" //
                 + " WHERE dc:title = 'testfile1_Title'";
-        col = spi.query(query, false, false, false, false, 0, 0, hasMoreItems);
+        col = spi.query(query, false, false, false, false, null);
         assertEquals(1, col.size());
         it = col.iterator();
         ob = it.next();
@@ -240,7 +239,7 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
                 + " JOIN cmis:document B ON A.cmis:objectId = B.cmis:parentId" //
                 + " WHERE A.dc:title = 'testfolder1_Title'" //
                 + " ORDER BY B.dc:title";
-        col = spi.query(query, false, false, false, false, 0, 0, hasMoreItems);
+        col = spi.query(query, false, false, false, false, null);
         assertEquals(3, col.size());
         it = col.iterator();
         ob = it.next();
@@ -333,15 +332,14 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
     public void testQuerySecurity() throws Exception {
         Connection conn = repository.getConnection(null);
         SPI spi = conn.getSPI();
-        boolean[] hasMoreItems = new boolean[1];
         String query;
         Collection<ObjectEntry> col;
 
         query = "SELECT * FROM cmis:document";
-        col = spi.query(query, false, false, false, false, 0, 0, hasMoreItems);
+        col = spi.query(query, false, false, false, false, null);
         assertEquals(4, col.size());
         query = "SELECT * FROM cmis:folder";
-        col = spi.query(query, false, false, false, false, 0, 0, hasMoreItems);
+        col = spi.query(query, false, false, false, false, null);
         assertEquals(3, col.size());
 
         // block members access to testfolder2
@@ -362,10 +360,10 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         spi = conn.getSPI();
 
         query = "SELECT * FROM cmis:document";
-        col = spi.query(query, false, false, false, false, 0, 0, hasMoreItems);
+        col = spi.query(query, false, false, false, false, null);
         assertEquals(3, col.size());
         query = "SELECT * FROM cmis:folder";
-        col = spi.query(query, false, false, false, false, 0, 0, hasMoreItems);
+        col = spi.query(query, false, false, false, false, null);
         assertEquals(1, col.size());
     }
 
@@ -375,22 +373,21 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
 
         Connection conn = repository.getConnection(null);
         SPI spi = conn.getSPI();
-        boolean[] hasMoreItems = new boolean[1];
         String query;
         Collection<ObjectEntry> col;
 
         query = "SELECT * FROM cmis:document";
-        col = spi.query(query, false, false, false, false, 0, 0, hasMoreItems);
+        col = spi.query(query, false, false, false, false, null);
         assertEquals(1, col.size()); // just testfile3 which is a Note
         query = "SELECT * FROM cmis:folder";
-        col = spi.query(query, false, false, false, false, 0, 0, hasMoreItems);
+        col = spi.query(query, false, false, false, false, null);
         assertEquals(3, col.size()); // policy doesn't apply
 
         query = "SELECT cmis:objectTypeId FROM cmis:document";
-        col = spi.query(query, false, false, false, false, 0, 0, hasMoreItems);
+        col = spi.query(query, false, false, false, false, null);
         assertEquals(1, col.size());
         query = "SELECT D.cmis:ObJeCtTyPeId FROM cmis:document D";
-        col = spi.query(query, false, false, false, false, 0, 0, hasMoreItems);
+        col = spi.query(query, false, false, false, false, null);
         assertEquals(1, col.size());
     }
 
