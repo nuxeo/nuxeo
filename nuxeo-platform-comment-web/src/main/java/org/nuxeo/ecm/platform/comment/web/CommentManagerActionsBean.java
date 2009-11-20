@@ -50,6 +50,10 @@ public class CommentManagerActionsBean extends
     protected CommentableDocument getCommentableDoc() {
         if (commentableDoc == null) {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
+            if (currentDocument == null) {
+                // what can I do?
+                return null;
+            }
             commentableDoc = currentDocument.getAdapter(CommentableDocument.class);
         }
         return commentableDoc;

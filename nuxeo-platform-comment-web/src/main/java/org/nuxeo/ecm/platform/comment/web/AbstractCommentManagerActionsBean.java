@@ -187,7 +187,10 @@ public abstract class AbstractCommentManagerActionsBean implements
             if (commentableDoc == null) {
                 commentableDoc = getCommentableDoc();
             }
-
+            // what if commentableDoc is still null? shouldn't, but...
+            if (commentableDoc == null) {
+                throw new ClientException("Can't comment on null document");
+            }
             DocumentModel newComment;
             if (parentComment != null) {
                 newComment = commentableDoc.addComment(
@@ -384,9 +387,12 @@ public abstract class AbstractCommentManagerActionsBean implements
             log.error("No comment id to delete");
             return null;
         }
+        if (commentableDoc == null) {
+            log.error("Can't delete comments of null document");
+            return null;
+        }
         try {
             UIComment selectedComment = commentMap.get(commentId);
-            UIComment parent = selectedComment.getParent();
             commentableDoc.removeComment(selectedComment.getComment());
             cleanContextVariable();
             // Events.instance().raiseEvent(CommentEvents.COMMENT_REMOVED, null,
@@ -470,7 +476,6 @@ public abstract class AbstractCommentManagerActionsBean implements
         return comments;
     }
 
-    @SuppressWarnings("unchecked")
     public List<UIComment> getLastCommentsByDate(String commentNumber)
             throws ClientException {
         return getLastCommentsByDate(commentNumber, null);
