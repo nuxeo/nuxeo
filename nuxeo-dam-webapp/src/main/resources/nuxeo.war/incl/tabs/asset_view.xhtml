@@ -20,6 +20,10 @@
       }
       return false;
     }
+
+    function focusComment() {
+      document.getElementById('navigation:assetView:commentList:addComment:commentContent').focus();
+    }
   </script>
 
   <div class="infoTabContent">
@@ -201,6 +205,7 @@
                     value="#{messages['command.add']}"
                     actionListener="#{commentActions.toggleCreateForm}"
                     rendered="#{!commentActions.showCreateForm}"
+                    oncomplete="focusComment();"
                     reRender="commentPanel" />
                 </span>
               </a4j:outputPanel>
