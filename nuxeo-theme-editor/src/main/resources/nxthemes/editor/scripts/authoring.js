@@ -56,7 +56,7 @@ NXThemesEditor.setCanvasMode =  function(info) {
 };
 
 NXThemesEditor.deletePage = function(info) {
-    var id = NXThemesEditor.extractElementUid(info);
+    var id = NXThemesEditor.extractElementUid(info.target);
     if (id === null) {
       return;
     }
@@ -1370,7 +1370,7 @@ if (typeof NXThemesStyleEditor == "undefined") {
 
 NXThemesStyleEditor.refreshPreview = function() {
     var previewArea = document.getElementById('stylePreviewArea');
-    var element  = previewArea.getAttribute('element');
+    var element = previewArea.getAttribute('element');
     NXThemesStyleEditor.renderElement(element, previewArea);
 };
 
@@ -1400,7 +1400,7 @@ NXThemesStyleEditor.renderElement = function(id, area) {
       onSuccess: function(req) {
         var temp = document.createElement("div");
         temp.innerHTML = req.responseText;
-        var elementList = $(temp).select('#' + id);
+        var elementList = $(temp).select('#e' + id);
         if (elementList.length > 0) {
           var element = elementList[0];
           var html = element.innerHTML;
