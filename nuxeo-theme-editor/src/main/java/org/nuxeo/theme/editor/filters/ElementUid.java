@@ -41,18 +41,18 @@ public final class ElementUid extends StandaloneFilter {
 
         String inBrackets = firstMatcher.group(1);
 
-        // remove existing uid attributes, if there are some
+        // remove existing uid attributes, if any
         inBrackets = inBrackets.replaceAll(" id=\"(.*?)\"", "");
 
         // write the final markup
         String f = "";
 
         if (inBrackets.endsWith("/")) {
-            f = String.format("<%s id=\"%s\" />%s", inBrackets.replaceAll("/$",
+            f = String.format("<%s id=\"e%s\" />%s", inBrackets.replaceAll("/$",
                     "").trim(), info.getElement().getUid(),
                     othersMatcher.group(1));
         } else {
-            f = String.format("<%s id=\"%s\">%s", inBrackets,
+            f = String.format("<%s id=\"e%s\">%s", inBrackets,
                     info.getElement().getUid(), othersMatcher.group(1));
         }
 

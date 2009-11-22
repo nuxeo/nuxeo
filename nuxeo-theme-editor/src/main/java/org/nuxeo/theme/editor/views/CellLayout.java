@@ -53,7 +53,7 @@ public class CellLayout extends DefaultLayoutView {
 
         final StringBuilder html = new StringBuilder();
         html.append(String.format(
-                "<td class=\"nxthemesCellLayout nxthemesContainer\" style=\"%s\" id=\"%s\">",
+                "<td class=\"nxthemesCellLayout nxthemesContainer\" style=\"%s\" id=\"e%s\">",
                 style.toString(), cellId));
 
         html.append(

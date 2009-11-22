@@ -37,31 +37,31 @@ public class TestElementUidFilter extends TestCase {
     }
 
     public void testFilter2() {
-        // insert the element uid
+        // insert the element e
         info.setMarkup("<div>content</div>");
         filter.process(info, false);
-        assertEquals("<div id=\"1\">content</div>", info.getMarkup());
+        assertEquals("<div id=\"e1\">content</div>", info.getMarkup());
     }
 
     public void testFilter3() {
-        // if the element already has a uid attribute, override it
-        info.setMarkup("<div id=\"2\">content</div>");
+        // if the element already has a e attribute, override it
+        info.setMarkup("<div id=\"e2\">content</div>");
         filter.process(info, false);
-        assertEquals("<div id=\"1\">content</div>", info.getMarkup());
+        assertEquals("<div id=\"e1\">content</div>", info.getMarkup());
     }
 
     public void testFilter4() {
         // edge-case
-        info.setMarkup("<div id=\"2\" id=\"3\">content</div>");
+        info.setMarkup("<div id=\"e2\" id=\"e3\">content</div>");
         filter.process(info, false);
-        assertEquals("<div id=\"1\">content</div>", info.getMarkup());
+        assertEquals("<div id=\"e1\">content</div>", info.getMarkup());
     }
 
     public void testFilter5() {
         // make sure that other attributes are preserved
         info.setMarkup("<div class=\"someClass\">content</div>");
         filter.process(info, false);
-        assertEquals("<div class=\"someClass\" id=\"1\">content</div>",
+        assertEquals("<div class=\"someClass\" id=\"e1\">content</div>",
                 info.getMarkup());
     }
 
@@ -69,13 +69,13 @@ public class TestElementUidFilter extends TestCase {
         // test line breaks
         info.setMarkup("<div>content\n</div>\n");
         filter.process(info, false);
-        assertEquals("<div id=\"1\">content\n</div>\n", info.getMarkup());
+        assertEquals("<div id=\"e1\">content\n</div>\n", info.getMarkup());
     }
 
     public void testFilter7() {
         info.setMarkup("<img src=\"/logo.png\" />");
         filter.process(info, false);
-        assertEquals("<img src=\"/logo.png\" id=\"1\" />", info.getMarkup());
+        assertEquals("<img src=\"/logo.png\" id=\"e1\" />", info.getMarkup());
     }
 
 }

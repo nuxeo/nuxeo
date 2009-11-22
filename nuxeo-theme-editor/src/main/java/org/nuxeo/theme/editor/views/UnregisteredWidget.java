@@ -25,7 +25,7 @@ public class UnregisteredWidget extends DefaultLayoutView {
         final Element element = info.getElement();
         final StringBuilder sb = new StringBuilder();
         sb.append(String.format(
-                "<div class=\"nxthemesUnregisteredWidget\" id=\"%s\">",
+                "<div class=\"nxthemesUnregisteredWidget\" id=\"e%s\">",
                 element.getUid()));
         String description = element.getDescription();
         if (description != null) {

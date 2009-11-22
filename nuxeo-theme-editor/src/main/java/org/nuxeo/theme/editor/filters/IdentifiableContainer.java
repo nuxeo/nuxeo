@@ -21,7 +21,7 @@ public final class IdentifiableContainer extends StandaloneFilter {
 
     @Override
     public RenderingInfo process(final RenderingInfo info, final boolean cache) {
-        info.setMarkup(String.format("<div id=\"%s\">%s</div>",
+        info.setMarkup(String.format("<div id=\"e%s\">%s</div>",
                 info.getElement().getUid(), info.getMarkup()));
         return info;
     }
