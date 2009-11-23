@@ -529,21 +529,6 @@
       </widget>
     </layout>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     <layout name="ip_rights">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
@@ -554,7 +539,10 @@
         </row>      
         <row>
           <widget>geo_broadcast</widget>
-        </row>
+        </row>      
+        <row>
+          <widget>copyright_holder</widget>
+        </row>                
         <row>
           <widget>licence</widget>
         </row>
@@ -594,6 +582,15 @@
           <property name="cssStyleClass">dataInputText</property>
         </properties>
       </widget>
+      <widget name="copyright_holder" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>ipr:copyright_holder</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>      
       <widget name="licence" type="selectOneDirectory">
         <translated>true</translated>
         <fields>
