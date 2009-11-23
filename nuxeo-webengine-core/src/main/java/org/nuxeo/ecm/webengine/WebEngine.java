@@ -112,7 +112,11 @@ public class WebEngine implements ResourceLocator {
 
     protected final File root;
 
-    protected ModuleManager moduleMgr;
+    /**
+     * moduleMgr use double-check idiom and needs to be volatile. See
+     * http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
+     */
+    protected volatile ModuleManager moduleMgr;
 
     protected final Scripting scripting;
 
