@@ -4,7 +4,7 @@
     <internalGadget name="mappy">
       <mountPoint>/mappy/mappy</mountPoint>
       <directory>mappy-gadget</directory>
-      <category>information</category>
+      <category>Utilitaires</category>
       <icon>mappy_icon.png</icon>
     </internalGadget>
   </extension>
