@@ -55,6 +55,7 @@ public class GadgetForm {
   public GadgetForm(GadgetPortlet portlet) {
     this.portlet = portlet;
     this.gadget = portlet.getGadgetBean();
+    this.title = portlet.getTitle();
   }
 
   public void showForm() {

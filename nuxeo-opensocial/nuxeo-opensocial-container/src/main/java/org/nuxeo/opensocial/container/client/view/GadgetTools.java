@@ -25,6 +25,7 @@ public class GadgetTools {
 
   public GadgetTools(GadgetPortlet portlet) {
     this.portlet = portlet;
+    this.title = portlet.getTitle();
   }
 
   public Tool[] getButtons() {

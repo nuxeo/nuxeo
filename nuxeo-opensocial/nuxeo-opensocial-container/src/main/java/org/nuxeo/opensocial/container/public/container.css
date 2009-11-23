@@ -140,7 +140,7 @@
 .x-column {
   margin-left: 2px;
   margin-top: 4px;
-  min-height: 250px;
+  min-height: 50px;
 }
 
 #firstCol.x-3-header2cols {

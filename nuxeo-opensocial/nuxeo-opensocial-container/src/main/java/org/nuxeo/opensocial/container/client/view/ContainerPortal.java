@@ -31,7 +31,6 @@ import org.nuxeo.opensocial.container.client.bean.GadgetPosition;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
-import com.google.gwt.user.client.Timer;
 import com.gwtext.client.dd.DropTargetConfig;
 import com.gwtext.client.widgets.BoxComponent;
 import com.gwtext.client.widgets.MessageBox;
@@ -67,7 +66,6 @@ public class ContainerPortal extends Portal {
   private final List<GadgetPortlet> collapsedCache = new ArrayList<GadgetPortlet>();
 
   private int loading;
-  private int loadingTimes = 0;
   private static GadgetPortlet maximizedPortlet;
 
   public ContainerPortal(Container container, Panel parent) {
@@ -87,23 +85,6 @@ public class ContainerPortal extends Portal {
   protected void afterRender() {
     new DropZone(this, ddConfig);
     loading = 0;
-  }
-
-  public void loader(final int timeout) {
-    Timer t = new Timer() {
-      @Override
-      public void run() {
-        if (loading == portlets.size() || loadingTimes >= 5) {
-          loadingTimes = 0;
-          JsLibrary.loadingHide();
-        } else {
-          loadingTimes++;
-          loader(timeout);
-        }
-      }
-    };
-
-    t.schedule(timeout);
   }
 
   public Container getContainer() {
@@ -285,7 +266,6 @@ public class ContainerPortal extends Portal {
       col = columns.get(COLS[0]);
     col.remove(id, true);
     col.doLayout();
-    loader(1);
   }
 
   public void incrementLoading() {

@@ -28,7 +28,6 @@ import org.nuxeo.opensocial.container.client.view.ContainerPortal;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.json.client.JSONBoolean;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -46,30 +45,19 @@ import com.gwtext.client.widgets.layout.FitLayout;
  */
 public class ContainerEntryPoint implements EntryPoint {
 
-  private static final String GWT_WINDOW_WIDTH = "windowWidth";
-  private static final String GWT_IMAGES_GADGET = "imagesGadget";
-
-  public static boolean imagesGadget = false;
-
   private static final String SERVICE_ENTRY_POINT = "/nuxeo/gwtcontainer";
 
+  private static final String GWT_WINDOW_WIDTH = "windowWidth";
   public static final int PANEL_WIDTH = 970;
+  private static final int MARGIN_FROM_FULL_WIDTH = 70;
 
   private static final String GWT_CONTAINER_ID = "gwtContainer";
-
   private static final String CONTAINER_PANEL_ID = "containerPanel";
 
-  public static final int MIN_TIMEOUT = 1;
-
-  public static final int DEFAULT_TIMEOUT = 400;
-
   private final static ContainerServiceAsync SERVICE = GWT.create(ContainerService.class);
-
   private final static ContainerConstants CONSTANTS = GWT.create(ContainerConstants.class);
 
   private static final HashMap<String, String> GWT_PARAMS = new HashMap<String, String>();
-
-  private static final int MARGIN_FROM_FULL_WIDTH = 70;
 
   ServiceDefTarget endpoint = (ServiceDefTarget) SERVICE;
 
@@ -87,7 +75,6 @@ public class ContainerEntryPoint implements EntryPoint {
     }
 
     windowWidth = getWindowWidth(objects);
-    imagesGadget = hasImagesForGadget(objects);
 
     SERVICE.getContainer(GWT_PARAMS, new AsyncCallback<Container>() {
       public void onFailure(Throwable object) {
@@ -109,7 +96,6 @@ public class ContainerEntryPoint implements EntryPoint {
         portal = new ContainerPortal(container, panel);
         panel.setWidth(windowWidth);
         panel.setHeight("100%");
-        portal.loader(DEFAULT_TIMEOUT);
         JsLibrary.updateFrameWidth();
         JsLibrary.updateColumnStyle();
         createGwtContainerMask();
@@ -118,24 +104,14 @@ public class ContainerEntryPoint implements EntryPoint {
           public void run() {
             ContainerEntryPoint.attachLayoutManager(container.getLayout(),
                 container.getStructure());
+            JsLibrary.loadingHide();
           }
         };
 
-        t.schedule(DEFAULT_TIMEOUT);
+        t.schedule(200);
 
       }
     });
-  }
-
-  private boolean hasImagesForGadget(JSONObject objects) {
-    JSONValue value = objects.get(GWT_IMAGES_GADGET);
-    if (value != null) {
-      JSONBoolean bool = value.isBoolean();
-      if (bool != null) {
-        imagesGadget = (boolean) bool.booleanValue();
-      }
-    }
-    return imagesGadget;
   }
 
   private int getWindowWidth(JSONObject objects) {
@@ -203,7 +179,8 @@ public class ContainerEntryPoint implements EntryPoint {
     return null;
   }-*/;
 
-  private static native void createGwtContainerMask() /*-{
+  private static native void createGwtContainerMask()
+  /*-{
     $wnd.jQuery("#gwtContainer").append($wnd.jQuery("<div></div>").attr("id","gwtContainerMask"));
     $wnd.jQuery("#gwtContainerMask").hide();
   }-*/;

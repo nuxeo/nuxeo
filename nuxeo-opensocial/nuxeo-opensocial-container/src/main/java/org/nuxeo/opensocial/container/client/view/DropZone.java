@@ -158,7 +158,6 @@ public class DropZone extends PortalDropZone {
       }
 
     });
-
   }-*/;
 
   @Override
@@ -268,6 +267,7 @@ public class DropZone extends PortalDropZone {
     lastPosC.doLayout();
     lastPosC = null;
     JsLibrary.hideGwtContainerMask();
+    gp.renderDefaultPreferences();
     return true;
   }
 

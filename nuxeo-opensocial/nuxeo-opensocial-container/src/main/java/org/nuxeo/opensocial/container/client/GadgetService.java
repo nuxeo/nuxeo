@@ -107,8 +107,6 @@ public class GadgetService {
       GadgetPortlet p = ContainerEntryPoint.getContainerPortal()
           .getGadgetPortletByRef(ref);
       p.setTitle(title);
-      p.getGadgetForm()
-          .setTitle(title);
     }
   };
 
