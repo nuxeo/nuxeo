@@ -78,7 +78,7 @@ public class GadgetService {
 
   public static void saveUserPref(String ref) {
     GadgetBean bean = ContainerEntryPoint.getContainerPortal()
-        .getGadgetPortlet(ref)
+        .getGadgetPortletByRef(ref)
         .getGadgetBean();
     ContainerEntryPoint.getService()
         .saveGadgetPreferences(bean, null, ContainerEntryPoint.getGwtParams(),
@@ -87,7 +87,7 @@ public class GadgetService {
 
   public static void setUserPref(String ref, String key, String value) {
     ContainerEntryPoint.getContainerPortal()
-        .getGadgetPortlet(ref)
+        .getGadgetPortletByRef(ref)
         .getGadgetBean()
         .setPref(key, value);
   };
