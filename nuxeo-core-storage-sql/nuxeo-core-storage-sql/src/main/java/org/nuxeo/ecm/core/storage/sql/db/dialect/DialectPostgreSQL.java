@@ -1192,14 +1192,13 @@ public class DialectPostgreSQL extends Dialect {
             }
             // check if we want to initialize the descendants table now, or log
             // a warning if the hierarchy table is too big
-            String sql = "SELECT COUNT(*) FROM descendants";
+            String sql = "SELECT id FROM descendants LIMIT 1";
             Statement s = connection.createStatement();
             ResultSet rs = s.executeQuery(sql);
-            rs.next();
-            long count = rs.getLong(1);
+            boolean empty = !rs.next();
             rs.close();
             s.close();
-            if (count == 0) {
+            if (empty) {
                 pathOptimizationsEnabled = false;
                 log.error("Table DESCENDANTS empty, must be upgraded by hand by calling: "
                         + "SELECT NX_INIT_DESCENDANTS()");
