@@ -85,6 +85,7 @@ public class DropZone extends PortalDropZone {
 
         $wnd.Ext.select("div.x-column").addClass("x-column-possible");
         g.select("div.x-tool").setStyle("display","none");
+        g.select("div.x-panel-tl").setStyle("background-color","#a29f9a");
       },
 
       alignElWithMouse: function(el, iPageX, iPageY) {
@@ -101,7 +102,7 @@ public class DropZone extends PortalDropZone {
       endDrag : function(e){
         this.proxy.hide();
         this.panel.saveState();
-         $wnd.Ext.select("div.x-column").removeClass("x-column-possible");
+        $wnd.Ext.select("div.x-column").removeClass("x-column-possible");
         $wnd.Ext.select("div.x-tool").setStyle("display","block");
       }
     });
