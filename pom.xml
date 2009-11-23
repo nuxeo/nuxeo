@@ -159,6 +159,16 @@
         </snapshotRepository>
       </distributionManagement>
     </profile>
+    <profile>
+      <id>qapriv</id>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>snapshots</id>
+          <url>http://mavenpriv.in.nuxeo.com/snapshots</url>
+          <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
   </profiles>
 
   <dependencyManagement>
