@@ -22,8 +22,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -761,6 +759,50 @@ public class TestSQLBackend extends SQLBackendTestCase {
         xaresource.prepare(xid);
         // Oracle needs a rollback as prepare() returns XA_RDONLY
         xaresource.rollback(xid);
+    }
+
+    protected List<String> getNames(List<Node> nodes) {
+        List<String> names = new ArrayList<String>(nodes.size());
+        for (Node node : nodes) {
+            names.add(node.getName());
+        }
+        return names;
+    }
+
+    public void testOrdered() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node fold = session.addChildNode(root, "fold", null, "OFolder", false);
+        Node doca = session.addChildNode(fold, "a", null, "TestDoc", false);
+        Node docb = session.addChildNode(fold, "b", null, "TestDoc", false);
+        Node docc = session.addChildNode(fold, "c", null, "TestDoc", false);
+        Node docd = session.addChildNode(fold, "d", null, "TestDoc", false);
+        Node doce = session.addChildNode(fold, "e", null, "TestDoc", false);
+        session.save();
+        // check order
+        List<Node> children = session.getChildren(fold, null, false);
+        assertEquals(Arrays.asList("a", "b", "c", "d", "e"), getNames(children));
+
+        // reorder self
+        session.orderBefore(fold, docb, docb);
+        children = session.getChildren(fold, null, false);
+        assertEquals(Arrays.asList("a", "b", "c", "d", "e"), getNames(children));
+        // reorder up
+        session.orderBefore(fold, docd, docb);
+        children = session.getChildren(fold, null, false);
+        assertEquals(Arrays.asList("a", "d", "b", "c", "e"), getNames(children));
+        // reorder first
+        session.orderBefore(fold, docc, doca);
+        children = session.getChildren(fold, null, false);
+        assertEquals(Arrays.asList("c", "a", "d", "b", "e"), getNames(children));
+        // reorder last
+        session.orderBefore(fold, docd, null);
+        children = session.getChildren(fold, null, false);
+        assertEquals(Arrays.asList("c", "a", "b", "e", "d"), getNames(children));
+        // reorder down
+        session.orderBefore(fold, doca, docd);
+        children = session.getChildren(fold, null, false);
+        assertEquals(Arrays.asList("c", "b", "e", "a", "d"), getNames(children));
     }
 
     public void testMove() throws Exception {

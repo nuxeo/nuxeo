@@ -234,6 +234,21 @@ public interface Session extends Connection {
     void removeNode(Node node) throws StorageException;
 
     /**
+     * Order the given source child node before the destination child node. The
+     * source node will be placed before the destination one. If destination is
+     * {@code null}, the source node will be appended at the end of the children
+     * list.
+     *
+     * @param parent the parent node
+     * @param source the child node to move
+     * @param dest the child node before which to place the source node, or
+     *            {@code null} to move at the end
+     * @throws StorageException
+     */
+    void orderBefore(Node parent, Node source, Node dest)
+            throws StorageException;
+
+    /**
      * Moves a node to a new location with a new name.
      * <p>
      * A {@link #save} is automatically done first.

@@ -471,6 +471,38 @@ public class PersistenceContext {
     }
 
     /**
+     * Order a source child node before a destination child node, in a given
+     * parent folder.
+     * <p>
+     * The source node will be placed before the destination one. If destId is
+     * {@code null}, the source node will be appended at the end of the children
+     * list.
+     *
+     * @param parentId the parent id
+     * @param sourceId the child node id to move
+     * @param destId the child node id before which to place the source node
+     * @throws StorageException
+     */
+    public void orderBefore(Serializable parentId, Serializable sourceId,
+            Serializable destId) throws StorageException {
+        hierContext.orderBefore(parentId, sourceId, destId);
+    }
+
+    /**
+     * Gets the next pos value for a new child in a folder.
+     *
+     * @param nodeId the folder node id
+     * @param complexProp whether to deal with complex properties or regular
+     *            children
+     * @return the next pos, or {@code null} if not orderable
+     * @throws StorageException
+     */
+    protected Long getNextPos(Serializable nodeId, boolean complexProp)
+            throws StorageException {
+        return hierContext.getNextPos(nodeId, complexProp);
+    }
+
+    /**
      * Move a hierarchy fragment to a new parent with a new name.
      *
      * @param source the source

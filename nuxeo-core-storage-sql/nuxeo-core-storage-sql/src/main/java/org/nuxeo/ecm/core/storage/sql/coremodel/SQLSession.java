@@ -33,7 +33,6 @@ import java.util.regex.Pattern;
 import javax.resource.ResourceException;
 import javax.transaction.xa.XAResource;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -218,6 +217,15 @@ public class SQLSession implements Session {
             throw new NoSuchDocumentException("No such document: " + path);
         }
         return doc;
+    }
+
+    protected void orderBefore(Node node, Node src, Node dest)
+            throws DocumentException {
+        try {
+            session.orderBefore(node, src, dest);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
     }
 
     public Document move(Document source, Document parent, String name)
@@ -477,7 +485,8 @@ public class SQLSession implements Session {
         public IterableQueryResult executeAndFetch(QueryFilter queryFilter,
                 Object... params) throws QueryException {
             try {
-                return session.queryAndFetch(query, queryType, queryFilter, params);
+                return session.queryAndFetch(query, queryType, queryFilter,
+                        params);
             } catch (StorageException e) {
                 throw new QueryException(e.getMessage(), e);
             }
@@ -830,7 +839,8 @@ public class SQLSession implements Session {
                 } catch (StorageException e) {
                     throw new DocumentException(e);
                 }
-                property = new SQLCollectionProperty(this, prop, listType, readonly);
+                property = new SQLCollectionProperty(this, prop, listType,
+                        readonly);
             } else {
                 property = new SQLComplexListProperty(node, listType, name,
                         this, readonly);
@@ -844,9 +854,6 @@ public class SQLSession implements Session {
                     if (complexListSize == -1) {
                         // get existing
                         childNodes = session.getChildren(node, name, true);
-                        // as Children are not ordered for now, order by hand
-                        Collections.sort(childNodes,
-                                new Node.PositionComparator(model));
                     } else {
                         // create with given size (after a remove)
                         childNodes = new ArrayList<Node>(complexListSize);

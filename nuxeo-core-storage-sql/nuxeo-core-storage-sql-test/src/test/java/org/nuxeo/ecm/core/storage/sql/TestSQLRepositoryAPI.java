@@ -2536,8 +2536,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertNull(p.getValue());
     }
 
-    // XXX deactivate for SQL until ordering is implemented
-    public void XXXtestOrdering() throws Exception {
+    public void testOrdering() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel parent = new DocumentModelImpl(root.getPathAsString(),
                 "theParent", "OrderedFolder");
@@ -2573,7 +2572,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(2, children.size());
         assertEquals(name1, children.get(0).getName());
         assertEquals(name2, children.get(1).getName());
-
     }
 
     public void testPropertyXPath() throws Exception {

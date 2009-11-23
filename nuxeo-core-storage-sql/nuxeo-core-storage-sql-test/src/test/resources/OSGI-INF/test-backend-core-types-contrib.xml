@@ -20,6 +20,9 @@
       <schema name="testschema" />
       <prefetch>tst:subjects</prefetch>
     </doctype>
+    <doctype name="OFolder" extends="TestDoc">
+      <facet name="Orderable"/>
+    </doctype>
   </extension>
 
 </component>

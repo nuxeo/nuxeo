@@ -20,13 +20,16 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -58,6 +61,8 @@ public class HierarchyContext extends Context {
      */
     private final Set<Serializable> modifiedParentsInvalidations;
 
+    private final PositionComparator posComparator;
+
     public HierarchyContext(Mapper mapper, PersistenceContext persistenceContext) {
         super(mapper.getModel().hierTableName, mapper, persistenceContext);
         childrenRegularSoft = new ReferenceMap(ReferenceMap.HARD,
@@ -68,6 +73,41 @@ public class HierarchyContext extends Context {
         childrenComplexPropHard = new HashMap<Serializable, Children>();
         modifiedParentsInTransaction = new HashSet<Serializable>();
         modifiedParentsInvalidations = new HashSet<Serializable>();
+        posComparator = new PositionComparator(model.HIER_CHILD_POS_KEY);
+    }
+
+    /**
+     * Comparator of {@link SimpleFragment}s according to their pos field.
+     */
+    public static class PositionComparator implements
+            Comparator<SimpleFragment> {
+
+        protected final String posKey;
+
+        public PositionComparator(String posKey) {
+            this.posKey = posKey;
+        }
+
+        public int compare(SimpleFragment frag1, SimpleFragment frag2) {
+            try {
+                Long pos1 = (Long) frag1.get(posKey);
+                Long pos2 = (Long) frag2.get(posKey);
+                if (pos1 == null && pos2 == null) {
+                    // coherent sort
+                    return frag1.hashCode() - frag2.hashCode();
+                }
+                if (pos1 == null) {
+                    return 1;
+                }
+                if (pos2 == null) {
+                    return -1;
+                }
+                return pos1.compareTo(pos2);
+            } catch (StorageException e) {
+                // shouldn't happen
+                return frag1.hashCode() - frag2.hashCode();
+            }
+        }
     }
 
     @Override
@@ -200,6 +240,9 @@ public class HierarchyContext extends Context {
 
     /**
      * Gets the list of children for a given parent id.
+     * <p>
+     * Complex properties and children of ordered folders are returned in the
+     * proper order.
      *
      * @param parentId the parent id
      * @param name the name of the children, or {@code null} for all
@@ -209,24 +252,37 @@ public class HierarchyContext extends Context {
      */
     public List<SimpleFragment> getChildren(Serializable parentId, String name,
             boolean complexProp) throws StorageException {
-
         Children children = getChildrenCache(parentId, complexProp);
         List<SimpleFragment> fragments = children.getFragmentsByValue(name);
-        if (fragments != null) {
-            // we know all the children
-            return fragments;
-        }
+        if (fragments == null) {
+            // ask the actual children to the mapper
+            fragments = mapper.readChildHierRows(parentId, complexProp, this);
+            List<Serializable> ids = new ArrayList<Serializable>(
+                    fragments.size());
+            for (Fragment fragment : fragments) {
+                ids.add(fragment.getId());
+            }
+            children.addExistingComplete(ids);
 
-        // ask the actual children to the mapper
-        fragments = mapper.readChildHierRows(parentId, complexProp, this);
-        List<Serializable> ids = new ArrayList<Serializable>(fragments.size());
-        for (Fragment fragment : fragments) {
-            ids.add(fragment.getId());
+            // the children may include newly-created ones, and filter by name
+            fragments = children.getFragmentsByValue(name);
         }
-        children.addExistingComplete(ids);
+        if (isOrderable(parentId, complexProp)) {
+            // sort children in order
+            Collections.sort(fragments, posComparator);
+        }
+        return fragments;
+    }
 
-        // the children may include newly-created ones, and filter by name
-        return children.getFragmentsByValue(name);
+    private boolean isOrderable(Serializable parentId, boolean complexProp)
+            throws StorageException {
+        if (complexProp) {
+            return true;
+        }
+        SimpleFragment parent = (SimpleFragment) get(parentId, true);
+        String typeName = parent.getString(model.MAIN_PRIMARY_TYPE_KEY);
+        return model.getDocumentTypeFacets(typeName).contains(
+                FacetNames.ORDERABLE);
     }
 
     /**
@@ -287,6 +343,90 @@ public class HierarchyContext extends Context {
             throw new StorageException("Destination name already exists: "
                     + name);
         }
+    }
+
+    /**
+     * Order a child before another.
+     *
+     * @param parentId the parent id
+     * @param sourceId the node id to move
+     * @param destId the node id before which to place the source node, if
+     *            {@code null} then move the source to the end
+     * @throws StorageException
+     */
+    public void orderBefore(Serializable parentId, Serializable sourceId,
+            Serializable destId) throws StorageException {
+        boolean complexProp = false;
+        if (!isOrderable(parentId, complexProp)) {
+            // TODO throw exception?
+            return;
+        }
+        if (sourceId.equals(destId)) {
+            return;
+        }
+        // This is optimized by assuming the number of children is small enough
+        // to be manageable in-memory.
+        // fetch children and relevant nodes
+        List<SimpleFragment> fragments = getChildren(parentId, null,
+                complexProp);
+        // renumber fragments
+        int i = 0;
+        SimpleFragment source = null; // source if seen
+        Long destPos = null;
+        for (SimpleFragment fragment : fragments) {
+            Serializable id = fragment.getId();
+            if (id.equals(destId)) {
+                destPos = Long.valueOf(i);
+                i++;
+                if (source != null) {
+                    source.put(model.HIER_CHILD_POS_KEY, destPos);
+                }
+            }
+            Long setPos;
+            if (id.equals(sourceId)) {
+                i--;
+                source = fragment;
+                setPos = destPos;
+            } else {
+                setPos = Long.valueOf(i);
+            }
+            if (setPos != null) {
+                if (!setPos.equals(fragment.get(model.HIER_CHILD_POS_KEY))) {
+                    fragment.put(model.HIER_CHILD_POS_KEY, setPos);
+                }
+            }
+            i++;
+        }
+        if (destId == null) {
+            Long setPos = Long.valueOf(i);
+            if (!setPos.equals(source.get(model.HIER_CHILD_POS_KEY))) {
+                source.put(model.HIER_CHILD_POS_KEY, setPos);
+            }
+        }
+    }
+
+    /**
+     * Gets the next pos value for a new child in a folder.
+     *
+     * @param nodeId the folder node id
+     * @param complexProp whether to deal with complex properties or regular
+     *            children
+     * @return the next pos, or {@code null} if not orderable
+     * @throws StorageException
+     */
+    protected Long getNextPos(Serializable nodeId, boolean complexProp)
+            throws StorageException {
+        if (!isOrderable(nodeId, complexProp)) {
+            return null;
+        }
+        long max = -1;
+        for (SimpleFragment fragment : getChildren(nodeId, null, complexProp)) {
+            Long pos = (Long) fragment.get(model.HIER_CHILD_POS_KEY);
+            if (pos != null && pos.longValue() > max) {
+                max = pos.longValue();
+            }
+        }
+        return Long.valueOf(max + 1);
     }
 
     /**

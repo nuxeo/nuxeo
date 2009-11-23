@@ -128,7 +128,7 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
     }
 
     @Override
-    public void orderBefore(String src, String dest) {
+    public void orderBefore(String src, String dest) throws DocumentException {
         throw new UnsupportedOperationException();
     }
 

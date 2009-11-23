@@ -32,7 +32,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
@@ -218,6 +217,11 @@ public class ConnectionImpl implements Session {
 
     public String getPath(Node node) throws StorageException {
         return getSession().getPath(node);
+    }
+
+    public void orderBefore(Node node, Node src, Node dest)
+            throws StorageException {
+        getSession().orderBefore(node, src, dest);
     }
 
     public Node move(Node source, Node parent, String name)

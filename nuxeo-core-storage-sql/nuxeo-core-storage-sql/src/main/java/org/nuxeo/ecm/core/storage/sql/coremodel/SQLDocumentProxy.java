@@ -137,6 +137,11 @@ public class SQLDocumentProxy extends SQLDocumentVersion implements
     }
 
     @Override
+    public void orderBefore(String src, String dest) throws DocumentException {
+        _orderBefore(src, dest);
+    }
+
+    @Override
     public Document getChild(String name) throws DocumentException {
         return _getChild(name);
     }

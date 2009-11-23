@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.SchemaImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;

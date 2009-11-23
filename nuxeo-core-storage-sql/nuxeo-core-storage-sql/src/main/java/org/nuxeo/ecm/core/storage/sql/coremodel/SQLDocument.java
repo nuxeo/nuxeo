@@ -156,7 +156,6 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     public void writeDocumentPart(DocumentPart dp) throws Exception {
         for (Property property : dp) {
             setPropertyValue(property.getName(), property.getValueForWrite());
-            //setPropertyValue(property.getName(), property.getValue());
         }
         clearDirtyFlags(dp);
     }
@@ -467,12 +466,32 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         if (!isFolder()) {
             throw new IllegalArgumentException("Not a folder");
         }
-        // TODO pos
         return session.addChild(getHierarchyNode(), name, null, typeName);
     }
 
     public void orderBefore(String src, String dest) throws DocumentException {
-        throw new UnsupportedOperationException();
+        _orderBefore(src, dest);
+    }
+
+    protected void _orderBefore(String src, String dest)
+            throws DocumentException {
+        SQLDocument srcDoc = (SQLDocument) getChild(src);
+        if (srcDoc == null) {
+            throw new DocumentException("Document " + this + " has no child: "
+                    + src);
+        }
+        SQLDocument destDoc;
+        if (dest == null) {
+            destDoc = null;
+        } else {
+            destDoc = (SQLDocument) getChild(dest);
+            if (destDoc == null) {
+                throw new DocumentException("Document " + this
+                        + " has no child: " + dest);
+            }
+        }
+        session.orderBefore(getHierarchyNode(), srcDoc.getHierarchyNode(),
+                destDoc == null ? null : destDoc.getHierarchyNode());
     }
 
     public void removeChild(String name) throws DocumentException {

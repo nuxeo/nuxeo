@@ -447,6 +447,9 @@ public class SessionImpl implements Session {
 
     public Node addChildNode(Node parent, String name, Long pos,
             String typeName, boolean complexProp) throws StorageException {
+        if (pos == null && !complexProp) {
+            pos = context.getNextPos(parent.getId(), complexProp);
+        }
         return addChildNode(null, parent, name, pos, typeName, complexProp);
     }
 
@@ -595,6 +598,13 @@ public class SessionImpl implements Session {
             nodes.add(node);
         }
         return nodes;
+    }
+
+    public void orderBefore(Node parent, Node source, Node dest)
+            throws StorageException {
+        checkLive();
+        context.orderBefore(parent.getId(), source.getId(), dest == null ? null
+                : dest.getId());
     }
 
     public Node move(Node source, Node parent, String name)
