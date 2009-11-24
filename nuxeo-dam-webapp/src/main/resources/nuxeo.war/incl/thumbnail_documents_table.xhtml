@@ -9,14 +9,68 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:rich="http://richfaces.org/rich">
 
+   
+<script type="text/javascript" src="/nuxeo/scripts/jquery.js"></script>
+<!-- The jQuery.noConflict() is necessary or else things start breaking like the import dialog popup -->    
+<script type="text/javascript">jQuery.noConflict();</script>    
+<script type="text/javascript" src="/nuxeo/scripts/jquery.event.extendedclick.js"></script>   
+<script type="text/javascript">
+var currentId = -1;
+    
+(function($){$(document).ready(function(){
+
+	$(document).ctrlclick(function(e) {
+		if(currentId >= 0) {
+			eval("link" + currentId + "();")
+			currentId = -1;
+		}
+	});
+	
+})})(jQuery);
+</script>
+    
   <rich:dataGrid
     id="dataTable"
     value="#{documents.rows}"
     var="row"
+    rowKeyVar="rowKey"
     columns="4"
     rendered="#{documents.rowCount > 0}">
 
-      <rich:panel><div class="thumbViewElement #{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}" docRef="#{row.data.ref}">
+      <rich:panel>
+        <div docRef="#{row.data.ref}" id="#{row.data.ref}" name="#{rowKey}"
+             class="thumbViewElement #{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}" 
+                ondblclick="dblclick = true;}'" onclick="currentId=#{rowKey};">
+             <script type="text/javascript">
+                    var dblclick;
+
+                    function link<h:outputText value="#{rowKey}" />(){
+	                        if(!dblclick){
+	                           if (document.getElementById('<h:outputText value="#{row.data.ref}" />').getAttribute('class')==('thumbViewElement selected')){	                       
+	                               document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0].checked=false;
+	                               document.getElementById('<h:outputText value="#{row.data.ref}" />').className='thumbViewElement';
+	                           }else{
+	                               document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0].checked=true;
+	                               document.getElementById('<h:outputText value="#{row.data.ref}" />').className='thumbViewElement selected';
+	                           }
+	                           selectDataTableRow('<h:outputText value="#{row.data.ref}" />' , 
+	                             '<h:outputText value="#{providerName}" />',
+	                             document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0],
+	                             null);                          
+	                        } else {
+
+	                        }
+
+                    }
+              </script>
+       		  <div id="docRefDiv:#{row.data.ref}" style="display: none;" >
+                <h:selectBooleanCheckbox value="#{row.selected}"  />
+              </div>
+              <!-- div id="docRefTarget:#{row.data.ref}" style="background-color:yellow;" 
+                ondblclick="dblclick = true; window.location.href = '#{nxd:documentUrl(row.data)}'"
+                onclick="setTimeout(link#{rowKey}, 300)">
+              </div --> 
+                
         <h:panelGrid>
           <a4j:commandLink id="imageLink" styleClass="thumbViewPictureLink"  action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
             <nxh:graphicImage id="theImage"

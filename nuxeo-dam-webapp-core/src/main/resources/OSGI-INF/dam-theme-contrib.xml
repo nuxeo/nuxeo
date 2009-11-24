@@ -63,6 +63,7 @@
       <resource>calendar.css</resource>
 
       <resource>jquery.js</resource>
+      <resource>jquery.event.extendedclick.js</resource>
       <resource>toggle-panel.js</resource>
     </view>
 
@@ -78,6 +79,14 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="resources">
 
+    <resource name="jquery.js">
+      <path>scripts/jquery.js</path>
+    </resource>
+
+    <resource name="jquery.event.extendedclick.js">
+      <path>scripts/jquery.event.extendedclick.js</path>
+    </resource>
+    
     <resource name="toggle-panel.js">
       <path>scripts/toggle-panel.js</path>
     </resource>
