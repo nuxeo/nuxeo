@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.nuxeo.build</groupId>
@@ -12,7 +12,6 @@
   <properties>
     <mavenVersion>2.0.9</mavenVersion>
   </properties>
-
 
   <repositories>
     <repository>
@@ -79,7 +78,6 @@
     </snapshotRepository>
   </distributionManagement>
 
-
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -105,22 +103,18 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-embedder</artifactId>
-      <!-- There's no release of Maven embedder since 2.0.1, so we can't do ${maven.version} here -->
+      <!--
+        There's no release of Maven embedder since 2.0.1, so we can't do
+        ${maven.version} here
+      -->
       <version>2.0.4</version>
       <scope>compile</scope>
     </dependency>
-    <!--dependency>
-        <groupId>ant</groupId>
-        <artifactId>ant-launcher</artifactId>
-        <version>1.7.0</version>
-        <scope>runtime</scope>
-    </dependency-->
     <dependency>
-        <groupId>ant</groupId>
-        <artifactId>ant</artifactId>
-        <version>1.7.0</version>
+      <groupId>ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.7.0</version>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -134,6 +128,11 @@
             <source>1.5</source>
             <target>1.5</target>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>1.2.1</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -155,26 +154,18 @@
             </goals>
             <configuration>
               <!--finalName>nuxeo-builder-${project.version}</finalName-->
-              <createDependencyReducedPom>
-                false
-              </createDependencyReducedPom>
-              <keepDependenciesWithProvidedScope>
-                true
-              </keepDependenciesWithProvidedScope>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
               <shadedArtifactAttached>true</shadedArtifactAttached>
               <shadedClassifierName>all</shadedClassifierName>
               <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ComponentsXmlResourceTransformer"/>
+                <transformer
+                  implementation="org.apache.maven.plugins.shade.resource.ComponentsXmlResourceTransformer" />
               </transformers>
               <artifactSet>
                 <excludes>
                   <exclude>junit:junit</exclude>
                   <exclude>jmock:jmock</exclude>
-                  <!--exclude>
-                    org.codehaus.plexus:plexus-component-api
-                  </exclude>
-                  <exclude>classworlds:classworlds</exclude>
-                  <exclude>xml-apis:xml-apis</exclude-->
                 </excludes>
               </artifactSet>
             </configuration>
@@ -182,7 +173,7 @@
         </executions>
       </plugin>
 
-      
+
     </plugins>
   </build>
 

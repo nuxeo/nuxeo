@@ -170,6 +170,10 @@
       </distributionManagement>
     </profile>
   </profiles>
+  
+  <modules>
+    <module>nuxeo-distribution-tools</module>
+  </modules>
 
   <dependencyManagement>
     <dependencies>
@@ -1039,6 +1043,18 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.nuxeo.build</groupId>
+          <artifactId>nuxeo-distribution-tools</artifactId>
+          <version>0.2</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
   <scm>
     <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution</connection>
