@@ -5,6 +5,7 @@ Bundle-Vendor: Nuxeo
 Provide-Package: org.nuxeo.common,
  org.nuxeo.common.collections,
  org.nuxeo.common.debug,
+ org.nuxeo.common.logging,
  org.nuxeo.common.mock.jndi,
  org.nuxeo.common.persistence,
  org.nuxeo.common.server,
