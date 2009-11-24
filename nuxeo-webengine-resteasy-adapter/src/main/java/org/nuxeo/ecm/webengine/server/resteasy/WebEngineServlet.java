@@ -131,16 +131,6 @@ public class WebEngineServlet extends HttpServlet {
             httpServletRequest.setCharacterEncoding("UTF-8");
         }
 
-        httpServletResponse.setContentType("text/html; charset=UTF-8");
-        httpServletResponse.addHeader("Pragma", "no-cache");
-        httpServletResponse.addHeader("Cache-Control", "no-cache");
-        httpServletResponse.addHeader("Cache-Control", "no-store");
-        httpServletResponse.addHeader("Cache-Control", "must-revalidate");
-        httpServletResponse.addHeader("Expires", "0");
-        httpServletResponse.setDateHeader("Expires", 0); // prevents caching
-        // at the proxy
-        // server
-
         if (enableJsp) {
             WebEngine engine = Framework.getLocalService(WebEngine.class);
             if (!isTaglibLoaded) {
@@ -157,6 +147,18 @@ public class WebEngineServlet extends HttpServlet {
 
         service(httpServletRequest.getMethod(), httpServletRequest,
                 httpServletResponse);
+
+        // check if the target resource don't want automatic headers to be inserted
+        if (null != httpServletRequest.getAttribute("org.nuxeo.webengine.DisableAutoHeaders")) {
+            // insert automatic headers
+            httpServletResponse.addHeader("Pragma", "no-cache");
+            httpServletResponse.addHeader("Cache-Control", "no-cache");
+            httpServletResponse.addHeader("Cache-Control", "no-store");
+            httpServletResponse.addHeader("Cache-Control", "must-revalidate");
+            httpServletResponse.addHeader("Expires", "0");
+            httpServletResponse.setDateHeader("Expires", 0); // prevents caching
+        }
+
     }
 
     public void service(String httpMethod, HttpServletRequest request,
