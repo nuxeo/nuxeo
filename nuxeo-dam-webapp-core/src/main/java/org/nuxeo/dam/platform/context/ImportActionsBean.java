@@ -3,9 +3,7 @@ package org.nuxeo.dam.platform.context;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.faces.application.FacesMessage;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -16,7 +14,10 @@ import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -41,13 +42,13 @@ public class ImportActionsBean implements Serializable {
 
     protected DocumentModel newImportSet;
 
-    @In(create = true, required=false)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
 
-    @In(create = true, required=false)
+    @In(create = true, required = false)
     // won't inject this because of seam problem after activation
     // ::protected Map<String, String> messages;
     protected ResourcesAccessor resourcesAccessor;
@@ -96,7 +97,9 @@ public class ImportActionsBean implements Serializable {
             log.error(e, e);
         } finally {
             // delete the temporary file that was made by the richface
-            ((FileBlob) blob).getFile().delete();
+            if (blob != null) {
+                ((FileBlob) blob).getFile().delete();
+            }
         }
         documentManager.save();
         sendImportSetCreationEvent();
@@ -132,9 +135,9 @@ public class ImportActionsBean implements Serializable {
     public void logDocumentWithTitle(String facesMessage, String someLogString,
             DocumentModel document) {
 
-        facesMessages.add(FacesMessage.SEVERITY_INFO, resourcesAccessor
-                .getMessages().get(facesMessage), resourcesAccessor
-                .getMessages().get(newImportSet.getType()));
+        facesMessages.add(FacesMessage.SEVERITY_INFO,
+                resourcesAccessor.getMessages().get(facesMessage),
+                resourcesAccessor.getMessages().get(newImportSet.getType()));
 
         if (null != document) {
             log.trace('[' + getClass().getSimpleName() + "] " + someLogString
