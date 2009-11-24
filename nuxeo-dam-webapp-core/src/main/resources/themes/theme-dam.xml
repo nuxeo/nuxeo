@@ -406,9 +406,13 @@
         <padding>6px 0px 0px 20px</padding>
         <background>transparent url(/nuxeo/img/import_button.png) no-repeat top left</background>
       </selector>
-      <selector path=".settingsButton">
+      <selector path=".administrationButton">
         <padding>6px 0px 0px 20px</padding>
         <background>transparent url(/nuxeo/img/settings_button.png) no-repeat top left</background>
+      </selector>
+      <selector path=".assetManagementButton">
+        <padding>6px 0px 0px 20px</padding>
+        <background>transparent url(/nuxeo/img/asset_management.png) no-repeat top left</background>
       </selector>
       <selector path=".configButton">
         <padding>6px 0px 0px 20px</padding>

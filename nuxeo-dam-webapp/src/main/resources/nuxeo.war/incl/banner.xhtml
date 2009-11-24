@@ -3,6 +3,8 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:rich="http://richfaces.org/rich">
 
 <div class="banner_actions">
@@ -24,31 +26,39 @@
       <ui:include src="/incl/new_import_set.xhtml" />
     </rich:modalPanel>
 
-    <h:form>
+    
     <a4j:region>
-      <ul>
-        <li>
-          <a4j:commandLink action="#{importActions.invalidateImportContext}" onclick="javascript:Richfaces.showModalPanel('importSetFormPanel');" id="importset_creation_button" reRender="importSetPanel">
-            <h:outputText class="importButton" value="${messages['label.action.createImportSet']}"/>
-          </a4j:commandLink>
-        </li>
-        <li>
-          <h:commandLink id="settings_button" action="#{userManagerActions.viewUsers}">
-            <h:outputText class="settingsButton" value="${messages['label.action.settings']}"/>
-          </h:commandLink>
-        </li>
-        <li>
-          <h:outputText class="separator" value=" | " />
-        </li>
-        <li>
-          <h:commandLink action="#{logoutActions.logout}">
-            <h:outputText class="logOutButton" value="#{messages['command.logout']}" />
-          </h:commandLink>
-        </li>
-      </ul>
-      <div style="clear:both;"></div>
+      <a4j:outputPanel id="administrationTable">
+        <a4j:form><ul>      
+          <li>
+            <a4j:commandLink action="#{importActions.invalidateImportContext}" onclick="javascript:Richfaces.showModalPanel('importSetFormPanel');" id="importset_creation_button" reRender="importSetPanel">
+              <h:outputText class="importButton" value="${messages['label.action.createImportSet']}"/>
+            </a4j:commandLink>
+          </li>   
+          <li>
+            <a4j:commandLink id="administration_button" action="#{webActions.navigateToAdministration}" 
+              rendered="#{!isInsideAdministration}" reRender="administrationTable">
+              <h:outputText class="settingsButton" value="${messages['label.action.administration']}"/>
+            </a4j:commandLink>
+          </li>
+          <li>
+            <a4j:commandLink id="asset_management_button" action="#{webActions.navigateToAssetManagement}" 
+              rendered="#{isInsideAdministration}" reRender="administrationTable">
+              <h:outputText class="settingsButton" value="${messages['label.action.asset.management']}"/>
+            </a4j:commandLink>
+          </li>        
+          <li>
+            <h:outputText class="separator" value=" | " />
+          </li>
+          <li>
+            <h:commandLink action="#{logoutActions.logout}">
+              <h:outputText class="logOutButton" value="#{messages['command.logout']}" />
+            </h:commandLink>
+          </li>
+        </ul><div style="clear:both;"></div>
+        </a4j:form>
+      </a4j:outputPanel>
     </a4j:region>
-    </h:form>
 
     <ui:include src="/incl/waiter.xhtml"/>
 </div>

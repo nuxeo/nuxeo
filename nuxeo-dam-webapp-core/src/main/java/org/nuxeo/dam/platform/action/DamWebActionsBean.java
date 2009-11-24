@@ -7,12 +7,14 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.dam.webapp.contentbrowser.DocumentActions;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.Action;
@@ -20,6 +22,7 @@ import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.action.WebActionsBean;
+import org.nuxeo.ecm.webapp.security.UserManagerActions;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -44,12 +47,17 @@ public class DamWebActionsBean extends WebActionsBean {
 
     @In(create = true, required = false)
     private transient DocumentActions documentActions;
+    
+    @In(create = true, required = false)
+    private transient UserManagerActions userManagerActions;
 
     private ActionManager actionService;
 
     private Boolean showList = Boolean.FALSE;
 
-    private Boolean showThumbnail = Boolean.TRUE;
+    private Boolean showThumbnail = Boolean.TRUE;    
+    
+    private Boolean showAdministration = Boolean.FALSE;
 
     @Override
     @Factory(value = "tabsActionsList", scope = EVENT)
@@ -84,6 +92,21 @@ public class DamWebActionsBean extends WebActionsBean {
         ctx.setCurrentPrincipal(currentNuxeoPrincipal);
         return ctx;
     }
+    
+    public String navigateToAdministration() throws ClientException {
+		showAdministration = Boolean.TRUE;
+		return userManagerActions.viewUsers();
+	}
+
+	public String navigateToAssetManagement() throws ClientException {
+		showAdministration = Boolean.FALSE;
+		return navigationContext.goHome();
+	}
+
+	@Factory(value = "isInsideAdministration", scope = ScopeType.EVENT)
+	public boolean showAdministration() {
+		return showAdministration;
+	}
 
     public void showListLink() {
         if (showList) {
