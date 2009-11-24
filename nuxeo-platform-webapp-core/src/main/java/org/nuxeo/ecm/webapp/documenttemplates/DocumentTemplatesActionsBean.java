@@ -171,10 +171,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
         try {
             String title = (String) doc.getProperty("dublincore", "title");
             String name = IdUtils.generateId(title);
-            documentManager.copy(new IdRef(selectedTemplateId), currentDocRef,
-                    name);
-
-            DocumentModel created = documentManager.getChild(currentDocRef,
+            DocumentModel created = documentManager.copy(new IdRef(selectedTemplateId), currentDocRef,
                     name);
 
             // Update from user input.
