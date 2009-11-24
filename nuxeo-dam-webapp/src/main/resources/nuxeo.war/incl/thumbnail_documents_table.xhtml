@@ -20,6 +20,9 @@ var currentId = -1;
 (function($){$(document).ready(function(){
 
 	$(document).ctrlclick(function(e) {
+		// alert($(this));
+		// alert(jQuery);
+			
 		if(currentId >= 0) {
 			eval("link" + currentId + "();")
 			currentId = -1;
@@ -39,19 +42,25 @@ var currentId = -1;
 
       <rich:panel>
         <div docRef="#{row.data.ref}" id="#{row.data.ref}" name="#{rowKey}"
-             class="thumbViewElement #{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}" 
+             class="thumbViewElement #{nxu:test(documentActions.currentSelection == row.data, 'selected', '')} #{nxu:test(documentActions.getIsCurrentSelectionInWorkingList(row.data.ref, providerName, 'CURRENT_SELECTION'), 'selectedCtrlClick', '')}"
                 ondblclick="dblclick = true;}'" onclick="currentId=#{rowKey};">
              <script type="text/javascript">
                     var dblclick;
 
                     function link<h:outputText value="#{rowKey}" />(){
 	                        if(!dblclick){
-	                           if (document.getElementById('<h:outputText value="#{row.data.ref}" />').getAttribute('class')==('thumbViewElement selected')){	                       
+	                           if (document.getElementById('<h:outputText value="#{row.data.ref}" />').getAttribute('class')==('thumbViewElement selected selectedCtrlClick')){	                       
+	                               document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0].checked=false;
+	                               document.getElementById('<h:outputText value="#{row.data.ref}" />').className='thumbViewElement selected';
+	                           }else if (document.getElementById('<h:outputText value="#{row.data.ref}" />').getAttribute('class')==('thumbViewElement selectedCtrlClick')){	                       
 	                               document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0].checked=false;
 	                               document.getElementById('<h:outputText value="#{row.data.ref}" />').className='thumbViewElement';
-	                           }else{
+	                           }else if (document.getElementById('<h:outputText value="#{row.data.ref}" />').getAttribute('class')==('thumbViewElement selected')){	                       
 	                               document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0].checked=true;
-	                               document.getElementById('<h:outputText value="#{row.data.ref}" />').className='thumbViewElement selected';
+	                               document.getElementById('<h:outputText value="#{row.data.ref}" />').className='thumbViewElement selected selectedCtrlClick';
+		                       }else{
+	                               document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0].checked=true;
+	                               document.getElementById('<h:outputText value="#{row.data.ref}" />').className='thumbViewElement selectedCtrlClick';
 	                           }
 	                           selectDataTableRow('<h:outputText value="#{row.data.ref}" />' , 
 	                             '<h:outputText value="#{providerName}" />',
@@ -124,5 +133,9 @@ var currentId = -1;
       </div></rich:panel>
 
   </rich:dataGrid>
+       <a4j:commandLink id="deleteLink" action="#{bulkSelectActions.deleteSelection}" reRender="dataTable, selectionView">
+       <nxh:outputText value="delete"
+         title="delete"/>
+     </a4j:commandLink>
 
 </div>

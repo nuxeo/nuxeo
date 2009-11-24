@@ -503,6 +503,9 @@
       <selector path=".selected">
         <background-color>#c7d3e0</background-color>
       </selector>
+      <selector path=".selectedCtrlClick">
+        <border>3px solid #004868</border>
+      </selector>
       <selector path=".deliveryBlock .dataInput">
         <margin>10px 0px</margin>
       </selector>

@@ -3,8 +3,10 @@ package org.nuxeo.dam.webapp.contentbrowser;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.faces.context.FacesContext;
 
@@ -21,23 +23,24 @@ import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.dam.webapp.PictureActions;
 import org.nuxeo.dam.webapp.helper.DownloadHelper;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
+import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
-import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -47,6 +50,8 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 @Name("documentActions")
 @Scope(ScopeType.CONVERSATION)
 public class DocumentActions implements Serializable {
+
+    protected static final String CACHED_SELECTED_DOCUMENT_IDS = "cachedSelectedDocumentIds";
 
     private static final long serialVersionUID = 1L;
 
@@ -227,11 +232,11 @@ public class DocumentActions implements Serializable {
      * maximum of maxLength characters. If the Title is more than maxLength
      * characters it will return the Beginning of the title, followed by 3
      * ellipses (...) followed by the End of the title.
-     *
+     * 
      * A minimum of 6 characters is needed before cropping takes effect. If you
      * specify a maxLength of less than 5, it is ignored - in this case
      * maxLength will be set to begin at 5.
-     *
+     * 
      * @param DocumentModel document to extract the title from
      * @param int maxLength the maximum length of the title before cropping will
      *        occur
@@ -294,7 +299,6 @@ public class DocumentActions implements Serializable {
             DocumentModel doc = documentManager.getDocument(docLoc.getDocRef());
             if (doc != null) {
                 // get properties from document view
-                Blob blob = DocumentFileCodec.getBlob(doc, docView);
                 String filename = DocumentFileCodec.getFilename(doc, docView);
                 // download
                 FacesContext context = FacesContext.getCurrentInstance();
@@ -400,6 +404,40 @@ public class DocumentActions implements Serializable {
     public static void raiseEvents(DocumentModel document) {
         Events eventManager = Events.instance();
         eventManager.raiseEvent(EventNames.DOCUMENT_SELECTION_CHANGED, document);
+    }
+
+    /**
+     * Tests if a document is in the working list
+     * 
+     * @param String docRef DocumentRef of the document
+     * @param String providerName The providerName
+     * @return String listName The name of the working list to check. If null,
+     *         the default working list will be checked.
+     */
+    @SuppressWarnings("unchecked")
+    public boolean getIsCurrentSelectionInWorkingList(String docId,
+            String providerName, String listName) {
+        if (docId == null) {
+            return false;
+        }
+        String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
+                : listName;
+
+        // Caching the construction of the set of selected document ids so as
+        // not to call the document list API 30 times per page rendering
+        Context eventContext = Contexts.getEventContext();
+        Set<String> selectedIds = (Set<String>) eventContext.get(CACHED_SELECTED_DOCUMENT_IDS);
+        if (selectedIds == null) {
+            selectedIds = new HashSet<String>();
+            List<DocumentModel> selectedDocumentsList = documentsListsManager.getWorkingList(lName);
+            if (selectedDocumentsList != null) {
+                for (DocumentModel selectedDocumentModel : selectedDocumentsList) {
+                    selectedIds.add(selectedDocumentModel.getId());
+                }
+            }
+            eventContext.set(CACHED_SELECTED_DOCUMENT_IDS, selectedIds);
+        }
+        return selectedIds.contains(docId);
     }
 
 }
