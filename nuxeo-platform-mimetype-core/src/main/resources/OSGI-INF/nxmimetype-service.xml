@@ -976,13 +976,13 @@
         <extension>ai</extension>
       </extensions>
     </mimetype>
-    
-    <!-- MIME types specific to RAW images; for more details see 
+
+    <!-- MIME types specific to RAW images; for more details see
     	http://www.rawsamples.ch
     	http://ufraw.sourceforge.net/wiki
-    	http://dotwhat.net/ 
+    	http://dotwhat.net/
     	http://trac.imagemagick.org/browser/ImageMagick/trunk/config/mime.xml -->
-    
+
     <!-- Canon RAW image file format -->
     <mimetype normalized="image/x-canon-cr2" binary="true"
       iconPath="image.gif">
@@ -1002,7 +1002,7 @@
         <extension>crw</extension>
       </extensions>
     </mimetype>
-        
+
     <!-- Nikon RAW image file format -->
     <mimetype normalized="image/x-nikon-nef" binary="true"
       iconPath="image.gif">
@@ -1013,7 +1013,7 @@
         <extension>nef</extension>
       </extensions>
     </mimetype>
-    
+
     <!-- Leica RAW image files format -->
     <mimetype normalized="image/x-adobe-dng" binary="true"
       iconPath="image.gif">
@@ -1023,7 +1023,7 @@
       <extensions>
         <extension>dng</extension>
       </extensions>
-    </mimetype>   
+    </mimetype>
     <!-- Panasonic RAW image file format -->
     <mimetype normalized="image/x-panasonic-raw" binary="true"
       iconPath="image.gif">
@@ -1034,20 +1034,20 @@
         <extension>raw</extension>
         <extension>rw2</extension>
       </extensions>
-    </mimetype>        
-         
-    <!-- Fuji RAW image file format -->     
+    </mimetype>
+
+    <!-- Fuji RAW image file format -->
     <mimetype normalized="image/x-fuji-raf" binary="true"
       iconPath="image.gif">
       <mimetypes>
         <mimetype>image/x-fuji-raf</mimetype>
       </mimetypes>
       <extensions>
-        <extension>raf</extension>    
+        <extension>raf</extension>
       </extensions>
-    </mimetype>    
-    
-    <!-- Sigma RAW image file format. A file with the extension .X3F is associated with a RAW image file taken with a digital cameras that incorporate the Foveon X3 direct image sensor. -->         
+    </mimetype>
+
+    <!-- Sigma RAW image file format. A file with the extension .X3F is associated with a RAW image file taken with a digital cameras that incorporate the Foveon X3 direct image sensor. -->
     <mimetype normalized="image/x-sigma-x3f" binary="true"
       iconPath="image.gif">
       <mimetypes>
@@ -1056,9 +1056,9 @@
       <extensions>
         <extension>x3f</extension>
       </extensions>
-    </mimetype>  
-    
-    <!-- Pentax RAW image file format -->   
+    </mimetype>
+
+    <!-- Pentax RAW image file format -->
     <mimetype normalized="image/x-pentax-pef" binary="true"
       iconPath="image.gif">
       <mimetypes>
@@ -1067,8 +1067,8 @@
       <extensions>
         <extension>pef</extension>
       </extensions>
-    </mimetype>  
-    
+    </mimetype>
+
     <!-- Kodak RAW image file format -->
     <mimetype normalized="image/x-kodak-dcr" binary="true"
       iconPath="image.gif">
@@ -1087,8 +1087,8 @@
       <extensions>
         <extension>kdc</extension>
       </extensions>
-    </mimetype>      
-    
+    </mimetype>
+
     <!-- Sony RAW image files format -->
     <mimetype normalized="image/x-sony-sr2" binary="true"
       iconPath="image.gif">
@@ -1098,7 +1098,7 @@
       <extensions>
         <extension>sr2</extension>
       </extensions>
-    </mimetype>     
+    </mimetype>
     <mimetype normalized="image/x-sony-arw" binary="true"
       iconPath="image.gif">
       <mimetypes>
@@ -1107,7 +1107,7 @@
       <extensions>
         <extension>arw</extension>
       </extensions>
-    </mimetype> 
+    </mimetype>
     <mimetype normalized="image/x-sony-srf" binary="true"
       iconPath="image.gif">
       <mimetypes>
@@ -1116,8 +1116,8 @@
       <extensions>
         <extension>srf</extension>
       </extensions>
-    </mimetype>   
-          
+    </mimetype>
+
     <!-- Minolta RAW image file format -->
     <mimetype normalized="image/x-minolta-mrw" binary="true"
       iconPath="image.gif">
@@ -1127,8 +1127,8 @@
       <extensions>
         <extension>mrw</extension>
       </extensions>
-    </mimetype>      
-    
+    </mimetype>
+
     <!-- Olympus RAW image file format -->
     <mimetype normalized="image/x-olympus-orf" binary="true"
       iconPath="image.gif">
@@ -1138,8 +1138,8 @@
       <extensions>
         <extension>orf</extension>
       </extensions>
-    </mimetype> 
-    
+    </mimetype>
+
     <!-- Epson RAW image file format -->
     <mimetype normalized="image/x-raw-epson" binary="true"
       iconPath="image.gif">
@@ -1149,8 +1149,8 @@
       <extensions>
         <extension>erf</extension>
       </extensions>
-    </mimetype> 
-    
+    </mimetype>
+
     <!-- Portable Pixmap image file Format -->
     <mimetype normalized="image/x-portable-pixmap" binary="true"
       iconPath="image.gif">
@@ -1160,22 +1160,22 @@
       <extensions>
         <extension>ppm</extension>
       </extensions>
-    </mimetype>     
-       
-    <!-- the bellow registered file extensions are not sure  as Image Magick does not have them registered... -->    
+    </mimetype>
+
+    <!-- the bellow registered file extensions are not sure  as Image Magick does not have them registered... -->
     <mimetype normalized="image/raw" binary="true"
       iconPath="image.gif">
       <mimetypes>
         <mimetype>image/raw</mimetype>
       </mimetypes>
-      <extensions>   
+      <extensions>
       	<extension>mos</extension>
       	<extension>nrw</extension>
       	<!-- Hasselblad RAW image file format -->
-      	<extension>3fr</extension>    
+      	<extension>3fr</extension>
       </extensions>
-    </mimetype>     
-    
+    </mimetype>
+
     <!-- Mamiya RAW image file format -->
     <mimetype normalized="image/x-raw" binary="true"
       iconPath="image.gif">
@@ -1185,8 +1185,8 @@
       <extensions>
         <extension>mef</extension>
       </extensions>
-    </mimetype> 
-                                                 
+    </mimetype>
+
   </extension>
 
   <extension
