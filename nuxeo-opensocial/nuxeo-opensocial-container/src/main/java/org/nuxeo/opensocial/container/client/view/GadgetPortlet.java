@@ -85,14 +85,13 @@ public class GadgetPortlet extends Portlet {
 
   void renderDefaultPreferences() {
     for (PreferencesBean p : this.gadget.getDefaultPrefs()) {
-      renderPreference(p.getName(), p.getValue());
+      renderPreference(p.getName(), (p.getValue() != null) ? p.getValue()
+          : p.getDefaultValue());
     }
   }
 
   public void renderPreference(String name, String value) {
-    if (value == null)
-      return;
-    else if (DEFAULT_PREFS.isBorder(name)) {
+    if (DEFAULT_PREFS.isBorder(name)) {
       if ("FFFFFF".equals(value))
         removeBorder(this.getId());
       else
@@ -100,7 +99,10 @@ public class GadgetPortlet extends Portlet {
     } else if (DEFAULT_PREFS.isFont(name))
       changeTitleColor(this.getId(), value);
     else if (DEFAULT_PREFS.isHeader(name)) {
-      changeHeaderColor(this.getId(), value);
+      if ("none".equals(value))
+        removeHeaderColor(this.getId());
+      else
+        changeHeaderColor(this.getId(), value);
     }
   }
 
@@ -231,6 +233,11 @@ public class GadgetPortlet extends Portlet {
   public void setView(String view) {
     this.view = view;
   }
+
+  private static native void removeHeaderColor(String id)
+  /*-{
+    $wnd.jQuery("#"+id).find("div.x-panel-tl").attr("style","");
+  }-*/;
 
   private static native void changeHeaderColor(String id, String color)
   /*-{

@@ -114,7 +114,6 @@ public class DropZone extends PortalDropZone {
           el.setStyle("margin","auto");
           el.setStyle("margin-bottom","10px");
           el.dom.style.display = '';
-          el.removeClass("x-portlet");
           el.setWidth(this.ghost.getWidth());
           var w = el.getWidth();
           if(this.proxy) {
@@ -122,10 +121,6 @@ public class DropZone extends PortalDropZone {
             delete this.proxy;
           }
           el.setWidth(_W,true);
-          setTimeout(function() {
-            el.addClass("x-portlet");
-          }, 1000);
-
           this.ghost.remove();
           delete this.ghost;
         }
@@ -246,10 +241,12 @@ public class DropZone extends PortalDropZone {
     gp.reloadRenderUrl();
     GadgetPosition dropPosition = portal.getDropPosition();
     GadgetBean bean = gp.getGadgetBean();
-    PortalColumn dragCol = portal.getPortalColumn(bean.getGadgetPosition()
-        .getPlaceID());
-    PortalColumn dropCol = portal.getPortalColumn(dropPosition.getPlaceID());
-    saveDropZone(bean, dropPosition, dragCol, dropCol);
+    if (dropPosition != null) {
+      PortalColumn dragCol = portal.getPortalColumn(bean.getGadgetPosition()
+          .getPlaceID());
+      PortalColumn dropCol = portal.getPortalColumn(dropPosition.getPlaceID());
+      saveDropZone(bean, dropPosition, dragCol, dropCol);
+    }
 
     grid = null;
 
@@ -262,9 +259,12 @@ public class DropZone extends PortalDropZone {
     proxy.getProxy()
         .remove();
 
-    lastPosC.remove(gp.getId());
-    lastPosC.insert(bean.getGadgetPosition()
-        .getPosition(), gp);
+    if (dropPosition != null) {
+      lastPosC.remove(gp.getId());
+      lastPosC.insert(bean.getGadgetPosition()
+          .getPosition(), gp);
+    }
+
     lastPosC.doLayout();
     lastPosC = null;
     JsLibrary.hideGwtContainerMask();

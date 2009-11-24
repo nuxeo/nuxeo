@@ -217,6 +217,7 @@ public class ContainerPortal extends Portal {
 
   private void createMaximizedCol() {
     maximizedCol = createCol(MAXIMIZED_COL_ID, 1.00);
+    columns.remove(MAXIMIZED_COL_ID);
     maximizedCol.hide();
   }
 
