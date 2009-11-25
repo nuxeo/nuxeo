@@ -159,16 +159,6 @@
               <type>zip</type>
             </configuration>
           </execution>
-          <!--
-            execution> <id>all-in-one</id> <goals> <goal>allinone</goal>
-            </goals> <configuration>
-            <includeNestedJars>${embedded.includeNestedJars}</includeNestedJars>
-            <excludeLibs>${embedded.excludeLibs}</excludeLibs>
-            <src>${basedir}/target/${application.name}.zip</src>
-            <target>${basedir}/target/nuxeo-${embedded.type}-${project.version}.jar</target>
-            <launcher>org.nuxeo.ecm.distribution:nuxeo-embedded-launcher:${project.version}</launcher>
-            </configuration> </execution
-          -->
         </executions>
       </plugin>
     </plugins>
