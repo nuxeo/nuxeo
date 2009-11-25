@@ -17,6 +17,8 @@
  */
 package org.nuxeo.ecm.platform.picture.convert;
 
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.*;
+
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,7 +34,6 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
-import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -49,8 +50,11 @@ public class ResizePictureConverter implements Converter {
         ImagingService service = Framework.getService(ImagingService.class);
         List<Blob> results = new ArrayList<Blob>();
         List<Blob> sources = blobHolder.getBlobs();
-        int height = (Integer) parameters.get(ImagingConvertConstants.OPTION_RESIZE_HEIGHT);
-        int width = (Integer) parameters.get(ImagingConvertConstants.OPTION_RESIZE_WIDTH);
+        int height = (Integer) parameters.get(OPTION_RESIZE_HEIGHT);
+        int width = (Integer) parameters.get(OPTION_RESIZE_WIDTH);
+        // use the registered conversion format
+        String format = (String) parameters.get(CONVERSION_FORMAT);
+
         for (Blob source : sources) {
             if (source != null) {
                 InputStream in = source.getStream();

@@ -3,7 +3,8 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo Picture Imaging Core
 Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.core;singleton=true
 Bundle-Vendor: Nuxeo
-Nuxeo-Component: OSGI-INF/ImagingComponent.xml,
+Nuxeo-Component: OSGI-INF/imaging-service-framework.xml,
+ OSGI-INF/imaging-service-contrib.xml,
  OSGI-INF/picture-schemas-contrib.xml,
  OSGI-INF/picture-life-cycle-contrib.xml,
  OSGI-INF/picturebook-schemas-contrib.xml,

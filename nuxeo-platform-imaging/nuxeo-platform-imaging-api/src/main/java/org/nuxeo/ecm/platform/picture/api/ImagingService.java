@@ -81,16 +81,54 @@ public interface ImagingService {
      */
     String getImageMimeType(File file);
     String getImageMimeType(InputStream in);
-    
+
     /**
      * Retrieves the <b>ImageInfo</b> of the blob that is received as parameter.
      * The information provided by the <b>ImageInfo</b>, like width, height or
      * format, is obtained using ImageMagick(see
      * http://www.imagemagick.org/script/index.php for more details on
      * ImageMagick)
-     * 
+     *
      * @param blob - the blob of a picture
      * @return - the <b>ImageInfo</b> of a blob
      */
-    ImageInfo getImageInfo(Blob blob);    
+    ImageInfo getImageInfo(Blob blob);
+
+    /**
+     * Returns a map with the configurations that were registered for the
+     * ImagingService.
+     *
+     * @return
+     */
+    Map<String, String> getConfigurations();
+
+    /**
+     * Returns the value a configuration which name is received as parameter.
+     *
+     * @param configurationName - the name of the configuration
+     * @return the value of the configuration, which can be null in case no
+     *         configuration with the specified name was registered
+     */
+    String getConfigurationValue(String configurationName);
+
+    /**
+     * Returns the value a configuration which name is received as parameter. In
+     * case no configuration with the specified name was registered, the
+     * received <b>defaultValue</b> parameter will be return.
+     *
+     * @param configurationName - the name of the configuration
+     * @param defaultValue the value of the configuration
+     * @return
+     */
+    String getConfigurationValue(String configurationName, String defaultValue);
+
+    /**
+     * Sets the value of a configuration which could be used by the
+     * ImagingService.
+     *
+     * @param configurationName - the name of the configuration
+     * @param configurationValue - the value of the configuration
+     */
+    void setConfigurationValue(String configurationName,
+            String configurationValue);
 }

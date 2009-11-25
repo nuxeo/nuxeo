@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.picture.api.adapters;
 
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.*;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.*;
 
 import java.awt.Point;
 import java.awt.color.ICC_Profile;
@@ -45,7 +46,6 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
-import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -324,11 +324,13 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             map.put("width", size.x);
             map.put("height", size.y);
             Map<String, Serializable> options = new HashMap<String, Serializable>();
-            options.put(ImagingConvertConstants.OPTION_RESIZE_WIDTH, size.x);
-            options.put(ImagingConvertConstants.OPTION_RESIZE_HEIGHT, size.y);
+            options.put(OPTION_RESIZE_WIDTH, size.x);
+            options.put(OPTION_RESIZE_HEIGHT, size.y);
+            // use the registered conversion format for 'Medium' and 'Thumbnail' views
+            options.put(CONVERSION_FORMAT, imagingService.getConfigurationValue(CONVERSION_FORMAT,
+                    DEFAULT_CONVERSATION_FORMAT));
             BlobHolder bh = new SimpleBlobHolder(fileContent);
-            bh = getConversionService().convert(
-                    ImagingConvertConstants.OPERATION_RESIZE, bh, options);
+            bh = getConversionService().convert(OPERATION_RESIZE, bh, options);
             Blob blob = bh.getBlob() != null ? bh.getBlob() : new FileBlob(
                     file, type);
             blob.setFilename(title + "_" + filename);
@@ -370,16 +372,13 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             String type = blob.getMimeType();
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
-            options.put(ImagingConvertConstants.OPTION_CROP_X, coords.get("x"));
-            options.put(ImagingConvertConstants.OPTION_CROP_Y, coords.get("y"));
-            options.put(ImagingConvertConstants.OPTION_RESIZE_HEIGHT,
-                    coords.get("h"));
-            options.put(ImagingConvertConstants.OPTION_RESIZE_WIDTH,
-                    coords.get("w"));
+            options.put(OPTION_CROP_X, coords.get("x"));
+            options.put(OPTION_CROP_Y, coords.get("y"));
+            options.put(OPTION_RESIZE_HEIGHT, coords.get("h"));
+            options.put(OPTION_RESIZE_WIDTH, coords.get("w"));
 
             if (type != "image/png") {
-                bh = getConversionService().convert(
-                        ImagingConvertConstants.OPERATION_CROP, bh, options);
+                bh = getConversionService().convert(OPERATION_CROP, bh, options);
                 return new FileBlob(bh.getBlob().getStream(), type);
             }
         } catch (Exception e) {
