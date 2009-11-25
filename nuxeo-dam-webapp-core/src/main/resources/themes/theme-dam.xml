@@ -565,6 +565,9 @@
       <selector path="#rightIconfilterForm\00003AtopicRichPanelMenuItem, #rightIconfilterForm\00003AcoverageRichPanelMenuItem">
         <width>0</width>
       </selector>
+      <selector path=".dr-pmenu-selected-item">
+        <font-style>normal</font-style>
+      </selector>
       <selector path=".comments">
         <padding>10px 5px 0px</padding>
       </selector>
