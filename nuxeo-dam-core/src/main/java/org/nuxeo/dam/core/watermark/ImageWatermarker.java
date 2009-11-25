@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.dam.webapp.watermark;
+package org.nuxeo.dam.core.watermark;
 
 import java.io.File;
 
