@@ -590,21 +590,18 @@
         <properties widgetMode="edit">
           <property name="styleClass">dataInputText</property>
         </properties>
-      </widget>      
-      <widget name="licence" type="selectOneDirectory">
+      </widget>            
+      
+      <widget name="licence" type="template">
         <translated>true</translated>
         <fields>
           <field>ipr:licence</field>
         </fields>
-        <properties widgetMode="any">
-          <property name="directoryName">dam_licence</property>
-          <property name="localize">true</property>
-        </properties>
-        <properties widgetMode="edit">
-          <property name="ordering">label</property>
-          <property name="cssStyleClass">dataInputText</property>
-        </properties>
-      </widget>
+        <properties mode="any">
+          <property name="template">/widgets/licence_widget.xhtml</property>
+        </properties>               
+      </widget>   
+      
       <widget name="embargo_date" type="datetime">     
         <translated>true</translated>
         <fields>

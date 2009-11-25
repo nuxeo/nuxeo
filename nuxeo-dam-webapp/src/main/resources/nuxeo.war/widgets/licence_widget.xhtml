@@ -1,0 +1,41 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="#{widget.id}">
+
+  <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
+
+    <nxdir:chainSelectOutput
+      directoryNameList="dam_licence"
+      value="#{field_0}"
+      localize="true"
+      display="label"
+      entrySeparator=""
+      displayKeySeparator="false"
+    />
+  </c:if>
+  
+  <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
+
+    <a4j:region id="#{widget.id}_region" renderRegionOnly="true">
+      <a4j:outputPanel ajaxRendered="true">
+        <nxdir:chainSelect size="1" value="#{field_0}"
+          id="#{widget.id}_editselect"
+          allowBranchSelection="true"
+          allowRootSelection="true">
+          <nxdir:chainSelectListbox index="0" size="0" directoryName="dam_licence"
+            localize="true" id="#{widget.id}_dam_licence" display="id">
+          </nxdir:chainSelectListbox>
+        </nxdir:chainSelect>
+        <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
+          id="#{widget.id}_message" />
+      </a4j:outputPanel>
+    </a4j:region>  
+
+  </c:if>
+
+</f:subview>
