@@ -33,6 +33,8 @@ public class ImageInfo {
     protected int width;
 
     protected int height;
+    
+    protected int depth;
 
     protected String format;
 
@@ -43,6 +45,12 @@ public class ImageInfo {
         this.height = Integer.parseInt(height);
         this.format = format;
         this.filePath = filePath;
+    }
+    
+    public ImageInfo(String width, String height, String format, String depth,
+            String filePath) {
+        this(width, height, format, filePath);
+        this.depth = Integer.parseInt(depth);
     }
 
     public int getWidth() {
@@ -81,5 +89,13 @@ public class ImageInfo {
     public File getFile() {
         return new File(filePath);
     }
+    
+    public int getDepth() {
+        return depth;
+    }
+
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }    
 
 }

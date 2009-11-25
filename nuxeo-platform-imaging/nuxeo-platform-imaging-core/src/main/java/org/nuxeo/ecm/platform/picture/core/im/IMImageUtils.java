@@ -100,6 +100,7 @@ public class IMImageUtils implements ImageUtils {
                 params.addNamedParameter("targetHeight", String.valueOf(height));
                 params.addNamedParameter("inputFilePath", path);
                 params.addNamedParameter("outputFilePath", img2);
+                params.addNamedParameter("targetDepth", res[3]);
 
                 cles.execCommand("resizer", params);
                 InputStream is = new FileInputStream(img2);

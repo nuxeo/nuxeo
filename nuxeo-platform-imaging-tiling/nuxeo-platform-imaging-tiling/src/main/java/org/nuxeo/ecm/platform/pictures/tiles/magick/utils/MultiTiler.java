@@ -20,7 +20,9 @@
 package org.nuxeo.ecm.platform.pictures.tiles.magick.utils;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 
 /**
  * Unit command to generate several tiles at once using ImageMagick
@@ -32,11 +34,13 @@ public class MultiTiler extends MagickExecutor {
 
     public static void tile(String inputFilePath, String outputPath,
             int tileWidth, int tileHeight) throws Exception {
+        ImageInfo imageInfo = ImageIdentifier.getInfo(inputFilePath);
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("targetWidth", String.valueOf(tileWidth));
         params.addNamedParameter("targetHeight", String.valueOf(tileHeight));
         params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
         params.addNamedParameter("outputFilePath", formatFilePath(outputPath + "tiles_%02d.jpeg"));
+        params.addNamedParameter("targetDepth", String.valueOf(imageInfo.getDepth()));
         execCommand("resizer", params);
     }
 }

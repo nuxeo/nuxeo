@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.picture.commandline.imagemagick">
 
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>  
+  	  
   <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
     point="command">
     
     <command name="identify" enabled="true">
       <commandLine>identify</commandLine>
-      <parameterString> -ping -format '%m %w %h' #{inputFilePath}</parameterString>
-      <winParameterString> -ping -format "%m %w %h" #{inputFilePath}</winParameterString>
+      <parameterString> -ping -format '%m %w %h %z' #{inputFilePath}</parameterString>
+      <winParameterString> -ping -format "%m %w %h %z" #{inputFilePath}</winParameterString>
       <installationDirective>You need to install ImageMagic.</installationDirective>
     </command>
     
@@ -19,7 +21,7 @@
     
     <command name="resizer" enabled="true">
       <commandLine>convert</commandLine>
-      <parameterString>-size #{targetWidth}x#{targetHeight} #{inputFilePath} #{outputFilePath}</parameterString>
+      <parameterString>-resize #{targetWidth}x#{targetHeight} -depth #{targetDepth} #{inputFilePath} #{outputFilePath}</parameterString>
       <installationDirective>You need to install ImageMagic.</installationDirective>
     </command>
     
@@ -28,6 +30,18 @@
       <parameterString>-rotate #{angle} #{inputFilePath} #{outputFilePath}</parameterString>
       <installationDirective>You need to install ImageMagic.</installationDirective>
     </command>
+    
+    <command name="cropAndResize" enabled="true">
+      <commandLine>stream</commandLine>
+      <parameterString> -map rgb -storage-type char -extract  #{tileWidth}x#{tileHeight}+#{offsetX}+#{offsetY} #{inputFilePath} - | convert -depth 8 -size #{tileWidth}x#{tileHeight} -resize #{targetWidth}x#{targetHeight}!  rgb:-  #{outputFilePath} </parameterString>
+      <installationDirective>You need to install ImageMagic.</installationDirective>
+    </command>
+    
+    <command name="converter" enabled="true">
+      <commandLine>convert</commandLine>
+      <parameterString>#{inputFilePath} #{outputFilePath}</parameterString>
+      <installationDirective>You need to install ImageMagic.</installationDirective>
+    </command>        
 
   </extension>
 

@@ -36,9 +36,9 @@ public class TestAdapters extends RepositoryOSGITestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.types.api");
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
-        "OSGI-INF/test-commandline-imagemagick-contrib.xml");
+        deployBundle("org.nuxeo.ecm.platform.commandline.executor");        
+        deployContrib("org.nuxeo.ecm.platform.picture.core",
+        "OSGI-INF/commandline-imagemagick-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
         "OSGI-INF/commandline-imagemagick-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.pictures.tiles",

@@ -35,11 +35,16 @@ public class JpegSimplifier extends MagickExecutor {
 
     public static ImageInfo simplify(String inputFile, String outputFile,
             int targetWidth, int targetHeight) throws Exception {
-        CmdParameters params = new CmdParameters();
+        
+        // find the depth of the image first
+        ImageInfo imageInfo = ImageIdentifier.getInfo(inputFile);
+        CmdParameters params = new CmdParameters();        
+                
         params.addNamedParameter("targetWidth", String.valueOf(targetWidth));
         params.addNamedParameter("targetHeight", String.valueOf(targetHeight));
         params.addNamedParameter("inputFilePath", formatFilePath(inputFile));
         params.addNamedParameter("outputFilePath", formatFilePath(outputFile));
+        params.addNamedParameter("targetDepth", String.valueOf(imageInfo.getDepth()));
         execCommand("resizer", params);
 
         if (new File(outputFile).exists()) {

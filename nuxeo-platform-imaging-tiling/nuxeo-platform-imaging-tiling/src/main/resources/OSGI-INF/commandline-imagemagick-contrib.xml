@@ -6,21 +6,9 @@
   <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
     point="command">
 
-    <command name="converter" enabled="true">
-      <commandLine>convert</commandLine>
-      <parameterString>#{inputFilePath} #{outputFilePath}</parameterString>
-      <installationDirective>You need to install ImageMagic.</installationDirective>
-    </command>
-
     <command name="multiTiler" enabled="true">
       <commandLine>convert</commandLine>
       <parameterString>#{inputFilePath}  -crop #{tileWidth}x#{tileHeight} + repage   #{outputFilePath}</parameterString>
-      <installationDirective>You need to install ImageMagic.</installationDirective>
-    </command>
-
-    <command name="cropAndResize" enabled="true">
-      <commandLine>stream</commandLine>
-      <parameterString> -map rgb -storage-type char -extract  #{tileWidth}x#{tileHeight}+#{offsetX}+#{offsetY} #{inputFilePath} - | convert -depth 8 -size #{tileWidth}x#{tileHeight} -resize #{targetWidth}x#{targetHeight}!  rgb:-  #{outputFilePath} </parameterString>
       <installationDirective>You need to install ImageMagic.</installationDirective>
     </command>
 

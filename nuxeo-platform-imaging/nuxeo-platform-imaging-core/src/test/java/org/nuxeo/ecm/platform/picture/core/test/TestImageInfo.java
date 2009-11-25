@@ -77,7 +77,7 @@ public class TestImageInfo extends RepositoryOSGITestCase {
         map.put(
                 "content",
                 StreamingBlob.createFromURL(this.getClass().getClassLoader().getResource(
-                        "exif_sample.jpg")));
+                        "images/exif_sample.jpg")));
         views.add(map);
         return views;
     }

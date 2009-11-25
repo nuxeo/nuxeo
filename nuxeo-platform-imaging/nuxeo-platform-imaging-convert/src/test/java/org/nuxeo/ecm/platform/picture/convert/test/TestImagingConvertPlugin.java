@@ -58,6 +58,7 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
 
         int resizeWidth = 120;
         int resizeHeight = 90;
+        
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
         options.put(ImagingConvertConstants.OPTION_RESIZE_WIDTH, resizeWidth);
