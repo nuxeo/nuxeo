@@ -30,8 +30,7 @@ public class DashboardUniverseProvider extends DefaultUniversProvider {
             throws SpaceException {
 
         if (!name.equals(DASHBOARD_UNIVERSE_NAME)) {
-            throw new SpaceException("Can only get one universe "
-                    + "when using the dashboard universe provider!");
+            return null;
         }
         try {
             UserWorkspaceService svc = Framework.getService(UserWorkspaceService.class);
