@@ -291,8 +291,8 @@ nxthemes css is not used in login.jsp */
       </form>
       </td>
       <td class="news_container" align="right" valign="center">
-        <iframe class="block_container" style="display:none"
-          onload="javascript:this.style.display='block';"
+        <iframe class="block_container" style="visibility:hidden"
+          onload="javascript:this.style.visibility='visible';"
           src="http://www.nuxeo.com/layout/set/newslist"></iframe>
       </td>
     </tr>
