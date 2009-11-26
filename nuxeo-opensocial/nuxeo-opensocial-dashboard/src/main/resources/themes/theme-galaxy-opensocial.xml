@@ -39,9 +39,9 @@
         <cell/>
       </section>
       <section>
-      <!-- before this was the nuxeo includes, but that broke the JS world 
+      <!-- before this was the nuxeo includes, but that broke the JS world
         <cell>
-         
+
           <fragment type="generic fragment"/>
         </cell> -->
         <cell/>
@@ -183,10 +183,10 @@
     <widget element="page[1]/section[6]/cell[1]">
       <view>cell frame</view>
     </widget>
-    <!-- this needs to be eliminated because it pulls in copies of a bunch of 
-      javascript libaries that break the opensocial code from LM 
+    <!-- this needs to be eliminated because it pulls in copies of a bunch of
+      javascript libaries that break the opensocial code from LM
     <widget element="page[1]/section[6]/cell[1]/fragment[1]">
-        <view>nuxeo5 includes</view> 
+        <view>nuxeo5 includes</view>
     </widget>
     -->
     <widget element="page[1]/section[2]/cell[1]/fragment[1]">
@@ -565,12 +565,20 @@
       <selector path="" view="cell frame">
         <background preset="fond_gris (intralm background)"/>
       </selector>
+
+
+
     </style>
     <style element="page[1]/section[4]/cell[1]/fragment[1]" inherit="loading">
       <selector path="*" view="contenu principal">
         <margin>0</margin>
         <padding>0</padding>
       </selector>
+
+      <selector path="div.x-panel-tl" view="contenu principal">
+        <background-color>rgb(78, 154, 225)</background-color>
+      </selector>
+
     </style>
     <style element="page[1]/section[5]"/>
     <style element="page[1]/section[5]/cell[1]">
