@@ -12,10 +12,6 @@
     <unzip from="${bundle.fileName}" to="/">
       <include>nuxeo.war/**</include>
     </unzip>
-
-    <delete path="${bundle.fileName}.tmp"/>
-    <mkdir path="${bundle.fileName}.tmp"/>
-
   </install>
 
 </fragment>
