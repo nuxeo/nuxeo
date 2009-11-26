@@ -25,6 +25,7 @@ import org.nuxeo.opensocial.container.client.bean.ContainerServiceException;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
 /**
  * ContainerServiceAsync
  *
@@ -51,8 +52,8 @@ public interface ContainerServiceAsync {
    * @param AsyncCallback
    *          <Container>
    */
-  void saveLayout(Map<String, String> gwtParams,
-      String layout, AsyncCallback<Container> callback);
+  void saveLayout(Map<String, String> gwtParams, String layout,
+      AsyncCallback<Container> callback);
 
   /**
    * Save preferences of gadget with form parameter

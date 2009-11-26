@@ -1,13 +1,6 @@
 <div>
-<#if nxthemesInfo.model.anonymous == false>
-  <div id="getGadgetManager" class="getManager">
-    <a href="#" id="openGadgetManager">Ajouter un gadget</a>
-  </div>
+<#if nxthemesInfo.model.anonymous == false && Session.hasPermission(Document.ref, "Write")>
   <div id="gadgetManager" style="display:none;" class="manager">
-
-    <div id="closeGadgetManager">
-      <a href="#" id="closeLinkGadgetManager">Fermer</a>
-    </div>
     <div id="gadgetManagerContainer">
       <div id="listCategories">
       <#if nxthemesInfo.model.categories>

@@ -101,7 +101,6 @@ public class GadgetManagerImpl implements GadgetManager {
       if (updatePrefs != null) {
         gadgetMapper.setPreferences(updatePrefs);
         if (updatePrefs.containsKey(TITLE_KEY_PREF)) {
-          //TODO: encode title
           gadgetMapper.setTitle(updatePrefs.get(TITLE_KEY_PREF));
         }
       }

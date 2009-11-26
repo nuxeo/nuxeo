@@ -1,4 +1,4 @@
-var loading_pathToImage = "/skin/portalRoot/images/themes/common/map_loading.gif";
+var loading_pathToImage = "/nuxeo/img/themes/common/map_loading.gif";
 var loadOn = false;
 
 //on page load call tb_init

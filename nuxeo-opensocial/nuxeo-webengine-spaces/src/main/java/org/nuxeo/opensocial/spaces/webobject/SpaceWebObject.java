@@ -111,9 +111,9 @@ public class SpaceWebObject extends DocumentObject {
       // TODO voir si on peut le recuperer directement
       if (space.getTheme() != null) {
         getContext().setProperty("view.theme", space.getTheme());
-        LOGGER.info("setting theme from space ");
+        LOGGER.info("setting theme from space in context request wall again "+space.getTheme());
       } else {
-        LOGGER.info("setting theme from space ");
+        LOGGER.info("no theme found from space ");
       }
 
       this.univers = (Univers) args[1];

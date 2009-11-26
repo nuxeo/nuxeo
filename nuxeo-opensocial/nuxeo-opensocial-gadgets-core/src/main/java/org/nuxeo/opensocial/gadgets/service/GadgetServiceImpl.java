@@ -142,15 +142,17 @@ public class GadgetServiceImpl extends DefaultComponent implements
     // TODO: FIX since it won't work on JBoss
     StringBuilder sb = getUrlPrefix();
     GadgetDeclaration gadget = getGadget(gadgetName);
-    sb.append(gadget.getMountPoint());
-    sb.append(URL_SEPARATOR);
-    sb.append(gadget.getEntryPoint());
-    try {
-      return new URL(sb.toString());
-    } catch (MalformedURLException e) {
-      e.printStackTrace();
-      return null;
+    if (gadget != null) {
+      sb.append(gadget.getMountPoint());
+      sb.append(URL_SEPARATOR);
+      sb.append(gadget.getEntryPoint());
+      try {
+        return new URL(sb.toString());
+      } catch (MalformedURLException e) {
+        e.printStackTrace();
+      }
     }
+    return null;
   }
 
   private StringBuilder getUrlPrefix() {

@@ -85,6 +85,7 @@ public class DropZone extends PortalDropZone {
 
         $wnd.Ext.select("div.x-column").addClass("x-column-possible");
         g.select("div.x-tool").setStyle("display","none");
+        g.select("div.x-panel-tl").setStyle("background-color","#a29f9a");
       },
 
       alignElWithMouse: function(el, iPageX, iPageY) {
@@ -101,7 +102,7 @@ public class DropZone extends PortalDropZone {
       endDrag : function(e){
         this.proxy.hide();
         this.panel.saveState();
-         $wnd.Ext.select("div.x-column").removeClass("x-column-possible");
+        $wnd.Ext.select("div.x-column").removeClass("x-column-possible");
         $wnd.Ext.select("div.x-tool").setStyle("display","block");
       }
     });
@@ -113,7 +114,6 @@ public class DropZone extends PortalDropZone {
           el.setStyle("margin","auto");
           el.setStyle("margin-bottom","10px");
           el.dom.style.display = '';
-          el.removeClass("x-portlet");
           el.setWidth(this.ghost.getWidth());
           var w = el.getWidth();
           if(this.proxy) {
@@ -121,10 +121,6 @@ public class DropZone extends PortalDropZone {
             delete this.proxy;
           }
           el.setWidth(_W,true);
-          setTimeout(function() {
-            el.addClass("x-portlet");
-          }, 1000);
-
           this.ghost.remove();
           delete this.ghost;
         }
@@ -158,7 +154,6 @@ public class DropZone extends PortalDropZone {
       }
 
     });
-
   }-*/;
 
   @Override
@@ -243,30 +238,37 @@ public class DropZone extends PortalDropZone {
   @Override
   public boolean notifyDrop(DragSource source, EventObject e, DragData data) {
     GadgetPortlet gp = portal.getGadgetPortlet(source.getId());
+    gp.reloadRenderUrl();
     GadgetPosition dropPosition = portal.getDropPosition();
     GadgetBean bean = gp.getGadgetBean();
-    PortalColumn dragCol = portal.getPortalColumn(bean.getGadgetPosition()
-        .getPlaceID());
-    PortalColumn dropCol = portal.getPortalColumn(dropPosition.getPlaceID());
-    saveDropZone(bean, dropPosition, dragCol, dropCol);
+    if (dropPosition != null) {
+      PortalColumn dragCol = portal.getPortalColumn(bean.getGadgetPosition()
+          .getPlaceID());
+      PortalColumn dropCol = portal.getPortalColumn(dropPosition.getPlaceID());
+      saveDropZone(bean, dropPosition, dragCol, dropCol);
+    }
 
     grid = null;
 
-    if (lastPosC == null) {
+    if (lastPosC == null)
       return false;
-    }
+
     PanelProxy proxy = new PanelProxy(source.getProxy()
         .getJsObj());
 
     proxy.getProxy()
         .remove();
 
-    lastPosC.remove(gp.getId());
-    lastPosC.insert(bean.getGadgetPosition()
-        .getPosition(), gp);
+    if (dropPosition != null) {
+      lastPosC.remove(gp.getId());
+      lastPosC.insert(bean.getGadgetPosition()
+          .getPosition(), gp);
+    }
+
     lastPosC.doLayout();
     lastPosC = null;
     JsLibrary.hideGwtContainerMask();
+    gp.renderDefaultPreferences();
     return true;
   }
 

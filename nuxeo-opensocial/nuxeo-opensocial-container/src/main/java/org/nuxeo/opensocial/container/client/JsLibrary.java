@@ -40,7 +40,6 @@ public class JsLibrary {
       $wnd.browser.selectDocument = function(id, type, url, contextPath,from){
         if(type=="Picturebook" || type=="Univers"){
           $wnd.jQuery("#"+prefName).val($wnd.lmportal.getNuxeoServerBase() + contextPath);
-          @org.nuxeo.opensocial.container.client.JsLibrary::close(Ljava/lang/String;)(ref);
         }
       };
       var type = prefName.split("_")[1];
@@ -59,14 +58,6 @@ public class JsLibrary {
       $wnd.browser.selectDocument = null;
   }-*/;
 
-  public static void close(String ref) {
-    ContainerEntryPoint.getContainerPortal()
-        .getGadgetPortlet(ref)
-        .getTools()
-        .getGadgetForm()
-        .closeSearchBrowser();
-  };
-
   public static native void showSearchBrowser(String id, String url)
   /*-{
     $wnd.jQuery("#"+id).load(url);
@@ -82,18 +73,18 @@ public class JsLibrary {
     $wnd.jQuery("#gwtContainerMask").show();
   }-*/;
 
-  public static native void updateFrameHeight()
+  public static native void updateFrameWidth()
   /*-{
     $wnd.jQuery(".x-panel-body").attr("style","width:100%");
     $wnd.jQuery(".gwt-Frame").attr("style","width:100%");
+     $wnd.jQuery(".gwt-Frame").width("100%");
   }-*/;
 
   public static native void updateColumnStyle()
   /*-{
-    $wnd.jQuery(".x-portal-column").attr("style","padding: 5px 5px 0px;");
+    $wnd.jQuery(".x-portal-column").attr("style","padding: 5px 0px 0px 5px;");
     $wnd.jQuery(".x-portlet").attr("style","width:100%");
   }-*/;
-
 
   public static native String getNuxeoClientSideUrl()
   /*-{
