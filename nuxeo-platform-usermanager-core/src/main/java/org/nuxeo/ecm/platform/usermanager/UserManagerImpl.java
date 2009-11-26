@@ -73,47 +73,47 @@ public class UserManagerImpl implements UserManager {
 
     private static final Log log = LogFactory.getLog(UserManagerImpl.class);
 
-    private final DirectoryService dirService;
+    protected final DirectoryService dirService;
 
-    private String userDirectoryName;
+    protected String userDirectoryName;
 
-    private String userSchemaName;
+    protected String userSchemaName;
 
-    private String userIdField;
+    protected String userIdField;
 
-    private String userEmailField;
+    protected String userEmailField;
 
-    private Map<String, MatchType> userSearchFields;
+    protected Map<String, MatchType> userSearchFields;
 
-    private String groupDirectoryName;
+    protected String groupDirectoryName;
 
-    private String groupSchemaName;
+    protected String groupSchemaName;
 
-    private String groupIdField;
+    protected String groupIdField;
 
-    private String groupMembersField;
+    protected String groupMembersField;
 
-    private String groupSubGroupsField;
+    protected String groupSubGroupsField;
 
-    private String groupParentGroupsField;
+    protected String groupParentGroupsField;
 
-    private String groupSortField;
+    protected String groupSortField;
 
-    private String defaultGroup;
+    protected String defaultGroup;
 
-    private String defaultRootLogin;
+    protected String defaultRootLogin;
 
-    private String userSortField;
+    protected String userSortField;
 
-    private String userListingMode;
+    protected String userListingMode;
 
-    private String groupListingMode;
+    protected String groupListingMode;
 
-    private Pattern userPasswordPattern;
+    protected Pattern userPasswordPattern;
 
-    private VirtualUser anonymousUser;
+    protected VirtualUser anonymousUser;
 
-    private final Map<String, VirtualUserDescriptor> virtualUsers;
+    protected final Map<String, VirtualUserDescriptor> virtualUsers;
 
     public UserManagerImpl() {
         dirService = Framework.getLocalService(DirectoryService.class);

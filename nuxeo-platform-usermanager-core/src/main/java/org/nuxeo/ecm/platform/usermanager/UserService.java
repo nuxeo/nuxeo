@@ -72,17 +72,18 @@ public class UserService extends DefaultComponent {
         for (UserManagerDescriptor descriptor : descriptors) {
             merged.merge(descriptor);
         }
+        Class<?> klass = merged.userManagerClass;
         if (userManager == null) {
-            // which means we'll always keep the first registered class
             if (descriptors.isEmpty()) {
                 throw new ClientException(
                         "No contributions registered for the userManager");
             }
-            Class<?> klass = merged.userManagerClass;
             if (klass == null) {
                 throw new ClientException(
                         "No class specified for the userManager");
             }
+        }
+        if (klass != null) {
             try {
                 userManager = (UserManager) klass.newInstance();
             } catch (InstantiationException e) {

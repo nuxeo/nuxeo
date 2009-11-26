@@ -5,7 +5,8 @@
 
   <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
       point="userManager">
-    <userManager>
+    <userManager
+        class="org.nuxeo.ecm.platform.usermanager.FakeTestUserManagerImpl">
       <defaultAdministratorId>bob</defaultAdministratorId>
       <userSortField>id</userSortField>
       <userPasswordPattern>
