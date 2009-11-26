@@ -93,7 +93,7 @@ public class DialectMySQL extends Dialect {
             // don't use the max 65535 because this max is actually for the
             // total size of all columns of a given table, so allow several
             // varchar columns in the same table
-            return jdbcInfo("VARCHAR(2000)", Types.VARCHAR);
+            return jdbcInfo("VARCHAR(500)", Types.VARCHAR);
         case CLOB:
             return jdbcInfo("LONGTEXT", Types.LONGVARCHAR);
         case BOOLEAN:
