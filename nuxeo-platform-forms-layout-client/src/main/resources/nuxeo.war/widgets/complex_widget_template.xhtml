@@ -32,7 +32,7 @@
           <tr>
             <td class="labelColumn">
               <h:outputText value="#{messages[widget.label]}"
-                styleClass="labelColumn nxu:test{widget.required, 'required', ''}" />
+                styleClass="labelColumn #{nxu:test(widget.required, 'required', '')}" />
             </td>
             <td class="fieldColumn">
               <nxl:widget widget="#{widget}" mode="#{widget.mode}" value="#{value}" />
