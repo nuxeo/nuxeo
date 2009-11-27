@@ -18,6 +18,7 @@
 package org.nuxeo.opensocial.container.factory;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Map;
 
@@ -308,6 +309,10 @@ public class ContainerManagerImpl implements ContainerManager {
 
 				public boolean isEqualTo(Space space) {
 					return space.isEqualTo(space);
+				}
+
+				public Calendar getDatePublication() {
+					return space.getDatePublication();
 				}
 
 			};
