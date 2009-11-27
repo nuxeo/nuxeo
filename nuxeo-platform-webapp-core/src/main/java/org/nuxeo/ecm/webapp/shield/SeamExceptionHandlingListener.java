@@ -23,7 +23,6 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,7 +35,7 @@ import org.jboss.seam.mock.MockApplication;
 import org.jboss.seam.mock.MockExternalContext;
 import org.jboss.seam.mock.MockFacesContext;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.NullExceptionHandlingListener;
-import org.nuxeo.ecm.platform.web.common.tx.TransactionsHelper;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Plays with conversations, trying to rollback transation.
@@ -76,12 +75,13 @@ public class SeamExceptionHandlingListener extends
             // leads to errors like in the following stack trace:
             /**
              * java.lang.NullPointerException: FacesContext is null at
-             * org.ajax4jsf.context.AjaxContext.getCurrentInstance(AjaxContext.java:159)
-             * at
-             * org.ajax4jsf.context.AjaxContext.getCurrentInstance(AjaxContext.java:144)
-             * at
-             * org.ajax4jsf.component.AjaxViewRoot.getViewId(AjaxViewRoot.java:580)
-             * at com.sun.faces.lifecycle.Phase.doPhase(Phase.java:104)
+             * org.ajax4jsf
+             * .context.AjaxContext.getCurrentInstance(AjaxContext.java:159) at
+             * org.ajax4jsf.context.AjaxContext.getCurrentInstance(AjaxContext.
+             * java:144) at
+             * org.ajax4jsf.component.AjaxViewRoot.getViewId(AjaxViewRoot
+             * .java:580) at
+             * com.sun.faces.lifecycle.Phase.doPhase(Phase.java:104)
              */
             log.debug("Using existing faces context for exception handling");
         }
@@ -113,18 +113,7 @@ public class SeamExceptionHandlingListener extends
     @Override
     public void startHandling(Throwable t, HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
-        try {
-            UserTransaction ut = TransactionsHelper.getUserTransaction();
-            if (ut != null && TransactionsHelper.isTransactionActive()) {
-                ut.setRollbackOnly();
-            }
-            if (log.isDebugEnabled()) {
-                log.debug("Marking transaction as rollback only");
-            }
-        } catch (Throwable newThrowable) {
-            log.error("Unable to mark transaction as rollback only",
-                    newThrowable);
-        }
+        TransactionHelper.setTransactionRollbackOnly();
     }
 
     /**
@@ -144,29 +133,33 @@ public class SeamExceptionHandlingListener extends
             /**
              * java.lang.IllegalStateException: No active application scope at
              * org.jboss.seam.core.Init.instance(Init.java:76) at
-             * org.jboss.seam.jsf.SeamPhaseListener.handleTransactionsAfterPhase(SeamPhaseListener.java:330)
-             * at
-             * org.jboss.seam.jsf.SeamPhaseListener.afterServletPhase(SeamPhaseListener.java:241)
-             * at
-             * org.jboss.seam.jsf.SeamPhaseListener.afterPhase(SeamPhaseListener.java:192)
-             * at com.sun.faces.lifecycle.Phase.handleAfterPhase(Phase.java:175)
-             * at com.sun.faces.lifecycle.Phase.doPhase(Phase.java:114) at
-             * com.sun.faces.lifecycle.LifecycleImpl.render(LifecycleImpl.java:139)
+             * org.jboss.seam.
+             * jsf.SeamPhaseListener.handleTransactionsAfterPhase(
+             * SeamPhaseListener.java:330) at
+             * org.jboss.seam.jsf.SeamPhaseListener
+             * .afterServletPhase(SeamPhaseListener.java:241) at
+             * org.jboss.seam.jsf
+             * .SeamPhaseListener.afterPhase(SeamPhaseListener.java:192) at
+             * com.sun.faces.lifecycle.Phase.handleAfterPhase(Phase.java:175) at
+             * com.sun.faces.lifecycle.Phase.doPhase(Phase.java:114) at
+             * com.sun.faces
+             * .lifecycle.LifecycleImpl.render(LifecycleImpl.java:139)
              */
             FacesLifecycle.endRequest(context.getExternalContext());
             // do not release an actual FacesContext that we did not create,
             // otherwise we get the following stack trace:
             /**
              * java.lang.IllegalStateException at
-             * com.sun.faces.context.FacesContextImpl.assertNotReleased(FacesContextImpl.java:395)
-             * at
-             * com.sun.faces.context.FacesContextImpl.getExternalContext(FacesContextImpl.java:147)
-             * at
-             * com.sun.faces.util.RequestStateManager.getStateMap(RequestStateManager.java:276)
-             * at
-             * com.sun.faces.util.RequestStateManager.remove(RequestStateManager.java:243)
-             * at
-             * com.sun.faces.context.FacesContextImpl.release(FacesContextImpl.java:345)
+             * com.sun.faces.context.FacesContextImpl
+             * .assertNotReleased(FacesContextImpl.java:395) at
+             * com.sun.faces.context
+             * .FacesContextImpl.getExternalContext(FacesContextImpl.java:147)
+             * at com.sun.faces.util.RequestStateManager.getStateMap(
+             * RequestStateManager.java:276) at
+             * com.sun.faces.util.RequestStateManager
+             * .remove(RequestStateManager.java:243) at
+             * com.sun.faces.context.FacesContextImpl
+             * .release(FacesContextImpl.java:345)
              */
             context.release();
         }
