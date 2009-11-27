@@ -212,6 +212,10 @@ public class LazyBlob extends DefaultStreamBlob implements Serializable {
     }
 
     public Blob persist() throws IOException {
+        // NXP-3190: fetch it first in case it's not initialized
+        if (in == null) {
+            getStream();
+        }
         // optimize -> when the underlying stream is an SerializableINputStream
         // this can be optimized by reusing the temp file
         // of the underlying stream

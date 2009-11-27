@@ -54,6 +54,11 @@ public class BlobPropertyAccessor implements PropertyAccessor {
     public void write(Node node, Property property) throws Exception {
         Serializable value = property.getValue();
         if (value instanceof Blob) {
+            if (value instanceof LazyBlob) {
+                // ignore: may happen when editing a list item
+                // with a file already uploaded
+                return;
+            }
             Blob blob = (Blob) value;
             if (blob.getMimeType() == null) {
                 blob.setMimeType("application/octet-stream");
