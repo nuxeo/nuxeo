@@ -23,11 +23,11 @@ import java.io.File;
 import org.apache.log4j.Logger;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.MagickExecutor;
+import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 
 /**
  * Unit command to watermark a picture using ImageMagick
- * 
+ *
  * @author btatar
  */
 public class ImageWatermarker extends MagickExecutor {

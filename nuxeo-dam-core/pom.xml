@@ -26,40 +26,35 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-tiling</artifactId>
-    </dependency>  
+      <artifactId>nuxeo-platform-imaging-core</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-imaging-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-commandline-executor</artifactId>      
-    </dependency>             
-    
+      <artifactId>nuxeo-platform-commandline-executor</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert-api</artifactId>
       <scope>test</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert</artifactId>
       <scope>test</scope>
-    </dependency>    
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-convert</artifactId>
-      <scope>test</scope>      
-    </dependency> 
-    <dependency>
-      <groupId>org.nuxeo.dam</groupId>
-      <artifactId>nuxeo-dam-test</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-core</artifactId>
+      <artifactId>nuxeo-platform-imaging-convert</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.dam</groupId>
+      <artifactId>nuxeo-dam-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -72,8 +67,8 @@
       <artifactId>nuxeo-platform-audio-core</artifactId>
       <scope>test</scope>
     </dependency>
-    
-    
+
+
     <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
