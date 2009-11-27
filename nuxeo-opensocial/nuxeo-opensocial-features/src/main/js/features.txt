@@ -34,3 +34,4 @@ features/pubsub/feature.xml
 nxfeatures/jquery/feature.xml
 nxfeatures/effects/feature.xml
 nxfeatures/ui/feature.xml
+nxfeatures/nuxeo/feature.xml

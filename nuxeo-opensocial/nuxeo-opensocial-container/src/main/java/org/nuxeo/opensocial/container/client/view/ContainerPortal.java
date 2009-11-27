@@ -342,4 +342,5 @@ public class ContainerPortal extends Portal {
     maximizedPortlet = canvas;
   }
 
+
 }
