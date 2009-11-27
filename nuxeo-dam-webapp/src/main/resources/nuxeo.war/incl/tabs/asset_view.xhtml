@@ -20,6 +20,10 @@
       }
       return false;
     }
+
+    function focusComment() {
+      document.getElementById('navigation:assetView:commentList:addComment:commentContent').focus();
+    }
   </script>
 
   <div class="infoTabContent">
@@ -171,48 +175,52 @@
 	      </c:if>
         </div>
 	  </div>
+
       <div class="togglePanel">
-        <div class="togglePanelTitleBox">
-          <h3>
-            <a href="#" class="folded" onclick="return togglePanel(this)">
-              <a4j:outputPanel id="commentTitlePanel">
-                <h:outputText value="#{messages['label.header.info.comments']} (#{commentActions.comments.size})"/>
+        <a4j:outputPanel id="commentPanel">
+          <div class="togglePanelTitleBox">
+            <h3>
+              <a4j:commandLink id="commentTitlePanel" 
+                styleClass="#{commentActions.showCommentsArea ? 'unfolded' : 'folded'}"
+                value="#{messages['label.header.info.comments']} (#{commentActions.comments.size})"
+                actionListener="#{commentActions.toggleCommentsArea}"
+                reRender="commentPanel" />
+            </h3>
+            <div class="dataBlockActions">
+              <a4j:outputPanel id="commentButtonsPanel">
+                <span>
+                  <a4j:commandLink styleClass="button"
+                    value="#{messages['command.add']}"
+                    action="#{commentActions.addComment}"
+                    rendered="#{commentActions.showCreateForm}"
+                    reRender="commentPanel" />
+                  <a4j:commandLink styleClass="button"
+                    value="#{messages['command.cancel']}"
+                    actionListener="#{commentActions.toggleCreateForm}"
+                    rendered="#{commentActions.showCreateForm}"
+                    reRender="commentPanel" />
+                </span>
+                <span>
+                  <a4j:commandLink styleClass="button"
+                    value="#{messages['command.add']}"
+                    actionListener="#{commentActions.toggleCreateForm}"
+                    rendered="#{!commentActions.showCreateForm}"
+                    oncomplete="focusComment();"
+                    reRender="commentPanel" />
+                </span>
               </a4j:outputPanel>
-            </a>
-          </h3>
-          <div class="dataBlockActions">
-            <a4j:outputPanel id="commentButtonsPanel">
-              <span>
-                <a4j:commandLink styleClass="button"
-                  value="#{messages['command.add']}"
-                  action="#{commentActions.addComment}"
-                  rendered="#{commentActions.showCreateForm}"
-                  reRender="commentTitlePanel, commentButtonsPanel, commentPanel" />
-                <a4j:commandLink styleClass="button"
-                  value="#{messages['command.cancel']}"
-                  actionListener="#{commentActions.toggleCreateForm}"
-                  rendered="#{commentActions.showCreateForm}"
-                  reRender="commentButtonsPanel, commentPanel" />
-              </span>
-              <span>
-                <a4j:commandLink styleClass="button"
-                  value="#{messages['command.add']}"
-                  actionListener="#{commentActions.toggleCreateForm}"
-                  rendered="#{!commentActions.showCreateForm}"
-                  reRender="commentButtonsPanel,commentPanel" />
-              </span>
-            </a4j:outputPanel>
+            </div>
+            <div style="clear:both;"></div>
           </div>
-          <div style="clear:both;"></div>
-        </div>
-        <div class="togglePanelBody" style="display:none">
-          <a4j:outputPanel id="commentPanel">
-            <f:subview id="addComment" rendered="#{commentActions.showCreateForm}">
-              <ui:include src="/incl/new_comment.xhtml" />
-            </f:subview>
-            <ui:include src="/incl/comment_list.xhtml" />
-          </a4j:outputPanel>
-        </div>
+          <f:subview id="commentList" rendered="#{commentActions.showCommentsArea}">
+            <div class="togglePanelBody">
+              <f:subview id="addComment" rendered="#{commentActions.showCreateForm}">
+                <ui:include src="/incl/new_comment.xhtml" />
+              </f:subview>
+              <ui:include src="/incl/comment_list.xhtml" />
+            </div>
+          </f:subview>
+        </a4j:outputPanel>
       </div>
 
       <f:subview rendered="#{documentActions.currentSelection.hasSchema('picture')}">

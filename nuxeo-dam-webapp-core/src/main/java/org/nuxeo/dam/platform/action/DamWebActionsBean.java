@@ -1,18 +1,16 @@
 package org.nuxeo.dam.platform.action;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
-
 import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.dam.webapp.contentbrowser.DocumentActions;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.Action;
@@ -20,7 +18,11 @@ import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.action.WebActionsBean;
+import org.nuxeo.ecm.webapp.security.UserManagerActions;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
 
 /**
  *
@@ -45,11 +47,16 @@ public class DamWebActionsBean extends WebActionsBean {
     @In(create = true, required = false)
     private transient DocumentActions documentActions;
 
+    @In(create = true, required = false)
+    private transient UserManagerActions userManagerActions;
+
     private ActionManager actionService;
 
-    private Boolean showList = Boolean.FALSE;
+    private boolean showList = false;
 
-    private Boolean showThumbnail = Boolean.TRUE;
+    private boolean showThumbnail = true;
+
+    private boolean showAdministration = false;
 
     @Override
     @Factory(value = "tabsActionsList", scope = EVENT)
@@ -85,6 +92,21 @@ public class DamWebActionsBean extends WebActionsBean {
         return ctx;
     }
 
+    public String navigateToAdministration() throws ClientException {
+        showAdministration = true;
+        return userManagerActions.viewUsers();
+    }
+
+    public String navigateToAssetManagement() throws ClientException {
+        showAdministration = false;
+        return navigationContext.goHome();
+    }
+
+    @Factory(value = "isInsideAdministration", scope = ScopeType.EVENT)
+    public boolean showAdministration() {
+        return showAdministration;
+    }
+
     public void showListLink() {
         if (showList) {
             return;
@@ -101,19 +123,19 @@ public class DamWebActionsBean extends WebActionsBean {
         this.showList = !this.showList;
     }
 
-    public Boolean getShowList() {
+    public boolean getShowList() {
         return showList;
     }
 
-    public void setShowList(Boolean showList) {
+    public void setShowList(boolean showList) {
         this.showList = showList;
     }
 
-    public Boolean getShowThumbnail() {
+    public boolean getShowThumbnail() {
         return showThumbnail;
     }
 
-    public void setShowThumbnail(Boolean showThumbnail) {
+    public void setShowThumbnail(boolean showThumbnail) {
         this.showThumbnail = showThumbnail;
     }
 

@@ -395,7 +395,7 @@
       </selector>
       <selector path=".banner_actions ul li a">
         <display>block</display>
-        <padding>9px 10px 8px</padding>
+        <padding>8px 10px 7px</padding>
         <background>transparent url(/nuxeo/img/headerLink_bg.png) repeat-x top left</background>
       </selector>
       <selector path=".banner_actions ul li a:hover">
@@ -403,16 +403,16 @@
         <text-decoration>none</text-decoration>
       </selector>
       <selector path=".importButton">
-        <padding>6px 0px 0px 20px</padding>
+        <padding>6px 0 3px 20px</padding>
         <background>transparent url(/nuxeo/img/import_button.png) no-repeat top left</background>
       </selector>
-      <selector path=".settingsButton">
-        <padding>6px 0px 0px 20px</padding>
-        <background>transparent url(/nuxeo/img/settings_button.png) no-repeat top left</background>
+      <selector path=".administrationButton">
+        <padding>6px 0 3px 22px</padding>
+        <background>transparent url(/nuxeo/img/administration_button.png) no-repeat top left</background>
       </selector>
-      <selector path=".configButton">
-        <padding>6px 0px 0px 20px</padding>
-        <background>transparent url(/nuxeo/img/config_button.png) no-repeat top left</background>
+      <selector path=".assetManagementButton">
+        <padding>6px 0 3px 24px</padding>
+        <background>transparent url(/nuxeo/img/asset_management_button.png) no-repeat top left</background>
       </selector>
       <selector path=".separator">
         <padding>9px 0px 8px</padding>
@@ -560,6 +560,9 @@
       </selector>
       <selector path="#rightIconfilterForm\00003AtopicRichPanelMenuItem, #rightIconfilterForm\00003AcoverageRichPanelMenuItem">
         <width>0</width>
+      </selector>
+      <selector path=".dr-pmenu-selected-item">
+        <font-style>normal</font-style>
       </selector>
       <selector path=".comments">
         <padding>10px 5px 0px</padding>

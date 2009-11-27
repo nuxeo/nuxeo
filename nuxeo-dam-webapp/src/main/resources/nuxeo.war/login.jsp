@@ -32,7 +32,7 @@
   }
 
 .topBar img {
-  margin-left:70px;
+  margin-left:62px;
   }
 
 table.loginForm {
@@ -121,13 +121,22 @@ nxthemes css is not used in login.jsp */
   }
 
 .footer {
-  color: #d6d6d6;
+  color:#c3c3c3;
   font-size: 9px;
   }
 
 .loginLegal {
   padding: 0;
   margin: 0 0 10px 0;
+  color:#c3c3c3;
+  }
+
+.loginLegal a, .loginLegal a:visited{
+  color:#c3c3c3;
+  }
+ 
+.loginLegal a:hover{
+  color:#d9d9d9;
   }
 
 .version {
@@ -139,11 +148,13 @@ nxthemes css is not used in login.jsp */
   margin:0;
   width:400px;
   padding-top:0px;
+  text-align:right;
   }
 
 .labelCorp ul{
   margin:0;
   padding:0 42px 0 0;
+  text-align:right;
   }
 
 .labelCorp li {
@@ -196,96 +207,117 @@ nxthemes css is not used in login.jsp */
 <table cellspacing="0" cellpadding="0" border="0" width="100%"
   height="100%">
   <tbody>
-  <tr class="topBar">
-        <td>
+    <tr class="topBar">
+      <td colspan="2" style="height:30px;">
+        <div>
           <img width="125" height="30" alt="Nuxeo DAM" src="/nuxeo/img/dam_logo.png"/>
-       </td>
-       <td align="right" class="leftColumn">
-       <div class="labelCorp">
-       <ul>
-                    <li><a href="http://www.nuxeo.com/en">
-                      <fmt:message bundle="${messages}" key="label.login.visitNuxeoCom" />
-                    </a></li>
-                    <li><a href="http://www.nuxeo.com/en/services/support">
-                      <fmt:message bundle="${messages}" key="label.login.getSupport" />
-                    </a></li>
-                    <li><a href="http://www.nuxeo.org/sections/community/">
-                      <fmt:message bundle="${messages}" key="label.login.joinTheCommunity" />
-                    </a></li>
-                </ul>
-                <div style="clear:both;" />
+        </div>
+      </td>
+      <td align="right" class="leftColumn">
+        <div class="labelCorp">
+           <ul>
+             <li>
+               <a href="http://www.nuxeo.com/en">
+                 <fmt:message bundle="${messages}" key="label.login.visitNuxeoCom" />
+               </a>
+             </li>
+             <li>
+               <a href="http://www.nuxeo.com/en/services/support">
+                 <fmt:message bundle="${messages}" key="label.login.getSupport" />
+               </a>
+             </li>
+             <li>
+               <a href="http://www.nuxeo.org/sections/community/">
+                 <fmt:message bundle="${messages}" key="label.login.joinTheCommunity" />
+               </a>
+             </li>
+           </ul>
+           <div style="clear:both;" />
           </div>
        </td>
+     </tr>
+     <tr>
+       <td align="center" colspan="2">
+         <form method="post" action="nxstartup.faces">
+           <!-- To prevent caching -->
+          <%
+		        response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1
+		        response.setHeader("Pragma", "no-cache"); // HTTP 1.0
+		        response.setDateHeader("Expires", -1); // Prevents caching at the proxy server
+          %>
+      			<div class="login">
+				      <table>
+				        <tr>
+				          <td class="login_label"><label for="username"> <fmt:message
+				            bundle="${messages}" key="label.login.username" /> </label></td>
+				          <td><input class="login_input" type="text"
+				            name="user_name" id="username" size="22"></td>
+				        </tr>
+				        <tr>
+				          <td class="login_label"><label for="password"> <fmt:message
+				            bundle="${messages}" key="label.login.password" /> </label></td>
+				          <td><input class="login_input" type="password"
+				            name="user_password" id="password" size="22"></td>
+				        </tr>
+				        <tr>
+				          <td class="login_label">
+				            <label for="language">
+				              <fmt:message bundle="${messages}" key="label.login.language" /> 
+				            </label>
+				          </td>
+				          <td>
+				            <select class="login_input" name="language" id="language">
+				              <option value="en" selected>English</option>
+				              <option value="fr">français</option>
+				            </select>
+				          </td>
+				        </tr>
+				        <tr>
+				          <td></td>
+				          <td><input type="hidden" name="form_submitted_marker"
+				            id="form_submitted_marker"> <input
+				            class="login_button" type="submit" name="Submit"
+				            value="<fmt:message bundle="${messages}" key="label.login.logIn" />"></td>
+				        </tr>
+				        <tr>
+				          <td></td>
+				          <td><c:if test="${param.loginFailed}">
+				            <div class="errorMessage"><fmt:message
+				              bundle="${messages}"
+				              key="label.login.invalidUsernameOrPassword" /></div>
+					          </c:if> <c:if test="${param.loginMissing}">
+					            <div class="errorMessage"><fmt:message
+					              bundle="${messages}" key="label.login.missingUsername" /></div>
+					          </c:if>
+				          </td>
+				        </tr>
+				      </table>
+				    </div>
+     		  </form>
+        </td>
+        <td class="news_container" align="right" valign="center">
+        <iframe class="block_container" style="visibility:hidden"
+          onload="javascript:this.style.visibility='visible';"
+          src="http://www.nuxeo.com/layout/set/dam_newslist/"></iframe>
+      </td>
+        </td>
       </tr>
-    <tr>
-      <td align="center">
-      <form method="post" action="nxstartup.faces">
-      <!-- To prevent caching -->
-      <%
-          response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1
-          response.setHeader("Pragma", "no-cache"); // HTTP 1.0
-          response.setDateHeader("Expires", -1); // Prevents caching at the proxy server
-      %>
-      <div class="login">
-      <table>
-        <tr>
-          <td class="login_label"><label for="username"> <fmt:message
-            bundle="${messages}" key="label.login.username" /> </label></td>
-          <td><input class="login_input" type="text"
-            name="user_name" id="username" size="22"></td>
-        </tr>
-        <tr>
-          <td class="login_label"><label for="password"> <fmt:message
-            bundle="${messages}" key="label.login.password" /> </label></td>
-          <td><input class="login_input" type="password"
-            name="user_password" id="password" size="22"></td>
-        </tr>
-        <tr>
-          <td class="login_label">
-            <label for="language">
-              <fmt:message bundle="${messages}" key="label.login.language" /> 
-            </label>
-          </td>
-          <td>
-            <select class="login_input" name="language" id="language">
-              <option value="en" selected>English</option>
-              <option value="fr">français</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td><input type="hidden" name="form_submitted_marker"
-            id="form_submitted_marker"> <input
-            class="login_button" type="submit" name="Submit"
-            value="<fmt:message bundle="${messages}" key="label.login.logIn" />"></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td><c:if test="${param.loginFailed}">
-            <div class="errorMessage"><fmt:message
-              bundle="${messages}"
-              key="label.login.invalidUsernameOrPassword" /></div>
-          </c:if> <c:if test="${param.loginMissing}">
-            <div class="errorMessage"><fmt:message
-              bundle="${messages}" key="label.login.missingUsername" /></div>
-          </c:if></td>
-        </tr>
-      </table>
-      </form>
-      </td>
-    </tr>
-    <tr class="footer">
-      <td align="center" valign="bottom">
-      <div class="loginLegal"><fmt:message bundle="${messages}"
-        key="label.login.copyright" /></div>
-      </td>
-      <td align="right" class="version" valign="bottom">
-      <div class="loginLegal"><%=productName%> &nbsp; <%=productVersion%></div>
-      </td>
-    </tr>
-  </tbody>
-</table>
+      <tr class="footer">
+        <td valign="bottom" style="padding-left:70px;">
+          <div class="loginLegal">
+            Photography: &#169; <a href="mailto:l.viatour@mm.be">Luc Viatour</a> GFDL/CC / <a href="www.lucnix.be/">www.lucnix.be</a> | Colors: &#169; Michael Yucha / <a href="http://www.flickr.com/photos/greenwenvy/">flickR</a> 
+          </div>
+        </td>
+	      <td align="center" valign="bottom">
+		      <div class="loginLegal"><fmt:message bundle="${messages}"
+		        key="label.login.copyright" /></div>
+		    </td>
+	      <td align="right" class="version" valign="bottom">
+	      	<div class="loginLegal"><%=productName%> &nbsp; <%=productVersion%></div>
+	      </td>
+      </tr>
+    </tbody>
+  </table>
 </body>
 </html>
 
