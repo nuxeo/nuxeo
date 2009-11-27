@@ -521,23 +521,40 @@
         <color>#333</color>
         <padding>0px 5px</padding>
       </selector>
-      <selector path=".waiterBlock div">
+      <selector path=".waiterBlock">
+        <text-align>center</text-align>
+      </selector>
+      <selector path=".importsetCreationWaiter">
+        <height>65%</height>
+        <left>10%</left>
+        <position>absolute</position>
+        <top>10%</top>
+        <white-space>nowrap</white-space>
+        <width>80%</width>
+        <display>none</display>
+        <text-align>center</text-align>
+        <z-index>1000</z-index>
+      </selector>
+      <selector path=".waiter">
         <background-color>white</background-color>
         <border>1px solid #9f9f9f</border>
-        <display>none</display>
-        <z-index>1000</z-index>
-        <position>absolute</position>
-        <top>0</top>
-        <left>0</left>
-        <right>0</right>
-        <bottom>0</bottom>
+        <display>inline-block</display>
+        <vertical-align>middle</vertical-align>
         <height>170px</height>
         <width>170px</width>
         <text-align>center</text-align>
-        <margin>auto</margin>
+        <z-index>1001</z-index>
       </selector>
       <selector path=".waiterParagraph">
         <padding-top>30px</padding-top>
+      </selector>
+      <selector path=".IEhack">
+        <display>inline-block</display>
+        <vertical-align>middle</vertical-align>
+        <height>100%</height>
+        <overflow>hidden</overflow>
+        <padding>0</padding>
+        <width>0</width>
       </selector>
       <!-- rich faces disabled icon area for the panelMenuItem that holds the tree -->
       <selector path=".hiddenMenuIcon .dr-pmenu-nowrap img">
