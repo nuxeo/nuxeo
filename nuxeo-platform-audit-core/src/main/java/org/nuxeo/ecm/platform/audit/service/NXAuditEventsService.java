@@ -282,9 +282,11 @@ public class NXAuditEventsService extends DefaultComponent implements
         entry.setDocPath(doc.getPathAsString());
         entry.setDocType(doc.getType());
         entry.setDocUUID(doc.getId());
+        // FIXME: why hard-code it if we may have a principal?
         entry.setPrincipalName("system");
         entry.setCategory("eventDocumentCategory");
         entry.setEventId(DocumentEventTypes.DOCUMENT_CREATED);
+        // why hard-code it if we have the document life cycle?
         entry.setDocLifeCycle("project");
         Calendar creationDate;
         try {
@@ -679,7 +681,12 @@ public class NXAuditEventsService extends DefaultComponent implements
             throw new AuditRuntimeException(
                     "Cannot fetch life cycle state from " + document, e1);
         }
-        entry.setCategory("eventDocumentCategory");
+        String category = (String) properties.get("category");
+        if (category != null) {
+            entry.setCategory(category);
+        } else {
+            entry.setCategory("eventDocumentCategory");
+        }
 
         doPutExtendedInfos(entry, docCtx, document, principal);
 

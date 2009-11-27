@@ -30,7 +30,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
@@ -94,11 +96,70 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         assertEquals("Administrator", entry.getPrincipalName());
     }
 
+    public void testLogDocumentMessageWithoutCategory() throws ClientException {
+        DocumentModel source = doCreateDocument();
+        EventContext ctx = new DocumentEventContext(coreSession,
+                coreSession.getPrincipal(), source);
+        Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
+        event.setInline(false);
+        event.setImmediate(true);
+        Framework.getLocalService(EventService.class).fireEvent(event);
+        waitForEventsDispatched();
+
+        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(source.getId());
+        assertEquals(2, entries.size());
+
+        // entries are not ordered => skip creation log
+        for (LogEntry entry : entries) {
+            if ("documentSecurityUpdated".equals(entry.getEventId())) {
+                assertEquals("eventDocumentCategory", entry.getCategory());
+                assertNull(entry.getComment());
+                assertEquals("project", entry.getDocLifeCycle());
+                assertEquals("/youps", entry.getDocPath());
+                assertEquals("File", entry.getDocType());
+                assertEquals("documentSecurityUpdated", entry.getEventId());
+                assertEquals("Administrator", entry.getPrincipalName());
+            } else {
+                assertEquals("documentCreated", entry.getEventId());
+            }
+        }
+    }
+
+    public void testLogDocumentMessageWithCategory() throws ClientException {
+        DocumentModel source = doCreateDocument();
+        EventContext ctx = new DocumentEventContext(coreSession,
+                coreSession.getPrincipal(), source);
+        ctx.setProperty("category", "myCategory");
+        Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
+        event.setInline(false);
+        event.setImmediate(true);
+        Framework.getLocalService(EventService.class).fireEvent(event);
+        waitForEventsDispatched();
+
+        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(source.getId());
+        assertEquals(2, entries.size());
+
+        // entries are not ordered => skip creation log
+        for (LogEntry entry : entries) {
+            if ("documentSecurityUpdated".equals(entry.getEventId())) {
+                assertEquals("myCategory", entry.getCategory());
+                assertNull(entry.getComment());
+                assertEquals("project", entry.getDocLifeCycle());
+                assertEquals("/youps", entry.getDocPath());
+                assertEquals("File", entry.getDocType());
+                assertEquals("documentSecurityUpdated", entry.getEventId());
+                assertEquals("Administrator", entry.getPrincipalName());
+            } else {
+                assertEquals("documentCreated", entry.getEventId());
+            }
+        }
+    }
+
     public void testLogMiscMessage() throws ClientException {
         List<String> eventIds = serviceUnderTest.getLoggedEventIds();
         int n = eventIds.size();
 
-        EventContextImpl ctx = new EventContextImpl(); // not:DocumentEventContext
+        EventContext ctx = new EventContextImpl(); // not:DocumentEventContext
         Event event = ctx.newEvent("documentModified"); // auditable
         event.setInline(false);
         event.setImmediate(true);
@@ -106,7 +167,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         waitForEventsDispatched();
 
         eventIds = serviceUnderTest.getLoggedEventIds();
-        assertEquals(1, eventIds.size() - n);
+        assertEquals(n + 1, eventIds.size());
     }
 
     public void testsyncLogCreation() throws AuditException, ClientException {
