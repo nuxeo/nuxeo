@@ -17,28 +17,34 @@
  * $Id$
  *
  */
-package org.nuxeo.ecm.platform.pictures.tiles.magick.utils;
+package org.nuxeo.ecm.platform.picture.magick;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.MagickExecutor;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Unit command to generate several tiles at once using ImageMagick
+ *
+ * Helper class to execute an ImageMagic command
  *
  * @author tiry
  *
  */
-public class MultiTiler extends MagickExecutor {
+public class MagickExecutor {
 
-    public static void tile(String inputFilePath, String outputPath,
-            int tileWidth, int tileHeight) throws Exception {
-        CmdParameters params = new CmdParameters();
-        params.addNamedParameter("targetWidth", String.valueOf(tileWidth));
-        params.addNamedParameter("targetHeight", String.valueOf(tileHeight));
-        params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
-        params.addNamedParameter("outputFilePath", formatFilePath(outputPath + "tiles_%02d.jpeg"));
-        execCommand("resizer", params);
+    private static final Log log = LogFactory.getLog(MagickExecutor.class);
+
+    protected static ExecResult execCommand( String commandName, CmdParameters params) throws CommandNotAvailable{
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        return cles.execCommand(commandName, params);
     }
+
+    protected static String formatFilePath(String filePath) {
+        return String.format("\"%s\"", filePath);
+    }
+
 }

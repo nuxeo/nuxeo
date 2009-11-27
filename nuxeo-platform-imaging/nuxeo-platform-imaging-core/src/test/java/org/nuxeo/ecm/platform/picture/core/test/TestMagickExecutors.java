@@ -17,19 +17,18 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.pictures.tiles.service.test;
+package org.nuxeo.ecm.platform.picture.core.test;
 
 import java.io.File;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageConverter;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageCropper;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageCropperAndResizer;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageIdentifier;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageInfo;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.JpegSimplifier;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.MultiTiler;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageConverter;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropper;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropperAndResizer;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageResizer;
 
 public class TestMagickExecutors extends RepositoryOSGITestCase {
 
@@ -37,14 +36,12 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
-                "OSGI-INF/test-commandline-imagemagick-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
+        deployContrib("org.nuxeo.ecm.platform.picture.core",
                 "OSGI-INF/commandline-imagemagick-contrib.xml");
     }
 
     public void testIdentify() throws Exception {
-        File file = FileUtils.getResourceFileFromContext("test.jpg");
+        File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
         ImageInfo info = ImageIdentifier.getInfo(file.getAbsolutePath());
 
@@ -60,10 +57,10 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         String outputFile = System.getProperty("java.io.tmpdir")
                 + "/test_small.jpg";
 
-        File file = FileUtils.getResourceFileFromContext("test.jpg");
+        File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
-        ImageInfo info = JpegSimplifier.simplify(file.getAbsolutePath(),
-                outputFile, 20, 20);
+        ImageInfo info = ImageResizer.resize(file.getAbsolutePath(),
+                outputFile, 20, 20, 8);
         assertNotNull(info);
 
         File out = new File(outputFile);
@@ -75,7 +72,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         String outputFilePath = System.getProperty("java.io.tmpdir")
                 + "/test_crop.jpg";
 
-        File file = FileUtils.getResourceFileFromContext("test.jpg");
+        File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
         ImageCropper.crop(file.getAbsolutePath(), outputFilePath, 255, 255, 10,
                 10);
@@ -94,7 +91,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         String outputFilePath = System.getProperty("java.io.tmpdir")
                 + "/test_crop_resized.jpg";
 
-        File file = FileUtils.getResourceFileFromContext("test.jpg");
+        File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
         ImageCropperAndResizer.cropAndResize(file.getAbsolutePath(),
                 outputFilePath, 255, 255, 10, 10, 200, 200);
@@ -109,22 +106,8 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         assertEquals(200, info.getHeight());
     }
 
-    public void testTiler() throws Exception {
-
-        String outputPath = System.getProperty("java.io.tmpdir")
-                + "/test_tiles/";
-        new File(outputPath).mkdir();
-        File file = FileUtils.getResourceFileFromContext("test.jpg");
-
-        MultiTiler.tile(file.getAbsolutePath(), outputPath, 255, 255);
-
-        File outDir = new File(outputPath);
-        String[] tiles = outDir.list();
-        assertTrue(tiles.length > 0);
-    }
-
     public void testConverterWithBmp() throws Exception {
-        File file = FileUtils.getResourceFileFromContext("andy.bmp");
+        File file = FileUtils.getResourceFileFromContext("images/andy.bmp");
 
         String outputFilePath = System.getProperty("java.io.tmpdir")
                 + "/andy.jpg";
@@ -137,7 +120,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
     }
 
     public void testConverterWithGif() throws Exception {
-        File file = FileUtils.getResourceFileFromContext("cat.gif");
+        File file = FileUtils.getResourceFileFromContext("images/cat.gif");
 
         String outputFilePath = System.getProperty("java.io.tmpdir")
                 + "/cat.jpg";

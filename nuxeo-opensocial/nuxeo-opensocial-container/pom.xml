@@ -82,8 +82,8 @@
               <goal>test</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.outputDirectory}/</outputDirectory> <!-- 1.0 -->
-              <webappDirectory>${project.build.outputDirectory}/</webappDirectory> <!-- 1.1 -->
+              <outputDirectory>${project.build.outputDirectory}/nuxeo.war</outputDirectory> <!-- 1.0 -->
+              <webappDirectory>${project.build.outputDirectory}/nuxeo.war</webappDirectory> <!-- 1.1 -->
               <modules>
                 <module>org.nuxeo.opensocial.container.ContainerEntryPoint</module>
               </modules>

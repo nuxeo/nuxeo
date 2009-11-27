@@ -17,31 +17,30 @@
  * $Id$
  *
  */
-package org.nuxeo.ecm.platform.pictures.tiles.magick.utils;
+package org.nuxeo.ecm.platform.picture.magick.utils;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.MagickExecutor;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 
 /**
- * Unit command to crop and resize an picture
+ * Unit command to crop a picture using ImageMagick
  *
  * @author tiry
  *
  */
-public class ImageCropperAndResizer extends MagickExecutor {
+public class ImageCropper extends MagickExecutor {
 
-    public static void cropAndResize(String inputFilePath,
-            String outputFilePath, int tileWidth, int tileHeight, int offsetX,
-            int offsetY, int targetWidth, int targetHeight) throws Exception {
+    public static void crop(String inputFilePath, String outputFilePath,
+            int tileWidth, int tileHeight, int offsetX, int offsetY)
+            throws CommandNotAvailable {
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("tileWidth", String.valueOf(tileWidth));
         params.addNamedParameter("tileHeight", String.valueOf(tileHeight));
         params.addNamedParameter("offsetX", String.valueOf(offsetX));
         params.addNamedParameter("offsetY", String.valueOf(offsetY));
-        params.addNamedParameter("targetWidth", String.valueOf(targetWidth));
-        params.addNamedParameter("targetHeight", String.valueOf(targetHeight));
         params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
         params.addNamedParameter("outputFilePath", formatFilePath(outputFilePath));
-        execCommand("cropAndResize", params);
+        execCommand("crop", params);
     }
 }

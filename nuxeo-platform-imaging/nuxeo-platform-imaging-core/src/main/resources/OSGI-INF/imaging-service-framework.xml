@@ -11,5 +11,12 @@
     <provide interface="org.nuxeo.ecm.platform.picture.api.ImagingService" />
   </service>
 
+  <extension-point name="configuration">
+    <documentation>
+    Extension point to contribute configuration information that will be used by the ImagingService
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.picture.api.ImagingConfigurationDescriptor" />
+  </extension-point>
 </component>
 

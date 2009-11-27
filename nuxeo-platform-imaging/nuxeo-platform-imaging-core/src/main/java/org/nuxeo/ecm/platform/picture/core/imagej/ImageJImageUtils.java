@@ -19,11 +19,6 @@
 
 package org.nuxeo.ecm.platform.picture.core.imagej;
 
-import ij.ImagePlus;
-import ij.io.FileInfo;
-import ij.io.FileSaver;
-import ij.process.ImageProcessor;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -31,14 +26,21 @@ import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
 import org.nuxeo.runtime.api.Framework;
+
+import ij.ImagePlus;
+import ij.io.FileInfo;
+import ij.io.FileSaver;
+import ij.process.ImageProcessor;
 
 public class ImageJImageUtils implements ImageUtils {
 
     private static final Log log = LogFactory.getLog(ImageJImageUtils.class);
 
+    @Deprecated
     public InputStream resize(InputStream in, int width, int height) {
         try {
             FileBlob fb = new FileBlob(in);
@@ -62,6 +64,7 @@ public class ImageJImageUtils implements ImageUtils {
         return null;
     }
 
+    @Deprecated
     public InputStream crop(InputStream in, int x, int y, int width, int height) {
         try {
             FileBlob fb = new FileBlob(in);
@@ -86,6 +89,7 @@ public class ImageJImageUtils implements ImageUtils {
         return null;
     }
 
+    @Deprecated
     public InputStream rotate(InputStream in, int angle) {
         try {
             FileBlob fb = new FileBlob(in);
@@ -95,10 +99,10 @@ public class ImageJImageUtils implements ImageUtils {
             ImageProcessor im = f.getProcessor();
             im.setInterpolate(true);
             ImageProcessor rotatedImage;
-            if (angle < 0){
+            if (angle < 0) {
                 rotatedImage = im.rotateLeft();
-            }else{
-                rotatedImage  = im.rotateRight();
+            } else {
+                rotatedImage = im.rotateRight();
             }
             ImagePlus newImage = new ImagePlus("small", rotatedImage);
             File resultFile = save(newImage, fileName.split("\\.")[0], "tmp",
@@ -110,6 +114,102 @@ public class ImageJImageUtils implements ImageUtils {
             }
         } catch (IOException e) {
             log.error("Cannot save the file", e);
+        }
+        return null;
+    }
+
+    public Blob crop(Blob blob, int x, int y, int width, int height) {
+        File sourceFile = null;
+        try {
+            sourceFile = File.createTempFile("source", blob.getFilename());
+            blob.transferTo(sourceFile);
+            String path = sourceFile.getAbsolutePath();
+            ImagePlus f = new ImagePlus(path);
+            String fileName = f.getFileInfo().fileName;
+            ImageProcessor im = f.getProcessor();
+            im.setInterpolate(true);
+            im.setRoi(x, y, width, height);
+            ImageProcessor ip_crop = im.crop();
+            ImagePlus cropImage = new ImagePlus("small", ip_crop);
+            File resultFile = save(cropImage, fileName.split("\\.")[0], "tmp",
+                    f.getOriginalFileInfo().fileFormat);
+            if (resultFile != null) {
+                Blob resultBlob = new FileBlob(resultFile);
+                Framework.trackFile(resultFile, resultBlob);
+                return resultBlob;
+            }
+        } catch (IOException e) {
+            log.error("Cannot save the file", e);
+        } finally {
+            if (sourceFile != null) {
+                sourceFile.delete();
+            }
+        }
+        return null;
+    }
+
+    public Blob resize(Blob blob, String finalFormat, int width, int height,
+            int depth) {
+        File sourceFile = null;
+        try {
+            sourceFile = File.createTempFile("source", blob.getFilename());
+            blob.transferTo(sourceFile);
+            String path = sourceFile.getAbsolutePath();
+            ImagePlus f = new ImagePlus(path);
+            String fileName = f.getFileInfo().fileName;
+            ImageProcessor im = f.getProcessor();
+            im.setInterpolate(true);
+            ImageProcessor ip_small = im.resize(width, height);
+            ImagePlus small = new ImagePlus("small", ip_small);
+            File resultFile = save(small, fileName.split("\\.")[0],
+                    finalFormat != null ? finalFormat : "tmp",
+                    finalFormat != null ? FileInfo.UNKNOWN
+                            : f.getOriginalFileInfo().fileFormat);
+            if (resultFile != null) {
+                Blob resultBlob = new FileBlob(resultFile);
+                Framework.trackFile(resultFile, resultBlob);
+                return resultBlob;
+            }
+        } catch (IOException e) {
+            log.error("Cannot save the file", e);
+        } finally {
+            if (sourceFile != null) {
+                sourceFile.delete();
+            }
+        }
+        return null;
+    }
+
+    public Blob rotate(Blob blob, int angle) {
+        File sourceFile = null;
+        try {
+            sourceFile = File.createTempFile("source", blob.getFilename());
+            blob.transferTo(sourceFile);
+            String path = sourceFile.getAbsolutePath();
+            ImagePlus f = new ImagePlus(path);
+            String fileName = f.getFileInfo().fileName;
+            ImageProcessor im = f.getProcessor();
+            im.setInterpolate(true);
+            ImageProcessor rotatedImage;
+            if (angle < 0) {
+                rotatedImage = im.rotateLeft();
+            } else {
+                rotatedImage = im.rotateRight();
+            }
+            ImagePlus newImage = new ImagePlus("small", rotatedImage);
+            File resultFile = save(newImage, fileName.split("\\.")[0], "tmp",
+                    f.getOriginalFileInfo().fileFormat);
+            if (resultFile != null) {
+                Blob resultBlob = new FileBlob(resultFile);
+                Framework.trackFile(resultFile, resultBlob);
+                return resultBlob;
+            }
+        } catch (IOException e) {
+            log.error("Cannot save the file", e);
+        } finally {
+            if (sourceFile != null) {
+                sourceFile.delete();
+            }
         }
         return null;
     }

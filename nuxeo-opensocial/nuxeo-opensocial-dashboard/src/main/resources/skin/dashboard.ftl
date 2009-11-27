@@ -7,7 +7,7 @@
     <script type="text/javascript" language="javascript" src="${This.path}/resources/loading.js"></script>
     <script type="text/javascript" language="javascript" src="${This.path}/resources/thickbox.js"></script>
     <script type="text/javascript" language="javascript" src="${This.path}/resources/initMenu.js"></script>
-    
+
     <script type="text/javascript" language="javascript" src="${This.path}/resources/layoutManager.js"></script>
     <script type="text/javascript" language="javascript" src="${This.path}/resources/gadgetManager.js"></script>
 
@@ -22,13 +22,13 @@
     </script>
   <link rel="stylesheet" type="text/css" href="${This.path}/resources/container.css" />
   <link rel="stylesheet" type="text/css" href="${This.path}/resources/dashboard.css" />
-  <script type="text/javascript" language="javascript" src="${basePath}/gadgets/resources/org.nuxeo.opensocial.container.ContainerEntryPoint.nocache.js"></script>
+  <script type="text/javascript" language="javascript" src="/nuxeo/org.nuxeo.opensocial.container.ContainerEntryPoint/org.nuxeo.opensocial.container.ContainerEntryPoint.nocache.js"></script>
 </head>
 <body>
     <div id="communicationGadgetContainer" style="display:none">
         <a href="#" id="thickboxContent" class="thickbox" ></a>
     </div>
-    
+
   <div id="getLayoutManager">
     <a href="#" id="openLayoutManager">Modifier l'apparence</a>
   </div>
@@ -73,7 +73,7 @@
     </div>
 
   </div>
-  
+
   <div id="getGadgetManager">
     <a href="#" id="openGadgetManager">Ajouter un gadget</a>
   </div>
@@ -109,7 +109,7 @@
     </div>
 
   </div>
-    
+
     <!--main content-->
   <div>
   <div style="min-height:300px;height:auto !important;height:300px;">
@@ -119,13 +119,13 @@
        return "{docRef:'<#if This.space>${This.space.id}</#if>',sessionId:'${Session.getSessionId()}'}";
      }
   </script>
-  <script type="text/javascript" language="javascript" src="${basePath}/gadgets/resources/org.nuxeo.opensocial.container.ContainerEntryPoint.nocache.js"></script>
+  <script type="text/javascript" language="javascript" src="/nuxeo/org.nuxeo.opensocial.container.ContainerEntryPoint/org.nuxeo.opensocial.container.ContainerEntryPoint.nocache.js"></script>
     <div id="content">
             <div id="gwtContainer" />
     </div>
   </div>
 </div>
 
-    
+
 </body>
 </html>

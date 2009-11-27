@@ -16,6 +16,27 @@
       <filter>image/png</filter>
       <filter>image/tiff</filter>
       <filter>image/x-ms-bmp</filter>
+      <!-- RAW images mime type -->
+      <filter>image/x-canon-cr2</filter>
+      <filter>image/x-canon-crw</filter>
+      <filter>image/x-nikon-nef</filter>
+      <filter>image/x-adobe-dng</filter>
+      <filter>image/x-panasonic-raw</filter>
+      <filter>image/x-fuji-raf</filter>
+      <filter>image/x-sigma-x3f</filter>
+      <filter>image/x-pentax-pef</filter>
+      <filter>image/x-kodak-dcr</filter>
+      <filter>image/x-kodak-kdc</filter>
+      <filter>image/x-sony-sr2</filter>
+      <filter>image/x-sony-arw</filter>
+      <filter>image/x-sony-srf</filter>
+      <filter>image/x-minolta-mrw</filter>
+      <filter>image/x-olympus-orf</filter>
+      <filter>image/x-raw-epson</filter>
+      <filter>image/x-portable-pixmap</filter>
+
+      <filter>image/raw</filter>
+      <filter>image/x-raw</filter>
     </plugin>
   </extension>
 

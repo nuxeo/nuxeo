@@ -12,35 +12,29 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     troger
  *
  * $Id$
- *
  */
-package org.nuxeo.ecm.platform.pictures.tiles.magick.utils;
+
+package org.nuxeo.ecm.platform.picture.magick.utils;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
-import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.MagickExecutor;
+import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
+
 
 /**
- * Unit command to extract information from a picture file
- *
- *
- * @author tiry
+ * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  *
  */
-public class ImageIdentifier extends MagickExecutor {
+public class ImageConverter extends MagickExecutor {
 
-    public static ImageInfo getInfo(String inputFilePath) throws Exception {
+    public static void convert(String inputFilePath, String outputFilePath)
+            throws Exception {
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
-        ExecResult result = execCommand("identify", params);
-
-        String out = result.getOutput().get(0);
-        String res[] = out.split(" ");
-
-        return new ImageInfo(res[1], res[2], res[0], inputFilePath);
+        params.addNamedParameter("outputFilePath", formatFilePath(outputFilePath));
+        execCommand("converter", params);
     }
 
 }

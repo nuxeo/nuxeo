@@ -25,13 +25,18 @@ import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
-import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
 import org.nuxeo.ecm.platform.picture.core.mistral.MistralImageUtils;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropper;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageResizer;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageRotater;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -41,6 +46,7 @@ public class IMImageUtils implements ImageUtils {
 
     private static final Log log = LogFactory.getLog(IMImageUtils.class);
 
+    @Deprecated
     public InputStream crop(InputStream in, int x, int y, int width, int height) {
         try {
             CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
@@ -48,25 +54,11 @@ public class IMImageUtils implements ImageUtils {
             if (commandAvailability.isAvailable()) {
                 FileBlob fb = new FileBlob(in);
                 String path = fb.getFile().getAbsolutePath();
-
-                CmdParameters params = new CmdParameters();
-                params.addNamedParameter("inputFilePath", path);
-                ExecResult result = cles.execCommand("identify", params);
-                String out = result.getOutput().get(0);
-                String res[] = out.split(" ");
-                File img2 = File.createTempFile("target", "." + res[0]);
-
-                params = new CmdParameters();
-                params.addNamedParameter("tileWidth", String.valueOf(width));
-                params.addNamedParameter("tileHeight", String.valueOf(height));
-                params.addNamedParameter("offsetX", String.valueOf(x));
-                params.addNamedParameter("offsetY", String.valueOf(y));
-                params.addNamedParameter("targetWidth", String.valueOf(width));
-                params.addNamedParameter("targetHeight", String.valueOf(height));
-                params.addNamedParameter("inputFilePath", path);
-                params.addNamedParameter("outputFilePath", img2);
-
-                cles.execCommand("crop", params);
+                ImageInfo imageInfo = ImageIdentifier.getInfo(path);
+                File img2 = File.createTempFile("target", "."
+                        + imageInfo.getFormat());
+                ImageCropper.crop(path, img2.getAbsolutePath(), width, height,
+                        x, y);
                 InputStream is = new FileInputStream(img2);
                 img2.delete();
                 return is;
@@ -80,28 +72,21 @@ public class IMImageUtils implements ImageUtils {
         }
     }
 
+    @Deprecated
     public InputStream resize(InputStream in, int width, int height) {
         try {
             CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
-            CommandAvailability commandAvailability = cles.getCommandAvailability("resize");
+            CommandAvailability commandAvailability = cles.getCommandAvailability("resizer");
             if (commandAvailability.isAvailable()) {
                 FileBlob fb = new FileBlob(in);
                 String path = fb.getFile().getAbsolutePath();
 
-                CmdParameters params = new CmdParameters();
-                params.addNamedParameter("inputFilePath", path);
-                ExecResult result = cles.execCommand("identify", params);
-                String out = result.getOutput().get(0);
-                String res[] = out.split(" ");
-                File img2 = File.createTempFile("target", "." + res[0]);
+                ImageInfo imageInfo = ImageIdentifier.getInfo(path);
+                File img2 = File.createTempFile("target", "."
+                        + imageInfo.getFormat());
+                ImageResizer.resize(path, img2.getAbsolutePath(), width,
+                        height, imageInfo.getDepth());
 
-                params = new CmdParameters();
-                params.addNamedParameter("targetWidth", String.valueOf(width));
-                params.addNamedParameter("targetHeight", String.valueOf(height));
-                params.addNamedParameter("inputFilePath", path);
-                params.addNamedParameter("outputFilePath", img2);
-
-                cles.execCommand("resizer", params);
                 InputStream is = new FileInputStream(img2);
                 img2.delete();
 
@@ -116,6 +101,7 @@ public class IMImageUtils implements ImageUtils {
         return null;
     }
 
+    @Deprecated
     public InputStream rotate(InputStream in, int angle) {
         try {
             CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
@@ -123,23 +109,12 @@ public class IMImageUtils implements ImageUtils {
             if (commandAvailability.isAvailable()) {
                 FileBlob fb = new FileBlob(in);
                 String path = fb.getFile().getAbsolutePath();
-
-                CmdParameters params = new CmdParameters();
-                params.addNamedParameter("inputFilePath", path);
-                ExecResult result = cles.execCommand("identify", params);
-                String out = result.getOutput().get(0);
-                String res[] = out.split(" ");
-                File img2 = File.createTempFile("target", "." + res[0]);
-
-                params = new CmdParameters();
-                params.addNamedParameter("angle", String.valueOf(angle));
-                params.addNamedParameter("inputFilePath", path);
-                params.addNamedParameter("outputFilePath", img2);
-
-                cles.execCommand("rotate", params);
+                ImageInfo imageInfo = ImageIdentifier.getInfo(path);
+                File img2 = File.createTempFile("target", "."
+                        + imageInfo.getFormat());
+                ImageRotater.rotate(path, img2.getAbsolutePath(), angle);
                 InputStream is = new FileInputStream(img2);
                 img2.delete();
-
                 return is;
             } else {
                 MistralImageUtils miu = new MistralImageUtils();
@@ -149,6 +124,106 @@ public class IMImageUtils implements ImageUtils {
             log.error("Rotation with ImageMagick failed", e);
         }
         return null;
+    }
+
+    public Blob crop(Blob blob, int x, int y, int width, int height) {
+        try {
+            CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+            CommandAvailability commandAvailability = cles.getCommandAvailability("resizer");
+            if (commandAvailability.isAvailable()) {
+                File sourceFile = File.createTempFile("source",
+                        blob.getFilename());
+                try {
+                    blob.transferTo(sourceFile);
+                    String suffix = getTempSuffix(blob, sourceFile);
+                    File targetFile = File.createTempFile("target", suffix);
+                    ImageCropper.crop(sourceFile.getAbsolutePath(),
+                            targetFile.getAbsolutePath(), width, height, x, y);
+                    Blob targetBlob = new FileBlob(targetFile);
+                    Framework.trackFile(targetFile, targetBlob);
+                    return targetBlob;
+                } finally {
+                    if (sourceFile != null) {
+                        sourceFile.delete();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Resizing with ImageMagick failed", e);
+        }
+        return null;
+    }
+
+    public Blob resize(Blob blob, String finalFormat, int width, int height,
+            int depth) {
+        try {
+            CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+            CommandAvailability commandAvailability = cles.getCommandAvailability("resizer");
+            if (commandAvailability.isAvailable()) {
+                File sourceFile = File.createTempFile("source",
+                        blob.getFilename());
+                try {
+                    blob.transferTo(sourceFile);
+                    String suffix;
+                    if (finalFormat != null) {
+                        suffix = "." + finalFormat;
+                    } else {
+                        suffix = getTempSuffix(blob, sourceFile);
+                    }
+                    File targetFile = File.createTempFile("target", suffix);
+                    ImageResizer.resize(sourceFile.getAbsolutePath(),
+                            targetFile.getAbsolutePath(), width, height, depth);
+                    Blob targetBlob = new FileBlob(targetFile);
+                    Framework.trackFile(targetFile, targetBlob);
+                    return targetBlob;
+                } finally {
+                    if (sourceFile != null) {
+                        sourceFile.delete();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Resizing with ImageMagick failed", e);
+        }
+        return null;
+    }
+
+    public Blob rotate(Blob blob, int angle) {
+        try {
+            CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+            CommandAvailability commandAvailability = cles.getCommandAvailability("rotate");
+            if (commandAvailability.isAvailable()) {
+                File sourceFile = File.createTempFile("source",
+                        blob.getFilename());
+                try {
+                    blob.transferTo(sourceFile);
+                    String suffix = getTempSuffix(blob, sourceFile);
+                    File targetFile = File.createTempFile("target", suffix);
+                    ImageRotater.rotate(sourceFile.getAbsolutePath(),
+                            targetFile.getAbsolutePath(), angle);
+                    Blob targetBlob = new FileBlob(targetFile);
+                    Framework.trackFile(targetFile, targetBlob);
+                    return targetBlob;
+                } finally {
+                    if (sourceFile != null) {
+                        sourceFile.delete();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Rotation with ImageMagick failed", e);
+        }
+        return null;
+    }
+
+    protected String getTempSuffix(Blob blob, File file)
+            throws CommandNotAvailable {
+        String suffix = blob.getFilename();
+        if (suffix == null) {
+            ImageInfo imageInfo = ImageIdentifier.getInfo(file.getAbsolutePath());
+            suffix = "." + imageInfo.getFormat();
+        }
+        return suffix;
     }
 
 }

@@ -101,7 +101,7 @@ public class GadgetServiceImpl extends DefaultComponent implements
 
     URL gadgetURL = component.getRuntimeContext()
         .getBundle()
-        .getEntry("gadget/" + resourcePath);
+        .getEntry("gadget/" +gadgetName + "/" + resourcePath);
     if (gadgetURL != null) {
       return gadgetURL.openStream();
     } else {

@@ -25,14 +25,14 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilesImpl;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilingService;
 import org.nuxeo.ecm.platform.pictures.tiles.gimp.GimpExecutor;
 import org.nuxeo.ecm.platform.pictures.tiles.gimp.tiler.GimpTiler;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.tiler.MagickTiler;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageIdentifier;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageInfo;
 import org.nuxeo.ecm.platform.pictures.tiles.service.GCTask;
 import org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingCacheGCManager;
 import org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent;
@@ -48,9 +48,8 @@ public class TestService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
                 "OSGI-INF/pictures-tiles-framework.xml");
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
-        "OSGI-INF/test-commandline-imagemagick-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
+
+        deployContrib("org.nuxeo.ecm.platform.picture.core",
         "OSGI-INF/commandline-imagemagick-contrib.xml");
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         PictureTilingComponent.endGC();

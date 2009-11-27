@@ -69,9 +69,15 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         if (type == null || type.equals("application/octet-stream")) {
             return false;
         }
-
-        setMetadata();
-        addViews(pictureTemplates, filename, title);
+        try {
+            setMetadata();
+        } catch (Exception e) {
+            log.debug("An error occured while trying to set metadata for "
+                    + filename, e);
+        }
+        if (width != null && height != null) {            
+            addViews(pictureTemplates, filename, title);
+        }
         return true;
     }
 

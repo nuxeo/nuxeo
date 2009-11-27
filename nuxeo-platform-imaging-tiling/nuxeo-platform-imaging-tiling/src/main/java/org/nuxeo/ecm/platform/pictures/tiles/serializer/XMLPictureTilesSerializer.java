@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.pictures.tiles.serializer;
 
 import org.dom4j.DocumentFactory;
 import org.dom4j.QName;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageInfo;
 
 /**
  * XML serializer for PictureTiles structure

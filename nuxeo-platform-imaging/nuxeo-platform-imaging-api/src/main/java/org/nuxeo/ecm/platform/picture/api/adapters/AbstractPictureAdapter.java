@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.picture.api.adapters;
 
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.*;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.*;
 
 import java.awt.Point;
 import java.awt.color.ICC_Profile;
@@ -44,7 +45,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -87,6 +88,8 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
     protected Integer width;
 
     protected Integer height;
+
+    protected Integer depth;
 
     protected String description;
 
@@ -143,12 +146,21 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
     }
 
     protected void setMetadata() throws IOException, ClientException {
+        boolean imageInfoUsed = false;
+        ImageInfo imageInfo = getImagingService().getImageInfo(fileContent);
+        if (imageInfo != null) {
+            width = imageInfo.getWidth();
+            height = imageInfo.getHeight();
+            depth = imageInfo.getDepth();
+            imageInfoUsed = true;
+        }
         Map<String, Object> metadata = getImagingService().getImageMetadata(
                 fileContent);
         description = (String) metadata.get(META_DESCRIPTION);
-        width = (Integer) metadata.get(META_WIDTH);
-        height = (Integer) metadata.get(META_HEIGHT);
-
+        if (!imageInfoUsed) {
+            width = (Integer) metadata.get(META_WIDTH);
+            height = (Integer) metadata.get(META_HEIGHT);
+        }
         doc.setPropertyValue("picture:" + FIELD_BYLINE,
                 (String) metadata.get(META_BY_LINE));
         doc.setPropertyValue("picture:" + FIELD_CAPTION,
@@ -280,22 +292,22 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
                 }
                 createPictureimpl((String) view.get("description"),
                         (String) view.get("tag"), (String) view.get("title"),
-                        maxsize, filename, width, height, fileContent);
+                        maxsize, filename, width, height, depth, fileContent);
             }
         } else {
             // Default properties When PictureBook doesn't exist
             createPictureimpl("Medium Size", "medium", "Medium", MEDIUM_SIZE,
-                    filename, width, height, fileContent);
+                    filename, width, height, depth, fileContent);
             createPictureimpl(description, "original", "Original", null,
-                    filename, width, height, fileContent);
+                    filename, width, height, depth, fileContent);
             createPictureimpl("Thumbnail Size", "thumb", "Thumbnail",
-                    THUMB_SIZE, filename, width, height, fileContent);
+                    THUMB_SIZE, filename, width, height, depth, fileContent);
         }
     }
 
     @SuppressWarnings( { "unchecked" })
     public void createPictureimpl(String description, String tag, String title,
-            Integer maxsize, String filename, Integer width, Integer height,
+            Integer maxsize, String filename, Integer width, Integer height, Integer depth,
             Blob fileContent) throws IOException, ClientException {
 
         Map<String, Object> map = new HashMap<String, Object>();
@@ -315,11 +327,14 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             map.put("width", size.x);
             map.put("height", size.y);
             Map<String, Serializable> options = new HashMap<String, Serializable>();
-            options.put(ImagingConvertConstants.OPTION_RESIZE_WIDTH, size.x);
-            options.put(ImagingConvertConstants.OPTION_RESIZE_HEIGHT, size.y);
+            options.put(OPTION_RESIZE_WIDTH, size.x);
+            options.put(OPTION_RESIZE_HEIGHT, size.y);
+            options.put(OPTION_RESIZE_DEPTH, depth);
+            // use the registered conversion format for 'Medium' and 'Thumbnail' views
+            options.put(CONVERSION_FORMAT, imagingService.getConfigurationValue(CONVERSION_FORMAT,
+                    DEFAULT_CONVERSATION_FORMAT));
             BlobHolder bh = new SimpleBlobHolder(fileContent);
-            bh = getConversionService().convert(
-                    ImagingConvertConstants.OPERATION_RESIZE, bh, options);
+            bh = getConversionService().convert(OPERATION_RESIZE, bh, options);
             Blob blob = bh.getBlob() != null ? bh.getBlob() : new FileBlob(
                     file, type);
             blob.setFilename(title + "_" + filename);
@@ -361,16 +376,13 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             String type = blob.getMimeType();
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
-            options.put(ImagingConvertConstants.OPTION_CROP_X, coords.get("x"));
-            options.put(ImagingConvertConstants.OPTION_CROP_Y, coords.get("y"));
-            options.put(ImagingConvertConstants.OPTION_RESIZE_HEIGHT,
-                    coords.get("h"));
-            options.put(ImagingConvertConstants.OPTION_RESIZE_WIDTH,
-                    coords.get("w"));
+            options.put(OPTION_CROP_X, coords.get("x"));
+            options.put(OPTION_CROP_Y, coords.get("y"));
+            options.put(OPTION_RESIZE_HEIGHT, coords.get("h"));
+            options.put(OPTION_RESIZE_WIDTH, coords.get("w"));
 
             if (type != "image/png") {
-                bh = getConversionService().convert(
-                        ImagingConvertConstants.OPERATION_CROP, bh, options);
+                bh = getConversionService().convert(OPERATION_CROP, bh, options);
                 return new FileBlob(bh.getBlob().getStream(), type);
             }
         } catch (Exception e) {

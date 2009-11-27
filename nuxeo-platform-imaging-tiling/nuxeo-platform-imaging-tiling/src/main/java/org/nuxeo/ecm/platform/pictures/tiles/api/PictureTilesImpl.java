@@ -27,8 +27,8 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.pictures.tiles.helpers.StringMaker;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageInfo;
 import org.nuxeo.runtime.api.Framework;
 
 /**

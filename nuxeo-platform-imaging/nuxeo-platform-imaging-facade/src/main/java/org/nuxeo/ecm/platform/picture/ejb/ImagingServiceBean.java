@@ -28,6 +28,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -79,12 +80,44 @@ public class ImagingServiceBean implements ImagingService {
     public InputStream crop(InputStream in, int x, int y, int width, int height) {
         return service.crop(in, x, y, width, height);
     }
-    public String getImageMimeType(File file){
+
+    public Blob crop(Blob blob, int x, int y, int width, int height) {
+        return service.crop(blob, x, y, width, height);
+    }
+
+    public Blob resize(Blob blob, String finalFormat, int width, int height,
+            int depth) {
+        return service.resize(blob, finalFormat, width, height, depth);
+    }
+
+    public Blob rotate(Blob blob, int angle) {
+        return service.rotate(blob, angle);
+    }
+
+    public String getImageMimeType(File file) {
         return service.getImageMimeType(file);
     }
 
     public String getImageMimeType(InputStream in) {
         return service.getImageMimeType(in);
+    }
+
+    public ImageInfo getImageInfo(Blob blob) {
+        return service.getImageInfo(blob);
+    }
+
+    public String getConfigurationValue(String configurationName) {
+        return service.getConfigurationValue(configurationName);
+    }
+
+    public String getConfigurationValue(String configurationName,
+            String defaultValue) {
+        return service.getConfigurationValue(configurationName, defaultValue);
+    }
+
+    public void setConfigurationValue(String configurationName,
+            String configurationValue) {
+        service.setConfigurationValue(configurationName, configurationValue);
     }
 
 }

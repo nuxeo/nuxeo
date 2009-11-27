@@ -17,7 +17,7 @@
  * $Id$
  *
  */
-package org.nuxeo.ecm.platform.pictures.tiles.magick;
+package org.nuxeo.ecm.platform.picture.magick;
 
 import java.util.List;
 

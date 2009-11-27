@@ -76,7 +76,7 @@ public class TestExifHelper extends TestCase {
 		// distributed under
 		// http://creativecommons.org/licenses/by-sa/2.0/deed.en
 		Blob blob = StreamingBlob.createFromURL((this.getClass()
-				.getClassLoader().getResource("statue.jpg")));
+				.getClassLoader().getResource("images/statue.jpg")));
 		Map<String, Object> metadatas = service.getImageMetadata(blob);
 		String userComment = ((String) metadatas
 				.get(MetadataConstants.META_COMMENT)).trim();

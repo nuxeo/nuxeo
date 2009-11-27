@@ -17,29 +17,33 @@
  * $Id$
  *
  */
-package org.nuxeo.ecm.platform.pictures.tiles.magick.utils;
+package org.nuxeo.ecm.platform.picture.magick.utils;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.MagickExecutor;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
+import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 
 /**
- * Unit command to crop a picture using ImageMagick
+ * Unit command to extract information from a picture file
+ *
  *
  * @author tiry
  *
  */
-public class ImageCropper extends MagickExecutor {
+public class ImageIdentifier extends MagickExecutor {
 
-    public static void crop(String inputFilePath, String outputFilePath,
-            int tileWidth, int tileHeight, int offsetX, int offsetY)
-            throws Exception {
+    public static ImageInfo getInfo(String inputFilePath) throws CommandNotAvailable {
         CmdParameters params = new CmdParameters();
-        params.addNamedParameter("tileWidth", String.valueOf(tileWidth));
-        params.addNamedParameter("tileHeight", String.valueOf(tileHeight));
-        params.addNamedParameter("offsetX", String.valueOf(offsetX));
-        params.addNamedParameter("offsetY", String.valueOf(offsetY));
         params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
-        params.addNamedParameter("outputFilePath", formatFilePath(outputFilePath));
-        execCommand("crop", params);
+        ExecResult result = execCommand("identify", params);
+
+        String out = result.getOutput().get(result.getOutput().size() > 1 ? result.getOutput().size() -1 : 0);
+        String res[] = out.split(" ");
+
+        return new ImageInfo(res[1], res[2], res[0], res[res.length - 1],
+                inputFilePath);
     }
+
 }

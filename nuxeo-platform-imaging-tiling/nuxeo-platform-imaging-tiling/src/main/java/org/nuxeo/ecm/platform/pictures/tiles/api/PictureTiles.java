@@ -22,7 +22,7 @@ package org.nuxeo.ecm.platform.pictures.tiles.api;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageInfo;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 
 /**
  * Interface for a collection of Tiles in a given format. Wraps underlying calls
