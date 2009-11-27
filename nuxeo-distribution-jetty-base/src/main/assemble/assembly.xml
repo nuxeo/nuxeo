@@ -24,7 +24,7 @@
       <artifact group="org.mortbay.jetty" name="jetty-util" version="6.1H.7"/>
       <artifact group="jotm" name="jotm" version="2.0.10"/>
       <artifact group="javax.ejb" name="ejb-api" version="3.0" />
-      <artifact group="javax.transaction" name="jta" version="1.0.1B" />
+      <artifact group="javax.transaction" name="jta" />
       <artifact group="com.sun.xml" name="relaxngDatatype"/>
       <artifact group="com.sun.xml" name="xsom" />
       <artifact group="cup" name="java-cup" />
