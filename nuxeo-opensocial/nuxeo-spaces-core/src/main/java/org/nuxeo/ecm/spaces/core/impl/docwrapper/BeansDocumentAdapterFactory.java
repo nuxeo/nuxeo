@@ -21,7 +21,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.spaces.core.impl.Constants.Gadget;
 import org.nuxeo.ecm.spaces.core.impl.Constants.Space;
-import org.nuxeo.ecm.spaces.core.impl.Constants.SpaceVersionnable;
 import org.nuxeo.ecm.spaces.core.impl.Constants.Univers;
 
 public class BeansDocumentAdapterFactory implements DocumentAdapterFactory {
@@ -30,8 +29,7 @@ public class BeansDocumentAdapterFactory implements DocumentAdapterFactory {
 	public Object getAdapter(DocumentModel doc, Class itf) {
 		if (doc.getType().equals(Univers.TYPE)) {
 			return new UniversDocumentWrapper(doc);
-		} else if (doc.getType().equals(Space.TYPE)
-				|| doc.getType().equals(SpaceVersionnable.TYPE)) {
+		} else if (doc.getType().equals(Space.TYPE)) {
 			return new SpaceDocumentWrapper(doc);
 		} else if (doc.getType().equals(Gadget.TYPE)) {
 			return new GadgetDocumentWrapper(doc);

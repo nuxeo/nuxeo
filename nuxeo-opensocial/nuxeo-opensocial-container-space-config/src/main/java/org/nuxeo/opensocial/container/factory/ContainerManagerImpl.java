@@ -311,14 +311,24 @@ public class ContainerManagerImpl implements ContainerManager {
                     return space.isEqualTo(space);
                 }
 
-		public Calendar getDatePublication() {
-			return space.getDatePublication();
-		}
+                public boolean isVersionnable() {
+                    return space.isVersionnable();
+                }
+
+                public Calendar getDatePublication() {
+                    return space.getDatePublication();
+                }
+
+
+                public void setVersionnable(boolean versionnable) {
+                }
+
 
 
             };
             return Framework.getService(SpaceManager.class).updateSpace(
                     spaceUpdate, session);
+
 
         } catch (SpaceNotFoundException e) {
             log.error(e);

@@ -8,9 +8,7 @@
 	<xs:element name="theme" type="xs:string"></xs:element>
 	<xs:element name="audience" type="xs:string"></xs:element>
 	<xs:element name="categoryId" type="xs:string"></xs:element>
-
 	<xs:element name="layout" type="xs:string"></xs:element>
-
-
+	<xs:element name="versionnable" type="xs:boolean"></xs:element>
 
 </xs:schema>

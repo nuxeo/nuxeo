@@ -94,6 +94,13 @@ public interface Space {
 	Calendar getDatePublication();
 
 	/**
+	 * versionnable property
+	 * 
+	 * @return
+	 */
+	boolean isVersionnable();
+
+	/**
 	 * for comparison
 	 * 
 	 * @param space

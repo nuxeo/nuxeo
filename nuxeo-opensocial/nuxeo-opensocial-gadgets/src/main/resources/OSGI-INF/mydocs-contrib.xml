@@ -4,8 +4,8 @@
   <extension target="org.nuxeo.opensocial.gadgets.service"
     point="gadget">
 
-    <internalGadget name="myDocs">
-      <mountPoint>/myDocs/myDocs</mountPoint>
+    <internalGadget name="mydocs">
+      <mountPoint>/mydocs/mydocs</mountPoint>
       <directory>mydocs-gadget</directory>
       <category>Utilitaires</category>
       <icon>meteo_icon.png</icon>

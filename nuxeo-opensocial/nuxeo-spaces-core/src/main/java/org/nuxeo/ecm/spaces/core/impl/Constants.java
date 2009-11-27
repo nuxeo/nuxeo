@@ -24,6 +24,7 @@ public interface Constants {// TODO à compléter
 		String DOCUMENT_DESCRIPTION = "dc:description";
 		String DOCUMENT_CREATOR = "dc:creator";
 		String PUBLICATION_DATE = "dc:valid";
+		String CREATE_DATE = "dc:created";
 	}
 
 	public interface Univers {
@@ -36,10 +37,7 @@ public interface Constants {// TODO à compléter
 		String SPACE_THEME = "space:theme";
 		String SPACE_LAYOUT = "space:layout";
 		String SPACE_CATEGORY = "space:categoryId";
-	}
-
-	public interface SpaceVersionnable {
-		String TYPE = "SpaceVersionnable";
+		String SPACE_VERSIONNABLE = "space:versionnable";
 	}
 
 	public interface Gadget {

@@ -17,13 +17,13 @@
 
 package org.nuxeo.ecm.spaces.core.impl.docwrapper;
 
-import java.util.Map;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.core.impl.Constants;
 
 public class SpaceDocumentWrapper extends DocumentWrapper implements Space {
+
+	private boolean versionnable = false;
 
 	SpaceDocumentWrapper(DocumentModel doc) {
 		super(doc);
@@ -43,6 +43,10 @@ public class SpaceDocumentWrapper extends DocumentWrapper implements Space {
 
 	public String getTheme() {
 		return getInternalStringProperty(Constants.Space.SPACE_THEME);
+	}
+
+	public boolean isVersionnable() {
+		return getInternalBooleanProperty(Constants.Space.SPACE_VERSIONNABLE);
 	}
 
 }
