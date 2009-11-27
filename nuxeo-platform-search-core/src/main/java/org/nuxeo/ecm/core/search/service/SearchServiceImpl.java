@@ -77,7 +77,6 @@ import org.nuxeo.ecm.core.search.api.internals.SearchPolicyDescriptor;
 import org.nuxeo.ecm.core.search.api.internals.SearchServiceInternals;
 import org.nuxeo.ecm.core.search.api.security.SearchPolicy;
 import org.nuxeo.ecm.core.search.backend.SearchEngineBackendDescriptor;
-import org.nuxeo.ecm.core.search.transaction.Transactions;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -1085,30 +1084,6 @@ public class SearchServiceImpl extends DefaultComponent implements
 
     public void setReindexingAll(boolean flag) {
         reindexingAll = flag;
-    }
-
-    protected void beginUTransaction() {
-        try {
-            log.debug("Beginning transaction prior to flushing sessions");
-            Transactions.getUserTransaction().begin();
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not start transaction", e);
-        }
-    }
-
-    protected void commitOrRollbackUTransaction() {
-        try {
-            if (Transactions.isTransactionActive()) {
-                log.debug("Committing transaction after flushing sessions");
-                Transactions.getUserTransaction().commit();
-            } else if (Transactions.isTransactionMarkedRollback()) {
-                log.debug("Rolling back transaction after flushing sessions");
-                Transactions.getUserTransaction().rollback();
-            }
-        } catch (Exception e) {
-            // TODO: what should we *really* do here??
-            throw new IllegalStateException("Could not commit transaction", e);
-        }
     }
 
     // search policy methods

@@ -39,14 +39,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestFilterConfig;
-import org.nuxeo.ecm.platform.web.common.tx.TransactionsHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Filter to handle Transactions and Requests synchronization. This filter is
@@ -115,7 +114,7 @@ public class NuxeoRequestControllerFilter implements Filter {
 
         boolean useSync = config.needSynchronization();
         boolean useTx = config.needTransaction();
-        
+
         // Add cache header if needed
         if (httpRequest.getMethod().equals("GET")) {
             boolean iscached = config.isCached();
@@ -147,7 +146,7 @@ public class NuxeoRequestControllerFilter implements Filter {
         boolean txStarted = false;
         try {
             if (useTx) {
-                txStarted = startUserTransaction(httpRequest);
+                txStarted = TransactionHelper.startTransaction();
             }
             chain.doFilter(request, response);
         } catch (Exception e) {
@@ -156,12 +155,12 @@ public class NuxeoRequestControllerFilter implements Filter {
                 if (log.isDebugEnabled()) {
                     log.debug(doFormatLogMessage(httpRequest, "Marking transaction for RollBack"));
                 }
-                markTransactionForRollBack(httpRequest);
+                TransactionHelper.setTransactionRollbackOnly();
             }
             throw new ServletException(e);
         } finally {
             if (txStarted) {
-                commitOrRollBackUserTransaction(httpRequest);
+                TransactionHelper.commitOrRollbackTransaction();
             }
             if (sessionSynched) {
                 simpleReleaseSyncOnSession(httpRequest);
@@ -169,73 +168,6 @@ public class NuxeoRequestControllerFilter implements Filter {
             if (log.isDebugEnabled()) {
                 log.debug(doFormatLogMessage(httpRequest,"Exiting NuxeoRequestControler filter"));
             }
-        }
-    }
-
-    /**
-     * Starts a new {@link UserTransaction}.
-     *
-     * @return true if the transaction was successfully translated, false
-     *         otherwise
-     */
-    protected boolean startUserTransaction(HttpServletRequest request) {
-        try {
-            UserTransaction ut = TransactionsHelper.getUserTransaction();
-            if (ut!=null) {
-                ut.begin();
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            log.error(doFormatLogMessage(request,"Unable to start transaction"), e);
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Marks the {@link UserTransaction} for rollBack.
-     */
-    protected void markTransactionForRollBack(HttpServletRequest request) {
-        try {
-            UserTransaction ut = TransactionsHelper.getUserTransaction();
-            if (ut!=null) {
-                ut.setRollbackOnly();
-            }
-            if (log.isDebugEnabled()) {
-                log.debug(doFormatLogMessage(request, "NuxeoRequestControler setting transaction to RollBackOnly"));
-            }
-        } catch (Exception e) {
-            log.error(doFormatLogMessage(request, "Unable to rollback transaction"), e);
-        }
-    }
-
-    /**
-     * Commits or rollbacks the {@link UserTransaction} depending on the
-     * Transaction status.
-     */
-    protected void commitOrRollBackUserTransaction(HttpServletRequest request) {
-        try {
-            UserTransaction ut = TransactionsHelper.getUserTransaction();
-            if (ut==null) {
-                return;
-            }
-            if (TransactionsHelper.isTransactionActiveOrMarkedRollback()) {
-                if (TransactionsHelper.isTransactionMarkedRollback()) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(doFormatLogMessage(request, "can not commit transaction since it is marked RollBack only"));
-                    }
-                    TransactionsHelper.getUserTransaction().rollback();
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug(doFormatLogMessage(request,"NuxeoRequestControler commiting transaction"));
-                    }
-                    TransactionsHelper.getUserTransaction().commit();
-                }
-            }
-        } catch (Exception e) {
-                log.error(doFormatLogMessage(request,
-                    "Unable to commit/rollback transaction"), e);
         }
     }
 
