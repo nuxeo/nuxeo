@@ -98,7 +98,7 @@ public interface ContainerService extends RemoteService {
    * @param gwtParams
    * @throws ContainerServiceException
    */
-  void saveGadgetPosition(ArrayList<GadgetBean> beans,
+  GadgetBean saveGadgetPosition(ArrayList<GadgetBean> beans,
       Map<String, String> gwtParams) throws ContainerServiceException;
 
   /**

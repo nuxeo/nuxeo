@@ -66,6 +66,7 @@ import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 import org.nuxeo.ecm.platform.jbpm.operations.AddCommentOperation;
 import org.nuxeo.ecm.platform.jbpm.operations.GetRecipientsForTaskOperation;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
 import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -92,6 +93,9 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
+
+    @In(create = true)
+    protected transient WebActions webActions;
 
     @In(create = true)
     protected transient JbpmService jbpmService;
@@ -553,11 +557,16 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
     private String returnToCurrentDocOrHome() throws ClientException {
         DocumentModel currentDocument;
         try {
-            // re-fetch the document, it might have change during the process
+            // re-fetch the document, it might have changed during the process
             currentDocument = navigationContext.getCurrentDocument();
             currentDocument = documentManager.getDocument(currentDocument.getRef());
+            getCurrentProcess();
+            String currentTabId = webActions.getCurrentTabId();
             navigationContext.setCurrentDocument(null);
-            return navigationContext.navigateToDocument(currentDocument);
+            if (currentProcess == null || currentProcess.hasEnded()) {
+                return navigationContext.navigateToDocument(currentDocument);
+            }
+            return webActions.setCurrentTabAndNavigate(currentDocument, currentTabId);
         } catch (DocumentSecurityException e) {
             navigationContext.setCurrentDocument(null);
             return navigationContext.goHome();

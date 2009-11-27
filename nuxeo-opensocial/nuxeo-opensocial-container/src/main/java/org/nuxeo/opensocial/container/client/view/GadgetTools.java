@@ -21,9 +21,11 @@ public class GadgetTools {
   private final static ContainerMessages MSG = GWT.create(ContainerMessages.class);
   private GadgetForm form;
   private GadgetPortlet portlet;
+  private String title;
 
   public GadgetTools(GadgetPortlet portlet) {
     this.portlet = portlet;
+    this.title = portlet.getTitle();
   }
 
   public Tool[] getButtons() {
@@ -44,12 +46,20 @@ public class GadgetTools {
         showManager();
         for (PortalColumn col : portal.getPortalColumns()) {
           col.show();
-          col.doLayout();
         }
         ;
         maximizedCol.hide();
-        maximizedCol.doLayout();
+        updateLayoutSizeForMin(ContainerEntryPoint.PANEL_WIDTH + "px");
+
       }
+
+      private native void updateLayoutSizeForMin(String width)
+      /*-{
+    $wnd.jQuery("#containerPortal").width(width);
+    $wnd.jQuery(".containerPortal").width(width);
+    $wnd.jQuery(".x-column-inner").width(width);
+    $wnd.jQuery("#containerPanel").width(width);
+  }-*/;
 
     });
     return new Tool[] { min };
@@ -61,13 +71,13 @@ public class GadgetTools {
     if (gadget.getPermission()) {
       Tool gear = new Tool(Tool.GEAR, new Function() {
         public void execute() {
-         launchGear();
+          launchGear();
         }
       });
 
       Tool close = new Tool(Tool.CLOSE, new Function() {
         public void execute() {
-          if (Window.confirm(MSG.askedDeleteGadget(gadget.getTitle()))) {
+          if (Window.confirm(MSG.askedDeleteGadget((title != null) ? title : ""))) {
             ContainerEntryPoint.getService()
                 .removeGadget(gadget, ContainerEntryPoint.getGwtParams(),
                     new AsyncCallback<GadgetBean>() {
@@ -93,20 +103,31 @@ public class GadgetTools {
           PortalColumn maximizedCol = portal.getMaximizedCol();
           GadgetPortlet canvas = new GadgetPortlet(gadget,
               GadgetPortlet.CANVAS_VIEW);
+          ContainerPortal.setMaximizedPortlet(canvas);
           maximizedCol.add(canvas);
           hideManager();
           for (PortalColumn col : portal.getPortalColumns()) {
-            col.doLayout();
             col.hide();
           }
           ;
           maximizedCol.show();
-          canvas.updateGadgetPortlet(gadget);
+          canvas.updateGadgetPortlet();
           canvas.doLayout();
           maximizedCol.doLayout();
+          updateLayoutSizeForMax(canvas.getId());
           if (!portal.isCollapsed())
             canvas.unCollapseGadget();
         }
+
+        private native void updateLayoutSizeForMax(String id)
+        /*-{
+    $wnd.jQuery("#containerPortal").width("100%");
+    $wnd.jQuery(".containerPortal").width("100%");
+    $wnd.jQuery("#containerPanel").width("100%");
+    $wnd.jQuery(".x-column-inner").width("100%");
+    $wnd.jQuery("#maximizedCol").attr("style","width:100%;padding:0;margin:0;");
+    $wnd.jQuery("#"+id).attr("style","width:100%;paddinf:0;");
+  }-*/;
 
       });
 
@@ -116,8 +137,8 @@ public class GadgetTools {
 
   }
 
-  public GadgetForm getGadgetForm() {
-    return form;
+  public void setGadgetForm(GadgetForm form) {
+    this.form = form;
   }
 
   private static native void hideManager()
@@ -128,11 +149,15 @@ public class GadgetTools {
 
   private static native void showManager()
   /*-{
-   $wnd.jQuery(".getManager").slideDown("fast");
+    $wnd.jQuery(".getManager").slideDown("fast");
   }-*/;
 
   public void launchGear() {
-    form = new GadgetForm(portlet);
-    form.showForm();
+    if (form != null)
+      form.showForm();
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 }

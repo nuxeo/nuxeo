@@ -45,6 +45,8 @@ public interface DocumentModelListSerializer {
 
     String typeField = "type";
 
+    String stateField = "currentLifecycleState";
+
     String authorField = "author";
 
     String EMPTY_LIST = "empty result";

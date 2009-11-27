@@ -23,8 +23,8 @@
   </extension>
   <extension target="org.nuxeo.ecm.spaces.core.spacemanager.service"
     point="gadgetContrib">
-    <gadgetContrib name="defaultGadgets" remove="true"></gadgetContrib>
-	<gadgetContrib name="dashboardGadgets">
+    <!-- gadgetContrib name="defaultGadgets" remove="true"></gadgetContrib -->
+  <gadgetContrib name="dashboardGadgets">
       <order>0</order>
       <className>
         org.nuxeo.opensocial.dashboard.DashboardGadgetProvider

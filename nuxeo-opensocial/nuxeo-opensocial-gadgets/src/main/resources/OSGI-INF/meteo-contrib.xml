@@ -7,7 +7,7 @@
     <internalGadget name="meteo">
       <mountPoint>/meteo/meteo</mountPoint>
       <directory>meteo-gadget</directory>
-      <category>Information</category>
+      <category>Utilitaires</category>
       <icon>meteo_icon.png</icon>
     </internalGadget>
 

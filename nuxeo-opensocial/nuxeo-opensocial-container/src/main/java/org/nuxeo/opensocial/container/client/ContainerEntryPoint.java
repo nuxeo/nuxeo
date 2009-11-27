@@ -31,6 +31,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -44,163 +45,166 @@ import com.gwtext.client.widgets.layout.FitLayout;
  */
 public class ContainerEntryPoint implements EntryPoint {
 
-    private static final String GWT_WINDOW_WIDTH = "windowWidth";
+  private static final String SERVICE_ENTRY_POINT = "/nuxeo/gwtcontainer";
 
-    private static final String SERVICE_ENTRY_POINT = "/nuxeo/gwtcontainer";
+  private static final String GWT_WINDOW_WIDTH = "windowWidth";
+  public static final int PANEL_WIDTH = 970;
+  private static final int MARGIN_FROM_FULL_WIDTH = 70;
 
-    private static final int PANEL_WIDTH = 970;
+  private static final String GWT_CONTAINER_ID = "gwtContainer";
+  private static final String CONTAINER_PANEL_ID = "containerPanel";
 
-    private static final String GWT_CONTAINER_ID = "gwtContainer";
+  private final static ContainerServiceAsync SERVICE = GWT.create(ContainerService.class);
+  private final static ContainerConstants CONSTANTS = GWT.create(ContainerConstants.class);
 
-    private static final String CONTAINER_PANEL_ID = "containerPanel";
+  private static final HashMap<String, String> GWT_PARAMS = new HashMap<String, String>();
 
-    public static final int MIN_TIMEOUT = 1;
+  ServiceDefTarget endpoint = (ServiceDefTarget) SERVICE;
 
-    public static final int DEFAULT_TIMEOUT = 400;
+  private static ContainerPortal portal;
 
-    private final static ContainerServiceAsync SERVICE = GWT.create(ContainerService.class);
+  private int windowWidth = PANEL_WIDTH; // for variable sizing
 
-    private final static ContainerConstants CONSTANTS = GWT.create(ContainerConstants.class);
+  public void onModuleLoad() {
+    JsLibrary.loadingShow();
+    endpoint.setServiceEntryPoint(SERVICE_ENTRY_POINT);
+    JSONObject objects = JSONParser.parse(getInitialisationParams())
+        .isObject();
+    for (String key : objects.keySet()) {
+      GWT_PARAMS.put(key, getGwtParam(objects, key));
+    }
 
-    private static final HashMap<String, String> GWT_PARAMS = new HashMap<String, String>();
+    windowWidth = getWindowWidth(objects);
 
-    private static final int MARGIN_FROM_FULL_WIDTH = 70;
+    SERVICE.getContainer(GWT_PARAMS, new AsyncCallback<Container>() {
+      public void onFailure(Throwable object) {
+        ContainerPortal.showErrorMessage(CONSTANTS.error(),
+            CONSTANTS.loadingError());
+        JsLibrary.loadingHide();
+      }
 
-    ServiceDefTarget endpoint = (ServiceDefTarget) SERVICE;
+      public void onSuccess(final Container container) {
+        GadgetService.registerService();
+        Panel panel = new Panel();
+        panel.setBorder(false);
+        panel.setId(CONTAINER_PANEL_ID);
+        panel.setLayout(new FitLayout());
 
-    private static ContainerPortal portal;
+        RootPanel.get(GWT_CONTAINER_ID)
+            .add(panel);
 
-    private int windowWidth = PANEL_WIDTH; // for variable sizing
+        portal = new ContainerPortal(container, panel);
+        panel.setWidth(windowWidth);
+        panel.setHeight("100%");
+        JsLibrary.updateFrameWidth();
+        JsLibrary.updateColumnStyle();
+        createGwtContainerMask();
+        Timer t = new Timer() {
+          @Override
+          public void run() {
+            ContainerEntryPoint.attachLayoutManager(container.getLayout(),
+                container.getStructure());
+            JsLibrary.loadingHide();
+          }
+        };
 
-    public void onModuleLoad() {
-        JsLibrary.loadingShow();
-        endpoint.setServiceEntryPoint(SERVICE_ENTRY_POINT);
-        JSONObject objects = JSONParser.parse(getInitialisationParams()).isObject();
-        for (String key : objects.keySet())
-            GWT_PARAMS.put(key, getGwtParam(objects, key));
+        t.schedule(200);
 
-        JSONNumber number = objects.get(GWT_WINDOW_WIDTH).isNumber();
+      }
+    });
+  }
 
-        if (number != null) {
-            windowWidth = (int) objects.get(GWT_WINDOW_WIDTH).isNumber().doubleValue();
-            // we want a little border
-            windowWidth -= MARGIN_FROM_FULL_WIDTH;
-        }
+  private int getWindowWidth(JSONObject objects) {
+    JSONValue value = objects.get(GWT_WINDOW_WIDTH);
+    if (value != null) {
+      JSONNumber width = value.isNumber();
+      if (width != null) {
+        windowWidth = (int) width.doubleValue();
+        // we want a little border
+        windowWidth -= MARGIN_FROM_FULL_WIDTH;
+      }
+    }
+    return windowWidth;
+  }
 
-        SERVICE.getContainer(GWT_PARAMS, new AsyncCallback<Container>() {
-            public void onFailure(Throwable object) {
-                ContainerPortal.showErrorMessage(CONSTANTS.error(),
-                        CONSTANTS.loadingError());
-                JsLibrary.loadingHide();
-            }
+  private static String getGwtParam(JSONObject object, String key) {
+    String value = object.get(key)
+        .toString();
+    return value.substring(1, value.length() - 1);
+  }
 
-            public void onSuccess(final Container container) {
-                GadgetService.registerService();
-                Panel panel = new Panel();
-                panel.setBorder(false);
-                panel.setId(CONTAINER_PANEL_ID);
-                panel.setLayout(new FitLayout());
+  public static ContainerServiceAsync getService() {
+    return SERVICE;
+  }
 
-                RootPanel.get(GWT_CONTAINER_ID).add(panel);
+  public static ContainerPortal getContainerPortal() {
+    return portal;
+  }
 
-                portal = new ContainerPortal(container, panel);
-                // panel.setWidth(PANEL_WIDTH);
-                panel.setWidth(windowWidth);
-                panel.setHeight("100%");
-                portal.loader(DEFAULT_TIMEOUT);
-                // portal.setHeight("100%");
-                JsLibrary.updateFrameHeight();
-                createGwtContainerMask();
-                Timer t = new Timer() {
-                    @Override
-                    public void run() {
-                        ContainerEntryPoint.attachLayoutManager(
-                                container.getLayout(), container.getStructure());
-                    }
-                };
+  public static HashMap<String, String> getGwtParams() {
+    return GWT_PARAMS;
+  }
 
-                t.schedule(DEFAULT_TIMEOUT);
+  static void chooseLayout(String name) {
+    ContainerEntryPoint.getService()
+        .saveLayout(getGwtParams(), name, new AsyncCallback<Container>() {
 
-            }
+          Container container = portal.getContainer();
+
+          final String oldLayout = container.getLayout();
+
+          final int oldStructure = container.getStructure();
+
+          public void onFailure(Throwable arg0) {
+            JsLibrary.log("save layout Failed");
+          }
+
+          public void onSuccess(Container c) {
+            portal.updateColumnClassName(oldLayout, c.getLayout(),
+                oldStructure, c.getStructure());
+          }
+
         });
-    }
+  };
 
-    private static String getGwtParam(JSONObject object, String key) {
-        String value = object.get(key).toString();
-        return value.substring(1, value.length() - 1);
-    }
+  static void addGadget(String name) {
+    SERVICE.addGadget(name, GWT_PARAMS,
+        new AddGadgetAsyncCallback<GadgetBean>());
+  };
 
-    public static ContainerServiceAsync getService() {
-        return SERVICE;
-    }
+  private static native String getInitialisationParams()
+  /*-{
+    if($wnd.getGwtParams)
+      return $wnd.getGwtParams();
+    return null;
+  }-*/;
 
-    public static ContainerPortal getContainerPortal() {
-        return portal;
-    }
+  private static native void createGwtContainerMask()
+  /*-{
+    $wnd.jQuery("#gwtContainer").append($wnd.jQuery("<div></div>").attr("id","gwtContainerMask"));
+    $wnd.jQuery("#gwtContainerMask").hide();
+  }-*/;
 
-    public static HashMap<String, String> getGwtParams() {
-        return GWT_PARAMS;
-    }
+  private static native void attachLayoutManager(String layout,
+      Integer boxSelected) /*-{
+    //Initialisation
+    $wnd.jQuery("a[box='"+boxSelected+"']").parent().removeClass("invisible").addClass("visible");
+    $wnd.jQuery("#listBoxes>div").removeClass("selected");
+    $wnd.jQuery("#listBoxes>div>button").removeClass("selected");
+    $wnd.jQuery("button[box='"+boxSelected+"']").addClass("selected");
+    $wnd.jQuery("button[box='"+boxSelected+"']").parent().addClass("selected");
+    $wnd.jQuery("#"+layout).addClass("selected");
 
-    static void chooseLayout(String name) {
-        ContainerEntryPoint.getService().saveLayout(getGwtParams(), name,
-                new AsyncCallback<Container>() {
+    //Choix du layout
+    $wnd.jQuery(".typeLayout").click(function(){
+      @org.nuxeo.opensocial.container.client.ContainerEntryPoint::chooseLayout(Ljava/lang/String;)($wnd.jQuery(this).attr("name"));
+      return false
+    });
 
-                    Container container = portal.getContainer();
-
-                    final String oldLayout = container.getLayout();
-
-                    final int oldStructure = container.getStructure();
-
-                    public void onFailure(Throwable arg0) {
-                        JsLibrary.log("save layout Failed");
-                    }
-
-                    public void onSuccess(Container c) {
-                        portal.updateColumnClassName(oldLayout, c.getLayout(),
-                                oldStructure, c.getStructure());
-                    }
-
-                });
-    };
-
-    static void addGadget(String name) {
-        SERVICE.addGadget(name, GWT_PARAMS,
-                new AddGadgetAsyncCallback<GadgetBean>());
-    };
-
-    private static native String getInitialisationParams() /*-{
-                                                                                                                                     if($wnd.getGwtParams)
-                                                                                                                                       return $wnd.getGwtParams();
-                                                                                                                                     return null;
-                                                                                                                                   }-*/;
-
-    private static native void createGwtContainerMask() /*-{
-                                                                                                                                     $wnd.jQuery("#gwtContainer").append($wnd.jQuery("<div></div>").attr("id","gwtContainerMask"));
-                                                                                                                                     $wnd.jQuery("#gwtContainerMask").hide();
-                                                                                                                                   }-*/;
-
-    private static native void attachLayoutManager(String layout,
-            Integer boxSelected) /*-{
-                                                                                                                                     //Initialisation
-                                                                                                                                     $wnd.jQuery("a[box='"+boxSelected+"']").parent().removeClass("invisible").addClass("visible");
-                                                                                                                                     $wnd.jQuery("#listBoxes>div").removeClass("selected");
-                                                                                                                                     $wnd.jQuery("#listBoxes>div>button").removeClass("selected");
-                                                                                                                                     $wnd.jQuery("button[box='"+boxSelected+"']").addClass("selected");
-                                                                                                                                     $wnd.jQuery("button[box='"+boxSelected+"']").parent().addClass("selected");
-                                                                                                                                     $wnd.jQuery("#"+layout).addClass("selected");
-
-                                                                                                                                     //Choix du layout
-                                                                                                                                     $wnd.jQuery(".typeLayout").click(function(){
-                                                                                                                                       @org.nuxeo.opensocial.container.client.ContainerEntryPoint::chooseLayout(Ljava/lang/String;)($wnd.jQuery(this).attr("name"));
-                                                                                                                                       return false
-                                                                                                                                     });
-
-                                                                                                                                     $wnd.jQuery(".directAdd>a").click(function(){
-                                                                                                                                       @org.nuxeo.opensocial.container.client.ContainerEntryPoint::addGadget(Ljava/lang/String;)($wnd.jQuery(this).attr("name"));
-                                                                                                                                       return false
-                                                                                                                                     });
-
-                                                                                                                                   }-*/;
+    $wnd.jQuery(".directAdd>a").click(function(){
+      @org.nuxeo.opensocial.container.client.ContainerEntryPoint::addGadget(Ljava/lang/String;)($wnd.jQuery(this).attr("name"));
+      return false
+    });
+  }-*/;
 
 }

@@ -30,33 +30,21 @@
             <span class="accueil" id="currentOngletName" title="${currentSpace.description}">${currentSpace.title}</span>
           </#if>
         </#if>
-
-          <a href="#" id="navtab-${currentSpace.name}" class="showPreferences" style="">
-            <img src="/skin/portalRoot/images/themes/intralm/down_green_selected.gif" border="0" alt="" />
-          </a>
-          <ul class="menuAction" id="ul-navtab-${currentSpace.name}" style="display:none;">
-            <#list This.getLinks("SPACE_CONTEXTUAL_MENU_ACTIONS_POPUP") as link>
-                <li class="pageAction">
-                <a id="a-navtab-${currentSpace.name}" href="${link.getCode(This)}&deletePath=${currentSpace.name}"  class="nav-tabs-thickbox" title="the title">
-                  ${Context.getMessage(link.id)}
-                </a>
-              </li>
-            </#list>
-          </ul>
       </li>
     </#list>
      <script>$(document).ready(function(){
 tb_init("a.nav-tabs-thickbox");
 });</script>
 
- <#if nxthemesInfo.model.anonymous == false>
 
-       <li class="onglet tab_0">
-         <a id="addTabLink" title="Ajouter un nouvel onglet" href="${Context.root.path}/${This.univers.name}/@views/create?theme=intralm/popup&amp;height=300&amp;width=300" class="thickbox">+</a>
-       </li>
+    <!--#if nxthemesInfo.model.anonymous == false-->
+
+       <!--li class="onglet tab_0">
+         <a id="addTabLink" title="Ajouter un nouvel onglet" href="{Context.root.path}/{This.univers.name}/@views/create?theme=intralm/popup&amp;height=300&amp;width=300" class="thickbox">+</a>
+       </li-->
 
 
-     </#if>
+     <!--/#if-->
 
 
   </ul>

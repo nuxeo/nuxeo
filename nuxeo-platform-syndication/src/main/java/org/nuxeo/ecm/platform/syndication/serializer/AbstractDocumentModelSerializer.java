@@ -114,6 +114,9 @@ public abstract class AbstractDocumentModelSerializer implements
         } else if (colDef.equals(typeField)) {
             String type = doc.getType();
             return new ResultField(typeField, type);
+        } else if (colDef.equals(stateField)) {
+            String state = doc.getCurrentLifeCycleState();
+            return new ResultField(stateField, state);
         } else if (colDef.contains(authorField)) {
             String authorLogin = (String)doc.getProperty("dublincore", "creator");
             try {

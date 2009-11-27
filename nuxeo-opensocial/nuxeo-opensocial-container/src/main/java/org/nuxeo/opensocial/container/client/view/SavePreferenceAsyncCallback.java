@@ -46,11 +46,12 @@ public class SavePreferenceAsyncCallback<T> implements
   }
 
   public void onSuccess(GadgetBean bean) {
-    ContainerPortal c = ContainerEntryPoint.getContainerPortal();
-    c.getGadgetPortletByRef(gadget.getRef())
-        .updateGadgetPortlet(bean);
-    c.loader(ContainerEntryPoint.DEFAULT_TIMEOUT);
     JsLibrary.loadingHide();
+    ContainerPortal c = ContainerEntryPoint.getContainerPortal();
+    GadgetPortlet gp = c.getGadgetPortletByRef(gadget.getRef());
+    gp.setGadgetBean(bean);
+    gp.updateGadgetPortlet();
+    gp.doLayoutFrame();
   }
 
 }

@@ -95,7 +95,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
    * @param gwtParams
    * @throws ContainerServiceException
    */
-  public void saveGadgetPosition(ArrayList<GadgetBean> beans,
+  public GadgetBean saveGadgetPosition(ArrayList<GadgetBean> beans,
       Map<String, String> gwtParams) throws ContainerServiceException {
     try {
       GadgetManager factory = Framework.getService(FactoryManager.class)
@@ -109,6 +109,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
     } catch (Exception e) {
       log.error(e);
     }
+    return null;
   }
 
   /**

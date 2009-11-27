@@ -108,12 +108,12 @@ public class SpaceWebObject extends DocumentObject {
       if (this.space == null)
         throw new Exception("Space argument can't be null");
 
-      // TODO voir si on peut le recuperer directement
+      //JIRA WEB-279 => now use RequestAttribute
       if (space.getTheme() != null) {
-        getContext().setProperty("view.theme", space.getTheme());
-        LOGGER.info("setting theme from space ");
+        getContext().getRequest().setAttribute("org.nuxeo.theme.theme", space.getTheme());
+        LOGGER.debug("setting theme from space in context request wall again "+space.getTheme());
       } else {
-        LOGGER.info("setting theme from space ");
+        LOGGER.debug("no theme found from space ");
       }
 
       this.univers = (Univers) args[1];
@@ -121,7 +121,7 @@ public class SpaceWebObject extends DocumentObject {
     } catch (Exception e) {
       throw ExceptionManager.wrap(e);
     }
-    LOGGER.info("Space has been set");
+    LOGGER.debug("Space has been set");
   }
 
   private CoreSession getSession() {

@@ -19,6 +19,7 @@ package org.nuxeo.opensocial.container.client;
 
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 import org.nuxeo.opensocial.container.client.view.ContainerPortal;
+import org.nuxeo.opensocial.container.client.view.GadgetPortlet;
 import org.nuxeo.opensocial.container.client.view.SavePreferenceAsyncCallback;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -42,7 +43,6 @@ public class GadgetService {
     rpc.register('show_image', @org.nuxeo.opensocial.container.client.GadgetService::showImage(Lcom/google/gwt/core/client/JsArray;I));
   }-*/;
 
-
   /**
    * Resize gadget
    *
@@ -55,7 +55,7 @@ public class GadgetService {
 
   public static void setHeight(String ref, int height) {
     ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
-    portal.getGadgetPortlet(ref)
+    portal.getGadgetPortletByRef(ref)
         .setHeight(height + 20);
     portal.incrementLoading();
   };
@@ -77,9 +77,8 @@ public class GadgetService {
   }-*/;
 
   public static void saveUserPref(String ref) {
-    JsLibrary.log("save user pref " + ref);
     GadgetBean bean = ContainerEntryPoint.getContainerPortal()
-        .getGadgetPortlet(ref)
+        .getGadgetPortletByRef(ref)
         .getGadgetBean();
     ContainerEntryPoint.getService()
         .saveGadgetPreferences(bean, null, ContainerEntryPoint.getGwtParams(),
@@ -88,7 +87,7 @@ public class GadgetService {
 
   public static void setUserPref(String ref, String key, String value) {
     ContainerEntryPoint.getContainerPortal()
-        .getGadgetPortlet(ref)
+        .getGadgetPortletByRef(ref)
         .getGadgetBean()
         .setPref(key, value);
   };
@@ -104,9 +103,11 @@ public class GadgetService {
   }-*/;
 
   public static void setTitleToGadget(String ref, String title) {
-    ContainerEntryPoint.getContainerPortal()
-        .getGadgetPortlet(ref)
-        .setTitle(title);
+    if (title != null) {
+      GadgetPortlet p = ContainerEntryPoint.getContainerPortal()
+          .getGadgetPortletByRef(ref);
+      p.setTitle(title);
+    }
   };
 
   /**
@@ -139,7 +140,7 @@ public class GadgetService {
         });
 
         $wnd.jQuery($wnd.jQuery("a.fancyboxImage")[current]).click();
-      }-*/;
+  }-*/;
 
   /**
    * Security : Setter of rpc relay
@@ -151,6 +152,7 @@ public class GadgetService {
   /*-{
     $wnd.gadgets.rpc.setRelayUrl(iframeId, serverBase + "files/container/rpc_relay.html");
   }-*/;
+
   /**
    * Security : Setter of Auth token
    *
