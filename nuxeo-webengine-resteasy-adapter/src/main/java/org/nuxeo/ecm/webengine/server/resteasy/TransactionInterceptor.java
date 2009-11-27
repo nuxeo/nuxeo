@@ -25,8 +25,6 @@ import java.lang.reflect.Method;
 
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.transaction.UserTransaction;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -40,6 +38,7 @@ import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Resource;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * The TransactionAttribute marks a method as needing bytecode enhancement to
@@ -64,9 +63,6 @@ import org.nuxeo.ecm.webengine.model.Resource;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TransactionInterceptor implements ResourceMethodInterceptor {
-
-    public static final String UTX_NAME = System.getProperty(
-            "org.nuxeo.UserTransactionName", "UserTransaction");
 
     private static final Log log = LogFactory.getLog(TransactionInterceptor.class);
 
@@ -166,10 +162,9 @@ public class TransactionInterceptor implements ResourceMethodInterceptor {
 
     protected final UserTransaction getUserTransaction() {
         try {
-            Context ctx = new InitialContext();
-            return (UserTransaction) ctx.lookup(UTX_NAME);
+            return TransactionHelper.lookupUserTransaction();
         } catch (Throwable e) {
-            log.error("Failed to get user transaction: "+UTX_NAME+". Disabling Tx support", e);
+            log.error("Failed to get user transaction, disabling Tx support", e);
             txDisabled = true;
             return null;
         }
