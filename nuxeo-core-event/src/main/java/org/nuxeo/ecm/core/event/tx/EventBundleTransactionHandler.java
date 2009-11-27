@@ -33,6 +33,7 @@ import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Helper class to encapsulate Transaction management
@@ -43,14 +44,6 @@ import org.apache.commons.logging.LogFactory;
 public class EventBundleTransactionHandler {
 
     private static final Log log = LogFactory.getLog(EventBundleTransactionHandler.class);
-
-    private static final String UT_NAME = "UserTransaction";
-
-    private static final String UT_NAME_ALT = "java:comp/UserTransaction";
-
-    private static final String TM_NAME = "TransactionManager";
-
-    private static final String TM_NAME_ALT = "java:/TransactionManager";
 
     protected UserTransaction tx;
 
@@ -97,14 +90,10 @@ public class EventBundleTransactionHandler {
 
         UserTransaction ut = null;
         try {
-            ut = (UserTransaction) context.lookup(UT_NAME);
-        } catch (NamingException ne) {
-            try {
-                ut = (UserTransaction) context.lookup(UT_NAME_ALT);
-            } catch (NamingException ne2) {
-                disabled = true;
-                return null;
-            }
+            ut = TransactionHelper.lookupUserTransaction();
+        } catch (NamingException e) {
+            disabled = true;
+            return null;
         }
 
         try {
@@ -134,37 +123,6 @@ public class EventBundleTransactionHandler {
             }
         }
         return ut;
-    }
-
-    protected Transaction createTxFromTM() {
-        InitialContext context = null;
-        try {
-            context = new InitialContext();
-        } catch (Exception e) {
-            disabled = true;
-            return null;
-        }
-
-        TransactionManager tm = null;
-        try {
-            tm = (TransactionManager) context.lookup(TM_NAME);
-        } catch (NamingException ne) {
-            try {
-                tm = (TransactionManager) context.lookup(TM_NAME_ALT);
-            } catch (NamingException ne2) {
-            }
-        }
-        if (tm == null) {
-            disabled = true;
-            return null;
-        }
-
-        try {
-            return tm.getTransaction();
-        } catch (SystemException e) {
-            disabled = true;
-            return null;
-        }
     }
 
     protected boolean isUTTransactionActive() {
