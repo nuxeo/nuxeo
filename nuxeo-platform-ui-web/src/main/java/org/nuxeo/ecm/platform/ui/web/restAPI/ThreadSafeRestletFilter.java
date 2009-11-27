@@ -21,9 +21,10 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.web.common.tx.SimpleTxManager;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.restlet.Filter;
-import org.restlet.Restlet;import org.restlet.data.MediaType;
+import org.restlet.Restlet;
+import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -52,24 +53,23 @@ public class ThreadSafeRestletFilter extends Filter {
     @Override
     protected void doHandle(Request request, Response response) {
         if (getNext() != null) {
-            boolean started=false;
+            boolean started = false;
             try {
-                //get a new instance of the restlet each time it is called.
+                // get a new instance of the restlet each time it is called.
                 Restlet next = getNext().getClass().newInstance();
                 // start TX
-                started = SimpleTxManager.startUserTransaction();
+                started = TransactionHelper.startTransaction();
                 next.handle(request, response);
             } catch (Exception e) {
                 log.error("Restlet handling error", e);
-                SimpleTxManager.markTransactionForRollBack();
+                TransactionHelper.setTransactionRollbackOnly();
                 response.setEntity(
                         "Error while getting a new Restlet instance: "
                                 + e.getMessage(), MediaType.TEXT_PLAIN);
-            }
-            finally {
+            } finally {
                 if (started) {
                     // commit Tx
-                    SimpleTxManager.commitOrRollBackUserTransaction();
+                    TransactionHelper.commitOrRollbackTransaction();
                 }
             }
         } else {
