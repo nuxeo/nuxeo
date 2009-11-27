@@ -36,7 +36,7 @@
 
         <nxu:inputList value="#{field_0}" id="#{widget.id}_input" model="model"
           template="#{nxd:propertyDefaultValue(propValueForTemplate)}"
-          required="#{widget.required}">
+          required="#{widget.required}" diff="#{widget.properties['diff']}">
 
           <h:panelGrid columns="2">
             <a4j:commandLink immediate="true"
