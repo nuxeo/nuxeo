@@ -31,14 +31,11 @@ public class GadgetDeclaration {
   @XNode("@name")
   private String name;
 
-  @XNode("@entryPoint")
+  @XNode("entryPoint")
   private String entryPoint;
 
   @XNode("mountPoint")
   private String mountPoint;
-
-  @XNode("directory")
-  private String directory;
 
   @XNode("category")
   private String category;
@@ -60,10 +57,6 @@ public class GadgetDeclaration {
 
   public final String getMountPoint() {
     return mountPoint;
-  }
-
-  public final String getDirectory() {
-    return directory;
   }
 
   public final String getCategory() {
