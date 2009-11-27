@@ -52,7 +52,7 @@
 
                 <nxl:subWidget>
                   <h:outputText value="#{messages[widget.label]}"
-                    styleClass="labelColumn" />
+                    styleClass="labelColumn nxu:test{widget.required, 'required', ''}" />
                   <nxl:widget widget="#{widget}" mode="#{widget.mode}"
                     value="#{submodel.rowData}" />
                 </nxl:subWidget>
