@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,7 +39,7 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.TransactionTypeHelper;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
@@ -105,8 +107,8 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
             setupConfiguration();
         }
         Map<String,String> properties = new HashMap<String,String>();
-        if (txType==null) {
-            txType = TransactionTypeHelper.getTxType();
+        if (txType == null) {
+            txType = getTxType();
         }
         if (txType != null) {
             properties.put(HibernatePersistence.TRANSACTION_TYPE, txType);
@@ -116,6 +118,30 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
 
     public EntityManagerFactory getFactory() {
         return getFactory(null);
+    }
+
+    public static final String RESOURCE_LOCAL = PersistenceUnitTransactionType.RESOURCE_LOCAL.name();
+
+    public static final String JTA = PersistenceUnitTransactionType.JTA.name();
+
+    public static final String TXTYPE_PROPERTY_NAME = "org.nuxeo.runtime.txType";
+
+    public static String getTxType() {
+        String txType;
+        if (Framework.isInitialized()) {
+            txType = Framework.getProperty(TXTYPE_PROPERTY_NAME);
+            if (txType == null) {
+                try {
+                    TransactionHelper.lookupTransactionManager();
+                    txType = JTA;
+                } catch (NamingException e) {
+                    txType = RESOURCE_LOCAL;
+                }
+            }
+        } else {
+            txType = RESOURCE_LOCAL;
+        }
+        return txType;
     }
 
     public static HibernateConfiguration load(URL location) {
