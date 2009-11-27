@@ -19,6 +19,7 @@
 
 package org.nuxeo.runtime.api;
 
+import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -27,43 +28,53 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Helper class to lookup DataSources without having to deal with vendor-specific
- * JNDI prefixes.
+ * Helper class to look up {@link DataSource}s without having to deal with
+ * vendor-specific JNDI prefixes.
  *
  * @author Thierry Delprat
+ * @author Florent Guillaume
  */
 public class DataSourceHelper {
 
     private static final Log log = LogFactory.getLog(DataSourceHelper.class);
 
-    private static final String JBOSS_PREFIX = "java:";
+    public static final String PREFIX_PROPERTY = "org.nuxeo.runtime.datasource.prefix";
 
-    private static final String DEFAULT_PREFIX = JBOSS_PREFIX;
-
-    private static final String DS_PREFIX_NAME = "org.nuxeo.runtime.datasource.prefix";
+    public static final String DEFAULT_PREFIX = "java:comp/env/jdbc";
 
     protected static String prefix;
 
-
-    protected static void dump(String msg) {
-        System.out.println(msg);
-        log.warn(msg);
-    }
-
     public static void autodetectPrefix() {
-    	J2EEContainerDescriptor selectedContainer = J2EEContainerDescriptor.getSelected();
-    	if (selectedContainer == null) {
-    		prefix = null;
-    	} else {
-    		prefix = selectedContainer.datasourcePrefix;
-    	}
+        Context ctx = getDefaultInitCtx();
+        String name = ctx == null ? null : ctx.getClass().getName();
+        if ("org.jnp.interfaces.NamingContext".equals(name)) { // JBoss
+            prefix = "java:";
+        } else if ("org.apache.naming.SelectorContext".equals(name)) { // Tomcat
+            prefix = "java:comp/env/jdbc";
+        } else if ("org.mortbay.naming.NamingContext".equals(name)) { // Jetty
+            prefix = "jdbc";
+        } else if ("com.sun.enterprise.naming.impl.SerialContext".equals(name)) { // GlassFish
+            prefix = "java:comp/env/jdbc";
+        } else {
+            // unknown, use Java EE standard
+            log.error("Unknown JNDI Context class: " + name);
+            prefix = DEFAULT_PREFIX;
+        }
+        log.info("Using JDBC JNDI prefix: " + prefix);
     }
 
-    /**
-     * Sets the prefix to be used (mainly for tests).
-     */
-    public static void setDataSourceJNDIPrefix(String prefix) {
-    	DataSourceHelper.prefix = prefix;
+    public static Context getDefaultInitCtx() {
+        try {
+            return new InitialContext() {
+                // subclass in order to access the protected method
+                @Override
+                public Context getDefaultInitCtx() throws NamingException {
+                    return super.getDefaultInitCtx();
+                }
+            }.getDefaultInitCtx();
+        } catch (NamingException e) {
+            return null;
+        }
     }
 
     /**
@@ -72,58 +83,54 @@ public class DataSourceHelper {
     public static String getDataSourceJNDIPrefix() {
         if (prefix == null) {
             if (Framework.isInitialized()) {
-                String configuredPrefix = Framework.getProperty(DS_PREFIX_NAME);
+                String configuredPrefix = Framework.getProperty(PREFIX_PROPERTY);
                 if (configuredPrefix != null) {
                     prefix = configuredPrefix;
-                }
-                if (prefix == null) {
+                } else {
                     autodetectPrefix();
                 }
-                if (prefix == null) {
-                    return DEFAULT_PREFIX;
-                }
             } else {
-                return DEFAULT_PREFIX;
+                prefix = DEFAULT_PREFIX;
             }
         }
         return prefix;
     }
 
     /**
-     * Get the JNDI name of the DataSource.
+     * Look up a datasource JNDI name given a partial name.
+     * <p>
+     * For a datasource {@code "jdbc/foo"}, then it's sufficient to pass {@code
+     * "foo"} to this method.
+     *
+     * @param partialName the partial name
+     * @return the datasource JNDI name
      */
     public static String getDataSourceJNDIName(String partialName) {
-        if (partialName == null) {
-            return null; // !!!
-        }
-
         String targetPrefix = getDataSourceJNDIPrefix();
-        if (partialName.startsWith(targetPrefix)) {
-            return partialName;
-        }
-
-        // remove prefix if any
-        int idx = partialName.indexOf("/");
+        // keep suffix only (jdbc/foo -> foo)
+        int idx = partialName.lastIndexOf("/");
         if (idx > 0) {
             partialName = partialName.substring(idx + 1);
         }
-
+        // add prefix
         return targetPrefix + "/" + partialName;
     }
 
     /**
-     * Lookup for a DataSource.
+     * Look up a datasource given a partial name.
+     * <p>
+     * For a datasource {@code "jdbc/foo"}, then it's sufficient to pass {@code
+     * "foo"} to this method.
      *
-     * @param partialName
-     * @return
+     * @param partialName the partial name
+     * @return the datasource
      * @throws NamingException
      */
     public static DataSource getDataSource(String partialName)
             throws NamingException {
         String jndiName = getDataSourceJNDIName(partialName);
         InitialContext context = new InitialContext();
-        DataSource dataSource = (DataSource) context.lookup(jndiName);
-        return dataSource;
+        return (DataSource) context.lookup(jndiName);
     }
 
 }

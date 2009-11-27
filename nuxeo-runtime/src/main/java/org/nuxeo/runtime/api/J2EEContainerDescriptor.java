@@ -28,33 +28,16 @@ import org.nuxeo.common.Environment;
  *
  * @author Stephane Lacoin
  * @author bstefanescu
+ * @author Florent Guillaume
  */
 public enum J2EEContainerDescriptor {
 
-    JBOSS("java:", TransactionTypeHelper.JTA, false),
-    TOMCAT("java:comp/env/jdbc", TransactionTypeHelper.RESOURCE_LOCAL, true),
-    //TOMCAT("java:jdbc", TransactionTypeHelper.RESOURCE_LOCAL,true),
-    JETTY("jdbc", TransactionTypeHelper.RESOURCE_LOCAL,true),
-    GF3("jdbc", TransactionTypeHelper.RESOURCE_LOCAL,true);
-
-    private J2EEContainerDescriptor(String datasourcePrefix, String hibernateTransactionStrategy, boolean preferLocalBindings) {
-        this.datasourcePrefix = datasourcePrefix;
-        this.txFactory = hibernateTransactionStrategy;
-        this.preferLocalBindings = preferLocalBindings;
-    }
-
-    public final String datasourcePrefix;
-
-    public final String txFactory;
-
-    public final boolean preferLocalBindings;
+    JBOSS, TOMCAT, JETTY, GF3;
 
     public static final Log log = LogFactory.getLog(J2EEContainerDescriptor.class);
 
     protected static J2EEContainerDescriptor autodetect() {
-        Environment env = Environment.getDefault();
-
-        String hostName = env.getHostApplicationName();
+        String hostName = Environment.getDefault().getHostApplicationName();
         if (hostName == null) {
             return null;
         }
@@ -87,20 +70,13 @@ public enum J2EEContainerDescriptor {
         }
     }
 
-    private static J2EEContainerDescriptor selected;
-
-    /**
-     * Sets the prefix to be used (mainly for tests).
-     */
-    public static void setSelected(J2EEContainerDescriptor selected) {
-        J2EEContainerDescriptor.selected = selected;
-    }
+    protected static J2EEContainerDescriptor selected;
 
     public static J2EEContainerDescriptor getSelected() {
-         if (selected != null) {
-             return selected;
-         }
-         return selected = autodetect();
+        if (selected == null) {
+            selected = autodetect();
+        }
+        return selected;
     }
 
 }
