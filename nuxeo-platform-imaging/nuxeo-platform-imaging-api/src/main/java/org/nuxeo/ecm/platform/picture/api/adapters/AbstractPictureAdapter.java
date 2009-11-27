@@ -89,6 +89,8 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
 
     protected Integer height;
 
+    protected Integer depth;
+
     protected String description;
 
     protected String type;
@@ -149,6 +151,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         if (imageInfo != null) {
             width = imageInfo.getWidth();
             height = imageInfo.getHeight();
+            depth = imageInfo.getDepth();
             imageInfoUsed = true;
         }
         Map<String, Object> metadata = getImagingService().getImageMetadata(
@@ -289,22 +292,22 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
                 }
                 createPictureimpl((String) view.get("description"),
                         (String) view.get("tag"), (String) view.get("title"),
-                        maxsize, filename, width, height, fileContent);
+                        maxsize, filename, width, height, depth, fileContent);
             }
         } else {
             // Default properties When PictureBook doesn't exist
             createPictureimpl("Medium Size", "medium", "Medium", MEDIUM_SIZE,
-                    filename, width, height, fileContent);
+                    filename, width, height, depth, fileContent);
             createPictureimpl(description, "original", "Original", null,
-                    filename, width, height, fileContent);
+                    filename, width, height, depth, fileContent);
             createPictureimpl("Thumbnail Size", "thumb", "Thumbnail",
-                    THUMB_SIZE, filename, width, height, fileContent);
+                    THUMB_SIZE, filename, width, height, depth, fileContent);
         }
     }
 
     @SuppressWarnings( { "unchecked" })
     public void createPictureimpl(String description, String tag, String title,
-            Integer maxsize, String filename, Integer width, Integer height,
+            Integer maxsize, String filename, Integer width, Integer height, Integer depth,
             Blob fileContent) throws IOException, ClientException {
 
         Map<String, Object> map = new HashMap<String, Object>();
@@ -326,6 +329,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             Map<String, Serializable> options = new HashMap<String, Serializable>();
             options.put(OPTION_RESIZE_WIDTH, size.x);
             options.put(OPTION_RESIZE_HEIGHT, size.y);
+            options.put(OPTION_RESIZE_DEPTH, depth);
             // use the registered conversion format for 'Medium' and 'Thumbnail' views
             options.put(CONVERSION_FORMAT, imagingService.getConfigurationValue(CONVERSION_FORMAT,
                     DEFAULT_CONVERSATION_FORMAT));

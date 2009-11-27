@@ -39,7 +39,9 @@ public interface ImagingService {
      * @param width
      * @param height
      * @return resized image file created in temporary folder
+     * @deprecated use {@link #crop(Blob, int, int, int, int)
      */
+    @Deprecated
     InputStream crop(InputStream in, int x, int y, int width, int height);
 
     /**
@@ -49,7 +51,9 @@ public interface ImagingService {
      * @param width
      * @param height
      * @return resized image file created in temporary folder
+     * @deprecated use {@link #resize(Blob, String, int, int, int)
      */
+    @Deprecated
     InputStream resize(InputStream in, int width, int height);
 
     /**
@@ -58,8 +62,16 @@ public interface ImagingService {
      * @param in
      * @param angle
      * @return
+     * @deprecated use {@link #rotate(Blob, int)
      */
+    @Deprecated
     InputStream rotate(InputStream in, int angle);
+
+    Blob crop(Blob blob, int x, int y, int width, int height);
+
+    Blob resize(Blob blob, String finalFormat, int width, int height, int depth);
+
+    Blob rotate(Blob blob, int angle);
 
     /**
      * Retrieve metadata from an image
@@ -95,14 +107,6 @@ public interface ImagingService {
     ImageInfo getImageInfo(Blob blob);
 
     /**
-     * Returns a map with the configurations that were registered for the
-     * ImagingService.
-     *
-     * @return
-     */
-    Map<String, String> getConfigurations();
-
-    /**
      * Returns the value a configuration which name is received as parameter.
      *
      * @param configurationName - the name of the configuration
@@ -131,4 +135,5 @@ public interface ImagingService {
      */
     void setConfigurationValue(String configurationName,
             String configurationValue);
+
 }

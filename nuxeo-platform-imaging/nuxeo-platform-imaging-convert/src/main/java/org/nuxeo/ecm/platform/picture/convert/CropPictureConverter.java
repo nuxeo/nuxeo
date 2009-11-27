@@ -17,7 +17,6 @@
  */
 package org.nuxeo.ecm.platform.picture.convert;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -41,33 +39,28 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class CropPictureConverter implements Converter {
 
-    private static final Log log = LogFactory.getLog(CropPictureConverter.class);;
+    private static final Log log = LogFactory.getLog(CropPictureConverter.class);
 
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
-        try{
-        ImagingService service = Framework.getService(ImagingService.class);
-        List<Blob> results = new ArrayList<Blob>();
-        List<Blob> sources = blobHolder.getBlobs();
-        int height = (Integer) parameters.get(ImagingConvertConstants.OPTION_RESIZE_HEIGHT);
-        int width = (Integer) parameters.get(ImagingConvertConstants.OPTION_RESIZE_WIDTH);
-        int x = (Integer) parameters.get(ImagingConvertConstants.OPTION_CROP_X);
-        int y = (Integer) parameters.get(ImagingConvertConstants.OPTION_CROP_Y);
-        for (Blob source : sources) {
-            if (source != null) {
-                InputStream in = source.getStream();
-                if (in != null) {
-                    InputStream result = service.crop(in, x, y, width, height);
+        try {
+            ImagingService service = Framework.getService(ImagingService.class);
+            List<Blob> results = new ArrayList<Blob>();
+            List<Blob> sources = blobHolder.getBlobs();
+            int height = (Integer) parameters.get(ImagingConvertConstants.OPTION_RESIZE_HEIGHT);
+            int width = (Integer) parameters.get(ImagingConvertConstants.OPTION_RESIZE_WIDTH);
+            int x = (Integer) parameters.get(ImagingConvertConstants.OPTION_CROP_X);
+            int y = (Integer) parameters.get(ImagingConvertConstants.OPTION_CROP_Y);
+            for (Blob source : sources) {
+                if (source != null) {
+                    Blob result = service.crop(source, x, y, width, height);
                     if (result != null) {
-                        // FIXME : local only
-                        Blob blob = new FileBlob(result);
-                        results.add(blob);
+                        results.add(result);
                     }
                 }
             }
-        }
-        return new SimpleCachableBlobHolder(results);
-        } catch (Exception e){
+            return new SimpleCachableBlobHolder(results);
+        } catch (Exception e) {
             log.error(e, e);
             throw new ConversionException("Crop conversion has failed", e);
         }

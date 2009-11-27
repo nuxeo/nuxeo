@@ -25,6 +25,12 @@
       <installationDirective>You need to install ImageMagic.</installationDirective>
     </command>
     
+    <command name="gifResizer" enabled="true">
+      <commandLine>convert</commandLine>
+      <parameterString>#{inputFilePath} -coalesce -resize #{targetWidth}x#{targetHeight} -depth #{targetDepth} -deconstruct #{outputFilePath}</parameterString>
+      <installationDirective>You need to install ImageMagic.</installationDirective>
+    </command>    
+    
     <command name="rotate" enabled="true">
       <commandLine>convert</commandLine>
       <parameterString>-rotate #{angle} #{inputFilePath} #{outputFilePath}</parameterString>

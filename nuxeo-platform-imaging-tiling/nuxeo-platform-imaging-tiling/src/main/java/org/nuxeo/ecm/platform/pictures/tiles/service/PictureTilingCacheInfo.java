@@ -193,7 +193,7 @@ public class PictureTilingCacheInfo {
                             ImageInfo shrinked = ImageResizer.resize(
                                     originalPictureInfos.getFilePath(),
                                     shrinkedImagePath, neededWidth,
-                                    neededHeight);
+                                    neededHeight, -1);
 
                             shrinkedImagesWidths.add(new Integer(
                                     shrinked.getWidth()));

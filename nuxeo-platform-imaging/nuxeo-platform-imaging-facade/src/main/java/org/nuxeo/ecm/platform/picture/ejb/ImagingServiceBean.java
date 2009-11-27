@@ -80,7 +80,21 @@ public class ImagingServiceBean implements ImagingService {
     public InputStream crop(InputStream in, int x, int y, int width, int height) {
         return service.crop(in, x, y, width, height);
     }
-    public String getImageMimeType(File file){
+
+    public Blob crop(Blob blob, int x, int y, int width, int height) {
+        return service.crop(blob, x, y, width, height);
+    }
+
+    public Blob resize(Blob blob, String finalFormat, int width, int height,
+            int depth) {
+        return service.resize(blob, finalFormat, width, height, depth);
+    }
+
+    public Blob rotate(Blob blob, int angle) {
+        return service.rotate(blob, angle);
+    }
+
+    public String getImageMimeType(File file) {
         return service.getImageMimeType(file);
     }
 
@@ -99,10 +113,6 @@ public class ImagingServiceBean implements ImagingService {
     public String getConfigurationValue(String configurationName,
             String defaultValue) {
         return service.getConfigurationValue(configurationName, defaultValue);
-    }
-
-    public Map<String, String> getConfigurations() {
-        return service.getConfigurations();
     }
 
     public void setConfigurationValue(String configurationName,

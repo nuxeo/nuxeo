@@ -20,20 +20,20 @@
 package org.nuxeo.ecm.platform.picture.magick.utils;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 
 /**
  * Unit command to rotate a picture
- * 
+ *
  * @author btatar
- * 
+ *
  */
 public class ImageRotater extends MagickExecutor {
 
     public static void rotate(String inputFile, String outputFile, int angle)
-            throws Exception {
+            throws CommandNotAvailable {
         CmdParameters params = new CmdParameters();
-        params = new CmdParameters();
         params.addNamedParameter("angle", String.valueOf(angle));
         params.addNamedParameter("inputFilePath", inputFile);
         params.addNamedParameter("outputFilePath", outputFile);

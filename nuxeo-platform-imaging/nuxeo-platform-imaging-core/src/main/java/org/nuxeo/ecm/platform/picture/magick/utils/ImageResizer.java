@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.picture.magick.utils;
 import java.io.File;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 
@@ -34,17 +35,18 @@ import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 public class ImageResizer extends MagickExecutor {
 
     public static ImageInfo resize(String inputFile, String outputFile,
-            int targetWidth, int targetHeight) throws Exception {
-        
-        // find the depth of the image first
-        ImageInfo imageInfo = ImageIdentifier.getInfo(inputFile);
-        CmdParameters params = new CmdParameters();        
-                
+            int targetWidth, int targetHeight, int targetDepth) throws CommandNotAvailable {
+
+        if (targetDepth == -1) {
+            targetDepth = ImageIdentifier.getInfo(inputFile).getDepth();
+        }
+        CmdParameters params = new CmdParameters();
+
         params.addNamedParameter("targetWidth", String.valueOf(targetWidth));
         params.addNamedParameter("targetHeight", String.valueOf(targetHeight));
         params.addNamedParameter("inputFilePath", formatFilePath(inputFile));
         params.addNamedParameter("outputFilePath", formatFilePath(outputFile));
-        params.addNamedParameter("targetDepth", String.valueOf(imageInfo.getDepth()));
+        params.addNamedParameter("targetDepth", String.valueOf(targetDepth));
         execCommand("resizer", params);
 
         if (new File(outputFile).exists()) {

@@ -60,7 +60,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
         ImageInfo info = ImageResizer.resize(file.getAbsolutePath(),
-                outputFile, 20, 20);
+                outputFile, 20, 20, 8);
         assertNotNull(info);
 
         File out = new File(outputFile);

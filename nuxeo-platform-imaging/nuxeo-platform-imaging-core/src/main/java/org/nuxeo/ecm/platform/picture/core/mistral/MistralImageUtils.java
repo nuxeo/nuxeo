@@ -43,6 +43,8 @@ import javax.imageio.ImageWriter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -55,6 +57,7 @@ public class MistralImageUtils implements ImageUtils {
 
     private static final double QUALITY_SCALE = 0.25;
 
+    @Deprecated
     public InputStream crop(InputStream in, int x, int y, int width, int height) {
         try {
             ImplementationFactoryJAI.getInstance();
@@ -78,6 +81,7 @@ public class MistralImageUtils implements ImageUtils {
         return null;
     }
 
+    @Deprecated
     public InputStream resize(InputStream in, int width, int height) {
         try {
             ImplementationFactoryJAI.getInstance();
@@ -126,6 +130,7 @@ public class MistralImageUtils implements ImageUtils {
         return null;
     }
 
+    @Deprecated
     public InputStream rotate(InputStream in, int angle) {
         try {
             EditableImage image = EditableImage.create(new ReadOp(in,
@@ -136,6 +141,94 @@ public class MistralImageUtils implements ImageUtils {
                 FileInputStream fis = new FileInputStream(resultFile);
                 Framework.trackFile(resultFile, fis);
                 return fis;
+            }
+        } catch (IOException e) {
+            log.error("Fail to rotate image", e);
+        }
+        return null;
+    }
+
+    public Blob crop(Blob blob, int x, int y, int width, int height) {
+        try {
+            ImplementationFactoryJAI.getInstance();
+            ImplementationFactoryJ2D.getInstance().unregisterImplementation(
+                    ScaleOp.class);
+        } catch (Exception e) {
+        }
+        try {
+            EditableImage image = EditableImage.create(new ReadOp(blob.getStream(),
+                    ReadOp.Type.IMAGE));
+            image = image.execute2(new CropOp(x, y, width, height));
+            File resultFile = writeJpegFile(image);
+            if (resultFile != null) {
+                Blob resultBlob = new FileBlob(resultFile);
+                Framework.trackFile(resultFile, resultBlob);
+                return resultBlob;
+            }
+        } catch (IOException e) {
+            log.error("Fail to crop image", e);
+        }
+        return null;
+    }
+
+    public Blob resize(Blob blob, String finalFormat, int width, int height, int depth) {
+        try {
+            ImplementationFactoryJAI.getInstance();
+            ImplementationFactoryJ2D.getInstance().unregisterImplementation(
+                    ScaleOp.class);
+        } catch (Exception e) {
+        }
+        try {
+            EditableImage image = EditableImage.create(new ReadOp(blob.getStream(),
+                    ReadOp.Type.IMAGE));
+            int imageWidth = image.getWidth();
+            int imageHeight = image.getHeight();
+            if (imageWidth <= width && imageHeight <= height) {
+                return null;
+            }
+            double scale;
+            if (imageWidth * height >= imageHeight * width) {
+                /* scale by width */
+                scale = (double) width / (double) imageWidth;
+            } else {
+                /* scale by height */
+                scale = (double) height / (double) imageHeight;
+            }
+            while (scale < QUALITY_SCALE) {
+                image = image.execute2(new ScaleOp(QUALITY_SCALE, Quality.BEST));
+                imageWidth = image.getWidth();
+                imageHeight = image.getHeight();
+                if (imageWidth * height >= imageHeight * width) {
+                    /* scale by width */
+                    scale = (double) width / (double) imageWidth;
+                } else {
+                    /* scale by height */
+                    scale = (double) height / (double) imageHeight;
+                }
+            }
+            image = image.execute2(new ScaleOp(scale, Quality.BEST));
+            File resultFile = writeJpegFile(image);
+            if (resultFile != null) {
+                Blob resultBlob = new FileBlob(resultFile);
+                Framework.trackFile(resultFile, resultBlob);
+                return resultBlob;
+            }
+        } catch (IOException e) {
+            log.error("Fail to resize image", e);
+        }
+        return null;
+    }
+
+    public Blob rotate(Blob blob, int angle) {
+        try {
+            EditableImage image = EditableImage.create(new ReadOp(blob.getStream(),
+                    ReadOp.Type.IMAGE));
+            image = image.execute2(new RotateQuadrantOp(angle));
+            File resultFile = writeJpegFile(image);
+            if (resultFile != null) {
+                Blob resultBlob = new FileBlob(resultFile);
+                Framework.trackFile(resultFile, resultBlob);
+                return resultBlob;
             }
         } catch (IOException e) {
             log.error("Fail to rotate image", e);

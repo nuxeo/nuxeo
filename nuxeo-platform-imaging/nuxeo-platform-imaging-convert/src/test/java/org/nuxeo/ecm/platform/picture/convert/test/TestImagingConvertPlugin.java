@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.picture.convert.test;
 
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.*;
+
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.Serializable;
@@ -31,7 +33,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -58,11 +59,13 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
 
         int resizeWidth = 120;
         int resizeHeight = 90;
-        
+        int resizeDepth = 8;
+
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
-        options.put(ImagingConvertConstants.OPTION_RESIZE_WIDTH, resizeWidth);
-        options.put(ImagingConvertConstants.OPTION_RESIZE_HEIGHT, resizeHeight);
+        options.put(OPTION_RESIZE_WIDTH, resizeWidth);
+        options.put(OPTION_RESIZE_HEIGHT, resizeHeight);
+        options.put(OPTION_RESIZE_DEPTH, resizeDepth);
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
@@ -86,7 +89,7 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
         String converter = "pictureRotation";
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
-        options.put(ImagingConvertConstants.OPTION_ROTATE_ANGLE,90);
+        options.put(OPTION_ROTATE_ANGLE,90);
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
@@ -120,10 +123,11 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
         int cropHeight = 200;
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
-        options.put(ImagingConvertConstants.OPTION_CROP_X, 100);
-        options.put(ImagingConvertConstants.OPTION_CROP_Y, 100);
-        options.put(ImagingConvertConstants.OPTION_RESIZE_WIDTH, cropWidth);
-        options.put(ImagingConvertConstants.OPTION_RESIZE_HEIGHT, cropHeight);
+        options.put(OPTION_CROP_X, 100);
+        options.put(OPTION_CROP_Y, 100);
+        options.put(OPTION_RESIZE_WIDTH, cropWidth);
+        options.put(OPTION_RESIZE_HEIGHT, cropHeight);
+
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 

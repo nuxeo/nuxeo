@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -45,12 +46,13 @@ public class ImagingComponent extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(ImagingComponent.class);
 
-    public static final String CONFIGURATION_PARAMETERS = "configuration";
+    public static final String CONFIGURATION_PARAMETERS_EP = "configuration";
 
     protected Map<String, String> configurationParameters = new HashMap<String, String>();
 
     private LibrarySelector librarySelector;
 
+    @Deprecated
     public InputStream crop(InputStream in, int x, int y, int width, int height) {
         try {
             return getLibrarySelectorService().getImageUtils().crop(in, x, y,
@@ -65,6 +67,7 @@ public class ImagingComponent extends DefaultComponent implements
         return in;
     }
 
+    @Deprecated
     public InputStream resize(InputStream in, int width, int height) {
         try {
             return getLibrarySelectorService().getImageUtils().resize(in,
@@ -79,6 +82,7 @@ public class ImagingComponent extends DefaultComponent implements
         return in;
     }
 
+    @Deprecated
     public InputStream rotate(InputStream in, int angle) {
         try {
             return getLibrarySelectorService().getImageUtils().rotate(in, angle);
@@ -90,6 +94,49 @@ public class ImagingComponent extends DefaultComponent implements
             log.error(e, e);
         }
         return in;
+    }
+
+    public Blob crop(Blob blob, int x, int y, int width, int height) {
+        try {
+            return getLibrarySelectorService().getImageUtils().crop(blob, x, y,
+                    width, height);
+        } catch (InstantiationException e) {
+            log.error("Failed to instanciate ImageUtils Class", e);
+        } catch (IllegalAccessException e) {
+            log.error("Failed to instanciate ImageUtils Class", e);
+        } catch (ClientException e) {
+            log.error(e, e);
+        }
+        return blob;
+    }
+
+    public Blob resize(Blob blob, String finalFormat, int width, int height,
+            int depth) {
+        try {
+            return getLibrarySelectorService().getImageUtils().resize(blob,
+                    finalFormat, width, height, depth);
+        } catch (InstantiationException e) {
+            log.error("Failed to instanciate ImageUtils Class", e);
+        } catch (IllegalAccessException e) {
+            log.error("Failed to instanciate ImageUtils Class", e);
+        } catch (ClientException e) {
+            log.error(e, e);
+        }
+        return blob;
+    }
+
+    public Blob rotate(Blob blob, int angle) {
+        try {
+            return getLibrarySelectorService().getImageUtils().rotate(blob,
+                    angle);
+        } catch (InstantiationException e) {
+            log.error("Failed to instanciate ImageUtils Class", e);
+        } catch (IllegalAccessException e) {
+            log.error("Failed to instanciate ImageUtils Class", e);
+        } catch (ClientException e) {
+            log.error(e, e);
+        }
+        return blob;
     }
 
     @Deprecated
@@ -180,7 +227,7 @@ public class ImagingComponent extends DefaultComponent implements
     public ImageInfo getImageInfo(Blob blob) {
         ImageInfo imageInfo = null;
         File tmpFile = new File(System.getProperty("java.io.tmpdir"),
-                blob.getFilename() + ".tmp");
+                blob.getFilename() != null ? blob.getFilename() : "tmp.tmp");
         try {
             blob.transferTo(tmpFile);
             imageInfo = ImageIdentifier.getInfo(tmpFile.getAbsolutePath());
@@ -196,7 +243,7 @@ public class ImagingComponent extends DefaultComponent implements
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (CONFIGURATION_PARAMETERS.equals(extensionPoint)) {
+        if (CONFIGURATION_PARAMETERS_EP.equals(extensionPoint)) {
             ImagingConfigurationDescriptor desc = (ImagingConfigurationDescriptor) contribution;
             configurationParameters.putAll(desc.getParameters());
         }
@@ -205,7 +252,7 @@ public class ImagingComponent extends DefaultComponent implements
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (CONFIGURATION_PARAMETERS.equals(extensionPoint)) {
+        if (CONFIGURATION_PARAMETERS_EP.equals(extensionPoint)) {
             ImagingConfigurationDescriptor desc = (ImagingConfigurationDescriptor) contribution;
             for (String configuration : desc.getParameters().keySet()) {
                 configurationParameters.remove(configuration);
@@ -213,30 +260,18 @@ public class ImagingComponent extends DefaultComponent implements
         }
     }
 
-    public Map<String, String> getConfigurations() {
-        return configurationParameters;
-    }
-
     public String getConfigurationValue(String configurationName) {
-        if (getConfigurations() == null) {
-            return null;
-        }
-        return getConfigurations().get(configurationName);
+        return configurationParameters.get(configurationName);
     }
 
     public String getConfigurationValue(String configurationName,
             String defaultValue) {
-        String value = getConfigurationValue(configurationName);
-        if (value == null) {
-            return defaultValue;
-        } else {
-            return value;
-        }
+        return configurationParameters.containsKey(configurationName) ? configurationParameters.get(configurationName)
+                : defaultValue;
     }
 
     public void setConfigurationValue(String configurationName,
             String configurationValue) {
         configurationParameters.put(configurationName, configurationValue);
     }
-
 }

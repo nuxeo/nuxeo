@@ -17,9 +17,6 @@
  */
 package org.nuxeo.ecm.platform.picture.convert;
 
-import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.*;
-
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,13 +26,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.CONVERSION_FORMAT;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_DEPTH;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_HEIGHT;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_WIDTH;
 
 /**
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguint</a>
@@ -46,30 +47,27 @@ public class ResizePictureConverter implements Converter {
 
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
-        try{
-        ImagingService service = Framework.getService(ImagingService.class);
-        List<Blob> results = new ArrayList<Blob>();
-        List<Blob> sources = blobHolder.getBlobs();
-        int height = (Integer) parameters.get(OPTION_RESIZE_HEIGHT);
-        int width = (Integer) parameters.get(OPTION_RESIZE_WIDTH);
-        // use the registered conversion format
-        String format = (String) parameters.get(CONVERSION_FORMAT);
+        try {
+            ImagingService service = Framework.getService(ImagingService.class);
+            List<Blob> results = new ArrayList<Blob>();
+            List<Blob> sources = blobHolder.getBlobs();
+            int height = (Integer) parameters.get(OPTION_RESIZE_HEIGHT);
+            int width = (Integer) parameters.get(OPTION_RESIZE_WIDTH);
+            int depth = (Integer) parameters.get(OPTION_RESIZE_DEPTH);
+            // use the registered conversion format
+            String format = (String) parameters.get(CONVERSION_FORMAT);
 
-        for (Blob source : sources) {
-            if (source != null) {
-                InputStream in = source.getStream();
-                if (in != null) {
-                    InputStream result = service.resize(in, width, height);
+            for (Blob source : sources) {
+                if (source != null) {
+                    Blob result = service.resize(source, format, width, height,
+                            depth);
                     if (result != null) {
-                        // FIXME : local only
-                        Blob blob = new FileBlob(result);
-                        results.add(blob);
+                        results.add(result);
                     }
                 }
             }
-        }
-        return new SimpleCachableBlobHolder(results);
-        } catch (Exception e){
+            return new SimpleCachableBlobHolder(results);
+        } catch (Exception e) {
             log.error(e);
             throw new ConversionException("Resize conversion has failed", e);
         }
