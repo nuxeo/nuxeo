@@ -181,7 +181,15 @@ public final class Mapper {
 		}
 
 		public Calendar getDatePublication() {
-			return null;
+			// TODO!
+			return Calendar.getInstance();
+		}
+
+		public boolean isVersionnable() {
+			return false;
+		}
+
+		public void setVersionnable(boolean versionnable) {
 		}
 
 	}

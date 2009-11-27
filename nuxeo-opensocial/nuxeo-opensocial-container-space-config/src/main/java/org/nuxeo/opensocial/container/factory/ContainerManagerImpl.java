@@ -315,6 +315,13 @@ public class ContainerManagerImpl implements ContainerManager {
 					return space.getDatePublication();
 				}
 
+				public boolean isVersionnable() {
+					return space.isVersionnable();
+				}
+
+				public void setVersionnable(boolean versionnable) {
+				}
+
 			};
 			return Framework.getService(SpaceManager.class).updateSpace(
 					spaceUpdate, session);

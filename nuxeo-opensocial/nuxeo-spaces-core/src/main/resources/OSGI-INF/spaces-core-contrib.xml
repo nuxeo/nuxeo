@@ -47,9 +47,6 @@
 			<facet name="Themable" />
 			<facet name="Searchable" />
 		</doctype>
-		<doctype name="SpaceVersionnable" extends="Space">
-			<facet name="Versionnable" />
-		</doctype>
 	<doctype name="Gadget" extends="Folder">
 			<schema name="common" />
 			<schema name="dublincore" />
