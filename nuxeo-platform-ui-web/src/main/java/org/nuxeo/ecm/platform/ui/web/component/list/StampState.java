@@ -284,8 +284,12 @@ final class StampState implements Externalizable {
             // XXX AT: must set value before localValueSet because UIInput
             // setValue method will set localValueSet to true.
             evh.setValue(selfState[2]);
-            evh.setLocalValueSet((Boolean) selfState[3]);
-            evh.setValid((Boolean) selfState[4]);
+            if (selfState[3] != null) {
+                evh.setLocalValueSet((Boolean) selfState[3]);
+            }
+            if (selfState[4] != null) {
+                evh.setValid((Boolean) selfState[4]);
+            }
         }
         // Force the ID to be reset to reset the client identifier (needed
         // for UIComponentBase implementation which caches clientId too
