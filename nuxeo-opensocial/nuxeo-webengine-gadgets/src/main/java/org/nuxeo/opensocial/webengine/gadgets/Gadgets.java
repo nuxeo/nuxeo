@@ -36,10 +36,6 @@ import org.nuxeo.runtime.api.Framework;
 @Produces("text/html; charset=UTF-8")
 public class Gadgets extends ModuleRoot {
 
-    /**
-     * Jar url prefix for gwt resources
-     */
-    public static final String GWT_FOLDER = "/org.nuxeo.opensocial.container.ContainerEntryPoint/";
 
     private final GadgetService gm;
 
@@ -54,7 +50,7 @@ public class Gadgets extends ModuleRoot {
                 gadgetList);
     }
 
-    @Path("/manager/{name}")
+    @Path("/{name}")
     public Object getGadget(@PathParam("name") String gadgetName)
             throws Exception {
 
@@ -69,10 +65,5 @@ public class Gadgets extends ModuleRoot {
         }
     }
 
-    @Path("/resources/{name:.*}")
-    public Object getGwtResource(@PathParam("name") String name)
-            throws Exception {
-        return new UrlResource(GWT_FOLDER.concat(name));
-    }
 
 }

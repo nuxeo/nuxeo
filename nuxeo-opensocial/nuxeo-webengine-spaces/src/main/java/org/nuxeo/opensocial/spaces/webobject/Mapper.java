@@ -16,6 +16,8 @@
  */
 
 package org.nuxeo.opensocial.spaces.webobject;//
+
+import java.util.Calendar;
 import java.util.Map;
 
 import org.nuxeo.common.utils.IdUtils;
@@ -23,202 +25,225 @@ import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.Univers;
 import org.nuxeo.ecm.webengine.forms.FormData;
+
 /**
- * Utility class for converting html forms to the 3 nuxeo-spaces concept ( i.e Univers, Space and Gadget )
+ * Utility class for converting html forms to the 3 nuxeo-spaces concept ( i.e
+ * Univers, Space and Gadget )
+ * 
  * @author 10044893
- *
+ * 
  */
 public final class Mapper {
-  private Mapper(){}
+	private Mapper() {
+	}
 
-  private static final class GadgetImplementation implements Gadget {
+	private static final class GadgetImplementation implements Gadget {
 
-    private final String id;
-    ////
-    private final FormData formData;
+		private final String id;
+		// //
+		private final FormData formData;
 
-    private GadgetImplementation(String id, FormData formData) {
-      this.id = id;
-      this.formData = formData;
-    }
+		private GadgetImplementation(String id, FormData formData) {
+			this.id = id;
+			this.formData = formData;
+		}
 
-    public String getName() {
-      if(id==null)
-        return IdUtils.generateId(formData.getString("name"));
-      else return formData.getString("name");
-    }
+		public String getName() {
+			if (id == null)
+				return IdUtils.generateId(formData.getString("name"));
+			else
+				return formData.getString("name");
+		}
 
-    public String getDescription() {
-      return formData.getString("dc:description");
-    }
+		public String getDescription() {
+			return formData.getString("dc:description");
+		}
 
-    public String getTitle() {
+		public String getTitle() {
 
-      return formData.getString("dc:title");
-    }
+			return formData.getString("dc:title");
+		}
 
-    public Map<String, String> getPreferences() {
-      return null;
-    }
+		public Map<String, String> getPreferences() {
+			return null;
+		}
 
-    public String getUrl() {
-      return null;
-    }
+		public String getUrl() {
+			return null;
+		}
 
-    public String getId() {
-          if(id==null)
-              return IdUtils.generateId(formData.getString("name"));
-            else return id;
-    }
+		public String getId() {
+			if (id == null)
+				return IdUtils.generateId(formData.getString("name"));
+			else
+				return id;
+		}
 
-    public String getCategory() {
-      return null;
-    }
+		public String getCategory() {
+			return null;
+		}
 
-    public String getDefinitionUrl() {
-      return null;
-    }
+		public String getDefinitionUrl() {
+			return null;
+		}
 
-    public String getPlaceID() {
-      return null;
-    }
+		public String getPlaceID() {
+			return null;
+		}
 
-    public int getPosition() {
-      return 0;
-    }
+		public int getPosition() {
+			return 0;
+		}
 
-    public String getType() {
-      // TODO Auto-generated method stub
-      return null;
-    }
+		public String getType() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 
-    public boolean isCollapsed() {
-      // TODO Auto-generated method stub
-      return false;
-    }
+		public boolean isCollapsed() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 
-    public String getOwner() {
-      // TODO Auto-generated method stub
-      return null;
-    }
+		public String getOwner() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 
-    public boolean isEqualTo(Gadget gadget) {
-      // TODO Auto-generated method stub
-      return false;
-    }
-  }
-  private static final class SpaceImplementation implements Space {
-    private final FormData formData;
-    private final String id;
+		public boolean isEqualTo(Gadget gadget) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+	}
 
-    private SpaceImplementation(FormData formData, String id) {
-      this.formData = formData;
-      this.id = id;
-    }
+	private static final class SpaceImplementation implements Space {
+		private final FormData formData;
+		private final String id;
 
-    public String getName() {
-      String nameParam = formData.getString("name");
-      if(id==null){
+		private SpaceImplementation(FormData formData, String id) {
+			this.formData = formData;
+			this.id = id;
+		}
 
-        //on est en creation
-        if(nameParam!=null){
-          //on a un champ name
-          return IdUtils.generateId(nameParam);
-        }else{
-          //on a un champ title
-          return IdUtils.generateId(formData.getString("dc:title"));
-        }
-      }
-      else return nameParam;
-    }
+		public String getName() {
+			String nameParam = formData.getString("name");
+			if (id == null) {
 
-    public String getDescription() {
-      return formData.getString("dc:description");
-    }
+				// on est en creation
+				if (nameParam != null) {
+					// on a un champ name
+					return IdUtils.generateId(nameParam);
+				} else {
+					// on a un champ title
+					return IdUtils.generateId(formData.getString("dc:title"));
+				}
+			} else
+				return nameParam;
+		}
 
-    public String getTitle() {
-      return formData.getString("dc:title");
-    }
+		public String getDescription() {
+			return formData.getString("dc:description");
+		}
 
-    public String getId() {
-          if(id==null){
-              return IdUtils.generateId(formData.getString("dc:title"));
-          }
-            else return id;
-    }
+		public String getTitle() {
+			return formData.getString("dc:title");
+		}
 
-    public String getLayout() {
-      return formData.getString("layout");
-    }
+		public String getId() {
+			if (id == null) {
+				return IdUtils.generateId(formData.getString("dc:title"));
+			} else
+				return id;
+		}
 
-    public String getOwner() {
-      return null;
-    }
+		public String getLayout() {
+			return formData.getString("layout");
+		}
 
-    public String getCategory() {
-      return null;
-    }
+		public String getOwner() {
+			return null;
+		}
 
-    public boolean isEqualTo(Space space) {
-      return false;
-    }
+		public String getCategory() {
+			return null;
+		}
 
-    public int compareTo(Space o) {
-      return 0;
-    }
+		public boolean isEqualTo(Space space) {
+			return false;
+		}
 
-    public String getTheme() {
-      return formData.getString("theme");
-    }
+		public int compareTo(Space o) {
+			return 0;
+		}
 
+		public String getTheme() {
+			return formData.getString("theme");
+		}
 
-  }
-  private static final class UniversImplementation implements Univers {
-    private final String id;
-    private final FormData formData;
+		public Calendar getDatePublication() {
+			// TODO!
+			return Calendar.getInstance();
+		}
 
-    private UniversImplementation(String id, FormData formData) {
-      this.id = id;
-      this.formData = formData;
-    }
+		public boolean isVersionnable() {
+			return false;
+		}
 
-    public String getName() {
-      if(id==null)
-        return IdUtils.generateId(formData.getString("name"));
-      else return formData.getString("name");
-    }
+		public void setVersionnable(boolean versionnable) {
+		}
 
-    public String getDescription() {
-      return formData.getString("dc:description");
-    }
+	}
 
-    public String getTitle() {
-      return formData.getString("dc:title");
-    }
+	private static final class UniversImplementation implements Univers {
+		private final String id;
+		private final FormData formData;
 
-    public String getId() {
-          if(id==null)
-              return IdUtils.generateId(formData.getString("name"));
-            else return id;
-    }
+		private UniversImplementation(String id, FormData formData) {
+			this.id = id;
+			this.formData = formData;
+		}
 
-    public boolean isEqualTo(Univers univers) {
-      return false;
-    }
-  }
-  public static Univers createUnivers(final FormData formData,final String id) {
-    Univers univers = new UniversImplementation(id, formData);
-    return univers;
-  }
+		public String getName() {
+			if (id == null)
+				return IdUtils.generateId(formData.getString("name"));
+			else
+				return formData.getString("name");
+		}
 
-  public static Space createSpace(final FormData formData,final String id) {
-    Space space = new SpaceImplementation(formData, id);
+		public String getDescription() {
+			return formData.getString("dc:description");
+		}
 
-    return space;
-  }
-  public static Gadget createGadget(final FormData formData,final String id) {
-    Gadget gadget = new GadgetImplementation(id, formData);
+		public String getTitle() {
+			return formData.getString("dc:title");
+		}
 
-    return gadget;
-  }
+		public String getId() {
+			if (id == null)
+				return IdUtils.generateId(formData.getString("name"));
+			else
+				return id;
+		}
+
+		public boolean isEqualTo(Univers univers) {
+			return false;
+		}
+	}
+
+	public static Univers createUnivers(final FormData formData, final String id) {
+		Univers univers = new UniversImplementation(id, formData);
+		return univers;
+	}
+
+	public static Space createSpace(final FormData formData, final String id) {
+		Space space = new SpaceImplementation(formData, id);
+
+		return space;
+	}
+
+	public static Gadget createGadget(final FormData formData, final String id) {
+		Gadget gadget = new GadgetImplementation(id, formData);
+
+		return gadget;
+	}
 }

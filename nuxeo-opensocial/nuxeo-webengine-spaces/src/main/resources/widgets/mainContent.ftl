@@ -8,7 +8,7 @@
        return "{docRef:'<#if This.space>${This.space.id}</#if>',sessionId:'${Session.getSessionId()}'}";
      }
   </script>
-  <script type="text/javascript" language="javascript" src="${basePath}/gadgets/resources/org.nuxeo.opensocial.container.ContainerEntryPoint.nocache.js"></script>
+  <script type="text/javascript" language="javascript" src="/nuxeo/org.nuxeo.opensocial.container.ContainerEntryPoint/org.nuxeo.opensocial.container.ContainerEntryPoint.nocache.js"></script>
     <div id="content">
             <div id="gwtContainer" />
     </div>

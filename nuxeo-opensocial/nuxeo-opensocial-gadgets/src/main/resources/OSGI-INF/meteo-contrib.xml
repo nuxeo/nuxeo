@@ -5,8 +5,8 @@
     point="gadget">
 
     <internalGadget name="meteo">
-      <mountPoint>/meteo/meteo</mountPoint>
-      <directory>meteo-gadget</directory>
+      <mountPoint>/meteo</mountPoint>
+      <entryPoint>meteo.xml</entryPoint>
       <category>Utilitaires</category>
       <icon>meteo_icon.png</icon>
     </internalGadget>

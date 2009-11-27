@@ -23,24 +23,30 @@ import org.nuxeo.ecm.spaces.core.impl.Constants;
 
 public class SpaceDocumentWrapper extends DocumentWrapper implements Space {
 
-  SpaceDocumentWrapper(DocumentModel doc) {
-    super(doc);
-  }
+	private boolean versionnable = false;
 
-  public String getLayout() {
-    return getInternalStringProperty(Constants.Space.SPACE_LAYOUT);
-  }
+	SpaceDocumentWrapper(DocumentModel doc) {
+		super(doc);
+	}
 
-  public String getCategory() {
-    return getInternalStringProperty(Constants.Space.SPACE_CATEGORY);
-  }
+	public String getLayout() {
+		return getInternalStringProperty(Constants.Space.SPACE_LAYOUT);
+	}
 
-  public boolean isEqualTo(Space space) {
-    return space.getId()!=null && space.getId().equals(getId());
-  }
+	public String getCategory() {
+		return getInternalStringProperty(Constants.Space.SPACE_CATEGORY);
+	}
 
-  public String getTheme() {
-    return getInternalStringProperty(Constants.Space.SPACE_THEME);
-  }
+	public boolean isEqualTo(Space space) {
+		return space.getId() != null && space.getId().equals(getId());
+	}
+
+	public String getTheme() {
+		return getInternalStringProperty(Constants.Space.SPACE_THEME);
+	}
+
+	public boolean isVersionnable() {
+		return getInternalBooleanProperty(Constants.Space.SPACE_VERSIONNABLE);
+	}
 
 }
