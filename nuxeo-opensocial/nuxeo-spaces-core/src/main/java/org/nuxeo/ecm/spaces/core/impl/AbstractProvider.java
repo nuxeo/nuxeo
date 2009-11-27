@@ -70,6 +70,8 @@ public abstract class AbstractProvider<E, P>
     DocumentModel doc;
     try {
       doc = session.getChild(spacesRoot.getRef(), name);
+      
+      
     } catch (DocumentSecurityException e) {
       throw new SpaceSecurityException(e);
     }catch (ClientException e) {
