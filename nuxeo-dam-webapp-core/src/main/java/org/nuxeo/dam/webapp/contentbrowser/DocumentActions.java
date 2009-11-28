@@ -31,13 +31,13 @@ import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
-import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -227,11 +227,11 @@ public class DocumentActions implements Serializable {
      * maximum of maxLength characters. If the Title is more than maxLength
      * characters it will return the Beginning of the title, followed by 3
      * ellipses (...) followed by the End of the title.
-     * 
+     *
      * A minimum of 6 characters is needed before cropping takes effect. If you
      * specify a maxLength of less than 5, it is ignored - in this case
      * maxLength will be set to begin at 5.
-     * 
+     *
      * @param DocumentModel document to extract the title from
      * @param int maxLength the maximum length of the title before cropping will
      *        occur
@@ -347,8 +347,8 @@ public class DocumentActions implements Serializable {
                         + "filename");
                 String blobXpath = xpath + "content";
                 FacesContext context = FacesContext.getCurrentInstance();
-                DownloadHelper.downloadWithWatermark(context, currentSelection,
-                        blobXpath, filename);
+                DownloadHelper.download(context, currentSelection, blobXpath,
+                        filename);
             }
         }
 

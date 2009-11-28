@@ -7,4 +7,3 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Bundle-Category: web
 Require-Bundle: org.nuxeo.ecm.core.api
-Provide-Package: org.nuxeo.dam.api
