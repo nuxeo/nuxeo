@@ -4,9 +4,10 @@
     scaling="true" directory_title="My Documents" title_url="http://www.wofrance.fr/"
     description="File browser in the ECM system" author="Damien METZLER"
     author_email="damien.metzler@leroymerlin.fr" author_affiliation="Leroy Merlin"
-    author_location="Lezennes, France"
+    author_location="Lezennes, France">
 
     <Require feature="dynamic-height" />
+    <Require feature="settitle" />
     <Require feature="opensocial-0.8" />
     <Require feature="nuxeo" />
   </ModulePrefs>
@@ -14,11 +15,23 @@
   <Content type="html" view="default">
 <![CDATA[
 <script type="text/javascript">
-    gadget.nuxeo.getSpaceId(function(id) {
-        alert(id);
-    }
+
+
+    _IG_RegisterOnloadHandler(
+
+        function(){
+            _gel("content_div").innerHTML = "<i>Fetching Nuxeo Datas.</i>";
+            var cb = function(id) {
+                _gel("content_div").innerHTML = "Space Id is : " + id;
+            }
+
+            gadgets.nuxeo.getSpaceId(cb);
+
+        }
+    );
 </script>
 <div style="height:100%;padding:7px;" id="content_div"></div>
+
 
   ]]>
   </Content>

@@ -5,10 +5,10 @@
     point="gadget">
 
     <internalGadget name="mydocs">
-      <mountPoint>/mydocs/mydocs</mountPoint>
-      <directory>mydocs-gadget</directory>
+      <mountPoint>/mydocs</mountPoint>
+      <entryPoint>mydocs.xml</entryPoint>
       <category>Utilitaires</category>
-      <icon>meteo_icon.png</icon>
+      <icon>documents.jpg</icon>
     </internalGadget>
 
   </extension>

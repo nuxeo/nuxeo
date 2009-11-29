@@ -30,16 +30,13 @@ gadgets.nuxeo = gadgets.nuxeo || {};
  * @scope gadgets.nuxeo
  */
 gadgets.nuxeo.getGadgetId = function(callback) {
-  callback = callback || function() {};
   gadgets.rpc.call(null, "get_nuxeo_gadget_id", callback, null);
 };
 
 gadgets.nuxeo.getSpaceId = function(callback) {
-  callback = callback || function() {};
   gadgets.rpc.call(null, "get_nuxeo_space_id", callback, null);
 };
 
 gadgets.nuxeo.getWorkspaceId = function(callback) {
-  callback = callback || function() {};
   gadgets.rpc.call(null, "get_nuxeo_workspace_id", callback, null);
 };

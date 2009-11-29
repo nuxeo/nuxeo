@@ -18,10 +18,11 @@ specific language governing permissions and limitations under the License.
 -->
 <feature>
   <name>nuxeo</name>
+  <dependency>rpc</dependency>
   <container>
-    
+
   </container>
   <gadget>
-
+     <script src="nuxeo-getid.js"/>
   </gadget>
 </feature>
