@@ -481,7 +481,7 @@
         <padding>8px</padding>
         <width>130px</width>
         <height>155px</height>
-        <border>1px solid #BED6F8</border>
+        <border>2px solid #BED6F8</border>
       </selector>
       <selector path=".thumbViewElement table">
         <font-size>10px</font-size>
@@ -504,7 +504,7 @@
         <background-color>#c7d3e0</background-color>
       </selector>
       <selector path=".selectedCtrlClick">
-        <border>3px solid #004868</border>
+        <border>2px solid #004868</border>
       </selector>
       <selector path=".deliveryBlock .dataInput">
         <margin>10px 0px</margin>
