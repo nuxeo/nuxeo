@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class LocalSession extends AbstractSession {
@@ -68,26 +68,30 @@ public class LocalSession extends AbstractSession {
                 if (entry != null) {
                     Principal p = entry.getPrincipal();
                     if (p instanceof NuxeoPrincipal) {
-                        principal = (NuxeoPrincipal)p;
+                        principal = (NuxeoPrincipal) p;
                     } else if (LoginComponent.isSystemLogin(p)) {
-                     // TODO: must use SystemPrincipal from nuxeo-platform-login
+                        // TODO: must use SystemPrincipal from
+                        // nuxeo-platform-login
                         principal = new UserPrincipal("system");
                     } else {
-                        throw new Error("Unsupported principal: "+p.getClass());
+                        throw new Error("Unsupported principal: "
+                                + p.getClass());
                     }
                 }
             }
             if (principal == null && isTestingContext()) {
                 principal = new UserPrincipal("system");
             }
-            // store the principal in the core session context so that other core tools may retrieve it
+            // store the principal in the core session context so that other
+            // core tools may retrieve it
             sessionContext.put("principal", principal);
 
             Repository repo = lookupRepository(repoName);
             supportsTags = repo.supportsTags();
             return repo.getSession(sessionContext);
         } catch (Exception e) {
-            throw new ClientException("Failed to load repository " + repoName, e);
+            throw new ClientException("Failed to load repository " + repoName,
+                    e);
         }
     }
 
@@ -96,12 +100,13 @@ public class LocalSession extends AbstractSession {
             Repository repo = lookupRepository(repositoryName);
             return repo.supportsTags();
         } catch (Exception e) {
-            throw new ClientException("Failed to load repository " + repositoryName, e);
+            throw new ClientException("Failed to load repository "
+                    + repositoryName, e);
         }
     }
 
     public boolean supportsTags() throws ClientException {
-        if (supportsTags!=null) {
+        if (supportsTags != null) {
             return supportsTags.booleanValue();
         }
         throw new ClientException("Can not query on a closed repository");
@@ -109,29 +114,31 @@ public class LocalSession extends AbstractSession {
 
     protected Repository lookupRepository(String name) throws Exception {
         try {
-            //needed by glassfish
-            return (Repository) new InitialContext()
-            .lookup("NXRepository/" + name);
+            // needed by glassfish
+            return (Repository) new InitialContext().lookup("NXRepository/"
+                    + name);
         } catch (NamingException e) {
-            return NXCore.getRepositoryService()
-            .getRepositoryManager().getRepository(name);
+            return NXCore.getRepositoryService().getRepositoryManager().getRepository(
+                    name);
         }
     }
 
     /**
-     * This method is for compatibility with < 1.5 core
-     * In older core this class were used only for testing - but now it is used by webengine
-     * and a security fix that break tests was done.
-     * This method is checking if we are in a testing context
+     * This method is for compatibility with < 1.5 core In older core this class
+     * were used only for testing - but now it is used by webengine and a
+     * security fix that break tests was done. This method is checking if we are
+     * in a testing context
+     *
      * @return
      */
-    public boolean isTestingContext() { // neither in jboss neither in nuxeo launcher
+    public boolean isTestingContext() { // neither in jboss neither in nuxeo
+                                        // launcher
         return Framework.isTestModeSet();
     }
 
     @Override
     public Principal getPrincipal() {
-        return (Principal)sessionContext.get("principal");
+        return (Principal) sessionContext.get("principal");
     }
 
     @Override
