@@ -17,7 +17,6 @@
     <dependency>
       <groupId>org.nuxeo.dam</groupId>
       <artifactId>nuxeo-dam-core</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
