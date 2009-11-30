@@ -45,8 +45,8 @@
           table="user2group" sourceColumn="groupId" targetColumn="userId" schema="user2group" 
           dataFile="user2group.csv" />
         <tableReference field="subGroups" directory="groupDirectory"
-          table="group2group" sourceColumn="childGroupId" 
-          targetColumn="parentGroupId" schema="group2group" />
+          table="group2group" sourceColumn="parentGroupId" 
+          targetColumn="childGroupId" schema="group2group" />
         <inverseReference field="parentGroups" directory="groupDirectory"
           dualReferenceField="subGroups" />
       </references>
