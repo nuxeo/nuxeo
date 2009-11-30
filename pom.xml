@@ -87,7 +87,6 @@
   <properties>
     <jboss.version>4.0.4.GA</jboss.version>
     <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
-    <jboss.embedded.version>beta3</jboss.embedded.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
@@ -593,17 +592,6 @@
         <artifactId>jboss-aspect-jdk50-client</artifactId>
         <version>1.5</version>
       </dependency>
-      <!-- JBoss Embedded -->
-      <dependency>
-        <groupId>org.jboss.embedded</groupId>
-        <artifactId>jboss-embedded-all</artifactId>
-        <version>${jboss.embedded.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.embedded</groupId>
-        <artifactId>thirdparty-all</artifactId>
-        <version>${jboss.embedded.version}</version>
-      </dependency>
 
       <!-- Jetty mortbay -->
       <dependency>
@@ -991,6 +979,12 @@
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>jaxrs-api</artifactId>
         <version>1.0.2.GA</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.components</groupId>
+        <artifactId>geronimo-connector</artifactId>
+        <version>2.1.3</version>
         <scope>provided</scope>
       </dependency>
 
