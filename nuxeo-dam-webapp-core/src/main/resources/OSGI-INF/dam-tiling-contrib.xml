@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.dam.tiling">
+
+  <require>org.nuxeo.ecm.platform.pictures.tiles.default.config</require>
+
+  <extension target="org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent"
+    point="environment">
+
+    <environment>
+      <parameters>
+        <!-- Image dimensions threshold tiling activation -->
+        <parameter name="WidthThreshold">700</parameter>
+        <parameter name="HeightThreshold">700</parameter>
+      </parameters>
+    </environment>
+
+  </extension>
+
+</component>
