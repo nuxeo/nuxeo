@@ -12,9 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Quentin Lamerand
- *
- * $Id$
+ *     Nuxeo
  */
 
 package org.nuxeo.dam.webapp.filter;
