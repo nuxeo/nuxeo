@@ -1,12 +1,9 @@
 package org.nuxeo.dam.webapp.contentbrowser;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.faces.context.FacesContext;
 
@@ -20,7 +17,6 @@ import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.dam.webapp.PictureActions;
 import org.nuxeo.dam.webapp.helper.DownloadHelper;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -28,8 +24,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.actions.Action;
@@ -53,6 +47,7 @@ public class DocumentActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(DocumentActions.class);
 
     protected static final long BIG_FILE_SIZE_LIMIT = 1024 * 1024 * 5;
@@ -98,7 +93,6 @@ public class DocumentActions implements Serializable {
     @WebRemote
     public String processSelectRow(String docRef, String providerName,
             String listName, Boolean selection) {
-        System.err.println("Start processSelectRow");
         PagedDocumentsProvider provider;
         try {
             provider = resultsProvidersCache.get(providerName);
@@ -117,23 +111,20 @@ public class DocumentActions implements Serializable {
                     "could not find doc '%s' in the current page of provider '%s'",
                     docRef, providerName));
         }
-        String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
+        listName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
                 : listName;
         if (selection) {
-            documentsListsManager.addToWorkingList(lName, doc);
-            System.err.println("adding to working list: " + doc.getId());
+            documentsListsManager.addToWorkingList(listName, doc);
         } else {
-            documentsListsManager.removeFromWorkingList(lName, doc);
-            System.err.println("removing from working list: " + doc.getId());
+            documentsListsManager.removeFromWorkingList(listName, doc);
         }
-        System.err.println("End processSelectRow");
-        return computeSelectionActions(lName);
+        // TODO: handle actions
+        return "";
     }
 
     @WebRemote
     public String processSelectPage(String providerName, String listName,
             Boolean selection) {
-        System.err.println("Start processSelectPage");
         PagedDocumentsProvider provider;
         try {
             provider = resultsProvidersCache.get(providerName);
@@ -145,35 +136,16 @@ public class DocumentActions implements Serializable {
                 : listName;
         if (selection) {
             documentsListsManager.addToWorkingList(lName, documents);
-            System.err.println("adding to working list: " + documents.toString());
         } else {
             documentsListsManager.removeFromWorkingList(lName, documents);
-            System.err.println("removing from working list: " + documents.toString());
         }
-        System.err.println("End processSelectPage");
-        return computeSelectionActions(lName);
+        raiseEvents(currentSelection);
+        // TODO handle action management
+        return "";
     }
 
     private String handleError(String errorMessage) {
-        log.error(errorMessage);
         return "ERROR: " + errorMessage;
-    }
-
-    private String computeSelectionActions(String listName) {
-
-        List<Action> availableActions = webActions.getUnfiltredActionsList(listName
-                + "_LIST");
-        List<String> availableActionIds = new ArrayList<String>();
-        for (Action a : availableActions) {
-            if (a.getAvailable()) {
-                availableActionIds.add(a.getId());
-            }
-        }
-        String res = "";
-        if (!availableActionIds.isEmpty()) {
-            res = StringUtils.join(availableActionIds.toArray(), "|");
-        }
-        return res;
     }
 
     public DocumentModel getCurrentSelection() {
@@ -181,7 +153,6 @@ public class DocumentActions implements Serializable {
     }
 
     public void setCurrentSelection(DocumentModel selection) {
-        System.err.println("Start setCurrentSelection");
         // Reset the tabs list and the display mode
         webActions.resetTabList();
         displayMode = BuiltinModes.VIEW;
@@ -195,11 +166,8 @@ public class DocumentActions implements Serializable {
             webActions.setCurrentTabAction(currentAction);
             currentSelectionLink = currentAction.getLink();
         }
-
         resetData();
-
         raiseEvents(currentSelection);
-        System.err.println("End setCurrentSelection");
     }
 
     public String getCurrentSelectionLink() {
