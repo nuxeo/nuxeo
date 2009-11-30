@@ -30,6 +30,7 @@
     <module>nuxeo-webengine-gadgets</module>
     <module>nuxeo-opensocial-container-space-config</module>
     <module>nuxeo-opensocial-dashboard</module>
+    <module>nuxeo-opensocial-mydocs-gadget</module>
   </modules>
 
   <developers>
