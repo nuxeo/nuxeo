@@ -15,6 +15,7 @@
       <filter>image/gif</filter>
       <filter>image/png</filter>
       <filter>image/tiff</filter>
+      <filter>image/bmp</filter>
       <filter>image/x-ms-bmp</filter>
       <!-- RAW images mime type -->
       <filter>image/x-canon-cr2</filter>
@@ -37,6 +38,9 @@
 
       <filter>image/raw</filter>
       <filter>image/x-raw</filter>
+
+      <filter>application/illustrator</filter>
+      <filter>image/photoshop</filter>
     </plugin>
   </extension>
 
