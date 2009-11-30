@@ -698,13 +698,10 @@
       </selector>
       <selector path=".actionBar">
         <background-color>#a0a8b4</background-color>
-        <border-top>1px solid #7e848c</border-top>
         <border-bottom>1px solid #7e848c</border-bottom>
       </selector>
-      <selector path=".actionBar .button">
-        <font preset="tiny (DAM fonts)"/>
-        <padding>1px 5px</padding>
-        <margin>1px 5px 2px</margin>
+      <selector path="a">
+        <white-space>normal</white-space>
       </selector>
       <selector path=".selected">
         <background-color>#d9e3ef</background-color>
