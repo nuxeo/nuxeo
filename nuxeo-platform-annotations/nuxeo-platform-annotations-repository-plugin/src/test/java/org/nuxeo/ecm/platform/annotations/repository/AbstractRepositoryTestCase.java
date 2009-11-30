@@ -31,6 +31,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 
 import org.hsqldb.jdbc.jdbcDataSource;
+import org.nuxeo.common.mock.jndi.MockContextFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
@@ -63,12 +64,14 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        MockContextFactory.setAsInitial();
+
         jdbcDataSource ds = new jdbcDataSource();
         ds.setDatabase("jdbc:hsqldb:mem:jena");
         ds.setUser("sa");
         ds.setPassword("");
         Context context = new InitialContext();
-        context.bind("java:/nxrelations-default-jena", ds);
+        context.bind("java:comp/env/jdbc/nxrelations-default-jena", ds);
         Framework.getProperties().setProperty(
                 "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
         Framework.getProperties().setProperty(
@@ -94,6 +97,12 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
         assertNotNull(is);
         annotation = manager.getAnnotation(is);
         openSession();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        MockContextFactory.revertSetAsInitial();
+        super.tearDown();
     }
 
     protected void setUpRepository() throws Exception {
