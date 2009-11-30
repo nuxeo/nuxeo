@@ -209,7 +209,9 @@ public abstract class AbstractSession implements CoreSession,
                         } catch (ClientException e) {
                             // shouldn't remove the root? ... to restart with an
                             // empty repository
-                            log.error("Failed to initialize repository content", e);
+                            log.error(
+                                    "Failed to initialize repository content",
+                                    e);
                         } catch (DocumentException e) {
                             log.error("Unable to save session after repository init : "
                                     + e.getMessage());
@@ -239,8 +241,8 @@ public abstract class AbstractSession implements CoreSession,
      * be unique in the system)
      *
      * <ul>
-     * <li>A is the repository name (which uniquely identifies the repository
-     * in the system)
+     * <li>A is the repository name (which uniquely identifies the repository in
+     * the system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>
      *
@@ -2019,7 +2021,8 @@ public abstract class AbstractSession implements CoreSession,
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, versionModel,
                     options, null, null, true, false);
 
-            // FIXME: the fields are hardcoded. should be moved in versioning component
+            // FIXME: the fields are hardcoded. should be moved in versioning
+            // component
             if (doc.getType().hasSchema("uid")) {
                 final Long majorVer = doc.getLong("major_version");
                 final Long minorVer = doc.getLong("minor_version");
@@ -2154,10 +2157,10 @@ public abstract class AbstractSession implements CoreSession,
             if (overwriteExistingProxy) {
                 proxyModel = updateExistingProxies(doc, section, version);
                 // proxyModel is null is update fails
-                if (proxyModel != null){
+                if (proxyModel != null) {
                     // notify for proxy updates
-                    notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED, proxyModel,
-                            options, null, null, true, false);
+                    notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED,
+                            proxyModel, options, null, null, true, false);
                 } else {
                     List<String> removedProxyIds = Collections.emptyList();
                     removedProxyIds = removeExistingProxies(doc, section);
@@ -2203,7 +2206,8 @@ public abstract class AbstractSession implements CoreSession,
     protected List<String> removeExistingProxies(Document doc, Document folder)
             throws DocumentException, ClientException {
         Collection<Document> otherProxies = getSession().getProxies(doc, folder);
-        List<String> removedProxyIds = new ArrayList<String>(otherProxies.size());
+        List<String> removedProxyIds = new ArrayList<String>(
+                otherProxies.size());
         for (Document otherProxy : otherProxies) {
             removedProxyIds.add(otherProxy.getUUID());
             removeNotifyOneDoc(otherProxy);
@@ -2214,14 +2218,16 @@ public abstract class AbstractSession implements CoreSession,
     /**
      * Update the proxy while republishing.
      */
-    protected DocumentModel updateExistingProxies(Document doc, Document folder, VersionModel version)
-            throws DocumentException, ClientException {
+    protected DocumentModel updateExistingProxies(Document doc,
+            Document folder, VersionModel version) throws DocumentException,
+            ClientException {
         Collection<Document> proxies = getSession().getProxies(doc, folder);
         try {
             if (proxies.size() == 1) {
                 for (Document proxy : proxies) {
                     if (proxy instanceof DocumentVersionProxy) {
-                        ((DocumentVersionProxy) proxy).setTargetDocument(doc, version.getLabel());
+                        ((DocumentVersionProxy) proxy).setTargetDocument(doc,
+                                version.getLabel());
                         return readModel(proxy, null);
                     }
                 }
@@ -2654,7 +2660,8 @@ public abstract class AbstractSession implements CoreSession,
                         docToPublish.getName());
 
                 Map<String, Serializable> options = new HashMap<String, Serializable>();
-                options.put(CoreEventConstants.REPLACED_PROXY_IDS, (Serializable) removedProxyIds);
+                options.put(CoreEventConstants.REPLACED_PROXY_IDS,
+                        (Serializable) removedProxyIds);
                 notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
                         newDocument, options, null, null, true, false);
 
