@@ -32,6 +32,7 @@
     <module>nuxeo-runtime-tomcat-adapter</module>    
     <module>nuxeo-runtime-scripting</module>
     <module>nuxeo-runtime-management</module>
+    <module>nuxeo-runtime-jtajca</module>
   </modules>
 
   <dependencyManagement>
@@ -85,6 +86,11 @@
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-management</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-jtajca</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
 
