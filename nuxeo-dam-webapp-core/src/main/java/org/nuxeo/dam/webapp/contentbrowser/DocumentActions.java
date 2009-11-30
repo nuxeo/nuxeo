@@ -51,8 +51,6 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 @Scope(ScopeType.CONVERSATION)
 public class DocumentActions implements Serializable {
 
-    protected static final String CACHED_SELECTED_DOCUMENT_IDS = "cachedSelectedDocumentIds";
-
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DocumentActions.class);
@@ -100,6 +98,7 @@ public class DocumentActions implements Serializable {
     @WebRemote
     public String processSelectRow(String docRef, String providerName,
             String listName, Boolean selection) {
+        System.err.println("Start processSelectRow");
         PagedDocumentsProvider provider;
         try {
             provider = resultsProvidersCache.get(providerName);
@@ -122,15 +121,19 @@ public class DocumentActions implements Serializable {
                 : listName;
         if (selection) {
             documentsListsManager.addToWorkingList(lName, doc);
+            System.err.println("adding to working list: " + doc.getId());
         } else {
             documentsListsManager.removeFromWorkingList(lName, doc);
+            System.err.println("removing from working list: " + doc.getId());
         }
+        System.err.println("End processSelectRow");
         return computeSelectionActions(lName);
     }
 
     @WebRemote
     public String processSelectPage(String providerName, String listName,
             Boolean selection) {
+        System.err.println("Start processSelectPage");
         PagedDocumentsProvider provider;
         try {
             provider = resultsProvidersCache.get(providerName);
@@ -142,9 +145,12 @@ public class DocumentActions implements Serializable {
                 : listName;
         if (selection) {
             documentsListsManager.addToWorkingList(lName, documents);
+            System.err.println("adding to working list: " + documents.toString());
         } else {
             documentsListsManager.removeFromWorkingList(lName, documents);
+            System.err.println("removing from working list: " + documents.toString());
         }
+        System.err.println("End processSelectPage");
         return computeSelectionActions(lName);
     }
 
@@ -154,6 +160,7 @@ public class DocumentActions implements Serializable {
     }
 
     private String computeSelectionActions(String listName) {
+
         List<Action> availableActions = webActions.getUnfiltredActionsList(listName
                 + "_LIST");
         List<String> availableActionIds = new ArrayList<String>();
@@ -174,6 +181,7 @@ public class DocumentActions implements Serializable {
     }
 
     public void setCurrentSelection(DocumentModel selection) {
+        System.err.println("Start setCurrentSelection");
         // Reset the tabs list and the display mode
         webActions.resetTabList();
         displayMode = BuiltinModes.VIEW;
@@ -191,6 +199,7 @@ public class DocumentActions implements Serializable {
         resetData();
 
         raiseEvents(currentSelection);
+        System.err.println("End setCurrentSelection");
     }
 
     public String getCurrentSelectionLink() {
@@ -405,39 +414,4 @@ public class DocumentActions implements Serializable {
         Events eventManager = Events.instance();
         eventManager.raiseEvent(EventNames.DOCUMENT_SELECTION_CHANGED, document);
     }
-
-    /**
-     * Tests if a document is in the working list
-     * 
-     * @param String docRef DocumentRef of the document
-     * @param String providerName The providerName
-     * @return String listName The name of the working list to check. If null,
-     *         the default working list will be checked.
-     */
-    @SuppressWarnings("unchecked")
-    public boolean getIsCurrentSelectionInWorkingList(String docId,
-            String providerName, String listName) {
-        if (docId == null) {
-            return false;
-        }
-        String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
-                : listName;
-
-        // Caching the construction of the set of selected document ids so as
-        // not to call the document list API 30 times per page rendering
-        Context eventContext = Contexts.getEventContext();
-        Set<String> selectedIds = (Set<String>) eventContext.get(CACHED_SELECTED_DOCUMENT_IDS);
-        if (selectedIds == null) {
-            selectedIds = new HashSet<String>();
-            List<DocumentModel> selectedDocumentsList = documentsListsManager.getWorkingList(lName);
-            if (selectedDocumentsList != null) {
-                for (DocumentModel selectedDocumentModel : selectedDocumentsList) {
-                    selectedIds.add(selectedDocumentModel.getId());
-                }
-            }
-            eventContext.set(CACHED_SELECTED_DOCUMENT_IDS, selectedIds);
-        }
-        return selectedIds.contains(docId);
-    }
-
 }

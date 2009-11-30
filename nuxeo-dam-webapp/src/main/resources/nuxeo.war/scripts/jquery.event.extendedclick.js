@@ -40,7 +40,8 @@ var extendedClickEvents = "click";
 
 // Big shared event handler
 function extendedClickHandler(event){
-	if (event.ctrlKey)
+	// added event.metaKey to deal with mac command-click select
+	if (event.ctrlKey || event.metaKey)
 	{
 		if (event.shiftKey)
 		{

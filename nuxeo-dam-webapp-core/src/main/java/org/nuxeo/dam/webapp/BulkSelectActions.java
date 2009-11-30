@@ -18,6 +18,9 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.contexts.Context;
+import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.Path;
@@ -40,6 +43,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 public class BulkSelectActions implements Serializable {
     
     private static final long serialVersionUID = 1L;
+    protected static final String CACHED_SELECTED_DOCUMENT_IDS = "cachedSelectedDocumentIds";
     private static final Log log = LogFactory.getLog(BulkSelectActions.class);
     
     @In(create = true, required = false)
@@ -243,5 +247,81 @@ public class BulkSelectActions implements Serializable {
         }
         
         }
+    /**
+     * Tests if a document is in the working list of selected documents.
+     * 
+     * @param String docId The DocumentRef of the document
+     * @param String lName The name of the working list of selected documents.
+     *            If null, the default list will be used.
+     * @return boolean true if the document is in the list, false if it isn't.
+     */
+    @SuppressWarnings("unchecked")
+    public boolean getIsCurrentSelectionInWorkingList(String docId,
+            String listName) {
+        if (docId == null) {
+            return false;
+        }
+        String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
+                : listName;
+
+        // Caching the construction of the set of selected document ids so as
+        // not to call the document list API 30 times per page rendering
+        Context eventContext = Contexts.getEventContext();
+        Set<String> selectedIds = (Set<String>) eventContext.get(CACHED_SELECTED_DOCUMENT_IDS);
+        if (selectedIds == null) {
+            selectedIds = new HashSet<String>();
+            List<DocumentModel> selectedDocumentsList = documentsListsManager.getWorkingList(lName);
+            if (selectedDocumentsList != null) {
+                for (DocumentModel selectedDocumentModel : selectedDocumentsList) {
+                    selectedIds.add(selectedDocumentModel.getId());
+                }
+            }
+            eventContext.set(CACHED_SELECTED_DOCUMENT_IDS, selectedIds);
+        }
+        return selectedIds.contains(docId);
+    }
+    
+    /**
+     * Clears the working list of selected documents.
+     * 
+     * @param String lName The name of the working list of selected documents.
+     *            If null, the default list will be used.
+     * @return void 
+     */
+    @SuppressWarnings("unchecked")
+    @WebRemote
+    public void clearWorkingList(String listName) {
+
+        String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
+                : listName;
+        
+
+        List<DocumentModel> selectedDocumentsList = documentsListsManager.getWorkingList(lName);
+        selectedDocumentsList.clear();
+        System.err.println("cleared working list");
+    }
+    
+    /**
+     * Tests whether the current working list of selected documents is empty.
+     * 
+     * @param String lName The name of the working list of selected documents.
+     *            If null, the default list will be used.
+     * @return boolean true if empty, false otherwise 
+     */
+    @SuppressWarnings("unchecked")
+    public boolean getIsCurrentWorkingListEmpty(String listName) {
+
+        String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
+                : listName;
+        
+
+        List<DocumentModel> selectedDocumentsList = documentsListsManager.getWorkingList(lName);
+        if(selectedDocumentsList == null) {
+            return true;
+        }
+        
+        return selectedDocumentsList.isEmpty();
+      
+    }
 
 }
