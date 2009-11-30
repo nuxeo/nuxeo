@@ -19,7 +19,6 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +27,6 @@ import java.util.NoSuchElementException;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
@@ -247,7 +245,7 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
     @Override
     public void setPropertyValue(String name, Object value)
             throws DocumentException {
-        if (readonly) {
+        if (readonly && !Model.MISC_LIFECYCLE_STATE_PROP.equals(name)) {
             throw new UnsupportedOperationException(String.format(
                     "Cannot set property on a version: %s = %s", name, value));
         } else {
@@ -257,8 +255,12 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
     }
 
     @Override
-    public void setString(String name, String value) {
-        throw new UnsupportedOperationException();
+    public void setString(String name, String value) throws DocumentException {
+        if (Model.MISC_LIFECYCLE_STATE_PROP.equals(name)) {
+            super.setString(name, value);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Override
@@ -296,20 +298,6 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
         throw new UnsupportedOperationException();
     }
 
-    /*
-     * ----- lifecycle overrides -----
-     */
-
-    @Override
-    public Collection<String> getAllowedStateTransitions() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public boolean followTransition(String transition)
-            throws LifeCycleException {
-        throw new LifeCycleException("Cannot follow lifecycle transitions");
-    }
 
     /*
      * ----- equals/hashcode -----
@@ -334,5 +322,7 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
     public int hashCode() {
         return getHierarchyNode().getId().hashCode();
     }
+
+ 
 
 }

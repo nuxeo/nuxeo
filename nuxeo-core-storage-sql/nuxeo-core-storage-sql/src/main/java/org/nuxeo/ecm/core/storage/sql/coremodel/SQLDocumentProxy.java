@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 import java.util.Iterator;
 import java.util.List;
 
+
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentVersionProxy;
@@ -81,10 +82,6 @@ public class SQLDocumentProxy extends SQLDocumentVersion implements
     public void updateToBaseVersion() {
         throw new UnsupportedOperationException();
     }
-
-    /*
-     * ----- proxy-specific overrides -----
-     */
 
     @Override
     public boolean isProxy() {

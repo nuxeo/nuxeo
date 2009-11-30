@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -571,6 +573,73 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         } finally {
             closeSession(session2);
         }
+    }
+
+    public void testVersionLifecycle() throws Exception {
+        DocumentModel root = session.getRootDocument();
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
+                "doc", "File");
+
+        doc = session.createDocument(doc);
+        doc.setProperty("dublincore", "title", "t1");
+        doc = session.saveDocument(doc);
+
+        VersionModel version = new VersionModelImpl();
+        version.setLabel("v1");
+        session.checkIn(doc.getRef(), version);
+        session.checkOut(doc.getRef());
+        doc.setProperty("dublincore", "title", "t2");
+        doc = session.saveDocument(doc);
+
+        DocumentModel proxy = session.createProxy(root.getRef(), doc.getRef(),
+                version, true);
+        session.save();
+        assertEquals("t1", proxy.getProperty("dublincore", "title"));
+        assertEquals("t2", doc.getProperty("dublincore", "title"));
+
+        // get version
+        DocumentModel ver = session.getLastDocumentVersion(doc.getRef());
+        assertTrue(ver.isVersion());
+
+        assertEquals("project", ver.getCurrentLifeCycleState());
+        ver.followTransition("approve");
+        session.save();
+
+        closeSession();
+        openSession();
+        doc = session.getDocument(new PathRef("/doc"));
+        ver = session.getLastDocumentVersion(doc.getRef());
+        assertEquals("approved", ver.getCurrentLifeCycleState());
+    }
+
+    public void testTransitionProxy() throws Exception {
+        DocumentModel root = session.getRootDocument();
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
+                "doc", "File");
+
+        doc = session.createDocument(doc);
+        doc.setProperty("dublincore", "title", "t1");
+        doc = session.saveDocument(doc);
+
+        VersionModel version = new VersionModelImpl();
+        version.setLabel("v1");
+        session.checkIn(doc.getRef(), version);
+        session.checkOut(doc.getRef());
+        doc.setProperty("dublincore", "title", "t2");
+        doc = session.saveDocument(doc);
+
+        DocumentModel proxy = session.createProxy(root.getRef(), doc.getRef(),
+                version, true);
+        session.save();
+
+        Collection<String> transitions = proxy.getAllowedStateTransitions();
+        assertEquals(transitions.size(), 3);
+
+        if (proxy.getAllowedStateTransitions().contains(
+                "delete")) {
+            proxy.followTransition("delete");
+        }
+        assertEquals(proxy.getCurrentLifeCycleState(), "deleted");
     }
 
 }

@@ -22,6 +22,7 @@ import java.io.Serializable;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
 
 /**
@@ -60,7 +61,9 @@ public class SQLSimpleProperty extends SQLBaseProperty {
     }
 
     public void setValue(Object value) throws DocumentException {
-        checkWritable();
+        if (!Model.MISC_LIFECYCLE_STATE_PROP.equals(getName())) {
+            checkWritable();
+        }
         if (value != null && !(value instanceof Serializable)) {
             throw new DocumentException("Value is not Serializable: " + value);
         }
