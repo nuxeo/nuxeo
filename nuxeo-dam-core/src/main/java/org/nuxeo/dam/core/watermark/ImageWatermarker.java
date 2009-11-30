@@ -27,7 +27,7 @@ import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 
 /**
  * Unit command to watermark a picture using ImageMagick
- * 
+ *
  * @author btatar
  */
 public class ImageWatermarker extends MagickExecutor {
@@ -47,8 +47,6 @@ public class ImageWatermarker extends MagickExecutor {
         params.addNamedParameter("outputFilePath",
                 formatFilePath(outputFilePath));
         ExecResult result = execCommand("watermark", params);
-
-        log.error("Error apply watermark", result.getError());
         return result.isSuccessful() ? new File(outputFilePath) : null;
     }
 }
