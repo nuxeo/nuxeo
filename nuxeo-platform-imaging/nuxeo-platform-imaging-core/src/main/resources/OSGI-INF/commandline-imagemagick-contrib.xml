@@ -15,7 +15,7 @@
 
     <command name="crop" enabled="true">
       <commandLine>stream</commandLine>
-      <parameterString> -map rgb -storage-type char -extract  #{tileWidth}x#{tileHeight}+#{offsetX}+#{offsetY} #{inputFilePath}  - | convert -depth 8 -size #{tileWidth}x#{tileHeight}  rgb:-  #{outputFilePath} </parameterString>
+      <parameterString> -map rgb -storage-type char -extract  #{tileWidth}x#{tileHeight}+#{offsetX}+#{offsetY} #{inputFilePath}[0]  - | convert -depth 8 -size #{tileWidth}x#{tileHeight}  rgb:-  #{outputFilePath} </parameterString>
       <installationDirective>You need to install ImageMagic.</installationDirective>
     </command>
 
@@ -33,7 +33,7 @@
 
     <command name="rotate" enabled="true">
       <commandLine>convert</commandLine>
-      <parameterString>-rotate #{angle} #{inputFilePath} #{outputFilePath}</parameterString>
+      <parameterString>-rotate #{angle} #{inputFilePath}[0] #{outputFilePath}</parameterString>
       <installationDirective>You need to install ImageMagic.</installationDirective>
     </command>
 
@@ -45,7 +45,7 @@
 
     <command name="converter" enabled="true">
       <commandLine>convert</commandLine>
-      <parameterString>-colorspace rgb #{inputFilePath} #{outputFilePath}</parameterString>
+      <parameterString>-colorspace rgb #{inputFilePath}[0] #{outputFilePath}</parameterString>
       <installationDirective>You need to install ImageMagic.</installationDirective>
     </command>
 
