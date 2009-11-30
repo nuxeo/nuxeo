@@ -9,11 +9,11 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:rich="http://richfaces.org/rich">
 
-   
+
 <script type="text/javascript" src="/nuxeo/scripts/jquery.js"></script>
-<!-- The jQuery.noConflict() is necessary or else things start breaking like the import dialog popup -->    
-<script type="text/javascript">jQuery.noConflict();</script>    
-<script type="text/javascript" src="/nuxeo/scripts/jquery.event.extendedclick.js"></script>   
+<!-- The jQuery.noConflict() is necessary or else things start breaking like the import dialog popup -->
+<script type="text/javascript">jQuery.noConflict();</script>
+<script type="text/javascript" src="/nuxeo/scripts/jquery.event.extendedclick.js"></script>
 
 <script type="text/javascript">
 var ctrlClickSelectedClassName = "selectedCtrlClick";
@@ -27,7 +27,7 @@ function toggleCtrlClickSelection(e) {
 }
 
 function isCtrlClickSelected(e) {
-	return jQuery(e).hasClass(ctrlClickSelectedClassName);
+  return jQuery(e).hasClass(ctrlClickSelectedClassName);
 }
 
 
@@ -40,32 +40,32 @@ function ctrlClickSelectionCB(element) {
         alert(result);
       } else {
         toggleCtrlClickSelection(element);
-      } 
+      }
     }
   };
 }
 
 jQuery(document).ready(function(){
-	// install selection event handlers for the  ctrl click event
-	jQuery("div.thumbViewElement").ctrlclick(function(event) {
-		var documentActions = Seam.Component.getInstance("documentActions");
-		var tagToToggle = jQuery(this);
-		documentActions.processSelectRow(tagToToggle.attr('docref'),
+  // install selection event handlers for the  ctrl click event
+  jQuery("div.thumbViewElement").ctrlclick(function(event) {
+    var documentActions = Seam.Component.getInstance("documentActions");
+    var tagToToggle = jQuery(this);
+    documentActions.processSelectRow(tagToToggle.attr('docref'),
       tagToToggle.attr('providername'), 'CURRENT_SELECTION', !isCtrlClickSelected(tagToToggle),
       ctrlClickSelectionCB(tagToToggle));
-	});
-	// clear  the working list on the server side so that when paging
-	// nothing is selected
-	// Seam.Component.getInstance("bulkSelectActions").clearWorkingList('CURRENT_SELECTION');
-	//$(".thumbViewElement").each(function (i) {		
-		// remove the selectedCtrlClick class from thumbnails on the current page
-	//	if($(this).hasClass("selectedCtrlClick")) {
-	//		$(this).removeClass("selectedCtrlClick");
-	//    }	
+  });
+  // clear  the working list on the server side so that when paging
+  // nothing is selected
+  // Seam.Component.getInstance("bulkSelectActions").clearWorkingList('CURRENT_SELECTION');
+  //$(".thumbViewElement").each(function (i) {
+    // remove the selectedCtrlClick class from thumbnails on the current page
+  //  if($(this).hasClass("selectedCtrlClick")) {
+  //    $(this).removeClass("selectedCtrlClick");
+  //    }
 });
 
 </script>
-    
+
   <div id="dataTableDivOuter">
   <div id="dataTableDivInner">
   <rich:dataGrid
@@ -112,7 +112,7 @@ jQuery(document).ready(function(){
           </h:panelGroup>
           <h:panelGroup rendered="#{!empty row.data.dam_common.author}" id="damcAuthor">
             <h:outputText class="thumbViewlabel" value="#{messages['label.content.thumbnail.by']} " />
-	        <h:outputText value="#{row.data.dam_common.author}" />
+          <h:outputText value="#{row.data.dam_common.author}" />
           </h:panelGroup>
           <h:panelGroup rendered="#{!empty row.data.dam_common.authoringDate}" id="damcAuthoringDate">
             <h:outputText class="thumbViewlabel" value="#{messages['label.content.thumbnail.creation']} " />
