@@ -26,11 +26,11 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.Published
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
 
 /**
- * 
+ *
  * Test simple marshaling
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class TestMarshaling extends TestCase {
 
@@ -44,7 +44,7 @@ public class TestMarshaling extends TestCase {
         String data = marshaler.marshalPublishedDocument(pubDoc);
 
         assertNotNull(data);
-        System.out.print(data);
+        // System.out.print(data);
 
         PublishedDocument pubDoc2 = marshaler.unMarshalPublishedDocument(data);
         assertNotNull(pubDoc2);

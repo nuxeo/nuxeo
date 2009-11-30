@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.publisher.jbpm.test;
 
 import org.hsqldb.jdbc.jdbcDataSource;
+import org.nuxeo.common.mock.jndi.MockContextFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -57,13 +58,14 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        MockContextFactory.setAsInitial();
 
         jdbcDataSource ds = new jdbcDataSource();
         ds.setDatabase("jdbc:hsqldb:mem:jena");
         ds.setUser("sa");
         ds.setPassword("");
         Context context = new InitialContext();
-        context.rebind("java:/nxrelations-default-jena", ds);
+        context.rebind("java:comp/env/jdbc/nxrelations-default-jena", ds);
         Framework.getProperties().setProperty(
                 "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
         Framework.getProperties().setProperty(
@@ -95,6 +97,12 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
 
         createDocumentToPublish();
         initializeACP();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        MockContextFactory.revertSetAsInitial();
+        super.tearDown();
     }
 
     private void createDocumentToPublish() throws Exception {
