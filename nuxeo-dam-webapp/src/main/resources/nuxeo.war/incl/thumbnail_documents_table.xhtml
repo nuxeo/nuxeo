@@ -9,71 +9,6 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:rich="http://richfaces.org/rich">
 
-
-<script type="text/javascript" src="/nuxeo/scripts/jquery.js"></script>
-<!-- The jQuery.noConflict() is necessary or else things start breaking like the import dialog popup -->
-<script type="text/javascript">jQuery.noConflict();</script>
-<script type="text/javascript" src="/nuxeo/scripts/jquery.event.extendedclick.js"></script>
-
-<script type="text/javascript">
-var ctrlClickSelectedClassName = "selectedCtrlClick";
-
-function toggleCtrlClickSelection(e) {
-  if(jQuery(e).hasClass(ctrlClickSelectedClassName)) {
-    jQuery(e).removeClass(ctrlClickSelectedClassName);
-  } else {
-    jQuery(e).addClass(ctrlClickSelectedClassName);
-  }
-}
-
-function isCtrlClickSelected(e) {
-  return jQuery(e).hasClass(ctrlClickSelectedClassName);
-}
-
-function ctrlClickSelectionCB(element) {
-  return function(result) {
-    if(typeof(result) != "undefined") {
-      if (result.indexOf("ERROR") == 0) {
-        // should never occur if the application if providers are configured
-        // properly
-        alert(result);
-      } else {
-        toggleCtrlClickSelection(element);
-      }
-    }
-  };
-}
-
-jQuery(document).ready(function(){
-
-  // install selection event handlers for the  ctrl click event
-  jQuery("div.thumbViewElement").ctrlclick(function(e) {
-    var documentActions = Seam.Component.getInstance("documentActions");
-    var tagToToggle = jQuery(this);
-    documentActions.processSelectRow(tagToToggle.attr('docref'),
-      tagToToggle.attr('providername'), 'CURRENT_SELECTION', !isCtrlClickSelected(tagToToggle),
-      ctrlClickSelectionCB(tagToToggle));
-
-    // prevent further propagation to avoid global unselect
-    e.stopPropagation();
-  });
-
-  // install selection event handlers for the  ctrl click event
-  jQuery("#dataTableContainer").click(function(e) {
-    // clear  the working list on the server side so that when paging
-    // nothing is selected
-    Seam.Component.getInstance("bulkSelectActions").clearWorkingList('CURRENT_SELECTION');
-    jQuery(".thumbViewElement").each(function (i) {
-      // remove the selectedCtrlClick class from thumbnails on the current page
-      if(jQuery(this).hasClass("selectedCtrlClick")) {
-        jQuery(this).removeClass("selectedCtrlClick");
-      }
-    });
-  });
-});
-
-</script>
-
   <div id="dataTableContainer">
   <rich:dataGrid
     id="dataTable"
@@ -91,8 +26,10 @@ jQuery(document).ready(function(){
             to avoid conflict with ctrlclick (un)selection  -->
           <a4j:commandLink id="imageLink" styleClass="thumbViewPictureLink"
             action="#{documentActions.setCurrentSelection(row.data)}"
-            onclick="if(event.type == 'ctrlclick') {event.preventDefault();} else
-            {event.stopPropagation();}" reRender="dataTable, selectionView">
+            onclick="if(event.ctrlKey || event.metaKey) {return false;}
+            else {event.stopPropagation();}"
+            oncomplete="installCtrlClickSelectEventListeners();installCtrlClickUnSelectEventListeners();"
+            reRender="dataTable, selectionView">
             <nxh:graphicImage id="theImage"
               url="#{nxd:fileUrl('downloadPicture', row.data, 'Thumbnail:content', row.data.dublincore.modified)}?conversationId=#{conversation.id}"
               style="max-height: 80px; max-width:125px;"
@@ -115,7 +52,10 @@ jQuery(document).ready(function(){
           </a4j:commandLink>
           <h:panelGroup>
             <span id="title_#{row.data.ref}" class="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
-              <a4j:commandLink id="titleLink" onclick="linkClick=1;" action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
+              <a4j:commandLink id="titleLink" onclick="if(event.ctrlKey || event.metaKey) {return false;}
+                else {event.stopPropagation();}"
+                oncomplete="installCtrlClickSelectEventListeners();installCtrlClickUnSelectEventListeners();"
+                action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
                 <nxh:outputText value="#{documentActions.getTitleCropped(row.data, 15)}"
                   title="#{row.data.dc.title}"
                   styleClass="thumbViewTitle"/>
@@ -144,5 +84,10 @@ jQuery(document).ready(function(){
       </div></rich:panel>
 
   </rich:dataGrid>
+  <script
+	type="text/javascript">
+	installCtrlClickSelectEventListeners();
+	installCtrlClickUnSelectEventListeners();</script>
   </div>
+  <a4j:log level="ALL" width="400" height="200"/>
 </div>
