@@ -30,7 +30,6 @@ function isCtrlClickSelected(e) {
   return jQuery(e).hasClass(ctrlClickSelectedClassName);
 }
 
-
 function ctrlClickSelectionCB(element) {
   return function(result) {
     if(typeof(result) != "undefined") {
@@ -46,28 +45,36 @@ function ctrlClickSelectionCB(element) {
 }
 
 jQuery(document).ready(function(){
+
   // install selection event handlers for the  ctrl click event
-  jQuery("div.thumbViewElement").ctrlclick(function(event) {
+  jQuery("div.thumbViewElement").ctrlclick(function(e) {
     var documentActions = Seam.Component.getInstance("documentActions");
     var tagToToggle = jQuery(this);
     documentActions.processSelectRow(tagToToggle.attr('docref'),
       tagToToggle.attr('providername'), 'CURRENT_SELECTION', !isCtrlClickSelected(tagToToggle),
       ctrlClickSelectionCB(tagToToggle));
+
+    // prevent further propagation to avoid global unselect
+    e.stopPropagation();
   });
-  // clear  the working list on the server side so that when paging
-  // nothing is selected
-  // Seam.Component.getInstance("bulkSelectActions").clearWorkingList('CURRENT_SELECTION');
-  //$(".thumbViewElement").each(function (i) {
-    // remove the selectedCtrlClick class from thumbnails on the current page
-  //  if($(this).hasClass("selectedCtrlClick")) {
-  //    $(this).removeClass("selectedCtrlClick");
-  //    }
+
+  // install selection event handlers for the  ctrl click event
+  jQuery("#dataTableContainer").click(function(e) {
+    // clear  the working list on the server side so that when paging
+    // nothing is selected
+    Seam.Component.getInstance("bulkSelectActions").clearWorkingList('CURRENT_SELECTION');
+    jQuery(".thumbViewElement").each(function (i) {
+      // remove the selectedCtrlClick class from thumbnails on the current page
+      if(jQuery(this).hasClass("selectedCtrlClick")) {
+        jQuery(this).removeClass("selectedCtrlClick");
+      }
+    });
+  });
 });
 
 </script>
 
-  <div id="dataTableDivOuter">
-  <div id="dataTableDivInner">
+  <div id="dataTableContainer">
   <rich:dataGrid
     id="dataTable"
     value="#{documents.rows}"
@@ -77,10 +84,15 @@ jQuery(document).ready(function(){
     rendered="#{documents.rowCount > 0}">
 
       <rich:panel>
-        <div id="#{row.data.ref}" docref="#{row.data.ref}" providername="#{providerName}"
+        <div docref="#{row.data.ref}" providername="#{providerName}"
              class="thumbViewElement #{nxu:test(documentActions.currentSelection == row.data, 'selected', '')} #{nxu:test(bulkSelectActions.getIsCurrentSelectionInWorkingList(row.data.ref, 'CURRENT_SELECTION'), 'selectedCtrlClick', '')}">
         <h:panelGrid>
-          <a4j:commandLink id="imageLink" styleClass="thumbViewPictureLink" action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
+          <!-- event.preventDefault() and event.stopPropagation()
+            to avoid conflict with ctrlclick (un)selection  -->
+          <a4j:commandLink id="imageLink" styleClass="thumbViewPictureLink"
+            action="#{documentActions.setCurrentSelection(row.data)}"
+            onclick="if(event.type == 'ctrlclick') {event.preventDefault();} else
+            {event.stopPropagation();}" reRender="dataTable, selectionView">
             <nxh:graphicImage id="theImage"
               url="#{nxd:fileUrl('downloadPicture', row.data, 'Thumbnail:content', row.data.dublincore.modified)}?conversationId=#{conversation.id}"
               style="max-height: 80px; max-width:125px;"
@@ -132,6 +144,5 @@ jQuery(document).ready(function(){
       </div></rich:panel>
 
   </rich:dataGrid>
-  </div>
   </div>
 </div>
