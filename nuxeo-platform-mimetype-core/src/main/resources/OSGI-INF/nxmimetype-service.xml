@@ -726,6 +726,33 @@
       </extensions>
     </mimetype>
 
+    <!-- Adobe PostScript / Illustrator -->
+   <mimetype normalized="application/illustrator" binary="false" iconPath="image.gif">
+     <mimetypes>
+       <mimetype>application/postscript</mimetype>
+       <mimetype>application/illustrator</mimetype>
+     </mimetypes>
+     <extensions>
+       <extension>ai</extension>
+     </extensions>
+   </mimetype>
+
+   <!-- Adobe Photoshop -->
+   <mimetype normalized="image/photoshop" binary="false" iconPath="image.gif">
+     <mimetypes>
+       <mimetype>image/photoshop</mimetype>
+       <mimetype>image/x-photoshop</mimetype>
+       <mimetype>image/psd</mimetype>
+       <mimetype>application/photoshop</mimetype>
+       <mimetype>application/psd</mimetype>
+       <mimetype>zz-application</mimetype>
+       <mimetype>zz-winassoc-psd</mimetype>
+     </mimetypes>
+     <extensions>
+       <extension>psd</extension>
+     </extensions>
+   </mimetype>
+
     <mimetype normalized="application/x-emf" binary="true"
       iconPath="image.gif">
       <mimetypes>
