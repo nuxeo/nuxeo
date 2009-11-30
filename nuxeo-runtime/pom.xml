@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.runtime</groupId>
     <artifactId>nuxeo-runtime-parent</artifactId>
-    <version>1.6.1-SNAPSHOT</version>
+    <version>1.6.1-I20091130_0115</version>
   </parent>
 
   <groupId>org.nuxeo.runtime</groupId>
