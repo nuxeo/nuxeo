@@ -39,7 +39,7 @@ public class TransactionalSession implements XAResource {
 
     private boolean inTransaction;
 
-    TransactionalSession(SessionImpl session, Mapper mapper) {
+    public TransactionalSession(SessionImpl session, Mapper mapper) {
         this.session = session;
         this.mapper = mapper;
     }

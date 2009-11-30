@@ -70,7 +70,7 @@ public class SQLRepository implements Repository {
     /**
      * Fetch SQL-level descriptor from Nuxeo repository descriptor.
      */
-    private static org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor getDescriptor(
+    public static org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor getDescriptor(
             RepositoryDescriptor descriptor) throws Exception {
         String filename = descriptor.getConfigurationFile();
         XMap xmap = new XMap();

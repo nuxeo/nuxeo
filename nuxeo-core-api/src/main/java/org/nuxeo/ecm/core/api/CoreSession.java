@@ -36,16 +36,15 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 /**
  * A session to the Nuxeo Core.
  * <p>
- * The session is opened and closed by a client and gives the
- * client the possibility to interact with the core.
+ * The session is opened and closed by a client and gives the client the
+ * possibility to interact with the core.
  * <p>
  * The core a session connects to can be located in a separate (remote) JVM or
  * in the current one.
  * <p>
- * To create remote or local sessions, you need to
- * use a specific {@link CoreSessionFactory}
- * object. These objects are usually specified using extension points but
- * you can also use them programatically.
+ * To create remote or local sessions, you need to use a specific
+ * {@link CoreSessionFactory} object. These objects are usually specified using
+ * extension points but you can also use them programatically.
  *
  * @see DocumentModel
  * @see DocumentRef
@@ -88,6 +87,23 @@ public interface CoreSession {
     String IMPORT_PROXY_TYPE = "ecm:proxy";
 
     /**
+     * The container calls this when this session sees a transaction begin.
+     */
+    void afterBegin();
+
+    /**
+     * The container calls this when this session is about to see a transaction
+     * completion.
+     */
+    void beforeCompletion();
+
+    /**
+     * The container calls this when this session sees a transaction
+     * commit/rollback.
+     */
+    void afterCompletion(boolean committed);
+
+    /**
      * Gets the document type object given its type name.
      *
      * @param type the document type name
@@ -109,9 +125,8 @@ public interface CoreSession {
      * Connects to the repository given its URI. This opens a new session on the
      * specified repository.
      * <p>
-     * This method <b>must</b> never be called by users. Is is indirectly
-     * called from {@link CoreInstance#open(String, Map)} when creating the
-     * client.
+     * This method <b>must</b> never be called by users. Is is indirectly called
+     * from {@link CoreInstance#open(String, Map)} when creating the client.
      *
      * @param repositoryUri the repository URI (unique in the platform)
      * @param context a map of properties used to initialize the session. Can be
@@ -125,9 +140,8 @@ public interface CoreSession {
     /**
      * Closes the current session and disconnects from the repository.
      * <p>
-     * This method <b>must</b> never be called by users. Is is indirectly
-     * called from {@link CoreInstance#close(CoreSession)} when closing the
-     * client
+     * This method <b>must</b> never be called by users. Is is indirectly called
+     * from {@link CoreInstance#close(CoreSession)} when closing the client
      * <p>
      * All pending change made on the repository through this session are saved.
      *
@@ -206,6 +220,7 @@ public interface CoreSession {
      * @throws ClientException
      * @throws SecurityException
      */
+    @NoRollbackOnException
     DocumentModel getDocument(DocumentRef docRef) throws ClientException;
 
     /**
@@ -221,6 +236,7 @@ public interface CoreSession {
      * @throws ClientException
      * @throws SecurityException
      */
+    @NoRollbackOnException
     DocumentModel getDocument(DocumentRef docRef, String[] schemas)
             throws ClientException;
 
@@ -229,6 +245,7 @@ public interface CoreSession {
      * <p>
      * Documents that are not accessible are skipped.
      */
+    @NoRollbackOnException
     DocumentModelList getDocuments(DocumentRef[] docRefs)
             throws ClientException;
 
@@ -258,6 +275,7 @@ public interface CoreSession {
      *         specified parent document is not a folder
      * @throws ClientException
      */
+    @NoRollbackOnException
     DocumentModelList getChildren(DocumentRef parent) throws ClientException;
 
     /**
@@ -281,12 +299,13 @@ public interface CoreSession {
      *         the parent document is not a folder
      * @throws ClientException
      */
+    @NoRollbackOnException
     DocumentModelList getChildren(DocumentRef parent, String type)
             throws ClientException;
 
     /**
-     * Gets an iterator to the children of the given parent filtered according to the given
-     * document type.
+     * Gets an iterator to the children of the given parent filtered according
+     * to the given document type.
      */
     DocumentModelIterator getChildrenIterator(DocumentRef parent, String type)
             throws ClientException;
@@ -302,6 +321,7 @@ public interface CoreSession {
      *         the parent document is not a folder
      * @throws ClientException
      */
+    @NoRollbackOnException
     DocumentModelList getChildren(DocumentRef parent, String type, String perm)
             throws ClientException;
 
@@ -318,6 +338,7 @@ public interface CoreSession {
      *         found or null if the given parent is not a folder
      * @throws ClientException
      */
+    @NoRollbackOnException
     DocumentModelList getChildren(DocumentRef parent, String type, String perm,
             Filter filter, Sorter sorter) throws ClientException;
 
@@ -405,8 +426,8 @@ public interface CoreSession {
             throws ClientException;
 
     /**
-     * Same as {@link CoreSession#getFolders(DocumentRef)} but uses an optional filter
-     * and sorter on the result.
+     * Same as {@link CoreSession#getFolders(DocumentRef)} but uses an optional
+     * filter and sorter on the result.
      *
      * @param parent the parent reference
      * @param filter the filter to use or null if none
@@ -430,7 +451,8 @@ public interface CoreSession {
     DocumentModelList getFiles(DocumentRef parent) throws ClientException;
 
     /**
-     * Same as {@link CoreSession#getFiles(DocumentRef)} but returns an iterator.
+     * Same as {@link CoreSession#getFiles(DocumentRef)} but returns an
+     * iterator.
      *
      * @param parent
      * @return
@@ -782,15 +804,15 @@ public interface CoreSession {
      * If the <code>overwrite</code> argument is false, the ACP is merged with
      * the existing one if any. The merge is done as follow:
      * <ul>
-     * <li> If any ACL is that already exists on the document ACp is redefined
-     * by the new ACO then it will be replaced by the new one. So if you want to
+     * <li>If any ACL is that already exists on the document ACp is redefined by
+     * the new ACO then it will be replaced by the new one. So if you want to
      * remove an ACl in this mode you need to specify an empty ACL.
-     * <li> If the new ACP contains an ACl that is not defined by the old one
-     * the it will be added to the merged ACP.
-     * <li> If the <code>owners</code> are specified then they will replace
-     * the existing ones if any. Otherwise the old owners are preserved if any.
-     * As for the ACL if you want to remove existing owners you need to specify
-     * an empty owner array (and not a null one)
+     * <li>If the new ACP contains an ACl that is not defined by the old one the
+     * it will be added to the merged ACP.
+     * <li>If the <code>owners</code> are specified then they will replace the
+     * existing ones if any. Otherwise the old owners are preserved if any. As
+     * for the ACL if you want to remove existing owners you need to specify an
+     * empty owner array (and not a null one)
      * </ul>
      * If the <code>overwrite</code> argument is true, the old ACP will be
      * replaced by the new one.
@@ -798,8 +820,7 @@ public interface CoreSession {
      * This way if you can remove the existing ACP by specifying a null ACP and
      * <code>overwrite</code> argument set to true.
      * <p>
-     * Setting a null ACP when <code>overwrite</code> is false will do
-     * nothing.
+     * Setting a null ACP when <code>overwrite</code> is false will do nothing.
      *
      * @param docRef
      * @param acp
@@ -1102,8 +1123,8 @@ public interface CoreSession {
      *
      * @throws ClientException
      */
-    IterableQueryResult queryAndFetch(String query,
-            String queryType, Object... params) throws ClientException;
+    IterableQueryResult queryAndFetch(String query, String queryType,
+            Object... params) throws ClientException;
 
     /**
      * Executes the given NXQL query and returns an iterators of results.
@@ -1124,8 +1145,8 @@ public interface CoreSession {
      * @return
      * @throws ClientException
      *
-     * @deprecated use SearchService instead. See
-     *             {@url http://doc.nuxeo.org/reference/html/search-service.html}
+     * @deprecated use SearchService instead. See {@url
+     *             http://doc.nuxeo.org/reference/html/search-service.html}
      */
     @Deprecated
     DocumentModelList querySimpleFts(String keywords) throws ClientException;
@@ -1139,24 +1160,24 @@ public interface CoreSession {
      * @return
      * @throws ClientException
      *
-     * @deprecated use SearchService instead. See
-     *             {@url http://doc.nuxeo.org/reference/html/search-service.html}
+     * @deprecated use SearchService instead. See {@url
+     *             http://doc.nuxeo.org/reference/html/search-service.html}
      */
     @Deprecated
     DocumentModelList querySimpleFts(String keywords, Filter filter)
             throws ClientException;
 
     /**
-     * @deprecated use SearchService instead. See
-     *             {@url http://doc.nuxeo.org/reference/html/search-service.html}
+     * @deprecated use SearchService instead. See {@url
+     *             http://doc.nuxeo.org/reference/html/search-service.html}
      */
     @Deprecated
     DocumentModelIterator querySimpleFtsIt(String query, Filter filter,
             int pageSize) throws ClientException;
 
     /**
-     * @deprecated use SearchService instead. See
-     *             {@url http://doc.nuxeo.org/reference/html/search-service.html}
+     * @deprecated use SearchService instead. See {@url
+     *             http://doc.nuxeo.org/reference/html/search-service.html}
      */
     @Deprecated
     DocumentModelIterator querySimpleFtsIt(String query, String startingPath,
@@ -1459,8 +1480,8 @@ public interface CoreSession {
      * Given a parent document, order the source child before the destination
      * child. The source and destination must be name of child documents of the
      * given parent document. (a document name can be retrieved using
-     * <code>docModel.getName()</code>) To place the source document at the
-     * end of the children list use a null destination node.
+     * <code>docModel.getName()</code>) To place the source document at the end
+     * of the children list use a null destination node.
      *
      * @param parent the parent document
      * @param src the document to be moved (ordered)
@@ -1511,12 +1532,12 @@ public interface CoreSession {
      * <p>
      * The result is an array defined as follows:
      * <ul>
-     * <li> on index 0 - the prefetch data
-     * <li> on index 1 - the lock state info
-     * <li> on index 2 - the life cycle state info
-     * <li> on index 3 - the life cycle policy
-     * <li> on index 4 - the ACP
-     * <li> on index 5 - an array of {@link DocumentPart} objects
+     * <li>on index 0 - the prefetch data
+     * <li>on index 1 - the lock state info
+     * <li>on index 2 - the life cycle state info
+     * <li>on index 3 - the life cycle policy
+     * <li>on index 4 - the ACP
+     * <li>on index 5 - an array of {@link DocumentPart} objects
      * </ul>
      *
      * @param ref the document reference
@@ -1532,23 +1553,23 @@ public interface CoreSession {
 
     /**
      * Provides the full list of all permissions or groups of permissions that
-     * contain the given one (inclusive).
-     * It makes the method {@link SecurityService#getPermissionsToCheck()}
-     * available remote.
+     * contain the given one (inclusive). It makes the method
+     * {@link SecurityService#getPermissionsToCheck()} available remote.
+     *
      * @param permission
      * @return the list, as an array of strings.
      */
     String[] getPermissionsToCheck(String permission);
 
-
     /**
-     * Indicates if implementation of the given repositoryName supports Tags feature
+     * Indicates if implementation of the given repositoryName supports Tags
+     * feature
      *
      * @param repositoryName the name of the repository to test
      * @return
      * @throws ClientException
      */
-     boolean supportsTags(String repositoryName) throws ClientException;
+    boolean supportsTags(String repositoryName) throws ClientException;
 
     /**
      * Indicates if current repository implementation supports Tags feature
@@ -1557,6 +1578,6 @@ public interface CoreSession {
      * @return
      * @throws ClientException
      */
-     boolean supportsTags() throws ClientException;
+    boolean supportsTags() throws ClientException;
 
 }

@@ -125,7 +125,7 @@ public class RepositoryService extends DefaultComponent implements EventListener
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter.isAssignableFrom(CoreSession.class)) {
-            return (T) new LocalSession();
+            return (T) LocalSession.createInstance();
         }
         return null;
     }
