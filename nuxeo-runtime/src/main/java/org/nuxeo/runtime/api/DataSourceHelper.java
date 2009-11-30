@@ -51,7 +51,7 @@ public class DataSourceHelper {
             prefix = "java:";
         } else if ("org.apache.naming.SelectorContext".equals(name)) { // Tomcat
             prefix = "java:comp/env/jdbc";
-        } else if ("org.mortbay.naming.NamingContext".equals(name)) { // Jetty
+        } else if ("org.mortbay.naming.local.localContextRoot".equals(name)) { // Jetty
             prefix = "jdbc";
         } else if ("com.sun.enterprise.naming.impl.SerialContext".equals(name)) { // GlassFish
             prefix = "java:comp/env/jdbc";
