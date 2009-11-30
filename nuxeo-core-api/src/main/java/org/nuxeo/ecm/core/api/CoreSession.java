@@ -87,6 +87,23 @@ public interface CoreSession {
     String IMPORT_PROXY_TYPE = "ecm:proxy";
 
     /**
+     * The container calls this when this session sees a transaction begin.
+     */
+    void afterBegin();
+
+    /**
+     * The container calls this when this session is about to see a transaction
+     * completion.
+     */
+    void beforeCompletion();
+
+    /**
+     * The container calls this when this session sees a transaction
+     * commit/rollback.
+     */
+    void afterCompletion(boolean committed);
+
+    /**
      * Gets the document type object given its type name.
      *
      * @param type the document type name
@@ -203,6 +220,7 @@ public interface CoreSession {
      * @throws ClientException
      * @throws SecurityException
      */
+    @NoRollbackOnException
     DocumentModel getDocument(DocumentRef docRef) throws ClientException;
 
     /**
@@ -218,6 +236,7 @@ public interface CoreSession {
      * @throws ClientException
      * @throws SecurityException
      */
+    @NoRollbackOnException
     DocumentModel getDocument(DocumentRef docRef, String[] schemas)
             throws ClientException;
 
@@ -226,6 +245,7 @@ public interface CoreSession {
      * <p>
      * Documents that are not accessible are skipped.
      */
+    @NoRollbackOnException
     DocumentModelList getDocuments(DocumentRef[] docRefs)
             throws ClientException;
 
@@ -255,6 +275,7 @@ public interface CoreSession {
      *         specified parent document is not a folder
      * @throws ClientException
      */
+    @NoRollbackOnException
     DocumentModelList getChildren(DocumentRef parent) throws ClientException;
 
     /**
@@ -278,6 +299,7 @@ public interface CoreSession {
      *         the parent document is not a folder
      * @throws ClientException
      */
+    @NoRollbackOnException
     DocumentModelList getChildren(DocumentRef parent, String type)
             throws ClientException;
 
@@ -299,6 +321,7 @@ public interface CoreSession {
      *         the parent document is not a folder
      * @throws ClientException
      */
+    @NoRollbackOnException
     DocumentModelList getChildren(DocumentRef parent, String type, String perm)
             throws ClientException;
 
@@ -315,6 +338,7 @@ public interface CoreSession {
      *         found or null if the given parent is not a folder
      * @throws ClientException
      */
+    @NoRollbackOnException
     DocumentModelList getChildren(DocumentRef parent, String type, String perm,
             Filter filter, Sorter sorter) throws ClientException;
 

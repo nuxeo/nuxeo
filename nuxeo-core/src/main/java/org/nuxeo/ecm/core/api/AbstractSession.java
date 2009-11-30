@@ -328,6 +328,36 @@ public abstract class AbstractSession implements CoreSession,
         return eventService;
     }
 
+    public void afterBegin() {
+        if (log.isTraceEnabled()) {
+            log.trace("Transaction started");
+        }
+        try {
+            getEventService().transactionStarted();
+        } catch (Exception e) {
+            log.error("Error while notifying transaction start", e);
+        }
+    }
+
+    public void beforeCompletion() {
+    }
+
+    public void afterCompletion(boolean committed) {
+        if (log.isTraceEnabled()) {
+            log.trace("Transaction "
+                    + (committed ? "committed" : "rolled back"));
+        }
+        try {
+            if (committed) {
+                getEventService().transactionCommitted();
+            } else {
+                getEventService().transactionRolledback();
+            }
+        } catch (Exception e) {
+            log.error("Error while notifying transaction completion", e);
+        }
+    }
+
     public void fireEvent(Event event) throws ClientException {
         getEventService().fireEvent(event);
     }

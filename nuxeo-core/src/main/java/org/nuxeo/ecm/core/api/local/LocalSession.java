@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.api.local;
@@ -29,7 +28,9 @@ import javax.naming.NamingException;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
@@ -37,8 +38,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * Local Session: a CoreSession not tied to an EJB container.
  */
 public class LocalSession extends AbstractSession {
 
@@ -47,6 +47,14 @@ public class LocalSession extends AbstractSession {
     private Session session;
 
     private Boolean supportsTags = null;
+
+    public LocalSession() {
+    }
+
+    public static CoreSession createInstance() {
+        CoreSession session = new LocalSession();
+        return TransactionalCoreSessionWrapper.wrap(session);
+    }
 
     // Locally we don't yet support NXCore.getRepository()
     protected Session createSession(String repoName) throws ClientException {
@@ -87,7 +95,7 @@ public class LocalSession extends AbstractSession {
             sessionContext.put("principal", principal);
 
             Repository repo = lookupRepository(repoName);
-            supportsTags = repo.supportsTags();
+            supportsTags = Boolean.valueOf(repo.supportsTags());
             return repo.getSession(sessionContext);
         } catch (Exception e) {
             throw new ClientException("Failed to load repository " + repoName,
@@ -131,8 +139,8 @@ public class LocalSession extends AbstractSession {
      *
      * @return
      */
-    public boolean isTestingContext() { // neither in jboss neither in nuxeo
-                                        // launcher
+    public boolean isTestingContext() { // neither in jboss nor in nuxeo
+        // launcher
         return Framework.isTestModeSet();
     }
 
@@ -143,10 +151,17 @@ public class LocalSession extends AbstractSession {
 
     @Override
     public Session getSession() throws ClientException {
-        if (session == null) {
+        if (session == null || !session.isLive()) {
             session = createSession(repositoryName);
         }
         return session;
+    }
+
+    @Override
+    public void cancel() throws ClientException {
+        if (session != null && session.isLive()) {
+            super.cancel();
+        }
     }
 
     public boolean isStateSharedByAllThreadSessions() {

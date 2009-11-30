@@ -93,7 +93,6 @@ public class ConnectionFactoryImpl implements Repository,
         this.connectionManager = connectionManager;
         managed = !(connectionManager instanceof ConnectionManagerImpl);
         name = managedConnectionFactory.getName();
-        log.info("ConnectionFactoryImpl got a name of " + name);
     }
 
     // NXP 3992 -- exposed this for clean shutdown on cluster

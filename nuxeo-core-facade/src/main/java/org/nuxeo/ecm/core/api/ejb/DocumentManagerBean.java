@@ -250,35 +250,8 @@ public class DocumentManagerBean extends AbstractSession implements
         }
     }
 
-    public void afterBegin() throws EJBException, RemoteException {
-        if (log.isTraceEnabled()) {
-            log.trace("Transaction started");
-        }
-        try {
-            getEventService().transactionStarted();
-        } catch (Exception e) {
-            log.error("Error while notifying transaction start", e);
-        }
-    }
-
-    public void beforeCompletion() throws EJBException, RemoteException {
-    }
-
-    public void afterCompletion(boolean committed) throws EJBException,
-            RemoteException {
-        if (log.isTraceEnabled()) {
-            log.trace("Transaction " + (committed ? "committed" : "rollbacked"));
-        }
-        try {
-            if (committed) {
-                getEventService().transactionCommitted();
-            } else {
-                getEventService().transactionRolledback();
-            }
-        } catch (Exception e) {
-            log.error("Error while notifying transaction completion", e);
-        }
-    }
+    // SessionSynchronization: AbstractSession already implements afterBegin,
+    // beforeCompletion and afterCompletion
 
     // Methods that throws a rolling back application exception
 

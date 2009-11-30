@@ -75,8 +75,15 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     private RepositoryImpl repository;
 
     public ManagedConnectionFactoryImpl() {
-        repositoryDescriptor = new RepositoryDescriptor();
-        repositoryDescriptor.properties = new HashMap<String, String>();
+        this(new RepositoryDescriptor());
+    }
+
+    public ManagedConnectionFactoryImpl(
+            RepositoryDescriptor repositoryDescriptor) {
+        this.repositoryDescriptor = repositoryDescriptor;
+        if (repositoryDescriptor.properties == null) {
+            repositoryDescriptor.properties = new HashMap<String, String>();
+        }
     }
 
     /*
