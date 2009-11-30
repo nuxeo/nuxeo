@@ -703,6 +703,10 @@
       <selector path="a">
         <white-space>normal</white-space>
       </selector>
+      <!-- IE 7 don't allow white-space:normal whithout a 100% width container-->
+      <selector path=".dr-tree-h-text div">
+        <width>100%</width>
+      </selector>
       <selector path=".selected">
         <background-color>#d9e3ef</background-color>
       </selector>
