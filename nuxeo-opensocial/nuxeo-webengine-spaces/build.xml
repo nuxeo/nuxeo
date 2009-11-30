@@ -1,13 +1,12 @@
 <?xml version="1.0"?>
-<project name="nuxeo-webengine-spaces" default="deploy" basedir=".">
+<project name="nuxeo-webengine-spaces" default="deploy-webengine" basedir=".">
 
   <!-- From the pom.xml -->
   <property name="name" value="nuxeo-webengine-spaces" />
-  <property name="version" value="${version}" />
 
   <!-- Create a build.properties file from build.properties.sample
        if you wish to override the JBoss paths -->
-  <property file="build.properties" />
+  <property file="../../../build.properties" />
   <property name="jboss.dir" value="/opt/jboss" />
 
   <property name="javac.debug" value="true" />
@@ -18,8 +17,8 @@
   <property name="deploy.dir" value="${jboss.dir}/server/default/deploy" />
   <property name="nuxeo.ear" value="nuxeo.ear" />
   <property name="mvn.opts" value="" />
-  <property name="lm.portal.dir.web.module" value="${lm.portal.dir}/web/modules/org.nuxeo.opensocial.spaces" />
-  <property name="webeng.dir" value="${jboss.dir}/server/default/deploy" />
+	
+  <property name="webengine.bundle.dir" value="${webengine.dir}/bundles"/>
 
   <condition property="osfamily-unix">
     <os family="unix" />
@@ -29,6 +28,8 @@
   </condition>
 
   <target name="deploy" depends="install,copy" description="Build and copy to JBoss" />
+	
+  <target name="deploy-webengine" depends="install,copy-webengine" description="Build and copy to Web Engine"/>
 
   <target name="install" depends="install-unix,install-windows" description="Build" />
   <target name="install-unix" if="osfamily-unix">
@@ -47,9 +48,11 @@
   </target>
 
   <target name="copy" description="Copy files to JBoss">
-
-    <echo message="${name}" />
-    <copy todir="${lm.portal.dir}/bundles/" overwrite="true">
+    <delete>
+      <!-- delete old versions of the project -->
+      <fileset file="${deploy.dir}/${nuxeo.ear}/plugins/${name}-*.jar" />
+    </delete>
+    <copy todir="${deploy.dir}/${nuxeo.ear}/plugins/" overwrite="true">
       <fileset dir="${build.dir}" casesensitive="yes">
         <include name="${name}-*.jar" />
         <exclude name="${name}-*-sources.jar" />
@@ -57,6 +60,19 @@
     </copy>
     <!-- Could copy other files to .../config too -->
   </target>
+	
+	<target name="copy-webengine" depends="install" description="Copy files to webengine">
+		<delete>
+	  		<!-- delete old version of the bundle -->
+			<fileset file="${webengine.bundle.dir}/${name}-*.jar"/>
+		</delete>
+		<copy todir="${webengine.bundle.dir}/" overwrite="true">
+	  	  <fileset dir="${build.dir}" casesensitive="yes">
+	  	    <include name="${name}-*.jar"/>
+	  	    <exclude name="${name}-*-sources.jar"/>
+	  	  </fileset>
+		</copy>
+	  </target>
 
   <target name="eclipseeclipse" depends="eclipseeclipse-unix,eclipseeclipse-windows" description="Build" />
   <target name="eclipseeclipse-unix" if="osfamily-unix">
@@ -74,10 +90,42 @@
     </exec>
   </target>
 
-  <target name="web" description="Copy resources to module">
-    <copy todir="${lm.portal.dir.web.module}" overwrite="true">
-      <fileset dir="${build.dir}/classes" />
+	 <target name="copyJartoJboss" description="Copy resources to mjboss">
+	    <copy todir="${jboss.dir.plugins}" overwrite="true">
+   	 <fileset dir="${build.dir}" casesensitive="yes">
+	        <include name="${name}-*.jar" /> 
+	      </fileset>    	
+	    </copy>
+	  </target>  
+	
+  <target name="web" description="Copy web files to a live JBoss">
+    <copy todir="${deploy.dir}/${nuxeo.ear}/nuxeo.war" overwrite="true">
+      <fileset dir="${basedir}/src/main/resources/nuxeo.war/" />
     </copy>
   </target>
+	
+	<target name="seam" depends="clean-seam-hotdeploy-dir">
+	 <antcall target="maven">
+	   <param name="mvn.lifecycle" value="clean"/>
+	 </antcall>
+	 <antcall target="maven">
+	   <param name="mvn.lifecycle" value="compile"/>
+	 </antcall>
+	 <echo message="Deploy Seam components in ${seam.hotdeploy.dir}"/>
+	 <copy todir="${seam.hotdeploy.dir}" flatten="false">
+	   <fileset dir="./target/classes">
+	     <include name="**/*.class"/>
+	   </fileset>
+	 </copy>
+	 <get dest="./seam_hotdeploy_result.html" src="http://127.0.0.1:8080/nuxeo/restAPI/seamReload" username="Administrator" password="Administrator"/>
+	</target>
+
+	<target name="clean-seam-hotdeploy-dir">
+	 <delete>
+	   <fileset dir="${seam.hotdeploy.dir}">
+	     <include name="*"/>
+	   </fileset>
+	 </delete>
+	</target>
 
 </project>

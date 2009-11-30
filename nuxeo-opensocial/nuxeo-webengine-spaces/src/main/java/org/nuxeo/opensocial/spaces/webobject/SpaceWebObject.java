@@ -110,7 +110,7 @@ public class SpaceWebObject extends DocumentObject {
 
       //JIRA WEB-279 => now use RequestAttribute
       if (space.getTheme() != null) {
-        getContext().getRequest().setAttribute("org.nuxeo.theme.theme", space.getTheme());
+        getContext().getRequest().setAttribute("org.nuxeo.theme.theme", space.getTheme()+"/default");
         LOGGER.debug("setting theme from space in context request wall again "+space.getTheme());
       } else {
         LOGGER.debug("no theme found from space ");
