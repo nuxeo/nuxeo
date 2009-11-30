@@ -42,6 +42,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-query</artifactId>
       <scope>test</scope>
