@@ -32,4 +32,17 @@
 
   <ui:include src="/pagination/pageNavigationControlsBottom.xhtml" />
 
+  <div>
+      <a4j:form id="deleteButton">
+        <p style="margin: 1em;">
+        <a4j:commandLink styleClass="button"
+            action="#{bulkSelectActions.deleteSelection}"
+            reRender="documentsList, assetView, deleteButton"
+            rendered="#{documents.rowCount != 0}">
+          <h:outputText value="#{messages['command.delete']}"/>
+        </a4j:commandLink>
+      </p>
+    </a4j:form>
+  </div>
+
 </div>
