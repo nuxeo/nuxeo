@@ -28,9 +28,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.restlet.Restlet;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 import org.w3c.dom.Element;
 
 import com.noelios.restlet.ext.servlet.ServletCall;
@@ -84,7 +87,11 @@ public class BaseNuxeoRestlet extends Restlet {
             error.setAttribute("class", classMessage);
         }
         result.setRootElement((org.dom4j.Element) error);
-        res.setEntity(result.asXML(), MediaType.TEXT_XML);
+        
+        Representation rep = new StringRepresentation(result.asXML(),
+                MediaType.APPLICATION_XML);
+        rep.setCharacterSet(CharacterSet.UTF_8);
+        res.setEntity(rep);
     }
 
     protected static HttpServletRequest getHttpRequest(Request req) {

@@ -41,9 +41,12 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
 import org.nuxeo.ecm.platform.ui.web.util.FileUploadHelper;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 
 /**
  * Restlet to import files as nuxeo documents using the pluggable FileManager
@@ -127,6 +130,9 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
                 }
             }
         }
-        res.setEntity(result.asXML(), MediaType.TEXT_XML);
+        Representation rep = new StringRepresentation(result.asXML(),
+                MediaType.APPLICATION_XML);
+        rep.setCharacterSet(CharacterSet.UTF_8);
+        res.setEntity(rep);
     }
 }

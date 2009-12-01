@@ -25,6 +25,8 @@ public class ButtonTag extends UIComponentELTag {
     private String switchTo;
 
     private String link;
+    
+    private String menu;
 
     private String classNames;
 
@@ -59,6 +61,11 @@ public class ButtonTag extends UIComponentELTag {
         if (link != null) {
             component.getAttributes().put("link", link);
         }
+        
+        // the menu
+        if (menu != null) {
+            component.getAttributes().put("menu", menu);
+        }
 
         // CSS class names
         if (classNames != null) {
@@ -73,6 +80,7 @@ public class ButtonTag extends UIComponentELTag {
         controlledBy = null;
         switchTo = null;
         link = null;
+        menu = null;
         classNames = null;
     }
 
@@ -106,6 +114,14 @@ public class ButtonTag extends UIComponentELTag {
 
     public void setLink(String link) {
         this.link = link;
+    }
+    
+    public String getMenu() {
+        return menu;
+    }
+
+    public void setMenu(String menu) {
+        this.menu = menu;
     }
 
     public String getClassNames() {

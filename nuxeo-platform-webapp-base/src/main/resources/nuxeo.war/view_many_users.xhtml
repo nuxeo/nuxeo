@@ -1,0 +1,37 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <ui:composition template="/view_users_template.xhtml">
+  
+    <ui:param name="userListStyleClass" value="tabsContent" />
+
+    <ui:define name="letters">
+      <div class="tabsBar subtabsBar">
+        <h:form>
+          <ul>
+            <c:set var="selectedLetter" value="#{userManagerActions.selectedLetter}" />
+            <c:forEach var="letter" items="#{userManagerActions.catalogLetters}">
+        
+              <c:set var="cssClass" value="" />
+              <c:if test="#{letter == selectedLetter}">
+                <c:set var="cssClass" value="selected" />
+              </c:if>
+          
+              <li class="#{cssClass}">
+                <h:commandLink action="#{userManagerActions.viewUsers}">
+                  <h:outputText value="#{letter}" />
+                  <f:param name="newSelectedLetter" value="#{letter}"/>
+                </h:commandLink>
+              </li>        
+           </c:forEach>        
+          </ul>
+        </h:form>
+      </div>
+      <div style="clear:both"></div>
+    </ui:define>
+
+  </ui:composition>
+  
+</div>

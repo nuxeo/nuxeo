@@ -39,9 +39,12 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.runtime.api.Framework;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 
 /**
  * Basic OpenSearch REST fulltext search implementation using the RSS 2.0
@@ -166,7 +169,10 @@ public class OpenSearchRestlet extends BaseNuxeoRestlet {
                         + DocumentModelFunctions.documentUrl(doc));
             }
 
-            res.setEntity(resultDocument.asXML(), MediaType.TEXT_XML);
+            Representation rep = new StringRepresentation(resultDocument.asXML(),
+                    MediaType.APPLICATION_XML);
+            rep.setCharacterSet(CharacterSet.UTF_8);
+            res.setEntity(rep);
 
         } catch (Exception e) {
             handleError(res, e);

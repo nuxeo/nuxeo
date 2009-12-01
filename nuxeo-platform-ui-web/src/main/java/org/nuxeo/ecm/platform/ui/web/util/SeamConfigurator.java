@@ -33,7 +33,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.core.Init;
-import org.nuxeo.ecm.platform.web.common.tx.TransactionsHelper;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Update Seam configuration as needed when app starts
@@ -57,15 +57,11 @@ public class SeamConfigurator implements Serializable {
     public void init() {
         init.setJbpmInstalled(false);
         try {
-            if (TransactionsHelper.getUserTransaction()==null) {
-                log.info("Desactivate Seam transaction support (no tx manager)");
-                init.setTransactionManagementEnabled(false);
-            } else {
-                log.info("Activate Seam transaction support");
-                init.setTransactionManagementEnabled(true);
-            }
+            TransactionHelper.lookupUserTransaction();
+            log.info("Activate Seam transaction support");
+            init.setTransactionManagementEnabled(true);
         } catch (NamingException e) {
-            log.info("Desactivate Seam transaction support  (no tx manager)");
+            log.info("Deactivate Seam transaction support (no tx manager)");
             init.setTransactionManagementEnabled(false);
         }
     }

@@ -1,0 +1,13 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <ui:composition template="/view_group_template.xhtml">
+    <ui:param name="currentGroupSubTab" value="view" />
+
+    <ui:define name="mainContent">
+      <nxl:layout name="group" mode="view" value="#{groupManagerActions.selectedGroup}" />
+    </ui:define>
+
+  </ui:composition>
+  
+</div>

@@ -37,10 +37,13 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 
 /**
  * Allow the creation of a new document of the specified document type
@@ -118,7 +121,10 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
             docElement.addElement(docRefTag).setText(newDm.getRef().toString());
             docElement.addElement(docTitleTag).setText(newDm.getTitle());
             docElement.addElement(docPathTag).setText(newDm.getPathAsString());
-            res.setEntity(resultDocument.asXML(), MediaType.TEXT_XML);
+            Representation rep = new StringRepresentation(resultDocument.asXML(),
+                    MediaType.APPLICATION_XML);
+            rep.setCharacterSet(CharacterSet.UTF_8);
+            res.setEntity(rep);
         } catch (ClientException e) {
             handleError(res, e);
         }
