@@ -627,6 +627,9 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         } else {
             sb.append("&");
         }
+        if (value == null) {
+            return;
+        }
         sb.append(name);
         sb.append("=");
         try {
@@ -658,7 +661,9 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String liveEditUrl(DocumentModel doc, String schemaName,
             String blobFieldName, String filenameFieldName)
             throws ClientException {
-
+        if (doc == null) {
+            return ""; // JSF DebugUtil.printTree may call this
+        }
         StringBuilder queryParamBuilder = new StringBuilder();
         addQueryParameter(queryParamBuilder, ACTION, ACTION_EDIT_DOCUMENT, true);
         addQueryParameter(queryParamBuilder, REPO_ID, doc.getRepositoryName(),
