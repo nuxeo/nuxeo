@@ -64,17 +64,33 @@ public class TransactionHelper {
     public static UserTransaction lookupUserTransaction()
             throws NamingException {
         InitialContext context = new InitialContext();
+        int i = 0;
         for (String name : UT_NAMES) {
             try {
                 UserTransaction userTransaction = (UserTransaction) context.lookup(name);
                 if (userTransaction != null) {
+                    if (i != 0) {
+                        // put successful name first for next time
+                        UT_NAMES[i] = UT_NAMES[0];
+                        UT_NAMES[0] = name;
+                    }
                     return userTransaction;
                 }
             } catch (NamingException e) {
                 // try next one
             }
+            i++;
         }
         throw new NamingException("UserTransaction not found in JNDI");
+    }
+
+    /**
+     * Returns the UserTransaction JNDI binding name.
+     * <p>
+     * Assumes {@link #lookupUserTransaction} has been called once before.
+     */
+    public static String getUserTransactionJNDIName() {
+        return UT_NAMES[0];
     }
 
     /**
@@ -86,15 +102,22 @@ public class TransactionHelper {
     public static TransactionManager lookupTransactionManager()
             throws NamingException {
         InitialContext context = new InitialContext();
+        int i = 0;
         for (String name : TM_NAMES) {
             try {
                 TransactionManager transactionManager = (TransactionManager) context.lookup(name);
                 if (transactionManager != null) {
+                    if (i != 0) {
+                        // put successful name first for next time
+                        TM_NAMES[i] = TM_NAMES[0];
+                        TM_NAMES[0] = name;
+                    }
                     return transactionManager;
                 }
             } catch (NamingException e) {
                 // try next one
             }
+            i++;
         }
         throw new NamingException("TransactionManager not found in JNDI");
     }
@@ -144,10 +167,12 @@ public class TransactionHelper {
         try {
             lookupUserTransaction().begin();
             return true;
+        } catch (NamingException e) {
+            // no transaction
         } catch (Exception e) {
             log.error("Unable to start transaction", e);
-            return false;
         }
+        return false;
     }
 
     /**
@@ -169,6 +194,8 @@ public class TransactionHelper {
                 }
                 ut.rollback();
             }
+        } catch (NamingException e) {
+            // no transaction
         } catch (Exception e) {
             log.error("Unable to commit/rollback transaction", e);
         }
@@ -184,10 +211,12 @@ public class TransactionHelper {
         try {
             lookupUserTransaction().setRollbackOnly();
             return true;
+        } catch (NamingException e) {
+            // no transaction
         } catch (Exception e) {
             log.error("Could not mark transaction as rollback only", e);
-            return false;
         }
+        return false;
     }
 
 }
