@@ -13,6 +13,8 @@ import java.util.Set;
 
 import javax.faces.application.FacesMessage;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -41,6 +43,8 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 public class BulkSelectActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Log log = LogFactory.getLog(BulkSelectActions.class);
 
     protected static final String CACHED_SELECTED_DOCUMENT_IDS = "cachedSelectedDocumentIds";
 
@@ -125,7 +129,7 @@ public class BulkSelectActions implements Serializable {
         }
     }
 
-    private List<DocumentModel> filterDeleteListAccordingToPerms(
+    protected List<DocumentModel> filterDeleteListAccordingToPerms(
             List<DocumentModel> docsToDelete) throws ClientException {
         // first filter on parents
         List<DocumentModel> docsThatCanBeDeletedOnParent = filterDeleteListAccordingToPermsOnParents(docsToDelete);
@@ -195,7 +199,7 @@ public class BulkSelectActions implements Serializable {
 
     /**
      * Tests if a document is in the working list of selected documents.
-     *
+     * 
      * @param String docId The DocumentRef of the document
      * @param String listName The name of the working list of selected
      *            documents. If null, the default list will be used.
@@ -229,7 +233,7 @@ public class BulkSelectActions implements Serializable {
 
     /**
      * Clears the working list of selected documents.
-     *
+     * 
      * @param String lName The name of the working list of selected documents.
      *            If null, the default list will be used.
      */
@@ -246,9 +250,9 @@ public class BulkSelectActions implements Serializable {
     // TODO: move this API to documentsListsManager directly
     /**
      * Tests whether the current working list of selected documents is empty.
-     *
-     * @param String listName The name of the working list of selected documents.
-     *            If null, the default list will be used.
+     * 
+     * @param String listName The name of the working list of selected
+     *            documents. If null, the default list will be used.
      * @return boolean true if empty, false otherwise
      */
     public boolean getIsCurrentWorkingListEmpty(String listName) {
@@ -260,6 +264,21 @@ public class BulkSelectActions implements Serializable {
             return true;
         }
         return selectedDocumentsList.isEmpty();
+    }
+
+    public void ctrlSelectDocument(DocumentModel doc, String listName) {
+        listName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
+                : listName;
+        List<DocumentModel> list = documentsListsManager.getWorkingList(listName);
+        if (list == null) {
+            log.error("no registered list with name " + listName);
+            return;
+        }
+        if (list.contains(doc)) {
+            documentsListsManager.removeFromWorkingList(listName, doc);
+        } else {
+            documentsListsManager.addToWorkingList(listName, doc);
+        }
     }
 
 }
