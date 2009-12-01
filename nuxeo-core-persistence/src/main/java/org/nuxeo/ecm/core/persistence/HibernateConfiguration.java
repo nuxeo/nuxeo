@@ -60,11 +60,13 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
 
     @XNode("datasource")
     public void setDatasource(String name) {
-       String expandedValue = Framework.expandVars(name);
-       if (expandedValue.startsWith("$")) {
-           throw new PersistenceError("Cannot expand " + name + " for datasource");
-       }
-       hibernateProperties.put("hibernate.connection.datasource", DataSourceHelper.getDataSourceJNDIName(name));
+        String expandedValue = Framework.expandVars(name);
+        if (expandedValue.startsWith("$")) {
+            throw new PersistenceError("Cannot expand " + name
+                    + " for datasource");
+        }
+        hibernateProperties.put("hibernate.connection.datasource",
+                DataSourceHelper.getDataSourceJNDIName(name));
     }
 
     @XNodeMap(value = "properties/property", key = "@name", type = Properties.class, componentType = String.class)
@@ -74,12 +76,12 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     public final List<Class<?>> annotedClasses = new ArrayList<Class<?>>();
 
     public void addAnnotedClass(Class<?> annotedClass) {
-       annotedClasses.add(annotedClass);
+        annotedClasses.add(annotedClass);
     }
 
     public void removeAnnotedClass(Class<?> annotedClass) {
         annotedClasses.remove(annotedClass);
-     }
+    }
 
     protected Ejb3Configuration cfg;
 
@@ -106,7 +108,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         if (cfg == null) {
             setupConfiguration();
         }
-        Map<String,String> properties = new HashMap<String,String>();
+        Map<String, String> properties = new HashMap<String, String>();
         if (txType == null) {
             txType = getTxType();
         }
@@ -150,7 +152,8 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         try {
             return (HibernateConfiguration) map.load(location);
         } catch (Exception e) {
-            throw new PersistenceError("Cannot load hibernate configuration from " + location, e);
+            throw new PersistenceError(
+                    "Cannot load hibernate configuration from " + location, e);
         }
     }
 
