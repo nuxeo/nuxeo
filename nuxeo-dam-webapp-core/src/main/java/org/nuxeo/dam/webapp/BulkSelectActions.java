@@ -22,6 +22,7 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.dam.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -55,6 +56,9 @@ public class BulkSelectActions implements Serializable {
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
 
+    @In(create = true)
+    protected DocumentActions documentActions;
+
     public void deleteSelection() throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
             deleteSelection(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION));
@@ -64,6 +68,10 @@ public class BulkSelectActions implements Serializable {
     public void deleteSelection(List<DocumentModel> docsToDelete)
             throws ClientException {
         if (null != docsToDelete) {
+
+            if (docsToDelete.contains(documentActions.getCurrentSelection())) {
+                documentActions.setCurrentSelection(null);
+            }
 
             List<DocumentModel> docsThatCanBeDeleted = filterDeleteListAccordingToPerms(docsToDelete);
 
@@ -187,7 +195,7 @@ public class BulkSelectActions implements Serializable {
 
     /**
      * Tests if a document is in the working list of selected documents.
-     * 
+     *
      * @param String docId The DocumentRef of the document
      * @param String listName The name of the working list of selected
      *            documents. If null, the default list will be used.
@@ -221,7 +229,7 @@ public class BulkSelectActions implements Serializable {
 
     /**
      * Clears the working list of selected documents.
-     * 
+     *
      * @param String lName The name of the working list of selected documents.
      *            If null, the default list will be used.
      */
@@ -238,7 +246,7 @@ public class BulkSelectActions implements Serializable {
     // TODO: move this API to documentsListsManager directly
     /**
      * Tests whether the current working list of selected documents is empty.
-     * 
+     *
      * @param String listName The name of the working list of selected documents.
      *            If null, the default list will be used.
      * @return boolean true if empty, false otherwise

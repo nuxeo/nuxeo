@@ -191,6 +191,7 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
         resultsProvidersCache.invalidate(qm.getDescriptor().getName());
     }
 
+    @Observer(EventNames.DOCUMENT_CHILDREN_CHANGED)
     public void invalidateProvider() {
         resultsProvidersCache.invalidate(QUERY_MODEL_NAME);
     }

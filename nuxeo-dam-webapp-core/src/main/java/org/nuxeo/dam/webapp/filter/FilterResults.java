@@ -20,6 +20,7 @@ package org.nuxeo.dam.webapp.filter;
 import java.io.Serializable;
 import java.util.List;
 
+import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.dam.platform.context.ImportActionsBean;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
@@ -29,6 +30,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -47,6 +49,8 @@ public class FilterResults implements SelectDataModelListener, Serializable {
 
     public static final String FILTERED_DOCUMENT_PROVIDER_NAME = "FILTERED_DOCUMENTS";
 
+    public static final String FILTER_SELECT_MODEL_NAME = "filterSelectModel";
+
     @In(required = false, create = true)
     protected transient DocumentsListsManager documentsListsManager;
 
@@ -55,7 +59,8 @@ public class FilterResults implements SelectDataModelListener, Serializable {
 
     protected transient PagedDocumentsProvider provider;
 
-    @Factory(value = "filterSelectModel", scope = ScopeType.EVENT)
+
+  @Factory(value = FILTER_SELECT_MODEL_NAME, scope = ScopeType.EVENT)
     public SelectDataModel getResultsSelectModelFiltered() throws ClientException {
         return getResultsSelectModel(FILTERED_DOCUMENT_PROVIDER_NAME);
     }
@@ -105,6 +110,11 @@ public class FilterResults implements SelectDataModelListener, Serializable {
         documentsListsManager.resetWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         resultsProvidersCache.invalidate(FILTERED_DOCUMENT_PROVIDER_NAME);
         provider = null;
+    }
+
+    @Observer(EventNames.DOCUMENT_CHILDREN_CHANGED)
+    public void invalidateSelectDataModel() {
+        Contexts.getEventContext().remove(FILTER_SELECT_MODEL_NAME);
     }
 
 }

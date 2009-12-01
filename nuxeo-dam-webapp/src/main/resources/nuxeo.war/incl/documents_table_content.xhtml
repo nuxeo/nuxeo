@@ -20,16 +20,16 @@
 	  <ui:decorate template="/incl/documents_table.xhtml" >
 	    <ui:param name="documents" value="#{documents}"/>
 	  </ui:decorate>
-	</f:subview>  
+	</f:subview>
 	<f:subview id="showListThumbnail" rendered="#{webActions.showThumbnail}">
 	  <ui:decorate template="/incl/thumbnail_documents_table.xhtml" >
 	    <ui:param name="documents" value="#{documents}"/>
 	  </ui:decorate>
-	</f:subview>  
+	</f:subview>
     </a4j:outputPanel>
     </a4j:region>
   </a4j:form>
-  
+
   <ui:include src="/pagination/pageNavigationControlsBottom.xhtml" />
-  
+
 </div>
