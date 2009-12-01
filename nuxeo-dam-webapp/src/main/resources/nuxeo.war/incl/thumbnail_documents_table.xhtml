@@ -17,15 +17,20 @@
     rowKeyVar="rowKey"
     columns="4"
     rendered="#{documents.rowCount > 0}">
+    <a4j:support event="onclick" reRender="dataTable"
+      onclick="if (event.ctrlKey || event.metaKey) {return false;};"
+      action="#{bulkSelectActions.clearWorkingList('CURRENT_SELECTION')}" />
 
       <rich:panel>
-        <div docref="#{row.data.ref}" providername="#{providerName}"
-             class="thumbViewElement #{nxu:test(documentActions.currentSelection == row.data, 'selected', '')} #{nxu:test(bulkSelectActions.getIsCurrentSelectionInWorkingList(row.data.ref, 'CURRENT_SELECTION'), 'selectedCtrlClick', '')}">
+        <div class="thumbViewElement #{nxu:test(documentActions.currentSelection == row.data, 'selected', '')} #{nxu:test(bulkSelectActions.getIsCurrentSelectionInWorkingList(row.data.ref, 'CURRENT_SELECTION'), 'selectedCtrlClick', '')}">
+        <a4j:support event="onclick" reRender="dataTable"
+          onclick="if (!event.ctrlKey &amp;&amp; !event.metaKey) {return false;};"
+          action="#{bulkSelectActions.ctrlSelectDocument(row.data, 'CURRENT_SELECTION')}" />
+
         <h:panelGrid>
-          <!-- event.preventDefault() and event.stopPropagation()
-            to avoid conflict with ctrlclick (un)selection  -->
           <a4j:commandLink id="imageLink" styleClass="thumbViewPictureLink"
             action="#{documentActions.setCurrentSelection(row.data)}"
+            onclick="if (event.ctrlKey || event.metaKey) {return false;} try {event.stopPropagation();} catch (err) {event.cancelBubble = true;}"
             reRender="dataTable, selectionView">
             <nxh:graphicImage id="theImage"
               url="#{nxd:fileUrl('downloadPicture', row.data, 'Thumbnail:content', row.data.dublincore.modified)}?conversationId=#{conversation.id}"
@@ -50,10 +55,11 @@
           <h:panelGroup>
             <span id="title_#{row.data.ref}" class="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
             <a4j:commandLink id="titleLink"
-                action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
-                <nxh:outputText value="#{documentActions.getTitleCropped(row.data, 15)}"
-                  title="#{row.data.dc.title}"
-                  styleClass="thumbViewTitle"/>
+              onclick="if (event.ctrlKey || event.metaKey) {return false;} try {event.stopPropagation();} catch (err) {event.cancelBubble = true;}"
+              action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
+              <nxh:outputText value="#{documentActions.getTitleCropped(row.data, 15)}"
+                title="#{row.data.dc.title}"
+                styleClass="thumbViewTitle"/>
               </a4j:commandLink>
             </span>
           </h:panelGroup>
