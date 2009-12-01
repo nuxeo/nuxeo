@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.persistence;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.TransactionRequiredException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +32,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 public class PersistenceProvider {
 
     protected static final Log log = LogFactory.getLog(PersistenceProvider.class);
+
     protected EntityManagerFactory emf;
 
     protected final EntityManagerFactoryProvider emfProvider;
@@ -44,7 +46,7 @@ public class PersistenceProvider {
             throw new IllegalArgumentException("emfProvider not set");
         }
         if (emf == null) {
-            synchronized(PersistenceProvider.class) {
+            synchronized (PersistenceProvider.class) {
                 if (emf == null) {
                     emf = emfProvider.getFactory();
                 }
@@ -69,52 +71,64 @@ public class PersistenceProvider {
         return emf.createEntityManager();
     }
 
-    protected ClassLoader lastLoader;
-
-    public EntityManager acquireEntityManager() {
-        return doAcquireEntityManager();
+    protected EntityTransaction getTransaction(EntityManager em) {
+        try {
+            return em.getTransaction();
+        } catch (IllegalStateException e) {
+            return null; // JTA container, no manual access to transaction
+        }
     }
 
     public EntityManager acquireEntityManagerWithActiveTransaction() {
         EntityManager em = doAcquireEntityManager();
-        EntityTransaction et = em.getTransaction();
-        et.begin();
+        doBegin(em);
         return em;
     }
 
+    protected void doBegin(EntityManager em) {
+        EntityTransaction et = getTransaction(em);
+        if (et != null) {
+            et.begin();
+        }
+    }
+
     protected void doCommit(EntityManager em) {
-        EntityTransaction et = em.getTransaction();
-        if (!et.isActive()) {
+        try {
+            em.flush();
+        } catch (TransactionRequiredException e) {
+            // ignore
+        }
+        EntityTransaction et = getTransaction(em);
+        if (et == null || !et.isActive()) {
             return;
         }
-        em.flush();
         et.commit();
     }
 
     protected void doRollback(EntityManager em) {
-        EntityTransaction et = em.getTransaction();
-        if (!et.isActive()) {
+        try {
+            em.flush();
+        } catch (TransactionRequiredException e) {
+            // ignore
+        }
+        EntityTransaction et = getTransaction(em);
+        if (et == null || !et.isActive()) {
             return;
         }
-        em.flush();
         et.rollback();
     }
 
-    public void releaseEntityManager(EntityManager em) {
+    protected void releaseEntityManager(EntityManager em) {
+        if (!em.isOpen()) {
+            return;
+        }
         try {
-            if (!em.isOpen()) {
-                return;
-            }
-            try {
-               doCommit(em);
-            } finally {
-                if (em.isOpen()) {
-                    em.clear();
-                    em.close();
-                }
-            }
+            doCommit(em);
         } finally {
-            Thread.currentThread().setContextClassLoader(lastLoader);
+            if (em.isOpen()) {
+                em.clear();
+                em.close();
+            }
         }
     }
 
@@ -136,14 +150,15 @@ public class PersistenceProvider {
         T runWith(EntityManager em) throws ClientException;
     }
 
-    public <T> T run(Boolean needActiveSession, RunCallback<T> callback) throws ClientException {
+    public <T> T run(Boolean needActiveSession, RunCallback<T> callback)
+            throws ClientException {
         Thread myThread = Thread.currentThread();
         ClassLoader lastLoader = myThread.getContextClassLoader();
         myThread.setContextClassLoader(getClass().getClassLoader());
-        try {  // insure context class loader restoring
+        try { // insure context class loader restoring
             EntityManager em = doAcquireEntityManager();
             if (needActiveSession) {
-                em.getTransaction().begin();
+                doBegin(em);
             }
             try { // insure entity manager releasing
                 return callback.runWith(em);
@@ -159,16 +174,18 @@ public class PersistenceProvider {
         void runWith(EntityManager em) throws ClientException;
     }
 
-    public void run(Boolean needActiveSession, RunVoid callback) throws ClientException {
+    public void run(Boolean needActiveSession, RunVoid callback)
+            throws ClientException {
         Thread myThread = Thread.currentThread();
         ClassLoader lastLoader = myThread.getContextClassLoader();
         myThread.setContextClassLoader(getClass().getClassLoader());
-        try {  // insure context class loader restoring
+        try { // insure context class loader restoring
             EntityManager em = doAcquireEntityManager();
             if (needActiveSession) {
-                em.getTransaction().begin();
-            } try { // insure entity manager releasing
-               callback.runWith(em);
+                doBegin(em);
+            }
+            try { // insure entity manager releasing
+                callback.runWith(em);
             } finally {
                 releaseEntityManager(em);
             }

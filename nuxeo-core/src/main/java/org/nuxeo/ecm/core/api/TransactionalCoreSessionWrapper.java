@@ -81,7 +81,8 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
             // first call in thread
             try {
                 Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
-                if (tx != null) {
+                if (tx != null
+                        && tx.getStatus() != Status.STATUS_MARKED_ROLLBACK) {
                     tx.registerSynchronization(this);
                     session.afterBegin();
                     threadBound.set(Boolean.TRUE);

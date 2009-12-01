@@ -27,11 +27,18 @@ import java.util.Properties;
 import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceUnitTransactionType;
+import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.HibernateException;
+import org.hibernate.cfg.Environment;
 import org.hibernate.ejb.Ejb3Configuration;
 import org.hibernate.ejb.HibernatePersistence;
+import org.hibernate.transaction.JBossTransactionManagerLookup;
+import org.hibernate.transaction.JNDITransactionManagerLookup;
+import org.hibernate.transaction.JTATransactionFactory;
+import org.hibernate.transaction.TransactionManagerLookup;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -114,8 +121,42 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         }
         if (txType != null) {
             properties.put(HibernatePersistence.TRANSACTION_TYPE, txType);
+            if (txType.equals(JTA)) {
+                properties.put(Environment.TRANSACTION_STRATEGY,
+                        JTATransactionFactory.class.getName());
+                properties.put(Environment.TRANSACTION_MANAGER_STRATEGY,
+                        NuxeoTransactionManagerLookup.class.getName());
+            }
         }
         return cfg.createEntityManagerFactory(properties);
+    }
+
+    /**
+     * Hibernate Transaction Manager Lookup that uses our framework.
+     */
+    public static class NuxeoTransactionManagerLookup implements
+            TransactionManagerLookup {
+        public NuxeoTransactionManagerLookup() {
+            // look up UserTransaction once to know its JNDI name
+            try {
+                TransactionHelper.lookupUserTransaction();
+            } catch (NamingException e) {
+                // ignore
+            }
+        }
+
+        public TransactionManager getTransactionManager(Properties props)
+                throws HibernateException {
+            try {
+                return TransactionHelper.lookupTransactionManager();
+            } catch (NamingException e) {
+                throw new HibernateException(e.getMessage());
+            }
+        }
+
+        public String getUserTransactionName() {
+            return TransactionHelper.getUserTransactionJNDIName();
+        }
     }
 
     public EntityManagerFactory getFactory() {
