@@ -1,7 +1,5 @@
 <div xmlns:h="http://java.sun.com/jsf/html">
 
-  <script type="text/javascript" src="#{baseURL}seam/resource/remoting/interface.js?documentActions"></script>
-
   <script type="text/javascript">
     <h:outputText
       value="var currentConversationId='#{org.jboss.seam.core.manager.currentConversationId}';"/>
@@ -10,6 +8,8 @@
       // set the conversation id before doing any call
       Seam.Remoting.getContext().setConversationId(currentConversationId);
   </script>
+  <script type="text/javascript" src="#{baseURL}seam/resource/remoting/interface.js?documentActions&amp;bulkSelectActions&amp;"></script>
 
-  <script type="text/javascript" src="#{baseURL}/js/?scripts=tableSelections.js|importSetForm.js"></script>
+  <script type="text/javascript">jQuery.noConflict();</script>
+  <script type="text/javascript" src="#{baseURL}js/?scripts=tableSelections.js|tableCtrlSelection.js|importSetForm.js"></script>
 </div>

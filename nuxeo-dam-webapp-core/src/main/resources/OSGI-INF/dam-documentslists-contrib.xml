@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webapp.documentsLists.DefaultDocumentsLists">
+
+  <documentation>
+    Default DocumentsLists used in DAM
+
+    @author
+    <a href="mailto:td@nuxeo.com">Nuxeo contributors</a>
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.webapp.documentsLists.DocumentsListsService"
+    point="list">
+
+    <documentsList name="CURRENT_SELECTION">
+      <events>
+        <event>folderishDocumentSelectionChanged</event>
+        <event>searchPerformed</event>
+      </events>
+      <isSession>false</isSession>
+    </documentsList>
+
+  </extension>
+
+</component>
+

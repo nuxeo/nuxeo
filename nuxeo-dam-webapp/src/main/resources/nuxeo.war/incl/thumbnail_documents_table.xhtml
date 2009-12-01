@@ -9,16 +9,27 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:rich="http://richfaces.org/rich">
 
+  <div id="dataTableContainer">
   <rich:dataGrid
     id="dataTable"
     value="#{documents.rows}"
     var="row"
+    rowKeyVar="rowKey"
     columns="4"
     rendered="#{documents.rowCount > 0}">
 
-      <rich:panel><div class="thumbViewElement #{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}" docRef="#{row.data.ref}">
+      <rich:panel>
+        <div docref="#{row.data.ref}" providername="#{providerName}"
+             class="thumbViewElement #{nxu:test(documentActions.currentSelection == row.data, 'selected', '')} #{nxu:test(bulkSelectActions.getIsCurrentSelectionInWorkingList(row.data.ref, 'CURRENT_SELECTION'), 'selectedCtrlClick', '')}">
         <h:panelGrid>
-          <a4j:commandLink id="imageLink" styleClass="thumbViewPictureLink"  action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
+          <!-- event.preventDefault() and event.stopPropagation()
+            to avoid conflict with ctrlclick (un)selection  -->
+          <a4j:commandLink id="imageLink" styleClass="thumbViewPictureLink"
+            action="#{documentActions.setCurrentSelection(row.data)}"
+            onclick="if(event.ctrlKey || event.metaKey) {return false;}
+            else {event.stopPropagation();}"
+            oncomplete="installCtrlClickSelectEventListeners();installCtrlClickUnSelectEventListeners();"
+            reRender="dataTable, selectionView">
             <nxh:graphicImage id="theImage"
               url="#{nxd:fileUrl('downloadPicture', row.data, 'Thumbnail:content', row.data.dublincore.modified)}?conversationId=#{conversation.id}"
               style="max-height: 80px; max-width:125px;"
@@ -41,7 +52,10 @@
           </a4j:commandLink>
           <h:panelGroup>
             <span id="title_#{row.data.ref}" class="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
-              <a4j:commandLink id="titleLink" action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
+              <a4j:commandLink id="titleLink" onclick="if(event.ctrlKey || event.metaKey) {return false;}
+                else {event.stopPropagation();}"
+                oncomplete="installCtrlClickSelectEventListeners();installCtrlClickUnSelectEventListeners();"
+                action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
                 <nxh:outputText value="#{documentActions.getTitleCropped(row.data, 15)}"
                   title="#{row.data.dc.title}"
                   styleClass="thumbViewTitle"/>
@@ -50,7 +64,7 @@
           </h:panelGroup>
           <h:panelGroup rendered="#{!empty row.data.dam_common.author}" id="damcAuthor">
             <h:outputText class="thumbViewlabel" value="#{messages['label.content.thumbnail.by']} " />
-	        <h:outputText value="#{row.data.dam_common.author}" />
+          <h:outputText value="#{row.data.dam_common.author}" />
           </h:panelGroup>
           <h:panelGroup rendered="#{!empty row.data.dam_common.authoringDate}" id="damcAuthoringDate">
             <h:outputText class="thumbViewlabel" value="#{messages['label.content.thumbnail.creation']} " />
@@ -70,5 +84,10 @@
       </div></rich:panel>
 
   </rich:dataGrid>
-
+  <script
+	type="text/javascript">
+	installCtrlClickSelectEventListeners();
+	installCtrlClickUnSelectEventListeners();</script>
+  </div>
+  <a4j:log level="ALL" width="400" height="200"/>
 </div>

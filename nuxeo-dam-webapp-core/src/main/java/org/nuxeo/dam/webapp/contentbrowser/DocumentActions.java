@@ -18,7 +18,6 @@
 package org.nuxeo.dam.webapp.contentbrowser;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +34,8 @@ import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.dam.webapp.PictureActions;
 import org.nuxeo.dam.webapp.helper.DownloadHelper;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -48,13 +45,13 @@ import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
+import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
-import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -67,6 +64,7 @@ public class DocumentActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(DocumentActions.class);
 
     protected static final long BIG_FILE_SIZE_LIMIT = 1024 * 1024 * 5;
@@ -130,14 +128,15 @@ public class DocumentActions implements Serializable {
                     "could not find doc '%s' in the current page of provider '%s'",
                     docRef, providerName));
         }
-        String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
+        listName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
                 : listName;
         if (selection) {
-            documentsListsManager.addToWorkingList(lName, doc);
+            documentsListsManager.addToWorkingList(listName, doc);
         } else {
-            documentsListsManager.removeFromWorkingList(lName, doc);
+            documentsListsManager.removeFromWorkingList(listName, doc);
         }
-        return computeSelectionActions(lName);
+        // TODO: handle actions
+        return "";
     }
 
     @WebRemote
@@ -157,28 +156,13 @@ public class DocumentActions implements Serializable {
         } else {
             documentsListsManager.removeFromWorkingList(lName, documents);
         }
-        return computeSelectionActions(lName);
+        raiseEvents(currentSelection);
+        // TODO handle action management
+        return "";
     }
 
     private String handleError(String errorMessage) {
-        log.error(errorMessage);
         return "ERROR: " + errorMessage;
-    }
-
-    private String computeSelectionActions(String listName) {
-        List<Action> availableActions = webActions.getUnfiltredActionsList(listName
-                + "_LIST");
-        List<String> availableActionIds = new ArrayList<String>();
-        for (Action a : availableActions) {
-            if (a.getAvailable()) {
-                availableActionIds.add(a.getId());
-            }
-        }
-        String res = "";
-        if (!availableActionIds.isEmpty()) {
-            res = StringUtils.join(availableActionIds.toArray(), "|");
-        }
-        return res;
     }
 
     public DocumentModel getCurrentSelection() {
@@ -199,9 +183,7 @@ public class DocumentActions implements Serializable {
             webActions.setCurrentTabAction(currentAction);
             currentSelectionLink = currentAction.getLink();
         }
-
         resetData();
-
         raiseEvents(currentSelection);
     }
 
@@ -244,11 +226,11 @@ public class DocumentActions implements Serializable {
      * maximum of maxLength characters. If the Title is more than maxLength
      * characters it will return the Beginning of the title, followed by 3
      * ellipses (...) followed by the End of the title.
-     *
+     * 
      * A minimum of 6 characters is needed before cropping takes effect. If you
      * specify a maxLength of less than 5, it is ignored - in this case
      * maxLength will be set to begin at 5.
-     *
+     * 
      * @param DocumentModel document to extract the title from
      * @param int maxLength the maximum length of the title before cropping will
      *        occur
@@ -311,7 +293,6 @@ public class DocumentActions implements Serializable {
             DocumentModel doc = documentManager.getDocument(docLoc.getDocRef());
             if (doc != null) {
                 // get properties from document view
-                Blob blob = DocumentFileCodec.getBlob(doc, docView);
                 String filename = DocumentFileCodec.getFilename(doc, docView);
                 // download
                 FacesContext context = FacesContext.getCurrentInstance();
@@ -418,5 +399,4 @@ public class DocumentActions implements Serializable {
         Events eventManager = Events.instance();
         eventManager.raiseEvent(EventNames.DOCUMENT_SELECTION_CHANGED, document);
     }
-
 }
