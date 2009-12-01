@@ -3,7 +3,7 @@
   <parent>
     <artifactId>nuxeo-features-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>5.3.1-SNAPSHOT</version>
+    <version>5.3.1-20091201</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
