@@ -26,9 +26,6 @@
             to avoid conflict with ctrlclick (un)selection  -->
           <a4j:commandLink id="imageLink" styleClass="thumbViewPictureLink"
             action="#{documentActions.setCurrentSelection(row.data)}"
-            onclick="if(event.ctrlKey || event.metaKey) {return false;}
-            else {event.stopPropagation();}"
-            oncomplete="installCtrlClickSelectEventListeners();installCtrlClickUnSelectEventListeners();"
             reRender="dataTable, selectionView">
             <nxh:graphicImage id="theImage"
               url="#{nxd:fileUrl('downloadPicture', row.data, 'Thumbnail:content', row.data.dublincore.modified)}?conversationId=#{conversation.id}"
@@ -52,9 +49,7 @@
           </a4j:commandLink>
           <h:panelGroup>
             <span id="title_#{row.data.ref}" class="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
-              <a4j:commandLink id="titleLink" onclick="if(event.ctrlKey || event.metaKey) {return false;}
-                else {event.stopPropagation();}"
-                oncomplete="installCtrlClickSelectEventListeners();installCtrlClickUnSelectEventListeners();"
+            <a4j:commandLink id="titleLink"
                 action="#{documentActions.setCurrentSelection(row.data)}" reRender="dataTable, selectionView">
                 <nxh:outputText value="#{documentActions.getTitleCropped(row.data, 15)}"
                   title="#{row.data.dc.title}"
@@ -84,10 +79,5 @@
       </div></rich:panel>
 
   </rich:dataGrid>
-  <script
-	type="text/javascript">
-	installCtrlClickSelectEventListeners();
-	installCtrlClickUnSelectEventListeners();</script>
   </div>
-  <a4j:log level="ALL" width="400" height="200"/>
 </div>
