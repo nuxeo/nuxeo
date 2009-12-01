@@ -113,7 +113,9 @@ public class SeamExceptionHandlingListener extends
     @Override
     public void startHandling(Throwable t, HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
-        TransactionHelper.setTransactionRollbackOnly();
+        if (TransactionHelper.isTransactionActive()) {
+            TransactionHelper.setTransactionRollbackOnly();
+        }
     }
 
     /**
