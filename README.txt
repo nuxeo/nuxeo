@@ -16,7 +16,7 @@ in the current folder::
 
 Build with::
 
-  $ and deploy
+  $ ant deploy
 
 TODO: add here instructions for Seam and nuxeo.war hot redeployment.
 
