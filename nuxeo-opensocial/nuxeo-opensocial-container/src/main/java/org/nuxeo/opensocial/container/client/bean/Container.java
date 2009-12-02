@@ -33,6 +33,7 @@ public class Container implements IsSerializable {
   private List<GadgetBean> gadgets;
   private Boolean permission;
   private String layout;
+  private String spaceId;
   private int structure;
 
   /**
@@ -50,15 +51,20 @@ public class Container implements IsSerializable {
    * @param permission
    */
   public Container(List<GadgetBean> gadgets, int structure, String layout,
-      Boolean permission) {
+      Boolean permission, String spaceId) {
     this.gadgets = gadgets;
     this.layout = layout;
     this.structure = structure;
     this.permission = permission;
+    this.spaceId = spaceId;
   }
 
   public List<GadgetBean> getGadgets() {
     return this.gadgets;
+  }
+
+  public String getSpaceId() {
+      return spaceId;
   }
 
   public String getLayout() {

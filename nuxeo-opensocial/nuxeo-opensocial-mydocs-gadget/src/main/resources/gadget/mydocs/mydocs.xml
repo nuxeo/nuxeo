@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="My documents" height="95" scrolling="ture"
+    scaling="true" directory_title="My Documents" title_url="http://www.wofrance.fr/"
+    description="File browser in the ECM system" author="Damien METZLER"
+    author_email="damien.metzler@leroymerlin.fr" author_affiliation="Leroy Merlin"
+    author_location="Lezennes, France">
+
+    <Require feature="dynamic-height" />
+    <Require feature="settitle" />
+    <Require feature="opensocial-0.8" />
+    <Require feature="nuxeo" />
+  </ModulePrefs>
+
+  <Content type="html" view="default">
+<![CDATA[
+    <script type="text/javascript">
+      var spaceId="";
+      var path=new Array();
+    </script>
+    <script type="text/javascript" language="javascript" src="documentlists.js"></script>
+    <link rel="stylesheet" type="text/css" href="documentlists.css"/>
+    <div id="nxDocumentList">
+        <!-- <div class="pageNavigationControls">
+        <input type="image" src="/nuxeo/icons/action_page_rewind.gif" onclick="firstPage()"/>
+        <input type="image" src="/nuxeo/icons/action_page_previous.gif" onclick="prevPage()"/>
+        <span class="currentPageStatus" id="nxDocumentListPage"></span>
+        <input type="image" src="/nuxeo/icons/action_page_next.gif" onclick="nextPage()"/>
+        <input type="image" src="/nuxeo/icons/action_page_fastforward.gif"onclick="lastPage()"/>
+        </div> -->
+        <div id="nxDocumentListData">
+          <img src="/nuxeo/img/standart_waiter.gif">
+        </div>
+    </div>
+
+
+  ]]>
+  </Content>
+</Module>

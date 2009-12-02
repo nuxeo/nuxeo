@@ -119,6 +119,7 @@ public class GadgetPortlet extends Portlet {
     f.setWidth("100%");
     Element elem = f.getElement();
     elem.setId(getIframeId());
+    elem.setAttribute("name", getIframeId());
     elem.setAttribute("overflow", "hidden");
     return f;
   }
