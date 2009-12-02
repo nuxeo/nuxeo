@@ -110,6 +110,9 @@ public class PostCommitSynchronousRunner {
                     log.debug("End of post commit sync execution for listener " + listener.getName() + " " +
                             + (System.currentTimeMillis() - t1) + "ms");
                 } catch (Throwable t) {
+                    log.error(
+                            "Exception during post commit sync execution for listener "
+                                    + listener.getName(), t);
                     txh.rollbackTransaction();
                 }
             }
