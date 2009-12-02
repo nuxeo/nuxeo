@@ -44,9 +44,7 @@ public class GadgetService {
       rpc.register('show_image', @org.nuxeo.opensocial.container.client.GadgetService::showImage(Lcom/google/gwt/core/client/JsArray;I));
 
       //Nuxeo specific bindings
-      rpc.register('get_nuxeo_gadget_id', @org.nuxeo.opensocial.container.client.GadgetService::getGadgetId());
       rpc.register('get_nuxeo_space_id', @org.nuxeo.opensocial.container.client.GadgetService::getSpaceId());
-      rpc.register('get_nuxeo_workspace_id', @org.nuxeo.opensocial.container.client.GadgetService::getWorkspaceId());
     }-*/;
 
     /**
@@ -167,16 +165,10 @@ public class GadgetService {
       $wnd.gadgets.rpc.setAuthToken(iframeId, rpcToken);
     }-*/;
 
-    public static String getGadgetId() {
-        return null;
-    }
 
     public static String getSpaceId() {
         ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
         return portal.getContainer().getSpaceId();
     }
 
-    public static String getWorkspaceId() {
-        return null;
-    }
 }

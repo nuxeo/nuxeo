@@ -97,13 +97,21 @@ function handleJSONResponse(obj) {
             errors=1;
             getDocumentLists();
         } else {
-            alert("Error, no result from server : " + obj.errors);
+            displayNoWorkspaceFound();
         }
         return;
     } else {
         errors=0;
     }
     displayDocumentList(jsonObject);
+}
+
+
+function displayNoWorkspaceFound() {
+  var html = "";
+  html = "Aucun espace de travail n'a été trouvé pour cet espace";
+  _gel("nxDocumentListData").innerHTML = html;
+  gadgets.window.adjustHeight();
 }
 
 // insert the whole table, as stupid IE can't do a tbody.innerHtml
@@ -122,7 +130,7 @@ function tableStart(jsonObject) {
     html += "  <thead>";
     html += "    <tr>";
     html += "      <th>";
-    if(path.length > 0) html +="<a href=\"#\" onclick=\"upFolder();return false;\"<img src=\"/nuxeo/img/UpFolder_icon.gif\"></a>"
+    if(path.length > 0) html +="<a href=\"#\" onclick=\"upFolder();return false;\"<img border=\"0\" src=\"/nuxeo/img/UpFolder_icon.gif\"></a>"
     html += "      </th>";
     html += "      <th>" + title + "</th>";
     html += "      <th/>";
@@ -149,6 +157,7 @@ function displayDocumentList(jsonObject) {
     }
     htmlContent += tableEnd();
     _gel("nxDocumentListData").innerHTML = htmlContent;
+    gadgets.window.adjustHeight();
 
     // page info
     var pageInfo = jsonObject.summary;

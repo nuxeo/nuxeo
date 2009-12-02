@@ -25,18 +25,10 @@ var gadgets = gadgets || {};
 gadgets.nuxeo = gadgets.nuxeo || {};
 
 /**
- * Gets the Id of the gadget document
+ * Gets the Id of the enclosing space doc id
  *
  * @scope gadgets.nuxeo
  */
-gadgets.nuxeo.getGadgetId = function(callback) {
-  gadgets.rpc.call(null, "get_nuxeo_gadget_id", callback, null);
-};
-
 gadgets.nuxeo.getSpaceId = function(callback) {
   gadgets.rpc.call(null, "get_nuxeo_space_id", callback, null);
-};
-
-gadgets.nuxeo.getWorkspaceId = function(callback) {
-  gadgets.rpc.call(null, "get_nuxeo_workspace_id", callback, null);
 };
