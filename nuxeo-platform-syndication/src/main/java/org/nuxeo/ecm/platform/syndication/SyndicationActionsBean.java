@@ -325,6 +325,9 @@ public class SyndicationActionsBean implements SyndicationActions {
     protected static String getCurrentDocumentSyndicationUrl(String feedType) {
         NavigationContext navigationContext = (NavigationContext) Component.getInstance(
                 "navigationContext", true);
+        if (navigationContext == null) {
+            return null; // JSF DebugUtil.printTree may call this
+        }
         String serverLocation = navigationContext.getCurrentServerLocation().getName();
         String docId = navigationContext.getCurrentDocument().getId();
         String docRef = serverLocation + '/' + docId;
@@ -359,6 +362,9 @@ public class SyndicationActionsBean implements SyndicationActions {
     protected static String getSearchSyndicationUrl(String feedType) {
         SearchActions searchActions = (SearchActions) Component.getInstance(
                 "searchActions", true);
+        if (searchActions == null) {
+            return null; // JSF DebugUtil.printTree may call this
+        }
         String searchQuery = searchActions.getLatestNxql();
         if (searchQuery == null) {
             throw new IllegalArgumentException("null searchQuery");

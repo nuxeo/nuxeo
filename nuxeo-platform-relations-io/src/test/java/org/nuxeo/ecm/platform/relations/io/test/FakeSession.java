@@ -38,6 +38,8 @@ public class FakeSession {
             final String name = method.getName();
             if (name.equals("getDocumentByUUID")) {
                 return new FakeDocument((String) args[0]);
+            } else if (name.equals("isLive")) {
+                return Boolean.TRUE;
             }
             return null;
         }

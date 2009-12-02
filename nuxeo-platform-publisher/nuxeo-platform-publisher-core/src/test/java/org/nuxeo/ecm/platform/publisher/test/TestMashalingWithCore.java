@@ -36,9 +36,9 @@ import java.util.Map;
 
 /**
  * Test marshaling with real {@link DocumentModel}
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class TestMashalingWithCore extends SQLRepositoryTestCase {
 
@@ -89,7 +89,7 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
         String data = marshaler.marshalDocument(doc2Export);
         assertNotNull(data);
 
-        System.out.println(data);
+        // System.out.println(data);
 
         session.removeDocument(doc2Export.getRef());
         session.save();
@@ -140,7 +140,7 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
 
         assertNotNull(data);
 
-        System.out.println(data);
+        // System.out.println(data);
 
         List<Object> params2 = marshaler.unMarshallParameters(data);
         assertNotNull(params2);
@@ -203,7 +203,7 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
         String data = marshaler.marshalDocument(doc2Export);
         assertNotNull(data);
 
-        System.out.println(data);
+        // System.out.println(data);
 
         assertTrue(data.contains("<dc:source>test@MySourceServer:"));
 
@@ -213,9 +213,9 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
         String repositoryName = refParts[0];
         DocumentRef ref = new IdRef(refParts[1].split(":")[1]);
 
-        System.out.println(sourceServer);
-        System.out.println(repositoryName);
-        System.out.println(ref);
+        // System.out.println(sourceServer);
+        // System.out.println(repositoryName);
+        // System.out.println(ref);
 
     }
 }
