@@ -26,6 +26,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.platform.picture.api.adapters.DefaultPictureAdapter;
+import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilingService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -42,7 +44,7 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
     private static final Log log = LogFactory.getLog(PictureTilesAdapterFactory.class);
 
     public Object getAdapter(DocumentModel doc, Class itf) {
-        PictureTilingService tilingService = null;
+        PictureTilingService tilingService;
         String blobProperty = null;
         try {
             tilingService = Framework.getService(PictureTilingService.class);
@@ -53,7 +55,7 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
 
         PictureTilesAdapter ptAdapter;
         try {
-            ptAdapter = getAdapterFor(doc, blobProperty);
+            ptAdapter = getPictureTilesAdapterFor(doc, blobProperty);
 
             if (ptAdapter != null) {
                 return ptAdapter;
@@ -78,21 +80,39 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
         return null;
     }
 
-    private PictureTilesAdapter getAdapterFor(DocumentModel doc,
+    private PictureTilesAdapter getPictureTilesAdapterFor(DocumentModel doc,
             String blobProperty) throws ClientException {
         if (blobProperty != null) {
-            Blob blob = null;
             try {
-                blob = (Blob) doc.getPropertyValue(blobProperty);
-                if (blob != null) {
-                    PictureTilesAdapter adapter = new PictureTilesAdapterImpl(
-                            doc, blobProperty);
-                    adapter.setFileName(blob.getFilename());
-                    return adapter;
-                }
+                return getPictureTilesAdapter(doc, blobProperty);
             } catch (PropertyException e) {
-                log.error("No such blob property: " + blobProperty, e);
+                return getPictureTilesAdapterForPicture(doc);
+            } catch (IndexOutOfBoundsException e) {
+                return getPictureTilesAdapterForPicture(doc);
             }
+        }
+        return null;
+    }
+
+    private PictureTilesAdapter getPictureTilesAdapterForPicture(DocumentModel doc)
+            throws ClientException {
+        if (doc.hasSchema("picture")) {
+            // fallback on old Origninal view xpath
+            PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
+            String blobProperty = adapter.getViewXPath("Original") + "content";
+            return getPictureTilesAdapter(doc, blobProperty);
+        }
+        return null;
+    }
+
+    private PictureTilesAdapter getPictureTilesAdapter(DocumentModel doc, String blobProperty)
+            throws ClientException {
+        Blob blob = (Blob) doc.getPropertyValue(blobProperty);
+        if (blob != null) {
+            PictureTilesAdapter adapter = new PictureTilesAdapterImpl(doc,
+                    blobProperty);
+            adapter.setFileName(blob.getFilename());
+            return adapter;
         }
         return null;
     }

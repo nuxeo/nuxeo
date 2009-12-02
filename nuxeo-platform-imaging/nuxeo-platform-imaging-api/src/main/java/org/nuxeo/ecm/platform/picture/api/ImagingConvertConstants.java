@@ -38,6 +38,6 @@ public class ImagingConvertConstants {
     public static final String OPTION_ROTATE_ANGLE = "angle";
 
     public static final String CONVERSION_FORMAT = "conversionFormat";
-    public static final String DEFAULT_CONVERSATION_FORMAT = "jpg";
+    public static final String JPEG_CONVERSATION_FORMAT = "jpg";
 
 }

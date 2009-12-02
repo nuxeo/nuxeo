@@ -302,6 +302,9 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
                     filename, width, height, depth, fileContent);
             createPictureimpl("Thumbnail Size", "thumb", "Thumbnail",
                     THUMB_SIZE, filename, width, height, depth, fileContent);
+            createPictureimpl("Original Picture in JPEG format", "originalJpeg", "OriginalJpeg", null,
+                    filename, width, height, depth, fileContent);
+
         }
     }
 
@@ -315,12 +318,28 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         map.put("description", description);
         map.put("filename", filename);
         map.put("tag", tag);
-        if (title.equals("Original")) {
+        if ("Original".equals(title)) {
             map.put("width", width);
             map.put("height", height);
             FileBlob fileBlob = new FileBlob(file, type);
             fileBlob.setFilename(title + "_" + filename);
             map.put("content", fileBlob);
+        } else if ("OriginalJpeg".equals(title)) {
+            map.put("width", width);
+            map.put("height", height);
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
+            options.put(OPTION_RESIZE_WIDTH, width);
+            options.put(OPTION_RESIZE_HEIGHT, height);
+            options.put(OPTION_RESIZE_DEPTH, depth);
+            // always convert to jpeg
+            options.put(CONVERSION_FORMAT, JPEG_CONVERSATION_FORMAT);
+            BlobHolder bh = new SimpleBlobHolder(fileContent);
+            bh = getConversionService().convert(OPERATION_RESIZE, bh, options);
+            Blob blob = bh.getBlob() != null ? bh.getBlob() : new FileBlob(
+                    file, type);
+            String viewFilename = computeViewFilename(filename, JPEG_CONVERSATION_FORMAT);
+            blob.setFilename(title + "_" + viewFilename);
+            map.put("content", blob);
         } else {
             Point size = new Point(width, height);
             size = getSize(size, maxsize);
@@ -332,12 +351,13 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             options.put(OPTION_RESIZE_DEPTH, depth);
             // use the registered conversion format for 'Medium' and 'Thumbnail' views
             options.put(CONVERSION_FORMAT, imagingService.getConfigurationValue(CONVERSION_FORMAT,
-                    DEFAULT_CONVERSATION_FORMAT));
+                JPEG_CONVERSATION_FORMAT));
             BlobHolder bh = new SimpleBlobHolder(fileContent);
             bh = getConversionService().convert(OPERATION_RESIZE, bh, options);
             Blob blob = bh.getBlob() != null ? bh.getBlob() : new FileBlob(
                     file, type);
-            blob.setFilename(title + "_" + filename);
+            String viewFilename = computeViewFilename(filename, JPEG_CONVERSATION_FORMAT);
+            blob.setFilename(title + "_" + viewFilename);
             map.put("content", blob);
         }
         Serializable views = doc.getPropertyValue("picture:views");
@@ -362,6 +382,15 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             return current;
         }
         return new Point(newx, newy);
+    }
+
+    protected String computeViewFilename(String filename, String format) {
+        int index = filename.lastIndexOf(".");
+        if (index == -1) {
+            return filename + "." + format;
+        } else {
+            return filename.substring(0, index + 1) + format;
+        }
     }
 
     protected Blob getContentFromViews(Integer i) throws ClientException {

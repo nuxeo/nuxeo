@@ -140,6 +140,12 @@ public class PictureBookManagerBean extends InputController implements
         map.put("tag", "thumbnail");
         map.put("description", "ThumbnailSize Picture");
         views.add(map);
+        map = new HashMap<String, Object>();
+        map.put("title", "OriginalJpeg");
+        map.put("maxsize", null);
+        map.put("tag", "originalJpeg");
+        map.put("description", "Original Picture in JPEG format");
+        views.add(map);
     }
 
     @Destroy

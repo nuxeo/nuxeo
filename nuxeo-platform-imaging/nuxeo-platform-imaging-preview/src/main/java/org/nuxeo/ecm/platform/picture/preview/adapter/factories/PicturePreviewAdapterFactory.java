@@ -29,6 +29,8 @@ import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
  */
 public class PicturePreviewAdapterFactory implements PreviewAdapterFactory {
 
+    protected static final String ORIGINAL_JPEG_VIEW_NAME = "OriginalJpeg";
+
     protected static final String ORIGINAL_VIEW_NAME = "Original";
 
     public HtmlPreviewAdapter getAdapter(DocumentModel doc) {
@@ -36,11 +38,15 @@ public class PicturePreviewAdapterFactory implements PreviewAdapterFactory {
         adapter.setAdaptedDocument(doc);
 
         PictureResourceAdapter prAdapter = doc.getAdapter(PictureResourceAdapter.class);
-        String xpath = prAdapter.getViewXPath(ORIGINAL_VIEW_NAME);
+        String xpath = prAdapter.getViewXPath(ORIGINAL_JPEG_VIEW_NAME);
+        if (xpath == null) {
+            xpath = prAdapter.getViewXPath(ORIGINAL_VIEW_NAME);
+        }
         if (xpath != null) {
             adapter.setDefaultPreviewFieldXPath(xpath + "content");
         } else {
-            adapter.setDefaultPreviewFieldXPath(prAdapter.getFirstViewXPath() + "content");
+            adapter.setDefaultPreviewFieldXPath(prAdapter.getFirstViewXPath()
+                    + "content");
         }
 
         return adapter;

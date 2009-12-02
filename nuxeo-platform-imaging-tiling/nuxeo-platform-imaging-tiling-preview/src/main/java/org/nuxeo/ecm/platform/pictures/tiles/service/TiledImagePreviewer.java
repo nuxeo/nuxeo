@@ -49,6 +49,8 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
 
     private static final Log log = LogFactory.getLog(TiledImagePreviewer.class);
 
+    protected static final String ORIGINAL_JPEG_VIEW_NAME = "OriginalJpeg";
+
     protected static final String ORIGINAL_VIEW_NAME = "Original";
 
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
@@ -80,9 +82,12 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
         if ("Picture".equals(dm.getType())) {
             try {
                 PictureResourceAdapter adapter = dm.getAdapter(PictureResourceAdapter.class);
-                String xpath = adapter.getViewXPath(ORIGINAL_VIEW_NAME);
+                String xpath = adapter.getViewXPath(ORIGINAL_JPEG_VIEW_NAME);
                 if (xpath == null) {
-                    xpath = adapter.getFirstViewXPath();
+                    xpath = adapter.getViewXPath(ORIGINAL_VIEW_NAME);
+                    if (xpath == null) {
+                      xpath = adapter.getFirstViewXPath();
+                    }
                 }
 
                 width = (Long) dm.getPropertyValue(xpath + "width");
