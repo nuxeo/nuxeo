@@ -7,7 +7,7 @@
   <name>Nuxeo Addons list</name>
   <packaging>pom</packaging>
   <description>Nuxeo Addons list</description>
-  <version>5.2</version>
+  <version>5.3</version>
 
   <scm>
     <connection>scm:hg:https://hg.nuxeo.org/addons</connection>
@@ -19,6 +19,7 @@
     <module>nuxeo-features-page-layout</module>
     <module>nuxeo-http-client</module>
     <module>nuxeo-platform-archive</module>
+    <module>nuxeo-platform-replication</module>
     <module>nuxeo-platform-archive-importer</module>
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-platform-audit-web-access</module>
@@ -34,14 +35,12 @@
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-mail-dispatcher</module>
     <module>nuxeo-platform-metadata-injector</module>
-<!--    <module>nuxeo-platform-metadataext</module>-->
     <module>nuxeo-platform-nxwss-rootfilter</module>
     <module>nuxeo-platform-orderedfolder-web</module>
     <module>nuxeo-platform-seam-pdf</module>
     <module>nuxeo-platform-spellchecker</module>
     <module>nuxeo-platform-sync-client</module>
     <module>nuxeo-platform-sync-server</module>
-<!--    <module>nuxeo-platform-transform-plugins</module>-->
     <module>nuxeo-platform-webdav-server</module>
     <module>nuxeo-platform-xmlrpc-connector</module>
     <module>nuxeo-platform-zip2text-extractor</module>
