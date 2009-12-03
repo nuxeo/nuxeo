@@ -107,7 +107,7 @@ public class DialectPostgreSQL extends Dialect {
         case TIMESTAMP:
             return jdbcInfo("timestamp", Types.TIMESTAMP);
         case BLOBID:
-            return jdbcInfo("varchar(32)", Types.VARCHAR);
+            return jdbcInfo("varchar(40)", Types.VARCHAR);
             // -----
         case NODEID:
         case NODEIDFK:

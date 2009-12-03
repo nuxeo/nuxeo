@@ -79,7 +79,7 @@ public class DialectH2 extends Dialect {
         case TIMESTAMP:
             return jdbcInfo("TIMESTAMP", Types.TIMESTAMP);
         case BLOBID:
-            return jdbcInfo("VARCHAR(32)", Types.VARCHAR);
+            return jdbcInfo("VARCHAR(40)", Types.VARCHAR);
             // -----
         case NODEID:
         case NODEIDFK:

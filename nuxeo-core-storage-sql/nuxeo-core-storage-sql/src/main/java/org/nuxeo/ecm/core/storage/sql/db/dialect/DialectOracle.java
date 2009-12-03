@@ -89,7 +89,7 @@ public class DialectOracle extends Dialect {
         case TIMESTAMP:
             return jdbcInfo("TIMESTAMP", Types.TIMESTAMP);
         case BLOBID:
-            return jdbcInfo("VARCHAR2(32)", Types.VARCHAR);
+            return jdbcInfo("VARCHAR2(40)", Types.VARCHAR);
             // -----
         case NODEID:
         case NODEIDFK:
