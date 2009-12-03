@@ -16,37 +16,8 @@
   </scm>
 
   <modules>
-    <module>nuxeo-features-page-layout</module>
-    <module>nuxeo-http-client</module>
-    <module>nuxeo-platform-archive</module>
-    <module>nuxeo-platform-replication</module>
-    <module>nuxeo-platform-archive-importer</module>
-    <module>nuxeo-platform-importer</module>
-    <module>nuxeo-platform-audit-web-access</module>
-    <module>nuxeo-platform-documentLink</module>
-    <module>nuxeo-platform-dynsearch</module>
-    <module>nuxeo-platform-exalead-connector</module>
-    <module>nuxeo-platform-filemanager-io-plugin</module>
-    <module>nuxeo-platform-flex</module>
-    <module>nuxeo-platform-gwt</module>
-    <module>nuxeo-platform-indexing-gateway</module>
-    <module>nuxeo-platform-intuition</module>
-    <module>nuxeo-platform-lang-ext</module>
-    <module>nuxeo-platform-login</module>
-    <module>nuxeo-platform-mail-dispatcher</module>
-    <module>nuxeo-platform-metadata-injector</module>
-    <module>nuxeo-platform-nxwss-rootfilter</module>
-    <module>nuxeo-platform-orderedfolder-web</module>
-    <module>nuxeo-platform-seam-pdf</module>
-    <module>nuxeo-platform-spellchecker</module>
-    <module>nuxeo-platform-sync-client</module>
-    <module>nuxeo-platform-sync-server</module>
-    <module>nuxeo-platform-webdav-server</module>
-    <module>nuxeo-platform-xmlrpc-connector</module>
-    <module>nuxeo-platform-zip2text-extractor</module>
-    <module>nuxeo-portlets</module>
-    <module>nuxeo-sample-project</module>
-    <module>nuxeo-samples</module>
-  </modules>
+    <module>nuxeo-features-audio</module>
+    <module>nuxeo-features-video</module>
+ </modules>
 
 </project>
