@@ -203,6 +203,7 @@
       <param-value>
         /WEB-INF/nxdirectory.taglib.xml; /WEB-INF/nxweb-html.taglib.xml;
         /WEB-INF/nxweb-util.taglib.xml; /WEB-INF/nxweb-document.taglib.xml;
+        /WEB-INF/nxweb-ajax4jsf.taglib.xml;
       </param-value>
     </context-param>
 
