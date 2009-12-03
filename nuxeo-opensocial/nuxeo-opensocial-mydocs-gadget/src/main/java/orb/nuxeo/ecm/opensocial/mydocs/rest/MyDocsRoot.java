@@ -33,7 +33,7 @@ public class MyDocsRoot extends ModuleRoot {
         try {
             IdRef spaceRef = new IdRef(spaceId);
             if(!session.exists(spaceRef)) {
-                return Response.serverError();
+                return Response.status(404);
             }
 
 

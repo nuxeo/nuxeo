@@ -14,25 +14,74 @@
 
   <Content type="html" view="default">
 <![CDATA[
-    <script type="text/javascript">
-      var spaceId="";
-      var path=new Array();
-    </script>
     <script type="text/javascript" language="javascript" src="documentlists.js"></script>
+    <script type="text/javascript">
+
+
+
+      gadgets.util.registerOnLoadHandler( function() {
+        var cb = function(id) {
+          spaceId = id;
+          getDocumentLists()
+        }
+
+        gadgets.nuxeo.getSpaceId(cb);
+
+      });
+    </script>
+
+
+
     <link rel="stylesheet" type="text/css" href="documentlists.css"/>
     <div id="nxDocumentList">
-        <!-- <div class="pageNavigationControls">
-        <input type="image" src="/nuxeo/icons/action_page_rewind.gif" onclick="firstPage()"/>
-        <input type="image" src="/nuxeo/icons/action_page_previous.gif" onclick="prevPage()"/>
-        <span class="currentPageStatus" id="nxDocumentListPage"></span>
-        <input type="image" src="/nuxeo/icons/action_page_next.gif" onclick="nextPage()"/>
-        <input type="image" src="/nuxeo/icons/action_page_fastforward.gif"onclick="lastPage()"/>
-        </div> -->
         <div id="nxDocumentListData">
           <img src="/nuxeo/img/standart_waiter.gif">
         </div>
+        <div align="center">
+            <input type="image" src="/nuxeo/icons/action_page_rewind.gif" onclick="firstPage()"/>
+            <input type="image" src="/nuxeo/icons/action_page_previous.gif" onclick="prevPage()"/>
+            <span class="currentPageStatus" id="nxDocumentListPage"></span>
+            <input type="image" src="/nuxeo/icons/action_page_next.gif" onclick="nextPage()"/>
+            <input type="image" src="/nuxeo/icons/action_page_fastforward.gif"onclick="lastPage()"/>
+            </div>
+        </div>
+
     </div>
 
+
+  ]]>
+  </Content>
+
+  <Content type="html" view="canvas">
+<![CDATA[
+    <script type="text/javascript" language="javascript" src="documentlists.js"></script>
+    <script type="text/javascript">
+      var spaceId="";
+      gadgets.util.registerOnLoadHandler( function() {
+        var cb = function(id) {
+          spaceId = id;
+          makeRequest(getResourceUrl(), onWorkspaceQueried);
+       }
+
+       gadgets.nuxeo.getSpaceId(cb);
+
+     });
+
+     var onWorkspaceQueried = function (obj) {
+        var jsonObject = obj.data;
+
+        var html="";
+        //FIXME: repo id is hard coded
+        var iframesrc="/nuxeo/nxdoc/default/" + jsonObject.summary.id + "/view_documents?theme=galaxy/popup";
+        html += "<iframe src=\""+ iframesrc + "\" width=\"100%\" height=\"500px\" border=\"0\">";
+        _gel("ifplace").innerHTML = html;
+
+        gadgets.window.adjustHeight();
+     }
+
+
+    </script>
+    <div id="ifplace"></div>
 
   ]]>
   </Content>

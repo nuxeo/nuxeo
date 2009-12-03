@@ -1,4 +1,6 @@
-
+img {
+  border: 0;
+}
 .pageNavigationControls span {
 color:#757575;
 font-size:13px;
