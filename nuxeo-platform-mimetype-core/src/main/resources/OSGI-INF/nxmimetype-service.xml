@@ -1225,6 +1225,7 @@
     <fileExtension name="xml" mimetype="text/xml" ambiguous="true" />
     <fileExtension name="vsd" mimetype="application/visio" ambiguous="false" />
     <fileExtension name="vst" mimetype="application/visio" ambiguous="false" />
+    <fileExtension name="ai" mimetype="application/illustrator" ambiguous="false" />
 
   </extension>
 
