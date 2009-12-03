@@ -216,7 +216,9 @@ public class SessionImpl implements Session {
     // also called by TransactionalSession#end
     protected void flush() throws StorageException {
         checkThread();
-        context.updateFulltext(this);
+        if (!repository.getRepositoryDescriptor().fulltextDisabled) {
+            context.updateFulltext(this);
+        }
         context.save();
         if (readAclsChanged) {
             updateReadAcls();

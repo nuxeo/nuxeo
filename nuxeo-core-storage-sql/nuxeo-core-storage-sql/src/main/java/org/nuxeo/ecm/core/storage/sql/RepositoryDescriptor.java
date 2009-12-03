@@ -91,6 +91,9 @@ public class RepositoryDescriptor {
     @XNodeList(value = "schema/field", type = ArrayList.class, componentType = FieldDescriptor.class)
     public List<FieldDescriptor> schemaFields = Collections.emptyList();
 
+    @XNode("indexing/fulltext@disabled")
+    public boolean fulltextDisabled;
+
     @XNode("indexing/fulltext@analyzer")
     public String fulltextAnalyzer;
 
@@ -117,6 +120,7 @@ public class RepositoryDescriptor {
         clusteringEnabled = other.clusteringEnabled;
         clusteringDelay = other.clusteringDelay;
         schemaFields = other.schemaFields;
+        fulltextDisabled = other.fulltextDisabled;
         fulltextAnalyzer = other.fulltextAnalyzer;
         fulltextCatalog = other.fulltextCatalog;
         queryMakerClasses = other.queryMakerClasses;

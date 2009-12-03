@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
  */
 public class QueryFilter {
 
-    public static final QueryFilter EMPTY = new QueryFilter(new String[0],
+    public static final QueryFilter EMPTY = new QueryFilter(null,
             new String[0], null,
             Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
 

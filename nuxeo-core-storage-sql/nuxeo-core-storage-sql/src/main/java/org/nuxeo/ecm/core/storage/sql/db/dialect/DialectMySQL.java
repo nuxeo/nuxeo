@@ -51,7 +51,7 @@ public class DialectMySQL extends Dialect {
 
     public DialectMySQL(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(metadata);
+        super(metadata, repositoryDescriptor);
     }
 
     @Override

@@ -532,16 +532,19 @@ public class SQLInfo {
         /*
          * fulltext
          */
-        table = database.getTable(model.FULLTEXT_TABLE_NAME);
-        for (String indexName : model.getFulltextInfo().indexNames) {
-            String suffix = model.getFulltextIndexSuffix(indexName);
-            int ftic = dialect.getFulltextIndexedColumns();
-            if (ftic == 1) {
-                table.addFulltextIndex(indexName, model.FULLTEXT_FULLTEXT_KEY
-                        + suffix);
-            } else if (ftic == 2) {
-                table.addFulltextIndex(indexName, model.FULLTEXT_SIMPLETEXT_KEY
-                        + suffix, model.FULLTEXT_BINARYTEXT_KEY + suffix);
+        if (!model.getRepositoryDescriptor().fulltextDisabled) {
+            table = database.getTable(model.FULLTEXT_TABLE_NAME);
+            for (String indexName : model.getFulltextInfo().indexNames) {
+                String suffix = model.getFulltextIndexSuffix(indexName);
+                int ftic = dialect.getFulltextIndexedColumns();
+                if (ftic == 1) {
+                    table.addFulltextIndex(indexName,
+                            model.FULLTEXT_FULLTEXT_KEY + suffix);
+                } else if (ftic == 2) {
+                    table.addFulltextIndex(indexName,
+                            model.FULLTEXT_SIMPLETEXT_KEY + suffix,
+                            model.FULLTEXT_BINARYTEXT_KEY + suffix);
+                }
             }
         }
     }

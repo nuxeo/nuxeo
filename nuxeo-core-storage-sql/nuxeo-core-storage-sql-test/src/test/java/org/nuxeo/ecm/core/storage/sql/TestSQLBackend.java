@@ -38,6 +38,8 @@ import java.util.Map.Entry;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
+import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -626,8 +628,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         repository.close();
         // get two clustered repositories
         long DELAY = 500; // ms
-        repository = newRepository(DELAY);
-        repository2 = newRepository(DELAY);
+        repository = newRepository(DELAY, false);
+        repository2 = newRepository(DELAY, false);
 
         Session session1 = repository.getConnection();
         // session1 creates root node and does a save
@@ -1332,6 +1334,45 @@ public class TestSQLBackend extends SQLBackendTestCase {
         acls = (ACLRow[]) aclProp.getValue();
         assertEquals(1, acls.length);
         assertEquals("Read", acls[0].permission);
+    }
+
+    public void testFulltext() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+        node.setSingleProperty("tst:title", "hello world");
+        session.save();
+        DatabaseHelper.DATABASE.sleepForFulltext();
+
+        // Note that MySQL is buggy and doesn't return answers on "hello", doh!
+        PartialList<Serializable> res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = \"world\"",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+    }
+
+    public void testFulltextDisabled() throws Exception {
+        // reconfigure repository with fulltext disabled
+        repository.close();
+        boolean fulltextDisabled = true;
+        repository = newRepository(-1, fulltextDisabled);
+
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+        node.setSingleProperty("tst:title", "hello world");
+        session.save();
+        try {
+            session.query(
+                    "SELECT * FROM TestDoc WHERE ecm:fulltext = \"world\"",
+                    QueryFilter.EMPTY, false);
+            fail("Expected fulltext to be disabled and throw an exception");
+        } catch (StorageException e) {
+            if (!e.getMessage().contains("disabled")) {
+                fail("Expected fulltext to be disabled, got: " + e);
+            }
+            // ok
+        }
     }
 
 }

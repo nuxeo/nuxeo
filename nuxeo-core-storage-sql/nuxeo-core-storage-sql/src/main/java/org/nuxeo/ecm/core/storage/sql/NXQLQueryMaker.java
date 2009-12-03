@@ -797,6 +797,10 @@ public class NXQLQueryMaker implements QueryMaker {
                 return;
             }
             if (name.startsWith(NXQL.ECM_FULLTEXT)) {
+                if (model.getRepositoryDescriptor().fulltextDisabled) {
+                    throw new QueryMakerException(
+                            "Fulltext disabled by configuration");
+                }
                 if (dialect.isFulltextTableNeeded()) {
                     // we only use this for its fragment name
                     props.add(model.FULLTEXT_SIMPLETEXT_PROP);

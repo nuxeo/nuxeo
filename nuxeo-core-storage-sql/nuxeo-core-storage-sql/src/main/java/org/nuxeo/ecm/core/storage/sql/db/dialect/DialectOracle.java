@@ -58,7 +58,7 @@ public class DialectOracle extends Dialect {
 
     public DialectOracle(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(metadata);
+        super(metadata, repositoryDescriptor);
         fulltextParameters = repositoryDescriptor.fulltextAnalyzer == null ? ""
                 : repositoryDescriptor.fulltextAnalyzer;
     }
@@ -458,31 +458,36 @@ public class DialectOracle extends Dialect {
                                 + "END;" //
                         , idType, declaredType)));
 
-        Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
-        FulltextInfo fti = model.getFulltextInfo();
-        List<String> lines = new ArrayList<String>(fti.indexNames.size());
-        for (String indexName : fti.indexNames) {
-            String suffix = model.getFulltextIndexSuffix(indexName);
-            Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY + suffix);
-            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY + suffix);
-            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY + suffix);
-            String line = String.format("  :NEW.%s := :NEW.%s || :NEW.%s; ",
-                    ftft.getQuotedName(), ftst.getQuotedName(),
-                    ftbt.getQuotedName());
-            lines.add(line);
+        if (!fulltextDisabled) {
+            Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+            FulltextInfo fti = model.getFulltextInfo();
+            List<String> lines = new ArrayList<String>(fti.indexNames.size());
+            for (String indexName : fti.indexNames) {
+                String suffix = model.getFulltextIndexSuffix(indexName);
+                Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY + suffix);
+                Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY
+                        + suffix);
+                Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY
+                        + suffix);
+                String line = String.format(
+                        "  :NEW.%s := :NEW.%s || :NEW.%s; ",
+                        ftft.getQuotedName(), ftst.getQuotedName(),
+                        ftbt.getQuotedName());
+                lines.add(line);
+            }
+            statements.add(new ConditionalStatement( //
+                    false, // late
+                    Boolean.FALSE, // no drop
+                    null, //
+                    null, //
+                    "CREATE OR REPLACE TRIGGER NX_TRIG_FT_UPDATE " //
+                            + "BEFORE INSERT OR UPDATE ON \"FULLTEXT\" "
+                            + "FOR EACH ROW " //
+                            + "BEGIN" //
+                            + StringUtils.join(lines, "") //
+                            + "END;" //
+            ));
         }
-        statements.add(new ConditionalStatement( //
-                false, // late
-                Boolean.FALSE, // no drop
-                null, //
-                null, //
-                "CREATE OR REPLACE TRIGGER NX_TRIG_FT_UPDATE " //
-                        + "BEFORE INSERT OR UPDATE ON \"FULLTEXT\" "
-                        + "FOR EACH ROW " //
-                        + "BEGIN" //
-                        + StringUtils.join(lines, "") //
-                        + "END;" //
-        ));
 
         return statements;
     }

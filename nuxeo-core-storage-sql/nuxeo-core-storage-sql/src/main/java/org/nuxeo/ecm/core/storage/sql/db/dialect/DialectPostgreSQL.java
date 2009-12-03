@@ -70,7 +70,7 @@ public class DialectPostgreSQL extends Dialect {
 
     public DialectPostgreSQL(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(metadata);
+        super(metadata, repositoryDescriptor);
         fulltextAnalyzer = repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
                 : repositoryDescriptor.fulltextAnalyzer;
         pathOptimizationsEnabled = repositoryDescriptor.pathOptimizationsEnabled;
@@ -497,8 +497,6 @@ public class DialectPostgreSQL extends Dialect {
         default:
             throw new AssertionError(model.idGenPolicy);
         }
-        Table ht = database.getTable(model.hierTableName);
-        Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
 
         List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
 
@@ -575,36 +573,6 @@ public class DialectPostgreSQL extends Dialect {
                 null, //
                 null, //
                 String.format(
-                        "CREATE OR REPLACE FUNCTION NX_TO_TSVECTOR(string VARCHAR) " //
-                                + "RETURNS TSVECTOR " //
-                                + "AS $$" //
-                                + "  SELECT TO_TSVECTOR('%s', SUBSTR($1, 1, 250000)) " //
-                                + "$$ " //
-                                + "LANGUAGE sql " //
-                                + "STABLE " //
-                        , fulltextAnalyzer)));
-
-        statements.add(new ConditionalStatement( //
-                true, // early
-                Boolean.FALSE, // no drop needed
-                null, //
-                null, //
-                String.format(
-                        "CREATE OR REPLACE FUNCTION NX_CONTAINS(ft TSVECTOR, query VARCHAR) " //
-                                + "RETURNS boolean " //
-                                + "AS $$" //
-                                + "  SELECT $1 @@ TO_TSQUERY('%s', $2) " //
-                                + "$$ " //
-                                + "LANGUAGE sql " //
-                                + "STABLE " //
-                        , fulltextAnalyzer)));
-
-        statements.add(new ConditionalStatement(
-                true, // early
-                Boolean.FALSE, // no drop needed
-                null, //
-                null, //
-                String.format(
                         "CREATE OR REPLACE FUNCTION NX_CLUSTER_INVAL" //
                                 + "(i %s, f varchar[], k int) " //
                                 + "RETURNS VOID " //
@@ -641,46 +609,83 @@ public class DialectPostgreSQL extends Dialect {
                         + "LANGUAGE plpgsql" //
         ));
 
-        FulltextInfo fti = model.getFulltextInfo();
-        List<String> lines = new ArrayList<String>(fti.indexNames.size());
-        for (String indexName : fti.indexNames) {
-            String suffix = model.getFulltextIndexSuffix(indexName);
-            Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY + suffix);
-            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY + suffix);
-            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY + suffix);
-            String line = String.format(
-                    "  NEW.%s := COALESCE(NEW.%s, ''::TSVECTOR) || COALESCE(NEW.%s, ''::TSVECTOR);",
-                    ftft.getQuotedName(), ftst.getQuotedName(),
-                    ftbt.getQuotedName());
-            lines.add(line);
-        }
-        statements.add(new ConditionalStatement( //
-                false, // late
-                Boolean.FALSE, // no drop needed
-                null, //
-                null, //
-                "CREATE OR REPLACE FUNCTION NX_UPDATE_FULLTEXT() " //
-                        + "RETURNS trigger " //
-                        + "AS $$ " //
-                        + "BEGIN" //
-                        + StringUtils.join(lines, "") //
-                        + "  RETURN NEW; " //
-                        + "END " //
-                        + "$$ " //
-                        + "LANGUAGE plpgsql " //
-                        + "VOLATILE " //
-        ));
+        if (!fulltextDisabled) {
+            statements.add(new ConditionalStatement(
+                    true, // early
+                    Boolean.FALSE, // no drop needed
+                    null, //
+                    null, //
+                    String.format(
+                            "CREATE OR REPLACE FUNCTION NX_TO_TSVECTOR(string VARCHAR) " //
+                                    + "RETURNS TSVECTOR " //
+                                    + "AS $$" //
+                                    + "  SELECT TO_TSVECTOR('%s', SUBSTR($1, 1, 250000)) " //
+                                    + "$$ " //
+                                    + "LANGUAGE sql " //
+                                    + "STABLE " //
+                            , fulltextAnalyzer)));
 
-        statements.add(new ConditionalStatement(
-                false, // late
-                Boolean.TRUE, // do a drop
-                null, //
-                String.format("DROP TRIGGER IF EXISTS NX_TRIG_FT_UPDATE ON %s",
-                        ft.getQuotedName()),
-                String.format("CREATE TRIGGER NX_TRIG_FT_UPDATE " //
-                        + "BEFORE INSERT OR UPDATE ON %s "
-                        + "FOR EACH ROW EXECUTE PROCEDURE NX_UPDATE_FULLTEXT()" //
-                , ft.getQuotedName())));
+            statements.add(new ConditionalStatement( //
+                    true, // early
+                    Boolean.FALSE, // no drop needed
+                    null, //
+                    null, //
+                    String.format(
+                            "CREATE OR REPLACE FUNCTION NX_CONTAINS(ft TSVECTOR, query VARCHAR) " //
+                                    + "RETURNS boolean " //
+                                    + "AS $$" //
+                                    + "  SELECT $1 @@ TO_TSQUERY('%s', $2) " //
+                                    + "$$ " //
+                                    + "LANGUAGE sql " //
+                                    + "STABLE " //
+                            , fulltextAnalyzer)));
+
+            Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+            FulltextInfo fti = model.getFulltextInfo();
+            List<String> lines = new ArrayList<String>(fti.indexNames.size());
+            for (String indexName : fti.indexNames) {
+                String suffix = model.getFulltextIndexSuffix(indexName);
+                Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY + suffix);
+                Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY
+                        + suffix);
+                Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY
+                        + suffix);
+                String line = String.format(
+                        "  NEW.%s := COALESCE(NEW.%s, ''::TSVECTOR) || COALESCE(NEW.%s, ''::TSVECTOR);",
+                        ftft.getQuotedName(), ftst.getQuotedName(),
+                        ftbt.getQuotedName());
+                lines.add(line);
+            }
+            statements.add(new ConditionalStatement( //
+                    false, // late
+                    Boolean.FALSE, // no drop needed
+                    null, //
+                    null, //
+                    "CREATE OR REPLACE FUNCTION NX_UPDATE_FULLTEXT() " //
+                            + "RETURNS trigger " //
+                            + "AS $$ " //
+                            + "BEGIN" //
+                            + StringUtils.join(lines, "") //
+                            + "  RETURN NEW; " //
+                            + "END " //
+                            + "$$ " //
+                            + "LANGUAGE plpgsql " //
+                            + "VOLATILE " //
+            ));
+
+            statements.add(new ConditionalStatement(
+                    false, // late
+                    Boolean.TRUE, // do a drop
+                    null, //
+                    String.format(
+                            "DROP TRIGGER IF EXISTS NX_TRIG_FT_UPDATE ON %s",
+                            ft.getQuotedName()),
+                    String.format(
+                            "CREATE TRIGGER NX_TRIG_FT_UPDATE " //
+                                    + "BEFORE INSERT OR UPDATE ON %s "
+                                    + "FOR EACH ROW EXECUTE PROCEDURE NX_UPDATE_FULLTEXT()" //
+                            , ft.getQuotedName())));
+        }
 
         statements.add(new ConditionalStatement(
                 true, // early

@@ -246,9 +246,11 @@ public class Model {
     /** Specified in ext. point to use CLOBs. */
     public static final String FIELD_TYPE_LARGETEXT = "largetext";
 
-    /** Special (non-schema-based) simple fragments present in all types. */
-    public static final String[] COMMON_SIMPLE_FRAGMENTS = { MISC_TABLE_NAME,
-            FULLTEXT_TABLE_NAME };
+    /**
+     * Special (non-schema-based) simple fragments present in all types.
+     * {@link #FULLTEXT_TABLE_NAME} is added to it if not disabled.
+     */
+    public static final List<String> COMMON_SIMPLE_FRAGMENTS = Collections.singletonList(MISC_TABLE_NAME);
 
     /** Special (non-schema-based) collection fragments present in all types. */
     public static final String[] COMMON_COLLECTION_FRAGMENTS = { ACL_TABLE_NAME };
@@ -302,6 +304,8 @@ public class Model {
      * Info about the fulltext configuration.
      */
     public static class FulltextInfo implements Serializable {
+
+        private static final long serialVersionUID = 1L;
 
         public static final String PROP_TYPE_STRING = "string";
 
@@ -467,7 +471,9 @@ public class Model {
         initAclModel();
         initMiscModel();
         initModels(schemaManager);
-        initFullTextModel();
+        if (!repositoryDescriptor.fulltextDisabled) {
+            initFullTextModel();
+        }
     }
 
     /**
@@ -1086,7 +1092,7 @@ public class Model {
             }
             inferTypePropertyInfos(typeName, documentType.getSchemaNames());
             inferTypePropertyPaths(documentType);
-            for (String fragmentName : COMMON_SIMPLE_FRAGMENTS) {
+            for (String fragmentName : getCommonSimpleFragments()) {
                 addTypeSimpleFragment(typeName, fragmentName);
             }
             for (String fragmentName : COMMON_COLLECTION_FRAGMENTS) {
@@ -1154,8 +1160,19 @@ public class Model {
             } while (superType != null);
         }
 
-        // infer fulltext info
-        inferFulltextInfo();
+        if (!repositoryDescriptor.fulltextDisabled) {
+            // infer fulltext info
+            inferFulltextInfo();
+        }
+    }
+
+    protected List<String> getCommonSimpleFragments() {
+        List<String> fragments = COMMON_SIMPLE_FRAGMENTS;
+        if (!repositoryDescriptor.fulltextDisabled) {
+            fragments = new ArrayList<String>(fragments);
+            fragments.add(FULLTEXT_TABLE_NAME);
+        }
+        return fragments;
     }
 
     /**

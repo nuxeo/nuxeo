@@ -65,6 +65,8 @@ public abstract class Dialect {
 
     protected final boolean storesUpperCaseIdentifiers;
 
+    protected final boolean fulltextDisabled;
+
     /**
      * Creates a {@code Dialect} by connecting to the datasource to check what
      * database is used.
@@ -102,12 +104,14 @@ public abstract class Dialect {
         throw new StorageException("Unsupported database: " + databaseName);
     }
 
-    public Dialect(DatabaseMetaData metadata) throws StorageException {
+    public Dialect(DatabaseMetaData metadata,
+            RepositoryDescriptor repositoryDescriptor) throws StorageException {
         try {
             storesUpperCaseIdentifiers = metadata.storesUpperCaseIdentifiers();
         } catch (SQLException e) {
             throw new StorageException("An error has occured.", e);
         }
+        fulltextDisabled = repositoryDescriptor.fulltextDisabled;
     }
 
     /**

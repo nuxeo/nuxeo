@@ -55,7 +55,7 @@ public class DialectH2 extends Dialect {
 
     public DialectH2(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(metadata);
+        super(metadata, repositoryDescriptor);
     }
 
     @Override
@@ -273,7 +273,7 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
-   public boolean supportsReadAcl() {
+    public boolean supportsReadAcl() {
         return true;
     }
 
@@ -355,7 +355,6 @@ public class DialectH2 extends Dialect {
         statements.add(makeFunction("NX_CLUSTER_GET_INVALS", //
                 "getClusterInvalidationsString"));
 
-
         // read acls ----------------------------------------------------------
         // table to store canonical read acls
         statements.add(new ConditionalStatement( //
@@ -385,8 +384,7 @@ public class DialectH2 extends Dialect {
                 null, //
                 "CREATE INDEX IF NOT EXISTS hierarchy_read_acl_acl_id_idx ON hierarchy_read_acl(acl_id);"));
         // Log hierarchy with updated read acl
-        statements.add(new ConditionalStatement(
-                false, // late
+        statements.add(new ConditionalStatement(false, // late
                 Boolean.FALSE, // no drop
                 null, //
                 null, //
@@ -409,7 +407,9 @@ public class DialectH2 extends Dialect {
                 "DROP TRIGGER IF EXISTS nx_trig_acls_modified;",
                 "CREATE TRIGGER nx_trig_acls_modified\n" //
                         + "  AFTER INSERT, UPDATE, DELETE ON acls\n" //
-                        + "  FOR EACH ROW CALL \""+ h2Functions +"$LogAclsModified\";"));
+                        + "  FOR EACH ROW CALL \""
+                        + h2Functions
+                        + "$LogAclsModified\";"));
         statements.add(new ConditionalStatement(
                 false, // late
                 Boolean.TRUE, // do a drop
@@ -417,7 +417,9 @@ public class DialectH2 extends Dialect {
                 "DROP TRIGGER IF EXISTS nx_trig_hierarchy_modified;",
                 "CREATE TRIGGER nx_trig_hierarchy_modified\n" //
                         + "  AFTER INSERT, UPDATE ON hierarchy\n" //
-                        + "  FOR EACH ROW CALL \""+ h2Functions +"$LogHierarchyModified\";"));
+                        + "  FOR EACH ROW CALL \""
+                        + h2Functions
+                        + "$LogHierarchyModified\";"));
         // build the read acls if empty, this takes care of the upgrade
         statements.add(new ConditionalStatement(
                 false, // late
@@ -429,14 +431,16 @@ public class DialectH2 extends Dialect {
         statements.add(makeFunction("NX_INIT_DESCENDANTS", //
                 "initDescendants"));
 
-        statements.add(new ConditionalStatement( //
-                true, // early
-                Boolean.FALSE, // no drop
-                null, //
-                null, //
-                String.format(
-                        "CREATE ALIAS IF NOT EXISTS NXFT_INIT FOR \"%s.init\"; "
-                                + "CALL NXFT_INIT()", h2Fulltext)));
+        if (!fulltextDisabled) {
+            statements.add(new ConditionalStatement( //
+                    true, // early
+                    Boolean.FALSE, // no drop
+                    null, //
+                    null, //
+                    String.format(
+                            "CREATE ALIAS IF NOT EXISTS NXFT_INIT FOR \"%s.init\"; "
+                                    + "CALL NXFT_INIT()", h2Fulltext)));
+        }
 
         statements.add(makeTrigger("NX_TRIG_DESC", ht.getQuotedName(),
                 h2TrigDesc));

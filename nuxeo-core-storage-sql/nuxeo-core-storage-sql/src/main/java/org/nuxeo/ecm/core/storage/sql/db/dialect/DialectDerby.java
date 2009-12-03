@@ -48,7 +48,7 @@ public class DialectDerby extends Dialect {
 
     public DialectDerby(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(metadata);
+        super(metadata, repositoryDescriptor);
     }
 
     @Override
@@ -270,11 +270,6 @@ public class DialectDerby extends Dialect {
         default:
             throw new AssertionError(model.idGenPolicy);
         }
-        Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
-        Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY);
-        Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
-        Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY);
-        Column ftid = ft.getColumn(model.MAIN_KEY);
 
         List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
 
@@ -291,48 +286,56 @@ public class DialectDerby extends Dialect {
                 "isAccessAllowed" + methodSuffix, //
                 "READS SQL DATA"));
 
-        statements.add(makeFunction(
-                "NX_PARSE_FULLTEXT",
-                "(S1 VARCHAR(10000), S2 VARCHAR(10000)) RETURNS VARCHAR(10000)",
-                "parseFullText", //
-                ""));
+        if (!fulltextDisabled) {
+            statements.add(makeFunction(
+                    "NX_PARSE_FULLTEXT",
+                    "(S1 VARCHAR(10000), S2 VARCHAR(10000)) RETURNS VARCHAR(10000)",
+                    "parseFullText", //
+                    ""));
 
-        statements.add(makeFunction("NX_CONTAINS", //
-                "(FT VARCHAR(10000), QUERY VARCHAR(10000)) RETURNS SMALLINT", //
-                "matchesFullTextDerby", //
-                ""));
+            statements.add(makeFunction(
+                    "NX_CONTAINS", //
+                    "(FT VARCHAR(10000), QUERY VARCHAR(10000)) RETURNS SMALLINT", //
+                    "matchesFullTextDerby", //
+                    ""));
 
-        statements.add(makeTrigger(
-                "NX_TRIG_FT_INSERT", //
-                String.format(
-                        "AFTER INSERT ON %1$s "//
-                                + "REFERENCING NEW AS NEW " //
-                                + "FOR EACH ROW "//
-                                + "UPDATE %1$s " //
-                                + "SET %2$s = NX_PARSE_FULLTEXT(CAST(%3$s AS VARCHAR(10000)), CAST(%4$s AS VARCHAR(10000))) " //
-                                + "WHERE %5$s = NEW.%5$s", //
-                        ft.getQuotedName(), // 1 table "FULLTEXT"
-                        ftft.getQuotedName(), // 2 column "TEXT"
-                        ftst.getQuotedName(), // 3 column "SIMPLETEXT"
-                        ftbt.getQuotedName(), // 4 column "BINARYTEXT"
-                        ftid.getQuotedName() // 5 column "ID"
-                )));
+            Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+            Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY);
+            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
+            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY);
+            Column ftid = ft.getColumn(model.MAIN_KEY);
+            statements.add(makeTrigger(
+                    "NX_TRIG_FT_INSERT", //
+                    String.format(
+                            "AFTER INSERT ON %1$s "//
+                                    + "REFERENCING NEW AS NEW " //
+                                    + "FOR EACH ROW "//
+                                    + "UPDATE %1$s " //
+                                    + "SET %2$s = NX_PARSE_FULLTEXT(CAST(%3$s AS VARCHAR(10000)), CAST(%4$s AS VARCHAR(10000))) " //
+                                    + "WHERE %5$s = NEW.%5$s", //
+                            ft.getQuotedName(), // 1 table "FULLTEXT"
+                            ftft.getQuotedName(), // 2 column "TEXT"
+                            ftst.getQuotedName(), // 3 column "SIMPLETEXT"
+                            ftbt.getQuotedName(), // 4 column "BINARYTEXT"
+                            ftid.getQuotedName() // 5 column "ID"
+                    )));
 
-        statements.add(makeTrigger(
-                "NX_TRIG_FT_UPDATE", //
-                String.format(
-                        "AFTER UPDATE OF %3$s, %4$s ON %1$s "//
-                                + "REFERENCING NEW AS NEW " //
-                                + "FOR EACH ROW "//
-                                + "UPDATE %1$s " //
-                                + "SET %2$s = NX_PARSE_FULLTEXT(CAST(%3$s AS VARCHAR(10000)), CAST(%4$s AS VARCHAR(10000))) " //
-                                + "WHERE %5$s = NEW.%5$s", //
-                        ft.getQuotedName(), // 1 table "FULLTEXT"
-                        ftft.getQuotedName(), // 2 column "TEXT"
-                        ftst.getQuotedName(), // 3 column "SIMPLETEXT"
-                        ftbt.getQuotedName(), // 4 column "BINARYTEXT"
-                        ftid.getQuotedName() // 5 column "ID"
-                )));
+            statements.add(makeTrigger(
+                    "NX_TRIG_FT_UPDATE", //
+                    String.format(
+                            "AFTER UPDATE OF %3$s, %4$s ON %1$s "//
+                                    + "REFERENCING NEW AS NEW " //
+                                    + "FOR EACH ROW "//
+                                    + "UPDATE %1$s " //
+                                    + "SET %2$s = NX_PARSE_FULLTEXT(CAST(%3$s AS VARCHAR(10000)), CAST(%4$s AS VARCHAR(10000))) " //
+                                    + "WHERE %5$s = NEW.%5$s", //
+                            ft.getQuotedName(), // 1 table "FULLTEXT"
+                            ftft.getQuotedName(), // 2 column "TEXT"
+                            ftst.getQuotedName(), // 3 column "SIMPLETEXT"
+                            ftbt.getQuotedName(), // 4 column "BINARYTEXT"
+                            ftid.getQuotedName() // 5 column "ID"
+                    )));
+        }
 
         return statements;
     }

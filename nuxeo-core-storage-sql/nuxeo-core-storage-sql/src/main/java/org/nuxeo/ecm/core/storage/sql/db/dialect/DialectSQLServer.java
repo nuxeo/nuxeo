@@ -59,7 +59,7 @@ public class DialectSQLServer extends Dialect {
 
     public DialectSQLServer(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(metadata);
+        super(metadata, repositoryDescriptor);
         fulltextAnalyzer = repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
                 : repositoryDescriptor.fulltextAnalyzer;
         fulltextCatalog = repositoryDescriptor.fulltextCatalog == null ? DEFAULT_FULLTEXT_CATALOG
@@ -349,19 +349,6 @@ public class DialectSQLServer extends Dialect {
 
         List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
 
-        statements.add(new ConditionalStatement( //
-                true, // early
-                null, // do a check
-                // strange inverted condition because this is designed to
-                // test drops
-                String.format(
-                        "IF EXISTS(SELECT name FROM sys.fulltext_catalogs WHERE name = '%s') "
-                                + "SELECT * FROM sys.tables WHERE 1 = 0 "
-                                + "ELSE SELECT 1", //
-                        fulltextCatalog), //
-                String.format("CREATE FULLTEXT CATALOG [%s]", fulltextCatalog), //
-                "SELECT 1"));
-
         statements.add(new ConditionalStatement(
                 false, // late
                 Boolean.TRUE, // always drop
@@ -455,6 +442,22 @@ public class DialectSQLServer extends Dialect {
                                 + "  RETURN 0;" //
                                 + "END" //
                         , idType)));
+
+        if (!fulltextDisabled) {
+            statements.add(new ConditionalStatement( //
+                    true, // early
+                    null, // do a check
+                    // strange inverted condition because this is designed to
+                    // test drops
+                    String.format(
+                            "IF EXISTS(SELECT name FROM sys.fulltext_catalogs WHERE name = '%s') "
+                                    + "SELECT * FROM sys.tables WHERE 1 = 0 "
+                                    + "ELSE SELECT 1", //
+                            fulltextCatalog), //
+                    String.format("CREATE FULLTEXT CATALOG [%s]",
+                            fulltextCatalog), //
+                    "SELECT 1"));
+        }
 
         return statements;
     }

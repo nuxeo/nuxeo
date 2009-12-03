@@ -54,7 +54,8 @@ public class TestDialectQuerySyntax extends TestCase {
     }
 
     public void testH2() throws Exception {
-        dialect = new DialectH2(getDatabaseMetaData(), null);
+        dialect = new DialectH2(getDatabaseMetaData(),
+                new RepositoryDescriptor());
         check("+foo", "foo");
         check("+foo +bar", "foo    bar");
         check("+foo -bar", "foo -bar");
