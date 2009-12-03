@@ -23,6 +23,18 @@
     </action>
 
 
+    <!-- BUTTONS -->
+    <action id="CURRENT_SELECTION_DELETE" link="#{bulkSelectActions.deleteSelection}"
+      label="command.delete" icon="" help="command.delete.help"
+      confirm="if( !confirmDeleteAssets() ) return false;">
+      <category>CURRENT_SELECTION_LIST</category>
+      <filter id="canDelete">
+        <rule grant="true">
+          <condition>#{bulkSelectActions.canDelete}</condition>
+        </rule>
+      </filter>
+    </action>
+
   </extension>
 
 </component>

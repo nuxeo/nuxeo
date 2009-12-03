@@ -19,13 +19,17 @@
     <!-- id and selection -->
     <nxu:column styleClass="#{nxu:test(documentActions.currentSelection == row.data, 'selected', '')}">
       <f:facet name="header">
-        <h:selectBooleanCheckbox rendered="true"
-            onclick="selectDataTablePage('#{documents.name}', '#{providerName}', this.checked)" title="#{messages['tooltip.content.select.all']}">
-        </h:selectBooleanCheckbox>
+        <nxu:methodResult name="isPageSelected"
+          value="#{bulkSelectActions.getIsCurrentPageInWorkingList(providerName, 'CURRENT_SELECTION')}">
+          <h:selectBooleanCheckbox title="#{messages['tooltip.content.select.all']}" value="#{isPageSelected}">
+            <a4j:support event="onclick" reRender="dataTable, selection_buttons"
+              action="#{bulkSelectActions.togglePageSelection(providerName, 'CURRENT_SELECTION', documents)}" />
+          </h:selectBooleanCheckbox>
+        </nxu:methodResult>
       </f:facet>
-       <h:selectBooleanCheckbox
-          value="#{row.selected}"
-          onclick="selectDataTableRow('#{row.data.ref}', '#{providerName}', this)">
+       <h:selectBooleanCheckbox value="#{row.selected}">
+         <a4j:support event="onclick" reRender="dataTable, selection_buttons"
+           action="#{bulkSelectActions.toggleDocumentSelection(row.data, 'CURRENT_SELECTION')}" />
       </h:selectBooleanCheckbox>
     </nxu:column>
 

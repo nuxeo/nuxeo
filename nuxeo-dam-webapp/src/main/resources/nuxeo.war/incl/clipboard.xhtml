@@ -1,0 +1,36 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxa4j="http://nuxeo.org/nxweb/a4j"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:s="http://jboss.com/products/seam/taglib"
+  class="clipboard">
+
+<script type="text/javascript">
+function confirmDeleteAssets() {
+    return confirm("#{messages['label.assets.confirmDeleteAssets']}");
+}
+</script>
+
+  <div style="margin: 1em;">
+    <a4j:form id="selection_buttons">
+      <nxu:dataList var="sel_action" value="#{clipboardActions.actionsForSelection}">
+        <span id="#{sel_action.id}">
+          <nxa4j:commandButton
+            styleClass="button" type="submit"
+            action="#{sel_action.getLink()}"
+            value="#{messages[sel_action.label]}"
+            onclick="#{sel_action.confirm}"
+            reRender="filterResultTable, selectionView"
+            disabled="#{!sel_action.available}"
+            />
+         </span>
+      </nxu:dataList>
+    </a4j:form>
+  </div>
+
+</div>

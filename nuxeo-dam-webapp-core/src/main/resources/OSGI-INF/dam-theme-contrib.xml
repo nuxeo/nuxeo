@@ -53,9 +53,7 @@
     <view name="dam includes" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/includes.xhtml</template>
-      <resource>seam-remote.js</resource>
 
-      <resource>tableSelections.js</resource>
       <resource>calendar-win2k-1.css</resource>
       <resource>calendar.js</resource>
       <resource>calendar-setup.js</resource>
@@ -88,10 +86,6 @@
 
     <resource name="seam-remote.js">
       <path>nxthemes/html/scripts/seam-remote.js</path>
-    </resource>
-
-    <resource name="tableSelections.js">
-      <path>scripts/tableSelections.js</path>
     </resource>
 
     <!-- calendar resources -->

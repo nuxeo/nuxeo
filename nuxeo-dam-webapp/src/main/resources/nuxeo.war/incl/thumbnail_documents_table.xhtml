@@ -17,15 +17,15 @@
     rowKeyVar="rowKey"
     columns="4"
     rendered="#{documents.rowCount > 0}">
-    <a4j:support event="onclick" reRender="dataTable"
+    <a4j:support event="onclick" reRender="dataTable, selection_buttons"
       onclick="if (event.ctrlKey || event.metaKey) {return false;};"
       action="#{bulkSelectActions.clearWorkingList('CURRENT_SELECTION')}" />
 
       <rich:panel>
         <div class="thumbViewElement #{nxu:test(documentActions.currentSelection == row.data, 'selected', '')} #{nxu:test(bulkSelectActions.getIsCurrentSelectionInWorkingList(row.data.ref, 'CURRENT_SELECTION'), 'selectedCtrlClick', '')}">
-        <a4j:support event="onclick" reRender="dataTable"
+        <a4j:support event="onclick" reRender="dataTable, selection_buttons"
           onclick="if (!event.ctrlKey &amp;&amp; !event.metaKey) {return false;};"
-          action="#{bulkSelectActions.ctrlSelectDocument(row.data, 'CURRENT_SELECTION')}" />
+          action="#{bulkSelectActions.toggleDocumentSelection(row.data, 'CURRENT_SELECTION')}" />
 
         <h:panelGrid>
           <a4j:commandLink id="imageLink" styleClass="thumbViewPictureLink"

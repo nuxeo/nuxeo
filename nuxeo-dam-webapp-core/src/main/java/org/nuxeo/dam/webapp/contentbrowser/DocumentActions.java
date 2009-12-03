@@ -30,11 +30,9 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
-import org.nuxeo.dam.webapp.PictureActions;
 import org.nuxeo.dam.webapp.helper.DownloadHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -53,10 +51,7 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
-import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 
 @Name("documentActions")
 @Scope(ScopeType.CONVERSATION)
@@ -71,12 +66,6 @@ public class DocumentActions implements Serializable {
 
     protected static final String DEFAULT_PICTURE_DOWNLOAD_PROPERTY = "Original";
 
-    @In(create = true)
-    protected transient ResultsProvidersCache resultsProvidersCache;
-
-    @In(required = false, create = true)
-    protected transient DocumentsListsManager documentsListsManager;
-
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
@@ -84,13 +73,7 @@ public class DocumentActions implements Serializable {
     protected transient Context conversationContext;
 
     @In(create = true)
-    protected PictureActions pictureActions;
-
-    @In(create = true)
     protected transient WebActions webActions;
-
-    @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
 
     /**
      * Current selected asset
@@ -106,64 +89,6 @@ public class DocumentActions implements Serializable {
     protected String displayMode = BuiltinModes.VIEW;
 
     protected String downloadSize = DEFAULT_PICTURE_DOWNLOAD_PROPERTY;
-
-    @WebRemote
-    public String processSelectRow(String docRef, String providerName,
-            String listName, Boolean selection) {
-        PagedDocumentsProvider provider;
-        try {
-            provider = resultsProvidersCache.get(providerName);
-        } catch (ClientException e) {
-            return handleError(e.getMessage());
-        }
-        DocumentModel doc = null;
-        for (DocumentModel pagedDoc : provider.getCurrentPage()) {
-            if (pagedDoc.getRef().toString().equals(docRef)) {
-                doc = pagedDoc;
-                break;
-            }
-        }
-        if (doc == null) {
-            return handleError(String.format(
-                    "could not find doc '%s' in the current page of provider '%s'",
-                    docRef, providerName));
-        }
-        listName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
-                : listName;
-        if (selection) {
-            documentsListsManager.addToWorkingList(listName, doc);
-        } else {
-            documentsListsManager.removeFromWorkingList(listName, doc);
-        }
-        // TODO: handle actions
-        return "";
-    }
-
-    @WebRemote
-    public String processSelectPage(String providerName, String listName,
-            Boolean selection) {
-        PagedDocumentsProvider provider;
-        try {
-            provider = resultsProvidersCache.get(providerName);
-        } catch (ClientException e) {
-            return handleError(e.getMessage());
-        }
-        DocumentModelList documents = provider.getCurrentPage();
-        String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
-                : listName;
-        if (selection) {
-            documentsListsManager.addToWorkingList(lName, documents);
-        } else {
-            documentsListsManager.removeFromWorkingList(lName, documents);
-        }
-        raiseEvents(currentSelection);
-        // TODO handle action management
-        return "";
-    }
-
-    private String handleError(String errorMessage) {
-        return "ERROR: " + errorMessage;
-    }
 
     public DocumentModel getCurrentSelection() {
         return currentSelection;

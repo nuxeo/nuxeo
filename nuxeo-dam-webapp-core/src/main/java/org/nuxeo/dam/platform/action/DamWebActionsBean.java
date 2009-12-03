@@ -17,7 +17,11 @@
 
 package org.nuxeo.dam.platform.action;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
+
 import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -26,7 +30,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.dam.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -37,9 +40,6 @@ import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.action.WebActionsBean;
 import org.nuxeo.ecm.webapp.security.UserManagerActions;
 import org.nuxeo.runtime.api.Framework;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
 
 /**
  *
@@ -62,12 +62,9 @@ public class DamWebActionsBean extends WebActionsBean {
     private transient CoreSession documentManager;
 
     @In(create = true, required = false)
-    private transient DocumentActions documentActions;
-
-    @In(create = true, required = false)
     private transient UserManagerActions userManagerActions;
 
-    private ActionManager actionService;
+    protected ActionManager actionService;
 
     private boolean showList = false;
 
@@ -79,7 +76,7 @@ public class DamWebActionsBean extends WebActionsBean {
     @Factory(value = "tabsActionsList", scope = EVENT)
     public List<Action> getTabsList() {
         if (tabsActionsList == null) {
-            actionService = getActionsService();
+            actionService = getActionService();
             tabsActionsList = actionService.getActions(
                     "VIEW_ASSET_ACTION_LIST", createActionContext());
             currentTabAction = getDefaultTab();
@@ -87,7 +84,8 @@ public class DamWebActionsBean extends WebActionsBean {
         return tabsActionsList;
     }
 
-    public ActionManager getActionsService() {
+    @Factory(value = "actionManager", scope = EVENT)
+    public ActionManager getActionService() {
         if (actionService != null) {
             return actionService;
         }

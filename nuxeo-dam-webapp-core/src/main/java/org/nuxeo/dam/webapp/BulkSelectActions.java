@@ -18,7 +18,6 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
@@ -28,12 +27,17 @@ import org.nuxeo.dam.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
+import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelRow;
 import org.nuxeo.ecm.platform.ui.web.util.DocumentsListsUtils;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 
 /**
  * @author <a href="mailto:pdilorenzo@nuxeo.com">Peter Di Lorenzo</a>
@@ -62,6 +66,9 @@ public class BulkSelectActions implements Serializable {
 
     @In(create = true)
     protected DocumentActions documentActions;
+
+    @In(create = true)
+    protected transient ResultsProvidersCache resultsProvidersCache;
 
     public void deleteSelection() throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
@@ -232,12 +239,43 @@ public class BulkSelectActions implements Serializable {
     }
 
     /**
+     * Tests if all of the documents of the current page are in the working list
+     * of selected documents.
+     *
+     * @param String providerName The provider name
+     * @param String listName The name of the working list of selected
+     *            documents. If null, the default list will be used.
+     * @return boolean true if the document is in the list, false if it isn't.
+     */
+    public boolean getIsCurrentPageInWorkingList(String providerName,
+            String listName) {
+        listName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
+                : listName;
+
+        List<DocumentModel> list = documentsListsManager.getWorkingList(listName);
+        if (list == null) {
+            log.error("no registered list with name " + listName);
+            return false;
+        }
+
+        PagedDocumentsProvider provider;
+        try {
+            provider = resultsProvidersCache.get(providerName);
+        } catch (ClientException e) {
+            log.error("Failed to get provider " + providerName, e);
+            return false;
+        }
+        DocumentModelList documents = provider.getCurrentPage();
+
+        return list.containsAll(documents);
+    }
+
+    /**
      * Clears the working list of selected documents.
      * 
      * @param String lName The name of the working list of selected documents.
      *            If null, the default list will be used.
      */
-    @WebRemote
     public void clearWorkingList(String listName) {
 
         String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
@@ -251,8 +289,8 @@ public class BulkSelectActions implements Serializable {
     /**
      * Tests whether the current working list of selected documents is empty.
      * 
-     * @param String listName The name of the working list of selected
-     *            documents. If null, the default list will be used.
+     * @param String listName The name of the working list of selected documents.
+     *            If null, the default list will be used.
      * @return boolean true if empty, false otherwise
      */
     public boolean getIsCurrentWorkingListEmpty(String listName) {
@@ -266,7 +304,7 @@ public class BulkSelectActions implements Serializable {
         return selectedDocumentsList.isEmpty();
     }
 
-    public void ctrlSelectDocument(DocumentModel doc, String listName) {
+    public void toggleDocumentSelection(DocumentModel doc, String listName) {
         listName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
                 : listName;
         List<DocumentModel> list = documentsListsManager.getWorkingList(listName);
@@ -279,6 +317,63 @@ public class BulkSelectActions implements Serializable {
         } else {
             documentsListsManager.addToWorkingList(listName, doc);
         }
+    }
+
+    public void togglePageSelection(String providerName, String listName, SelectDataModel selectDataModel) {
+        PagedDocumentsProvider provider;
+        try {
+            provider = resultsProvidersCache.get(providerName);
+        } catch (ClientException e) {
+            log.error("Failed to get provider " + providerName, e);
+            return;
+        }
+        DocumentModelList documents = provider.getCurrentPage();
+        listName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
+                : listName;
+        List<DocumentModel> list = documentsListsManager.getWorkingList(listName);
+        if (list == null) {
+            log.error("no registered list with name " + listName);
+            return;
+        }
+        if (list.containsAll(documents)) {
+            documentsListsManager.removeFromWorkingList(listName, documents);
+            for (SelectDataModelRow row : selectDataModel.getRows()) {
+                row.setSelected(false);
+            }
+        } else {
+            documentsListsManager.addToWorkingList(listName, documents);
+            for (SelectDataModelRow row : selectDataModel.getRows()) {
+                row.setSelected(true);
+            }
+        }
+    }
+
+    public boolean getCanDelete() {
+        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+
+        if (docsToDelete == null || docsToDelete.isEmpty()) {
+            return false;
+        }
+
+        // do simple filtering
+        return checkDeletePermOnParents(docsToDelete);
+    }
+
+    public boolean checkDeletePermOnParents(List<DocumentModel> docsToDelete) {
+
+        List<DocumentRef> parentRefs = DocumentsListsUtils.getParentRefFromDocumentList(docsToDelete);
+
+        for (DocumentRef parentRef : parentRefs) {
+            try {
+                if (documentManager.hasPermission(parentRef,
+                        SecurityConstants.REMOVE_CHILDREN)) {
+                    return true;
+                }
+            } catch (ClientException e) {
+                log.error(e);
+            }
+        }
+        return false;
     }
 
 }
