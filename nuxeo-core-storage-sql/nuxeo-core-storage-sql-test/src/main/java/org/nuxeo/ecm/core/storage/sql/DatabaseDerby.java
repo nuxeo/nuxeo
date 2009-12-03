@@ -64,14 +64,22 @@ public class DatabaseDerby extends DatabaseHelper {
 
     @Override
     public void tearDown() throws Exception {
+        Exception ex = null;
         try {
             DriverManager.getConnection("jdbc:derby:;shutdown=true");
         } catch (SQLException e) {
-            if ("Derby system shutdown.".equals(e.getMessage())) {
+            String message = e.getMessage();
+            if ("Derby system shutdown.".equals(message)) {
                 return;
             }
+            if ("org.apache.derby.jdbc.EmbeddedDriver is not registered with the JDBC driver manager".equals(message)) {
+                // huh? happens for testClustering
+                return;
+            }
+            ex = e;
         }
-        throw new RuntimeException("Expected Derby shutdown exception");
+        throw new RuntimeException("Expected Derby shutdown exception instead",
+                ex);
     }
 
     @Override
@@ -90,6 +98,11 @@ public class DatabaseDerby extends DatabaseHelper {
         properties.put("password", System.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;
         return descriptor;
+    }
+
+    @Override
+    public boolean supportsMultipleFulltextIndexes() {
+        return false;
     }
 
 }

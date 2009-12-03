@@ -756,9 +756,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node foo = session.getNodeByPath("/foo", null);
         assertNotNull(foo);
         xaresource.end(xid, XAResource.TMSUCCESS);
-        xaresource.prepare(xid);
-        // Oracle needs a rollback as prepare() returns XA_RDONLY
-        xaresource.rollback(xid);
+        int outcome = xaresource.prepare(xid);
+        if (outcome == XAResource.XA_OK) {
+            // Derby doesn't allow rollback if prepare returned XA_RDONLY
+            xaresource.rollback(xid);
+        }
     }
 
     protected List<String> getNames(List<Node> nodes) {

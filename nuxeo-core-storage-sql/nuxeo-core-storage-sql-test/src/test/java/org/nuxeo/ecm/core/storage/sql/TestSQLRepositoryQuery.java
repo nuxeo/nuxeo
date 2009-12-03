@@ -88,6 +88,12 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
         super.testQueryBasic();
         DocumentModelList dml;
 
+        if (DatabaseHelper.DATABASE == DatabaseDerby.INSTANCE) {
+            // Derby 10.5.3.0 has bugs with LEFT JOIN and NOT BETWEEN
+            // http://issues.apache.org/jira/browse/DERBY-4388
+            return;
+        }
+
         dml = session.query("SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-01-01' AND DATE '2008-01-01'");
         assertEquals(0, dml.size()); // 2 Documents match the BETWEEN query
 

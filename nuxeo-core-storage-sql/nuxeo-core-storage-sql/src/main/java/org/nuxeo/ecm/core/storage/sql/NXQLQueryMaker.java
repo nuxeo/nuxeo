@@ -138,7 +138,9 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected static final String COL_ORDER_ALIAS_PREFIX = "_C";
 
-    private static final String JOIN_ON = "%s ON %s = %s";
+    protected static final String UNION_ALIAS = "_T";
+
+    protected static final String JOIN_ON = "%s ON %s = %s";
 
     /*
      * Fields used by the search service.
@@ -524,9 +526,12 @@ public class NXQLQueryMaker implements QueryMaker {
         if (statements.size() > 1) {
             select = new Select(null);
             select.setWhat(hier.getColumn(model.MAIN_KEY).getQuotedName());
+            // note that Derby has bizarre restrictions on parentheses placement
+            // around UNION, see http://issues.apache.org/jira/browse/DERBY-2374
             String from = '(' + StringUtils.join(statements, " UNION ALL ") + ')';
             if (dialect.needsAliasForDerivedTable()) {
-                from += " AS _T";
+                from += " AS " + dialect.openQuote() + UNION_ALIAS
+                        + dialect.closeQuote();
             }
             select.setFrom(from);
         }
@@ -1084,7 +1089,8 @@ public class NXQLQueryMaker implements QueryMaker {
                     // use normal processing
                     super.visitExpression(node);
                 }
-            } else if (node.operator == Operator.BETWEEN || node.operator == Operator.NOTBETWEEN) {
+            } else if (node.operator == Operator.BETWEEN
+                    || node.operator == Operator.NOTBETWEEN) {
                 LiteralList l = (LiteralList) node.rvalue;
                 node.lvalue.accept(this);
                 buf.append(' ');
