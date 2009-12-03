@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.spaces.api;
 
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Gadget container corresponding to a sub-part of an universe . A
@@ -30,82 +31,91 @@ import java.util.Calendar;
  */
 public interface Space {
 
-	/**
-	 * Unique identifier of a space instance
-	 * 
-	 * @return
-	 */
-	String getId();
+  /**
+   * Unique identifier of a space instance
+   * 
+   * @return
+   */
+  String getId();
 
-	/**
-	 * Name of the space
-	 * 
-	 * @return
-	 */
-	String getName();
+  /**
+   * Name of the space
+   * 
+   * @return
+   */
+  String getName();
 
-	/**
-	 * Space theme
-	 * 
-	 * @return
-	 */
-	String getTheme();
+  /**
+   * Space theme
+   * 
+   * @return
+   */
+  String getTheme();
 
-	/**
-	 * Title of the space
-	 * 
-	 * @return
-	 */
-	String getTitle();
+  /**
+   * Title of the space
+   * 
+   * @return
+   */
+  String getTitle();
 
-	/**
-	 * description of the space
-	 * 
-	 * @return
-	 */
-	String getDescription();
+  /**
+   * description of the space
+   * 
+   * @return
+   */
+  String getDescription();
 
-	/**
-	 * A key for displaying elements in this space
-	 * 
-	 * @return
-	 */
-	String getLayout();
+  /**
+   * A key for displaying elements in this space
+   * 
+   * @return
+   */
+  String getLayout();
 
-	/**
-	 * Family/category of this space
-	 * 
-	 * @return
-	 */
-	String getCategory();
+  /**
+   * Family/category of this space
+   * 
+   * @return
+   */
+  String getCategory();
 
-	/**
-	 * Name of the creator of this space
-	 * 
-	 * @return
-	 */
-	String getOwner();
+  /**
+   * Name of the creator of this space
+   * 
+   * @return
+   */
+  String getOwner();
 
-	/**
-	 * Date publication of this space
-	 * 
-	 * @return
-	 */
-	Calendar getDatePublication();
+  /**
+   * Date publication of this space
+   * 
+   * @return
+   */
+  Calendar getDatePublication();
 
-	/**
-	 * versionnable property
-	 * 
-	 * @return
-	 */
-	boolean isVersionnable();
+  /**
+   * versionnable property
+   * 
+   * @return
+   */
+  boolean isVersionnable();
 
-	/**
-	 * for comparison
-	 * 
-	 * @param space
-	 * @return
-	 */
-	boolean isEqualTo(Space space);
+  /**
+   * current version property
+   * 
+   * @return
+   */
+  boolean isCurrentVersion();
+
+  List<Space> getVersions();
+
+  /**
+   * for comparison
+   * 
+   * @param space
+   * @return
+   */
+  boolean isEqualTo(Space space);
 
 }

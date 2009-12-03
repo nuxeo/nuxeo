@@ -58,13 +58,7 @@
         <cell/>
       </section>
     </page>
-    <page name="popup">
-      <section>
-        <cell>
-          <fragment type="popup"/>
-        </cell>
-      </section>
-    </page>
+    
   </layout>
   <formats>
     <layout element="page[1]"/>
@@ -290,15 +284,6 @@
     <widget element="page[2]/section[4]/cell[1]/fragment[1]">
       <view>contenu principal</view>
     </widget>
-    <widget element="page[3]">
-      <view>page frame</view>
-    </widget>
-    <widget element="page[3]/section[1]">
-      <view>section frame</view>
-    </widget>
-    <widget element="page[3]/section[1]/cell[1]">
-      <view>cell frame</view>
-    </widget>
     <widget element="page[1]/section[4]">
       <view>section frame</view>
     </widget>
@@ -396,8 +381,8 @@
         <background preset="fond_gris (intralm background)"/>
       </selector>
     </style>
-    <style element="page[2]/section[1]/cell[1]/fragment[1]" inherit="root_actions"/>
-    <style element="page[2]/section[1]/cell[2]/fragment[1]" inherit="login"/>
+    <style element="page[2]/section[1]/cell[1]/fragment[1]"/>
+    <style element="page[2]/section[1]/cell[2]/fragment[1]"/>
     <style name="layoutManager">
       <selector path="*#layoutManagerContainer">
         <height>130px</height>
@@ -768,9 +753,6 @@
     </style>
     <style element="page[2]/section[2]/cell[1]/fragment[1]" inherit="onglets"/>
     <style element="page[2]/section[4]/cell[1]/fragment[1]"/>
-    <style element="page[3]"/>
-    <style element="page[3]/section[1]"/>
-    <style element="page[3]/section[1]/cell[1]"/>
     <style element="page[1]/section[4]"/>
     <style element="page[1]/section[4]/cell[1]"/>
     <style element="page[1]/section[4]/cell[1]/fragment[1]" inherit="layoutManager"/>

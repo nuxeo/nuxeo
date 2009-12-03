@@ -28,106 +28,109 @@ import org.nuxeo.ecm.spaces.core.impl.Constants;
 
 public class DocumentWrapper {
 
-	private static final Log LOGGER = LogFactory.getLog(DocumentWrapper.class);
+  private static final Log LOGGER = LogFactory.getLog(DocumentWrapper.class);
 
-	private DocumentModel internalDoc = null;
+  DocumentModel internalDoc = null;
 
-	public DocumentModel getInternalDocument() {
-		return internalDoc;
-	}
+  public DocumentModel getInternalDocument() {
+    return internalDoc;
+  }
 
-	protected DocumentWrapper(DocumentModel doc) {
-		this.internalDoc = doc;
-	}
+  protected DocumentWrapper(DocumentModel doc) {
+    this.internalDoc = doc;
+  }
 
-	public final String getId() {
-		return internalDoc.getId();
-	}
+  public final String getId() {
+    return internalDoc.getId();
+  }
 
-	public final String getName() {
-		return internalDoc.getName();
-	}
+  public final String getName() {
+    return internalDoc.getName();
+  }
 
-	public final String getTitle() {
-		try {
-			return internalDoc.getTitle();
-		} catch (ClientException e) {
-			LOGGER.error("Unable to retrieve document title, returns null", e);
-			return null;
-		}
-	}
+  public final String getTitle() {
+    try {
+      return internalDoc.getTitle();
+    } catch (ClientException e) {
+      LOGGER.error("Unable to retrieve document title, returns null", e);
+      return null;
+    }
+  }
 
-	public String getOwner() {
-		return getInternalStringProperty(Constants.Document.DOCUMENT_CREATOR);
-	}
+  public String getOwner() {
+    return getInternalStringProperty(Constants.Document.DOCUMENT_CREATOR);
+  }
 
-	public Calendar getDatePublication() {
-		return getInternalCalendarProperty(Constants.Document.PUBLICATION_DATE);
-	}
+  public Calendar getDatePublication() {
+    return getInternalCalendarProperty(Constants.Document.PUBLICATION_DATE);
+  }
 
-	public final void setTitle(String title) throws ClientException {
-		internalDoc.setPropertyValue(Constants.Document.DOCUMENT_TITLE, title);
-	}
+  public final void setTitle(String title) throws ClientException {
+    internalDoc.setPropertyValue(Constants.Document.DOCUMENT_TITLE, title);
+  }
 
-	public final String getDescription() {
-		return getInternalStringProperty(Constants.Document.DOCUMENT_DESCRIPTION);
-	}
+  public final String getDescription() {
+    return getInternalStringProperty(Constants.Document.DOCUMENT_DESCRIPTION);
+  }
 
-	public final void setDescription(String description) throws ClientException {
-		setStringProperty(Constants.Document.DOCUMENT_DESCRIPTION, description);
-	}
+  public final void setDescription(String description) throws ClientException {
+    setStringProperty(Constants.Document.DOCUMENT_DESCRIPTION, description);
+  }
 
-	public final void setStringProperty(String key, String title)
-			throws ClientException {
-		internalDoc.setPropertyValue(key, title);
-	}
+  public final void setStringProperty(String key, String title)
+      throws ClientException {
+    internalDoc.setPropertyValue(key, title);
+  }
 
-	protected String getInternalStringProperty(String key) {
-		try {
-			return (String) internalDoc.getProperty(key).getValue();
-		} catch (ClientException e) {
-			LOGGER.error("Unable to retrieve property '" + key
-					+ "', returns null", e);
-			return null;
-		}
-	}
+  protected String getInternalStringProperty(String key) {
+    try {
+      return (String) internalDoc.getProperty(key)
+          .getValue();
+    } catch (ClientException e) {
+      LOGGER.error("Unable to retrieve property '" + key + "', returns null", e);
+      return null;
+    }
+  }
 
-	protected int getInternalIntegerProperty(String key) {
-		try {
-			Serializable ser = internalDoc.getProperty(key).getValue();
-			if (ser == null)
-				return 0;
-			return ((Long) ser).intValue();
-		} catch (ClientException e) {
-			LOGGER.error("Unable to retrieve integer property '" + key
-					+ "', returns 0", e);
-			return 0;
-		}
-	}
+  protected int getInternalIntegerProperty(String key) {
+    try {
+      Serializable ser = internalDoc.getProperty(key)
+          .getValue();
+      if (ser == null)
+        return 0;
+      return ((Long) ser).intValue();
+    } catch (ClientException e) {
+      LOGGER.error("Unable to retrieve integer property '" + key
+          + "', returns 0", e);
+      return 0;
+    }
+  }
 
-	protected boolean getInternalBooleanProperty(String key) {
-		try {
-			Serializable ser = internalDoc.getProperty(key).getValue();
-			if (ser == null)
-				return false;
-			return (Boolean) ser;
-		} catch (ClientException e) {
-			LOGGER.error("Unable to retrieve boolean property '" + key
-					+ "', returns false", e);
-			return false;
-		}
-	}
+  protected boolean getInternalBooleanProperty(String key) {
+    try {
+      Serializable ser = internalDoc.getProperty(key)
+          .getValue();
+      if (ser == null)
+        return false;
+      return (Boolean) ser;
+    } catch (ClientException e) {
+      LOGGER.error("Unable to retrieve boolean property '" + key
+          + "', returns false", e);
+      return false;
+    }
+  }
 
-	private Calendar getInternalCalendarProperty(String key) {
-		try {
-			Serializable ser = internalDoc.getProperty(key).getValue();
-			if (ser != null)
-				return (Calendar) ser;
-		} catch (ClientException e) {
-			LOGGER.error("Unable to retrieve calendar property '" + key
-					+ "', returns null", e);
-		}
-		return null;
-	}
+  private Calendar getInternalCalendarProperty(String key) {
+    try {
+      Serializable ser = internalDoc.getProperty(key)
+          .getValue();
+      if (ser != null)
+        return (Calendar) ser;
+    } catch (ClientException e) {
+      LOGGER.error("Unable to retrieve calendar property '" + key
+          + "', returns null", e);
+    }
+    return null;
+  }
 
 }

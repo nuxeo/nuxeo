@@ -3,6 +3,7 @@
   <documentation> @author Damien de St Laurent</documentation>
   
   <require>org.nuxeo.theme.webengine</require>
+  <require>webengine.spaces.fragments</require>
   
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="applications">

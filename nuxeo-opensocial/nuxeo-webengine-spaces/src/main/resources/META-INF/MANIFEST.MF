@@ -6,5 +6,5 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Provide-Package: org.nuxeo.opensocial.webengines.spaces
 Require-Bundle: org.nuxeo.ecm.webengine.core
-Nuxeo-Component: OSGI-INF/nxtheme-contrib.xml,
- OSGI-INF/theme-contrib.xml
+Nuxeo-Component: OSGI-INF/theme-contrib.xml,
+ OSGI-INF/nxtheme-contrib.xml

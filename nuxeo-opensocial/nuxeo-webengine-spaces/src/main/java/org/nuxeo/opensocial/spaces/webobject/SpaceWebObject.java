@@ -17,13 +17,16 @@
 
 package org.nuxeo.opensocial.spaces.webobject;
 
+import java.util.Calendar;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,12 +34,14 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
 import org.nuxeo.ecm.spaces.api.Univers;
 import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
 
@@ -108,10 +113,13 @@ public class SpaceWebObject extends DocumentObject {
       if (this.space == null)
         throw new Exception("Space argument can't be null");
 
-      //JIRA WEB-279 => now use RequestAttribute
+      // JIRA WEB-279 => now use RequestAttribute
       if (space.getTheme() != null) {
-        getContext().getRequest().setAttribute("org.nuxeo.theme.theme", space.getTheme()+"/default");
-        LOGGER.debug("setting theme from space in context request wall again "+space.getTheme());
+        getContext().getRequest()
+            .setAttribute("org.nuxeo.theme.theme",
+                space.getTheme() + "/default");
+        LOGGER.debug("setting theme from space in context request wall again "
+            + space.getTheme());
       } else {
         LOGGER.debug("no theme found from space ");
       }
@@ -125,7 +133,8 @@ public class SpaceWebObject extends DocumentObject {
   }
 
   private CoreSession getSession() {
-    return WebEngine.getActiveContext() .getCoreSession();
+    return WebEngine.getActiveContext()
+        .getCoreSession();
   }
 
   private void buildSpacesAndGadgets() throws Exception
@@ -174,7 +183,7 @@ public class SpaceWebObject extends DocumentObject {
 
   /**
    * Pour simplifier le process de mise a jour on utilise le doc directement ici
-   *
+   * 
    * @return
    */
   @POST
@@ -189,7 +198,8 @@ public class SpaceWebObject extends DocumentObject {
 
       Space newSpace = Mapper.createSpace(ctx.getForm(), space.getId());
 
-      this.space = Framework.getService(SpaceManager.class).updateSpace(newSpace, getSession());
+      this.space = Framework.getService(SpaceManager.class)
+          .updateSpace(newSpace, getSession());
 
       return redirect(getPath());
 
@@ -199,20 +209,151 @@ public class SpaceWebObject extends DocumentObject {
   }
 
   /**
+   * Space creation in the current univers
+   * 
+   * @return
+   */
+  @POST
+  @Path("@createSpace")
+  public Response createSpace() {
+    try {
+      Space newSpace = Mapper.createSpace(ctx.getForm(), null);
+      SpaceManager spaceManager = Framework.getService(SpaceManager.class);
+      Space createSpace = spaceManager.createSpace(newSpace, univers,
+          getSession());
+      return redirect(ctx.getModulePath() + "/" + univers.getName() + "/"
+          + createSpace.getName());
+
+    } catch (Exception e) {
+      throw ExceptionManager.wrap(e);
+    }
+
+  }
+
+  /**
+   * Space creation in the current univers
+   * 
+   * @return
+   */
+  @POST
+  @Path("@createVersion")
+  public Response createVersion() {
+    try {
+      Calendar d = getDatePublication(ctx.getForm());
+      if (d.compareTo(Calendar.getInstance()) == 1) {
+        Space newSpace = Mapper.createSpace(ctx.getForm(), null);
+        SpaceManager spaceManager = Framework.getService(SpaceManager.class);
+        Space createSpace = spaceManager.createSpace(newSpace, univers,
+            getSession());
+        return Response.ok()
+            .entity(
+                ctx.getModulePath() + "/" + univers.getName() + "/"
+                    + createSpace.getName())
+            .build();
+      } else {
+        return Response.status(Status.INTERNAL_SERVER_ERROR)
+            .build();
+      }
+    } catch (Exception e) {
+      throw ExceptionManager.wrap(e);
+    }
+
+  }
+
+  /**
+   * update space
+   * 
+   * @return
+   */
+  @POST
+  @Path("@save")
+  public Response save() {
+    try {
+      Calendar d = getDatePublication(ctx.getForm());
+      if (d.compareTo(Calendar.getInstance()) == 1) {
+        updatePubicationDate(getDatePublication(ctx.getForm()));
+        return Response.ok()
+            .entity("OK")
+            .build();
+      } else {
+        return Response.status(Status.INTERNAL_SERVER_ERROR)
+            .build();
+      }
+    } catch (Exception e) {
+      throw ExceptionManager.wrap(e);
+    }
+
+  }
+
+  public Calendar getDatePublication(FormData formData) {
+
+    StringTokenizer st = new StringTokenizer(formData.getString("dc:valid"),
+        "/");
+    Calendar date = Calendar.getInstance();
+    date.set(Calendar.DAY_OF_MONTH, Integer.parseInt(st.nextToken()));
+    date.set(Calendar.MONTH, Integer.parseInt(st.nextToken()) - 1);
+    date.set(Calendar.YEAR, Integer.parseInt(st.nextToken()));
+    date.set(Calendar.HOUR_OF_DAY,
+        Integer.parseInt(formData.getString("hours")));
+    date.set(Calendar.MINUTE, Integer.parseInt(formData.getString("minutes")));
+    return date;
+  }
+
+  /**
+   * update space
+   * 
+   * @return
+   */
+  @POST
+  @Path("@publish")
+  public Response publishNow() {
+    try {
+      updatePubicationDate(Calendar.getInstance());
+      return redirect(ctx.getModulePath() + "/" + univers.getName() + "/"
+          + ctx.getForm()
+              .getString("actualVersionName"));
+    } catch (ClientException e) {
+      throw ExceptionManager.wrap(e);
+    }
+  }
+
+  public void updatePubicationDate(Calendar cal) throws ClientException {
+    try {
+      DocumentModel doc = getDocument();
+      doc.setPropertyValue("dc:valid", cal);
+      CoreSession session = getSession();
+      session.saveDocument(doc);
+      session.save();
+    } catch (PropertyException e) {
+      throw ExceptionManager.wrap(e);
+    }
+  }
+
+  /**
+   * Space creation in the current univers
+   * 
+   * @return
+   */
+  @POST
+  @Path("@removeSpace")
+  public Response removeSpace() {
+    super.doDelete();
+    return redirect(ctx.getModulePath() + "/" + univers.getName());
+  }
+
+  /**
    * Gadget creation in the current space
-   *
+   * 
    * @return
    */
   @POST
   @Path("@createGadget")
   public Response createGadget() {
     try {
-
       Gadget gadget = Mapper.createGadget(ctx.getForm(), null);
       SpaceManager spaceManager = Framework.getService(SpaceManager.class);
-
-      Gadget createdGadget = spaceManager.createGadget(gadget, space, getSession());
-
+      Gadget createdGadget = spaceManager.createGadget(gadget, space,
+          getSession());
       if (createdGadget != null) {
         return redirect(getPath() + "/" + gadget.getName());
       } else {

@@ -17,36 +17,64 @@
 
 package org.nuxeo.ecm.spaces.core.impl.docwrapper;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.core.impl.Constants;
 
 public class SpaceDocumentWrapper extends DocumentWrapper implements Space {
 
-	private boolean versionnable = false;
+  SpaceDocumentWrapper(DocumentModel doc) {
+    super(doc);
+  }
 
-	SpaceDocumentWrapper(DocumentModel doc) {
-		super(doc);
-	}
+  public String getLayout() {
+    return getInternalStringProperty(Constants.Space.SPACE_LAYOUT);
+  }
 
-	public String getLayout() {
-		return getInternalStringProperty(Constants.Space.SPACE_LAYOUT);
-	}
+  public String getCategory() {
+    return getInternalStringProperty(Constants.Space.SPACE_CATEGORY);
+  }
 
-	public String getCategory() {
-		return getInternalStringProperty(Constants.Space.SPACE_CATEGORY);
-	}
+  public boolean isEqualTo(Space space) {
+    return space.getId() != null && space.getId()
+        .equals(getId());
+  }
 
-	public boolean isEqualTo(Space space) {
-		return space.getId() != null && space.getId().equals(getId());
-	}
+  public String getTheme() {
+    return getInternalStringProperty(Constants.Space.SPACE_THEME);
+  }
 
-	public String getTheme() {
-		return getInternalStringProperty(Constants.Space.SPACE_THEME);
-	}
+  public boolean isVersionnable() {
+    return getInternalBooleanProperty(Constants.Space.SPACE_VERSIONNABLE);
+  }
 
-	public boolean isVersionnable() {
-		return getInternalBooleanProperty(Constants.Space.SPACE_VERSIONNABLE);
-	}
+  public List<Space> getVersions() {
+    if (isVersionnable()) {
+      try {
+        List<DocumentModel> docs = internalDoc.getCoreSession()
+            .getChildren(internalDoc.getParentRef(), Constants.Space.TYPE,
+                null, new SpaceSorter());
+        List<Space> spaces = new ArrayList<Space>();
+        for (DocumentModel doc : docs) {
+          spaces.add(doc.getAdapter(Space.class));
+        }
+        return spaces;
+      } catch (ClientException e) {
+        e.printStackTrace();
+      }
+    }
+    return null;
+  }
 
+  public boolean isCurrentVersion() {
+    if (getVersions().get(0)
+        .getDatePublication()
+        .equals(this.getDatePublication()))
+      return true;
+    return false;
+  }
 }
