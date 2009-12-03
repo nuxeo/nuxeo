@@ -44,6 +44,7 @@
 
     <imageToConvert extension="ai" mimeType="application/illustrator" />
     <imageToConvert extension="psd" mimeType="image/photoshop" />
+    <imageToConvert extension="eps" mimeType="image/eps" />
 
     <!-- Raw files -->
     <imageToConvert extension="cr2" mimeType="image/x-canon-cr2" />
