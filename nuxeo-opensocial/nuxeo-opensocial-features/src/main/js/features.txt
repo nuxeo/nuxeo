@@ -32,6 +32,9 @@ features/pubsub/feature.xml
 
 # List each feature you want to support here
 nxfeatures/jquery/feature.xml
+nxfeatures/datepicker/feature.xml
+nxfeatures/json/feature.xml
+nxfeatures/tablesorter/feature.xml
 nxfeatures/effects/feature.xml
 nxfeatures/ui/feature.xml
 nxfeatures/nuxeo/feature.xml
