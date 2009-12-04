@@ -30,6 +30,8 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
 
     private static final String WEB_BUNDLE = "org.nuxeo.ecm.platform.web.common";
 
+    private static final String WEB_BUNDLE_TEST = "org.nuxeo.ecm.platform.web.common.test";
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -49,7 +51,7 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
     public void testRegister() {
         getAuthService();
         assertNotNull(authService);
-        //Rux NXP-1972: webservices plugin also
+        // Rux NXP-1972: webservices plugin also
         assertEquals(4, authService.getAuthChain().size());
         assertEquals("BASIC_AUTH", authService.getAuthChain().get(0));
     }
@@ -60,6 +62,19 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
         assertTrue(!plugin.getParameters().isEmpty());
         assertTrue(plugin.getParameters().containsKey("LoginPage"));
         assertEquals("login.jsp", plugin.getParameters().get("LoginPage"));
+    }
+
+    public void testDescriptorMerge() throws Exception {
+        deployBundle(WEB_BUNDLE_TEST);
+        PluggableAuthenticationService service = getAuthService();
+        AuthenticationPluginDescriptor plugin = service.getDescriptor("ANONYMOUS_AUTH");
+
+        assertFalse(plugin.getStateful());
+        assertTrue(plugin.getNeedStartingURLSaving());
+        assertEquals("Dummy_LM", plugin.getLoginModulePlugin());
+        assertEquals(
+                Class.forName("org.nuxeo.ecm.platform.ui.web.auth.DummyAuthenticator"),
+                plugin.getClassName());
     }
 
 }

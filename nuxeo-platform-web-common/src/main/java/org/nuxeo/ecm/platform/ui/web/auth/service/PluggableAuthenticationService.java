@@ -23,11 +23,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
@@ -46,12 +44,19 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class PluggableAuthenticationService extends DefaultComponent {
 
     public static final String NAME = "org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService";
+
     public static final String EP_AUTHENTICATOR = "authenticators";
+
     public static final String EP_SESSIONMANAGER = "sessionManager";
+
     public static final String EP_CHAIN = "chain";
+
     public static final String EP_PROPAGATOR = "propagator";
+
     public static final String EP_CBFACTORY = "JbossCallbackfactory";
+
     public static final String EP_STARTURL = "startURL";
+
     public static final String EP_OPENURL = "openUrl";
 
     private static final Log log = LogFactory.getLog(PluggableAuthenticationService.class);
@@ -200,6 +205,14 @@ public class PluggableAuthenticationService extends DefaultComponent {
                 && newContrib.getLoginModulePlugin().length() > 0) {
             oldDescriptor.setLoginModulePlugin(newContrib.getLoginModulePlugin());
         }
+
+        oldDescriptor.setStateful(newContrib.getStateful());
+
+        if (newContrib.getClassName() != null) {
+            oldDescriptor.setClassName(newContrib.getClassName());
+        }
+
+        oldDescriptor.setNeedStartingURLSaving(newContrib.getNeedStartingURLSaving());
     }
 
     // Service API
@@ -297,7 +310,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
         if (!sessionManagers.isEmpty()) {
             for (String smName : sessionManagers.keySet()) {
                 NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
-                if (sm.canBypassRequest(request)){
+                if (sm.canBypassRequest(request)) {
                     return true;
                 }
             }
@@ -320,11 +333,13 @@ public class PluggableAuthenticationService extends DefaultComponent {
         return VirtualHostHelper.getBaseURL(request);
     }
 
-    public void onAuthenticatedSessionCreated(ServletRequest request, HttpSession session, CachableUserIdentificationInfo cachebleUserInfo) {
+    public void onAuthenticatedSessionCreated(ServletRequest request,
+            HttpSession session, CachableUserIdentificationInfo cachebleUserInfo) {
         if (!sessionManagers.isEmpty()) {
             for (String smName : sessionManagers.keySet()) {
                 NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
-                sm.onAuthenticatedSessionCreated(request, session, cachebleUserInfo);
+                sm.onAuthenticatedSessionCreated(request, session,
+                        cachebleUserInfo);
             }
         }
     }

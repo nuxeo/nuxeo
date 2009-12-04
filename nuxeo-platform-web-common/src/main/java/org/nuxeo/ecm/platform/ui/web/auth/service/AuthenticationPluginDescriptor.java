@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.ui.web.auth.service;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -92,6 +91,18 @@ public class AuthenticationPluginDescriptor implements Serializable {
 
     public boolean getStateful() {
         return stateful;
+    }
+
+    public void setClassName(Class<NuxeoAuthenticationPlugin> className) {
+        this.className = className;
+    }
+
+    public void setNeedStartingURLSaving(boolean needStartingURLSaving) {
+        this.needStartingURLSaving = needStartingURLSaving;
+    }
+
+    public void setStateful(boolean stateful) {
+        this.stateful = stateful;
     }
 
 }
