@@ -38,6 +38,8 @@ import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.NoPermissionException;
 import javax.naming.NotContextException;
+import javax.naming.Reference;
+import javax.naming.spi.NamingManager;
 
 /**
  * Provides implementation of <code>javax.naming.Context</code> interface for
@@ -93,7 +95,6 @@ import javax.naming.NotContextException;
  * @author Alexander Ananiev
  * @author Dimitar Gospodinov
  */
-@SuppressWarnings({"ALL"})
 public class MockContext implements Context {
 
     private static final String ROOT_CONTEXT_NAME = "ROOT";
@@ -557,6 +558,21 @@ public class MockContext implements Context {
             } else {
                 throw new NotContextException("Expected MockContext but found "
                         + res);
+            }
+        }
+        // if this is a reference
+        else if (res instanceof Reference) {
+            try {
+                Hashtable<String, Object> env = new Hashtable<String, Object>();
+                res = NamingManager.getObjectInstance(res, name, this,
+                        env);
+                if (res != null) {
+                    objects.put(nameComponent, res);
+                }
+            } catch (NamingException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new NamingException(e.getMessage());
             }
         }
         return res;

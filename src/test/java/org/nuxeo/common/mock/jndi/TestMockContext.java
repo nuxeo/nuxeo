@@ -20,6 +20,7 @@ package org.nuxeo.common.mock.jndi;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.naming.Binding;
@@ -32,6 +33,8 @@ import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.NoPermissionException;
+import javax.naming.Reference;
+import javax.naming.spi.ObjectFactory;
 
 import junit.framework.TestCase;
 
@@ -407,6 +410,13 @@ public class TestMockContext extends TestCase {
         assertTrue(ctx.lookup("a.b.c.d") instanceof Context);
     }
 
+    public void testResourceFactory() throws NamingException {
+        Reference ref = new Reference(String.class.getName(),
+                StringFactory.class.getName(), null);
+        initialCtx.bind("java:comp/env/astring", ref);
+        assertEquals("someString", initialCtx.lookup("java:comp/env/astring"));
+    }
+
     /**
      * Class to simulate remote context.
      * Always returns the dummy object from lookup
@@ -433,6 +443,13 @@ public class TestMockContext extends TestCase {
             return new Object();
         }
 
+    }
+
+    public static class StringFactory implements ObjectFactory {
+        public Object getObjectInstance(Object obj, Name name, Context nameCtx,
+                Hashtable<?, ?> env) throws Exception {
+            return "someString";
+        }
     }
 
 }
