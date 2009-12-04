@@ -47,11 +47,9 @@ public class EventServiceComponent extends DefaultComponent {
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (EVENT_LISTENER_XP.equals(extensionPoint)) {
-            EventListenerDescriptor descriptor = (EventListenerDescriptor)contribution;
-            if (descriptor.isEnabled()) {
-                descriptor.setRuntimeContext(contributor.getRuntimeContext());
-                service.addEventListener(descriptor);
-            }
+            EventListenerDescriptor descriptor = (EventListenerDescriptor) contribution;
+            descriptor.setRuntimeContext(contributor.getRuntimeContext());
+            service.addEventListener(descriptor);
         }
     }
 
@@ -60,15 +58,16 @@ public class EventServiceComponent extends DefaultComponent {
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (EVENT_LISTENER_XP.equals(extensionPoint)) {
-            service.removeEventListener((EventListenerDescriptor)contribution);
+            service.removeEventListener((EventListenerDescriptor) contribution);
         }
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (EventService.class == adapter || EventProducer.class == adapter || EventServiceAdmin.class == adapter) {
-            return (T)service;
+        if (EventService.class == adapter || EventProducer.class == adapter
+                || EventServiceAdmin.class == adapter) {
+            return (T) service;
         }
         return null;
     }

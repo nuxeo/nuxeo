@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="test-disabling-listener1">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener async="false" postCommit="true" script="script/postCommitListener.groovy" name="testPostCommit">
+      <event>test</event>
+      <event>test1</event>
+      <event>test3</event>
+    </listener>
+  </extension>
+
+</component>
