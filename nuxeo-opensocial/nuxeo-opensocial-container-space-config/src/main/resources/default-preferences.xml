@@ -23,7 +23,7 @@
     <EnumValue display_value="white" value="FFFFFF"/>
   </UserPref>
 
-  <UserPref name="COLOR_border" display_name="Bordure" default_value="FFFFFF" datatype="enum" >
+  <UserPref name="COLOR_border" display_name="Bordure" default_value="none" datatype="enum" >
     <EnumValue display_value="ref" value="FF0000"/>
     <EnumValue display_value="pink" value="FF0066"/>
     <EnumValue display_value="orange" value="FF6600"/>

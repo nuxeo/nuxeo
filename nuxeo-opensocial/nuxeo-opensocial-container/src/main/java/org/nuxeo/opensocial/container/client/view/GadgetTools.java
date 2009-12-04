@@ -13,8 +13,8 @@ import com.gwtext.client.widgets.Tool;
 import com.gwtext.client.widgets.portal.PortalColumn;
 
 /**
-* @author Guillaume Cusnieux
-*/
+ * @author Guillaume Cusnieux
+ */
 public class GadgetTools {
 
   private final static ContainerConstants CST = GWT.create(ContainerConstants.class);
@@ -55,11 +55,11 @@ public class GadgetTools {
 
       private native void updateLayoutSizeForMin(String width)
       /*-{
-    $wnd.jQuery("#containerPortal").width(width);
-    $wnd.jQuery(".containerPortal").width(width);
-    $wnd.jQuery(".x-column-inner").width(width);
-    $wnd.jQuery("#containerPanel").width(width);
-  }-*/;
+      $wnd.jQuery("#containerPortal").width(width);
+      $wnd.jQuery(".containerPortal").width(width);
+      $wnd.jQuery(".x-column-inner").width(width);
+      $wnd.jQuery("#containerPanel").width(width);
+      }-*/;
 
     });
     return new Tool[] { min };
@@ -121,13 +121,13 @@ public class GadgetTools {
 
         private native void updateLayoutSizeForMax(String id)
         /*-{
-    $wnd.jQuery("#containerPortal").width("100%");
-    $wnd.jQuery(".containerPortal").width("100%");
-    $wnd.jQuery("#containerPanel").width("100%");
-    $wnd.jQuery(".x-column-inner").width("100%");
-    $wnd.jQuery("#maximizedCol").attr("style","width:100%;padding:0;margin:0;");
-    $wnd.jQuery("#"+id).attr("style","width:100%;paddinf:0;");
-  }-*/;
+        $wnd.jQuery("#containerPortal").width("100%");
+        $wnd.jQuery(".containerPortal").width("100%");
+        $wnd.jQuery("#containerPanel").width("100%");
+        $wnd.jQuery(".x-column-inner").width("100%");
+        $wnd.jQuery("#maximizedCol").attr("style","width:100%;padding:0;margin:0;");
+        $wnd.jQuery("#"+id).attr("style","width:100%;paddinf:0;");
+        }-*/;
 
       });
 
@@ -143,13 +143,12 @@ public class GadgetTools {
 
   private static native void hideManager()
   /*-{
-    $wnd.jQuery(".manager").slideUp("fast");
-    $wnd.jQuery(".getManager").slideUp("fast");
+    $wnd.jQuery(".managerContainer").slideUp();
   }-*/;
 
   private static native void showManager()
   /*-{
-    $wnd.jQuery(".getManager").slideDown("fast");
+    $wnd.jQuery(".managerContainer").slideDown();
   }-*/;
 
   public void launchGear() {

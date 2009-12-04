@@ -2,7 +2,7 @@ package org.nuxeo.opensocial.container.client;
 
 /**
  * JSNI tools for call JS function in parent application
- *
+ * 
  * @author Guillaume Cusnieux
  */
 public class JsLibrary {
@@ -83,7 +83,6 @@ public class JsLibrary {
   public static native void updateColumnStyle()
   /*-{
     $wnd.jQuery(".x-portal-column").attr("style","padding: 5px 0px 0px 5px;");
-    $wnd.jQuery(".x-portlet").attr("style","width:100%");
   }-*/;
 
   public static native String getNuxeoClientSideUrl()

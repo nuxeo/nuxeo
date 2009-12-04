@@ -7,6 +7,7 @@ import org.nuxeo.opensocial.container.client.bean.GadgetView;
 import org.nuxeo.opensocial.container.client.bean.PreferencesBean;
 
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Frame;
 import com.gwtext.client.widgets.layout.FitLayout;
 import com.gwtext.client.widgets.portal.Portlet;
@@ -16,6 +17,7 @@ import com.gwtext.client.widgets.portal.Portlet;
  */
 public class GadgetPortlet extends Portlet {
 
+  private static final String NONE_PROPERTY = "none";
   static final String GADGET = "gadget-";
   private static final String GADGET_CONTAINER = "portlet-";
   public static final String CANVAS_VIEW = "canvas";
@@ -92,15 +94,13 @@ public class GadgetPortlet extends Portlet {
 
   public void renderPreference(String name, String value) {
     if (DEFAULT_PREFS.isBorder(name)) {
-      if ("FFFFFF".equals(value))
-        removeBorder(this.getId());
-      else
+      if (!NONE_PROPERTY.equals(value))
         changeBorderColor(this.getId(), value);
     } else if (DEFAULT_PREFS.isFont(name)) {
-      if (!"none".equals(value))
+      if (!NONE_PROPERTY.equals(value))
         changeTitleColor(this.getId(), value);
     } else if (DEFAULT_PREFS.isHeader(name)) {
-      if ("none".equals(value))
+      if (NONE_PROPERTY.equals(value))
         removeHeaderColor(this.getId());
       else
         changeHeaderColor(this.getId(), value);
@@ -262,8 +262,16 @@ public class GadgetPortlet extends Portlet {
     $wnd.jQuery("#"+id).find("span.x-panel-header-text").css("color","#"+color);
   }-*/;
 
+  // hack css
   public void addMarginLeft() {
-    _addMarginLeft(this.getId());
+    final String id = this.getId();
+    Timer t = new Timer() {
+      @Override
+      public void run() {
+        _addMarginLeft(id);
+      }
+    };
+    t.schedule(70);
   }
 
   static native void _addMarginLeft(String id)
