@@ -97,13 +97,13 @@ public class TestService extends NXRuntimeTestCase {
         config = rcmTest.computeConfigForRequest(uri);
         assertFalse(config.isCached());
         assertFalse(config.isPrivate());
-        assertTrue(config.getCacheTime().equals("3599"));
+        assertEquals("3599", config.getCacheTime());
 
         uri = "/nuxeo/Cache";
         config = rcmTest.computeConfigForRequest(uri);
         assertTrue(config.isCached());
         assertTrue(config.isPrivate());
-        assertEquals(config.getCacheTime(),"3000");
+        assertEquals("3000", config.getCacheTime());
 
     }
 

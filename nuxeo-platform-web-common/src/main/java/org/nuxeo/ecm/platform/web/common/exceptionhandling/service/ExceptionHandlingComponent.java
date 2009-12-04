@@ -55,7 +55,7 @@ public class ExceptionHandlingComponent extends DefaultComponent implements
         switch (ep) {
         case exceptionhandler:
             ExceptionHandlerDescriptor ehd = (ExceptionHandlerDescriptor) contribution;
-            exceptionHandler = (NuxeoExceptionHandler) ehd.getKlass().newInstance();
+            exceptionHandler = ehd.getKlass().newInstance();
             exceptionHandler.setParameters(exceptionHandlerParameters);
             break;
         case errorhandlers:
@@ -91,7 +91,7 @@ public class ExceptionHandlingComponent extends DefaultComponent implements
     public NuxeoExceptionHandler getExceptionHandler() {
         return exceptionHandler;
     }
-    
+
 
 
 }

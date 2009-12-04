@@ -58,12 +58,11 @@ public class AggregatedJSProvider extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        String resultScript = null;
         String scriptsStr = req.getParameter("scripts");
         String refreshStr = req.getParameter("refresh");
         String minimizeStr = req.getParameter("minimize");
-        boolean minimize = "true".equalsIgnoreCase(minimizeStr) ? true : false;
-        boolean refresh = "true".equalsIgnoreCase(refreshStr) ? true : false;
+        boolean minimize = "true".equalsIgnoreCase(minimizeStr);
+        boolean refresh = "true".equalsIgnoreCase(refreshStr);
 
         if (scriptsStr == null) {
             super.doGet(req, resp);
@@ -72,6 +71,7 @@ public class AggregatedJSProvider extends HttpServlet {
 
         String cacheKey = scriptsStr + "*" + minimize;
 
+        String resultScript = null;
         if (!refresh) {
             cacheLock.readLock().lock();
             try {
@@ -155,10 +155,7 @@ public class AggregatedJSProvider extends HttpServlet {
                                     minimizerClassName);
                     minimizer = (JSMinimizer) minimizerClass.newInstance();
                 } catch (Exception e) {
-                    log
-                            .error(
-                                    "Error while getting minimizer implementation",
-                                    e);
+                    log.error("Error while getting minimizer implementation", e);
                 }
             }
         }
@@ -174,8 +171,7 @@ public class AggregatedJSProvider extends HttpServlet {
 
         public String minimize(String jsScriptContent) {
             StringBuffer sb = new StringBuffer();
-            sb
-                    .append("// No (correct) JSMinimizer implementation class was defined\n");
+            sb.append("// No (correct) JSMinimizer implementation class was defined\n");
             sb.append("please check web.xml to set init parameter\n");
             sb.append(jsScriptContent);
             return sb.toString();

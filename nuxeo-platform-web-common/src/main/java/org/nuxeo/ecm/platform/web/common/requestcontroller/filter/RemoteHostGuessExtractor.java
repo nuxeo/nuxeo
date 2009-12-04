@@ -27,9 +27,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class RemoteHostGuessExtractor {
 
-    static final List<String> HEADER_NAMES = Arrays.asList(new String[] {
-            "x-forwarded-for", "x-forwaded", "forwarded-for",
-            "via", "x-coming-from", "coming-from" });
+    static final List<String> HEADER_NAMES = Arrays.asList(
+            "x-forwarded-for", "x-forwaded", "forwarded-for", "via", "x-coming-from", "coming-from");
 
     public static String getRemoteHost(HttpServletRequest request) {
         for (String name : HEADER_NAMES) {
