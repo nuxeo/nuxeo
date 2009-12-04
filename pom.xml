@@ -148,7 +148,7 @@
       </modules>
     </profile>
 
-    <!-- For use by Nuxeo internal QA -->
+    <!-- NXP-4272 - don't use timestamp -->
     <profile>
       <id>qa</id>
       <distributionManagement>
@@ -170,7 +170,7 @@
       </distributionManagement>
     </profile>
   </profiles>
-  
+
   <modules>
     <module>nuxeo-distribution-tools</module>
   </modules>
@@ -1110,6 +1110,7 @@
     </pluginRepository>
   </pluginRepositories>
 
+  <!-- NXP-4272 - don't use timestamp -->
   <distributionManagement>
     <snapshotRepository>
       <id>nuxeo-snapshot</id>
