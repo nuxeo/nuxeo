@@ -226,6 +226,11 @@ public final class ThemeManager implements Registrable {
         }
         return null;
     }
+    
+    public static ThemeDescriptor getThemeDescriptorByThemeName(
+            final String themeName) {
+        return getThemeDescriptorByThemeName(null, themeName);
+    }
 
     public static Set<String> getThemeNames() {
         return getThemeNames(null);
@@ -368,6 +373,13 @@ public final class ThemeManager implements Registrable {
         return pages.get(path);
     }
 
+    public static String getPageNameFromPagePath(final String path) {
+        if (path.contains("/")) {
+            return path.split("/")[1];
+        }
+        return null;
+    }
+    
     public ThemeElement getThemeByName(final String name) {
         return themes.get(name);
     }
