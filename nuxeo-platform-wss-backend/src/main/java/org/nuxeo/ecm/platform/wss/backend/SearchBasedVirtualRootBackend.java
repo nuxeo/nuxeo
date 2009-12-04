@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.platform.wss.service.WSSPlugableBackendManager;
 import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.servlet.WSSRequest;
 import org.nuxeo.wss.spi.WSSBackend;
@@ -114,7 +115,7 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
             try {
                 String corePath = getName2path().get(base);
                 DocumentModel doc = getCoreSession().getDocument(new PathRef(corePath));
-                NuxeoListItem item = new NuxeoListItem(doc, new Path(corePath).removeLastSegments(1).toString(), urlRoot);
+                NuxeoListItem item =  WSSPlugableBackendManager.instance().createItem(doc, new Path(corePath).removeLastSegments(1).toString(), urlRoot);
                 item.setVirtualName(base);
                 return item;
             } catch (Exception e) {
@@ -141,7 +142,7 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
                     // XXX !!!
                     String corePath = getName2path().get(name);
                     DocumentModel doc = getCoreSession().getDocument(new PathRef(corePath));
-                    NuxeoListItem item = new NuxeoListItem(doc, new Path(corePath).removeLastSegments(1).toString(), urlRoot);
+                    NuxeoListItem item = WSSPlugableBackendManager.instance().createItem(doc, new Path(corePath).removeLastSegments(1).toString(), urlRoot);
                     item.setVirtualName(name);
                     items.add(item);
                 }

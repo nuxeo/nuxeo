@@ -39,7 +39,8 @@
       </init-param>-->
       <init-param>
         <param-name>org.nuxeo.wss.backendFactory</param-name>
-        <param-value>org.nuxeo.ecm.platform.wss.backend.SearchBasedVirtualHostedBackendfactory</param-value>
+        <param-value>org.nuxeo.ecm.platform.wss.service.PluggableBackendFactory</param-value>
+        <!--<param-value>org.nuxeo.ecm.platform.wss.backend.SearchBasedVirtualHostedBackendfactory</param-value>-->
       </init-param>
     </filter>
     <filter-mapping>
