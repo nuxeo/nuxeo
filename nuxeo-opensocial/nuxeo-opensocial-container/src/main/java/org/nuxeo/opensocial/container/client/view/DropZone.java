@@ -269,6 +269,7 @@ public class DropZone extends PortalDropZone {
     lastPosC = null;
     JsLibrary.hideGwtContainerMask();
     gp.renderDefaultPreferences();
+    gp.addMarginLeft();
     return true;
   }
 

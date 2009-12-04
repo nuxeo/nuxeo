@@ -12,8 +12,8 @@ import com.gwtext.client.widgets.layout.FitLayout;
 import com.gwtext.client.widgets.portal.Portlet;
 
 /**
-* @author Guillaume Cusnieux
-*/
+ * @author Guillaume Cusnieux
+ */
 public class GadgetPortlet extends Portlet {
 
   static final String GADGET = "gadget-";
@@ -96,9 +96,10 @@ public class GadgetPortlet extends Portlet {
         removeBorder(this.getId());
       else
         changeBorderColor(this.getId(), value);
-    } else if (DEFAULT_PREFS.isFont(name))
-      changeTitleColor(this.getId(), value);
-    else if (DEFAULT_PREFS.isHeader(name)) {
+    } else if (DEFAULT_PREFS.isFont(name)) {
+      if (!"none".equals(value))
+        changeTitleColor(this.getId(), value);
+    } else if (DEFAULT_PREFS.isHeader(name)) {
       if ("none".equals(value))
         removeHeaderColor(this.getId());
       else
@@ -247,7 +248,8 @@ public class GadgetPortlet extends Portlet {
 
   static native void changeBorderColor(String id, String color)
   /*-{
-    $wnd.jQuery("#"+id).find("div.x-panel-bwrap").css("border","2px solid #"+color);
+    $wnd.jQuery("#"+id).find("div.x-panel-tl").css("border-bottom","1px solid #"+color);
+    $wnd.jQuery("#"+id).attr("style","border:1px solid #"+color);
   }-*/;
 
   static native void removeBorder(String id)
@@ -258,6 +260,15 @@ public class GadgetPortlet extends Portlet {
   static native void changeTitleColor(String id, String color)
   /*-{
     $wnd.jQuery("#"+id).find("span.x-panel-header-text").css("color","#"+color);
+  }-*/;
+
+  public void addMarginLeft() {
+    _addMarginLeft(this.getId());
+  }
+
+  static native void _addMarginLeft(String id)
+  /*-{
+    $wnd.jQuery("#"+id).css("margin-left","-2px");
   }-*/;
 
 }

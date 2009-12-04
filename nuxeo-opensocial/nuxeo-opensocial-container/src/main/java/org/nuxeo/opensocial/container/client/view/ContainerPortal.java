@@ -245,7 +245,6 @@ public class ContainerPortal extends Portal {
 
   private PortalColumn createCol(String id, double columnWidth) {
     PortalColumn col = new PortalColumn();
-    col.setPaddings(5, 5, 5, 0);
     col.setId(id);
     col.addClass(container.getLayout());
     this.add(col, new ColumnLayoutData(columnWidth));

@@ -127,7 +127,7 @@
 
 .x-color-palette {
   float: left;
-  width: 190px;
+  width: 215px;
   height:100%;
 }
 
@@ -149,6 +149,8 @@
 }
 
 .x-3-header2cols>.x-portlet {
+  border:1px solid #D4D0C8;
+  margin-left:-2px;
   min-width: 100%;
   width: 100%
 }
@@ -159,6 +161,8 @@
 }
 
 .x-1-default>.x-portlet {
+  border:1px solid #D4D0C8;
+  margin-left:-2px;
   min-width: 100%;
   width: 100%
 }
@@ -169,6 +173,8 @@
 }
 
 .x-2-default>.x-portlet,.x-3-default>.x-portlet,.x-2-33-66>.x-portlet,.x-2-66-33>.x-portlet {
+  border:1px solid #D4D0C8;
+  margin-left:-2px;
   min-width: 100%;
   width: 100%;
 }
@@ -210,6 +216,8 @@
 }
 
 .x-4-footer3cols>.x-portlet,.x-4-header3cols>.x-portlet  {
+  border:1px solid #D4D0C8;
+  margin-left:-2px;
   min-width: 100%;
   width: 100%;
 }
@@ -222,6 +230,8 @@
 
 .x-4-66-33-50-50>.x-portlet,.x-4-50-50-66-33>.x-portlet,.x-4-100-66-33-100>.x-portlet,.x-4-100-33-66-100>.x-portlet
 {
+  border:1px solid #D4D0C8;
+  margin-left:-2px;
   min-width: 100%;
   width: 100%;
 }
