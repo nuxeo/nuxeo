@@ -126,4 +126,18 @@
     </profile>
   </profiles>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-jtajca</artifactId>
+      <version>${nuxeo.runtime.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-ra</artifactId>
+      <version>${nuxeo.core.version}</version>
+    </dependency>
+                     
+  </dependencies>
+
 </project>

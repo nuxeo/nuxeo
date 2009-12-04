@@ -5,6 +5,7 @@
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
            uri="urn:nuxeo-artifact" />
+  <artifact:expand depth="2" />
 
   <property name="outdir" value="${maven.project.build.directory}" />
   <property name="stagedir" value="${outdir}/stage" />
@@ -120,7 +121,9 @@ set JAVA_OPTS=%JAVA_OPTS% -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding
       <replacetoken>factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory"</replacetoken>
       <replacevalue>factory="org.nuxeo.ecm.core.storage.sql.PoolingRepositoryFactory"</replacevalue>
     </replace>
-    <echo file="${tomcat}/conf/Catalina/localhost/nuxeo.xml" append="true"><![CDATA[
+    <replace file="${tomcat}/conf/Catalina/localhost/nuxeo.xml">
+      <replacetoken><![CDATA[</Context>]]></replacetoken>
+      <replacevalue><![CDATA[
       <Resource name="TransactionManager" auth="Container"
       type="javax.transaction.TransactionManager"
       factory="org.nuxeo.runtime.jtajca.NuxeoTransactionManagerFactory"
@@ -130,8 +133,9 @@ set JAVA_OPTS=%JAVA_OPTS% -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding
       type="javax.resource.spi.ConnectionManager"
       factory="org.nuxeo.runtime.jtajca.NuxeoConnectionManagerFactory"
       minPoolSize="0" maxPoolSize="20" idleTimeoutMinutes="0"/>
-      ]]>
-    </echo>
+      </Context>
+      ]]></replacevalue>
+      </replace>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}-jtajca.zip"
          basedir="${stagedir}" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}-jtajca.zip"
