@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -32,9 +32,38 @@
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
-    </profile>    
+    </profile>
+
+    <!-- NXP-4272 - don't use timestamp -->
+    <profile>
+      <id>qa</id>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>snapshots</id>
+          <url>http://maven.in.nuxeo.com/snapshots</url>
+          <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+    <profile>
+      <id>qapriv</id>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>snapshots</id>
+          <url>http://mavenpriv.in.nuxeo.com/snapshots</url>
+          <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
   </profiles>
-  
+  <distributionManagement>
+    <snapshotRepository>
+      <id>nuxeo-snapshot</id>
+      <url>http://maven.nuxeo.org/nuxeo-snapshot</url>
+      <uniqueVersion>false</uniqueVersion>
+    </snapshotRepository>
+  </distributionManagement>
+
   <properties>
     <core.version>1.6.1-SNAPSHOT</core.version>
     <gf3.version>3.0-b38</gf3.version>
@@ -47,7 +76,7 @@
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-server</artifactId>
       <version>${project.version}</version>
-      <type>zip</type>      
+      <type>zip</type>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution</groupId>
@@ -60,8 +89,10 @@
       <artifactId>nuxeo-runtime-gf3-adapter</artifactId>
       <version>${nuxeo.runtime.version}</version>
     </dependency>
-    <!-- these dependencies are normally part of specific profiles but maven is limited when working with profiles 
-      and these will not be available when activating a profile from ant
+    <!--
+      these dependencies are normally part of specific profiles but maven is
+      limited when working with profiles and these will not be available when
+      activating a profile from ant
     -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -89,7 +120,7 @@
       <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
       <version>${core.version}</version>
     </dependency>
-    
+
     <!-- stax needed by gf3 but only on java5 ... -->
     <dependency>
       <groupId>javax.xml.stream</groupId>
@@ -105,7 +136,7 @@
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
     </dependency>
-    
+
   </dependencies>
 
   <build>
