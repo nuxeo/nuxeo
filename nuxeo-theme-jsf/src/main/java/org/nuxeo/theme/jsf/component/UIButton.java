@@ -37,6 +37,9 @@ public class UIButton extends UIOutput {
     private String menu;
 
     private String label;
+    
+    private String icon;
+
 
     private String classNames;
 
@@ -52,6 +55,7 @@ public class UIButton extends UIOutput {
         params.put("label", (String) attributes.get("label"));
         params.put("menu", (String) attributes.get("menu"));
         params.put("classNames", (String) attributes.get("classNames"));
+        params.put("icon", (String) attributes.get("icon"));
         writer.write(Button.render(params));
     }
 
@@ -109,5 +113,13 @@ public class UIButton extends UIOutput {
 
     public void setClassNames(final String classNames) {
         this.classNames = classNames;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }
