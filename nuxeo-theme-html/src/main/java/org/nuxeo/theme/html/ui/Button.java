@@ -31,6 +31,7 @@ public class Button {
         String menu = params.get("menu");
         String label = params.get("label");
         String classNames = params.get("classNames");
+        String icon = params.get("icon");
 
         // view
         Map<String, Object> view = new HashMap<String, Object>();
@@ -56,6 +57,9 @@ public class Button {
         }
         if (null != classNames) {
             view.put("classNames", classNames);
+        }
+        if (null != icon) {
+            view.put("icon", icon);
         }
         view.put("label", label);
 

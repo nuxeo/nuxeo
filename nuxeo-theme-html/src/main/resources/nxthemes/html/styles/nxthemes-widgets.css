@@ -136,6 +136,11 @@
   margin-left: 3px;
   padding-left: 15px;
 }
+.nxthemesButton img {
+  border: none;
+  vertical-align: middle;
+  margin: -3px 3px 0 -10px;
+}
 
 .nxthemesButton a {
   background-position: 100% 0;

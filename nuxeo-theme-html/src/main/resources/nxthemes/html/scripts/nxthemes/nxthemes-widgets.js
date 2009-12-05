@@ -669,7 +669,9 @@ NXThemes.Button.prototype = Object.extend(new NXThemes.View(), {
     if (link == null) {
       link = 'javascript:void(0)';
     }
-    widget.innerHTML = '<b>&nbsp;</b><a href="' + link + '">' + label + '</a>';
+    var icon = this.def.icon;
+    var icon_str = icon ? '<img src="' + icon + '" width="14" height="14" alt="' + label + '" />' : '';
+    widget.innerHTML = '<b>&nbsp;' + icon_str + '</b><a href="' + link + '">' + label + '</a>';
     this.ready();
   },
 
