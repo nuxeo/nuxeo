@@ -16,17 +16,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nuxeo.common.mock.jndi;
+package org.nuxeo.common.jndi;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.Vector;
 
 import javax.naming.Binding;
 import javax.naming.CompositeName;
+import javax.naming.CompoundName;
 import javax.naming.Context;
 import javax.naming.ContextNotEmptyException;
 import javax.naming.InvalidNameException;
@@ -44,7 +46,7 @@ import javax.naming.spi.NamingManager;
 /**
  * Provides implementation of <code>javax.naming.Context</code> interface for
  * hierarchical in memory single-namespace naming system.
- * A name in the <code>MockContext</code> namespace is a sequence of one or more
+ * A name in the <code>NamingContext</code> namespace is a sequence of one or more
  * atomic names, relative to a root initial context.
  * When a name consist of more than one atomic names it is a <code>CompoundName</code>
  * where atomic names are separated with separator character - '/' or '.'.
@@ -61,14 +63,14 @@ import javax.naming.spi.NamingManager;
  * <code>InvalidNameException</code> will be thrown.
  * <p>
  * Composite names (instances of <code>CompositeName</code>) must contain zero or one
- * component from the <code>MockContext</code> namespace.
+ * component from the <code>NamingContext</code> namespace.
  * <p>
- * The namespace of <code>MockContext</code> can be represented as a tree of atomic names.
- * Each name is bound to an instance of MockContext (subcontext) or to an arbitrary object.
+ * The namespace of <code>NamingContext</code> can be represented as a tree of atomic names.
+ * Each name is bound to an instance of NamingContext (subcontext) or to an arbitrary object.
  * Each subcontext has collection of names bound to other subcontexts or arbitrary objects.
  * <p>
  * When instance of <code>Name</code> is used as parameter to any of the
- * MockContext methods, if the object is not <code>CompositeName</code> then
+ * NamingContext methods, if the object is not <code>CompositeName</code> then
  * it is assumed that it is <code>CompoundName</code>
  * <p>
  * Example:
@@ -80,8 +82,8 @@ import javax.naming.spi.NamingManager;
  * <code>myObject = initialContext.lookup("foo/bar");</code>
  * </pre>
  * <p>
- * Instances of <code>MockContext</code> are created only through
- * <code>MockContextFactory</code>, when <code>InitialContext</code> is instantiated.
+ * Instances of <code>NamingContext</code> are created only through
+ * <code>NamingContextFactory</code>, when <code>InitialContext</code> is instantiated.
  * <p>
  * If a remote context is provided, this class will search in that remote context if the
  * object is not found locally.
@@ -95,12 +97,47 @@ import javax.naming.spi.NamingManager;
  * @author Alexander Ananiev
  * @author Dimitar Gospodinov
  */
-public class MockContext implements Context {
+public class NamingContext implements Context {
 
     private static final String ROOT_CONTEXT_NAME = "ROOT";
 
-    // MockContext supports single naming scheme and all instances use the same parser.
-    private static final NameParser nameParser = new MockContextNameParser();
+    // NamingContext supports single naming scheme and all instances use the same parser.
+    private static final NameParser nameParser = new NamingContextNameParser();
+
+    /**
+     * NamingContext name parser.
+     *
+     * @author Dimitar Gospodinov
+     */
+    public static class NamingContextNameParser implements NameParser {
+
+        private static final Properties syntax = new Properties();
+        static {
+            syntax.put("jndi.syntax.direction", "left_to_right");
+            syntax.put("jndi.syntax.separator", "/");
+            syntax.put("jndi.syntax.ignorecase", "false");
+            syntax.put("jndi.syntax.trimblanks", "yes");
+        }
+
+        /**
+         * Parses <code>name</code> into <code>CompoundName</code>
+         * using the following <code>CompoundName</code> properties:
+         * <pre>
+         * jndi.syntax.direction = "left_to_right"
+         * jndi.syntax.separator = "/"
+         * jndi.syntax.ignorecase = "false"
+         * jndi.syntax.trimblanks = "yes"
+         * </pre>
+         * Any characters '.' in the name <code>name</code> will be replaced with the
+         * separator character specified above, before parsing.
+         *
+         * @param name name to parse
+         * @throws NamingException if a naming error occurs
+         */
+        public Name parse(String name) throws NamingException {
+            return new CompoundName(name.replace('.', '/'), syntax);
+        }
+    }
 
     /**
      * Map of objects registered for this context representing the local
@@ -109,7 +146,7 @@ public class MockContext implements Context {
     private final Map<Object, Object> objects = Collections.synchronizedMap(new HashMap<Object, Object>());
 
     /** Parent Context of this Context. */
-    private final MockContext parent;
+    private final NamingContext parent;
 
     /** Atomic name of this Context. */
     private final String contextName;
@@ -126,23 +163,23 @@ public class MockContext implements Context {
      * Creates a new instance of the context. This class can only be
      * instantiated by its factory.
      *
-     * @param remoteContext remote context that MockContext will delegate to if
+     * @param remoteContext remote context that NamingContext will delegate to if
      *            it fails to lookup an object locally
      */
-    protected MockContext(Context remoteContext) {
+    protected NamingContext(Context remoteContext) {
         this(remoteContext, null, ROOT_CONTEXT_NAME);
     }
 
     /**
-     * Creates new instance of <code>MockContext</code>.
+     * Creates new instance of <code>NamingContext</code>.
      *
-     * @param remoteContext remote context that MockContext will delegate to if
+     * @param remoteContext remote context that NamingContext will delegate to if
      *            it fails to lookup an object locally
      * @param parent parent context of this context. <code>null</code> if this
      *            is the root context.
      * @param name atomic name for this context
      */
-    private MockContext(Context remoteContext, MockContext parent, String name) {
+    private NamingContext(Context remoteContext, NamingContext parent, String name) {
         this.remoteContext = remoteContext;
         this.parent = parent;
         contextName = name;
@@ -279,7 +316,7 @@ public class MockContext implements Context {
             // Check if <code>name</code> is already in use
             if (boundObject == null) {
                 Context subContext =
-                    new MockContext(remoteContext, this, subContextName);
+                    new NamingContext(remoteContext, this, subContextName);
                 objects.put(subContextName, subContext);
                 return subContext;
             } else {
@@ -327,7 +364,7 @@ public class MockContext implements Context {
      * @throws NameNotFoundException if subcontext with name <code>name</code>
      *             can not be found
      * @throws NotContextException if <code>name</code> is not bound to
-     *             instance of <code>MockContext</code>
+     *             instance of <code>NamingContext</code>
      * @see javax.naming.Context#destroySubcontext(javax.naming.Name)
      */
     public void destroySubcontext(Name name) throws NamingException {
@@ -342,10 +379,10 @@ public class MockContext implements Context {
             throw new NameNotFoundException(
                 "Name " + subContextName + "not found in the context!");
         }
-        if (!(boundObject instanceof MockContext)) {
+        if (!(boundObject instanceof NamingContext)) {
             throw new NotContextException();
         }
-        MockContext contextToDestroy = (MockContext) boundObject;
+        NamingContext contextToDestroy = (NamingContext) boundObject;
         if (parsedName.size() == 1) {
             /*
              * Check if the Context to be destroyed is empty.
@@ -463,7 +500,7 @@ public class MockContext implements Context {
      *             system
      * @throws NameNotFoundException if <code>name</code> can not be found
      * @throws NotContextException component of <code>name</code> is not bound
-     *             to instance of <code>MockContext</code>, when
+     *             to instance of <code>NamingContext</code>, when
      *             <code>name</code> is not an atomic name
      * @throws NamingException if any other naming error occurs
      * @see javax.naming.Context#listBindings(javax.naming.Name)
@@ -521,7 +558,7 @@ public class MockContext implements Context {
      *             system
      * @throws NameNotFoundException if <code>name</code> can not be found
      * @throws NotContextException component of <code>name</code> is not bound
-     *             to instance of <code>MockContext</code>, when
+     *             to instance of <code>NamingContext</code>, when
      *             <code>name</code> is not atomic name.
      * @throws NamingException if any other naming error occurs
      * @see javax.naming.Context#lookup(javax.naming.Name)
@@ -552,11 +589,11 @@ public class MockContext implements Context {
         // if this is a compound name
         else if (parsedName.size() > 1) {
 
-            if (res instanceof MockContext) {
-                res = ((MockContext) res).lookupInternal(parsedName
+            if (res instanceof NamingContext) {
+                res = ((NamingContext) res).lookupInternal(parsedName
                         .getSuffix(1));
             } else {
-                throw new NotContextException("Expected MockContext but found "
+                throw new NotContextException("Expected NamingContext but found "
                         + res);
             }
         }
@@ -846,7 +883,7 @@ public class MockContext implements Context {
     String getCompoundStringName() throws NamingException {
         //StringBuffer compositeName  = new StringBuffer();
         String compositeName="";
-        MockContext curCtx = this;
+        NamingContext curCtx = this;
         while (!curCtx.isRootContext()) {
             compositeName = composeName(compositeName, curCtx.contextName);
             curCtx = curCtx.parent;
@@ -857,7 +894,7 @@ public class MockContext implements Context {
     /**
      * Returns parent context of this context.
      */
-    MockContext getParentContext() {
+    NamingContext getParentContext() {
         return parent;
     }
 

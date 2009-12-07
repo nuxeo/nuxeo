@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nuxeo.common.mock.jndi;
+package org.nuxeo.common.jndi;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -29,15 +29,14 @@ import javax.naming.spi.InitialContextFactory;
 
 
 /**
- * Creates {@link MockContext }. In case a delegate
+ * Creates {@link NamingContext }. In case a delegate
  * environment was provided, obtains delegate InitialContext.
- * Delegate context is used by MockContext for unresolved lookups.
+ * Delegate context is used by NamingContext for unresolved lookups.
  *
  * @author Alexander Ananiev
  * @author Dimitar Gospodinov
  */
-@SuppressWarnings({"ALL"})
-public class MockContextFactory implements InitialContextFactory {
+public class NamingContextFactory implements InitialContextFactory {
 
     private static final Map<String, Object> savedSystemProps = new HashMap<String, Object>();
 
@@ -49,13 +48,13 @@ public class MockContextFactory implements InitialContextFactory {
 
     /**
      * Singleton for initial context.
-     * Instantiates and returns root/initial <code>MockContext</code> object that
+     * Instantiates and returns root/initial <code>NamingContext</code> object that
      * will be used as starting point for all naming operations.
-     * <code>MockContext</code> is then used by <code>javax.naming.InitialContext</code> object.
-     * It also creates the delegate context if the delegate environment is set. MockContextFactory
+     * <code>NamingContext</code> is then used by <code>javax.naming.InitialContext</code> object.
+     * It also creates the delegate context if the delegate environment is set. NamingContextFactory
      * caches the delegate context once it's created.
      * @see javax.naming.spi.InitialContextFactory#getInitialContext(java.util.Hashtable)
-     * @return <code>MockContext</code> object
+     * @return <code>NamingContext</code> object
      */
     public Context getInitialContext(Hashtable<?, ?> environment)
         throws NamingException {
@@ -64,7 +63,7 @@ public class MockContextFactory implements InitialContextFactory {
             delegateContext = new InitialContext(delegateEnv);
         }
         if (rootContext == null) {
-            rootContext = new MockContext(delegateContext);
+            rootContext = new NamingContext(delegateContext);
         }
         return rootContext;
     }
@@ -74,7 +73,7 @@ public class MockContextFactory implements InitialContextFactory {
      * Sets the environment of the delegate JNDI context. Normally,
      * this is the environment of the application server.
      * At the very minimum, the environment includes PROVIDER_URL and INITIAL_CONTEXT_FACTORY.
-     * <code>MockContext</code> first tries to look up the object in its local tree.
+     * <code>NamingContext</code> first tries to look up the object in its local tree.
      * If the object is not found, it will look in the delegate context.
      *
      * @param env JNDI properties of the delegate environment
@@ -88,12 +87,12 @@ public class MockContextFactory implements InitialContextFactory {
      * Sets the delegate context. Normally,
      * this is the initial context of the application server.
      *
-     * <code>MockContext</code> first tries to look up the object in its local tree.
+     * <code>NamingContext</code> first tries to look up the object in its local tree.
      * If the object is not found, it will look in the delegate context.
      *
      * Example:
      * <code>
-     * MockContextFactory.setDelegateContext(new InitialContext());
+     * NamingContextFactory.setDelegateContext(new InitialContext());
      * </code>
      * @param ctx  delegate context
      */
@@ -103,7 +102,7 @@ public class MockContextFactory implements InitialContextFactory {
 
 
     /**
-     * Sets the <code>MockContextFactory</code> as the initial context factory.
+     * Sets the <code>NamingContextFactory</code> as the initial context factory.
      * This helper method sets  the <code>Context.INITIAL_CONTEXT_FACTORY</code>
      * and  <code>Context.URL_PKG_PREFIXES</code> system properties. The second one is needed to
      * be able to handle java:comp context correctly.
@@ -114,8 +113,8 @@ public class MockContextFactory implements InitialContextFactory {
      * You can also set these properties directly:
      * <pre>
      * <code>
-     *  java.naming.factory.initial=org.nuxeo.common.mock.jndi.MockContextFactory
-     *  java.naming.factory.url.pkgs=org.nuxeo.common.mock.jndi
+     *  java.naming.factory.initial=org.nuxeo.common.jndi.NamingContextFactory
+     *  java.naming.factory.url.pkgs=org.nuxeo.common.jndi
      * </code>
      * </pre>
      *
@@ -128,8 +127,8 @@ public class MockContextFactory implements InitialContextFactory {
         key = Context.URL_PKG_PREFIXES;
         savedSystemProps.put(key, System.getProperty(key));
 
-        System.setProperty(Context.INITIAL_CONTEXT_FACTORY, MockContextFactory.class.getName());
-        System.setProperty(Context.URL_PKG_PREFIXES, "org.nuxeo.common.mock.jndi");
+        System.setProperty(Context.INITIAL_CONTEXT_FACTORY, NamingContextFactory.class.getName());
+        System.setProperty(Context.URL_PKG_PREFIXES, "org.nuxeo.common.jndi");
     }
 
     /**

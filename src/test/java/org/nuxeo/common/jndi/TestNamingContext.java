@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nuxeo.common.mock.jndi;
+package org.nuxeo.common.jndi;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,16 +36,20 @@ import javax.naming.NoPermissionException;
 import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
 
+import org.nuxeo.common.jndi.NamingContext;
+import org.nuxeo.common.jndi.NamingContextFactory;
+import org.nuxeo.common.jndi.NamingContext.NamingContextNameParser;
+
 import junit.framework.TestCase;
 
 
 /**
- * Tests all basic methods of MockContext.
+ * Tests all basic methods of NamingContext.
  * Test for remote context lookup is not included.
  *
  * @author Dimitar Gospodinov
  */
-public class TestMockContext extends TestCase {
+public class TestNamingContext extends TestCase {
 
     private Context initialCtx;
     private Context compCtx;
@@ -54,7 +58,7 @@ public class TestMockContext extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        MockContextFactory.setAsInitial();
+        NamingContextFactory.setAsInitial();
         // Empty initial Context
         initialCtx = new InitialContext();
         initialCtx.bind("java:comp/env/ejb/Dummy", null);
@@ -70,7 +74,7 @@ public class TestMockContext extends TestCase {
         envCtx = null;
         compCtx = null;
         initialCtx = null;
-        MockContextFactory.revertSetAsInitial();
+        NamingContextFactory.revertSetAsInitial();
     }
 
     /**
@@ -207,7 +211,7 @@ public class TestMockContext extends TestCase {
             fail();
         } catch (NoPermissionException ex) { }
         try {
-            MockContextNameParser parser = new MockContextNameParser();
+            NamingContextNameParser parser = new NamingContextNameParser();
             sub.composeName(parser.parse("a"), parser.parse("b"));
             fail();
         } catch (NoPermissionException ex) { }
@@ -334,7 +338,7 @@ public class TestMockContext extends TestCase {
 
     public void testCompositeNameWithLeadingTrailingEmptyComponents()
             throws NamingException {
-        MockContext c = new MockContext(null);
+        NamingContext c = new NamingContext(null);
         Object o = new Object();
 
         c.rebind("/a/b/c/", o);
@@ -343,35 +347,35 @@ public class TestMockContext extends TestCase {
     }
 
     public void testLookup() throws NamingException {
-        MockContext mockCtx = new MockContext(null);
+        NamingContext namingCtx = new NamingContext(null);
         Object obj = new Object();
-        mockCtx.rebind("a/b/c/d", obj);
-        assertEquals(obj, mockCtx.lookup("a/b/c/d"));
+        namingCtx.rebind("a/b/c/d", obj);
+        assertEquals(obj, namingCtx.lookup("a/b/c/d"));
 
-        mockCtx.bind("a", obj);
-        assertEquals(obj, mockCtx.lookup("a"));
+        namingCtx.bind("a", obj);
+        assertEquals(obj, namingCtx.lookup("a"));
     }
 
     public void testGetCompositeName() throws NamingException {
-        MockContext mockCtx = new MockContext(null);
-        mockCtx.rebind("a/b/c/d", new Object());
+        NamingContext namingCtx = new NamingContext(null);
+        namingCtx.rebind("a/b/c/d", new Object());
 
-        MockContext subCtx;
+        NamingContext subCtx;
 
-        subCtx = (MockContext) mockCtx.lookup("a");
+        subCtx = (NamingContext) namingCtx.lookup("a");
         assertEquals("a", subCtx.getCompoundStringName());
 
-        subCtx = (MockContext) mockCtx.lookup("a/b/c");
+        subCtx = (NamingContext) namingCtx.lookup("a/b/c");
         assertEquals("a/b/c", subCtx.getCompoundStringName());
     }
 
     /**
      * Tests that delegate context is
-     * invoked when MockContext does not find the name.
+     * invoked when NamingContext does not find the name.
      */
     public void testDelegateContext() throws NamingException {
         List<String> recordedLookups = new ArrayList<String>();
-        Context ctx = new MockContext(new RecordingMockContext(recordedLookups));
+        Context ctx = new NamingContext(new RecordingNamingContext(recordedLookups));
 
         // Test simple name
         String wrongName = "mockejb";
@@ -386,7 +390,7 @@ public class TestMockContext extends TestCase {
         assertEquals(1, recordedLookups.size());
         assertEquals(wrongName, recordedLookups.get(0));
 
-        // Test the situation when root context is bound already in MockCOntext
+        // Test the situation when root context is bound already in NamingContext
         recordedLookups.clear();
         ctx.rebind("mockejb/dummy", new Object());
         wrongName = "mockejb/a";
@@ -401,7 +405,7 @@ public class TestMockContext extends TestCase {
      * @throws NamingException
      */
     public void testTwoSeparatorNames() throws NamingException {
-        MockContext ctx = new MockContext(null);
+        NamingContext ctx = new NamingContext(null);
         Object obj = new Object();
 
         ctx.bind("a/b.c.d/e", obj);
@@ -422,11 +426,11 @@ public class TestMockContext extends TestCase {
      * Always returns the dummy object from lookup
      * and stores the lookup call info.
      */
-    static class RecordingMockContext extends MockContext {
+    static class RecordingNamingContext extends NamingContext {
 
         private final Collection<String> recordedLookups;
 
-        RecordingMockContext(Collection<String> recordedNames) {
+        RecordingNamingContext(Collection<String> recordedNames) {
             super(null);
             recordedLookups = recordedNames;
         }
