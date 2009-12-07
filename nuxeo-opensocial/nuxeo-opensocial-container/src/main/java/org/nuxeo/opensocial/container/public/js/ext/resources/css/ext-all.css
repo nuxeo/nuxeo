@@ -3922,7 +3922,6 @@ td.x-date-mp-sep {
 }
 
 .x-panel-ghost {
-  background: #cbddf3;
   z-index: 12000;
   overflow: hidden;
   position: absolute;
@@ -3939,7 +3938,6 @@ td.x-date-mp-sep {
   overflow: hidden;
   font-size: 0;
   line-height: 0;
-  border: 1px solid #99bbe8;
   border-top: 0 none;
   display: block;
 }

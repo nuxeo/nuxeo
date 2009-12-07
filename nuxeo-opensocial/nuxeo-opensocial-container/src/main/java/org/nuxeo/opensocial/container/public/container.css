@@ -35,14 +35,6 @@
   min-width:100%;
 }
 
-.x-panel-mc { /*background-color: #60a524;*/
-
-}
-
-.gadgetPortlet {
-  background-color: green;
-}
-
 .x-panel-tl {
   border:0;
 }
@@ -52,7 +44,12 @@
 }
 
 .x-panel-ghost {
-  background: #FFFFFF;
+  background-color: #808080;
+}
+
+.x-panel-ghost > .x-panel-header {
+  background-color: #FFFFFF;
+  font-color:#808080;
 }
 
 .x-panel-header {
