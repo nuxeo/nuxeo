@@ -59,7 +59,7 @@ set JAVA_OPTS=%JAVA_OPTS% -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding
     <delete>
       <fileset dir="${nxserver}" includes="nuxeo-runtime-launcher-*" />
       <fileset dir="${nxserver}/bundles" includes="nuxeo-runtime-jetty-*" />
-      <fileset dir="${nxserver}/bundles" includes="nuxeo-runtime-deploy-*" />
+      <!--fileset dir="${nxserver}/bundles" includes="nuxeo-runtime-deploy-*" /-->
       <!--fileset dir="${nxserver}/bundles" includes="nuxeo-platform-virtualnavigation-*" /-->
       <fileset dir="${nxserver}/lib" includes="core-*" />
       <!-- jetty-util is needed by jsp impl jar - whic is referring jetty log classes -->
