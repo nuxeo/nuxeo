@@ -20,7 +20,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>org.nuxeo.runtime</artifactId>
+      <artifactId>nuxeo-runtime</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
