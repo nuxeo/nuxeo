@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -19,6 +18,10 @@
     <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
@@ -46,10 +49,10 @@
       <groupId>javax.el</groupId>
       <artifactId>el-api</artifactId>
     </dependency>
-    <!--dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-ri</artifactId>
-      </dependency-->
+    <!--
+      dependency> <groupId>javax.el</groupId> <artifactId>el-ri</artifactId>
+      </dependency
+    -->
 
     <dependency>
       <groupId>org.jboss.seam</groupId>
@@ -80,6 +83,11 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
