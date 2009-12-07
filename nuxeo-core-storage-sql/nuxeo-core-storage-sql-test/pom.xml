@@ -15,6 +15,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
     </dependency>
@@ -56,7 +60,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-query</artifactId>
+      <artifactId>nuxeo-core-event</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -166,12 +170,9 @@
       <scope>runtime</scope>
     </dependency>
     <!--
-    <dependency>
-      <groupId>com.oracle</groupId>
-      <artifactId>ojdbc14</artifactId>
-      <version>10.2.0.3.0</version>
-      <scope>runtime</scope>
-    </dependency>
+      <dependency> <groupId>com.oracle</groupId>
+      <artifactId>ojdbc14</artifactId> <version>10.2.0.3.0</version>
+      <scope>runtime</scope> </dependency>
     -->
   </dependencies>
 

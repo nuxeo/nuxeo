@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -29,6 +28,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-event</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector</artifactId>
     </dependency>
     <dependency>
@@ -41,10 +44,10 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- 
-    Use of compile scope for external dependencies because this module must
-    only be used with a test scope (except in [module]-test where you may use
-    compile scope)
+    <!--
+      Use of compile scope for external dependencies because this module must
+      only be used with a test scope (except in [module]-test where you may use
+      compile scope)
     -->
     <dependency>
       <groupId>jmock</groupId>
@@ -87,7 +90,7 @@
       <artifactId>nuxeo-core-query-test</artifactId>
       <scope>test</scope>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
       <scope>test</scope>

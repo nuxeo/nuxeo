@@ -15,6 +15,18 @@
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-schema</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>org.nuxeo.runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-management</artifactId>
     </dependency>
@@ -27,8 +39,8 @@
       <artifactId>jta</artifactId>
     </dependency>
     <!--
-      TODO this should use maven conditional dependencies. If java 6 we
-      don't need it since scripting is part of java 6
+      TODO this should use maven conditional dependencies. If java 6 we don't
+      need it since scripting is part of java 6
     -->
     <dependency>
       <groupId>javax.script</groupId>
@@ -39,6 +51,11 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
