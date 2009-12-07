@@ -22,7 +22,7 @@
             <artifactItem>
               <groupId>org.seleniumhq.selenium.server</groupId>
               <artifactId>selenium-server</artifactId>
-              <version>1.0-beta-2</version>
+              <version>1.0.1</version>
               <classifier>standalone</classifier>
               <overWrite>false</overWrite>
               <outputDirectory>.</outputDirectory>
