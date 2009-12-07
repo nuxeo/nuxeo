@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -70,6 +69,8 @@
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
     </dependency>
+
+    <!-- scope test -->
     <dependency>
       <groupId>pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
@@ -85,6 +86,11 @@
       <artifactId>slf4j-log4j12</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -93,8 +99,8 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>
-             <exclude>**/TestOOoServiceManagerService.class</exclude>
-             <exclude>**/TestOffice2html.class</exclude>
+            <exclude>**/TestOOoServiceManagerService.class</exclude>
+            <exclude>**/TestOffice2html.class</exclude>
           </excludes>
         </configuration>
       </plugin>
