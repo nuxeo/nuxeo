@@ -955,4 +955,13 @@ public class NamingContext implements Context {
         }
     }
 
+    @Override
+    public String toString() {
+        try {
+            return getCompoundStringName();
+        } catch (NamingException e) {
+            return super.toString();
+        }
+    }
+
 }
