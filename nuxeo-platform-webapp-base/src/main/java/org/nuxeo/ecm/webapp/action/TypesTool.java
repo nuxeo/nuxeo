@@ -19,16 +19,13 @@
 
 package org.nuxeo.ecm.webapp.action;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,13 +34,16 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.SubType;
+import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.jboss.seam.annotations.intercept.BypassInterceptors;
+
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
 
 /**
  * Document type service for document type creation.
@@ -66,7 +66,7 @@ public class TypesTool implements Serializable {
     @In
     private transient TypeManager typeManager;
 
-    private Map<String,List<List<Type>>> typesMap;
+    private Map<String, List<List<Type>>> typesMap;
 
     private Type selectedType;
 
@@ -74,7 +74,7 @@ public class TypesTool implements Serializable {
     private transient NavigationContext navigationContext;
 
     @Observer(value = { EventNames.CONTENT_ROOT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject=false)
+            EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
     @BypassInterceptors
     public void resetTypesList() {
         typesMap = null;
@@ -99,7 +99,8 @@ public class TypesTool implements Serializable {
                     SubType currentSubType = allowedSubTypes.get(currentKey);
                     boolean addElement = true;
                     List<String> subTypesHiddenInCreation = currentSubType.getHidden();
-                    if (subTypesHiddenInCreation != null && subTypesHiddenInCreation.contains("create")) {
+                    if (subTypesHiddenInCreation != null
+                            && subTypesHiddenInCreation.contains("create")) {
                         addElement = false;
                     }
 
@@ -165,16 +166,17 @@ public class TypesTool implements Serializable {
 
     public Type getSelectedType() {
         if (selectedType != null) {
-            log.debug("Returning selected type with id: " + selectedType.getId());
+            log.debug("Returning selected type with id: "
+                    + selectedType.getId());
         }
         return selectedType;
     }
 
     /**
-     * If the selected type is supposed to be automatically injected by
-     * Seam through @DataModelSelection callback (i.e. the user
-     * will select the type from a list), this method should be
-     * called with <code>null</code> parameter before.
+     * If the selected type is supposed to be automatically injected by Seam
+     * through @DataModelSelection callback (i.e. the user will select the type
+     * from a list), this method should be called with <code>null</code>
+     * parameter before.
      *
      * @param type
      */
@@ -186,7 +188,7 @@ public class TypesTool implements Serializable {
     }
 
     @Factory(value = "typesMap", scope = EVENT)
-    public Map<String,List<List<Type>>>  getTypesList() {
+    public Map<String, List<List<Type>>> getTypesList() {
         // XXX : should cache per currentDocument type
         if (typesMap == null) {
             // cache the list of allowed subtypes
@@ -196,7 +198,7 @@ public class TypesTool implements Serializable {
         return typesMap;
     }
 
-    public void setTypesList(Map<String,List<List<Type>>>  typesList) {
+    public void setTypesList(Map<String, List<List<Type>>> typesList) {
         this.typesMap = typesList;
     }
 
