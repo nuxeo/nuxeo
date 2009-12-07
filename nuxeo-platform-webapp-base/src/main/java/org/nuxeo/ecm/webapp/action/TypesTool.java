@@ -74,7 +74,8 @@ public class TypesTool implements Serializable {
     private transient NavigationContext navigationContext;
 
     @Observer(value = { EventNames.CONTENT_ROOT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
+            EventNames.DOCUMENT_SELECTION_CHANGED,
+            EventNames.DOMAIN_SELECTION_CHANGED }, create = false, inject = false)
     @BypassInterceptors
     public void resetTypesList() {
         typesMap = null;
