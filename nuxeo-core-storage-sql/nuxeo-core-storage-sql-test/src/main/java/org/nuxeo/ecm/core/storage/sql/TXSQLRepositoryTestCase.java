@@ -19,7 +19,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import javax.naming.InitialContext;
 
-import org.nuxeo.common.mock.jndi.MockContextFactory;
+import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerConfiguration;
 import org.nuxeo.runtime.jtajca.NuxeoContainer.TransactionManagerConfiguration;
@@ -59,7 +59,7 @@ public class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
 
     @Override
     public void setUp() throws Exception {
-        MockContextFactory.setAsInitial();
+        NamingContextFactory.setAsInitial();
         initJTAJCA();
         super.setUp(); // calls deployRepositoryConfig()
         deployBundle("org.nuxeo.runtime.jtajca");
@@ -76,7 +76,7 @@ public class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
         }
         closeSession();
         super.tearDown();
-        MockContextFactory.revertSetAsInitial();
+        NamingContextFactory.revertSetAsInitial();
     }
 
 }
