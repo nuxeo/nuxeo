@@ -41,7 +41,7 @@ import com.gwtext.client.widgets.portal.Portal;
 import com.gwtext.client.widgets.portal.PortalColumn;
 
 /**
- *
+ * 
  * @author Guillaume Cusnieux
  */
 public class ContainerPortal extends Portal {
@@ -340,6 +340,5 @@ public class ContainerPortal extends Portal {
   public static void setMaximizedPortlet(GadgetPortlet canvas) {
     maximizedPortlet = canvas;
   }
-
 
 }

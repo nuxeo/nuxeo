@@ -24,7 +24,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * GadgetBean
- *
+ * 
  * @author Guillaume Cusnieux
  */
 public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
@@ -146,7 +146,7 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
         return;
       }
     }
-    
+
     for (PreferencesBean pref : this.defaultPrefs) {
       if (key.equals(pref.getName())) {
         pref.setValue(value);

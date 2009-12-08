@@ -62,7 +62,7 @@ public class GadgetMapper extends GadgetBean implements Gadget {
 
   /**
    * Constructor for convert GadgetBean to Gadget
-   *
+   * 
    * @param bean
    */
   public GadgetMapper(GadgetBean bean) {
@@ -78,17 +78,23 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     this.preferences = createPreferences(bean);
     this.defaultPrefs = bean.getDefaultPrefs();
     this.userPrefs = bean.getUserPrefs();
-    this.renderUrl = bean.getRenderUrl();
     this.viewer = bean.getViewer();
     this.shindigId = bean.getShindigId();
     this.permission = bean.getPermission();
     this.name = bean.getName();
     this.spaceName = bean.getSpaceName();
+    this.renderUrl = updateRenderUrl();
+  }
+
+  private String updateRenderUrl() {
+    String url = createRenderUrl();
+    this.bean.setRenderUrl(url);
+    return url;
   }
 
   /**
    * Constructor for convert Gadget to GadgetBean
-   *
+   * 
    * @param bean
    */
   public GadgetMapper(Gadget gadget, String viewer, int shindigId,
@@ -242,7 +248,7 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     updateTitleInPreference();
     bean = new GadgetBean(shindigId, ref, title, viewer, defaultPrefs,
         userPrefs, permission, collapsed, name, spaceName, createGadgetViews());
-    this.renderUrl = createRenderUrl();
+    this.renderUrl = updateRenderUrl();
     bean.setRenderUrl(renderUrl);
     bean.setPosition(this.position);
   }
@@ -276,7 +282,7 @@ public class GadgetMapper extends GadgetBean implements Gadget {
   /**
    * Use this method for get GadgetBean in GwtContainer because GadgetMapper
    * isn't serializabel
-   *
+   * 
    * @return GadgetBean
    */
   public GadgetBean getGadgetBean() {

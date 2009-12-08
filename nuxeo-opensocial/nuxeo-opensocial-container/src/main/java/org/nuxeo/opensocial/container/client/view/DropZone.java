@@ -42,9 +42,9 @@ import com.gwtext.client.widgets.portal.PortalDropZone;
 /**
  * DropZone serve for catch drag and drop event and call container service for
  * save
- *
+ * 
  * @author Guillaume Cusnieux
- *
+ * 
  */
 public class DropZone extends PortalDropZone {
 
@@ -250,23 +250,21 @@ public class DropZone extends PortalDropZone {
 
     grid = null;
 
-    if (lastPosC == null)
-      return false;
-
     PanelProxy proxy = new PanelProxy(source.getProxy()
         .getJsObj());
 
     proxy.getProxy()
         .remove();
 
-    if (dropPosition != null) {
-      lastPosC.remove(gp.getId());
-      lastPosC.insert(bean.getGadgetPosition()
-          .getPosition(), gp);
+    if (lastPosC != null) {
+      if (dropPosition != null) {
+        lastPosC.remove(gp.getId());
+        lastPosC.insert(bean.getGadgetPosition()
+            .getPosition(), gp);
+      }
+      lastPosC.doLayout();
+      lastPosC = null;
     }
-
-    lastPosC.doLayout();
-    lastPosC = null;
     JsLibrary.hideGwtContainerMask();
     gp.renderDefaultPreferences();
     gp.addMarginLeft();
