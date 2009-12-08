@@ -28,11 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
-import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
-
 import jcifs.Config;
 import jcifs.UniAddress;
 import jcifs.http.NtlmSsp;
@@ -41,13 +36,27 @@ import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
+
 public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
 
-    protected String defaultDomain;
+    private static final String JCIFS_PREFIX = "jcifs.";
+    public static final String JCIFS_NETBIOS_CACHE_POLICY = "jcifs.netbios.cachePolicy";
+    public static final String JCIFS_SMB_CLIENT_SO_TIMEOUT = "jcifs.smb.client.soTimeout";
+    public static final String JCIFS_HTTP_LOAD_BALANCE = "jcifs.http.loadBalance";
+    public static final String JCIFS_HTTP_DOMAIN_CONTROLLER = "jcifs.http.domainController";
+    public static final String JCIFS_SMB_CLIENT_DOMAIN = "jcifs.smb.client.domain";
 
-    protected String domainController;
+    public static final boolean  FORCE_SESSION_CREATION = true;
+    public static final String NTLM_HTTP_AUTH_SESSION_KEY = "NtlmHttpAuth";
+    public static final String NTLM_HTTP_CHAL_SESSION_KEY = "NtlmHttpChal";
 
-    protected boolean loadBalance;
+    protected static String defaultDomain;
+    protected static String domainController;
+    protected static boolean loadBalance;
 
     private static final Log log = LogFactory.getLog(NTLMAuthenticator.class);
 
@@ -60,14 +69,14 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
 
         log.debug("Handle NTLM login prompt");
         NtlmPasswordAuthentication ntlm=null;
-        HttpSession ssn = httpRequest.getSession(false);
+        HttpSession httpSession = httpRequest.getSession(FORCE_SESSION_CREATION);
 
-        if (ssn !=null)
+        if (httpSession !=null)
         {
-            ntlm = (NtlmPasswordAuthentication) ssn.getAttribute("NtlmHttpAuth");
+            ntlm = (NtlmPasswordAuthentication) httpSession.getAttribute(NTLM_HTTP_AUTH_SESSION_KEY);
         }
 
-        if (ssn == null || ntlm == null) {
+        if (httpSession == null || ntlm == null) {
             log.debug("Sending NTLM Chanllenge/Response request to browser");
             httpResponse.setHeader("WWW-Authenticate", "NTLM");
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -81,7 +90,7 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
             return true;
         } else
         {
-            log.debug("No NTLM Prompt done !!!");
+            log.debug("No NTLM Prompt done since NTLM Auth was found :"  + ntlm.getUsername());
             return false;
         }
     }
@@ -89,19 +98,13 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
     public UserIdentificationInfo handleRetrieveIdentity(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
-
         log.debug("NTML handleRetrieveIdentity");
         NtlmPasswordAuthentication ntlm;
 
         try {
             ntlm = negotiate(httpRequest, httpResponse, false);
-        } catch (IOException e) {
-            e.printStackTrace();
-            log.error("NTLM negociation failed : " + e.getMessage());
-            return null;
-        } catch (ServletException e) {
-            e.printStackTrace();
-            log.error("NTLM negociation failed : " + e.getMessage());
+        } catch (Exception e) {
+            log.error("NTLM negociation failed : " + e.getMessage(), e);
             return null;
         }
 
@@ -121,38 +124,37 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
             }
             log.debug("userName = " + userName);
             String password = ntlm.getPassword();
-            if (password==null)
+            if (password==null || "".equals(password))
             {
-            	// we don't get the NTLM password, so we have to trust NTLM auth
-            	UserIdentificationInfo userInfo =new UserIdentificationInfo(ntlm.getUsername(), "ITrustNTLM");
-            	userInfo.setLoginPluginName("Trusting_LM");
-            	return 	userInfo;
+                // we don't get the NTLM password, so we have to trust NTLM auth
+                UserIdentificationInfo userInfo =new UserIdentificationInfo(ntlm.getUsername(), "ITrustNTLM");
+                userInfo.setLoginPluginName("Trusting_LM");
+                return 	userInfo;
             }
             else
-            	return new UserIdentificationInfo(ntlm.getUsername(), ntlm.getPassword());
+                return new UserIdentificationInfo(ntlm.getUsername(), ntlm.getPassword());
         }
     }
 
     public void initPlugin(Map<String, String> parameters) {
 
-        Config.setProperty("jcifs.smb.client.soTimeout", "300000");
-        Config.setProperty("jcifs.netbios.cachePolicy", "1200");
+        Config.setProperty(JCIFS_SMB_CLIENT_SO_TIMEOUT, "300000");
+        Config.setProperty(JCIFS_NETBIOS_CACHE_POLICY, "1200");
 
         // init CIFS from parameters
         for (String name : parameters.keySet()) {
-            if (name.startsWith("jcifs.")) {
+            if (name.startsWith(JCIFS_PREFIX)) {
                 Config.setProperty(name, parameters.get(name));
             }
         }
 
         // get params from CIFS config
-        defaultDomain = Config.getProperty("jcifs.smb.client.domain");
-        domainController = Config.getProperty("jcifs.http.domainController");
+        defaultDomain = Config.getProperty(JCIFS_SMB_CLIENT_DOMAIN);
+        domainController = Config.getProperty(JCIFS_HTTP_DOMAIN_CONTROLLER);
         if (domainController == null) {
             domainController = defaultDomain;
-            loadBalance = Config.getBoolean("jcifs.http.loadBalance", true);
+            loadBalance = Config.getBoolean(JCIFS_HTTP_LOAD_BALANCE, true);
         }
-
     }
 
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
@@ -175,7 +177,7 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
         return true;
     }
 
-    protected NtlmPasswordAuthentication negotiate(HttpServletRequest req,
+    public static NtlmPasswordAuthentication negotiate(HttpServletRequest req,
             HttpServletResponse resp, boolean skipAuthentication)
             throws IOException, ServletException {
 
@@ -194,10 +196,10 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
 
             if (loadBalance) {
                 NtlmChallenge chal = (NtlmChallenge) ssn
-                        .getAttribute("NtlmHttpChal");
+                        .getAttribute(NTLM_HTTP_CHAL_SESSION_KEY);
                 if (chal == null) {
                     chal = SmbSession.getChallengeForDomain();
-                    ssn.setAttribute("NtlmHttpChal", chal);
+                    ssn.setAttribute(NTLM_HTTP_CHAL_SESSION_KEY, chal);
                 }
                 dc = chal.dc;
                 challenge = chal.challenge;
@@ -207,7 +209,6 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
                 challenge = SmbSession.getChallenge(dc);
             }
 
-
             ntlm = NtlmSsp.authenticate(req, resp, challenge);
             if (ntlm  == null) {
                 log.debug("NtlmSsp.authenticate returned null");
@@ -216,44 +217,54 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
 
             log.debug("NtlmSsp.authenticate succeed");
             log.debug("Domain controler is " + dc.getHostName());
-            if (ntlm.getDomain()!=null)
+            if (ntlm.getDomain()!=null) {
                 log.debug("NtlmSsp.authenticate => domain = " + ntlm.getDomain());
-            if (ntlm.getUsername()!=null)
+            } else {
+                log.debug("NtlmSsp.authenticate => null domain");
+            }
+            if (ntlm.getUsername()!=null) {
                 log.debug("NtlmSsp.authenticate => userName = " + ntlm.getUsername());
-            if (ntlm.getPassword()!=null)
+            } else {
+                log.debug("NtlmSsp.authenticate => userName = null");
+            }
+            if (ntlm.getPassword()!=null) {
                 log.debug("NtlmSsp.authenticate => password = " + ntlm.getPassword());
+            } else {
+                log.debug("NtlmSsp.authenticate => password = null");
+            }
 
             /* negotiation complete, remove the challenge object */
-            ssn.removeAttribute("NtlmHttpChal");
-            try {
+            ssn.removeAttribute(NTLM_HTTP_CHAL_SESSION_KEY);
+            if (!skipAuthentication) {
+                try {
+                    log.debug("Trying to logon NTLM session on dc " + dc.toString());
+                    SmbSession.logon(dc, ntlm);
+                    log.debug(ntlm + " successfully authenticated against " + dc);
 
-                log.debug("Trying to logon NTLM session on dc " + dc.toString());
-                SmbSession.logon(dc, ntlm);
-                log.debug(ntlm + " successfully authenticated against " + dc);
+                } catch (SmbAuthException sae) {
 
-            } catch (SmbAuthException sae) {
+                    log.error(ntlm.getName() + ": 0x"
+                            + jcifs.util.Hexdump.toHexString(sae.getNtStatus(), 8)
+                            + ": " + sae);
 
-                log.error(ntlm.getName() + ": 0x"
-                        + jcifs.util.Hexdump.toHexString(sae.getNtStatus(), 8)
-                        + ": " + sae);
-
-                if (sae.getNtStatus() == sae.NT_STATUS_ACCESS_VIOLATION) {
-                    /*
-                     * Server challenge no longer valid for externally supplied
-                     * password hashes.
-                     */
-                    ssn = req.getSession(false);
-                    if (ssn != null) {
-                        ssn.removeAttribute("NtlmHttpAuth");
+                    if (sae.getNtStatus() == sae.NT_STATUS_ACCESS_VIOLATION) {
+                        /*
+                         * Server challenge no longer valid for externally supplied
+                         * password hashes.
+                         */
+                        ssn = req.getSession(false);
+                        if (ssn != null) {
+                            ssn.removeAttribute(NTLM_HTTP_AUTH_SESSION_KEY);
+                        }
                     }
+                    resp.setHeader("WWW-Authenticate", "NTLM");
+                    resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    resp.setContentLength(0);
+                    resp.flushBuffer();
+                    return null;
                 }
-                resp.setHeader("WWW-Authenticate", "NTLM");
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                resp.setContentLength(0);
-                resp.flushBuffer();
-                return null;
+                req.getSession().setAttribute(NTLM_HTTP_AUTH_SESSION_KEY, ntlm);
             }
-            req.getSession().setAttribute("NtlmHttpAuth", ntlm);
         } else {
             log.debug("NTLM negociation header is null");
             return null;
