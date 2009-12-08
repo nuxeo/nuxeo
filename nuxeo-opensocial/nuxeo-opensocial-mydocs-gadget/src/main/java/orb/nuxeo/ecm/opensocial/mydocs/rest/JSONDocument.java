@@ -96,7 +96,7 @@ public class JSONDocument extends DocumentObject {
             for (DocumentModel child : provider.getPage(index)) {
 
                 //FIXME
-                if (child.getType() != "Space") {
+                if (!"Space".equals(child.getType())) {
                     try {
                         docs.add(getDocItem(child));
                     } catch (Exception e) {
