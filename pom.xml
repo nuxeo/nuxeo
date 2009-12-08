@@ -34,6 +34,7 @@
     <module>nuxeo-runtime-scripting</module>
     <module>nuxeo-runtime-management</module>
     <module>nuxeo-runtime-jtajca</module>
+    <module>nuxeo-runtime-datasource</module>
   </modules>
 
   <dependencyManagement>
@@ -92,6 +93,11 @@
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-jtajca</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-datasource</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
 
