@@ -435,7 +435,7 @@ thumbnail="http://www.wofrance.fr/gifs/igooglecity_screen_fr.png">
 <EnumValue display_value="Vosges" value="00616"/>
 <EnumValue display_value="Voyage" value="07240"/>
 </UserPref>
-  <Content type="html" view="default">
+  <Content type="html">
 <![CDATA[
 <script type="text/javascript">
   function displayWeather(){
@@ -549,8 +549,5 @@ thumbnail="http://www.wofrance.fr/gifs/igooglecity_screen_fr.png">
 
 <div style="height:100%;padding:7px;" id="content_div"></div>
   ]]>
-  </Content>
-  <Content type="html" view="canvas">
-  Vu canvas
   </Content>
   </Module>

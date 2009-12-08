@@ -5,6 +5,7 @@ var loadOn = false;
 $(document).ready(function(){
   imgLoader = new Image();// preload image
   imgLoader.src = loading_pathToImage;
+  loading_show();
 });
 
 function loading_show() {//function called when the user clicks on a thickbox link

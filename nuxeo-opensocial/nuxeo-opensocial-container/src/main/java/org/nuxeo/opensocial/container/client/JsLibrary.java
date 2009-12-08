@@ -9,12 +9,14 @@ public class JsLibrary {
 
   public static native void loadingShow()
   /*-{
-    $wnd.loading_show();
+    if($wnd.loading_show)
+      $wnd.loading_show();
   }-*/;
 
   public static native void loadingHide()
   /*-{
-    $wnd.loading_remove();
+    if($wnd.loading_remove)
+      $wnd.loading_remove();
   }-*/;
 
   public static native void log(String msg)
@@ -82,7 +84,7 @@ public class JsLibrary {
 
   public static native void updateColumnStyle()
   /*-{
-    $wnd.jQuery(".x-portal-column").attr("style","padding: 5px 0px 0px 5px;");
+    $wnd.jQuery(".x-portal-column").attr("style","padding: 5px;");
   }-*/;
 
   public static native String getNuxeoClientSideUrl()

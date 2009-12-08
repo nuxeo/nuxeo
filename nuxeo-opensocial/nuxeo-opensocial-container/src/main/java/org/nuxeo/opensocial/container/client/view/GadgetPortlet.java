@@ -7,7 +7,6 @@ import org.nuxeo.opensocial.container.client.bean.GadgetView;
 import org.nuxeo.opensocial.container.client.bean.PreferencesBean;
 
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Frame;
 import com.gwtext.client.widgets.layout.FitLayout;
 import com.gwtext.client.widgets.portal.Portlet;
@@ -260,23 +259,6 @@ public class GadgetPortlet extends Portlet {
   static native void changeTitleColor(String id, String color)
   /*-{
     $wnd.jQuery("#"+id).find("span.x-panel-header-text").css("color","#"+color);
-  }-*/;
-
-  // hack css
-  public void addMarginLeft() {
-    final String id = this.getId();
-    Timer t = new Timer() {
-      @Override
-      public void run() {
-        _addMarginLeft(id);
-      }
-    };
-    t.schedule(70);
-  }
-
-  static native void _addMarginLeft(String id)
-  /*-{
-    $wnd.jQuery("#"+id).css("margin-left","-2px");
   }-*/;
 
 }

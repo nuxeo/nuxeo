@@ -111,8 +111,6 @@ public class DropZone extends PortalDropZone {
       hide : function(){
         if(this.ghost) {
           var el = this.panel.el;
-          el.setStyle("margin","auto");
-          el.setStyle("margin-bottom","10px");
           el.dom.style.display = '';
           el.setWidth(this.ghost.getWidth());
           var w = el.getWidth();
@@ -267,7 +265,6 @@ public class DropZone extends PortalDropZone {
     }
     JsLibrary.hideGwtContainerMask();
     gp.renderDefaultPreferences();
-    gp.addMarginLeft();
     return true;
   }
 
