@@ -40,6 +40,7 @@ import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
 import org.nuxeo.ecm.spaces.api.Univers;
+import org.nuxeo.ecm.spaces.core.impl.Constants;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -241,14 +242,17 @@ public class SpaceWebObject extends DocumentObject {
     try {
       Calendar d = getDatePublication(ctx.getForm());
       if (d.compareTo(Calendar.getInstance()) == 1) {
-        Space newSpace = Mapper.createSpace(ctx.getForm(), null);
-        SpaceManager spaceManager = Framework.getService(SpaceManager.class);
-        Space createSpace = spaceManager.createSpace(newSpace, univers,
-            getSession());
+
+        CoreSession session = this.ctx.getCoreSession();
+        DocumentModel createDoc = session.copy(this.doc.getRef(),
+            this.doc.getParentRef(), this.doc.getName());
+        createDoc.setPropertyValue(Constants.Document.PUBLICATION_DATE, d);
+        session.saveDocument(createDoc);
+        session.save();
         return Response.ok()
             .entity(
                 ctx.getModulePath() + "/" + univers.getName() + "/"
-                    + createSpace.getName())
+                    + createDoc.getName())
             .build();
       } else {
         return Response.status(Status.INTERNAL_SERVER_ERROR)
