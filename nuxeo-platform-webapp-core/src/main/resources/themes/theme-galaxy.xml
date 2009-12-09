@@ -325,7 +325,7 @@
     <style name="default buttons">
       <selector path="input.button">
         <font preset="default (Galaxy fonts)"/>
-        <color>#333333</color>
+        <color preset="black.lite (Galaxy colors)" />
         <border preset="buttons (Galaxy borders)"/>
         <background preset="buttons (Galaxy backgrounds)"/>
         <margin>5px 10px 10px 0px</margin>
@@ -333,11 +333,13 @@
         <cursor>pointer</cursor>
       </selector>
       <selector path="input.button:hover">
-        <color>#000000</color>
-        <border-color>#92999e</border-color>
+        <color preset="black (Galaxy colors)" />
+        <border preset="buttons.hover (Galaxy borders)" />
       </selector>
       <selector path="input.button[disabled=disabled], input.button[disabled=disabled]:hover">
-        <color>#ccc</color>
+        <color preset="gray.medium (Galaxy colors)" />
+        <border preset="buttons (Galaxy borders)"/>
+        <cursor>default</cursor>
       </selector>
     </style>
     <style name="breadcrumbs style">
@@ -354,17 +356,17 @@
         <padding>0</padding>
       </selector>
       <selector path="a">
-        <color>#666666</color>
+        <color preset="gray (Galaxy colors)" />
         <text-decoration>none</text-decoration>
       </selector>
       <selector path="a:visited">
-        <color>#666666</color>
+        <color preset="gray (Galaxy colors)" />
       </selector>
       <selector path="a:active">
-        <color>#666666</color>
+        <color preset="gray (Galaxy colors)" />
       </selector>
       <selector path="a:hover">
-        <color>#666666</color>
+        <color preset="gray (Galaxy colors)" />
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path=".breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited">
@@ -384,7 +386,7 @@
       </selector>
       <selector path=".printButton .liveEditCreateButtons">
         <margin-right>5px</margin-right>
-        <border-right>1px solid #ccc</border-right>
+        <border-right preset="tablelines (Galaxy borders)" />
         <padding-right>8px</padding-right>
       </selector>
       <selector path=".breadcrumbs">
@@ -414,7 +416,7 @@
         <float>left</float>
       </selector>
       <selector path=".tabsBar a, .tabsBar a:hover, .tabsBar a:visited">
-        <color>#0066CC</color>
+        <color preset="blue.link (Galaxy colors)" />
         <border preset="tabisnotselected (Galaxy borders)"/>
         <background preset="white (Galaxy backgrounds)"/>
         <text-decoration>none</text-decoration>
@@ -424,28 +426,28 @@
         <float>left</float>
       </selector>
       <selector path=".tabsBar li.selected a, .tabsBar li.selected a:hover, .tabsBar li.selected a:visited">
-        <color>#ffffff</color>
+        <color preset="white (Galaxy colors)" />
         <border preset="tabiselected (Galaxy borders)"/>
         <background preset="tabiselected (Galaxy backgrounds)"/>
       </selector>
       <selector path=".tabsBar li a:hover">
-        <color>#ffffff</color>
+        <color preset="white (Galaxy colors)" />
         <background preset="tabiselected (Galaxy backgrounds)"/>
       </selector>
       <selector path=".subtabsBar">
         <border-bottom preset="subtabsbar (Galaxy borders)"/>
-        <font>normal 11px 'Lucida Grande', Verdana, sans-serif !important</font>
+        <font preset="default (Galaxy fonts)"/>
       </selector>
       <selector path=".subtabsBar a, .subtabsBar a:hover, .subtabsBar a:visited">
-        <color>#0066CC</color>
+        <color preset="blue.link (Galaxy colors)" />
         <border preset="subtabisnotselected (Galaxy borders)"/>
       </selector>
       <selector path=".subtabsBar li a:hover">
-        <color>#5f6265</color>
+        <color preset="gray.dark (Galaxy colors)" />
         <background preset="subtabiselected (Galaxy backgrounds)"/>
       </selector>
       <selector path=".subtabsBar li.selected a, .subtabsBar li.selected a:hover, .subtabsBar li.selected a:visited">
-        <color>#5f6265</color>
+        <color preset="gray.dark (Galaxy colors)" />
         <border preset="subtabiselected (Galaxy borders)"/>
         <background preset="subtabiselected (Galaxy backgrounds)"/>
       </selector>
@@ -459,20 +461,20 @@
         <margin>0</margin>
       </selector>
       <selector path=".pageNavigationControls span">
-        <color>#757575</color>
+        <color preset="gray (Galaxy colors)" />
         <vertical-align>top</vertical-align>
         <font-weight>bold</font-weight>
         <margin>10px 5px</margin>
         <font-size>13px</font-size>
       </selector>
       <selector path=".directoryBack">
-        <background>url(/nuxeo/icons/arrow_left.gif) 3px 1px no-repeat</background>
+        <background preset="back (Galaxy backgrounds)"/>
         <padding>2px 2px 2px 20px</padding>
       </selector>
       <selector path=".errorMessage">
-        <color>#000</color>
-        <border>1px solid #666</border>
-        <background>url(/nuxeo/img/warning.gif) 2px 3px no-repeat #FFCC33</background>
+        <color preset="black (Galaxy colors)" />
+        <border preset="dataInput (Galaxy borders)" />
+        <background preset="warning (Galaxy backgrounds)"/>
         <width>480px</width>
         <margin>2px 0 2px 0</margin>
         <padding>3px 3px 3px 23px</padding>
@@ -483,16 +485,16 @@
         <width>470px</width>
       </selector>
       <selector path=".infoMessage">
-        <color>#003399</color>
-        <border>1px solid #0066cc</border>
-        <background>url(/nuxeo/icons/tip.gif) 2px 3px no-repeat #f2f7fc</background>
+        <color preset="blue.dark (Galaxy colors)" />
+        <border preset="blue.border (Galaxy borders)" />
+        <background preset="info (Galaxy backgrounds)"/>
         <margin-bottom>5px</margin-bottom>
         <padding>5px 5px 5px 23px</padding>
         <display>block</display>
       </selector>
       <selector path=".rightsAddManager td">
-        <border>1px solid #4e9ae1</border>
-        <background-color>#fff</background-color>
+        <border preset="tabiselected (Galaxy borders)" />
+        <background-color preset="white (Galaxy backgrounds)"/>
         <margin>0 10px 0 10px</margin>
         <padding>10px</padding>
       </selector>
@@ -500,19 +502,19 @@
         <margin-right>15px</margin-right>
       </selector>
       <selector path=".wizardFrame">
-        <border>2px solid #3399ff</border>
+        <border preset="blue.sky (Galaxy borders)" />
         <width>800px</width>
         <padding>0 5px !important</padding>
       </selector>
       <selector path=".error">
-        <color>red</color>
+        <color preset="red (Galaxy colors)" />
         <font-weight>bold</font-weight>
       </selector>
       <selector path=".archiveTabContent">
         <margin-left>18px</margin-left>
       </selector>
       <selector path="h4, h5, h6">
-        <color>#4a4a4a</color>
+        <color preset="gray.dark (Galaxy colors)" />
         <margin>10px 0px 5px 0px</margin>
       </selector>
       <selector path=".iconColumn">
@@ -520,7 +522,7 @@
         <text-align>center</text-align>
       </selector>
       <selector path=".iconColumn .dropInto">
-        <background-color>#adf</background-color>
+        <background-color preset="blue.sky (Galaxy backgrounds)"/>
       </selector>
       <selector path=".wizardFrame .wizardFinish h4 img">
         <margin-right>10px</margin-right>
@@ -537,7 +539,7 @@
         <text-align>center</text-align>
       </selector>
       <selector path="table.dataOutput thead th a, table.dataOutput thead th a:hover, table.dataOutput thead th a:active, table.dataOutput thead th a:visited">
-        <color>#606161</color>
+        <color preset="gray (Galaxy colors)" />
       </selector>
       <selector path=".boldColumn">
         <font-weight>bold !important</font-weight>
@@ -548,15 +550,15 @@
         <padding>10px</padding>
       </selector>
       <selector path=".vocabularyEntryContent .notEditable">
-        <color>#000</color>
-        <background-color>#fff</background-color>
+        <color preset="black (Galaxy colors)" />
+        <background-color preset="white (Galaxy backgrounds)"/>
       </selector>
       <selector path=".warningMessage">
-        <background>url(/nuxeo/img/warning.gif) 2px 3px no-repeat #FFCC33</background>
+        <background preset="warning (Galaxy backgrounds)"/>
         <width>500px</width>
         <margin>2px 0 2px 0</margin>
-        <border>1px solid #666</border>
-        <color>#000</color>
+        <border preset="dataInput (Galaxy borders)" />
+        <color preset="black (Galaxy colors)" />
         <margin-bottom>12px</margin-bottom>
         <display>block</display>
         <padding>5px 5px 5px 23px</padding>
@@ -576,10 +578,10 @@
         <padding>0 0 0 5px</padding>
       </selector>
       <selector path=".focusColumn">
-        <background-color>#ddeeff</background-color>
+        <background-color preset="blue.sky (Galaxy backgrounds)"/>
       </selector>
       <selector path="a:visited">
-        <color>#112B8C</color>
+        <color preset="blue.night (Galaxy colors)" />
       </selector>
       <selector path=".dataInput textarea, .dataInput .dataInputText">
         <width>500px</width>
@@ -594,7 +596,7 @@
         <width>100%</width>
       </selector>
       <selector path=".wizardFrame .templatePreview">
-        <border>1px solid #3399FF</border>
+        <border preset="blue.sky (Galaxy borders)" />
         <padding>10px !important</padding>
       </selector>
       <selector path=".dataList td">
@@ -606,7 +608,7 @@
         <border>0px none transparent</border>
       </selector>
       <selector path=".currentItemDescription">
-        <color>#454545</color>
+        <color preset="gray.dark (Galaxy colors)" />
         <font-size>13px</font-size>
       </selector>
       <selector path=".dataInput">
@@ -644,28 +646,28 @@
       </selector>
       <!-- End of Rich Faces fileUpload -->
       <selector path=".rightsAddSelect">
-        <border>1px normal #666</border>
+        <border preset="dataInput (Galaxy borders)" />
         <margin-top>0px</margin-top>
       </selector>
       <selector path=".dataList thead th">
         <border-bottom preset="tablelines (Galaxy borders)"/>
-        <color>#606161</color>
+        <color preset="gray (Galaxy colors)" />
         <background preset="tablethead (Galaxy backgrounds)"/>
         <padding>5px 3px</padding>
         <text-align>left</text-align>
       </selector>
       <selector path=".dataList thead th a, .dataList thead th a:link">
-        <color>#606161</color>
+        <color preset="gray (Galaxy colors)" />
         <text-decoration>none</text-decoration>
       </selector>
       <selector path=".dataList thead th a:visited">
-        <color>#606161</color>
+        <color preset="gray (Galaxy colors)" />
       </selector>
       <selector path=".dataList thead th a:active">
-        <color>#606161</color>
+        <color preset="gray (Galaxy colors)" />
       </selector>
       <selector path=".dataList thead th a:hover">
-        <color>#606161</color>
+        <color preset="gray (Galaxy colors)" />
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path=".relationPredicateColumn">
@@ -676,9 +678,9 @@
         <margin-top>10px</margin-top>
       </selector>
       <selector path=".archiveTabContent .notEditable">
-        <color>#000</color>
+        <color preset="black (Galaxy colors)" />
         <border>none</border>
-        <background-color>#fff</background-color>
+        <background-color preset="white (Galaxy backgrounds)"/>
       </selector>
       <selector path=".twoColumns">
         <width>50%</width>
@@ -690,7 +692,7 @@
         <font-style>italic</font-style>
       </selector>
       <selector path=".pageNavigationControls">
-        <border>1px solid #3399FF</border>
+        <border preset="blue.sky.mini (Galaxy borders)" />
         <margin>5px 0px</margin>
         <padding>7px</padding>
         <text-align>center</text-align>
@@ -701,7 +703,7 @@
         <margin>0</margin>
       </selector>
       <selector path=".dataInput .fieldColumn table.mceEditor .mceToolbarBottom">
-        <background-color>#ddeeff</background-color>
+        <background-color preset="blue.sky (Galaxy backgrounds)"/>
       </selector>
       <selector path=".wizardFrame .wizardButtonBar">
         <text-align>right</text-align>
@@ -714,14 +716,14 @@
         <width>40px</width>
       </selector>
       <selector path="a, a:link">
-        <color>#0066CC</color>
+        <color preset="blue.link (Galaxy colors)" />
         <text-decoration>none</text-decoration>
       </selector>
       <selector path="a:active">
-        <color>#0066CC</color>
+        <color preset="blue.link (Galaxy colors)" />
       </selector>
       <selector path="a:hover">
-        <color>#0066CC</color>
+        <color preset="blue.link (Galaxy colors)" />
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path="table">
@@ -729,16 +731,16 @@
       </selector>
       <selector path=".pictureBookItem">
         <height>160px</height>
-        <border>1px solid #2A90F6</border>
+        <border preset="blue.sky.mini (Galaxy borders)" />
         <width>140px</width>
-        <background-color>#ddeeff</background-color>
+        <background-color preset="blue.sky (Galaxy backgrounds)"/>
         <margin>10px 20px 10px 0px</margin>
         <float>left</float>
         <text-align>center</text-align>
       </selector>
       <selector path=".itemSelected">
-        <border>1px solid #ff9933</border>
-        <background-color>#ffcc66</background-color>
+        <border preset="orange (Galaxy borders)" />
+        <background-color preset="selected.orange (Galaxy backgrounds)"/>
       </selector>
       <selector path=".pictureBookItem .cell">
         <height>110px</height>
@@ -753,11 +755,11 @@
       </selector>
       <selector path=".pictureBookItemTitle">
         <font preset="small (Galaxy fonts)"/>
-        <background-color>#2A90F6</background-color>
+        <background-color preset="big.blue (Galaxy backgrounds)"/>
         <padding>5px 0</padding>
       </selector>
       <selector path=".pictureBookItemTitle a, .pictureBookItemTitle a:hover, .pictureBookItemTitle a:visited">
-        <color>#001986</color>
+        <color preset="blue.night (Galaxy colors)" />
       </selector>
       <selector path=".slideshowContent">
         <padding>10px 0px 5px 0px</padding>
@@ -773,7 +775,7 @@
         <padding>0px</padding>
       </selector>
       <selector path=".slideShowControl input.button[disabled=disabled]">
-        <background>url(/nuxeo/img/button_disabled.gif) 0 0 repeat-x #ebeff4</background>
+        <background preset="disabled (Galaxy backgrounds)"/>
         <border-color>#ccc #999 #999 #ccc</border-color>
         <cursor>default</cursor>
       </selector>
@@ -781,7 +783,7 @@
         <margin>0px 3px 4px 0px</margin>
       </selector>
       <selector path=".slideShowControl span">
-        <color>#666666</color>
+        <color preset="gray (Galaxy colors)" />
         <font-weight>bold</font-weight>
         <font-size>13px</font-size>
         <padding-right>10px</padding-right>
@@ -796,65 +798,64 @@
       </selector>
       <selector path=".foldableBox h3">
         <border-bottom preset="tabiselected (Galaxy borders)"/>
-        <color>#fff</color>
+        <color preset="white (Galaxy colors)" />
         <padding>3px 3px 3px 18px</padding>
         <font-size>11px</font-size>
       </selector>
       <selector path=".foldableBox h3.folded">
-        <background>url(/nuxeo/img/theme_galaxy/arrow_folded.gif) top left no-repeat</background>
+        <background preset="folded (Galaxy backgrounds)"/>
       </selector>
       <selector path=".foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover">
-        <color>#fff</color>
+        <color preset="white (Galaxy colors)" />
       </selector>
       <selector path=".foldableBox h3.unfolded">
-        <background>url(/nuxeo/img/theme_galaxy/arrow_unfolded.gif) top left no-repeat</background>
+        <background preset="unfolded (Galaxy backgrounds)"/>
       </selector>
       <selector path=".foldableBox h3 a">
-        <color>#fff</color>
+        <color preset="white (Galaxy colors)" />
         <display>block</display>
       </selector>
       <selector path=".foldableBox .boxBody">
-        <background>#ffffff</background>
+        <color preset="white (Galaxy colors)" />
         <padding>10px</padding>
       </selector>
       <selector path=".relationCreateFieldColumn, .fieldColumn, .workflowFieldColumn">
         <vertical-align>top</vertical-align>
       </selector>
       <selector path=".commentQuote">
-        <font-family>Verdana, Arial, sans-serif</font-family>
+        <font preset="default (Galaxy fonts)" />
         <width>99%</width>
-        <font-weight>normal</font-weight>
         <margin>5px 0 5px 0</margin>
       </selector>
       <selector path=".warningFeedback">
-        <font>bold 11px Verdana, sans-serif</font>
-        <color>#000</color>
-        <border>2px solid #666</border>
-        <background>url(/nuxeo/img/warning.gif) 4px 5px no-repeat #FFCC33</background>
+        <font preset="big.default (Galaxy fonts)"/>
+        <color preset="black (Galaxy colors)" />
+        <border preset="warningfeedback (Galaxy borders)" />
+        <background preset="warning (Galaxy backgrounds)"/>
         <padding>7px 7px 7px 24px</padding>
       </selector>
       <selector path=".vocabularyEntryContent .currentDocumentInformation">
-        <background-color>#DDEEFF</background-color>
+        <background-color preset="blue.sky (Galaxy backgrounds)"/>
       </selector>
       <selector path=".rightsAddLabel">
         <font-weight>bold</font-weight>
         <padding>0 5px 0 0px</padding>
       </selector>
       <selector path=".archiveTabContent .currentDocumentInformation">
-        <background-color>#DDEEFF</background-color>
+        <background-color preset="blue.sky (Galaxy backgrounds)"/>
       </selector>
       <selector path=".buttonsGadget">
         <margin>5px 0px 5px 135px</margin>
       </selector>
       <selector path=".errorFeedback">
-        <font>bold 11px Verdana, sans-serif</font>
-        <color>#000</color>
-        <border>2px solid #666</border>
-        <background>url(/nuxeo/img/warning.gif) 4px 5px no-repeat #FFCC33</background>
+        <font preset="big.default (Galaxy fonts)"/>
+        <color preset="black (Galaxy colors)" />
+        <border preset="warningfeedback (Galaxy borders)" />
+        <background preset="warning (Galaxy backgrounds)"/>
         <padding>7px 7px 7px 24px</padding>
       </selector>
       <selector path=".wizardFrame .templatePreview img">
-        <border>1px solid #333</border>
+        <border preset="preview (Galaxy borders)" />
         <float>left</float>
       </selector>
       <selector path=".dataInput td">
@@ -862,8 +863,8 @@
         <padding>7px 4px</padding>
       </selector>
       <selector path=".dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize">
-        <font>normal 11px Verdana, sans-serif</font>
-        <border>1px normal #666</border>
+        <font preset="default (Galaxy fonts)"/>
+        <border preset="dataInput (Galaxy borders)" />
         <vertical-align>top</vertical-align>
         <padding>4px</padding>
       </selector>
@@ -874,10 +875,10 @@
         <background>transparent</background>
       </selector>
       <selector path=".infoFeedback">
-        <font>bold 11px Verdana, sans-serif</font>
-        <color>#003399</color>
-        <border>2px solid #0066cc</border>
-        <background>url(/nuxeo/icons/info.gif) 4px 5px no-repeat #f2f7fc</background>
+        <font preset="big.default (Galaxy fonts)"/>
+        <color preset="blue.dark (Galaxy colors)" />
+        <border preset="infofeedback (Galaxy borders)" />
+        <background preset="info (Galaxy backgrounds)"/>
         <padding>7px 7px 7px 24px</padding>
       </selector>
       <selector path=".pageNavigationControls input">
@@ -887,8 +888,8 @@
         <width>80px</width>
       </selector>
       <selector path=".commentAuthor">
-        <color>#666</color>
-        <background>url(/nuxeo/icons/comment.gif) no-repeat 4px 4px</background>
+        <color preset="gray (Galaxy colors)" />
+        <background preset="comment (Galaxy backgrounds)"/>
         <font-weight>bold</font-weight>
         <padding>5px 3px 3px 24px</padding>
       </selector>
@@ -900,14 +901,12 @@
         <text-align>center</text-align>
       </selector>
       <selector path=".dataInput .fieldColumn table.mceEditor">
-        <background-color>#ddeeff</background-color>
-        <border-color>#ccc</border-color>
-        <border-style>solid</border-style>
-        <border-width>1px</border-width>
+        <background preset="blue.sky (Galaxy backgrounds)"/>
+        <border preset="gray.light (Galaxy borders"/>
       </selector>
       <selector path="table.dataOutput thead th">
         <border-bottom preset="tablelines (Galaxy borders)"/>
-        <color>#606161</color>
+        <color preset="gray (Galaxy colors)" />
         <background preset="tablethead (Galaxy backgrounds)"/>
         <padding>5px 3px</padding>
         <text-align>left</text-align>
@@ -924,8 +923,8 @@
         <padding>4px 0</padding>
       </selector>
       <selector path=".rightsAddTitle">
-        <border>1px solid #0066cc</border>
-        <background>#f2f7fc</background>
+        <border preset="blue.border (Galaxy borders)" />
+        <background preset="blue.light (Galaxy backgrounds)"/>
         <padding>5px</padding>
         <text-align>center</text-align>
       </selector>
@@ -952,7 +951,7 @@
         <margin>0 0 0 0</margin>
       </selector>
       <selector path=".required">
-        <background>url(/nuxeo/img/required.gif) top right no-repeat</background>
+        <background preset="required (Galaxy backgrounds)"/>
         <padding-right>8px</padding-right>
       </selector>
       <selector path=".archiveTabContent .dataInput">
@@ -960,12 +959,10 @@
         <margin-bottom>15px</margin-bottom>
       </selector>
       <selector path=".closedContent">
-        <background>#FFF</background>
-        <border-color>#0066cc</border-color>
+        <background preset="white (Galaxy backgrounds)"/>
         <margin>15px 0px 0px 0px</margin>
         <padding>0px 10px 10px 10px</padding>
-        <border-style>solid</border-style>
-        <border-width>1px</border-width>
+        <border preset="blue.border (Galaxy borders)"/>
       </selector>
       <selector path=".dataOutput td">
         <border-bottom preset="tablelines (Galaxy borders)"/>
@@ -998,21 +995,19 @@
         <width>120px</width>
       </selector>
       <selector path="h2">
-        <color>#4a4a4a</color>
+        <color preset="gray.dark (Galaxy colors)" />
         <font preset="title 2 (Galaxy fonts)"/>
         <padding>0.5em 1em 0.5em 0</padding>
       </selector>
       <selector path=".dataInput select">
-        <border>1px normal #666</border>
+        <border preset="dataInput (Galaxy borders)" />
         <vertical-align>top</vertical-align>
         <padding>2px 1px 2px 1px</padding>
       </selector>
       <selector path=".dataInput .fieldColumn table.mceEditor .mceEditorIframe">
-        <background-color>#fff</background-color>
-        <border-color>#333 #999 #999 #333</border-color>
+        <background-color preset="white (Galaxy backgrounds)" />
+        <border preset="preview (Galaxy borders)" />
         <padding>5px</padding>
-        <border-style>solid</border-style>
-        <border-width>1px</border-width>
       </selector>
       <selector path=".action_bar">
         <margin>10px 10px 10px 0</margin>
@@ -1038,30 +1033,30 @@
         <float>left</float>
         <text-decoration>none</text-decoration>
         <border preset="buttons (Galaxy borders)"/>
-        <color>#333333</color>
+        <color preset="black.lite (Galaxy colors)" />
         <padding>4px 7px</padding>
         <margin-right>10px</margin-right>
         <cursor>pointer</cursor>
       </selector>
       <selector path=".action_bar a:hover">
-        <color>#000000</color>
-        <border-color>#92999e</border-color>
+        <color preset="black (Galaxy colors)" />
+        <border preset="buttons.hover (Galaxy borders)" />
       </selector>
       <selector path=".tabsContent">
         <margin>0px</margin>
         <padding>5px 10px 10px 10px</padding>
       </selector>
       <selector path=".tabsContent table.trashTable thead th">
-        <background-color>#ffd9a3</background-color>
+        <background-color preset="orange.lite (Galaxy backgrounds)" />
       </selector>
       <selector path="table.trashTable tbody tr.dataRowOdd">
-        <background-color>#fff9f0</background-color>
+        <background-color preset="orange.lite (Galaxy backgrounds)" />
       </selector>
       <selector path="textarea">
         <padding>5px</padding>
       </selector>
       <selector path=".rightsAddManager">
-        <background>url(/nuxeo/img/rightsadd_bar.gif) no-repeat center</background>
+        <background preset="addmanager (Galaxy backgrounds)"/>
         <width>100%</width>
         <margin>3px 0 0 0</margin>
       </selector>
@@ -1083,19 +1078,19 @@
         <padding>2px 10px 2px 0px</padding>
       </selector>
       <selector path="h1">
-        <color>#4a4a4a</color>
+        <color preset="gray.dark (Galaxy colors)" />
         <font preset="title1 (Galaxy fonts)"/>
         <overflow>auto</overflow>
       </selector>
       <selector path=".dataRowEven">
-        <background>#fff</background>
+        <background preset="white (Galaxy backgrounds)"/>
       </selector>
       <selector path=".relationCommentColumn">
         <vertical-align>top</vertical-align>
       </selector>
       <selector path=".taskAssign">
-        <border>1px solid #0066cc</border>
-        <background>#f2f7fc</background>
+        <border preset="blue.border (Galaxy borders)" />
+        <background preset="blue.light (Galaxy backgrounds)"/>
         <margin>5px 0px 10px 0px</margin>
         <display>block</display>
         <padding>5px</padding>
@@ -1113,20 +1108,20 @@
         <z-index>25</z-index>
       </selector>
       <selector path="h3">
-        <color>#4a4a4a</color>
+        <color preset="gray.dark (Galaxy colors)" />
         <font preset="title3 (Galaxy fonts)"/>
         <margin>0</margin>
         <padding>13px 0px 10px 0px</padding>
       </selector>
       <selector path=".directoryFilter, .searchField">
-        <border>1px normal #666</border>
-        <background>url(/nuxeo/icons/search.gif) 2px 2px no-repeat #FFF</background>
+        <border preset="dataInput (Galaxy borders)" />
+        <background preset="search (Galaxy backgrounds)"/>
         <margin>0 5px 10px 0</margin>
         <padding>3px 3px 3px 20px</padding>
         <font-size>11px</font-size>
       </selector>
       <selector path=".taskPrincipalSelect select">
-        <border>1px normal #666</border>
+        <border preset="dataInput (Galaxy borders)" />
         <margin>5px 0px 10px 15px</margin>
         <padding>2px 1px 2px 1px</padding>
       </selector>
@@ -1143,8 +1138,8 @@
       </selector>
       <!-- Style for Resume Tab -->
       <selector path="h3.summaryTitle">
-        <border-bottom>1px solid #a9a9a9</border-bottom>
-        <color>#4a4a4a</color>
+        <border-bottom preset="summary (Galaxy borders)" />
+        <color preset="gray.dark (Galaxy colors)" />
         <font preset="title3 (Galaxy fonts)"/>
         <margin>0px 0px 10px 0px</margin>
         <padding>25px 0px 3px 0px</padding>
@@ -1187,15 +1182,15 @@
         <float>left</float>
       </selector>
       <selector path=".lockFile_block">
-        <border>1px solid black</border>
-        <background-color>white</background-color>
+        <border preset="black (Galaxy borders)" />
+        <background-color preset="white (Galaxy backgrounds)"/>
         <width>30%</width>
         <margin>15px 0 10px 0px</margin>
         <padding>10px</padding>
         <float>right</float>
       </selector>
       <selector path=".summary_locked">
-        <color>#f56200</color>
+        <color preset="red (Galaxy colors)" />
         <font-weight>bold</font-weight>
       </selector>
       <selector path=".lockDetail, .DetailList, .contributors_table">
@@ -1223,24 +1218,23 @@
         <padding-left>5px</padding-left>
       </selector>
       <selector path=".dataOutput th, .dataList th">
-        <color>#fff</color>
-        <background-color>#E0E0E0</background-color>
+        <color preset="white (Galaxy colors)" />
+        <background-color preset="gray.lite (Galaxy backgrounds)" />
         <padding>4px 5px</padding>
         <text-align>left</text-align>
       </selector>
       <selector path="div">
-        <font-family>Verdana, Arial, sans-serif</font-family>
-        <background-color>#fff</background-color>
-        <font-size>11pt</font-size>
+        <font preset="default (Galaxy fonts)" />
+        <background-color preset="white (Galaxy backgrounds)"/>
         <float>none</float>
       </selector>
       <selector path="a:link, a:visited">
-        <color>#333</color>
+        <color preset="black.lite (Galaxy colors)" />
         <background>transparent</background>
         <text-decoration>none</text-decoration>
       </selector>
       <selector path=".dataInput, .dataOutput, .dataList">
-        <border>1px solid #DBDBDB</border>
+        <border preset="gray.light (Galaxy borders)" />
         <border-collapse>collapse</border-collapse>
       </selector>
       <selector path="ul">
@@ -1256,7 +1250,7 @@
       </selector>
       <selector path=".breadcrumbs">
         <margin-bottom>10px</margin-bottom>
-        <font-size>80%</font-size>
+        <font preset="small (Galaxy fonts)" />
         <float>left</float>
       </selector>
       <selector path=".syndicationLinks">
@@ -1294,7 +1288,7 @@
       element="page[1]/section[1]/cell[2]/fragment[1]|page[3]/section[1]/cell[2]/fragment[1]" inherit="default buttons">
       <selector path="div" view="User services (Galaxy theme)">
         <font preset="small (Galaxy fonts)"/>
-        <color>#cecece</color>
+        <color preset="gray.neutral (Galaxy colors)" />
         <margin>0</margin>
         <padding>2px 2px 0px 0px</padding>
         <line-height>185%</line-height>
@@ -1307,8 +1301,8 @@
         <padding-top>11px</padding-top>
       </selector>
       <selector path=".directoryFilter, .searchField" view="User services (Galaxy theme)">
-        <border>1px normal #666</border>
-        <background>url(/nuxeo/icons/search.gif) 2px 2px no-repeat #FFF</background>
+        <border preset="dataInput (Galaxy borders)" />
+        <background preset="search (Galaxy backgrounds)"/>
         <margin>0 5px 10px 0</margin>
         <padding>3px 3px 3px 20px</padding>
         <font-size>11px</font-size>
@@ -1320,7 +1314,7 @@
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path="a, a:link, a:visited, a:hover, a:active" view="User services (Galaxy theme)">
-        <color>#ffffff</color>
+        <color preset="white (Galaxy colors)" />
       </selector>
       <selector path="img" view="User services (Galaxy theme)">
         <margin-left>5px</margin-left>
@@ -1373,21 +1367,21 @@
         <padding>0</padding>
       </selector>
       <selector path="a" view="nuxeo5 tree explorer">
-        <color>#112b8c</color>
+        <color preset="blue.night (Galaxy colors)" />
         <text-decoration>none</text-decoration>
       </selector>
       <selector path="a:visited" view="nuxeo5 tree explorer">
-        <color>#112B8C</color>
+        <color preset="blue.night (Galaxy colors)" />
       </selector>
       <selector path="a:active" view="nuxeo5 tree explorer">
-        <color>#112b8c</color>
+        <color preset="blue.night (Galaxy colors)" />
       </selector>
       <selector path="a:hover" view="nuxeo5 tree explorer">
-        <color>#0066CC</color>
+        <color preset="blue.link (Galaxy colors)" />
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path=".dropInto" view="nuxeo5 tree explorer">
-        <background-color>#adf</background-color>
+        <background-color preset="blue.sky (Galaxy backgrounds)" />
       </selector>
       <selector path=".treeLink img" view="nuxeo5 tree explorer">
         <margin-left>4px</margin-left>
@@ -1397,8 +1391,8 @@
       </selector>
       <selector path=".userClipboard h4" view="nuxeo5 tree explorer">
         <height>16px</height>
-        <border-bottom>1px dotted #999</border-bottom>
-        <color>#4a4a4a</color>
+        <border-bottom preset="dotted (Galaxy borders)" />
+        <color preset="gray.dark (Galaxy colors)" />
         <margin-bottom>2px</margin-bottom>
         <margin-top>0px</margin-top>
         <font-size>12px</font-size>
@@ -1416,7 +1410,7 @@
       </selector>
       <selector path=".clipboardFunctions" view="nuxeo5 tree explorer">
         <padding-top>10px</padding-top>
-        <border-top>2px solid #e7e7e7</border-top>
+        <border-top preset="clipboard (Galaxy borders)" />
       </selector>
       <selector path=".clipboardFunction" view="nuxeo5 tree explorer">
         <padding>2px 2px 2px 2px</padding>
@@ -1427,7 +1421,7 @@
       </selector>
       <selector path=".userClipboard" view="nuxeo5 tree explorer">
         <height>1%</height>
-        <background-color>#FFF</background-color>
+        <background-color preset="white (Galaxy backgrounds)"/>
         <margin>10px 0px 10px 0px</margin>
       </selector>
       <selector path=".menu dl" view="nuxeo5 tree explorer">
@@ -1450,24 +1444,24 @@
         <font preset="small (Galaxy fonts)"/>
       </selector>
       <selector path="a" view="nuxeo5 clip board">
-        <color>#0066CC</color>
+        <color preset="blue.link (Galaxy colors)" />
         <text-decoration>none</text-decoration>
       </selector>
       <selector path="a:visited" view="nuxeo5 clip board">
-        <color>#112B8C</color>
+        <color preset="blue.night (Galaxy colors)" />
       </selector>
       <selector path="a:active" view="nuxeo5 clip board">
-        <color>#0066CC</color>
+        <color preset="blue.link (Galaxy colors)" />
       </selector>
       <selector path="a:hover" view="nuxeo5 clip board">
-        <color>#0066CC</color>
+        <color preset="blue.link (Galaxy colors)" />
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path=".dropInto" view="nuxeo5 clip board">
-        <background-color>#adf</background-color>
+        <background-color preset="blue.sky (Galaxy backgrounds)"/>
       </selector>
       <selector path=".dropIntoClipboardCopy" view="nuxeo5 clip board">
-        <background>url(/nuxeo/icons/action_clipboard_copy.gif) no-repeat 98% 3% #adf</background>
+        <background preset="clipboardcopy (Galaxy backgrounds)" />
       </selector>
       <selector path="#clipboardCopy" view="nuxeo5 clip board">
         <padding>3px</padding>
@@ -1487,13 +1481,13 @@
       </selector>
       <selector path=".clipboardFunctions" view="nuxeo5 clip board">
         <padding-top>10px</padding-top>
-        <border-top>2px solid #e7e7e7</border-top>
+        <border-top preset="clipboard (Galaxy borders)" />
       </selector>
       <selector path=".clipboardFunction" view="nuxeo5 clip board">
         <padding>2px 2px 2px 2px</padding>
       </selector>
       <selector path=".clipboardEmptyMessage" view="nuxeo5 clip board">
-        <color>#666</color>
+        <color preset="gray (Galaxy colors)" />
         <font-style>italic</font-style>
         <font-size>9px</font-size>
         <padding>0 2px 2px 2px</padding>
@@ -1505,7 +1499,7 @@
       </selector>
       <selector path=".userClipboard" view="nuxeo5 clip board">
         <height>1%</height>
-        <background-color>#FFF</background-color>
+        <background-color preset="white (Galaxy backgrounds)"/>
         <margin>30px 0px 0px 0px</margin>
       </selector>
     </style>
@@ -1542,7 +1536,7 @@
       </selector>
       <selector path="" view="Nuxeo EP footer (Galaxy Theme)">
         <font preset="small (Galaxy fonts)"/>
-        <color>#5c5c5c</color>
+        <color preset="gray.dark (Galaxy colors)" />
         <padding>5px 15px 5px 5px</padding>
       </selector>
       <selector path="div" view="Nuxeo EP footer (Galaxy Theme)">
@@ -1552,17 +1546,17 @@
         <font-size preset="small (Galaxy fonts)"/>
       </selector>
       <selector path="a" view="Nuxeo EP footer (Galaxy Theme)">
-        <color>#0066CC</color>
+        <color preset="blue.link (Galaxy colors)" />
         <text-decoration>none</text-decoration>
       </selector>
       <selector path="a:visited" view="Nuxeo EP footer (Galaxy Theme)">
-        <color>#112B8C</color>
+        <color preset="blue.night (Galaxy colors)" />
       </selector>
       <selector path="a:active" view="Nuxeo EP footer (Galaxy Theme)">
-        <color>#0066CC</color>
+        <color preset="blue.link (Galaxy colors)" />
       </selector>
       <selector path="a:hover" view="Nuxeo EP footer (Galaxy Theme)">
-        <color>#0066CC</color>
+        <color preset="blue.link (Galaxy colors)" />
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path="select.langSelect" view="Nuxeo EP footer (Galaxy Theme)">
@@ -1589,12 +1583,12 @@
         <height>30px</height>
       </selector>
       <selector path="div.syndicationButton div.syndicationLinks" view="facelet region">
-        <color>rgb(241, 242, 243)</color>
+        <color preset="gray.lite (Galaxy colors)" />
         <font preset="small (Galaxy fonts)"/>
         <padding>2px 4px</padding>
       </selector>
       <selector path="div.syndicationButton div.syndicationLinks a" view="facelet region">
-        <color>rgb(255, 255, 255)</color>
+        <color preset="white (Galaxy colors)" />
         <text-decoration>none</text-decoration>
       </selector>
     </style>
@@ -1612,12 +1606,12 @@
         <float>right</float>
       </selector>
       <selector path="div.syndicationButton div.syndicationLinks" view="facelet region">
-        <color>rgb(241, 242, 243)</color>
+        <color preset="gray.lite (Galaxy colors)" />
         <font preset="small (Galaxy fonts)"/>
         <padding>2px 4px</padding>
       </selector>
       <selector path="div.syndicationButton div.syndicationLinks a" view="facelet region">
-        <color>rgb(255, 255, 255)</color>
+        <color preset="white (Galaxy colors)" />
         <text-decoration>none</text-decoration>
       </selector>
     </style>

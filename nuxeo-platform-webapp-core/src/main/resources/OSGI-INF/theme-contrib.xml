@@ -389,6 +389,8 @@
       src="themes/palettes/galaxy-backgrounds.properties" category="background" />
     <palette name="Galaxy fonts" src="themes/palettes/galaxy-fonts.properties"
       category="font" />
+    <palette name="Galaxy colors" src="themes/palettes/galaxy-colors.properties"
+      category="color" />
 
   </extension>
 
