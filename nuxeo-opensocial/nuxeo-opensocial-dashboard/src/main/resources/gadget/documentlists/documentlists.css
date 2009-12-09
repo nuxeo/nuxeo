@@ -8,9 +8,9 @@ vertical-align:top;
 }
 
 .pageNavigationControls {
-border:1px solid #3399FF;
-margin:5px 0px;
-padding:2px;
+border-bottom:1px solid #3399FF;
+margin:0px;
+padding:2px 0px 0px;
 text-align:center;
 }
 
