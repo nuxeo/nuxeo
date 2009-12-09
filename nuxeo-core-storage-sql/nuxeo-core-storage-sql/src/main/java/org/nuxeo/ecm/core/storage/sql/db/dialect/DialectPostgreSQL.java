@@ -720,7 +720,6 @@ public class DialectPostgreSQL extends Dialect {
                         + "  curid varchar(36); " //
                         + "  curparentid varchar(36); " //
                         + "BEGIN " //
-                        + "  PERFORM NX_DESCENDANTS_CREATE_TRIGGERS(); " //
                         + "  CREATE TEMP TABLE nxtodo (id varchar(36), parentid varchar(36)) ON COMMIT DROP; " //
                         + "  CREATE INDEX nxtodo_idx ON nxtodo (id);" //
                         + "  INSERT INTO nxtodo SELECT id, NULL FROM repositories;" //
@@ -743,6 +742,7 @@ public class DialectPostgreSQL extends Dialect {
                         + "      SELECT id, curid FROM descendants WHERE descendantid = curparentid;" //
                         + "    INSERT INTO descendants (id, descendantid) VALUES (curparentid, curid);" //
                         + "  END LOOP;" //
+                        + "  PERFORM NX_DESCENDANTS_CREATE_TRIGGERS(); " //
                         + "END " //
                         + "$$ " //
                         + "LANGUAGE plpgsql " //
