@@ -125,9 +125,13 @@
 
 .x-color-palette {
   float: left;
-  width: 215px;
+  width: 235px;
   height:100%;
 }
+
+.color-none span{
+  background:url(color_none.png) no-repeat center;
+  }
 
 .x-column-possible {
   background-image: url(transparent.png);

@@ -13,7 +13,6 @@ import com.google.gwt.http.client.URL;
 import com.gwtext.client.data.SimpleStore;
 import com.gwtext.client.data.Store;
 import com.gwtext.client.widgets.BoxComponent;
-import com.gwtext.client.widgets.ColorPalette;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.form.Checkbox;
 import com.gwtext.client.widgets.form.ComboBox;
@@ -76,7 +75,7 @@ public class InputFactory {
   }
 
   /****************************************************/
-  /**             Field Input Text                 **/
+  /** Field Input Text **/
 
   private class NXField extends TextField {
 
@@ -89,7 +88,7 @@ public class InputFactory {
   }
 
   /****************************************************/
-  /**             Field Input Hidden                 **/
+  /** Field Input Hidden **/
 
   private class NXFieldHidden extends TextArea {
 
@@ -103,13 +102,13 @@ public class InputFactory {
 
   private class NXFieldColor extends Panel {
 
-    protected ColorPalette palette;
+    protected NXColorPalette palette;
 
     public NXFieldColor(GadgetPortlet gp, PreferencesBean bean) {
       super();
       NXFieldHidden fieldHidden = new NXFieldHidden(bean);
       Label label = new Label(MESSAGES.getLabel(bean.getDisplayName()));
-      palette = new ColorPalette();
+      palette = new NXColorPalette();
       palette.addListener(new ColorListener(gp, bean.getName(), fieldHidden));
       palette.setTitle(CONSTANTS.colorChoice());
       label.setCls(CSS_CLS.COLOR_LBL.toString());
@@ -138,7 +137,7 @@ public class InputFactory {
   }
 
   /****************************************************/
-  /**             Field Input Combo                 **/
+  /** Field Input Combo **/
 
   private class NXFieldComboBox extends ComboBox {
 
@@ -179,7 +178,7 @@ public class InputFactory {
   }
 
   /****************************************************/
-  /**             Field Input Checkbox                 **/
+  /** Field Input Checkbox **/
 
   private class NXFieldCheckbox extends Checkbox {
 

@@ -95,9 +95,13 @@ public class GadgetPortlet extends Portlet {
     if (DEFAULT_PREFS.isBorder(name)) {
       if (!NONE_PROPERTY.equals(value))
         changeBorderColor(this.getId(), value);
+      else
+        removeBorderColor(this.getId());
     } else if (DEFAULT_PREFS.isFont(name)) {
       if (!NONE_PROPERTY.equals(value))
         changeTitleColor(this.getId(), value);
+      else
+        removeTitleColor(this.getId());
     } else if (DEFAULT_PREFS.isHeader(name)) {
       if (NONE_PROPERTY.equals(value))
         removeHeaderColor(this.getId());
@@ -251,6 +255,13 @@ public class GadgetPortlet extends Portlet {
     $wnd.jQuery("#"+id).attr("style","border:1px solid #"+color);
   }-*/;
 
+
+  static native void removeBorderColor(String id)
+  /*-{
+    $wnd.jQuery("#"+id).find("div.x-panel-tl").css("border-bottom","");
+    $wnd.jQuery("#"+id).attr("style","");
+  }-*/;
+
   static native void removeBorder(String id)
   /*-{
     $wnd.jQuery("#"+id).find("div.x-panel-bwrap").css("border","0px");
@@ -259,6 +270,11 @@ public class GadgetPortlet extends Portlet {
   static native void changeTitleColor(String id, String color)
   /*-{
     $wnd.jQuery("#"+id).find("span.x-panel-header-text").css("color","#"+color);
+  }-*/;
+
+  static native void removeTitleColor(String id)
+  /*-{
+    $wnd.jQuery("#"+id).find("span.x-panel-header-text").css("color","");
   }-*/;
 
 }
