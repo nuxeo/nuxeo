@@ -55,7 +55,7 @@ a:hover {
 
 .stacktrace {
   padding: 0 5px 0 20px;
-  background: url( /nuxeo/icons/page_white_text.png ) no-repeat scroll 0%;
+  background: url( /nuxeo/icons/page_text.gif ) no-repeat scroll 0%;
   margin: 10px 0 0 0;
 }
 
