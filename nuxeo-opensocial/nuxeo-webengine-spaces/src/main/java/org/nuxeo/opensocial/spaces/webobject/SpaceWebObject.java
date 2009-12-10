@@ -193,6 +193,13 @@ public class SpaceWebObject extends DocumentObject {
     return super.doPut();
   }
 
+  @POST
+  @Path("@updateSpace")
+  public Response updateTheme() {
+    super.doPut();
+    return redirect(getPath() + "#openManager");
+  }
+
   @Override
   public Response doPut() {
     try {
