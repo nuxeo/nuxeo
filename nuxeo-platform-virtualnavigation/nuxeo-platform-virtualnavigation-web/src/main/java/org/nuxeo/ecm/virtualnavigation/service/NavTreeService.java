@@ -45,7 +45,7 @@ public class NavTreeService extends DefaultComponent {
         return descriptors;
     }
 
-    protected void maybeFetchDirectoryTrees() {
+    protected synchronized void maybeFetchDirectoryTrees() {
         if (directoryTreesFetched) {
             return;
         }

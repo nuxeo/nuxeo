@@ -51,6 +51,8 @@ import org.nuxeo.ecm.platform.relations.api.impl.RelationDate;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.wss.service.PluggableBackendFactory;
+import org.nuxeo.ecm.platform.wss.service.WSSPlugableBackendManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.servlet.WSSFilter;
@@ -141,7 +143,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
         try {
             DocumentModel doc = resolveLocation(location);
             if (doc!=null) {
-                return new NuxeoListItem(doc, corePathPrefix, urlRoot);
+                return WSSPlugableBackendManager.instance().createItem(doc, corePathPrefix, urlRoot);
             }
             else {
                 throw new WSSException("Unable to find item " + location);
@@ -172,7 +174,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
                 } else if (LifeCycleConstants.DELETED_STATE.equals(child.getCurrentLifeCycleState())) {
                     log.debug("Skipping deleted doc");
                 } else {
-                    items.add(new NuxeoListItem(child, corePathPrefix, urlRoot));
+                    items.add(WSSPlugableBackendManager.instance().createItem(child, corePathPrefix, urlRoot));
                 }
             }
             return items;
@@ -200,7 +202,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
         }
 
         if (movedDoc!=null) {
-            return new NuxeoListItem(movedDoc, corePathPrefix,urlRoot);
+            return WSSPlugableBackendManager.instance().createItem(movedDoc, corePathPrefix, urlRoot);
         } else {
             throw new WSSException("No resulting doc found !!!");
         }
@@ -260,7 +262,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
              throw new WSSException("Error while doing move", e);
         }
         if (movedDoc!=null) {
-            return new NuxeoListItem(movedDoc, corePathPrefix,urlRoot);
+            return WSSPlugableBackendManager.instance().createItem(movedDoc, corePathPrefix, urlRoot);
         } else {
             throw new WSSException("No resulting doc found !!!");
         }
@@ -300,13 +302,13 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
             throw new WSSException("Can not create a child in a non folderish node");
         }
 
-        String targetType = "Folder";
+        String targetType = WSSPlugableBackendManager.folderishDocType;
         if (folderish) {
             if ("WorkspaceRoot".equals(parent.getType())) {
                 targetType = "Workspace";
             }
         } else {
-            targetType = "File";
+            targetType = WSSPlugableBackendManager.leafDocType;
         }
 
         String nodeName = cleanName(name);
@@ -325,7 +327,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
     public WSSListItem createFolder(String parentPath, String name)
             throws WSSException {
         DocumentModel newFolder = createNode(parentPath, name, true);
-        return new NuxeoListItem(newFolder,corePathPrefix, urlRoot);
+        return WSSPlugableBackendManager.instance().createItem(newFolder, corePathPrefix, urlRoot);
     }
 
     protected String cleanName(String name) {
@@ -349,7 +351,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
     public WSSListItem createFileItem(String parentPath, String name)
             throws WSSException {
         DocumentModel newFolder = createNode(parentPath, name, false);
-        return new NuxeoListItem(newFolder,corePathPrefix, urlRoot);
+        return WSSPlugableBackendManager.instance().createItem(newFolder, corePathPrefix, urlRoot);
     }
 
     public Site getSite(String location) throws WSSException {

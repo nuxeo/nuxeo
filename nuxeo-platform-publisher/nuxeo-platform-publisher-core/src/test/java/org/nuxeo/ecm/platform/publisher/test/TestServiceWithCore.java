@@ -18,7 +18,7 @@
 package org.nuxeo.ecm.platform.publisher.test;
 
 import org.hsqldb.jdbc.jdbcDataSource;
-import org.nuxeo.common.mock.jndi.MockContextFactory;
+import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -56,7 +56,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        MockContextFactory.setAsInitial();
+        NamingContextFactory.setAsInitial();
 
         jdbcDataSource ds = new jdbcDataSource();
         ds.setDatabase("jdbc:hsqldb:mem:jena");
@@ -89,7 +89,7 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        MockContextFactory.revertSetAsInitial();
+        NamingContextFactory.revertSetAsInitial();
         super.tearDown();
     }
 

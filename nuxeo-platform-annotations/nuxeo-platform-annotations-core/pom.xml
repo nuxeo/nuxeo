@@ -23,6 +23,11 @@
       <artifactId>nuxeo-platform-relations-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging-api</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-annotations-core-contrib</artifactId>
       <scope>test</scope>
