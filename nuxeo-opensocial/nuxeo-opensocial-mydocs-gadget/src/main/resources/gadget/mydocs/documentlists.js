@@ -148,6 +148,7 @@ function tableStart(jsonObject) {
   html += "      <th>" + title + "</th>";
   html += "      <th/>";
   html += "      <th>" + modified + "</th>";
+  html += "      <th>&nbsp;</th>";
   html += "    </tr>";
   html += "  </thead>";
   html += "  <tbody>";
@@ -222,22 +223,27 @@ function mkRow(document, i) {
         + "\" onclick=\"followPath('" + document.name
         + "');return false;\" />";
   } else {
-    htmlRow += "<td><a target = \"_top\" title=\"" + document.title
-        + "\" href=\"/nuxeo/" + document.url + "\" />";
+  var DLUrl = getDLUrl(document.name);
+    htmlRow += "<td><a title=\"" + document.title
+        + "\" href=\"" + DLUrl + "\" />";
   }
   htmlRow += document.title;
-  if (document.folderish == 0) {
+  /* if (document.folderish == 0) {
     var DLUrl = getDLUrl(document.name);
     htmlRow += "<a href=\""
         + DLUrl
         + "\"><img src=\"/nuxeo/icons/download.png\" alt=\"Download\"></a>";
-  }
+  } */
   htmlRow += "</a></td><td class=\"iconColumn\"/>";
   htmlRow += "<td>";
   htmlRow += getDateForDisplay(document.modified);
   htmlRow += "</td>";
 
-  htmlRow += "<td class=\"iconColumn\"/>";
+  htmlRow += "<td class=\"iconColumn\">";
+  htmlRow += "<a target=\"_tab\" href=\"/nuxeo/"
+      + document.url
+      + "\"><img src=\"/nuxeo/img/external.gif\" alt=\"Download\"></a>";
+  htmlRow +="</td>";
   htmlRow += "</tr>";
   return htmlRow;
 }

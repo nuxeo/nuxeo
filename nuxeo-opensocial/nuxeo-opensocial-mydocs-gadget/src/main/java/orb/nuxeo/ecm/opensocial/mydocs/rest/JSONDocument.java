@@ -46,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
 
 @WebObject(type = "JSONDocument")
 public class JSONDocument extends DocumentObject {
-    private static final int PAGE_SIZE = 5;
+    private static final int PAGE_SIZE = 10;
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss");
 
