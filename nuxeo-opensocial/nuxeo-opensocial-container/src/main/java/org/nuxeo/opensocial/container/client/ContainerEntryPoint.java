@@ -41,6 +41,7 @@ import com.gwtext.client.widgets.layout.FitLayout;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
+ * 
  * @author Guillaume Cusnieux
  */
 public class ContainerEntryPoint implements EntryPoint {
@@ -92,7 +93,6 @@ public class ContainerEntryPoint implements EntryPoint {
 
         RootPanel.get(GWT_CONTAINER_ID)
             .add(panel);
-
         portal = new ContainerPortal(container, panel);
         panel.setWidth(windowWidth);
         panel.setHeight("100%");
@@ -186,25 +186,26 @@ public class ContainerEntryPoint implements EntryPoint {
   }-*/;
 
   private static native void attachLayoutManager(String layout,
-      Integer boxSelected) /*-{
-    //Initialisation
-    $wnd.jQuery("a[box='"+boxSelected+"']").parent().removeClass("invisible").addClass("visible");
-    $wnd.jQuery("#listBoxes>div").removeClass("selected");
-    $wnd.jQuery("#listBoxes>div>button").removeClass("selected");
-    $wnd.jQuery("button[box='"+boxSelected+"']").addClass("selected");
-    $wnd.jQuery("button[box='"+boxSelected+"']").parent().addClass("selected");
-    $wnd.jQuery("#"+layout).addClass("selected");
-
-    //Choix du layout
-    $wnd.jQuery(".typeLayout").click(function(){
-      @org.nuxeo.opensocial.container.client.ContainerEntryPoint::chooseLayout(Ljava/lang/String;)($wnd.jQuery(this).attr("name"));
-      return false
-    });
-
-    $wnd.jQuery(".directAdd>a").click(function(){
-      @org.nuxeo.opensocial.container.client.ContainerEntryPoint::addGadget(Ljava/lang/String;)($wnd.jQuery(this).attr("name"));
-      return false
-    });
-  }-*/;
+      Integer boxSelected)
+  /*-{
+     //Initialisation
+     $wnd.jQuery("a[box='"+boxSelected+"']").parent().removeClass("invisible").addClass("visible");
+     $wnd.jQuery("#listBoxes>div").removeClass("selected");
+     $wnd.jQuery("#listBoxes>div>button").removeClass("selected");
+     $wnd.jQuery("button[box='"+boxSelected+"']").addClass("selected");
+     $wnd.jQuery("button[box='"+boxSelected+"']").parent().addClass("selected");
+     $wnd.jQuery("#"+layout).addClass("selected");
+    
+     //Choix du layout
+     $wnd.jQuery(".typeLayout").click(function(){
+       @org.nuxeo.opensocial.container.client.ContainerEntryPoint::chooseLayout(Ljava/lang/String;)($wnd.jQuery(this).attr("name"));
+       return false
+     });
+    
+     $wnd.jQuery(".directAdd>a").click(function(){
+       @org.nuxeo.opensocial.container.client.ContainerEntryPoint::addGadget(Ljava/lang/String;)($wnd.jQuery(this).attr("name"));
+       return false
+     });
+   }-*/;
 
 }
