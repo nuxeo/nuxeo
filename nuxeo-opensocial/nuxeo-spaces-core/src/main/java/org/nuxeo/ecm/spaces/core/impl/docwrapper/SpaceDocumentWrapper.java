@@ -71,10 +71,11 @@ public class SpaceDocumentWrapper extends DocumentWrapper implements Space {
   }
 
   public boolean isCurrentVersion() {
-    if (getVersions().get(0)
-        .getDatePublication()
-        .equals(this.getDatePublication()))
-      return true;
+    List<Space> spaces = getVersions();
+    if(spaces != null && getVersions().get(0)
+            .getDatePublication()
+            .equals(this.getDatePublication()))
+          return true;
     return false;
   }
 }
