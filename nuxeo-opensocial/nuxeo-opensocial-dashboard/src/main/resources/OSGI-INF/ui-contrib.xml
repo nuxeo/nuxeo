@@ -11,8 +11,8 @@
     <type id="Space" coretype="Space">
       <label>Space: Not Seen By User</label>
       <description>Not seen by user</description>
-      <icon>/icons/Space.png</icon>
-      <bigIcon>/icons/Space.png</bigIcon>
+      <icon>/icons/space.png</icon>
+      <bigIcon>/icons/space.png</bigIcon>
       <default-view>view_documents</default-view>
       <category>none</category>
       <layouts mode="any">
