@@ -278,12 +278,12 @@ public class ContainerPortal extends Portal {
     addGadget(portlet.getGadgetBean());
   }
 
-  public void addGadget(GadgetBean bean) {
+  public GadgetPortlet addGadget(GadgetBean bean) {
     bean.setPosition(new GadgetPosition(COLS[0], 0));
-    addGadget(bean, null);
-    this.doLayout();
+    GadgetPortlet g = addGadget(bean, null);
     columns.get(COLS[0])
         .doLayout();
+    return g;
   }
 
   public static String getDefaultColId() {
@@ -339,6 +339,10 @@ public class ContainerPortal extends Portal {
 
   public static void setMaximizedPortlet(GadgetPortlet canvas) {
     maximizedPortlet = canvas;
+  }
+
+  public GadgetPortlet getGadgetPortletByFrameId(String frameId) {
+    return getGadgetPortlet(GadgetPortlet.getIdWithIframeId(frameId));
   }
 
 }

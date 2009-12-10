@@ -63,7 +63,6 @@ public class UrlBuilder {
 
   private static final String SECURITY_TOKEN_KEY = "st";
 
-  // use rpc token in shindig url for pass gadgetRef
   private static final String RPC_TOKEN = "rpctoken";
 
   private static final Log log = LogFactory.getLog(UrlBuilder.class);

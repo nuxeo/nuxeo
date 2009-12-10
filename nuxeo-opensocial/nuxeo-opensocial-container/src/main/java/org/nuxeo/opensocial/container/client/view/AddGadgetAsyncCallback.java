@@ -26,7 +26,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * AddGadgetAsyncCallback
- *
+ * 
  * @author Guillaume Cusnieux
  */
 public class AddGadgetAsyncCallback<T> implements AsyncCallback<GadgetBean> {
@@ -39,10 +39,9 @@ public class AddGadgetAsyncCallback<T> implements AsyncCallback<GadgetBean> {
   }
 
   public void onSuccess(GadgetBean bean) {
-    ContainerPortal p = ContainerEntryPoint.getContainerPortal();
-    p.addGadget(bean);
-    GadgetPortlet portlet = p.getGadgetPortletByRef(bean.getRef());
-    portlet.getTools()
+    GadgetPortlet port = ContainerEntryPoint.getContainerPortal()
+        .addGadget(bean);
+    port.getTools()
         .launchGear();
   }
 

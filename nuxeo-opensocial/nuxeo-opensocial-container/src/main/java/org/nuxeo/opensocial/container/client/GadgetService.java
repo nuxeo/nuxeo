@@ -54,12 +54,12 @@ public class GadgetService {
    */
   public static native void resizeIframe(int height)
   /*-{
-    @org.nuxeo.opensocial.container.client.GadgetService::setHeight(Ljava/lang/String;I)(this.t,height);
+    @org.nuxeo.opensocial.container.client.GadgetService::setHeight(Ljava/lang/String;I)(this.f,height);
   }-*/;
 
-  public static void setHeight(String ref, int height) {
+  public static void setHeight(String frameId, int height) {
     ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
-    portal.getGadgetPortletByRef(ref)
+    portal.getGadgetPortletByFrameId(frameId)
         .setHeight(height + 20);
     portal.incrementLoading();
   };
@@ -75,23 +75,23 @@ public class GadgetService {
   /*-{
     for ( var i = 1, j = arguments.length; i < j; i += 2) {
       if(arguments[i]!="refresh")
-        @org.nuxeo.opensocial.container.client.GadgetService::setUserPref(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)(this.t,arguments[i],arguments[i+1]);
+        @org.nuxeo.opensocial.container.client.GadgetService::setUserPref(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)(this.f,arguments[i],arguments[i+1]);
     }
-    @org.nuxeo.opensocial.container.client.GadgetService::saveUserPref(Ljava/lang/String;)(this.t);
+    @org.nuxeo.opensocial.container.client.GadgetService::saveUserPref(Ljava/lang/String;)(this.f);
   }-*/;
 
-  public static void saveUserPref(String ref) {
+  public static void saveUserPref(String frameId) {
     GadgetBean bean = ContainerEntryPoint.getContainerPortal()
-        .getGadgetPortletByRef(ref)
+        .getGadgetPortletByFrameId(frameId)
         .getGadgetBean();
     ContainerEntryPoint.getService()
         .saveGadgetPreferences(bean, null, ContainerEntryPoint.getGwtParams(),
             new SavePreferenceAsyncCallback<GadgetBean>(bean));
   };
 
-  public static void setUserPref(String ref, String key, String value) {
+  public static void setUserPref(String frameId, String key, String value) {
     ContainerEntryPoint.getContainerPortal()
-        .getGadgetPortletByRef(ref)
+        .getGadgetPortletByFrameId(frameId)
         .getGadgetBean()
         .setPref(key, value);
   };
@@ -103,13 +103,13 @@ public class GadgetService {
    */
   public static native void setTitle(String title)
   /*-{
-    @org.nuxeo.opensocial.container.client.GadgetService::setTitleToGadget(Ljava/lang/String;Ljava/lang/String;)(this.t,title);
+    @org.nuxeo.opensocial.container.client.GadgetService::setTitleToGadget(Ljava/lang/String;Ljava/lang/String;)(this.f,title);
   }-*/;
 
-  public static void setTitleToGadget(String ref, String title) {
+  public static void setTitleToGadget(String frameId, String title) {
     if (title != null) {
       GadgetPortlet p = ContainerEntryPoint.getContainerPortal()
-          .getGadgetPortletByRef(ref);
+          .getGadgetPortletByFrameId(frameId);
       p.setTitle(title);
     }
   };

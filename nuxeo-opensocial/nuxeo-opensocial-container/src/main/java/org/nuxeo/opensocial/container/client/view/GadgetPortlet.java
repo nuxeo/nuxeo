@@ -17,8 +17,9 @@ import com.gwtext.client.widgets.portal.Portlet;
 public class GadgetPortlet extends Portlet {
 
   private static final String NONE_PROPERTY = "none";
-  static final String GADGET = "gadget-";
-  private static final String GADGET_CONTAINER = "portlet-";
+
+  private static final String PREFIX_PORTLET_ID = "portlet-";
+  static final String PREFIX_FRAME_ID = "gadget-";
   public static final String CANVAS_VIEW = "canvas";
   public static final String DEFAULT_VIEW = "default";
 
@@ -113,7 +114,11 @@ public class GadgetPortlet extends Portlet {
   static String getIdWithRefAndView(String ref, String view) {
     if (view == null)
       view = DEFAULT_VIEW;
-    return GADGET_CONTAINER + ref + "-" + view;
+    return PREFIX_PORTLET_ID + view + "-" + ref;
+  }
+
+  static String getIdWithIframeId(String iframeId) {
+    return iframeId.replace(PREFIX_FRAME_ID, PREFIX_PORTLET_ID);
   }
 
   private Frame buildFrame() {
@@ -152,7 +157,7 @@ public class GadgetPortlet extends Portlet {
   }
 
   private String getIframeId() {
-    return GADGET + view + "-" + this.gadget.getRef();
+    return PREFIX_FRAME_ID + view + "-" + this.gadget.getRef();
   }
 
   public void doLayoutFrame() {
@@ -219,7 +224,6 @@ public class GadgetPortlet extends Portlet {
   public void unCollapseGadget() {
     unCollapse(this.getId(), this.getIframeId(), this.gadget.getRenderUrl());
     this.gadget.setCollapse(false);
-
   }
 
   public void collapseGadget() {
