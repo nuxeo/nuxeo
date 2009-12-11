@@ -276,7 +276,7 @@
 
     <type id="AdvancedSearch" coretype="AdvancedSearch">
       <label>Advanced Search</label>
-      <icon>/icons/folder.gif</icon>
+      <icon>/icons/advanced_search.gif</icon>
       <default-view>view_user</default-view>
     </type>
 
