@@ -104,6 +104,10 @@ set JAVA_OPTS=%JAVA_OPTS% -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding
     <!-- make the final zip -->
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
          basedir="${stagedir}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
+                     classifier="${distribution}"
+                     type="zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}" />
 
     <!-- NXP-4361 - provide transaction management and pooling support for Tomcat -->
     <copy todir="${nxserver}/lib">
