@@ -116,7 +116,7 @@
     <profile>
       <id>embedded-minimal</id>
       <properties>
-        <embedded.type>minmal</embedded.type>
+        <embedded.type>minimal</embedded.type>
         <embedded.includeNestedJars>false</embedded.includeNestedJars>
         <embedded.excludeLibs>true</embedded.excludeLibs>
         <distribution>embedded-minimal</distribution>
