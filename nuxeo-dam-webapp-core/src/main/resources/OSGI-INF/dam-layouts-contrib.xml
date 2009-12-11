@@ -51,6 +51,9 @@
       </templates>
       <rows>
         <row>
+          <widget>language</widget>
+        </row>
+        <row>
           <widget>topic</widget>
         </row>      
         <row>
@@ -60,6 +63,15 @@
           <widget>expired</widget>
         </row>
       </rows>
+      <widget name="language" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>dc:language</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
       <widget name="topic" type="template">
         <translated>true</translated>
         <fields>
