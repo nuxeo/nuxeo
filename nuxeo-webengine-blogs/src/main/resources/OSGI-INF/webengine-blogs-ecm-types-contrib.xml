@@ -14,9 +14,9 @@
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
     <type id="BlogSite" coretype="BlogSite">
       <label>Blog Site</label>
-      <icon>/icons/folder.gif</icon>
-      <bigIcon>/icons/website_100.png</bigIcon>
-      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <icon>/icons/blog_folder.png</icon>
+      <bigIcon>/icons/blogsite_100.png</bigIcon>
+      <icon-expanded>/icons/blogsite_100.png</icon-expanded>
       <category>Collaborative</category>
       <description>BlogSite.description</description>
       <default-view>view_documents</default-view>
@@ -38,9 +38,9 @@
 
     <type id="BlogPost" coretype="BlogPost">
       <label>Blog Post</label>
-      <icon>/icons/page_white_world.png</icon>
-      <bigIcon>/icons/webpage_100.png</bigIcon>
-      <icon-expanded>/icons/web_folder.png</icon-expanded>
+      <icon>/icons/blogpage.png</icon>
+      <bigIcon>/icons/blogpage_100.png</bigIcon>
+      <icon-expanded>/icons/blogpage.png</icon-expanded>
       <category>SimpleDocument</category>
       <description>BlogPost.description</description>
       <default-view>view_documents</default-view>

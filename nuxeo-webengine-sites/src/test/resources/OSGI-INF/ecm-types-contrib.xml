@@ -18,8 +18,9 @@
     
     <type id="WebPage" coretype="WebPage">
       <label>Web Page</label>
-      <icon>/icons/page_white_world.png</icon>
-      <icon-expanded>/icons/web_folder.png</icon-expanded>
+      <icon>/icons/webpage.png</icon>
+      <bigIcon>icons/webpage_100.png</bigIcon>
+      <icon-expanded>/icons/webpage.png</icon-expanded>
       <category>WebObject</category>
       <description>WebPage.description</description>
       <default-view>view_documents</default-view>
@@ -37,8 +38,8 @@
     <!-- ContextualLink doc type definition  -->    
     <type id="ContextualLink" coretype="ContextualLink">
       <label>Contextual Link</label>
-      <icon>/icons/file.gif</icon>
-      <bigIcon>/icons/file_100.gif</bigIcon>
+      <icon>/icons/contextuallink.png</icon>
+      <bigIcon>/icons/contextuallink_100.png</bigIcon>
       <description>ContextualLink.description</description>
       <category>WebObject</category>
       <default-view>view_documents</default-view>
