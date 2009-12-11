@@ -793,12 +793,12 @@
       </selector>
       <selector path=".foldableBox">
         <border preset="tabisnotselected (Galaxy borders)"/>
-        <background preset="tabiselected (Galaxy backgrounds)"/>
         <margin-bottom>20px</margin-bottom>
       </selector>
       <selector path=".foldableBox h3">
         <border-bottom preset="tabiselected (Galaxy borders)"/>
         <color preset="white (Galaxy colors)" />
+        <background preset="tabiselected (Galaxy backgrounds)"/>
         <padding>3px 3px 3px 18px</padding>
         <font-size>11px</font-size>
       </selector>
@@ -816,7 +816,6 @@
         <display>block</display>
       </selector>
       <selector path=".foldableBox .boxBody">
-        <color preset="white (Galaxy colors)" />
         <padding>10px</padding>
       </selector>
       <selector path=".relationCreateFieldColumn, .fieldColumn, .workflowFieldColumn">
@@ -1050,7 +1049,7 @@
         <background-color preset="orange.lite (Galaxy backgrounds)" />
       </selector>
       <selector path="table.trashTable tbody tr.dataRowOdd">
-        <background-color preset="orange.lite (Galaxy backgrounds)" />
+        <background-color preset="orange.odd (Galaxy backgrounds)" />
       </selector>
       <selector path="textarea">
         <padding>5px</padding>

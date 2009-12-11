@@ -221,7 +221,7 @@
 
     <type id="AdvancedSearch">
       <label>Advanced Search</label>
-      <icon>/icons/folder.gif</icon>
+      <icon>/icons/advanced_search.gif</icon>
       <bigIcon>/icons/folder_100.png</bigIcon>
       <default-view>view_user</default-view>
     </type>
