@@ -16,8 +16,17 @@
   </scm>
 
   <modules>
-    <module>nuxeo-features-audio</module>
-    <module>nuxeo-features-video</module>
+    <module>nuxeo-platform-audio</module>
+    <module>nuxeo-platform-audit-web-access</module>
+    <module>nuxeo-platform-document-categorization</module>
+    <module>nuxeo-platform-error-web</module>
+    <module>nuxeo-platform-importer</module>
+    <module>nuxeo-platform-login</module>
+    <module>nuxeo-platform-replication</module>
+    <module>nuxeo-platform-sync</module>
+    <module>nuxeo-platform-userdata-core-contrib</module>
+    <module>nuxeo-platform-userdata</module>
+    <module>nuxeo-platform-video</module>
  </modules>
 
 </project>
