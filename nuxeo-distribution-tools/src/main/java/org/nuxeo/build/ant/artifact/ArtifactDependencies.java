@@ -106,7 +106,7 @@ public class ArtifactDependencies extends DataType implements ResourceCollection
                 throw new BuildException("Artifact with pattern "+key+" was not found in graph");
             }
             if (ad.classifier != null) {
-                // we need to create a virtual node that points to the attachement
+                // we need to create a virtual node that points to the attachment
                 node = new AttachmentNode(node, ad.classifier);
             }
         }
