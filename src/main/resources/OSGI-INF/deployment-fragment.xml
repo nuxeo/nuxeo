@@ -7,4 +7,47 @@
     </module>
   </extension>
 
+  <extension target="web#SERVLET">
+
+    <!-- Enable authentication for Dav requests -->
+    <extension target="web#STD-AUTH-FILTER">
+      <filter>
+        <display-name>Nuxeo Security Filter</display-name>
+        <filter-name>NuxeoAuthenticationFilter</filter-name>
+        <filter-class>
+          org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter
+        </filter-class>
+      </filter>
+      <filter-mapping>
+        <filter-name>NuxeoAuthenticationFilter</filter-name>
+        <url-pattern>/webdav/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+      </filter-mapping>
+    </extension>
+
+    <servlet>
+      <servlet-name>nuxeo-webdav</servlet-name>
+      <!--
+        Doesn't currently work (but should) with:
+      
+        org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
+        org.nuxeo.ecm.webengine.server.resteasy.WebEngineServlet
+      -->
+      <servlet-class>
+        com.sun.jersey.spi.container.servlet.ServletContainer
+      </servlet-class>
+        
+      <load-on-startup>1</load-on-startup>
+      <init-param>
+        <param-name>javax.ws.rs.Application</param-name>
+        <param-value>org.nuxeo.ecm.webdav.Application</param-value>
+      </init-param>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>nuxeo-rest</servlet-name>
+      <url-pattern>/webdav/*</url-pattern>
+    </servlet-mapping>
+  </extension>
+
 </fragment>

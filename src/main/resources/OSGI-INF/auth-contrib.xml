@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webdav.authConfig">
+
+  <!-- replace auth chain -->
+  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+  <require>org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService</require>
+
+  <!--extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="sessionManager">
+
+    <sessionManager name="SeamJsf" enabled="true"
+      class="org.nuxeo.ecm.platform.ui.web.auth.plugins.SeamJsfSessionManager">
+    </sessionManager>
+  </extension-->
+  
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="sessionManager">
+
+    <sessionManager name="WebEngine" enabled="true"
+      class="org.nuxeo.ecm.webengine.login.WebEngineSessionManager">
+    </sessionManager>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="startURL">
+
+    <startURLPattern>
+      <patterns>
+        <pattern>jaxrs/</pattern>
+      </patterns>
+    </startURLPattern>
+  </extension>
+  
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="authenticators">
+
+    <authenticationPlugin name="BASIC_AUTH" enabled="true"
+        class="org.nuxeo.ecm.platform.ui.web.auth.plugins.BasicAuthenticator">
+      <needStartingURLSaving>false</needStartingURLSaving>
+      <stateful>false</stateful>
+      <parameters>
+        <parameter name="RealmName">Nuxeo 5 EP</parameter>
+        <parameter name="AutoPrompt">false</parameter>
+
+        <parameter name="ForcePromptURL_jaxrs">
+          jaxrs/
+        </parameter>
+      </parameters>
+    </authenticationPlugin>
+
+  </extension>
+
+</component>

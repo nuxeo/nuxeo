@@ -53,14 +53,15 @@ public class Main extends ModuleRoot {
     private static final Log log = LogFactory.getLog(Main.class);
 
     @GET
-    @Path("/{path:.+}")
+    @Path("{path:.+}")
     public Response get(@PathParam("path") String path) throws ClientException,
             IOException {
-        log.debug("get called for " + path);
+        log.info("get called for " + path);
         CoreSession session = ctx.getCoreSession();
-        DocumentRef ref = new PathRef(path);
+
+        DocumentRef ref = new PathRef("/" + path);
         if (!session.exists(ref)) {
-            return Response.status(404).build();
+            return Response.status(404).entity("Nothing found at " + ref).build();
         }
         DocumentModel doc = session.getDocument(ref);
         if (doc.getDeclaredFacets().contains("Folderish")) {
@@ -70,14 +71,13 @@ public class Main extends ModuleRoot {
         if (content == null) {
             return Response.ok("").build();
         } else {
-            // System.out.println(content.getString());
-            return Response.ok(content.getString()).type(content.getMimeType()).build();
+            return Response.ok(content.getStream()).type(content.getMimeType()).build();
         }
     }
 
     @DELETE
-    @Path("/{path:.+}")
-    public Response delete(@PathParam("path") String path) throws ClientException, IOException {
+    @Path("{path:.+}")
+    public Response delete(@PathParam("path") String path) throws ClientException {
         log.debug("delete called for " + path);
         CoreSession session = ctx.getCoreSession();
 
@@ -92,9 +92,9 @@ public class Main extends ModuleRoot {
     }
 
     @MKCOL
-    @Path("/{path:.+}")
+    @Path("{path:.+}")
     public Response mkcol(@PathParam("path") String path) throws ClientException, URISyntaxException {
-        System.out.println("mkcol called for " + path);
+        log.info("mkcol called for " + path);
 
         CoreSession session = ctx.getCoreSession();
 

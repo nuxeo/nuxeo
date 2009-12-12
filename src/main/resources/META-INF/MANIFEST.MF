@@ -1,11 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
-Bundle-Name: nuxeo-webdav project
-Bundle-SymbolicName: org.nuxeo.ecm.webdav;singleton:=true
+Bundle-Name: Rest demo projects for Nuxeo
+Bundle-SymbolicName: org.nuxeo.ecm.webdav;singleton=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Provide-Package: org.nuxeo.ecm.webdav
-Require-Bundle: org.nuxeo.ecm.core.api, org.nuxeo.ecm.webengine.core
+Require-Bundle: org.nuxeo.ecm.core.api
 Nuxeo-Require: org.nuxeo.runtime,
- org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.webengine.core
+ org.nuxeo.ecm.core.api

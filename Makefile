@@ -1,51 +1,32 @@
-	SERVER=nxserver
-	#SERVER=/opt/jboss/server/default
+	APPS=/Users/fermigier/apps
+	EAR=$(APPS)/nuxeo-distribution-jboss-5.3.0/server/default/deploy/nuxeo.ear
+	TOMCAT=$(APPS)/nuxeo-distribution-tomcat
+	JETTY=$(APPS)/nuxeo-distribution-jetty-5.3.0
 
-	LOGIN=Administrator
-	PASSWORD=Administrator
-	ROOT_URL=http://localhost:8080/blogs
+.PHONY: all check deploy clean start build deploy test
 
-.PHONY: check deploy clean start jar deploy-jar test classpath
-
-ALL: deploy
-
-jar:
-	mvn clean install
-
-deploy: deploy-jar deploy-lib
-
-deploy-jar: jar
-	cp target/nuxeo-webdav-*SNAPSHOT.jar $(SERVER)/bundles
-
-deploy-lib: jar
-	cp target/*.dir/[a-m]* $(SERVER)/lib
-	cp target/*.dir/[o-z]* $(SERVER)/lib
+all: build
 
 clean:
+	rm -rf .clover bin target data data-bt *.log projectFilesBackup
 	find . -name "*~" | xargs rm -f
-	find . -name "*orig" | xargs rm -f
-	mvn clean
+	#mvn $(MVN_OPT) clean
 
-#
-# Start / stop / run
-#
+superclean: clean
+	mvn dependency:purge-local-repository
 
-check: deploy
-	cd $(SERVER) ; sh nxserverctl.sh start
+deploy-jboss: build
+	cp target/nuxeo-rest-0.0.1-SNAPSHOT.jar $(EAR)/plugins
+	cp target/classes/lib/*.jar $(EAR)/lib
 
-start:
-	chmod 755 $(SERVER)/*.sh
-	rm -f $(SERVER)/log/*
-	cd $(SERVER) ; sh nxserverctl.sh start
+deploy-tomcat: build
+	cp target/nuxeo-rest-0.0.1-SNAPSHOT.jar $(TOMCAT)/nxserver/bundles
+	cp target/classes/lib/*.jar $(TOMCAT)/nxserver/lib
 
-stop:
-	cd $(SERVER) ; sh nxserverctl.sh stop ; echo "(ignore)"
+deploy-jetty: build
+	cp target/nuxeo-rest-0.0.1-SNAPSHOT.jar $(JETTY)/bundles
+	cp target/classes/lib/*.jar $(JETTY)/lib
 
-restart:
-	cd $(SERVER) ; sh nxserverctl.sh stop
-	cd $(SERVER) ; sh nxserverctl.sh start
-	sleep 1
-
-run:
-	cd $(SERVER) ; sh nxserver.sh -dev
+build:
+	mvn $(MVN_OPT) clean install -Dmaven.test.skip=true
 
