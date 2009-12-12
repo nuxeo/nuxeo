@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with webdav-jaxrs.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.nuxeo.ecm.webdav;
+package org.nuxeo.ecm.webdav.resource;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +35,6 @@ import net.java.dev.webdav.jaxrs.xml.properties.GetContentLength;
 import net.java.dev.webdav.jaxrs.xml.properties.GetContentType;
 import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
 import net.java.dev.webdav.jaxrs.xml.properties.ResourceType;
-import net.java.dev.webdav.jaxrs.xml.properties.CreationDate;
 
 import org.w3c.dom.Element;
 

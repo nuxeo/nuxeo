@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webdav;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -178,7 +179,8 @@ public class Server {
     private static void createFile(String name, String mimeType, CoreSession session) throws Exception {
         DocumentModel file = session.createDocumentModel("/workspaces", name, "File");
         file.setProperty("dublincore", "title", name);
-        FileBlob fb = new FileBlob(new File("testdocs/" + name));
+        String testDocsPath = Thread.currentThread().getContextClassLoader().getResource("testdocs").getPath();
+        FileBlob fb = new FileBlob(new File(testDocsPath + "/" + name));
         fb.setMimeType(mimeType);
         file.setProperty("file", "content", fb);
         session.createDocument(file);

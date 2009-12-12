@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webdav;
+package org.nuxeo.ecm.webdav.provider;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -31,7 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Simple error handler to give a user-readable status.
+ * Simple error handler to give back a user-readable status, and log it to the console.
  * <p>
  * This is a convenience for troubleshouting.
  */
@@ -46,9 +46,11 @@ public class ExceptionHandler implements ExceptionMapper<Exception> {
         int status = 500;
         String msg;
         if (e instanceof WebApplicationException) {
-            // TODO: only log serious errors, not 404 and the like.
-            log.error(e, e);
             status = ((WebApplicationException) e).getResponse().getStatus();
+            if (status < 400 || status >= 500) {
+                log.error("Status = " + status);
+                log.error(e, e);
+            }
             msg = "Error " + status + "\n\n" + e.getMessage() + "\n\n" + sw;
         } else {
             log.error(e, e);

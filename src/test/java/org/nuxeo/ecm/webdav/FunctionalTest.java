@@ -30,8 +30,6 @@ import com.sun.jersey.api.client.WebResource;
 
 public class FunctionalTest extends AbstractServerTest {
 
-    static final String ROOT_URI = TEST_URI + "/dav/workspaces";
-
     /**
      * Simple test using the Jersey HTTP client.
      * Only standard HTTP methods are supported, so we're only testing GET, PUT and DELETE.

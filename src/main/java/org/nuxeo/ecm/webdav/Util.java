@@ -20,7 +20,13 @@
 package org.nuxeo.ecm.webdav;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 
+import net.java.dev.webdav.jaxrs.xml.conditions.*;
+import net.java.dev.webdav.jaxrs.xml.elements.*;
+import net.java.dev.webdav.jaxrs.xml.properties.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -50,5 +56,27 @@ public class Util {
         Repository repo = rm.getDefaultRepository();
         return repo.open();
     }
+
+    // utility methods related to JAXB marshalling
+
+    public static JAXBContext getJaxbContext() throws JAXBException {
+        return JAXBContext.newInstance(new Class<?>[] {
+                // Minimal set
+                // PropFind.class, PropertyUpdate.class,
+
+                // Full set
+                ActiveLock.class, AllProp.class, CannotModifyProtectedProperty.class, Collection.class,
+                CreationDate.class, Depth.class, DisplayName.class, net.java.dev.webdav.jaxrs.xml.elements.Error.class, Exclusive.class,
+                GetContentLanguage.class, GetContentLength.class, GetContentType.class, GetETag.class,
+                GetLastModified.class, HRef.class, Include.class, Location.class, LockDiscovery.class, LockEntry.class,
+                LockInfo.class, LockRoot.class, LockScope.class, LockToken.class, LockTokenMatchesRequestUri.class,
+                LockTokenSubmitted.class, LockType.class, MultiStatus.class, NoConflictingLock.class,
+                NoExternalEntities.class, Owner.class, PreservedLiveProperties.class, Prop.class, PropertyUpdate.class,
+                PropFind.class, PropFindFiniteDepth.class, PropName.class, PropStat.class, Remove.class,
+                ResourceType.class, javax.ws.rs.core.Response.class, ResponseDescription.class, Set.class, Shared.class, Status.class,
+                SupportedLock.class, TimeOut.class, Write.class});
+    }
+
+
 
 }

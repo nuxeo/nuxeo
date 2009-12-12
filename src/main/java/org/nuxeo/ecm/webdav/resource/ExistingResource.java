@@ -19,82 +19,10 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
-import static javax.ws.rs.core.Response.Status.OK;
-import static net.java.dev.webdav.jaxrs.xml.properties.ResourceType.COLLECTION;
-
-import java.io.StringWriter;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-
-import net.java.dev.webdav.jaxrs.methods.COPY;
-
-import net.java.dev.webdav.jaxrs.methods.LOCK;
-import net.java.dev.webdav.jaxrs.methods.MKCOL;
-import net.java.dev.webdav.jaxrs.methods.MOVE;
-import net.java.dev.webdav.jaxrs.methods.PROPFIND;
-import net.java.dev.webdav.jaxrs.methods.PROPPATCH;
-import net.java.dev.webdav.jaxrs.methods.UNLOCK;
-import net.java.dev.webdav.jaxrs.xml.conditions.CannotModifyProtectedProperty;
-import net.java.dev.webdav.jaxrs.xml.conditions.LockTokenMatchesRequestUri;
-import net.java.dev.webdav.jaxrs.xml.conditions.LockTokenSubmitted;
-import net.java.dev.webdav.jaxrs.xml.conditions.NoConflictingLock;
-import net.java.dev.webdav.jaxrs.xml.conditions.NoExternalEntities;
-import net.java.dev.webdav.jaxrs.xml.conditions.PreservedLiveProperties;
-import net.java.dev.webdav.jaxrs.xml.conditions.PropFindFiniteDepth;
-import net.java.dev.webdav.jaxrs.xml.elements.ActiveLock;
-import net.java.dev.webdav.jaxrs.xml.elements.AllProp;
-import net.java.dev.webdav.jaxrs.xml.elements.Collection;
-import net.java.dev.webdav.jaxrs.xml.elements.Depth;
-import net.java.dev.webdav.jaxrs.xml.elements.Error;
-import net.java.dev.webdav.jaxrs.xml.elements.Exclusive;
-import net.java.dev.webdav.jaxrs.xml.elements.HRef;
-import net.java.dev.webdav.jaxrs.xml.elements.Include;
-import net.java.dev.webdav.jaxrs.xml.elements.Location;
-import net.java.dev.webdav.jaxrs.xml.elements.LockEntry;
-import net.java.dev.webdav.jaxrs.xml.elements.LockInfo;
-import net.java.dev.webdav.jaxrs.xml.elements.LockRoot;
-import net.java.dev.webdav.jaxrs.xml.elements.LockScope;
-import net.java.dev.webdav.jaxrs.xml.elements.LockToken;
-import net.java.dev.webdav.jaxrs.xml.elements.LockType;
-import net.java.dev.webdav.jaxrs.xml.elements.MultiStatus;
-import net.java.dev.webdav.jaxrs.xml.elements.Owner;
-import net.java.dev.webdav.jaxrs.xml.elements.Prop;
-import net.java.dev.webdav.jaxrs.xml.elements.PropFind;
-import net.java.dev.webdav.jaxrs.xml.elements.PropName;
-import net.java.dev.webdav.jaxrs.xml.elements.PropStat;
-import net.java.dev.webdav.jaxrs.xml.elements.PropertyUpdate;
-import net.java.dev.webdav.jaxrs.xml.elements.Remove;
-import net.java.dev.webdav.jaxrs.xml.elements.ResponseDescription;
-import net.java.dev.webdav.jaxrs.xml.elements.Set;
-import net.java.dev.webdav.jaxrs.xml.elements.Shared;
-import net.java.dev.webdav.jaxrs.xml.elements.Status;
-import net.java.dev.webdav.jaxrs.xml.elements.TimeOut;
-import net.java.dev.webdav.jaxrs.xml.elements.Write;
+import net.java.dev.webdav.jaxrs.methods.*;
+import net.java.dev.webdav.jaxrs.xml.elements.*;
 import net.java.dev.webdav.jaxrs.xml.properties.CreationDate;
-import net.java.dev.webdav.jaxrs.xml.properties.DisplayName;
-import net.java.dev.webdav.jaxrs.xml.properties.GetContentLanguage;
-import net.java.dev.webdav.jaxrs.xml.properties.GetContentLength;
-import net.java.dev.webdav.jaxrs.xml.properties.GetContentType;
-import net.java.dev.webdav.jaxrs.xml.properties.GetETag;
 import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
-import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
-import net.java.dev.webdav.jaxrs.xml.properties.ResourceType;
-import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -102,7 +30,30 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webdav.Constants;
-import org.nuxeo.ecm.webdav.PropStatBuilderExt;
+import org.nuxeo.ecm.webdav.resource.PropStatBuilderExt;
+import org.nuxeo.ecm.webdav.Util;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.StringWriter;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import static javax.ws.rs.core.Response.Status.OK;
+import static net.java.dev.webdav.jaxrs.xml.properties.ResourceType.COLLECTION;
 
 /**
  * An existing resource corresponds to an existing document (folder or file)
@@ -180,11 +131,14 @@ public class ExistingResource extends AbstractResource {
     // Properties
 
     @PROPFIND
+    @Consumes("*/*")
+    @Produces("application/xml")
     public Response propfind(@Context UriInfo uriInfo, @Context HttpServletRequest request,
             @HeaderParam("depth") int depth) throws Exception {
         log.info("Depth=" + depth);
-        JAXBContext jc = getJaxbContext();
+        JAXBContext jc = Util.getJaxbContext();
         Unmarshaller u = jc.createUnmarshaller();
+
         PropFind propFind;
         try {
             propFind = (PropFind) u.unmarshal(request.getInputStream());
@@ -264,7 +218,7 @@ public class ExistingResource extends AbstractResource {
 
     @PROPPATCH
     public Response proppatch(@Context UriInfo uriInfo, @Context HttpServletRequest request) throws Exception {
-        JAXBContext jc = getJaxbContext();
+        JAXBContext jc = Util.getJaxbContext();
         Unmarshaller u = jc.createUnmarshaller();
         PropertyUpdate propertyUpdate;
         try {
@@ -296,32 +250,11 @@ public class ExistingResource extends AbstractResource {
         return Response.status(500).build();
     }
 
-    // utility methods related to JAXB marshalling
-
-    private static JAXBContext getJaxbContext() throws JAXBException {
-        JAXBContext jc = JAXBContext.newInstance(new Class<?>[] {
-                // Minimal set
-                // PropFind.class, PropertyUpdate.class,
-
-                // Full set
-                ActiveLock.class, AllProp.class, CannotModifyProtectedProperty.class, Collection.class,
-                CreationDate.class, Depth.class, DisplayName.class, Error.class, Exclusive.class,
-                GetContentLanguage.class, GetContentLength.class, GetContentType.class, GetETag.class,
-                GetLastModified.class, HRef.class, Include.class, Location.class, LockDiscovery.class, LockEntry.class,
-                LockInfo.class, LockRoot.class, LockScope.class, LockToken.class, LockTokenMatchesRequestUri.class,
-                LockTokenSubmitted.class, LockType.class, MultiStatus.class, NoConflictingLock.class,
-                NoExternalEntities.class, Owner.class, PreservedLiveProperties.class, Prop.class, PropertyUpdate.class,
-                PropFind.class, PropFindFiniteDepth.class, PropName.class, PropStat.class, Remove.class,
-                ResourceType.class, Response.class, ResponseDescription.class, Set.class, Shared.class, Status.class,
-                SupportedLock.class, TimeOut.class, Write.class});
-        return jc;
-    }
-
     // For debug.
 
     private static void printXml(Object o) throws JAXBException {
         StringWriter sw = new StringWriter();
-        Marshaller marshaller = getJaxbContext().createMarshaller();
+        Marshaller marshaller = Util.getJaxbContext().createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         marshaller.marshal(o, sw);
         System.out.println(sw);

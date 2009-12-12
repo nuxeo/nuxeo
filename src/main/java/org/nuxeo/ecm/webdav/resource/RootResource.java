@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
@@ -69,6 +72,11 @@ public class RootResource {
     @Path("{path:.+}")
     public Object findResource(@PathParam("path") String path,
             @Context HttpServletRequest request) throws Exception {
+
+        // For debug. TODO: remove
+        StringWriter writer = new StringWriter();
+        BufferedReader in
+                = new BufferedReader(new InputStreamReader(request.getInputStream()));
         CoreSession session = Util.getSession(request);
 
         DocumentRef ref = new PathRef("/" + path);
