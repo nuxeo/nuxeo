@@ -25,35 +25,7 @@ import java.io.InputStreamReader;
 import org.junit.Test;
 import org.nuxeo.ecm.webdav.AbstractServerTest;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-
-public class FunctionalTest extends AbstractServerTest {
-
-    /**
-     * Simple test using the Jersey HTTP client.
-     * Only standard HTTP methods are supported, so we're only testing GET, PUT and DELETE.
-     */
-    @Test
-    public void simpleTest() {
-        Client client = Client.create();
-        WebResource r = client.resource(ROOT_URI);
-
-        String e1 = r.path("").get(String.class);
-        assertTrue(e1.length() > 0);
-
-        // Create / remove file
-
-        r.path("file").put("toto");
-
-        String e2 = r.path("file").get(String.class);
-        assertEquals("toto", e2);
-
-        r.path("file").delete();
-
-        //Response response = r.path("toto").get(Response.class);
-        //assertEquals(404, response.getStatus());
-    }
+public class LitmusTest extends AbstractServerTest {
 
     /**
      * Runs the litmus test, a third-party WebDAV compliance testing tool (must be installed separately).

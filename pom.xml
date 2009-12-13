@@ -196,6 +196,15 @@
           <target>1.6</target>
         </configuration>
       </plugin>
+      
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/LitmusTest.class</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

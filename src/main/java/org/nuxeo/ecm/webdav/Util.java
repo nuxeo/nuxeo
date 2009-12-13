@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Utility functions related to core session.
+ * Utility functions.
  */
 public class Util {
 
@@ -61,10 +61,6 @@ public class Util {
 
     public static JAXBContext getJaxbContext() throws JAXBException {
         return JAXBContext.newInstance(new Class<?>[] {
-                // Minimal set
-                // PropFind.class, PropertyUpdate.class,
-
-                // Full set
                 ActiveLock.class, AllProp.class, CannotModifyProtectedProperty.class, Collection.class,
                 CreationDate.class, Depth.class, DisplayName.class, net.java.dev.webdav.jaxrs.xml.elements.Error.class, Exclusive.class,
                 GetContentLanguage.class, GetContentLength.class, GetContentType.class, GetETag.class,

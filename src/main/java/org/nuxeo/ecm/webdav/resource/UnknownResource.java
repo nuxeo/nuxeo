@@ -51,6 +51,9 @@ public class UnknownResource extends AbstractResource {
         super(path);
     }
 
+    /**
+     * PUT over a non-existing resource: create a new file resource.
+     */
     @PUT
     public Response put(@Context HttpServletRequest request) throws Exception {
         ensureParentExists();
@@ -68,6 +71,9 @@ public class UnknownResource extends AbstractResource {
         return Response.created(new URI(request.getRequestURI())).build();
     }
 
+    /**
+     * MKCOL over a non-existing resource: create a new folder resource.
+     */
     @MKCOL
     public Response mkcol(@Context HttpServletRequest request) throws Exception {
         ensureParentExists();

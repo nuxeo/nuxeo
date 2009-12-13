@@ -23,6 +23,7 @@ import net.java.dev.webdav.jaxrs.methods.*;
 import net.java.dev.webdav.jaxrs.xml.elements.*;
 import net.java.dev.webdav.jaxrs.xml.properties.CreationDate;
 import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
+import net.java.dev.webdav.jaxrs.xml.properties.ResourceType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -134,7 +135,7 @@ public class ExistingResource extends AbstractResource {
     @Consumes("*/*")
     @Produces("application/xml")
     public Response propfind(@Context UriInfo uriInfo, @Context HttpServletRequest request,
-            @HeaderParam("depth") int depth) throws Exception {
+            @HeaderParam("depth") String depth) throws Exception {
         log.info("Depth=" + depth);
         JAXBContext jc = Util.getJaxbContext();
         Unmarshaller u = jc.createUnmarshaller();
@@ -149,6 +150,7 @@ public class ExistingResource extends AbstractResource {
         }
         Prop prop = propFind.getProp();
 
+        // Get key properties from doc
         Date lastModified = ((Calendar) doc.getPropertyValue("dc:modified")).getTime();
         Date creationDate = ((Calendar) doc.getPropertyValue("dc:created")).getTime();
 
@@ -159,9 +161,8 @@ public class ExistingResource extends AbstractResource {
                                 new Prop(new CreationDate(creationDate), new GetLastModified(lastModified), COLLECTION),
                                 new Status(OK)));
 
-        if (!doc.isFolder() || depth == 0) {
-            //printXml(new MultiStatus(response));
-            return Response.ok(new MultiStatus(response)).build();
+        if (!doc.isFolder() || depth.equals("0")) {
+            return Response.status(207).entity(new MultiStatus(response)).build();
         }
 
         List<net.java.dev.webdav.jaxrs.xml.elements.Response> responses
@@ -212,8 +213,8 @@ public class ExistingResource extends AbstractResource {
 
         MultiStatus st = new MultiStatus(responses.toArray(
                         new net.java.dev.webdav.jaxrs.xml.elements.Response[responses.size()]));
-        //printXml(st);
-        return Response.ok(st).build();
+        printXml(st);
+        return Response.status(207).entity(st).build();
     }
 
     @PROPPATCH
@@ -250,7 +251,7 @@ public class ExistingResource extends AbstractResource {
         return Response.status(500).build();
     }
 
-    // For debug.
+    // For debugging.
 
     private static void printXml(Object o) throws JAXBException {
         StringWriter sw = new StringWriter();

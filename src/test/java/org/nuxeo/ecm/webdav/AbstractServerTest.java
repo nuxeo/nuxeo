@@ -40,7 +40,7 @@ public abstract class AbstractServerTest extends Assert {
         TEST_URI = "http://localhost:" + port;
     }
 
-    static final String ROOT_URI = TEST_URI + "/dav/workspaces";
+    static final String ROOT_URI = TEST_URI + "/dav/workspaces/";
 
     @BeforeClass
     public static void startServer() throws Exception {

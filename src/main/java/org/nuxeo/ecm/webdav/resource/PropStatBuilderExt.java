@@ -48,8 +48,8 @@ public class PropStatBuilderExt {
         names = new HashSet<String>();
     }
 
-    public PropStatBuilderExt creationDate(Date dateTime){
-        if(!names.contains("creationdate")){
+    public PropStatBuilderExt creationDate(Date dateTime) {
+        if (!names.contains("creationdate")) {
             CreationDate create = new CreationDate(dateTime);
             properties.add(create);
             names.add("creationdate");
@@ -58,8 +58,8 @@ public class PropStatBuilderExt {
         return this;
     }
 
-    public PropStatBuilderExt lastModified(Date dateTime){
-        if(!names.contains("getlastmodified")){
+    public PropStatBuilderExt lastModified(Date dateTime) {
+        if (!names.contains("getlastmodified")) {
             GetLastModified lastModified = new GetLastModified(dateTime);
             properties.add(lastModified);
             names.add("getlastmodified");
@@ -68,8 +68,8 @@ public class PropStatBuilderExt {
         return this;
     }
 
-    public PropStatBuilderExt contentLength(long length){
-        if(!names.contains("getcontentlength")){
+    public PropStatBuilderExt contentLength(long length) {
+        if (!names.contains("getcontentlength")) {
             GetContentLength contentLength = new GetContentLength(length);
             properties.add(contentLength);
             names.add("getcontentlength");
@@ -78,8 +78,8 @@ public class PropStatBuilderExt {
         return this;
     }
 
-    public PropStatBuilderExt isResource(long length, String mime){
-        if(!names.contains("getcontenttype")){
+    public PropStatBuilderExt isResource(long length, String mime) {
+        if (!names.contains("getcontenttype")) {
             GetContentType type = new GetContentType(mime);
             properties.add(type);
             names.add("getcontenttype");
@@ -91,8 +91,8 @@ public class PropStatBuilderExt {
         return this;
     }
 
-    public PropStatBuilderExt isCollection(){
-        if(!names.contains("resourcetype")){
+    public PropStatBuilderExt isCollection() {
+        if (!names.contains("resourcetype")) {
             ResourceType type = ResourceType.COLLECTION;
             properties.add(type);
             names.add("resourcetype");
@@ -101,8 +101,8 @@ public class PropStatBuilderExt {
         return this;
     }
 
-    public PropStatBuilderExt displayName(String displayName){
-        if(!names.contains("displayname")){
+    public PropStatBuilderExt displayName(String displayName) {
+        if (!names.contains("displayname")) {
             DisplayName name = new DisplayName(displayName);
             properties.add(name);
             names.add("displayname");
@@ -131,25 +131,25 @@ public class PropStatBuilderExt {
 //        return this;
 //    }
 
-    public PropStat notFound(Prop allprops){
+    public PropStat notFound(Prop allprops) {
         boolean empty = true;
         List<Object> notFound = new ArrayList<Object>();
-        for(Object prop : allprops.getProperties()){
-            if(prop instanceof Element){
-                Element element = (Element)prop;
+        for (Object prop : allprops.getProperties()) {
+            if (prop instanceof Element) {
+                Element element = (Element) prop;
                 String name = element.getLocalName();
-                if(!names.contains(name)){
-                    System.out.println("notFound: "+name);
+                if (!names.contains(name)) {
+                    System.out.println("notFound: " + name);
                     notFound.add(prop);
                     empty = false;
                 }
-            }else{
-                System.out.println("notfound-object - transformed into: "+prop.getClass().getSimpleName());
+            } else {
+                System.out.println("notfound-object - transformed into: " + prop.getClass().getSimpleName());
             }
         }
 
         PropStat stat = null;
-        if(!empty){
+        if (!empty) {
             Object[] objects = notFound.toArray(new Object[properties.size()]);
             Prop prop = new Prop(objects);
             stat = new PropStat(prop, new net.java.dev.webdav.jaxrs.xml.elements.Status(Status.NOT_FOUND));
@@ -158,13 +158,13 @@ public class PropStatBuilderExt {
         return stat;
     }
 
-    public PropStatBuilderExt status(Status status){
+    public PropStatBuilderExt status(Status status) {
         this.status = status;
 
         return this;
     }
 
-    public PropStat build(){
+    public PropStat build() {
         Object[] objects = properties.toArray(new Object[properties.size()]);
         Prop prop = new Prop(objects);
         PropStat stat = new PropStat(prop, new net.java.dev.webdav.jaxrs.xml.elements.Status(status));

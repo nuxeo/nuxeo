@@ -20,13 +20,23 @@
 package org.nuxeo.ecm.webdav.resource;
 
 import java.net.URI;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
+import static javax.ws.rs.core.Response.Status.OK;
+import net.java.dev.webdav.jaxrs.methods.PROPFIND;
+import net.java.dev.webdav.jaxrs.xml.elements.*;
+import net.java.dev.webdav.jaxrs.xml.properties.CreationDate;
+import net.java.dev.webdav.jaxrs.xml.properties.GetContentLength;
+import net.java.dev.webdav.jaxrs.xml.properties.GetContentType;
+import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
@@ -54,13 +64,32 @@ public class FileResource extends ExistingResource {
         content.setMimeType(request.getContentType());
         content.setFilename(name);
 
-        DocumentModel newdoc = session.createDocumentModel(parentPath, name, "File");
-
-        newdoc.getProperty("file:content").setValue(content);
-        session.createDocument(newdoc);
+        doc.getProperty("file:content").setValue(content);
+        session.saveDocument(doc);
         session.save();
 
         return Response.created(new URI(path)).build();
     }
+
+    @PROPFIND
+	public Response propfind(@Context UriInfo uriInfo) throws Exception {
+
+        Date lastModified = ((Calendar) doc.getPropertyValue("dc:modified")).getTime();
+        Date creationDate = ((Calendar) doc.getPropertyValue("dc:created")).getTime();
+
+		net.java.dev.webdav.jaxrs.xml.elements.Response response;
+        response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
+                new HRef(uriInfo.getRequestUri()),
+                null,
+                null,
+                null,
+                new PropStat(new Prop(
+                        new CreationDate(lastModified), new GetLastModified(lastModified),
+                        new GetContentType("application/octet-stream"), new GetContentLength(0 /* FIXME */)),
+                        new Status(OK)));
+
+		MultiStatus st = new MultiStatus(response);
+		return Response.ok(st).build();
+	}
 
 }
