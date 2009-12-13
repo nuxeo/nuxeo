@@ -66,7 +66,7 @@ import org.nuxeo.ecm.directory.sql.repository.Update;
 
 /**
  * This class represents a session against an SQLDirectory.
- * 
+ *
  * @author glefter@nuxeo.com
  */
 public class SQLSession extends BaseSession implements EntrySource {
@@ -247,7 +247,8 @@ public class SQLSession extends BaseSession implements EntrySource {
 
         try {
             PreparedStatement ps = sqlConnection.prepareStatement(sql);
-            ps.setString(1, id);
+            setFieldValue(ps, 1, idField, id);
+
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
                 return null;
@@ -339,7 +340,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                             dataModel.getData(fieldName));
                     index++;
                 }
-                ps.setString(index, docModel.getId());
+                setFieldValue(ps, index, idField, docModel.getId());
                 ps.execute();
             } catch (SQLException e) {
                 throw new DirectoryException("updateEntry failed for "
@@ -396,7 +397,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             delete.setWhere(whereString);
             String sql = delete.getStatement();
             PreparedStatement ps = sqlConnection.prepareStatement(sql);
-            ps.setString(1, id);
+            setFieldValue(ps, 1, idField, id);
             ps.execute();
         } catch (SQLException e) {
             throw new DirectoryException("deleteEntry failed", e);
@@ -444,7 +445,11 @@ public class SQLSession extends BaseSession implements EntrySource {
             delete.setWhere(whereClause.toString());
             PreparedStatement ps = sqlConnection.prepareStatement(delete.getStatement());
             for (int i = 0; i < values.size(); i++) {
-                ps.setString(1 + i, values.get(i));
+                if (i==0) {
+                    setFieldValue(ps, 1, idField, values.get(i));
+                } else {
+                    ps.setString(1 + i, values.get(i));
+                }
             }
             ps.execute();
         } catch (SQLException e) {
@@ -676,7 +681,16 @@ public class SQLSession extends BaseSession implements EntrySource {
             String typeName = field.getType().getName();
             if ("string".equals(typeName)) {
                 if (value != null) {
-                    ps.setString(index, (String) value);
+                    if (fieldName.equals(idField)) {
+                       if ((table.getPrimaryColumn().getSqlType()== Types.BIGINT) || (table.getPrimaryColumn().getSqlType()== Types.INTEGER) || (table.getPrimaryColumn().getSqlType()== Types.SMALLINT)){
+                             ps.setInt(index, Integer.parseInt((String)value));
+                       } else {
+                             ps.setString(index, (String)value);
+                       }
+                    }
+                    else {
+                        ps.setString(index, (String) value);
+                    }
                 } else {
                     ps.setNull(index, Types.VARCHAR);
                 }
@@ -814,7 +828,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         String sql = select.getStatement();
         try {
             PreparedStatement ps = sqlConnection.prepareStatement(sql);
-            ps.setString(1, id);
+            setFieldValue(ps, 1, idField, id);
             ResultSet rs = ps.executeQuery();
             return rs.next();
         } catch (SQLException e) {
@@ -826,7 +840,7 @@ public class SQLSession extends BaseSession implements EntrySource {
      * Public getter to allow custom {@link Reference} implementation to access
      * the current connection even if it lives in a separate java package,
      * typically: com.company.custom.nuxeo.project.MyCustomReference
-     * 
+     *
      * @return the current {@link Connection} instance
      */
     public Connection getSqlConnection() {
