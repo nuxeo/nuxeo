@@ -88,7 +88,9 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
             httpRequest.setAttribute(NXAuthConstants.LOGIN_ERROR,
                     NXAuthConstants.ERROR_USERNAME_MISSING);
         }
-
+        if (userName==null  || userName.length() == 0 ) {
+            return null;
+        }
         return new UserIdentificationInfo(userName, password);
     }
 
