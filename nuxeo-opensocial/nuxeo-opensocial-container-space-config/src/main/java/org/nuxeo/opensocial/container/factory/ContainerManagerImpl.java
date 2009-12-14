@@ -197,6 +197,14 @@ public class ContainerManagerImpl implements ContainerManager {
                 .equals(getId());
           }
 
+          public int getHeight() {
+            return 0;
+          }
+
+          public String getHtmlContent() {
+            return null;
+          }
+
         };
 
         Gadget createGadget = service.createGadget(g, service.getSpaceFromId(

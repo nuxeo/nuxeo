@@ -27,5 +27,6 @@
   <xs:element name="placeID" type="xs:string"></xs:element>
   <xs:element name="position" type="xs:int"></xs:element>
   <xs:element name="collapsed" type="xs:boolean"></xs:element>
-
+  <xs:element name="height" type="xs:int"></xs:element>
+  <xs:element name="htmlContent" type="xs:string"></xs:element>
 </xs:schema>

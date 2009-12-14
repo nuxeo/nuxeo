@@ -90,9 +90,10 @@ public class ContainerEntryPoint implements EntryPoint {
         panel.setBorder(false);
         panel.setId(CONTAINER_PANEL_ID);
         panel.setLayout(new FitLayout());
-
-        RootPanel.get(GWT_CONTAINER_ID)
-            .add(panel);
+        RootPanel rootPanel = RootPanel.get(GWT_CONTAINER_ID);
+        rootPanel.setHeight("100%");
+        panel.setHeight("100%");
+        rootPanel.add(panel);
         portal = new ContainerPortal(container, panel);
         panel.setWidth(windowWidth);
         panel.setHeight("100%");

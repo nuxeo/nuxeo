@@ -303,7 +303,7 @@ public class DropZone extends PortalDropZone {
     ArrayList<GadgetBean> beans = getOrderingAndUpdatingBeans(dragCol, bean);
     beans.addAll(getOrderingAndUpdatingBeans(dropCol, bean));
     ContainerEntryPoint.getService()
-        .saveGadgetPosition(beans, ContainerEntryPoint.getGwtParams(),
+        .saveGadgetsCollection(beans, ContainerEntryPoint.getGwtParams(),
             new SaveGadgetAsyncCallback());
   }
 

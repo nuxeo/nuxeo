@@ -20,6 +20,7 @@ package org.nuxeo.opensocial.container.service;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -35,9 +36,10 @@ import org.nuxeo.opensocial.container.factory.api.GadgetManager;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+
 /**
-* @author Guillaume Cusnieux
-*/
+ * @author Guillaume Cusnieux
+ */
 public class ContainerServiceImpl extends RemoteServiceServlet implements
     ContainerService {
 
@@ -46,7 +48,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
 
   /**
    * Retrieve a specific container
-   *
+   * 
    * @param gwtParams
    * @return Container
    * @throws ContainerServiceException
@@ -65,7 +67,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
 
   /**
    * Save preferences of gadget with form parameter
-   *
+   * 
    * @param gadget
    * @param form
    *          : new preferences
@@ -89,22 +91,22 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
   }
 
   /**
-   * Save gadget position
-   *
+   * Save collection of gadgets
+   * 
    * @param beans
    * @param gwtParams
    * @throws ContainerServiceException
    */
-  public GadgetBean saveGadgetPosition(ArrayList<GadgetBean> beans,
+  public GadgetBean saveGadgetsCollection(List<GadgetBean> beans,
       Map<String, String> gwtParams) throws ContainerServiceException {
     try {
       GadgetManager factory = Framework.getService(FactoryManager.class)
           .getGadgetFactory();
       for (GadgetBean gadget : beans) {
-        factory.savePosition(gadget, gwtParams);
+        factory.saveGadget(gadget, gwtParams);
       }
     } catch (ClientException e) {
-      log.error("savePosition error " + e, e);
+      log.error("save error " + e, e);
       throw new ContainerServiceException(e.getMessage(), e);
     } catch (Exception e) {
       log.error(e);
@@ -114,7 +116,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
 
   /**
    * Remove gadget
-   *
+   * 
    * @param gadget
    * @param gwtParams
    * @return GadgetBean removed
@@ -136,32 +138,8 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
   }
 
   /**
-   * Save collapsed
-   *
-   * @param gadget
-   * @param gwtParams
-   * @return Gadget bean saved
-   * @throws ContainerServiceException
-   */
-  public GadgetBean saveGadgetCollapsed(GadgetBean gadget,
-      Map<String, String> gwtParams) throws ContainerServiceException {
-    try {
-      Framework.getService(FactoryManager.class)
-          .getGadgetFactory()
-          .saveCollapsed(gadget, gwtParams);
-    } catch (ClientException e) {
-      log.error(e.getMessage(), e);
-      throw new ContainerServiceException(e.getMessage(), e);
-    } catch (Exception e) {
-      log.error(e.getMessage(), e);
-    }
-
-    return gadget;
-  }
-
-  /**
    * Get collection of gadget name sorted by category
-   *
+   * 
    * @param gwtParams
    * @return key is category - value is list of gadget name
    * @throws ContainerServiceException
@@ -180,7 +158,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
 
   /**
    * Add gadget
-   *
+   * 
    * @param gadgetName
    * @param gwtParams
    * @return GadgetBean added
@@ -203,17 +181,17 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
    */
 
   public static String decode(String string) {
-      try {
-          string = new URI('?' + string).getQuery();
-      } catch (Exception e) {
-          // ignore, use unescaped stuff
-      }
-      return string;
+    try {
+      string = new URI('?' + string).getQuery();
+    } catch (Exception e) {
+      // ignore, use unescaped stuff
+    }
+    return string;
   }
 
   /**
    * Get a map of preferences
-   *
+   * 
    * @param form
    *          : html form result (&name=result&...)
    * @return Map of parameters key : name, value : result
@@ -238,7 +216,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
 
   /**
    * Save layout of container
-   *
+   * 
    * @param gwtParams
    * @param layoutName
    * @return
@@ -255,4 +233,21 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
       throw new ContainerServiceException(e.getMessage(), e);
     }
   }
+
+  public GadgetBean saveGadget(GadgetBean gadget, Map<String, String> gwtParams)
+      throws ContainerServiceException {
+    try {
+      Framework.getService(FactoryManager.class)
+          .getGadgetFactory()
+          .saveGadget(gadget, gwtParams);
+    } catch (ClientException e) {
+      log.error(e.getMessage(), e);
+      throw new ContainerServiceException(e.getMessage(), e);
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+    }
+
+    return gadget;
+  }
+
 }

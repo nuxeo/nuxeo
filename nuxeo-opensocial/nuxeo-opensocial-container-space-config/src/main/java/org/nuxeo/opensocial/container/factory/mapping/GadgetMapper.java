@@ -59,6 +59,8 @@ public class GadgetMapper extends GadgetBean implements Gadget {
   private boolean permission;
   private String name;
   private String spaceName;
+  private int height;
+  private String htmlContent;
 
   /**
    * Constructor for convert GadgetBean to Gadget
@@ -78,6 +80,9 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     this.preferences = createPreferences(bean);
     this.defaultPrefs = bean.getDefaultPrefs();
     this.userPrefs = bean.getUserPrefs();
+    log.info("set height of bean is " + bean.getHeight());
+    this.height = bean.getHeight();
+    this.htmlContent = bean.getHtmlContent();
     this.viewer = bean.getViewer();
     this.shindigId = bean.getShindigId();
     this.permission = bean.getPermission();
@@ -112,6 +117,8 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     this.viewer = viewer;
     this.shindigId = shindigId;
     this.permission = permission;
+    this.height = gadget.getHeight();
+    this.htmlContent = gadget.getHtmlContent();
     createGadgetBean();
   }
 
@@ -247,7 +254,8 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     this.defaultPrefs = PreferenceManager.getDefaultPreferences(this);
     updateTitleInPreference();
     bean = new GadgetBean(shindigId, ref, title, viewer, defaultPrefs,
-        userPrefs, permission, collapsed, name, spaceName, createGadgetViews());
+        userPrefs, permission, collapsed, name, spaceName, createGadgetViews(),
+        htmlContent, height);
     this.renderUrl = updateRenderUrl();
     bean.setRenderUrl(renderUrl);
     bean.setPosition(this.position);
@@ -302,6 +310,14 @@ public class GadgetMapper extends GadgetBean implements Gadget {
 
   public void setName(String name) {
     this.name = spaceName;
+  }
+
+  public int getHeight() {
+    return height;
+  }
+
+  public String getHtmlContent() {
+    return htmlContent;
   }
 
 }
