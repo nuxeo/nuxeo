@@ -149,6 +149,10 @@
       <artifact group="com.google.collections" name="google-collections" />
       <artifact group="com.google.gwt" name="gwt-servlet" />
       <artifact group="backport-util-concurrent" name="backport-util-concurrent" />
+
+      <!-- Remote publication lib -->
+      <artifact group="org.apache.httpcomponents" name="httpclient" />
+      <artifact group="org.apache.httpcomponents" name="httpcore" />
     </artifacts>
   </artifactSet>
 
