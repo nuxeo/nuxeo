@@ -18,7 +18,7 @@
 package org.nuxeo.ecm.spaces.api.exceptions;
 
 
-public class UniversNotFoundException extends SpaceElementNotFoundException {
+public class UniversNotFoundException extends Exception {
 
   /**
    *

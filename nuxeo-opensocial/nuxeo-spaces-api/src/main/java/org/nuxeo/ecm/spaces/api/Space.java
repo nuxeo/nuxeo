@@ -17,8 +17,10 @@
 
 package org.nuxeo.ecm.spaces.api;
 
-import java.util.Calendar;
+import java.net.URL;
 import java.util.List;
+
+import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Gadget container corresponding to a sub-part of an universe . A
@@ -29,93 +31,87 @@ import java.util.List;
  * SpaceManager service = Framework.getService(SpaceManager.class)<br/>
  * List&lt;Space&gt; gadgets = service.getGadgetsForSpace(space,coreSession);
  */
-public interface Space {
+public interface Space extends List<Gadget> {
 
   /**
    * Unique identifier of a space instance
-   * 
+   *
    * @return
    */
   String getId();
 
   /**
    * Name of the space
-   * 
+   *
    * @return
    */
   String getName();
 
   /**
    * Space theme
-   * 
+   *
    * @return
    */
   String getTheme();
 
   /**
    * Title of the space
-   * 
+   *
    * @return
    */
   String getTitle();
 
   /**
    * description of the space
-   * 
+   *
    * @return
    */
   String getDescription();
 
   /**
    * A key for displaying elements in this space
-   * 
+   *
    * @return
    */
   String getLayout();
 
+
+  String setLayout(String name);
+
   /**
    * Family/category of this space
-   * 
+   *
    * @return
    */
   String getCategory();
 
   /**
    * Name of the creator of this space
-   * 
+   *
    * @return
    */
   String getOwner();
 
   /**
-   * Date publication of this space
-   * 
+   * Name of the viewer of this space
    * @return
    */
-  Calendar getDatePublication();
+  String getViewer();
 
   /**
-   * versionnable property
-   * 
+   * Create and adds the gadget to the space
+   * @param g
    * @return
    */
-  boolean isVersionnable();
+  Gadget createGadget(String gadgetName) throws ClientException;
 
-  /**
-   * current version property
-   * 
-   * @return
-   */
-  boolean isCurrentVersion();
+  Gadget createGadget(URL gadgetDefUrl)  throws ClientException;
 
-  List<Space> getVersions();
+  void updateGadget(Gadget gagdet) throws ClientException;
 
-  /**
-   * for comparison
-   * 
-   * @param space
-   * @return
-   */
-  boolean isEqualTo(Space space);
+  boolean hasPermission(String permissionName);
+
+
+
 
 }

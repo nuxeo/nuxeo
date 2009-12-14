@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.gadgets.spec.View;
 import org.nuxeo.ecm.spaces.api.Gadget;
+import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 import org.nuxeo.opensocial.container.client.bean.GadgetPosition;
 import org.nuxeo.opensocial.container.client.bean.GadgetView;
@@ -62,7 +63,7 @@ public class GadgetMapper extends GadgetBean implements Gadget {
 
   /**
    * Constructor for convert GadgetBean to Gadget
-   * 
+   *
    * @param bean
    */
   public GadgetMapper(GadgetBean bean) {
@@ -94,7 +95,7 @@ public class GadgetMapper extends GadgetBean implements Gadget {
 
   /**
    * Constructor for convert Gadget to GadgetBean
-   * 
+   *
    * @param bean
    */
   public GadgetMapper(Gadget gadget, String viewer, int shindigId,
@@ -282,7 +283,7 @@ public class GadgetMapper extends GadgetBean implements Gadget {
   /**
    * Use this method for get GadgetBean in GwtContainer because GadgetMapper
    * isn't serializabel
-   * 
+   *
    * @return GadgetBean
    */
   public GadgetBean getGadgetBean() {
@@ -303,5 +304,10 @@ public class GadgetMapper extends GadgetBean implements Gadget {
   public void setName(String name) {
     this.name = spaceName;
   }
+
+public Space getParent() {
+    // TODO Auto-generated method stub
+    return null;
+}
 
 }

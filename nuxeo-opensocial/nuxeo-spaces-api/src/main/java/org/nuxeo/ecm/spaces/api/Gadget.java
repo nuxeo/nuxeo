@@ -49,13 +49,6 @@ public interface Gadget {
   String getOwner();
 
   /**
-   * use category
-   * @return
-   */
-  //@Deprecated
-  //String getType();
-
-  /**
    * category of a gadget
    * @return
    */
@@ -87,4 +80,6 @@ public interface Gadget {
 
 
   public boolean isEqualTo(Gadget gadget);
+
+  Space getParent();
 }

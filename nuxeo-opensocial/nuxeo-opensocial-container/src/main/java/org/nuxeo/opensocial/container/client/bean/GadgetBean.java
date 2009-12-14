@@ -24,7 +24,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * GadgetBean
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {

@@ -18,26 +18,22 @@
 package org.nuxeo.opensocial.container.factory;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
-import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
-import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
 import org.nuxeo.opensocial.container.client.bean.Container;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 import org.nuxeo.opensocial.container.factory.api.ContainerManager;
 import org.nuxeo.opensocial.container.factory.mapping.GadgetMapper;
-import org.nuxeo.opensocial.container.factory.utils.CoreSessionHelper;
-import org.nuxeo.opensocial.container.factory.utils.PermissionHelper;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -61,38 +57,28 @@ public class ContainerManagerImpl implements ContainerManager {
 
   private int shindigId = 0;
 
-  public Container createContainer(Map<String, String> containerParams)
-      throws ClientException {
-    String spaceId = getParamValue(DOC_REF, containerParams, true, null);
-    String repositoryName = getParamValue(REPO_NAME, containerParams, false,
-        CoreSessionHelper.DEFAULT_REPOSITORY_NAME);
-    CoreSession session = getCoreSession(containerParams);
-    if (session != null) {
-      try {
-        return createContainer(Framework.getService(SpaceManager.class)
-            .getSpaceFromId(spaceId, session), session);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    } else {
-      log.error("Unable to get core session from repository name '"
-          + repositoryName + "'.");
-    }
-    return null;
+
+  protected SpaceManager spaceManager() throws Exception {
+      return Framework.getService(SpaceManager.class);
   }
 
-  protected CoreSession getCoreSession(Map<String, String> containerParams)
+  public Container createContainer(Map<String, String> containerParams)
       throws ClientException {
     try {
-      return CoreSessionHelper.getCoreSession(containerParams.get(REPO_NAME));
+        String spaceId = getParamValue(DOC_REF, containerParams, true, null);
+        Space space = spaceManager().getSpace(spaceId);
+        return createContainer(space);
     } catch (Exception e) {
-      e.printStackTrace();
-      throw new ClientException();
+        // TODO Auto-generated catch block
+        throw new ClientException("Space not found");
     }
+
+
+
   }
 
   /**
-   * 
+   *
    * @param key
    * @param containerParams
    * @param required
@@ -133,7 +119,7 @@ public class ContainerManagerImpl implements ContainerManager {
 
   /**
    * Add Gadget to Container
-   * 
+   *
    * @param gadgetName
    *          : Name of gadget
    * @param gwtParams
@@ -144,77 +130,21 @@ public class ContainerManagerImpl implements ContainerManager {
       Map<String, String> gwtParams) throws ClientException {
 
     String spaceId = getParamValue(DOC_REF, gwtParams, true, null);
-    CoreSession session = getCoreSession(gwtParams);
-    if (session != null) {
-
-      SpaceManager service;
-      try {
-        service = Framework.getService(SpaceManager.class);
-        Gadget g = new Gadget() {
-
-          public String getCategory() {
-            return null;
-          }
-
-          public String getDescription() {
-            return null;
-          }
-
-          public String getId() {
-            return gadgetName;
-          }
-
-          public String getName() {
-            return gadgetName;
-          }
-
-          public String getOwner() {
-            return null;
-          }
-
-          public String getPlaceID() {
-            return null;
-          }
-
-          public int getPosition() {
-            return 0;
-          }
-
-          public Map<String, String> getPreferences() {
-            return null;
-          }
-
-          public String getTitle() {
-            return gadgetName;
-          }
-
-          public boolean isCollapsed() {
-            return false;
-          }
-
-          public boolean isEqualTo(Gadget gadget) {
-            return gadget.getId() != null && gadget.getId()
-                .equals(getId());
-          }
-
-        };
-
-        Gadget createGadget = service.createGadget(g, service.getSpaceFromId(
-            spaceId, session), session);
-
-        return new GadgetMapper(createGadget, session.getPrincipal()
-            .getName(), shindigId++,
-            PermissionHelper.canWrite(spaceId, session)).getGadgetBean();
-      } catch (Exception e) {
-        throw new ClientException();
-      }
+    Space space;
+    try {
+        space = spaceManager().getSpace(spaceId);
+    } catch (Exception e) {
+        throw new ClientException("Space not found");
     }
-    return null;
+    Gadget createGadget = space.createGadget(gadgetName);
+    return new GadgetMapper(createGadget, space.getViewer(), shindigId++,
+            space.hasPermission("Write")).getGadgetBean();
+
   }
 
   /**
    * Get a list of gadget
-   * 
+   *
    * @return Map of gadgets, key is category and value is list of gadget name
    */
   public Map<String, ArrayList<String>> getGadgetList() throws ClientException {
@@ -229,24 +159,25 @@ public class ContainerManagerImpl implements ContainerManager {
   public Container saveLayout(Map<String, String> containerParams,
       final String layout) throws ClientException {
 
-    CoreSession session = getCoreSession(containerParams);
-    if (session != null) {
       String spaceId = getParamValue(DOC_REF, containerParams, true, null);
-      Space space = createUpdateSpace(spaceId, session, layout);
-      return createContainer(space, session);
-    }
-    return null;
-  }
+      Space space;
+    try {
+        space = spaceManager().getSpace(spaceId);
 
-  private Container createContainer(Space space, CoreSession session) {
+    } catch (Exception e) {
+        throw new ClientException("Space not found");
+    }
+      space.setLayout(layout);
+      return createContainer(space);
+    }
+
+  private Container createContainer(Space space) {
     try {
       if (space != null) {
         ArrayList<GadgetBean> gadgets = new ArrayList<GadgetBean>();
-        Boolean perm = getPermission(space, session);
-        for (Gadget g : Framework.getService(SpaceManager.class)
-            .getGadgetsForSpace(space, session)) {
-          gadgets.add(new GadgetMapper(g, session.getPrincipal()
-              .getName(), shindigId++, perm).getGadgetBean());
+        Boolean perm = space.hasPermission("Write");
+        for (Gadget g : space) {
+          gadgets.add(new GadgetMapper(g, space.getViewer(), shindigId++, perm).getGadgetBean());
         }
         Collections.sort(gadgets);
         String layout = space.getLayout();
@@ -256,8 +187,6 @@ public class ContainerManagerImpl implements ContainerManager {
         return new Container(gadgets, getStructure(space), layout, perm,
             space.getId());
       }
-    } catch (SpaceException e) {
-      e.printStackTrace();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -265,85 +194,5 @@ public class ContainerManagerImpl implements ContainerManager {
     return null;
   }
 
-  private boolean getPermission(Space space, CoreSession session) {
-    if (!space.isVersionnable())
-      return PermissionHelper.canWrite(space.getId(), session);
-    else
-      return PermissionHelper.canWrite(space.getId(), session)
-          && !space.isCurrentVersion();
-  }
-
-  private Space createUpdateSpace(String spaceId, CoreSession session,
-      final String layout) {
-    try {
-      final Space space = Framework.getService(SpaceManager.class)
-          .getSpaceFromId(spaceId, session);
-      Space spaceUpdate = new Space() {
-
-        public String getCategory() {
-          return space.getCategory();
-        }
-
-        public String getDescription() {
-          return space.getDescription();
-        }
-
-        public String getId() {
-          return space.getId();
-        }
-
-        public String getLayout() {
-          return layout;
-        }
-
-        public String getName() {
-          return space.getName();
-        }
-
-        public String getOwner() {
-          return space.getOwner();
-        }
-
-        public String getTheme() {
-          return space.getTheme();
-        }
-
-        public String getTitle() {
-          return space.getTitle();
-        }
-
-        public boolean isEqualTo(Space space) {
-          return space.isEqualTo(space);
-        }
-
-        public boolean isVersionnable() {
-          return space.isVersionnable();
-        }
-
-        public Calendar getDatePublication() {
-          return space.getDatePublication();
-        }
-
-        public List<Space> getVersions() {
-          return space.getVersions();
-        }
-
-        public boolean isCurrentVersion() {
-          return space.isCurrentVersion();
-        }
-
-      };
-      return Framework.getService(SpaceManager.class)
-          .updateSpace(spaceUpdate, session);
-
-    } catch (SpaceNotFoundException e) {
-      log.error(e);
-    } catch (SpaceException e) {
-      log.error(e);
-    } catch (Exception e) {
-      log.error(e);
-    }
-    return null;
-  }
 
 }
