@@ -104,6 +104,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-storage-sql-ra</artifactId>
+        <version>${nuxeo.core.version}</version>
+        <type>jar</type> <!-- a dependency on the JAR is also needed -->
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
