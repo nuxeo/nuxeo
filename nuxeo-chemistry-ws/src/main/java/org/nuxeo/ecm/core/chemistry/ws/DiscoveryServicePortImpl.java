@@ -35,11 +35,13 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.Holder;
 
 import org.apache.chemistry.Connection;
+import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Paging;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyType;
+import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.ws.CmisException;
 import org.apache.chemistry.ws.CmisExtensionType;
@@ -56,6 +58,7 @@ import org.apache.chemistry.ws.CmisPropertyInteger;
 import org.apache.chemistry.ws.CmisPropertyString;
 import org.apache.chemistry.ws.CmisPropertyUri;
 import org.apache.chemistry.ws.DiscoveryServicePort;
+import org.apache.chemistry.ws.EnumIncludeRelationships;
 import org.apache.chemistry.ws.Query;
 import org.apache.chemistry.ws.QueryResponse;
 import org.nuxeo.ecm.core.chemistry.impl.NuxeoRepository;
@@ -83,9 +86,11 @@ public class DiscoveryServicePortImpl implements DiscoveryServicePort {
         // parameters
         String repositoryName = parameters.getRepositoryId();
         String statement = parameters.getStatement();
+
         JAXBElement<Boolean> searchAllVersionsB = parameters.getSearchAllVersions();
         boolean searchAllVersions = searchAllVersionsB == null ? false
                 : searchAllVersionsB.getValue().booleanValue();
+
         JAXBElement<BigInteger> maxItemsBI = parameters.getMaxItems();
         int maxItems = maxItemsBI == null
                 || maxItemsBI.getValue().intValue() < 0 ? 0
@@ -94,9 +99,18 @@ public class DiscoveryServicePortImpl implements DiscoveryServicePort {
         int skipCount = skipCountBI == null
                 || skipCountBI.getValue().intValue() < 0 ? 0
                 : skipCountBI.getValue().intValue();
-        JAXBElement<Boolean> includeAllowableActionsB = parameters.getIncludeAllowableActions();
-        boolean includeAllowableActions = includeAllowableActionsB == null ? false
-                : includeAllowableActionsB.getValue().booleanValue();
+        Paging paging = new Paging(maxItems, skipCount);
+
+        JAXBElement<Boolean> includeAllowableActions = parameters.getIncludeAllowableActions();
+        boolean allowableActions = includeAllowableActions == null ? false
+                : includeAllowableActions.getValue().booleanValue();
+        JAXBElement<EnumIncludeRelationships> includeRelationships = parameters.getIncludeRelationships();
+        RelationshipDirection relationships = RelationshipDirection.fromInclusion(includeRelationships.getValue().name());
+        JAXBElement<String> renditionFilter = parameters.getRenditionFilter();
+        String renditions = renditionFilter == null ? null
+                : renditionFilter.getValue();
+        Inclusion inclusion = new Inclusion(null, renditions, relationships,
+                allowableActions, false, false);
 
         // response
         QueryResponse response = new QueryResponse();
@@ -108,12 +122,8 @@ public class DiscoveryServicePortImpl implements DiscoveryServicePort {
 
         Connection connection = repository.getConnection(null);
         try {
-            boolean includeRelationships = false; // TODO
-            boolean includeRenditions = false; // TODO
             ListPage<ObjectEntry> res = connection.getSPI().query(statement,
-                    searchAllVersions, includeAllowableActions,
-                    includeRelationships, includeRenditions,
-                    new Paging(maxItems, skipCount));
+                    searchAllVersions, inclusion, paging);
             objects.setHasMoreItems(res.getHasMoreItems());
             objects.setNumItems(BigInteger.valueOf(res.getNumItems()));
             List<CmisObjectType> objectList = objects.getObjects();

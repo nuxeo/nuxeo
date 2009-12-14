@@ -39,6 +39,7 @@ import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
@@ -47,7 +48,6 @@ import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
-import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Rendition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
@@ -218,22 +218,19 @@ public class NuxeoConnection implements Connection, SPI {
      */
 
     public List<ObjectEntry> getFolderTree(ObjectId folder, int depth,
-            String filter, boolean includeAllowableActions) {
+            Inclusion inclusion) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
-            String filter, boolean includeAllowableActions,
-            boolean includeRelationships, boolean includeRenditions,
-            String orderBy) {
+            String orderBy, Inclusion inclusion) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public ListPage<ObjectEntry> getChildren(ObjectId folder, String filter,
-            boolean includeAllowableActions, boolean includeRelationships,
-            boolean includeRenditions, String orderBy, Paging paging) {
+    public ListPage<ObjectEntry> getChildren(ObjectId folder,
+            Inclusion inclusion, String orderBy, Paging paging) {
         // TODO orderBy
         DocumentModelList docs;
         try {
@@ -263,8 +260,7 @@ public class NuxeoConnection implements Connection, SPI {
     }
 
     public ListPage<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
-            String filter, boolean includeAllowableActions,
-            boolean includeRelationships, Paging paging) {
+            Inclusion inclusion, Paging paging) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -302,8 +298,7 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectEntry getProperties(ObjectId object, String filter,
-            boolean includeAllowableActions, boolean includeRelationships) {
+    public ObjectEntry getProperties(ObjectId object, Inclusion inclusion) {
         // TODO filter, includeAllowableActions, includeRelationships
         DocumentModel doc;
         try {
@@ -318,8 +313,7 @@ public class NuxeoConnection implements Connection, SPI {
         return new NuxeoObjectEntry(doc, this);
     }
 
-    public ObjectEntry getObjectByPath(String path, String filter,
-            boolean includeAllowableActions, boolean includeRelationships) {
+    public ObjectEntry getObjectByPath(String path, Inclusion inclusion) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -354,8 +348,8 @@ public class NuxeoConnection implements Connection, SPI {
         }
     }
 
-    public ListPage<Rendition> getRenditions(ObjectId object, String filter,
-            Paging paging) {
+    public ListPage<Rendition> getRenditions(ObjectId object,
+            Inclusion inclusion, Paging paging) {
         return SimpleListPage.emptyList();
     }
 
@@ -443,9 +437,7 @@ public class NuxeoConnection implements Connection, SPI {
      */
 
     public ListPage<ObjectEntry> query(String statement,
-            boolean searchAllVersions, boolean includeAllowableActions,
-            boolean includeRelationships, boolean includeRenditions,
-            Paging paging) {
+            boolean searchAllVersions, Inclusion inclusion, Paging paging) {
 
         IterableQueryResult iterable;
         try {
@@ -679,9 +671,8 @@ public class NuxeoConnection implements Connection, SPI {
      */
 
     public ListPage<ObjectEntry> getRelationships(ObjectId object,
-            RelationshipDirection direction, String typeId,
-            boolean includeSubRelationshipTypes, String filter,
-            String includeAllowableActions, Paging paging) {
+            String typeId, boolean includeSubRelationshipTypes,
+            Inclusion inclusion, Paging paging) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
