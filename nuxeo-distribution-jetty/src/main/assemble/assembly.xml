@@ -25,9 +25,6 @@
       <artifact name="nuxeo-apt-extensions" />
       <artifact name="nuxeo-webengine-apt" />
 
-      <!-- exclude webservices -->
-      <artifact name="nuxeo-platform-ws" />
-
       <!-- exclude facades -->
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-core-facade" />
