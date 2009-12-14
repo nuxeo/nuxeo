@@ -114,6 +114,9 @@ public class SQLDirectoryDescriptor {
     @XNode("cacheMaxSize")
     public int cacheMaxSize = 0;
 
+    @XNodeList(value = "filters/staticFilter", type = SQLStaticFilter[].class, componentType = SQLStaticFilter.class)
+    private SQLStaticFilter[] staticFilters;
+
     public String getDataSourceName() {
         return dataSourceName;
     }
@@ -320,5 +323,12 @@ public class SQLDirectoryDescriptor {
 
     public void setSubstringMatchType(SubstringMatchType substringMatchType) {
         this.substringMatchType = substringMatchType;
+    }
+
+    public SQLStaticFilter[] getStaticFilters() {
+        if (staticFilters==null) {
+            return new SQLStaticFilter[0];
+        }
+        return staticFilters;
     }
 }

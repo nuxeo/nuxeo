@@ -95,6 +95,8 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     final SQLDirectory directory;
 
+    protected SQLStaticFilter[] staticFilters;
+
     String sid;
 
     Connection sqlConnection;
@@ -119,6 +121,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         this.managedSQLSession = managedSQLSession;
         this.substringMatchType = config.getSubstringMatchType();
         this.idGenerator = idGenerator;
+        this.staticFilters = config.getStaticFilters();
     }
 
     public Directory getDirectory() {
@@ -233,6 +236,36 @@ public class SQLSession extends BaseSession implements EntrySource {
         return directory.getCache().getEntry(id, this, fetchReferences);
     }
 
+    protected String addFilterWhereClause(String whereClause) throws DirectoryException {
+        if (staticFilters.length==0) {
+            return whereClause;
+        }
+        if (whereClause!=null && whereClause.trim().length()>0) {
+            whereClause = whereClause + " AND ";
+        } else {
+            whereClause="";
+        }
+        for (int i = 0 ; i< staticFilters.length; i++) {
+            SQLStaticFilter filter = staticFilters[i];
+            whereClause = whereClause + filter.getDirectoryColumn().getQuotedName(dialect);
+            whereClause = whereClause + " " + filter.getOperator() + " " ;
+            whereClause = whereClause + "? " ;
+
+            if (i<staticFilters.length-1) {
+                whereClause = whereClause + " AND ";
+            }
+        }
+        return whereClause;
+    }
+
+    protected void addFilterValues(PreparedStatement ps, int startIdx) throws DirectoryException {
+        for (int i = 0 ; i< staticFilters.length; i++) {
+            SQLStaticFilter filter = staticFilters[i];
+            setFieldValue(ps, startIdx + i, filter.getColumn(), filter.getValue());
+
+        }
+    }
+
     public DocumentModel getEntryFromSource(String id, boolean fetchReferences)
             throws DirectoryException {
         acquireConnection();
@@ -241,13 +274,17 @@ public class SQLSession extends BaseSession implements EntrySource {
         Select select = new Select(dialect);
         select.setFrom(table.getQuotedName(dialect));
         select.setWhat("*");
-        select.setWhere(table.getPrimaryColumn().getQuotedName(dialect)
-                + " = ?");
+
+        String whereClause = table.getPrimaryColumn().getQuotedName(dialect) + " = ?";
+        whereClause = addFilterWhereClause(whereClause);
+
+        select.setWhere(whereClause);
         String sql = select.getStatement();
 
         try {
             PreparedStatement ps = sqlConnection.prepareStatement(sql);
             setFieldValue(ps, 1, idField, id);
+            addFilterValues(ps, 2);
 
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
@@ -543,7 +580,10 @@ public class SQLSession extends BaseSession implements EntrySource {
                     Select select = new Select(dialect);
                     select.setWhat("count(*)");
                     select.setFrom(table.getQuotedName(dialect));
-                    select.setWhere(whereClause.toString());
+
+                    String where = whereClause.toString();
+                    where = addFilterWhereClause(where);
+                    select.setWhere(where);
 
                     String countQuery = select.getStatement();
                     ps = sqlConnection.prepareStatement(countQuery);
@@ -553,7 +593,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                         setFieldValue(ps, index, fieldName, value);
                         index++;
                     }
-
+                    addFilterValues(ps, index);
                     ResultSet rs = ps.executeQuery();
                     rs.next();
                     int count = rs.getInt(1);
@@ -576,7 +616,11 @@ public class SQLSession extends BaseSession implements EntrySource {
             Select select = new Select(dialect);
             select.setWhat("*");
             select.setFrom(table.getQuotedName(dialect));
-            select.setWhere(whereClause.toString());
+
+            String where = whereClause.toString();
+            where = addFilterWhereClause(where);
+            select.setWhere(where);
+
             StringBuilder orderby = new StringBuilder(128);
             if (orderBy != null) {
                 for (Iterator<Map.Entry<String, String>> it = orderBy.entrySet().iterator(); it.hasNext();) {
@@ -599,6 +643,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 setFieldValue(ps, index, fieldName, value);
                 index++;
             }
+            addFilterValues(ps, index);
 
             // execute the query and create a documentModel list
             ResultSet rs = ps.executeQuery();
@@ -678,7 +723,18 @@ public class SQLSession extends BaseSession implements EntrySource {
         acquireConnection();
         try {
             Field field = schemaFieldMap.get(fieldName);
-            String typeName = field.getType().getName();
+            String typeName = "string";
+            if (field==null) {
+                for (SQLStaticFilter filter :  staticFilters) {
+                    if (filter.getColumn().equals(fieldName)) {
+                        typeName = filter.type;
+                        break;
+                    }
+                }
+            }
+            else {
+                typeName = field.getType().getName();
+            }
             if ("string".equals(typeName)) {
                 if (value != null) {
                     if (fieldName.equals(idField)) {
