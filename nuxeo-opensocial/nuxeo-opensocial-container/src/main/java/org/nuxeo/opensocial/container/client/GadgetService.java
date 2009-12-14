@@ -28,7 +28,7 @@ import com.google.gwt.core.client.JsArray;
 
 /**
  * JSNI implementation of opensocial container
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public class GadgetService {
@@ -52,7 +52,7 @@ public class GadgetService {
 
   /**
    * Resize gadget
-   * 
+   *
    * @param height
    */
   public static native void resizeIframe(int height)
@@ -77,7 +77,7 @@ public class GadgetService {
 
   /**
    * Set new preference
-   * 
+   *
    * @param editToken
    * @param name
    * @param value
@@ -109,7 +109,7 @@ public class GadgetService {
 
   /**
    * Service : Set new title
-   * 
+   *
    * @param title
    */
   public static native void setTitle(String title)
@@ -131,6 +131,7 @@ public class GadgetService {
   }-*/;
 
   public static void setHtmlContentToGadget(String frameId, String content) {
+    JsLibrary.log("html content " + content);
     if (content != null) {
       JsLibrary.log("save html content");
       GadgetBean b = ContainerEntryPoint.getContainerPortal()
@@ -143,21 +144,26 @@ public class GadgetService {
     }
   };
 
-  public static native void getHtmlContent()
+  public static native String getHtmlContent()
   /*-{
-    @org.nuxeo.opensocial.container.client.GadgetService::getHtmlContentOfGadget(Ljava/lang/String;)(this.f);
+    var ee = @org.nuxeo.opensocial.container.client.GadgetService::getHtmlContentOfGadget(Ljava/lang/String;)(this.f);
+    return ee;
   }-*/;
 
   public static String getHtmlContentOfGadget(String frameId) {
-    return ContainerEntryPoint.getContainerPortal()
+    JsLibrary.log("get html content " + frameId);
+    String htmlContent = ContainerEntryPoint.getContainerPortal()
         .getGadgetPortletByFrameId(frameId)
         .getGadgetBean()
         .getHtmlContent();
+    if (htmlContent == null)
+      return "";
+    return htmlContent;
   };
 
   /**
    * Service : Show List of image in Container
-   * 
+   *
    * @param childs
    * @param current
    */
@@ -189,7 +195,7 @@ public class GadgetService {
 
   /**
    * Security : Setter of rpc relay
-   * 
+   *
    * @param iframeId
    * @param rpcToken
    */
@@ -200,7 +206,7 @@ public class GadgetService {
 
   /**
    * Security : Setter of Auth token
-   * 
+   *
    * @param iframeId
    * @param rpcToken
    */
