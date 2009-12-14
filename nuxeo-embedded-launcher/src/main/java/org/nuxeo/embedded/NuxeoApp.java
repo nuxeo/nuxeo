@@ -50,9 +50,9 @@ import org.osgi.framework.FrameworkEvent;
 /**
  * The system property nuxeo.home can be used to specify the nuxoe working
  * directory. If not specified ${user.home}/.nxserver will be used.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class NuxeoApp {
 
@@ -150,7 +150,7 @@ public class NuxeoApp {
     protected String remoteServerHost;
     protected int remoteServerPort;
     protected String batchCommand;
-    
+
     public static ClassLoader getDefaultClassLoader() {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         if (cl == null) {
@@ -196,7 +196,7 @@ public class NuxeoApp {
             remoteServerHost = address;
         }
     }
-    
+
     public void setBatchCommand(String cmd) {
         //TODO test this
         if (cmd.startsWith("\"") || cmd.startsWith("'")) {
@@ -204,9 +204,13 @@ public class NuxeoApp {
         }
         batchCommand = cmd;
     }
-    
+
     public void blacklistComponent(String component) {
         blacklist.add(component);
+    }
+
+    public OSGiAdapter osgi() {
+        return osgi;
     }
 
     public void start() throws Exception {
@@ -413,8 +417,8 @@ public class NuxeoApp {
                 + ((System.currentTimeMillis() - startTime) / 1000) + " sec.");
     }
 
-    protected static void stopFramework() {
-        // TODO
+    protected static void stopFramework() throws Exception {
+        //Framework.shutdown();
     }
 
     public static File url2file(URL url) {

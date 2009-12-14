@@ -163,6 +163,7 @@
       <artifact group="com.sun.xml" name="relaxngDatatype" />
       <artifact group="org.wikimodel" name="wem" />
       <artifact group="com.hp.hpl.jena" name="jena" />
+      <artifact group="javassist" name="javassist" version="3.6"/>
     </artifacts>
   </artifactSet>
 
