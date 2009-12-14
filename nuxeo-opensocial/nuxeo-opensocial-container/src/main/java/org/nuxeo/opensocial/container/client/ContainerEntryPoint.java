@@ -90,19 +90,19 @@ public class ContainerEntryPoint implements EntryPoint {
         panel.setBorder(false);
         panel.setId(CONTAINER_PANEL_ID);
         panel.setLayout(new FitLayout());
-        RootPanel rootPanel = RootPanel.get(GWT_CONTAINER_ID);
-        rootPanel.setHeight("100%");
-        panel.setHeight("100%");
-        rootPanel.add(panel);
+        RootPanel.get(GWT_CONTAINER_ID)
+            .add(panel);
         portal = new ContainerPortal(container, panel);
         panel.setWidth(windowWidth);
         panel.setHeight("100%");
         JsLibrary.updateFrameWidth();
         JsLibrary.updateColumnStyle();
         createGwtContainerMask();
+
         Timer t = new Timer() {
           @Override
           public void run() {
+            portal.showPortlets();
             ContainerEntryPoint.attachLayoutManager(container.getLayout(),
                 container.getStructure());
             JsLibrary.loadingHide();

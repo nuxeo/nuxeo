@@ -1,17 +1,12 @@
 /**** GWT Container ****/
-.containerPanel { /*background-color: transparent;*/
+.containerPanel {
   color: #000000;
-  height:100%;
 }
 
 .addGadget {
   margin-top: 5px;
   margin-bottom: 5px;
   margin-left: 88%;
-}
-
-#gwtContainer {
-  height:100%;
 }
 
 #gwtContainerMask {

@@ -38,6 +38,7 @@ public class GadgetPortlet extends Portlet {
     buildPortlet();
     this.form = new GadgetForm(this);
     this.tools.setGadgetForm(form);
+    this.setVisible(false);
   }
 
   public GadgetPortlet(GadgetBean bean) {

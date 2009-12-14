@@ -281,6 +281,7 @@ public class ContainerPortal extends Portal {
   public GadgetPortlet addGadget(GadgetBean bean) {
     bean.setPosition(new GadgetPosition(COLS[0], 0));
     GadgetPortlet g = addGadget(bean, null);
+    g.setVisible(true);
     columns.get(COLS[0])
         .doLayout();
     return g;
@@ -343,6 +344,13 @@ public class ContainerPortal extends Portal {
 
   public GadgetPortlet getGadgetPortletByFrameId(String frameId) {
     return getGadgetPortlet(GadgetPortlet.getIdWithIframeId(frameId));
+  }
+
+  public void showPortlets() {
+    for (GadgetPortlet p : portlets.values()) {
+      p.setVisible(true);
+    }
+
   }
 
 }
