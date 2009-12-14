@@ -17,6 +17,19 @@
   	  </login-module>
 	  </domain>
 
+    <domain name="nuxeo-client-login">
+      <login-module code="org.nuxeo.ecm.platform.login.NuxeoLoginModule"
+          flag="required">
+        <option name="principalClassName">org.nuxeo.ecm.platform.login.NuxeoPrincipal</option>
+        <option name="useUserIdentificationInfoCB">true</option>
+      </login-module>
+      <login-module code="org.nuxeo.ecm.core.api.local.ClientLoginModule" flag="required">
+        <option name="password-stacking">true</option>
+        <option name="restore-login-identity">true</option>
+        <option name="multi-threaded">true</option>
+      </login-module>
+	  </domain>
+
 
   	<domain name="nuxeo-webengine">
 	    <login-module code = "org.nuxeo.ecm.platform.login.NuxeoLoginModule"
@@ -27,7 +40,7 @@
       <!--login-module code="org.nuxeo.ecm.core.api.local.ClientLoginModule" flag="required">
         <option name="password-stacking">true</option>
         <option name="multi-threaded">true</option>
-      </login-module-->      
+      </login-module-->
     </domain>
 
   </extension>

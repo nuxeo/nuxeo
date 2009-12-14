@@ -17,6 +17,9 @@
   <template name="components" src="OSGI-INF/templates/components.xml"
     installPath="nuxeo.war/WEB-INF/components.xml" required="true" />
 
+  <template name="jaxws" src="OSGI-INF/templates/sun-jaxws.xml"
+    installPath="nuxeo.war/WEB-INF/sun-jaxws.xml" required="false" />
+
   <directory>bundles</directory>
 
   <install>
