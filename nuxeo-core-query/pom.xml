@@ -10,6 +10,7 @@
   <artifactId>nuxeo-core-query</artifactId>
   <name>Nuxeo Core Query</name>
   <description>Nuxeo Core: Query.</description>
+  <version>1.5.0-RC1-NXP-4462</version>
 
   <dependencies>
     <dependency>

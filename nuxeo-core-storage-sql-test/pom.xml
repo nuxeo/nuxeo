@@ -10,6 +10,7 @@
   <artifactId>nuxeo-core-storage-sql-test</artifactId>
   <name>Nuxeo Core SQL Storage Tests</name>
   <description>Nuxeo Core: SQL Storage Tests.</description>
+  <version>1.5.0-RC1-NXP-4462</version>
 
   <dependencies>
     <dependency>
@@ -54,6 +55,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql</artifactId>
+      <version>1.5.0-RC1-SP1-NXP-4462</version>
     </dependency>
     <dependency>
       <groupId>commons-collections</groupId>

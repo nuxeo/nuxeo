@@ -1042,6 +1042,8 @@ public class QueryMaker {
                 visitExpressionIsVersion(node);
             } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT)) {
                 visitExpressionFulltext(node, name);
+            } else if (op == Operator.ILIKE) {
+                visitExpressionIlike(node, name);
             } else if ((op == Operator.EQ || op == Operator.NOTEQ
                     || op == Operator.IN || op == Operator.NOTIN
                     || op == Operator.LIKE || op == Operator.NOTLIKE)
@@ -1297,6 +1299,20 @@ public class QueryMaker {
                 return "_FT";
             } else {
                 return "_FT" + ftJoinNumber;
+            }
+        }
+
+        private void visitExpressionIlike(Expression node, String name) {
+            if (dialect.supportsIlike()) {
+                super.visitExpression(node);
+            } else {
+                buf.append("UPPER(");
+                node.lvalue.accept(this);
+                buf.append(")");
+                buf.append(" LIKE ");
+                buf.append("UPPER(");
+                node.rvalue.accept(this);
+                buf.append(")");
             }
         }
 

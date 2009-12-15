@@ -27,6 +27,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-query</artifactId>
+      <version>1.5.0-RC1-NXP-4462</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>

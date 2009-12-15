@@ -126,6 +126,11 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
+    public boolean supportsIlike() {
+        return true;
+    }
+
+    @Override
     public Array createArrayOf(int type, Object[] elements,
             Connection connection) throws SQLException {
         if (elements == null || elements.length == 0) {

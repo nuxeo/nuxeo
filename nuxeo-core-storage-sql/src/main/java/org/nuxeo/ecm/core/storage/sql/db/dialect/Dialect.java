@@ -379,6 +379,14 @@ public abstract class Dialect {
     }
 
     /**
+     * Does the dialect support ILIKE operator
+     *
+     */
+    public boolean supportsIlike() {
+        return false;
+    }
+
+    /**
      * Factory method for creating Array objects, suitable for passing to
      * {@link PreparedStatement#setArray}.
      * <p>
