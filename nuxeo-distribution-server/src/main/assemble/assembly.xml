@@ -137,9 +137,11 @@
       <artifact group="commons-io" name="commons-io" />
       <artifact group="commons-fileupload" name="commons-fileupload" />
       <artifact group="commons-lang" name="commons-lang" />
+      <artifact group="commons-codec" name="commons-codec" />
       <artifact group="org.freemarker" name="freemarker" version="2.3.11" />
       <artifact group="net.sf.json-lib" name="json-lib" version="2.2.1"
         classifier="jdk15" />
+      <artifact group="cup" name="java-cup" />
       <artifact group="net.sf.ezmorph" name="ezmorph" />
       <artifact group="net.sf.opencsv" name="opencsv" version="1.7" />
       <artifact group="org.apache.derby" name="derby" />
