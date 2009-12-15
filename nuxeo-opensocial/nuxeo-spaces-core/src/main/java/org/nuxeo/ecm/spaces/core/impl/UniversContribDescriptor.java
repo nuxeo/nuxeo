@@ -20,53 +20,60 @@ package org.nuxeo.ecm.spaces.core.impl;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
-
 @XObject("universContrib")
 public class UniversContribDescriptor {
 
-  @XNode("@name")
-  private String name;
+    @XNode("@name")
+    private String name;
 
-  @XNode("@remove")
-  private boolean remove;
+    @XNode("@remove")
+    private boolean remove;
 
-  @XNode("className")
-  private String className;
+    @XNode("class")
+    private Class<? extends UniversProvider> klass;
 
-  @XNode("order")
-  private String order;
+    @XNode("order")
+    private String order;
 
-  public String getName() {
-    return name;
-  }
+    @XNode("needSession")
+    private boolean needSession;
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public boolean getNeedSession() {
+        return needSession;
+    }
 
-  public boolean isRemove() {
-    return remove;
-  }
+    private UniversProvider provider;
 
-  public void setRemove(boolean remove) {
-    this.remove = remove;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public String getClassName() {
-    return className;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public void setClassName(String className) {
-    this.className = className;
-  }
+    public boolean isRemove() {
+        return remove;
+    }
 
-  public String getOrder() {
-    return order;
-  }
+    public void setRemove(boolean remove) {
+        this.remove = remove;
+    }
 
-  public void setOrder(String order) {
-    this.order = order;
-  }
+    public String getOrder() {
+        return order;
+    }
 
+    public void setOrder(String order) {
+        this.order = order;
+    }
+
+    public UniversProvider getProvider() throws InstantiationException,
+            IllegalAccessException {
+        if (provider == null) {
+            provider = klass.newInstance();
+        }
+        return provider;
+    }
 
 }

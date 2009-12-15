@@ -19,6 +19,7 @@ package org.nuxeo.ecm.spaces.core.impl;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.spaces.api.SpaceProvider;
 
 
 @XObject("spaceContrib")
@@ -31,13 +32,15 @@ public class SpaceContribDescriptor  {
   private boolean remove;
 
   @XNode("className")
-  private String className;
+  private Class<? extends SpaceProvider> klass;
 
   @XNode("order")
-  private String order;
+  private int order;
 
   @XNode("restrictToUniverse")
   private String pattern;
+
+  private SpaceProvider provider;
 
   public String getName() {
     return name;
@@ -55,28 +58,21 @@ public class SpaceContribDescriptor  {
     this.remove = remove;
   }
 
-  public String getClassName() {
-    return className;
-  }
 
-  public void setClassName(String className) {
-    this.className = className;
-  }
-
-  public String getOrder() {
+  public int getOrder() {
     return order;
-  }
-
-  public void setOrder(String order) {
-    this.order = order;
   }
 
   public String getPattern() {
     return pattern;
   }
 
-  public void setPattern(String pattern) {
-    this.pattern = pattern;
+
+  public SpaceProvider getProvider() throws InstantiationException, IllegalAccessException {
+      if(provider == null) {
+          provider = klass.newInstance();
+      }
+      return provider;
   }
 
 }

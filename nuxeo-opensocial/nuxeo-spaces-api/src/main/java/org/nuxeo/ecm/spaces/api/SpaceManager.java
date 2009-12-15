@@ -19,7 +19,6 @@ package org.nuxeo.ecm.spaces.api;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
 import org.nuxeo.ecm.spaces.api.exceptions.UniversNotFoundException;

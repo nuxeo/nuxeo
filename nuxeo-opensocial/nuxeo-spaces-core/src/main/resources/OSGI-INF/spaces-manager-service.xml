@@ -24,25 +24,12 @@
       <spaceContrib name="someName">
         <restrictToUniverse>pattern</restrictToUniverse>
         <order>index of space insertion( java convention  so 0 for first , must be combined with 'require' component mecanism )</order>
-        <className>class name of the contribution - must implements
-          SpaceProvider</className>
+        <className>class name of the contribution - must implements SpaceProvider</className>
       </spaceContrib>
     </documentation>
     <object class="org.nuxeo.ecm.spaces.core.impl.SpaceContribDescriptor" />
   </extension-point>
 
-
-  <extension-point name="gadgetContrib">
-    <documentation>
-      Gadget provider contribution
-      <gadgetContrib name="someName">
-        <order>index of gadget insertion( java convention  so 0 for first , must be combined with 'require' component mecanism )</order>
-        <className>class name of the contribution - must implements
-          GadgetProvider</className>
-      </gadgetContrib>
-    </documentation>
-    <object class="org.nuxeo.ecm.spaces.core.impl.GadgetContribDescriptor" />
-  </extension-point>
 
 
 </component>
