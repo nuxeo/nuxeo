@@ -311,6 +311,11 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
+    public boolean supportsIlike() {
+        return true;
+    }
+
+    @Override
     public boolean supportsReadAcl() {
         return true;
     }

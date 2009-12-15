@@ -508,6 +508,14 @@ public abstract class Dialect {
     }
 
     /**
+     * Does the dialect support ILIKE operator
+     *
+     */
+    public boolean supportsIlike() {
+        return false;
+    }
+
+    /**
      * Does the dialect support an optimized read security checks
      *
      */

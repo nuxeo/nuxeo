@@ -45,7 +45,7 @@ parser code {:
 
 /* ------------Declaration of Terminals and Non Terminals Section----------- */
 
-terminal           	SELECT, FROM, WHERE, AS, IN, LIKE, BETWEEN, NOTBETWEEN, NOTIN, NOTLIKE, ORDERBY, GROUPBY, HAVING, LIMIT, DISTINCT, ALL,
+terminal           	SELECT, FROM, WHERE, AS, IN, LIKE, ILIKE, BETWEEN, NOTBETWEEN, NOTIN, NOTLIKE, ORDERBY, GROUPBY, HAVING, LIMIT, DISTINCT, ALL,
 					ASC, DESC, AND, OR, NOT, SUM, SUB, DIV, MUL, EQ, NOTEQ, LT, GT, LTEQ, GTEQ,
 					COMMA, LPARA, RPARA, LOCATION, STARTSWITH, TYPE,
 					DATE, TIMESTAMP, OFFSET;
@@ -85,7 +85,7 @@ non terminal String			from_key;
   precedence left OR;
   precedence left AND;
   precedence left NOT;
-  precedence nonassoc GT, LT, EQ, NOTEQ, LTEQ, GTEQ, LIKE, AS, IN, BETWEEN, STARTSWITH;
+  precedence nonassoc GT, LT, EQ, NOTEQ, LTEQ, GTEQ, LIKE, ILIKE, AS, IN, BETWEEN, STARTSWITH;
   precedence left SUM, SUB;
   precedence left MUL, DIV;
 
@@ -248,8 +248,10 @@ non terminal String			from_key;
 				range.add(min); range.add(max);
 				RESULT = new Predicate(new Reference(name), Operator.NOTBETWEEN, range);
 				:}
-				| IDENTIFIER:name LIKE STRING:s
-				{: RESULT = new Predicate(new Reference(name), Operator.LIKE, new StringLiteral(s)); :}
+        | IDENTIFIER:name LIKE STRING:s
+        {: RESULT = new Predicate(new Reference(name), Operator.LIKE, new StringLiteral(s)); :}
+        | IDENTIFIER:name ILIKE STRING:s
+        {: RESULT = new Predicate(new Reference(name), Operator.ILIKE, new StringLiteral(s)); :}
 				| IDENTIFIER:name NOT LIKE STRING:s
 				{: RESULT = new Predicate(new Reference(name), Operator.NOTLIKE, new StringLiteral(s)); :}
 

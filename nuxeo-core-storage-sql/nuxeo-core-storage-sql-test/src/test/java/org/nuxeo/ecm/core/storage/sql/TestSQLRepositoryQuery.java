@@ -102,6 +102,12 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
 
         dml = session.query("SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2009-03-15' AND DATE '2009-01-01'");
         assertEquals(2, dml.size()); // 0 Document matches the BETWEEN query
+
+        dml = session.query("SELECT * FROM Document WHERE dc:title ILIKE 'test%'");
+        assertEquals(5, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:title ILIKE 'Test%'");
+        assertEquals(5, dml.size());
     }
 
 }
