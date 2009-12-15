@@ -172,6 +172,10 @@
       <artifact group="com.hp.hpl.jena" name="jena" />
       <artifact group="javassist" name="javassist" version="3.6"/>
       <artifact group="com.h2database" name="h2" />
+      
+      <artifact group="javax.ejb" name="ejb-api" />
+      <artifact group="javax.servlet" name="servlet-api" />
+      
     </artifacts>
   </artifactSet>
 
