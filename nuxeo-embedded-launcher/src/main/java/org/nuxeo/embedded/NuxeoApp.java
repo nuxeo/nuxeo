@@ -280,6 +280,11 @@ public class NuxeoApp {
             // create the log dir - otherwise jetty will fail to start
             new File(home, "log").mkdir();
         }
+        String h2 = System.getProperty("h2.baseDir");
+        if (h2 == null) {
+            h2 = new File(home, "data/h2").getAbsolutePath();
+            System.setProperty("h2.baseDir", h2);
+        }
     }
 
     protected static void setHttpServerAddress(String host, int port) {

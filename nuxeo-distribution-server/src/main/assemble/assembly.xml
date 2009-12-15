@@ -50,13 +50,17 @@
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-convert-api" />
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-convert-plugins" />
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-event" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql-extensions" />      
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql-ra" />      
+
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-jcr-connector" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-web-common" />
       <!-- needed for UserIdentificationInfo - must be moved in web-common -->
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-api" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-login" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-dublincore" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-content-template-manager" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-content-template-manager" />      
     </artifacts>
   </artifactSet>
 
@@ -149,6 +153,7 @@
       <artifact group="org.slf4j" name="slf4j-api" />
       <artifact group="org.slf4j" name="slf4j-log4j12" />
       <artifact group="org.apache.lucene" name="lucene-core" />
+      <artifact group="org.apache.lucene" name="lucene-analyzers" />
       <artifact group="commons-collections" name="commons-collections" />
       <artifact group="concurrent" name="concurrent" />
       <artifact group="org.jboss.resteasy" name="resteasy-jaxrs"
@@ -164,6 +169,7 @@
       <artifact group="org.wikimodel" name="wem" />
       <artifact group="com.hp.hpl.jena" name="jena" />
       <artifact group="javassist" name="javassist" version="3.6"/>
+      <artifact group="com.h2database" name="h2" />
     </artifacts>
   </artifactSet>
 
