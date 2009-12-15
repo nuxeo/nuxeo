@@ -10,7 +10,6 @@
   <name>RSA ClearTrust authentication plugin for Nuxeo EP</name>
   <description> This addon authenticates users against the RSA
     ClearTrust Single-Sign-On (SSO) system. </description>
-  <version>1.0-5.1.6</version>
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
