@@ -28,7 +28,7 @@ import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.webdav.LockManager;
+import org.nuxeo.ecm.webdav.locking.LockManager;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,8 +45,8 @@ import static javax.ws.rs.core.Response.Status.OK;
 
 public class FileResource extends ExistingResource {
 
-    public FileResource(String path, DocumentModel doc) throws Exception {
-        super(path, doc);
+    public FileResource(String path, DocumentModel doc, HttpServletRequest request) throws Exception {
+        super(path, doc, request);
     }
 
     @GET
@@ -60,8 +60,8 @@ public class FileResource extends ExistingResource {
     }
 
     @PUT
-    public Response put(@Context HttpServletRequest request) throws Exception {
-        if (LockManager.getInstance().isLocked(path)) {
+    public Response put() throws Exception {
+        if (lockManager.isLocked(path)) {
             return Response.status(423).build();
         }
 

@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webdav.resource;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webdav.Util;
+import org.nuxeo.ecm.webdav.locking.LockManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.OPTIONS;
@@ -39,10 +40,12 @@ public class AbstractResource {
 
     protected CoreSession session;
 
-    @Context
-    public HttpServletRequest request;
+    protected HttpServletRequest request;    
+    protected LockManager lockManager = LockManager.getInstance();
 
-    protected AbstractResource(String path) throws Exception {
+    protected AbstractResource(String path, HttpServletRequest request) throws Exception {
+        assert request != null;
+        this.request = request;
         this.path = path;
         parentPath = getParentPath(path);
         name = getName(path);

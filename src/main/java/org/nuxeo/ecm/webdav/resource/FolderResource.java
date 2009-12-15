@@ -52,8 +52,8 @@ public class FolderResource extends ExistingResource {
 
     private static final Log log = LogFactory.getLog(FolderResource.class);
 
-    public FolderResource(String path, DocumentModel doc) throws Exception {
-        super(path, doc);
+    public FolderResource(String path, DocumentModel doc, HttpServletRequest request) throws Exception {
+        super(path, doc, request);
     }
 
     @GET
@@ -62,7 +62,7 @@ public class FolderResource extends ExistingResource {
     }
 
     @PROPFIND
-    public Response propfind(@Context UriInfo uriInfo, @Context HttpServletRequest request,
+    public Response propfind(@Context UriInfo uriInfo,
             @HeaderParam("depth") String depth) throws Exception {
         Unmarshaller u = Util.getUnmarshaller();
 

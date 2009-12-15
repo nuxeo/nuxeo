@@ -41,15 +41,15 @@ import java.net.URI;
  */
 public class UnknownResource extends AbstractResource {
 
-    public UnknownResource(String path) throws Exception {
-        super(path);
+    public UnknownResource(String path, HttpServletRequest request) throws Exception {
+        super(path, request);
     }
 
     /**
      * PUT over a non-existing resource: create a new file resource.
      */
     @PUT
-    public Response put(@Context HttpServletRequest request) throws Exception {
+    public Response put() throws Exception {
         ensureParentExists();
 
         Blob content = new StreamingBlob(new InputStreamSource(request.getInputStream()));
@@ -69,7 +69,7 @@ public class UnknownResource extends AbstractResource {
      * MKCOL over a non-existing resource: create a new folder resource.
      */
     @MKCOL
-    public Response mkcol(@Context HttpServletRequest request) throws Exception {
+    public Response mkcol() throws Exception {
         ensureParentExists();
 
         InputStreamSource iss = new InputStreamSource(request.getInputStream());

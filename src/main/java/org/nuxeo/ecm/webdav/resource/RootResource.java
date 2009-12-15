@@ -73,14 +73,14 @@ public class RootResource {
 
         DocumentRef ref = new PathRef("/" + path);
         if (!session.exists(ref)) {
-            return new UnknownResource(path);
+            return new UnknownResource(path, request);
         }
 
         DocumentModel doc = session.getDocument(ref);
         if (doc.isFolder()) {
-            return new FolderResource(path, doc);
+            return new FolderResource(path, doc, request);
         } else {
-            return new FileResource(path, doc);
+            return new FileResource(path, doc, request);
         }
     }
 

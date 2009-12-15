@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webdav.Constants;
-import org.nuxeo.ecm.webdav.LockManager;
+import org.nuxeo.ecm.webdav.locking.LockManager;
 import org.nuxeo.ecm.webdav.Util;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,15 +52,18 @@ public class ExistingResource extends AbstractResource {
 
     protected DocumentModel doc;
 
-    protected ExistingResource(String path, DocumentModel doc) throws Exception {
-        super(path);
+    protected ExistingResource(String path, DocumentModel doc, HttpServletRequest request) throws Exception {
+        super(path, request);
         this.doc = doc;
     }
 
     @DELETE
     public Response delete() throws Exception {
-        if (LockManager.getInstance().isLocked(path)) {
-            return Response.status(423).build();
+        if (lockManager.isLocked(path)) {
+            String token = getTokenFromHeaders();
+            if (!LockManager.getInstance().canUnlock(path, token)) {
+                return Response.status(423).build();
+            }
         }
 
         DocumentRef ref = new PathRef(path);
@@ -78,8 +81,11 @@ public class ExistingResource extends AbstractResource {
     @MOVE
     public Response move(@HeaderParam("Destination") String dest,
             @HeaderParam("Overwrite") String overwrite) throws Exception {
-        if (LockManager.getInstance().isLocked(path)) {
-            return Response.status(423).build();
+        if (lockManager.isLocked(path)) {
+            String token = getTokenFromHeaders();
+            if (!LockManager.getInstance().canUnlock(path, token)) {
+                return Response.status(423).build();
+            }
         }
         
         return copyOrMove("MOVE", dest, overwrite);
@@ -95,8 +101,11 @@ public class ExistingResource extends AbstractResource {
         destPath = destPath.substring(Constants.DAV_HOME.length(), destPath.length());
         log.info("to " + destPath);
 
-        if (LockManager.getInstance().isLocked(destPath)) {
-            return Response.status(423).build();
+        if (lockManager.isLocked(destPath)) {
+            String token = getTokenFromHeaders();
+            if (!LockManager.getInstance().canUnlock(path, token)) {
+                return Response.status(423).build();
+            }
         }
 
         DocumentRef sourceRef = new PathRef(path);
@@ -130,8 +139,8 @@ public class ExistingResource extends AbstractResource {
     // Properties
 
     @PROPPATCH
-    public Response proppatch(@Context UriInfo uriInfo, @Context HttpServletRequest request) throws Exception {
-        if (LockManager.getInstance().isLocked(path)) {
+    public Response proppatch(@Context UriInfo uriInfo) throws Exception {
+        if (lockManager.isLocked(path)) {
             return Response.status(423).build();
         }
 
@@ -148,8 +157,8 @@ public class ExistingResource extends AbstractResource {
     }
 
     @LOCK
-    public Response lock(@Context HttpServletRequest request) throws Exception {
-        LockInfo lockInfo = null;
+    public Response lock() throws Exception {
+        LockInfo lockInfo;
         if (request.getHeader("content-length") != null) {
             try {
                 Unmarshaller u = Util.getUnmarshaller();
@@ -161,23 +170,27 @@ public class ExistingResource extends AbstractResource {
                 return Response.status(400).build();
             }
         } else if (request.getHeader("if") != null) {
-            // TODO
+            String token = getTokenFromHeaders();
+            if (!lockManager.canUnlock(path, token)) {
+                return Response.status(423).build();
+            } 
         } else {
             return Response.status(400).build();
         }
 
-        LockManager.getInstance().lock(path);
+        String token = LockManager.getInstance().lock(path);
         Prop prop = new Prop(new LockDiscovery(new ActiveLock(
                 LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
                 new Owner("toto"),
-                new TimeOut(10000), new LockToken(new HRef("urn:uuid:asdasd")),
+                new TimeOut(10000), new LockToken(new HRef("urn:uuid:" + token)),
                 new LockRoot(new HRef("http://asdasd/"))
         )));
-        return Response.ok().entity(prop).header("Lock-Token", "urn:uuid:asdasd").build();
+        return Response.ok().entity(prop)
+                .header("Lock-Token", "urn:uuid:" + token).build();
     }
 
     @UNLOCK
-    public Response unlock(@Context HttpServletRequest request) {
+    public Response unlock() {
         LockManager.getInstance().unlock(path);
         return Response.status(204).build();
     }
@@ -188,6 +201,16 @@ public class ExistingResource extends AbstractResource {
     @MKCOL
     public Response mkcol() {
         return Response.status(405).build();
+    }
+
+    String getTokenFromHeaders() {
+        String header = request.getHeader("if");
+        if (header == null) {
+            return null;
+        }
+        header = header.trim();
+        String token = header.substring(1, header.length()-1);
+        return token;
     }
 
 }
