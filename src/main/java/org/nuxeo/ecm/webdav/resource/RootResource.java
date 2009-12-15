@@ -19,18 +19,6 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.security.Principal;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -38,6 +26,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webdav.Util;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import java.security.Principal;
 
 @Path("dav")
 public class RootResource {
@@ -73,10 +69,6 @@ public class RootResource {
     public Object findResource(@PathParam("path") String path,
             @Context HttpServletRequest request) throws Exception {
 
-        // For debug. TODO: remove
-        StringWriter writer = new StringWriter();
-        BufferedReader in
-                = new BufferedReader(new InputStreamReader(request.getInputStream()));
         CoreSession session = Util.getSession(request);
 
         DocumentRef ref = new PathRef("/" + path);

@@ -30,3 +30,5 @@ deploy-jetty: build
 build:
 	mvn $(MVN_OPT) clean install -Dmaven.test.skip=true
 
+run:
+	mvn clean test-compile ; ./run.sh

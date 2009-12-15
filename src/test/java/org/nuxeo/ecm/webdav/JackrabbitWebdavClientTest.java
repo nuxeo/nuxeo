@@ -81,7 +81,6 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
         MultiStatus multiStatus = pFind.getResponseBodyAsMultiStatus();
         MultiStatusResponse[] responses = multiStatus.getResponses();
         assertTrue(responses.length >= 4);
-        List<String> urls = new ArrayList<String>();
         boolean found = false;
         for (MultiStatusResponse response : responses) {
             if (response.getHref().endsWith("quality.jpg")) {
@@ -89,6 +88,19 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
             }
         }
         assertTrue(found);
+    }
+
+    @Test
+    public void testGetDocProperties() throws Exception {
+        DavMethod pFind = new PropFindMethod(
+                ROOT_URI + "quality.jpg", DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
+        client.executeMethod(pFind);
+
+        MultiStatus multiStatus = pFind.getResponseBodyAsMultiStatus();
+        MultiStatusResponse[] responses = multiStatus.getResponses();
+        assertEquals(1, responses.length);
+        MultiStatusResponse response = responses[0];
+        assertEquals("123631", response.getProperties(200).get("getcontentlength").getValue());
     }
 
 }

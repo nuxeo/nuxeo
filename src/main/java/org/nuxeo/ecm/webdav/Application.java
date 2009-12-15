@@ -1,13 +1,12 @@
 package org.nuxeo.ecm.webdav;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.nuxeo.ecm.webdav.provider.WebDavContextResolver;
 import org.nuxeo.ecm.webdav.provider.ExceptionHandler;
+import org.nuxeo.ecm.webdav.provider.WebDavContextResolver;
 import org.nuxeo.ecm.webdav.resource.RootResource;
 
 import javax.xml.bind.JAXBException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Used to register the application (root resource classes and providers) in a container-neutral way.

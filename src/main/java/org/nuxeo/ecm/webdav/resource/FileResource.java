@@ -19,18 +19,6 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
-import java.net.URI;
-import java.util.Calendar;
-import java.util.Date;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
-import static javax.ws.rs.core.Response.Status.OK;
 import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 import net.java.dev.webdav.jaxrs.xml.elements.*;
 import net.java.dev.webdav.jaxrs.xml.properties.CreationDate;
@@ -40,7 +28,20 @@ import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.webdav.LockManager;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
+import java.util.Calendar;
+import java.util.Date;
+
+import static javax.ws.rs.core.Response.Status.OK;
 
 public class FileResource extends ExistingResource {
 
@@ -60,6 +61,10 @@ public class FileResource extends ExistingResource {
 
     @PUT
     public Response put(@Context HttpServletRequest request) throws Exception {
+        if (LockManager.getInstance().isLocked(path)) {
+            return Response.status(423).build();
+        }
+
         Blob content = new StreamingBlob(new InputStreamSource(request.getInputStream()));
         content.setMimeType(request.getContentType());
         content.setFilename(name);
@@ -73,23 +78,20 @@ public class FileResource extends ExistingResource {
 
     @PROPFIND
 	public Response propfind(@Context UriInfo uriInfo) throws Exception {
-
         Date lastModified = ((Calendar) doc.getPropertyValue("dc:modified")).getTime();
         Date creationDate = ((Calendar) doc.getPropertyValue("dc:created")).getTime();
+        Blob content = (Blob) doc.getPropertyValue("file:content");
 
 		net.java.dev.webdav.jaxrs.xml.elements.Response response;
         response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                new HRef(uriInfo.getRequestUri()),
-                null,
-                null,
-                null,
+                new HRef(uriInfo.getRequestUri()), null, null, null,
                 new PropStat(new Prop(
-                        new CreationDate(lastModified), new GetLastModified(lastModified),
-                        new GetContentType("application/octet-stream"), new GetContentLength(0 /* FIXME */)),
+                        new CreationDate(creationDate), new GetLastModified(lastModified),
+                        new GetContentType("application/octet-stream"), new GetContentLength(content.getLength())),
                         new Status(OK)));
 
 		MultiStatus st = new MultiStatus(response);
-		return Response.ok(st).build();
+		return Response.status(207).entity(st).build();
 	}
 
 }

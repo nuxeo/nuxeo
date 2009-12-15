@@ -18,25 +18,13 @@
  */
 package org.nuxeo.ecm.webdav.resource;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import javax.ws.rs.core.Response.Status;
-
 import net.java.dev.webdav.jaxrs.xml.elements.Prop;
 import net.java.dev.webdav.jaxrs.xml.elements.PropStat;
-import net.java.dev.webdav.jaxrs.xml.properties.CreationDate;
-import net.java.dev.webdav.jaxrs.xml.properties.DisplayName;
-import net.java.dev.webdav.jaxrs.xml.properties.GetContentLength;
-import net.java.dev.webdav.jaxrs.xml.properties.GetContentType;
-import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
-import net.java.dev.webdav.jaxrs.xml.properties.ResourceType;
-
+import net.java.dev.webdav.jaxrs.xml.properties.*;
 import org.w3c.dom.Element;
+
+import javax.ws.rs.core.Response.Status;
+import java.util.*;
 
 public class PropStatBuilderExt {
     private List<Object> properties;

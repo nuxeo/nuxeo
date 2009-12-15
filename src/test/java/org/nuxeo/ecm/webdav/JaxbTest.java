@@ -26,7 +26,7 @@ public class JaxbTest extends Assert {
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("xmlsamples/" + name);
         assertNotNull(is);
         Object o = u.unmarshal(is);
-        System.out.println(o);
+        //System.out.println(o);
         assertEquals(o.getClass(), class_);        
     }
 

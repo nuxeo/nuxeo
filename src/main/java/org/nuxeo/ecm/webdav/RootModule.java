@@ -1,14 +1,14 @@
 package org.nuxeo.ecm.webdav;
 
+import org.nuxeo.ecm.webdav.resource.RootResource;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-
-import org.nuxeo.ecm.webdav.resource.RootResource;
-import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 /**
  * Wire the JAX RS root classes into WebEngine.

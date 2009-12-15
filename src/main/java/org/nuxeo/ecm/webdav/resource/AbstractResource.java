@@ -19,14 +19,14 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
+import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.webdav.Util;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-
-import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.webdav.Util;
 
 /**
  * Base class for all resources.
@@ -51,11 +51,10 @@ public class AbstractResource {
 
     @OPTIONS
     public Response options() throws Exception {
-        return Response.ok("")
-            .header("DAV", "1,2")
+        return Response.status(204).entity("")
+            .header("DAV", "1,2") // not 1,2 for now.
             .header("Allow", "GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE, "
-                    + "PROPFIND, PROPPATCH, MKCOL, COPY, MOVE").build();
-            // ignoring: LOCK, UNLOCK
+                    + "PROPFIND, PROPPATCH, MKCOL, COPY, MOVE, LOCK, UNLOCK").build();
     }
 
     // Util methods.

@@ -90,7 +90,6 @@ public class Server {
         // deploy platform bundles
         osgi.deployBundle("org.nuxeo.ecm.platform.dublincore");
 
-
         // deploy this project's bundles + contribs
         osgi.deployBundle(Constants.BUNDLE_NAME);
 
@@ -126,6 +125,14 @@ public class Server {
         jerseyAdapter.setHandleStaticResources(true);
         jerseyAdapter.setServletInstance(new ServletContainer());
         jerseyAdapter.setContextPath("");
+
+        // For debugging
+        jerseyAdapter.addInitParameter("com.sun.jersey.spi.container.ContainerRequestFilters",
+                "com.sun.jersey.api.container.filter.LoggingFilter");
+        //jerseyAdapter.addInitParameter("com.sun.jersey.spi.container.ContainerResponseFilters",
+        //        "com.sun.jersey.api.container.filter.LoggingFilter");
+        jerseyAdapter.addInitParameter("com.sun.jersey.config.feature.logging.DisableEntitylogging", "true");
+
         gws.addGrizzlyAdapter(jerseyAdapter, new String[] { "" });
 
         // let Grizzly run
