@@ -1,6 +1,5 @@
 var perm = gadgets.util.getUrlParameters().permission;
-var modifyLink = "<div style=\"float:right;\"><a href=\"javascript:modifyVideo();\" id=\"modifyVideo\">Modifier</a></div>"; // javascript:
-// toogleForms('create')\
+var modifyLink = "<div style=\"float:right;\"><a href=\"javascript:modifyVideo();\" id=\"modifyVideo\">Modifier</a></div>";
 
 function validateVideo() {
   gadgets.nuxeo.setHtmlContent(jQuery("#baliseVideo").val());
@@ -17,16 +16,17 @@ function showForm() {
   jQuery("#addVideo").show();
   jQuery("#showVideo").hide();
   gadgets.window.adjustHeight();
-  var dim = gadgets.window.getViewportDimensions();
-  console.log("width is "+dim.width);
-  console.log("height is "+dim.height);
-  
+ 
 }
 
 function showVideo(html) {
   jQuery("#showVideo").html(html);
   jQuery("#addVideo").hide();
-  jQuery("#showVideo").show();
+  jQuery("#showVideo").fadeIn();
+  var dim = gadgets.window.getViewportDimensions();
+  var h = (dim.width * jQuery("embed").height())/jQuery("object").width();
+  jQuery("embed").width(dim.width);
+  jQuery("embed").height(h);
   gadgets.window.adjustHeight();
 }
 

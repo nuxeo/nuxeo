@@ -44,12 +44,13 @@
 
       <script type="text/javascript" language="javascript" src="video.js"></script>
       <script type="text/javascript">
+      	var prefs = new _IG_Prefs(__MODULE_ID__);
+      	_IG_SetTitle(prefs.getString("title"));
+      	
         gadgets.util.registerOnLoadHandler( function() {
-
-       gadgets.nuxeo.getHtmlContent(function(content) {
-         launchVideoWidget(content);
-       });
-
+       		gadgets.nuxeo.getHtmlContent(function(content) {
+         		launchVideoWidget(content);
+       		});
         })
       </script>
 

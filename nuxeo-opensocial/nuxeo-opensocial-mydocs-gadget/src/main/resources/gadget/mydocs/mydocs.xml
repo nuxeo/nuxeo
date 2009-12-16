@@ -24,13 +24,9 @@
           spaceId = id;
           getDocumentLists()
         }
-
         gadgets.nuxeo.getSpaceId(cb);
-
       });
     </script>
-
-
 
     <link rel="stylesheet" type="text/css" href="documentlists.css"/>
     <div id="nxDocumentList">
@@ -45,10 +41,7 @@
             <input type="image" src="/nuxeo/icons/action_page_fastforward.gif"onclick="lastPage()"/>
             </div>
         </div>
-
     </div>
-
-
   ]]>
   </Content>
 
