@@ -85,9 +85,9 @@ function _isSet(val){
 };
 
 function savePrefs(){
-	if(_isSet(t)) prefs.set("picTitle",gadgets.util.escapeString(jQuery("#title-field").val()));
-	if(_isSet(l)) prefs.set("link",gadgets.util.escapeString(jQuery("#link-field").val()));
-	if(_isSet(e)) prefs.set("legend",gadgets.util.escapeString(jQuery("#legend-field").val()));
+	prefs.set("picTitle",gadgets.util.escapeString(jQuery("#title-field").val()));
+	prefs.set("link",gadgets.util.escapeString(jQuery("#link-field").val()));
+	prefs.set("legend",gadgets.util.escapeString(jQuery("#legend-field").val()));
 };
 
 function loadImage(id){
@@ -100,15 +100,20 @@ function loadImage(id){
 		error : function(){
 		    jQuery("#photo").attr("src", pUrl);
 		    jQuery("#photo").width("30%");
-		  },
+		    showImage();
+		},
 		success : function(data, textStatus) {
 		    jQuery("#photo").attr("src", photoUrl);
 		    jQuery("#photo").width("100%");
-		    jQuery("#loader").hide();
-		    jQuery("#link").fadeIn("slow");
-	    	setTimeout(function(){
-	    		gadgets.window.adjustHeight();
-	    	},150);
+		    showImage();
 		  }
 	  });	
-	}
+	};
+	
+function showImage(){
+	jQuery("#loader").hide();
+	jQuery("#link").fadeIn("slow");
+	setTimeout(function(){
+		gadgets.window.adjustHeight();
+	},150);
+};
