@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.themes;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,24 +75,33 @@ public class ThemeParser {
 
     public static String registerTheme(final ThemeDescriptor themeDescriptor)
             throws ThemeIOException {
+        return registerTheme(themeDescriptor, null);
+    }
+
+    public static String registerTheme(
+            final ThemeDescriptor themeDescriptor, final String xmlSource)
+            throws ThemeIOException {
         final String src = themeDescriptor.getSrc();
         String themeName = null;
-        URL url = null;
         InputStream in = null;
-        try {
-            url = new URL(src);
-        } catch (MalformedURLException e) {
-            url = Thread.currentThread().getContextClassLoader().getResource(
-                    src);
-        }
-
-        if (url == null) {
-            throw new ThemeIOException("Incorrect theme URL: " + src);
-        }
 
         try {
-            in = url.openStream();
-            themeName = registerTheme(themeDescriptor, in);
+            if (xmlSource == null) {
+                URL url = null;
+                try {
+                    url = new URL(src);
+                } catch (MalformedURLException e) {
+                    url = Thread.currentThread().getContextClassLoader().getResource(
+                            src);
+                }
+                if (url == null) {
+                    throw new ThemeIOException("Incorrect theme URL: " + src);
+                }
+                in = url.openStream();
+            } else {
+                in = new ByteArrayInputStream(xmlSource.getBytes());
+            }
+            themeName = registerThemeFromInputStream(themeDescriptor, in);
         } catch (FileNotFoundException e) {
             throw new ThemeIOException("File not found: " + src, e);
         } catch (IOException e) {
@@ -112,7 +122,7 @@ public class ThemeParser {
         return themeName;
     }
 
-    private static String registerTheme(final ThemeDescriptor themeDescriptor,
+    private static String registerThemeFromInputStream(final ThemeDescriptor themeDescriptor,
             final InputStream in) throws ThemeIOException, ThemeException {
         String themeName = null;
 
@@ -522,8 +532,7 @@ public class ThemeParser {
         return nodes;
     }
 
-    public static List<Node> getChildElementsByTagName(Node node,
-            String tagName) {
+    public static List<Node> getChildElementsByTagName(Node node, String tagName) {
         List<Node> nodes = new ArrayList<Node>();
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {

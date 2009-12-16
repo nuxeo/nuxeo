@@ -800,14 +800,14 @@ public final class ThemeManager implements Registrable {
     }
 
     // Theme management
-    public void loadTheme(String src) throws ThemeIOException, ThemeException {
+    public void loadTheme(String src, String xmlSource) throws ThemeIOException, ThemeException {
         ThemeDescriptor themeDescriptor = getThemeDescriptor(src);
         if (themeDescriptor == null) {
             throw new ThemeIOException("Theme not found: " + src);
         }
         final String oldThemeName = themeDescriptor.getName();
         themeDescriptor.setLoadingFailed(true);
-        String themeName = ThemeParser.registerTheme(themeDescriptor);
+        String themeName = ThemeParser.registerTheme(themeDescriptor, xmlSource);
         if (themeName == null) {
             throw new ThemeIOException("Could not parse theme: " + src);
         }
@@ -828,6 +828,10 @@ public final class ThemeManager implements Registrable {
             }
         }
         log.debug("Loaded theme: " + src);
+    }
+    
+    public void loadTheme(String src) throws ThemeIOException, ThemeException {
+        loadTheme(src, null);
     }
 
     public void deleteTheme(String src) throws ThemeIOException, ThemeException {
