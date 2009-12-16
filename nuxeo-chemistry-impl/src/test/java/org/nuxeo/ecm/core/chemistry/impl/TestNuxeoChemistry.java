@@ -30,7 +30,9 @@ import java.util.TimeZone;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
@@ -194,6 +196,42 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
 
         List<CMISObject> entries = root.getChildren();
         assertEquals(2, entries.size());
+    }
+
+    public void testCreateSPI() throws Exception {
+        Connection conn = repository.getConnection(null);
+        SPI spi = conn.getSPI();
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put(Property.TYPE_ID, "cmis:folder");
+        properties.put(Property.NAME, "myfolder");
+        ObjectId folderId = spi.createFolder(properties,
+                repository.getRootFolderId());
+        assertNotNull(folderId);
+        // create a doc in it
+        properties.put(Property.TYPE_ID, "Note");
+        properties.put(Property.NAME, "mynote");
+        ObjectId noteId = spi.createDocument(properties, folderId, null, null);
+        assertNotNull(noteId);
+        // list children to check
+        ListPage<ObjectEntry> children = spi.getChildren(folderId, null, null,
+                null);
+        assertEquals(1, children.size());
+        ObjectEntry entry = children.get(0);
+        assertEquals("Note", entry.getTypeId());
+    }
+
+    public void testUpdateSPI() throws Exception {
+        Connection conn = repository.getConnection(null);
+        SPI spi = conn.getSPI();
+
+        ObjectEntry ob = spi.getObjectByPath("/testfolder1/testfile1", null);
+        assertEquals("testfile1_Title", ob.getValue("dc:title"));
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put("dc:title", "foo");
+        ObjectId id = spi.updateProperties(ob, null, properties);
+        assertEquals(ob.getId(), id.getId());
+        ob = spi.getProperties(id, null);
+        assertEquals("foo", ob.getValue("dc:title"));
     }
 
     public void testQuery() throws Exception {

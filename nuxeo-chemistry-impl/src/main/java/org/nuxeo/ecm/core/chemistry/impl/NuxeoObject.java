@@ -114,7 +114,7 @@ public class NuxeoObject extends BaseObject implements CMISObject {
     }
 
     public Type getType() {
-        return connection.repository.getType(doc.getType());
+        return connection.repository.getType(NuxeoType.mappedId(doc.getType()));
     }
 
     public BaseType getBaseType() {
@@ -143,6 +143,9 @@ public class NuxeoObject extends BaseObject implements CMISObject {
     public void save() {
         try {
             if (getId() == null) {
+                if (getName() == null) {
+                    throw new IllegalArgumentException("Missing name");
+                }
                 connection.session.createDocument(doc);
             } else {
                 connection.session.saveDocument(doc);

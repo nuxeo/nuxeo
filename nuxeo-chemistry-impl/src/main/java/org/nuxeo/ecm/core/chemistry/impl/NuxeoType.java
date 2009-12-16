@@ -164,6 +164,10 @@ public class NuxeoType implements Type {
 
     }
 
+    protected String getNuxeoTypeName() {
+        return documentType.getName();
+    }
+
     protected static String mappedId(String id) {
         if (id.equals("Document")) {
             return BaseType.DOCUMENT.getId();

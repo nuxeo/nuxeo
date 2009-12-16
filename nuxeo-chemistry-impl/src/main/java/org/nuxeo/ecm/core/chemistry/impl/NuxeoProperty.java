@@ -106,7 +106,7 @@ public class NuxeoProperty implements Property {
         } else if (Property.CHANGE_TOKEN.equals(name)) {
             value = null;
         } else if (Property.NAME.equals(name)) {
-            value = doc.getName();
+            return new NameProperty(doc, pd);
         } else if (Property.IS_IMMUTABLE.equals(name)) {
             value = Boolean.FALSE; // TODO check write permission
         } else if (Property.IS_LATEST_VERSION.equals(name)) {
@@ -169,7 +169,7 @@ public class NuxeoProperty implements Property {
 
         if (prop == null) {
             // read-only
-            return new ReadOnly(value, pd);
+            return new ReadOnlyProperty(value, pd);
         } else {
             return new NuxeoProperty(prop, pd);
         }
@@ -215,13 +215,13 @@ public class NuxeoProperty implements Property {
     /**
      * A read-only property.
      */
-    public static class ReadOnly implements Property {
+    public static class ReadOnlyProperty implements Property {
 
         private final Serializable value;
 
         private final PropertyDefinition propertyDefinition;
 
-        public ReadOnly(Serializable value,
+        public ReadOnlyProperty(Serializable value,
                 PropertyDefinition propertyDefinition) {
             this.value = value;
             this.propertyDefinition = propertyDefinition;
@@ -239,6 +239,43 @@ public class NuxeoProperty implements Property {
             throw new UnsupportedOperationException("Read-only property: "
                     + propertyDefinition.getId());
         }
-
     }
+
+    /**
+     * Property for NAME. Allows writing before the document is saved.
+     */
+
+    public static class NameProperty implements Property {
+
+        private final DocumentModel doc;
+
+        private final PropertyDefinition propertyDefinition;
+
+        public NameProperty(DocumentModel doc,
+                PropertyDefinition propertyDefinition) {
+            this.doc = doc;
+            this.propertyDefinition = propertyDefinition;
+        }
+
+        public PropertyDefinition getDefinition() {
+            return propertyDefinition;
+        }
+
+        public Serializable getValue() {
+            return doc.getName();
+        }
+
+        public void setValue(Serializable value) {
+            if (doc.getId() != null) {
+                throw new UnsupportedOperationException("Read-only property: "
+                        + propertyDefinition.getId());
+            }
+            if (value == null || "".equals(value)) {
+                throw new IllegalArgumentException("Illegal empty name");
+            }
+            doc.setPathInfo(doc.getPath().removeLastSegments(1).toString(),
+                    (String) value);
+        }
+    }
+
 }

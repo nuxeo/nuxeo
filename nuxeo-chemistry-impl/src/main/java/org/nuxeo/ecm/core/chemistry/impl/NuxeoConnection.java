@@ -35,6 +35,7 @@ import org.apache.chemistry.ACE;
 import org.apache.chemistry.ACLPropagation;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
@@ -70,6 +71,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityPolicyService;
@@ -168,49 +170,54 @@ public class NuxeoConnection implements Connection, SPI {
         return new NuxeoObjectEntry(doc, this);
     }
 
-    private DocumentModel createDoc(String typeId, Folder folder) {
-        DocumentModel doc;
-        try {
-            doc = session.createDocumentModel(typeId);
-        } catch (ClientException e) {
+    private DocumentModel createDoc(String typeId, ObjectId folder,
+            BaseType baseType) {
+        if (typeId == null) {
+            throw new IllegalArgumentException("Missing object type id");
+        }
+        Type type = repository.getType(typeId);
+        if (type == null || type.getBaseType() != baseType) {
             throw new IllegalArgumentException(typeId);
         }
+        DocumentModel doc;
+        try {
+            String typeName = ((NuxeoType) type).getNuxeoTypeName();
+            doc = session.createDocumentModel(typeName);
+        } catch (ClientException e) {
+            throw new IllegalArgumentException(type.getId());
+        }
         if (folder != null) {
-            doc.setPathInfo(((NuxeoFolder) folder).doc.getPathAsString(), "");
+            DocumentModel parentDoc;
+            if (folder instanceof NuxeoFolder) {
+                parentDoc = ((NuxeoFolder) folder).doc;
+            } else {
+                try {
+                    parentDoc = session.getDocument(new IdRef(folder.getId()));
+                } catch (ClientException e) {
+                    throw new CMISRuntimeException("Cannot create object", e);
+                }
+            }
+            doc.setPathInfo(parentDoc.getPathAsString(), typeId);
         }
         return doc;
     }
 
     public Document newDocument(String typeId, Folder folder) {
-        Type type = repository.getType(typeId);
-        if (type == null || type.getBaseType() != BaseType.DOCUMENT) {
-            throw new IllegalArgumentException(typeId);
-        }
-        return new NuxeoDocument(createDoc(typeId, folder), this);
+        return new NuxeoDocument(createDoc(typeId, folder, BaseType.DOCUMENT),
+                this);
     }
 
     public Folder newFolder(String typeId, Folder folder) {
-        Type type = repository.getType(typeId);
-        if (type == null || type.getBaseType() != BaseType.FOLDER) {
-            throw new IllegalArgumentException(typeId);
-        }
-        return new NuxeoFolder(createDoc(typeId, folder), this);
+        return new NuxeoFolder(createDoc(typeId, folder, BaseType.FOLDER), this);
     }
 
     public Relationship newRelationship(String typeId) {
-        Type type = repository.getType(typeId);
-        if (type == null || type.getBaseType() != BaseType.RELATIONSHIP) {
-            throw new IllegalArgumentException(typeId);
-        }
-        return new NuxeoRelationship(createDoc(typeId, null), this);
+        return new NuxeoRelationship(createDoc(typeId, null,
+                BaseType.RELATIONSHIP), this);
     }
 
     public Policy newPolicy(String typeId, Folder folder) {
-        Type type = repository.getType(typeId);
-        if (type == null || type.getBaseType() != BaseType.POLICY) {
-            throw new IllegalArgumentException(typeId);
-        }
-        return new NuxeoPolicy(createDoc(typeId, folder), this);
+        return new NuxeoPolicy(createDoc(typeId, folder, BaseType.POLICY), this);
     }
 
     /*
@@ -269,17 +276,37 @@ public class NuxeoConnection implements Connection, SPI {
      * ----- Object Services -----
      */
 
+    protected NuxeoObjectEntry getObjectEntry(ObjectId object) {
+        if (object instanceof NuxeoObjectEntry) {
+            return (NuxeoObjectEntry) object;
+        }
+        try {
+            DocumentRef docRef = new IdRef(object.getId());
+            if (!session.exists(docRef)) {
+                return null;
+            }
+            return new NuxeoObjectEntry(session.getDocument(docRef), this);
+        } catch (ClientException e) {
+            throw new CMISRuntimeException(e);
+        }
+    }
+
     public ObjectId createDocument(Map<String, Serializable> properties,
             ObjectId folder, ContentStream contentStream,
             VersioningState versioningState) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // TODO contentStream, versioningState
+        if (folder == null) {
+            throw new IllegalArgumentException("Missing folder");
+        }
+        return createObject(properties, folder, BaseType.DOCUMENT);
     }
 
     public ObjectId createFolder(Map<String, Serializable> properties,
             ObjectId folder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (folder == null) {
+            throw new IllegalArgumentException("Missing folder");
+        }
+        return createObject(properties, folder, BaseType.FOLDER);
     }
 
     public ObjectId createRelationship(Map<String, Serializable> properties) {
@@ -293,6 +320,28 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
+    protected ObjectId createObject(Map<String, Serializable> properties,
+            ObjectId folder, BaseType baseType) {
+        String typeId = (String) properties.get(Property.TYPE_ID);
+        DocumentModel doc = createDoc(typeId, folder, baseType);
+        NuxeoObjectEntry entry = new NuxeoObjectEntry(doc, this);
+        // don't mutate properties -> cannot remove TYPE_ID
+        for (Entry<String, Serializable> e : properties.entrySet()) {
+            String key = e.getKey();
+            if (Property.TYPE_ID.equals(key)) {
+                continue;
+            }
+            entry.setValue(key, e.getValue());
+        }
+        try {
+            doc = session.createDocument(doc);
+            session.save();
+        } catch (ClientException e) {
+            throw new CMISRuntimeException("Cannot create folder", e);
+        }
+        return NuxeoObject.construct(doc, this);
+    }
+
     public Collection<QName> getAllowableActions(ObjectId object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
@@ -300,22 +349,20 @@ public class NuxeoConnection implements Connection, SPI {
 
     public ObjectEntry getProperties(ObjectId object, Inclusion inclusion) {
         // TODO filter, includeAllowableActions, includeRelationships
-        DocumentModel doc;
-        try {
-            DocumentRef docRef = new IdRef(object.getId());
-            if (!session.exists(docRef)) {
-                return null;
-            }
-            doc = session.getDocument(docRef);
-        } catch (ClientException e) {
-            throw new RuntimeException(e); // TODO
-        }
-        return new NuxeoObjectEntry(doc, this);
+        return getObjectEntry(object);
     }
 
     public ObjectEntry getObjectByPath(String path, Inclusion inclusion) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // TODO Inclusion
+        try {
+            DocumentRef docRef = new PathRef(path);
+            if (!session.exists(docRef)) {
+                return null;
+            }
+            return new NuxeoObjectEntry(session.getDocument(docRef), this);
+        } catch (ClientException e) {
+            throw new RuntimeException(e); // TODO
+        }
     }
 
     public Folder getFolder(String path) {
@@ -399,10 +446,14 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId updateProperties(ObjectId objeId, String changeToken,
+    public ObjectId updateProperties(ObjectId object, String changeToken,
             Map<String, Serializable> properties) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // TODO changeToken
+        ObjectEntry objectEntry = getObjectEntry(object);
+        for (Entry<String, Serializable> en : properties.entrySet()) {
+            objectEntry.setValue(en.getKey(), en.getValue());
+        }
+        return objectEntry;
     }
 
     public ObjectId moveObject(ObjectId object, ObjectId targetFolder,
