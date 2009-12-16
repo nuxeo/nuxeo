@@ -155,7 +155,7 @@ public class NotificationEventListener implements PostCommitEventListener {
 
     protected List<String> getGroupMembers(String groupId)
             throws ClientException {
-        return getUserManager().getUsersInGroup(groupId);
+        return getUserManager().getUsersInGroupAndSubGroups(groupId);
     }
 
     private void sendNotificationSignalForUser(Notification notification,
