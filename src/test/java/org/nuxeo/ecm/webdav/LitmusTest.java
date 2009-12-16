@@ -36,7 +36,7 @@ public class LitmusTest extends AbstractServerTest {
         if (System.getenv("BT") != null) {
             return;
         }
-        Process p = Runtime.getRuntime().exec("litmus " + ROOT_URI);
+        Process p = Runtime.getRuntime().exec("litmus -k " + ROOT_URI);
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
         String s;
         while ((s = reader.readLine()) != null) {

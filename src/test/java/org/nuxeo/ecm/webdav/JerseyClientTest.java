@@ -16,7 +16,7 @@ public class JerseyClientTest extends AbstractServerTest {
     @Test
     public void simpleTest() {
         Client client = Client.create();
-        WebResource r = client.resource(LitmusTest.ROOT_URI);
+        WebResource r = client.resource(ROOT_URI);
 
         String e1 = r.path("").get(String.class);
         assertTrue(e1.length() > 0);
@@ -37,6 +37,13 @@ public class JerseyClientTest extends AbstractServerTest {
             fail("Should have raise a 'doc not found' exception");
         } catch (Exception e) {
             // OK.
+        }
+    }
+
+    @Test
+    public void multipleTest() {
+        for (int i = 0; i < 100; i++) {
+            simpleTest();
         }
     }
 

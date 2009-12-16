@@ -81,4 +81,21 @@ public class AbstractResource {
         return p.lastSegment();
     }
 
+    String getTokenFromHeaders(String headerName) {
+        return getTokenFromHeaders(headerName, request);
+    }
+
+    static String getTokenFromHeaders(String headerName, HttpServletRequest request) {
+        String header = request.getHeader(headerName);
+        if (header == null) {
+            return null;
+        }
+        String token = header.trim();
+        int tokenStart = token.indexOf("<urn:uuid:");
+        token = token.substring(tokenStart + "<urn:uuid:".length(), token.length());
+        int tokenEnd = token.indexOf(">");
+        token = token.substring(0, tokenEnd);
+        return token;
+    }
+
 }

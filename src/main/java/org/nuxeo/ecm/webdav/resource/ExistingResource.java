@@ -60,8 +60,8 @@ public class ExistingResource extends AbstractResource {
     @DELETE
     public Response delete() throws Exception {
         if (lockManager.isLocked(path)) {
-            String token = getTokenFromHeaders();
-            if (!LockManager.getInstance().canUnlock(path, token)) {
+            String token = getTokenFromHeaders("if");
+            if (!lockManager.canUnlock(path, token)) {
                 return Response.status(423).build();
             }
         }
@@ -82,8 +82,8 @@ public class ExistingResource extends AbstractResource {
     public Response move(@HeaderParam("Destination") String dest,
             @HeaderParam("Overwrite") String overwrite) throws Exception {
         if (lockManager.isLocked(path)) {
-            String token = getTokenFromHeaders();
-            if (!LockManager.getInstance().canUnlock(path, token)) {
+            String token = getTokenFromHeaders("if");
+            if (!lockManager.canUnlock(path, token)) {
                 return Response.status(423).build();
             }
         }
@@ -102,7 +102,7 @@ public class ExistingResource extends AbstractResource {
         log.info("to " + destPath);
 
         if (lockManager.isLocked(destPath)) {
-            String token = getTokenFromHeaders();
+            String token = getTokenFromHeaders("if");
             if (!LockManager.getInstance().canUnlock(path, token)) {
                 return Response.status(423).build();
             }
@@ -158,27 +158,29 @@ public class ExistingResource extends AbstractResource {
 
     @LOCK
     public Response lock() throws Exception {
+        String token = getTokenFromHeaders("if");
+        if (lockManager.isLocked(path) && !lockManager.canUnlock(path, token)) {
+            return Response.status(423).build();
+        }
+
         LockInfo lockInfo;
         if (request.getHeader("content-length") != null) {
             try {
                 Unmarshaller u = Util.getUnmarshaller();
                 lockInfo = (LockInfo) u.unmarshal(request.getInputStream());
                 Util.printAsXml(lockInfo);
+                token = lockManager.lock(path);
             } catch (JAXBException e) {
                 log.error(e);
                 // FIXME: check this is the right response code
                 return Response.status(400).build();
             }
-        } else if (request.getHeader("if") != null) {
-            String token = getTokenFromHeaders();
-            if (!lockManager.canUnlock(path, token)) {
-                return Response.status(423).build();
-            } 
+        } else if (token != null) {
+            // OK
         } else {
             return Response.status(400).build();
         }
 
-        String token = LockManager.getInstance().lock(path);
         Prop prop = new Prop(new LockDiscovery(new ActiveLock(
                 LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
                 new Owner("toto"),
@@ -191,8 +193,17 @@ public class ExistingResource extends AbstractResource {
 
     @UNLOCK
     public Response unlock() {
-        LockManager.getInstance().unlock(path);
-        return Response.status(204).build();
+        if (lockManager.isLocked(path)) {
+            String token = getTokenFromHeaders("lock-token");
+            if (!lockManager.canUnlock(path, token)) {
+                return Response.status(423).build();
+            }
+            lockManager.unlock(path);
+            return Response.status(204).build();
+        } else {
+            // TODO: return an error
+            return Response.status(204).build();
+        }
     }
 
     /**
@@ -201,16 +212,6 @@ public class ExistingResource extends AbstractResource {
     @MKCOL
     public Response mkcol() {
         return Response.status(405).build();
-    }
-
-    String getTokenFromHeaders() {
-        String header = request.getHeader("if");
-        if (header == null) {
-            return null;
-        }
-        header = header.trim();
-        String token = header.substring(1, header.length()-1);
-        return token;
     }
 
 }

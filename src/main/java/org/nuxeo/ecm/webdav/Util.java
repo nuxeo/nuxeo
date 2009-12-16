@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,20 +44,28 @@ public class Util {
 
     private static final Log log = LogFactory.getLog(Util.class);
 
+    private static CoreSession session;
+    private static Unmarshaller unmarshaller;
+
     // Utility class.
     private Util() {
     }
 
     public static CoreSession getSession(HttpServletRequest request) throws Exception {
         return getSession();
+
+        // FIXME
         //UserSession us = UserSession.getCurrentSession(request);
         //return us.getCoreSession();
     }
 
     private static CoreSession getSession() throws Exception {
-        RepositoryManager rm = Framework.getService(RepositoryManager.class);
-        Repository repo = rm.getDefaultRepository();
-        return repo.open();
+        if (session == null) {
+            RepositoryManager rm = Framework.getService(RepositoryManager.class);
+            Repository repo = rm.getDefaultRepository();
+            session = repo.open();
+        }
+        return session;
     }
 
     // utility methods related to JAXB marshalling
@@ -76,17 +85,22 @@ public class Util {
     }
 
     public static Unmarshaller getUnmarshaller() throws JAXBException {
-        return getJaxbContext().createUnmarshaller();        
+        if (unmarshaller == null) {
+            unmarshaller = getJaxbContext().createUnmarshaller();
+        }
+        return unmarshaller;
     }
 
     // For debugging.
 
     public static void printAsXml(Object o) throws JAXBException {
+/*
         StringWriter sw = new StringWriter();
         Marshaller marshaller = Util.getJaxbContext().createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         marshaller.marshal(o, sw);
         System.out.println(sw);
+*/
     }
 
 }

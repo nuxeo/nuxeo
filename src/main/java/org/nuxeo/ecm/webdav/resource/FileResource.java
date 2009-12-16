@@ -28,7 +28,6 @@ import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.webdav.locking.LockManager;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +37,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -61,7 +61,8 @@ public class FileResource extends ExistingResource {
 
     @PUT
     public Response put() throws Exception {
-        if (lockManager.isLocked(path)) {
+        String token = getTokenFromHeaders("if");
+        if (lockManager.isLocked(path) && !lockManager.canUnlock(path, token)) {
             return Response.status(423).build();
         }
 
@@ -73,7 +74,7 @@ public class FileResource extends ExistingResource {
         session.saveDocument(doc);
         session.save();
 
-        return Response.created(new URI(path)).build();
+        return Response.created(new URI(URLEncoder.encode(path, "UTF8"))).build();
     }
 
     @PROPFIND
@@ -87,7 +88,8 @@ public class FileResource extends ExistingResource {
                 new HRef(uriInfo.getRequestUri()), null, null, null,
                 new PropStat(new Prop(
                         new CreationDate(creationDate), new GetLastModified(lastModified),
-                        new GetContentType("application/octet-stream"), new GetContentLength(content.getLength())),
+                        new GetContentType("application/octet-stream"),
+                        new GetContentLength(content.getLength())),
                         new Status(OK)));
 
 		MultiStatus st = new MultiStatus(response);
