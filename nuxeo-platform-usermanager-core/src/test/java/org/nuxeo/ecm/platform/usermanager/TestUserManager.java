@@ -346,6 +346,135 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertEquals(expectedTopLevelGroups, topLevelGroups);
     }
 
+    /**
+     * Test the method getUsersInGroup, making sure it does return only the
+     * users of the group (and not the subgroups ones)
+     * 
+     * @throws Exception
+     */
+    public void testGetUsersInGroup() throws Exception {
+        deleteTestObjects();
+
+        DocumentModel u1 = getUser("test_u1");
+        DocumentModel u2 = getUser("test_u2");
+        DocumentModel u2bis = getUser("test_u2bis");
+
+        userManager.createUser(u1);
+        userManager.createUser(u2);
+        userManager.createUser(u2bis);
+        DocumentModel g1 = getGroup("test_g1");
+        DocumentModel g2 = getGroup("test_g2");
+
+        List<String> g1Users = Arrays.asList("test_u1");
+        List<String> g2Users = Arrays.asList("test_u2", "test_u2bis");
+
+        List<String> g2Groups = Arrays.asList("test_g1");
+
+        g1.setProperty("group", "members", g1Users);
+        userManager.createGroup(g1);
+        g2.setProperty("group", "members", g2Users);
+        g2.setProperty("group", "subGroups", g2Groups);
+        userManager.createGroup(g2);
+
+        List<String> expectedUsersInGroup1 = Arrays.asList("test_u1");
+        List<String> expectedUsersInGroup2 = Arrays.asList("test_u2bis",
+                "test_u2");
+        Collections.sort(expectedUsersInGroup1);
+        Collections.sort(expectedUsersInGroup2);
+        assertEquals(expectedUsersInGroup1,
+                userManager.getUsersInGroup("test_g1"));
+        assertEquals(expectedUsersInGroup2,
+                userManager.getUsersInGroup("test_g2"));
+    }
+
+    /**
+     * Test the method getUsersInGroupAndSubgroups, making sure it does return
+     * all the users from a group and its subgroups.
+     * 
+     * @throws Exception
+     */
+    public void testGetUsersInGroupAndSubgroups() throws Exception {
+        deleteTestObjects();
+
+        DocumentModel u1 = getUser("test_u1");
+        DocumentModel u2 = getUser("test_u2");
+        DocumentModel u2bis = getUser("test_u2bis");
+
+        userManager.createUser(u1);
+        userManager.createUser(u2);
+        userManager.createUser(u2bis);
+        DocumentModel g1 = getGroup("test_g1");
+        DocumentModel g2 = getGroup("test_g2");
+
+        List<String> g1Users = Arrays.asList("test_u1");
+        List<String> g2Users = Arrays.asList("test_u2", "test_u2bis");
+        List<String> g2Groups = Arrays.asList("test_g1");
+
+        g1.setProperty("group", "members", g1Users);
+        userManager.createGroup(g1);
+        g2.setProperty("group", "members", g2Users);
+        g2.setProperty("group", "subGroups", g2Groups);
+        userManager.createGroup(g2);
+
+        List<String> expectedUsersInGroup1 = Arrays.asList("test_u1");
+        List<String> usersInGroupAndSubGroups1 = userManager.getUsersInGroupAndSubGroups("test_g1");
+        Collections.sort(expectedUsersInGroup1);
+        Collections.sort(usersInGroupAndSubGroups1);
+        assertEquals(expectedUsersInGroup1, usersInGroupAndSubGroups1);
+
+        // should have all the groups from group1 and group2
+        List<String> expectedUsersInGroup2 = Arrays.asList("test_u2bis",
+                "test_u2", "test_u1");
+        List<String> usersInGroupAndSubGroups2 = userManager.getUsersInGroupAndSubGroups("test_g2");
+        Collections.sort(expectedUsersInGroup2);
+        Collections.sort(usersInGroupAndSubGroups2);
+        assertEquals(expectedUsersInGroup2, usersInGroupAndSubGroups2);
+
+    }
+
+    /**
+     * Test the method getUsersInGroupAndSubgroups making sure it's not going
+     * into an infinite loop when a subgroup is also parent of a group.
+     * 
+     * @throws Exception
+     */
+    public void testGetUsersInGroupAndSubgroupsWithoutInfiniteLoop()
+            throws Exception {
+        deleteTestObjects();
+
+        DocumentModel u1 = getUser("test_u1");
+        DocumentModel u2 = getUser("test_u2");
+        DocumentModel u2bis = getUser("test_u2bis");
+
+        userManager.createUser(u1);
+        userManager.createUser(u2);
+        userManager.createUser(u2bis);
+        DocumentModel g1 = getGroup("test_g1");
+        DocumentModel g2 = getGroup("test_g2");
+
+        List<String> g1Users = Arrays.asList("test_u1");
+        List<String> g2Users = Arrays.asList("test_u2", "test_u2bis");
+        List<String> g2Groups = Arrays.asList("test_g1");
+        // group1 is also a subgroup of group2
+        List<String> g1Groups = Arrays.asList("test_g2");
+
+        g1.setProperty("group", "members", g1Users);
+        g1.setProperty("group", "subGroups", g1Groups);
+        userManager.createGroup(g1);
+        g2.setProperty("group", "members", g2Users);
+        g2.setProperty("group", "subGroups", g2Groups);
+        userManager.createGroup(g2);
+
+        List<String> expectedUsersInGroup2 = Arrays.asList("test_u2bis",
+                "test_u2", "test_u1");
+        // infinite loop can occure here:
+        List<String> usersInGroupAndSubGroups2 = userManager.getUsersInGroupAndSubGroups("test_g2");
+        Collections.sort(expectedUsersInGroup2);
+        Collections.sort(usersInGroupAndSubGroups2);
+        assertEquals(expectedUsersInGroup2, usersInGroupAndSubGroups2);
+
+    }
+
     public void testDeletePrincipal() throws Exception {
         deleteTestObjects();
         DocumentModel user = getUser("test_u1");

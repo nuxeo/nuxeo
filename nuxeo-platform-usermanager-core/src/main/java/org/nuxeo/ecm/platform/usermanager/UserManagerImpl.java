@@ -502,6 +502,34 @@ public class UserManagerImpl implements UserManager {
         return getGroup(groupId).getMemberUsers();
     }
 
+    public List<String> getUsersInGroupAndSubGroups(String groupId)
+            throws ClientException {
+        Set<String> groups = new HashSet<String>();
+        groups.add(groupId);
+        appendSubgroups(groupId, groups);
+
+        Set<String> users = new HashSet<String>();
+        for (String groupid : groups) {
+            users.addAll(getGroup(groupid).getMemberUsers());
+        }
+
+        return new ArrayList<String>(users);
+    }
+
+    protected void appendSubgroups(String groupId, Set<String> groups)
+            throws ClientException {
+        List<String> groupsToAppend = getGroupsInGroup(groupId);
+        groups.addAll(groupsToAppend);
+        for (String subgroupId : groupsToAppend) {
+            groups.add(subgroupId);
+            // avoiding infinite loop
+            if (!groups.contains(subgroupId)) {
+                appendSubgroups(subgroupId, groups);
+            }
+        }
+
+    }
+
     protected boolean isAnonymousMatching(Map<String, Serializable> filter,
             Set<String> fulltext) {
         String anonymousUserId = getAnonymousUserId();

@@ -282,6 +282,15 @@ public interface UserManager extends Serializable {
     List<String> getUsersInGroup(String groupId) throws ClientException;
 
     /**
+     * Get users from a group and its subgroups
+     * 
+     * @param groupId ID of the group
+     * @return
+     */
+    List<String> getUsersInGroupAndSubGroups(String groupId)
+            throws ClientException;
+
+    /**
      * Returns true is users referential is read only (ie : LDAP) -> can not add
      * users -> can not delete users.
      */

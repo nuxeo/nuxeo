@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
  * @author Florent Guillaume
- *
+ * 
  */
 public class FakeUserManagerImpl implements UserManager {
 
@@ -210,7 +210,8 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     public NuxeoPrincipal getPrincipal(String username) throws ClientException {
-        NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(SecurityConstants.ADMINISTRATOR);
+        NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(
+                SecurityConstants.ADMINISTRATOR);
         principal.setGroups(Arrays.asList(new String[] { SecurityConstants.ADMINISTRATORS }));
         principal.setEmail("admin@example.com");
         return principal;
@@ -221,6 +222,11 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     public List<String> getUsersInGroup(String groupId) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<String> getUsersInGroupAndSubGroups(String groupId)
+            throws ClientException {
         throw new UnsupportedOperationException();
     }
 

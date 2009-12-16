@@ -226,6 +226,15 @@ public class UserManagerBean implements UserManager {
         }
     }
 
+    public List<String> getUsersInGroupAndSubGroups(String groupId)
+            throws ClientException {
+        try {
+            return getUserManager().getUsersInGroupAndSubGroups(groupId);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
     public Boolean areGroupsReadOnly() throws ClientException {
         try {
             return getUserManager().areGroupsReadOnly();
