@@ -246,6 +246,11 @@ public class MockUserManager implements UserManager{
         return null;
     }
 
+    public List<String> getUsersInGroupAndSubGroups(String groupId)
+            throws ClientException {
+        return null;
+    }
+    
     public List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter,
             Set<String> pattern) throws ClientException {
         // TODO Auto-generated method stub
