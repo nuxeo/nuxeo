@@ -38,3 +38,4 @@ nxfeatures/tablesorter/feature.xml
 nxfeatures/effects/feature.xml
 nxfeatures/ui/feature.xml
 nxfeatures/nuxeo/feature.xml
+nxfeatures/form/feature.xml

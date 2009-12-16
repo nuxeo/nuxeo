@@ -274,11 +274,12 @@ public class ContainerManagerImpl implements ContainerManager {
   }
 
   private boolean getPermission(Space space, CoreSession session) {
-    if (!space.isVersionnable())
+    if (!space.isVersionnable()) {
       return PermissionHelper.canWrite(space.getId(), session);
-    else
+    } else {
       return PermissionHelper.canWrite(space.getId(), session)
           && !space.isCurrentVersion();
+    }
   }
 
   private Space createUpdateSpace(String spaceId, CoreSession session,

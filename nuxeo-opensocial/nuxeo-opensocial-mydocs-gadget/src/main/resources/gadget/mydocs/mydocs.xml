@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-  <ModulePrefs title="My documents" height="95" scrolling="ture"
-    scaling="true" directory_title="My Documents" title_url="http://www.wofrance.fr/"
+  <ModulePrefs title="My documents" height="95" scrolling="true"
+    scaling="true" directory_title="My Documents"
     description="File browser in the ECM system" author="Damien METZLER"
     author_email="damien.metzler@leroymerlin.fr" author_affiliation="Leroy Merlin"
     author_location="Lezennes, France">

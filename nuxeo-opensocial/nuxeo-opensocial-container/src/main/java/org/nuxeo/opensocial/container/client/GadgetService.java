@@ -28,7 +28,7 @@ import com.google.gwt.core.client.JsArray;
 
 /**
  * JSNI implementation of opensocial container
- *
+ * 
  * @author Guillaume Cusnieux
  */
 public class GadgetService {
@@ -45,14 +45,13 @@ public class GadgetService {
     rpc.register('set_htmlcontent', @org.nuxeo.opensocial.container.client.GadgetService::setHtmlContent(Ljava/lang/String;));
     rpc.register('get_htmlcontent', @org.nuxeo.opensocial.container.client.GadgetService::getHtmlContent());
     rpc.register('show_image', @org.nuxeo.opensocial.container.client.GadgetService::showImage(Lcom/google/gwt/core/client/JsArray;I));
-
-    //Nuxeo specific bindings
+    rpc.register('get_nuxeo_gadget_id', @org.nuxeo.opensocial.container.client.GadgetService::getGadgetId());
     rpc.register('get_nuxeo_space_id', @org.nuxeo.opensocial.container.client.GadgetService::getSpaceId());
   }-*/;
 
   /**
    * Resize gadget
-   *
+   * 
    * @param height
    */
   public static native void resizeIframe(int height)
@@ -77,7 +76,7 @@ public class GadgetService {
 
   /**
    * Set new preference
-   *
+   * 
    * @param editToken
    * @param name
    * @param value
@@ -109,7 +108,7 @@ public class GadgetService {
 
   /**
    * Service : Set new title
-   *
+   * 
    * @param title
    */
   public static native void setTitle(String title)
@@ -151,7 +150,6 @@ public class GadgetService {
   }-*/;
 
   public static String getHtmlContentOfGadget(String frameId) {
-    JsLibrary.log("get html content " + frameId);
     String htmlContent = ContainerEntryPoint.getContainerPortal()
         .getGadgetPortletByFrameId(frameId)
         .getGadgetBean()
@@ -161,9 +159,22 @@ public class GadgetService {
     return htmlContent;
   };
 
+  public static native String getGadgetId()
+  /*-{
+    var id = @org.nuxeo.opensocial.container.client.GadgetService::getGadgetIdRef(Ljava/lang/String;)(this.f);
+    return id;
+  }-*/;
+
+  public static String getGadgetIdRef(String frameId) {
+    return ContainerEntryPoint.getContainerPortal()
+        .getGadgetPortletByFrameId(frameId)
+        .getGadgetBean()
+        .getRef();
+  };
+
   /**
    * Service : Show List of image in Container
-   *
+   * 
    * @param childs
    * @param current
    */
@@ -195,7 +206,7 @@ public class GadgetService {
 
   /**
    * Security : Setter of rpc relay
-   *
+   * 
    * @param iframeId
    * @param rpcToken
    */
@@ -206,7 +217,7 @@ public class GadgetService {
 
   /**
    * Security : Setter of Auth token
-   *
+   * 
    * @param iframeId
    * @param rpcToken
    */

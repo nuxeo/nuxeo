@@ -17,12 +17,12 @@ KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 -->
 <feature>
-  <name>nuxeo</name>
-  <dependency>rpc</dependency>
+  <name>form</name>
+  <dependency>jquery</dependency>
   <container>
-
+    <script src="form.js"/>
   </container>
   <gadget>
-     <script src="nuxeo.js"/>
+    <script src="form.js"/>
   </gadget>
 </feature>

@@ -40,3 +40,7 @@ gadgets.nuxeo.getHtmlContent = function(callback) {
 gadgets.nuxeo.setHtmlContent = function(htmlContent, callback) {
   gadgets.rpc.call(null, "set_htmlcontent", callback, htmlContent);
 };
+
+gadgets.nuxeo.getGadgetId = function(callback) {
+  gadgets.rpc.call(null, "get_nuxeo_gadget_id", callback, null);
+};
