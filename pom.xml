@@ -72,6 +72,7 @@
       <id>nuxeo-ep-jetty</id>
       <modules>
         <module>nuxeo-platform-ear</module>
+        <module>nuxeo-distribution-dm</module>
         <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
@@ -170,10 +171,6 @@
       </distributionManagement>
     </profile>
   </profiles>
-
-  <modules>
-    <module>nuxeo-distribution-tools</module>
-  </modules>
 
   <dependencyManagement>
     <dependencies>

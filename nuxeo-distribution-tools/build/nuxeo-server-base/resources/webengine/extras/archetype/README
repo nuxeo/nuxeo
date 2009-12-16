@@ -1,5 +1,0 @@
-To generate an WebEngine module project use the following command:
-
-java Archetype webmodule target/directory
-
-The project will be generated in target/directory/artifactId where the artifactIf is the specified artifact 
