@@ -5,7 +5,6 @@
   <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
   <require>org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService</require>
 
-
   <extension
     target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
     point="sessionManager">
@@ -24,7 +23,6 @@
         <pattern>site/</pattern>
       </patterns>
     </startURLPattern>
-
   </extension>
 
   <extension
@@ -54,9 +52,7 @@
         <plugin>WEBSERVICES_AUTH</plugin>
       </plugins>
     </authenticationChain>
-
   </extension>
-
 
   <!-- The propagator must be deployed only on webengine standalone 
   so the definition was moved to config directory in webengine -->

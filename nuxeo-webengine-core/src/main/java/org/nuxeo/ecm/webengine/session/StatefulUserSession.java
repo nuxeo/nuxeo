@@ -27,6 +27,8 @@ import javax.servlet.http.HttpSessionBindingListener;
 
 public class StatefulUserSession extends UserSession implements HttpSessionBindingListener {
 
+    private static final long serialVersionUID = 1L;
+
     public StatefulUserSession(Principal principal) {
         super(principal);
     }
@@ -38,8 +40,6 @@ public class StatefulUserSession extends UserSession implements HttpSessionBindi
     public StatefulUserSession(Principal principal, Object credentials) {
         super(principal, credentials);
     }
-
-    private static final long serialVersionUID = 1L;
 
     public void valueBound(HttpSessionBindingEvent event) {
         // the user session was bound to the HTTP session
@@ -54,7 +54,6 @@ public class StatefulUserSession extends UserSession implements HttpSessionBindi
     @Override
     public void terminateRequest(HttpServletRequest request) {
         // TODO Auto-generated method stub
-
     }
 
 }

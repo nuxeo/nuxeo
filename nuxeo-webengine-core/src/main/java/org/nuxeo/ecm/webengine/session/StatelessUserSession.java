@@ -25,9 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 
 public class StatelessUserSession extends UserSession {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     public StatelessUserSession(Principal principal) {
@@ -41,7 +38,6 @@ public class StatelessUserSession extends UserSession {
     public StatelessUserSession(Principal principal, Object credentials) {
         super(principal, credentials);
     }
-
 
     @Override
     public void terminateRequest(HttpServletRequest resuest) {

@@ -29,7 +29,7 @@ import org.nuxeo.runtime.contribution.ContributionRegistry;
 
 /**
  * The parent provider is read only. It is never modified by the registry.
- * It serves only to resolve dependencies. This allow greater flexibility in managing dependencies.
+ * It serves only to resolve dependencies. This allows greater flexibility in managing dependencies.
  * This registry may have a parent registry that can be used only read only.
  *
  * TODO need to implement a visibility (PRIVATE, PROTECTED, PUBLIC etc) on contributions when extending other registries

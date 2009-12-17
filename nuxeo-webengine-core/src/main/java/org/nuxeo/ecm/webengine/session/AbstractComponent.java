@@ -19,10 +19,8 @@
 
 package org.nuxeo.ecm.webengine.session;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class AbstractComponent implements Component {
 

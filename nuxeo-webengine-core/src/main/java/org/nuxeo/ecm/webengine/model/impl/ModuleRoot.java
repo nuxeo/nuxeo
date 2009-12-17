@@ -50,9 +50,9 @@ public class ModuleRoot extends DefaultObject implements ModuleResource {
             if (file != null) {
                 long lastModified = file.lastModified();
                 ResponseBuilder resp = Response.ok(file.getFile())
-                .lastModified(new Date(lastModified))
-                .header("Cache-Control", "public")
-                .header("Server", "Nuxeo/WebEngine-1.0");
+                        .lastModified(new Date(lastModified))
+                        .header("Cache-Control", "public")
+                        .header("Server", "Nuxeo/WebEngine-1.0");
 
                 String mimeType = ctx.getEngine().getMimeType(file.getExtension());
                 if (mimeType == null) {

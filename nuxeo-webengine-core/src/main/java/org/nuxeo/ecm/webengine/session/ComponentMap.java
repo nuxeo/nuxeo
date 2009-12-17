@@ -23,7 +23,6 @@ import java.util.HashMap;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ComponentMap<T extends Component> extends HashMap<String, T> {
 
@@ -49,4 +48,5 @@ public class ComponentMap<T extends Component> extends HashMap<String, T> {
             }
         }
     }
+
 }

@@ -22,7 +22,7 @@
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
     Expose the registration of freemarker templates (directives, methods or global shared variables)
-    This way custom tremplates can be registered into the freemarker engine from outside
+    This way, custom templates can be registered into the freemarker engine from outside. Ex:
     <code>
       <template name="wiki" class="org.nuxeo.ecm.platform.wiki.WikiTransformer"/>
     </code>
@@ -37,7 +37,7 @@
     @author Bogdan Stefanescu (bs@nuxeo.com)
     Expose the registration of rendering transformers contributions.
     This extension point will generally be extended by other components
-    with specific transformer configuration
+    with specific transformer configuration.
     <code>
       <transformer name="wiki" class="org.nuxeo.ecm.platform.wiki.WikiTransformer"/>
     </code>
@@ -53,7 +53,7 @@
     Expose the registration of site object descriptors
     <code>
       <object id="WebFolder" extends="default">
-        <requestHandler>org.nuxeo.ecm.webengine.DefaultRequestHandler</requestHandler> <!-- this is the default value -->
+        <requestHandler>org.nuxeo.ecm.webengine.DefaultRequestHandler</requestHandler><!-- this is the default value -->
         <actions>
           <action id="update" enabled="true" permissions=".|WRITE"
             script="/my/optional/script/path" handler="myOptionalActionHandler"/>

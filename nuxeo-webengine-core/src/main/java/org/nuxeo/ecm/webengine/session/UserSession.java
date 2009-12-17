@@ -44,12 +44,13 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-// TODO: should be synchronized? concurrent access may happen for the same session
-public abstract class UserSession extends HashMap<String, Object>  {
+// TODO: should be synchronized? concurrent access may happen for the same
+// session
+public abstract class UserSession extends HashMap<String, Object> {
 
     private static final long serialVersionUID = 260562970988817064L;
 
-    protected static final String WE_SESSION_KEY="nuxeo.webengine.user_session";
+    protected static final String WE_SESSION_KEY = "nuxeo.webengine.user_session";
 
     private static final Log log = LogFactory.getLog(UserSession.class);
 
@@ -75,8 +76,7 @@ public abstract class UserSession extends HashMap<String, Object>  {
         HttpSession session = request.getSession(false);
         if (session == null) {
             request.setAttribute(WE_SESSION_KEY, us);
-        }
-        else {
+        } else {
             session.setAttribute(WE_SESSION_KEY, us);
         }
     }
@@ -97,7 +97,8 @@ public abstract class UserSession extends HashMap<String, Object>  {
         Set<Object> privateCredentials = new HashSet<Object>();
         principals.add(principal);
         publicCredentials.add(credentials);
-        subject = new Subject(true, principals, publicCredentials, privateCredentials);
+        subject = new Subject(true, principals, publicCredentials,
+                privateCredentials);
     }
 
     public void setCoreSession(CoreSession coreSession) {
@@ -107,8 +108,8 @@ public abstract class UserSession extends HashMap<String, Object>  {
     /**
      * Gets a core session.
      * <p>
-     * If it does not already exist, it will be opened against the
-     * given repository.
+     * If it does not already exist, it will be opened against the given
+     * repository.
      *
      * @param repoName
      * @return the core session
@@ -120,7 +121,7 @@ public abstract class UserSession extends HashMap<String, Object>  {
                     try {
                         coreSession = openSession(repoName);
                     } catch (Exception e) {
-                        e.printStackTrace(); //TODO
+                        e.printStackTrace(); // TODO
                     }
                 }
             }
@@ -155,7 +156,7 @@ public abstract class UserSession extends HashMap<String, Object>  {
     public static CoreSession openSession(String repoName) throws Exception {
         RepositoryManager rm = Framework.getService(RepositoryManager.class);
         Repository repo = null;
-        if (repoName== null) {
+        if (repoName == null) {
             repo = rm.getDefaultRepository();
         } else {
             repo = rm.getRepository(repoName);
@@ -166,7 +167,6 @@ public abstract class UserSession extends HashMap<String, Object>  {
         }
         return repo.open();
     }
-
 
     protected void install() {
         if (log.isDebugEnabled()) {
@@ -179,11 +179,11 @@ public abstract class UserSession extends HashMap<String, Object>  {
             log.debug("Uninstalling user session");
         }
         // destroy all components
-        for (Map.Entry<Class<?>,ComponentMap<?>> entry : comps.entrySet()) {
+        for (Map.Entry<Class<?>, ComponentMap<?>> entry : comps.entrySet()) {
             try {
                 entry.getValue().destroy(this);
             } catch (SessionException e) {
-                log.error("Failed to destroy component: "+entry.getKey(), e);
+                log.error("Failed to destroy component: " + entry.getKey(), e);
             }
         }
         comps = new HashMap<Class<?>, ComponentMap<?>>();
@@ -210,8 +210,8 @@ public abstract class UserSession extends HashMap<String, Object>  {
     /**
      * Finds an existing component.
      * <p>
-     * The component state will not be modified before being returned
-     * as in {@link #getComponent(Class, String)}.
+     * The component state will not be modified before being returned as in
+     * {@link #getComponent(Class, String)}.
      * <p>
      * If the component was not found in that session, returns null.
      *
@@ -221,8 +221,9 @@ public abstract class UserSession extends HashMap<String, Object>  {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public synchronized <T extends Component> T findComponent(Class<T> type, String name) {
-        ComponentMap<T> map = (ComponentMap<T>)comps.get(type);
+    public synchronized <T extends Component> T findComponent(Class<T> type,
+            String name) {
+        ComponentMap<T> map = (ComponentMap<T>) comps.get(type);
         if (map == null) {
             return null;
         }
@@ -236,8 +237,8 @@ public abstract class UserSession extends HashMap<String, Object>  {
     /**
      * Gets a component given its class and an optional name.
      * <p>
-     * If the component was not yet created in this session, it will
-     * be created and registered against the session.
+     * If the component was not yet created in this session, it will be created
+     * and registered against the session.
      *
      * @param <T>
      * @param type
@@ -246,7 +247,8 @@ public abstract class UserSession extends HashMap<String, Object>  {
      * @throws SessionException
      */
     @SuppressWarnings("unchecked")
-    public synchronized <T extends Component> T getComponent(Class<T> type, String name) throws SessionException {
+    public synchronized <T extends Component> T getComponent(Class<T> type,
+            String name) throws SessionException {
         ComponentMap<T> map = (ComponentMap<T>) comps.get(type);
         T comp = null;
         if (map == null) {
@@ -266,7 +268,8 @@ public abstract class UserSession extends HashMap<String, Object>  {
         try {
             comp = type.newInstance();
         } catch (Exception e) {
-            throw new SessionException("Failed to instantiate component: "+type, e);
+            throw new SessionException("Failed to instantiate component: "
+                    + type, e);
         }
         comp.initialize(this, name);
         if (name == null) {
@@ -277,12 +280,14 @@ public abstract class UserSession extends HashMap<String, Object>  {
         return type.cast(comp);
     }
 
-    public <T extends Component> T getComponent(Class<T> type) throws SessionException {
+    public <T extends Component> T getComponent(Class<T> type)
+            throws SessionException {
         return getComponent(type, null);
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Component> T getComponent(String  typeName, String name) throws SessionException {
+    public <T extends Component> T getComponent(String typeName, String name)
+            throws SessionException {
         try {
             Class<T> type = (Class<T>) Class.forName(typeName);
             return getComponent(type, name);
@@ -295,15 +300,16 @@ public abstract class UserSession extends HashMap<String, Object>  {
     /**
      * Gets component by ID.
      * <p>
-     * The ID is of the form <code>type#name</code> for non-null names
-     * and <code>type</code> for null names.
+     * The ID is of the form <code>type#name</code> for non-null names and
+     * <code>type</code> for null names.
      *
      * @param <T>
      * @param id
      * @return
      */
     @SuppressWarnings("unchecked")
-    public <T extends Component> T getComponent(String id) throws SessionException {
+    public <T extends Component> T getComponent(String id)
+            throws SessionException {
         int p = id.lastIndexOf('#');
         if (p > -1) {
             return (T) getComponent(id.substring(0, p), id.substring(p + 1));

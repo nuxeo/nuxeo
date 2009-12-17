@@ -38,7 +38,6 @@ import org.nuxeo.runtime.api.Framework;
  * Servlet for accessing common file resources
  *
  * @author <a href="mailto:bs@nuxeo.com">Stefanescu Bogdan</a>
- *
  */
 public class ResourceServlet extends HttpServlet {
 
@@ -82,8 +81,8 @@ public class ResourceServlet extends HttpServlet {
         service(req, resp, module, "/resources"+path);
     }
 
-    protected void service(HttpServletRequest req, HttpServletResponse resp, Module module, String path)
-            throws IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp,
+            Module module, String path) throws IOException {
 
         ScriptFile file = module.getSkinResource(path);
         if (file != null) {
@@ -107,7 +106,8 @@ public class ResourceServlet extends HttpServlet {
         resp.sendError(404);
     }
 
-    protected static void sendBinaryContent(ScriptFile file, HttpServletResponse resp) throws IOException {
+    protected static void sendBinaryContent(ScriptFile file, HttpServletResponse resp)
+            throws IOException {
         OutputStream out = resp.getOutputStream();
         InputStream in = file.getInputStream();
         try {
@@ -119,7 +119,8 @@ public class ResourceServlet extends HttpServlet {
         out.flush();
     }
 
-    protected static void sendTextContent(ScriptFile file, HttpServletResponse resp) throws IOException {
+    protected static void sendTextContent(ScriptFile file, HttpServletResponse resp)
+            throws IOException {
         //Writer out = resp.getWriter();
         OutputStream out = resp.getOutputStream();
         InputStream in = file.getInputStream();

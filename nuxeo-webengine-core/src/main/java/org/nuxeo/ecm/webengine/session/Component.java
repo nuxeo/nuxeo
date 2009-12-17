@@ -42,7 +42,7 @@ public interface Component extends Serializable {
      *
      * @param session the user session that created the component
      * @param name the name under this component is registered.
-     * Can be null for unnamed component.
+     *      Can be null for unnamed component.
      *
      * @throws InvalidStateException if the component is not in an appropriate life cycle state
      * @throws SessionException an internal error occurred
