@@ -75,9 +75,9 @@ public class UrlBuilder {
         + GADGET_ID_KEY + "=" + gadget.getShindigId() + "&" + PARENT_KEY + "="
         + ServerBase.getBase() + "&" + PERMISSION_KEY + "="
         + gadget.getPermission() + "&" + URL_KEY + "=" + gadgetDef
-        + getUserPrefs(gadget.getUserPrefs()) + "&" + SECURITY_TOKEN_KEY + "="
-        + getSecurityToken(gadget, gadgetDef) + "#" + RPC_TOKEN + "="
-        + gadget.getId();
+        + getUserPrefs(gadget.getUserPrefs()) + "&up_" + gadget.getHeight()
+        + "&" + SECURITY_TOKEN_KEY + "=" + getSecurityToken(gadget, gadgetDef)
+        + "#" + RPC_TOKEN + "=" + gadget.getId();
   }
 
   /**

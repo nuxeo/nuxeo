@@ -32,3 +32,15 @@ gadgets.nuxeo = gadgets.nuxeo || {};
 gadgets.nuxeo.getSpaceId = function(callback) {
   gadgets.rpc.call(null, "get_nuxeo_space_id", callback, null);
 };
+
+gadgets.nuxeo.getHtmlContent = function(callback) {
+  gadgets.rpc.call(null, "get_htmlcontent", callback, null);
+};
+
+gadgets.nuxeo.setHtmlContent = function(htmlContent, callback) {
+  gadgets.rpc.call(null, "set_htmlcontent", callback, htmlContent);
+};
+
+gadgets.nuxeo.getGadgetId = function(callback) {
+  gadgets.rpc.call(null, "get_nuxeo_gadget_id", callback, null);
+};

@@ -17,10 +17,6 @@
 
 package org.nuxeo.opensocial.spaces.webobject;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
@@ -83,15 +79,13 @@ public class GadgetWebObject extends DocumentObject {
     LOGGER.info("Gadget has been set");
     this.gadget = (Gadget) args[0];
     try {
-      super.initialize(getSession()
-          .getDocument(new IdRef(this.gadget.getId())));
+      super.initialize(getSession().getDocument(new IdRef(this.gadget.getId())));
     } catch (ClientException e) {
       throw new RuntimeException(e);
     }
     space = (Space) args[1];
     univers = (Univers) args[2];
   }
-
 
   /**
    * Delete a space

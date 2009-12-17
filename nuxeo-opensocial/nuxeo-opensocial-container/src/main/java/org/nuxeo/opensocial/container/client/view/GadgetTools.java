@@ -117,7 +117,7 @@ public class GadgetTools {
             canvas.doLayout();
             maximizedCol.doLayout();
             updateLayoutSizeForMax(canvas.getId());
-            if (!portal.isCollapsed())
+            if (gadget.isCollapse())
               canvas.unCollapseGadget();
           }
 
@@ -148,6 +148,7 @@ public class GadgetTools {
   private static native void hideManager()
   /*-{
     $wnd.jQuery(".managerContainer").slideUp();
+    $wnd.jQuery(".managerContainer").hide();
   }-*/;
 
   private static native void showManager()

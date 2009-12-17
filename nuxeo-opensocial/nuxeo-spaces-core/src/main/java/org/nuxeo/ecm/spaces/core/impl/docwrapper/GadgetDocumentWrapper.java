@@ -29,17 +29,13 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.core.impl.Constants;
 
-public class GadgetDocumentWrapper extends DocumentWrapper implements
-      Gadget {
+public class GadgetDocumentWrapper extends DocumentWrapper implements Gadget {
 
   GadgetDocumentWrapper(DocumentModel doc) {
     super(doc);
   }
 
-  private static final Log log = LogFactory
-      .getLog(GadgetDocumentWrapper.class);
-
-
+  private static final Log log = LogFactory.getLog(GadgetDocumentWrapper.class);
 
   private static final long serialVersionUID = 1L;
 
@@ -58,37 +54,45 @@ public class GadgetDocumentWrapper extends DocumentWrapper implements
   @SuppressWarnings("unchecked")
   public Map<String, String> getPreferences() {
 
-
     try {
-      ArrayList<Map<String, String>> list = (ArrayList<Map<String, String>>) getInternalDocument().getPropertyValue(Constants.Gadget.GADGET_PREFERENCES);
-      if(list==null)
+      ArrayList<Map<String, String>> list = (ArrayList<Map<String, String>>) getInternalDocument().getPropertyValue(
+          Constants.Gadget.GADGET_PREFERENCES);
+      if (list == null)
         return null;
       HashMap ret = new HashMap<String, String>();
       for (Map<String, String> map : list) {
         String key = map.get("name");
-        String value= map.get("value");
+        String value = map.get("value");
         ret.put(key, value);
       }
-      return ret ;
+      return ret;
     } catch (PropertyException e) {
-     log.error(e);
+      log.error(e);
     } catch (ClientException e) {
       log.error(e);
     }
     return null;
   }
 
-  //public String getType() {
-   // return getInternalStringProperty(Constants.Gadget.GADGET_TYPE);
- // }
+  // public String getType() {
+  // return getInternalStringProperty(Constants.Gadget.GADGET_TYPE);
+  // }
 
   public boolean isCollapsed() {
     return getInternalBooleanProperty(Constants.Gadget.GADGET_COLLAPSED);
   }
 
   public boolean isEqualTo(Gadget gadget) {
-    return gadget.getId()!=null && gadget.getId().equals(getId());
+    return gadget.getId() != null && gadget.getId()
+        .equals(getId());
   }
 
+  public int getHeight() {
+    return getInternalIntegerProperty(Constants.Gadget.GADGET_HEIGHT);
+  }
+
+  public String getHtmlContent() {
+    return getInternalStringProperty(Constants.Gadget.GADGET_HTMLCONTENT);
+  }
 
 }

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="__UP_title__" category="tools"
+    render_inline="required" scrolling="false" author="" directory_title="Video"
+    singleton="false">
+    <Require feature="opensocial-0.8" />
+    <Require feature="dynamic-height" />
+    <Require feature="setprefs" />
+    <Require feature="settitle" />
+    <Require feature="nuxeo" />
+    <Require feature="jquery" />
+  </ModulePrefs>
+  <UserPref name="title" display_name="Title" required="false"
+    default_value="Video" />
+  <Content type="html">
+    <![CDATA[
+      <style type='text/css'>
+        *{
+         font-family:Arial,Verdana;
+         font-size:11px;
+        }
+
+        #baliseVideo{
+         border:1px solid #000000;
+         width:90%;
+         display:block;
+         margin:auto;
+        }
+
+        #container{
+         padding:0 0 5px 0;
+        }
+
+        #addVideo,#showVideo{
+         display:none;
+        }
+
+        input.textinput{
+         width:45px;
+         border:1px solid #000000;
+        }
+
+      </style>
+
+      <script type="text/javascript" language="javascript" src="video.js"></script>
+      <script type="text/javascript">
+      	var prefs = new _IG_Prefs(__MODULE_ID__);
+      	_IG_SetTitle(prefs.getString("title"));
+      	
+        gadgets.util.registerOnLoadHandler( function() {
+       		gadgets.nuxeo.getHtmlContent(function(content) {
+         		launchVideoWidget(content);
+       		});
+        })
+      </script>
+
+      <div id="addVideo">
+
+        <span>Veuillez copier une balise vidéo</span>
+
+        <div id="container">
+          <textarea name="baliseVideo" id="baliseVideo"></textarea>
+        </div>
+        <div>
+          <a href="javascript:validateVideo()">Valider</a>
+        </div>
+
+      </div>
+
+      <div id="showVideo">
+
+      </div>
+
+
+    ]]>
+  </Content>
+</Module>

@@ -21,13 +21,11 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
-/**
-* @author Guillaume Cusnieux
-*/
-public interface GadgetManager {
 
-  void savePosition(GadgetBean gadget, Map<String, String> gwtParams)
-      throws ClientException;
+/**
+ * @author Guillaume Cusnieux
+ */
+public interface GadgetManager {
 
   void removeGadget(GadgetBean gadget, Map<String, String> gwtParams)
       throws ClientException;
@@ -35,7 +33,7 @@ public interface GadgetManager {
   void savePreferences(GadgetBean gadget, Map<String, String> updatePrefs,
       Map<String, String> gwtParams) throws Exception;
 
-  void saveCollapsed(GadgetBean gadget, Map<String, String> gwtParams)
+  void saveGadget(GadgetBean gadget, Map<String, String> gwtParams)
       throws ClientException;
 
 }
