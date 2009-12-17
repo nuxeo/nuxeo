@@ -61,6 +61,12 @@ public class NXFeedProcessor extends FeedProcessor {
             json.put("Description", feed.getDescription());
             json.put("Link", feed.getLink());
 
+            if(feed.getCategories().size() >0 ) {
+                json.put("Categories", feed.getCategories());
+            }
+
+
+
             List<SyndPerson> authors = feed.getAuthors();
             String jsonAuthor = null;
             jsonAuthor = getAuthor(authors);
@@ -100,6 +106,10 @@ public class NXFeedProcessor extends FeedProcessor {
         JSONObject entry = new JSONObject();
         entry.put("Title", e.getTitle());
         entry.put("Link", e.getLink());
+
+        if(e.getCategories().size() >0 ) {
+            entry.put("Categories", e.getCategories());
+        }
 
         if (getSummaries) {
             addSummariesFromEntry(entry, e);
