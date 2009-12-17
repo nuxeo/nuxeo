@@ -248,10 +248,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         String context = httpRequest.getContextPath() + '/';
         requestedURI = requestedURI.substring(context.length());
         for (String prefixURL : excludePromptURLs) {
-            System.out.println("XXX check for: " + prefixURL);
-
             if (requestedURI.startsWith(prefixURL)) {
-                System.out.println("XXX exclude url : " + requestedURI);
                 return false;
             }
         }
