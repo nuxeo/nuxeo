@@ -14,6 +14,7 @@
   <name>Nuxeo Jetty Distribution</name>
   <description>Package Nuxeo EP or DM into Jetty</description>
 
+  <!-- This should be done on Nuxeo ECM Parent POM -->
   <dependencyManagement>
     <dependencies>
       <dependency>

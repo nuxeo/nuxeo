@@ -191,13 +191,6 @@
       <artifactId>nuxeo-opensocial-features</artifactId>
       <version>${nuxeo.features.version}</version>
     </dependency>
-    <!-- 
-    <dependency>
-      <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-platform-login-oauth</artifactId>
-      <version>${nuxeo.features.version}</version>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-opensocial-gadgets-core</artifactId>
@@ -238,7 +231,6 @@
       <artifactId>nuxeo-webengine-gadgets</artifactId>
       <version>${nuxeo.features.version}</version>
     </dependency>
-
   </dependencies>
 
   <profiles>

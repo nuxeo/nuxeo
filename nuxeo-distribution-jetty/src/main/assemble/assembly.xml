@@ -4,6 +4,11 @@
     <artifact>
       org.nuxeo.ecm.distribution:nuxeo-distribution-server:${project.version}:zip
     </artifact>
+    <!-- to avoid duplicate libraries -->
+    <excludes>
+      <exclude>lib/javassist-3.6.jar</exclude>
+      <exclude>lib/servlet-api-2.4.jar</exclude>
+    </excludes>
   </zipEntrySet>
 
   <fileSet id="template">

@@ -7,7 +7,8 @@
 
   <artifactSet id="launcher-lib">
     <artifacts>
-      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-launcher" version="${nuxeo.runtime.version}" />
+      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-launcher"
+        version="${nuxeo.runtime.version}" />
     </artifacts>
   </artifactSet>
 
@@ -38,7 +39,6 @@
       <artifact group="xerces" name="xercesImpl" />
     </includes>
   </artifactSet>
-
 
   <assemble>
     <set>template</set>
