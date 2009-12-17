@@ -18,6 +18,7 @@
 package org.nuxeo.opensocial.shindig.gadgets;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.shindig.gadgets.FeedProcessor;
@@ -26,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.sun.syndication.feed.synd.SyndCategory;
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEnclosure;
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -61,8 +63,9 @@ public class NXFeedProcessor extends FeedProcessor {
             json.put("Description", feed.getDescription());
             json.put("Link", feed.getLink());
 
+
             if(feed.getCategories().size() >0 ) {
-                json.put("Categories", feed.getCategories());
+                json.put("Categories", getCategoriesStringList(feed.getCategories()));
             }
 
 
@@ -101,14 +104,25 @@ public class NXFeedProcessor extends FeedProcessor {
         }
     }
 
+    private List<String> getCategoriesStringList(List categories) {
+      List<String> result = new ArrayList<String>();
+      for(Object cat : categories) {
+        SyndCategory syndCat = (SyndCategory) cat;
+        result.add(syndCat.getName());
+      }
+      return result;
+    }
+
     private JSONObject getJSONEntryFromSyndEntry(SyndEntry e,
             boolean getSummaries) throws JSONException {
         JSONObject entry = new JSONObject();
         entry.put("Title", e.getTitle());
         entry.put("Link", e.getLink());
 
+
+
         if(e.getCategories().size() >0 ) {
-            entry.put("Categories", e.getCategories());
+            entry.put("Categories", getCategoriesStringList(e.getCategories()));
         }
 
         if (getSummaries) {
