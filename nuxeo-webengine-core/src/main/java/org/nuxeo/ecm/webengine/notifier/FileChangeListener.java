@@ -42,16 +42,12 @@ import java.util.List;
  */
 public interface FileChangeListener {
 
-
     /**
      * Notifies that the given files changed.
-     *
-     * @param entry
-     * @throws Exception
      */
-    void filesModified(List<File> entry) throws Exception;
+    void filesModified(List<File> entries) throws Exception;
 
-    void filesCreated(List<File> entry) throws Exception;
+    void filesCreated(List<File> entries) throws Exception;
 
-    void filesRemoved(List<File> entry) throws Exception;
+    void filesRemoved(List<File> entries) throws Exception;
 }

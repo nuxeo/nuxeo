@@ -25,16 +25,13 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- *
  * Defines a JAX-RS root resource binding.
  * This is an extension to JAX-RS to be able to declare root resource binding dynamically
  * without using {@link Path} annotations on classes.
  *
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  * @see Path
- *
  */
 @XObject(value="resource", order={"@path", "@class"})
 public class ResourceBinding {
@@ -55,10 +52,19 @@ public class ResourceBinding {
 
     public Class<?> clazz;
 
+
+    public ResourceBinding() {
+
+    }
+
+    public ResourceBinding(String path, Class<?> clazz, boolean singleton) {
+        this.path = path;
+        this.clazz = clazz;
+        this.singleton = singleton;
+    }
+
     /**
-     * Must be called before using this binding
-     * @param engine
-     * @throws ClassNotFoundException
+     * Must be called before using this binding.
      */
     public void resolve(WebEngine engine) throws ClassNotFoundException {
         if (clazz == null) {
@@ -79,16 +85,6 @@ public class ResourceBinding {
     public void reload(WebEngine engine) throws ClassNotFoundException {
         clazz = null;
         resolve(engine);
-    }
-
-    public ResourceBinding() {
-
-    }
-
-    public ResourceBinding(String path, Class<?> clazz, boolean singleton) {
-        this.path = path;
-        this.clazz = clazz;
-        this.singleton = singleton;
     }
 
     @Override
@@ -119,23 +115,14 @@ public class ResourceBinding {
         return binding;
     }
 
-    /**
-     * @return the path.
-     */
     public String getPath() {
         return path;
     }
 
-    /**
-     * @return the clazz.
-     */
     public Class<?> getClazz() {
         return clazz;
     }
 
-    /**
-     * @return the singleton.
-     */
     public boolean isSingleton() {
         return singleton;
     }

@@ -21,6 +21,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.webengine.forms.validation.annotations.Enumeration;
@@ -116,15 +117,15 @@ public class FormDescriptor {
             // custom validator
             org.nuxeo.ecm.webengine.forms.validation.annotations.FieldValidator custom = m.getAnnotation(org.nuxeo.ecm.webengine.forms.validation.annotations.FieldValidator.class);
             if (custom != null) {
-                validator.add((FieldValidator)custom.value().newInstance());
+                validator.add((FieldValidator) custom.value().newInstance());
             }            
             // type convertor
             Class<?> rtype = m.getReturnType();
-            this.isArray = rtype.isArray();
+            isArray = rtype.isArray();
             if (isArray) {
                 rtype = rtype.getComponentType();
             }
-            this.convertor = TypeConvertor.getConvertor(rtype);
+            convertor = TypeConvertor.getConvertor(rtype);
             
             this.m = m;
             this.name = name;
@@ -150,7 +151,7 @@ public class FormDescriptor {
         }
 
         Object[] validateArray(String[] values) throws ValidationException {
-            ArrayList<Object> result = new ArrayList<Object>();
+            List<Object> result = new ArrayList<Object>();
             for (String value : values) {
                 result.add(validate(value));
             }

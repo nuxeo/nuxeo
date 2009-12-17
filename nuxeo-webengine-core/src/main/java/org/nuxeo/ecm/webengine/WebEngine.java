@@ -73,11 +73,11 @@ public class WebEngine implements ResourceLocator {
 
     protected static final Pattern PATH_PATTERN = Pattern.compile("\\s+@Path\\(\"([^\"]*)\"\\)\\s+");
 
+    protected static final Map<Object, Object> mimeTypes = loadMimeTypes();
+
     private static final Log log = LogFactory.getLog(WebEngine.class);
 
     private static final ThreadLocal<WebContext> CTX = new ThreadLocal<WebContext>();
-
-    protected static final Map<Object, Object> mimeTypes = loadMimeTypes();
 
     static Map<Object, Object> loadMimeTypes() {
         Map<Object, Object> mimeTypes = new HashMap<Object, Object>();

@@ -60,15 +60,13 @@ public class WebEngineSessionManager extends DefaultSessionManager {
         UserSession userSession;
         if (httpSession == null) {
             // create WE custom UserSession
-            userSession = new StatelessUserSession(cachebleUserInfo
-                    .getPrincipal(), cachebleUserInfo.getUserInfo()
-                    .getPassword());
+            userSession = new StatelessUserSession(cachebleUserInfo.getPrincipal(),
+                    cachebleUserInfo.getUserInfo().getPassword());
             log.debug("Creating Stateless UserSession");
         } else {
             // create WE custom UserSession
-            userSession = new StatefulUserSession(cachebleUserInfo
-                    .getPrincipal(), cachebleUserInfo.getUserInfo()
-                    .getPassword());
+            userSession = new StatefulUserSession(cachebleUserInfo.getPrincipal(),
+                    cachebleUserInfo.getUserInfo().getPassword());
             log.debug("Creating Stateful UserSession");
         }
 

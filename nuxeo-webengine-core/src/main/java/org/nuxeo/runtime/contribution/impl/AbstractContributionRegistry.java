@@ -32,10 +32,10 @@ import org.nuxeo.runtime.contribution.ContributionRegistry;
  * It serves only to resolve dependencies. This allows greater flexibility in managing dependencies.
  * This registry may have a parent registry that can be used only read only.
  *
- * TODO need to implement a visibility (PRIVATE, PROTECTED, PUBLIC etc) on contributions when extending other registries
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+// TODO need to implement a visibility (PRIVATE, PROTECTED, PUBLIC etc)
+// on contributions when extending other registries
 public abstract class AbstractContributionRegistry<K, T> implements
         ContributionRegistry<K, T> {
 

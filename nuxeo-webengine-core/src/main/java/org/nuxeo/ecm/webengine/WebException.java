@@ -99,8 +99,7 @@ public class WebException extends WebApplicationException {
     }
 
     /**
-     * for compatibiliy only
-     * @return
+     * For compatibiliy only.
      */
     @Deprecated
     public int getReturnCode() {

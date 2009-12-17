@@ -23,10 +23,10 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.forms.FormDataProvider;
@@ -63,7 +63,7 @@ public class FormManager implements InvocationHandler, Form {
     @SuppressWarnings("unchecked")
     public void load(FormDataProvider data, Form proxy) throws ValidationException {
         ValidationException ve = null;
-        HashSet<String> reqs = (HashSet<String>)fd.requiredFields.clone();
+        Set<String> reqs = (Set<String>) fd.requiredFields.clone();
         for (String key : data.getKeys()) {
             String[] values = data.getList(key);
             if (values != null) {

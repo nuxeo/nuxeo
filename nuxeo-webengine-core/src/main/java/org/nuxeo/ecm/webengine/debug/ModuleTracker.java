@@ -105,12 +105,12 @@ public abstract class ModuleTracker implements Runnable {
      */
     public static void flushSkinCache(ModuleImpl module) {
 //      module.flushSkinCache();
-      ModuleConfiguration[] modules = module.getEngine().getModuleManager().getModules();
-      for (ModuleConfiguration mc : modules) {
-          if (mc.isLoaded()) {
-              ((ModuleImpl)mc.get()).flushSkinCache();
-          }
-      }
-  }
+        ModuleConfiguration[] modules = module.getEngine().getModuleManager().getModules();
+        for (ModuleConfiguration mc : modules) {
+            if (mc.isLoaded()) {
+                ((ModuleImpl) mc.get()).flushSkinCache();
+            }
+        }
+    }
 
 }

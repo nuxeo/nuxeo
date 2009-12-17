@@ -32,4 +32,5 @@ public interface AdapterType extends ResourceType {
     String getAdapterName();
 
     boolean acceptResource(Resource resource);
+
 }
