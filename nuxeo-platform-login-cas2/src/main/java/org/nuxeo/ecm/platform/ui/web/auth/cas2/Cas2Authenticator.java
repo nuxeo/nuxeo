@@ -21,6 +21,7 @@
 package org.nuxeo.ecm.platform.ui.web.auth.cas2;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +51,8 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         NuxeoAuthenticationPluginLogoutExtension {
 
     protected static final Log log = LogFactory.getLog(Cas2Authenticator.class);
+
+    protected static final String EXCLUDE_PROMPT_KEY = "excludePromptURL";
 
     protected String ticketKey = "ticket";
 
@@ -98,6 +101,8 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
     protected final static String VALIDATE_ACTION = "Valid";
 
     protected final static String PROXY_VALIDATE_ACTION = "ProxyValid";
+
+    protected List<String> excludePromptURLs;
 
     public List<String> getUnAuthenticatedURLPrefix() {
         // CAS login screen is not part of Nuxeo5 Web App
@@ -189,7 +194,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         UserIdentificationInfo uui = new UserIdentificationInfo(userName,
                 casTicket);
         uui.setToken(casTicket);
-        
+
         return uui;
     }
 
@@ -230,9 +235,26 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         if (parameters.containsKey(CAS2Parameters.PROMPT_LOGIN)) {
             promptLogin = Boolean.parseBoolean(parameters.get(CAS2Parameters.PROMPT_LOGIN));
         }
+        excludePromptURLs = new ArrayList<String>();
+        for (String key : parameters.keySet()) {
+            if (key.startsWith(EXCLUDE_PROMPT_KEY)) {
+                excludePromptURLs.add(parameters.get(key));
+            }
+        }
     }
 
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
+        String requestedURI = httpRequest.getRequestURI();
+        String context = httpRequest.getContextPath() + '/';
+        requestedURI = requestedURI.substring(context.length());
+        for (String prefixURL : excludePromptURLs) {
+            System.out.println("XXX check for: " + prefixURL);
+
+            if (requestedURI.startsWith(prefixURL)) {
+                System.out.println("XXX exclude url : " + requestedURI);
+                return false;
+            }
+        }
         return promptLogin;
     }
 
@@ -264,13 +286,19 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
             proxyValidator = (ProxyTicketValidator) Framework.getRuntime().getContext().loadClass(
                     proxyValidatorClassName).newInstance();
         } catch (InstantiationException e) {
-            log.error("checkProxyCasTicket during the ProxyTicketValidator initialization with InstantiationException:", e);
+            log.error(
+                    "checkProxyCasTicket during the ProxyTicketValidator initialization with InstantiationException:",
+                    e);
             return null;
         } catch (IllegalAccessException e) {
-            log.error("checkProxyCasTicket during the ProxyTicketValidator initialization with IllegalAccessException:", e);
+            log.error(
+                    "checkProxyCasTicket during the ProxyTicketValidator initialization with IllegalAccessException:",
+                    e);
             return null;
         } catch (ClassNotFoundException e) {
-            log.error("checkProxyCasTicket during the ProxyTicketValidator initialization with ClassNotFoundException:", e);
+            log.error(
+                    "checkProxyCasTicket during the ProxyTicketValidator initialization with ClassNotFoundException:",
+                    e);
             return null;
         }
 
@@ -296,28 +324,32 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         String username = proxyValidator.getUser();
         log.debug("checkProxyCasTicket: validation returned username = "
                 + username);
-        
+
         return username;
     }
 
     // Cas2 Ticket management
     protected String checkCasTicket(String ticket,
             HttpServletRequest httpRequest) {
-        
         try {
             ticketValidator = (ServiceTicketValidator) Framework.getRuntime().getContext().loadClass(
                     ticketValidatorClassName).newInstance();
         } catch (InstantiationException e) {
-            log.error("checkCasTicket during the ServiceTicketValidator initialization with InstantiationException:", e);
+            log.error(
+                    "checkCasTicket during the ServiceTicketValidator initialization with InstantiationException:",
+                    e);
             return null;
         } catch (IllegalAccessException e) {
-            log.error("checkCasTicket during the ServiceTicketValidator initialization with IllegalAccessException:", e);
+            log.error(
+                    "checkCasTicket during the ServiceTicketValidator initialization with IllegalAccessException:",
+                    e);
             return null;
         } catch (ClassNotFoundException e) {
-            log.error("checkCasTicket during the ServiceTicketValidator initialization with ClassNotFoundException:", e);
+            log.error(
+                    "checkCasTicket during the ServiceTicketValidator initialization with ClassNotFoundException:",
+                    e);
             return null;
         }
-
 
         ticketValidator.setCasValidateUrl(getServiceURL(httpRequest,
                 VALIDATE_ACTION));

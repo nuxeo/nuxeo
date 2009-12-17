@@ -12,6 +12,8 @@
    		 - serviceValidateURL : CAS url for ticket validation
    		   ( can use $CASSERVER to let nuxeo define url according to CasServer header)
    		 - serviceKey : name of the service parameter in the URL</pre>
+		 - excludePromptURL : if requested url starts with this value, there will be no CAS authentication
+		   (you can add multiple exclude path by adding different suffix to the parameter name)
    </documentation>
    <extension
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
