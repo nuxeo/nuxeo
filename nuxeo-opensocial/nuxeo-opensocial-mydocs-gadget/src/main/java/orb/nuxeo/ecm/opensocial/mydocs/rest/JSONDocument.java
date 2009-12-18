@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -20,6 +21,7 @@ import net.sf.json.JSONSerializer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -35,9 +37,11 @@ import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
@@ -106,6 +110,21 @@ public class JSONDocument extends DocumentObject {
     }
 
     return makeJSON(all);
+  }
+
+  @POST
+  public Object addDocument() throws Exception {
+    FileManager fm = Framework.getService(FileManager.class);
+    CoreSession session = ctx.getCoreSession();
+    FormData form = ctx.getForm();
+    Blob blob = form.getFirstBlob();
+    if (blob == null) {
+        throw new IllegalArgumentException(
+                "Could not find any uploaded file");
+    }
+    fm.createDocumentFromBlob(session, blob, doc.getPathAsString(), true, blob.getFilename());
+    return doGet();
+
   }
 
   private Map<String, Object> getDocItem(DocumentModel doc) throws Exception {

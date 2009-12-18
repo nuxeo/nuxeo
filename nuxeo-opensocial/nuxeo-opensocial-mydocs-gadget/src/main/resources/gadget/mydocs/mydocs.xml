@@ -10,6 +10,8 @@
     <Require feature="settitle" />
     <Require feature="opensocial-0.8" />
     <Require feature="nuxeo" />
+    <Require feature="jquery" />
+    <Require feature="form" />
   </ModulePrefs>
 
   <Content type="html" view="default">
@@ -39,9 +41,15 @@
             <span class="currentPageStatus" id="nxDocumentListPage"></span>
             <input type="image" src="/nuxeo/icons/action_page_next.gif" onclick="nextPage()"/>
             <input type="image" src="/nuxeo/icons/action_page_fastforward.gif"onclick="lastPage()"/>
-            </div>
-        </div>
+         </div>
+         <div id="addfile">
+         <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="">
+            <input type="file" name="file" id="uploadFile" size="20" /> <input  id="uploadBtn" type="submit" value="Ajouter" />
+        </form>
+
+         </div>
     </div>
+
   ]]>
   </Content>
 
