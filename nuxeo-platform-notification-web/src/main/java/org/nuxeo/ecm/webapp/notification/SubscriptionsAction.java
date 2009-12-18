@@ -62,13 +62,13 @@ public class SubscriptionsAction extends InputController implements
     private static final Log log = LogFactory.getLog(SubscriptionsAction.class);
 
     @In
-    private transient NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
-    private transient CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @DataModel("notificationList")
-    private List<SelectableSubscription> notificationList;
+    protected List<SelectableSubscription> notificationList;
 
     @DataModel("inheritedNotifications")
     private List<Notification> inheritedNotifications;
@@ -77,7 +77,7 @@ public class SubscriptionsAction extends InputController implements
     private SelectableSubscription currentSubscription;
 
     @In(create = true)
-    private transient NotificationManager notificationManager;
+    protected transient NotificationManager notificationManager;
 
     /**
      * Gets all the notifications the user may subscribe to.
