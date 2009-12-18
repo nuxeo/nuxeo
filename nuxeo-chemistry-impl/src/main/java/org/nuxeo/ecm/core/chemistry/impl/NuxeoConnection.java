@@ -444,7 +444,7 @@ public class NuxeoConnection implements Connection, SPI {
 
     public ObjectId updateProperties(ObjectId object, String changeToken,
             Map<String, Serializable> properties) {
-        return updateProperties(object, changeToken, properties);
+        return updateProperties(object, changeToken, properties, false);
     }
 
     protected ObjectId updateProperties(ObjectId object, String changeToken,
