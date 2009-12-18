@@ -19,6 +19,14 @@ public class ThemeInfo {
 
     public String path;
 
+    public boolean selected;
+
+    public ThemeInfo(String name, String path, boolean selected) {
+        this.name = name;
+        this.path = path;
+        this.selected = selected;
+    }
+
     public String getName() {
         return name;
     }
@@ -27,9 +35,8 @@ public class ThemeInfo {
         return path;
     }
 
-    public ThemeInfo(String name, String path) {
-        this.name = name;
-        this.path = path;
+    public boolean isSelected() {
+        return selected;
     }
 
 }

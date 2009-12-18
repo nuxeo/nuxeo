@@ -29,13 +29,14 @@ import org.nuxeo.theme.uids.*
 import org.nuxeo.theme.views.*
 import org.nuxeo.theme.editor.*
 
-@WebObject(type="nxthemes-editor", guard="group=administrators")
+@WebObject(type="nxthemes-editor", guard="user=Administrator")
 @Produces(["text/html", "*/*"])
 public class Main extends ModuleRoot {
-
+    
     @GET
     @Path("perspectiveSelector")
-    public Object renderPerspectiveSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
+    public Object renderPerspectiveSelector(@QueryParam("org.nuxeo.theme.application.path") String path,
+            @QueryParam("org.nuxeo.theme.application.name") String name) {
       return getTemplate("perspectiveSelector.ftl").arg("perspectives", getPerspectives())
     }
 
@@ -43,9 +44,7 @@ public class Main extends ModuleRoot {
     @Path("themeSelector")
     public Object renderThemeSelector(@QueryParam("org.nuxeo.theme.application.path") String path,
             @QueryParam("org.nuxeo.theme.application.name") String name) {
-      return getTemplate("themeSelector.ftl").arg(
-              "current_theme_name", getCurrentThemeName(path, name)).arg(
-              "themes", getThemes(path, name))
+      return getTemplate("themeSelector.ftl").arg("themes", getWorkspaceThemes(path, name))
     }
 
   @GET
@@ -59,20 +58,29 @@ public class Main extends ModuleRoot {
 
   @GET
   @Path("canvasModeSelector")
-  public Object renderCanvasModeSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderCanvasModeSelector(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("canvasModeSelector.ftl")
   }
 
+  @GET
+  @Path("presetLibrary")
+  public Object renderPresetLibrary(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
+    return getTemplate("presetLibrary.ftl").arg(           
+            "preset_groups", getPresetGroups()).arg(
+            "selected_preset_group", getSelectedPresetGroup())
+  }
+  
   @GET
   @Path("presetManager")
   public Object renderPresetManager(@QueryParam("org.nuxeo.theme.application.path") String path,
           @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("presetManager.ftl").arg(
             "current_theme_name", getCurrentThemeName(path, name)).arg(
-            "preset_groups", getPresetGroups()).arg(
             "preset_manager_mode", getPresetManagerMode()).arg(
-            "selected_preset_group", getSelectedPresetGroup())
-  }
+            "selected_preset_category", getSelectedPresetCategory()) 
+   }
 
   @GET
   @Path("styleManager")
@@ -83,25 +91,113 @@ public class Main extends ModuleRoot {
     if (!styles.contains(selectedStyle) && !styles.isEmpty()) {
         selectedStyle = styles[0];
     }
+    String currentThemeName = getCurrentThemeName(path, name)
+    String templateEngine = getTemplateEngine(path)
+    ThemeDescriptor currentThemeDef = themeManager.getThemeDescriptorByThemeName(templateEngine, currentThemeName) 
     return getTemplate("styleManager.ftl").arg(
+            "theme", currentThemeDef).arg(
             "named_styles", styles).arg(
             "style_manager_mode", getStyleManagerMode()).arg(
             "selected_named_style", selectedStyle).arg(
             "selected_named_style_css", getRenderedPropertiesForNamedStyle(selectedStyle)).arg(
-            "current_theme_name", getCurrentThemeName(path, name))
+            "current_theme_name", currentThemeName)
+  }  
+  
+  @GET
+  @Path("themeBrowser")
+  public Object renderThemeBrowser(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
+    def availableThemes = []
+    def workspaceThemes = getWorkspaceThemes(path, name)
+    def workspaceThemeNames =  []
+    for (ThemeInfo theme: workspaceThemes) {
+        workspaceThemeNames.add(theme.getName())
+    }
+    for (ThemeInfo theme: themeManager.getThemeDescriptors()) {
+        if (!workspaceThemeNames.contains(theme.getName())) {
+            availableThemes.add(theme)
+        }
+    }
+    return getTemplate("themeBrowser.ftl").arg(
+            "available_themes", availableThemes).arg(
+            "workspace_themes", workspaceThemes)
   }
 
   @GET
-  @Path("themeManager")
-  public Object renderThemeManager(@QueryParam("org.nuxeo.theme.application.path") String path,
-          @QueryParam("org.nuxeo.theme.application.name") String name) {
-    return getTemplate("themeManager.ftl").arg(
-            "current_theme_name", getCurrentThemeName(path, name))
+  @Path("backToCanvas")
+  public Object renderBackToCanvas(@QueryParam("org.nuxeo.theme.application.path") String path, 
+           @QueryParam("org.nuxeo.theme.application.name") String name) {
+      return getTemplate("backToCanvas.ftl")
+  }
+  
+  @GET
+  @Path("themeActions")
+  public Object renderThemeActions(@QueryParam("org.nuxeo.theme.application.path") String path, 
+           @QueryParam("org.nuxeo.theme.application.name") String name) {
+    String currentThemeName = getCurrentThemeName(path, name)
+    String templateEngine = getTemplateEngine(path)
+    String currentPagePath = getCurrentPagePath(path, name)
+    String currentpageName = ThemeManager.getPageNameFromPagePath(currentPagePath)
+    ThemeDescriptor currentThemeDef = themeManager.getThemeDescriptorByThemeName(templateEngine, currentThemeName)
+    return getTemplate("themeActions.ftl").arg("theme", currentThemeDef).arg(
+                       "current_page_path", currentPagePath).arg(
+                       "current_page_name", currentpageName)
   }
 
+  @GET
+  @Path("presetManagerActions")
+  public Object renderPresetManagerActions(@QueryParam("org.nuxeo.theme.application.path") String path, 
+           @QueryParam("org.nuxeo.theme.application.name") String name) {
+      String currentThemeName = getCurrentThemeName(path, name)
+      String templateEngine = getTemplateEngine(path)
+      ThemeDescriptor currentThemeDef = themeManager.getThemeDescriptorByThemeName(templateEngine, currentThemeName)
+      return getTemplate("presetManagerActions.ftl").arg("theme", currentThemeDef).arg(
+                  "selected_preset_category", getSelectedPresetCategory())
+  }  
+    
+  @GET
+  @Path("styleManagerActions")
+  public Object renderStyleManagerActions(@QueryParam("org.nuxeo.theme.application.path") String path, 
+           @QueryParam("org.nuxeo.theme.application.name") String name) {
+      String currentThemeName = getCurrentThemeName(path, name)
+      String templateEngine = getTemplateEngine(path)
+      ThemeDescriptor currentThemeDef = themeManager.getThemeDescriptorByThemeName(templateEngine, currentThemeName)
+      return getTemplate("styleManagerActions.ftl").arg("theme", currentThemeDef)
+  }
+
+  @GET
+  @Path("viewModes")
+  public Object renderViewModes(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
+    return getTemplate("viewModes.ftl")
+  }
+   
+  @GET
+  @Path("themeBrowserActions")
+  public Object renderThemeBrowserActions(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {          
+    return getTemplate("themeBrowserActions.ftl")
+  }
+
+  @GET
+  @Path("undoActions")
+  public Object renderUndoActions(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
+    String themeName =  getCurrentThemeName(path, name)
+    UndoBuffer undoBuffer = SessionManager.getUndoBuffer(themeName)
+    boolean canUndo = false
+    if (undoBuffer) {
+        canUndo = undoBuffer.canUndo()
+    }   
+    return getTemplate("undoActions.ftl").arg(
+        "current_theme_name", themeName).arg(
+        "can_undo", canUndo)
+  }  
+  
   @GET
   @Path("fragmentFactory")
-  public Object renderFragmentFactory(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderFragmentFactory(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
     String fragmentType = getSelectedFragmentType()
     String fragmentVIew = getSelectedFragmentView()
     return getTemplate("fragmentFactory.ftl").arg(
@@ -114,19 +210,22 @@ public class Main extends ModuleRoot {
 
   @GET
   @Path("elementEditor")
-  public Object renderElementEditor(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderElementEditor(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("elementEditor.ftl").arg("selected_element", getSelectedElement())
   }
 
   @GET
   @Path("elementDescription")
-  public Object renderElementDescription(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderElementDescription(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("elementDescription.ftl").arg("selected_element", getSelectedElement())
   }
 
   @GET
   @Path("elementPadding")
-  public Object renderElementPadding(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderElementPadding(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("elementPadding.ftl").arg(
             "selected_element", getSelectedElement()).arg(
             "padding_of_selected_element", getPaddingOfSelectedElement())
@@ -134,7 +233,8 @@ public class Main extends ModuleRoot {
 
   @GET
   @Path("elementProperties")
-  public Object renderElementProperties(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderElementProperties(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("elementProperties.ftl").arg(
             "selected_element", getSelectedElement()).arg(
             "element_properties", getSelectedElementProperties())
@@ -155,7 +255,8 @@ public class Main extends ModuleRoot {
 
   @GET
   @Path("elementWidget")
-  public Object renderElementWidget(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderElementWidget(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("elementWidget.ftl").arg(
             "selected_element", getSelectedElement()).arg(
             "selected_view_name", getViewNameOfSelectedElement()).arg(
@@ -164,10 +265,11 @@ public class Main extends ModuleRoot {
 
   @GET
   @Path("elementVisibility")
-  public Object renderElementVisibility(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderElementVisibility(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("elementVisibility.ftl").arg(
             "selected_element", getSelectedElement()).arg(
-            "perspectives_of_selected_element", getPerspectivesOfSelectedElement()).arg(
+            "perspectives_of_selected_element", getPerspectivesOfSelectedElement()).arg(        
             "is_selected_element_always_visible", isSelectedElementAlwaysVisible()).arg(
             "perspectives", getPerspectives())
   }
@@ -178,19 +280,19 @@ public class Main extends ModuleRoot {
           @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("stylePicker.ftl").arg(
             "style_category", getSelectedStyleCategory()).arg(
-            "current_theme_name", getCurrentThemeName(path, name)).arg(
-            "selected_preset_group", getSelectedPresetGroup()).arg(
+            "current_theme_name", getCurrentThemeName(path, name)).arg(                          
+            "selected_preset_group", getSelectedPresetGroup()).arg(                            
             "preset_groups", getPresetGroupsForSelectedCategory()).arg(
             "presets_for_selected_group", getPresetsForSelectedGroup(path, name))
   }
-
+  
   @GET
   @Path("areaStyleChooser")
   public Object renderAreaStyleChooser(@QueryParam("org.nuxeo.theme.application.path") String path,
           @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("areaStyleChooser.ftl").arg(
             "style_category", getSelectedStyleCategory()).arg(
-            "current_theme_name", getCurrentThemeName(path, name)).arg(
+            "current_theme_name", getCurrentThemeName(path, name)).arg(                              
             "preset_groups", getPresetGroupsForSelectedCategory()).arg(
             "presets_for_selected_group", getPresetsForSelectedGroup(path, name)).arg(
             "selected_preset_group", getSelectedPresetGroup())
@@ -198,16 +300,17 @@ public class Main extends ModuleRoot {
 
   @GET
   @Path("styleProperties")
-  public Object renderStyleProperties(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderStyleProperties(@QueryParam("org.nuxeo.theme.application.path") String path,
+          @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("styleProperties.ftl").arg(
             "selected_element", getSelectedElement()).arg(
-            "style_edit_mode", getStyleEditMode()).arg(
+            "style_edit_mode", getStyleEditMode()).arg(                    
             "style_selectors", getStyleSelectorsForSelectedElement()).arg(
             "rendered_style_properties", getRenderedStylePropertiesForSelectedElement()).arg(
             "selected_style_selector", getSelectedStyleSelector()).arg(
             "style_properties", getStylePropertiesForSelectedElement()).arg(
             "style_categories", getStyleCategories()).arg(
-            "selected_view_name", getViewNameOfSelectedElement()).arg(
+            "selected_view_name", getViewNameOfSelectedElement()).arg(                    
             "element_style_properties", getElementStyleProperties())
   }
 
@@ -229,8 +332,8 @@ public class Main extends ModuleRoot {
       Element selectedElement = getSelectedElement()
       return Editor.renderCssPreview(selectedElement, selectedStyleLayer, selectedViewName)
   }
-
-
+  
+  
   @GET
   @Path("xml_export")
   public Response xmlExport(@QueryParam("src") String src, @QueryParam("download") Integer download, @QueryParam("indent") Integer indent) {
@@ -243,7 +346,7 @@ public class Main extends ModuleRoot {
       if (indent == null) {
           indent = 0
       }
-
+      
       String xml = serializer.serializeToXml(src, indent);
       if (xml == null) {
           return
@@ -256,8 +359,8 @@ public class Main extends ModuleRoot {
       }
       builder.type("text/xml")
       return builder.build()
-  }
-
+  }  
+  
   @POST
   @Path("clear_selections")
   public void clearSelections() {
@@ -269,11 +372,12 @@ public class Main extends ModuleRoot {
     SessionManager.setStylePropertyCategory(null);
     SessionManager.setStyleCategory(null);
     SessionManager.setPresetGroup(null);
+    SessionManager.setPresetCategory(null);
     SessionManager.setClipboardElementId(null);
     SessionManager.setFragmentView(null);
     SessionManager.setFragmentType(null);
   }
-
+  
   @POST
   @Path("select_element")
   public void selectElement() {
@@ -287,10 +391,11 @@ public class Main extends ModuleRoot {
     SessionManager.setStylePropertyCategory(null);
     SessionManager.setStyleCategory(null);
     SessionManager.setPresetGroup(null);
+    SessionManager.setPresetCategory(null);
     SessionManager.setFragmentView(null);
     SessionManager.setFragmentType(null);
   }
-
+  
   @POST
   @Path("add_page")
   public String addPage() {
@@ -299,9 +404,9 @@ public class Main extends ModuleRoot {
         return Editor.addPage(pagePath)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
-      }
+      }      
   }
-
+  
   @POST
   @Path("add_theme")
   public String addTheme() {
@@ -312,7 +417,7 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("align_element")
   public void alignElement() {
@@ -324,25 +429,25 @@ public class Main extends ModuleRoot {
         Editor.alignElement(element, position)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
-      }
-
+      }       
+      
   }
-
+  
   @POST
   @Path("assign_style_property")
   public void assignStyleProperty() {
       FormData form = ctx.getForm()
       String id = form.getString("element_id")
       String propertyName = form.getString("property")
-      String value = form.getString("value")
+      String value = form.getString("value")          
       Element element = ThemeManager.getElementById(id)
     try {
         Editor.assignStyleProperty(element, propertyName, value)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
-      }
+      }   
   }
-
+  
   @POST
   @Path("copy_element")
   public void copyElement() {
@@ -362,37 +467,37 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("copy_preset")
   public void copyPreset() {
       String id = ctx.getForm().getString("id")
-      SessionManager.setClipboardPresetId(id)
+      SessionManager.setClipboardPresetId(id) 
   }
-
+  
   @POST
   @Path("paste_preset")
   public String pastePreset() {
       FormData form = ctx.getForm()
       String themeName = form.getString("theme_name")
-      String newPresetName = form.getString("preset_name")
+      String newPresetName = form.getString("preset_name")    
       String presetName = getClipboardPreset()
       if (presetName == null) {
           throw new ThemeEditorException("Nothing to paste")
       }
-
+      
       PresetType preset = PresetManager.getPresetByName(presetName)
       if (preset == null) {
           throw new ThemeEditorException("Preset not found: " + presetName)
       }
-
+     
       try {
           Editor.addPreset(themeName, newPresetName, preset.getCategory(), preset.getValue())
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
-      }
+      }      
   }
-
+  
   @POST
   @Path("create_named_style")
   public void createNamedStyle() {
@@ -400,14 +505,17 @@ public class Main extends ModuleRoot {
       String id = form.getString("id")
       String themeName = form.getString("theme_name")
       String styleName = form.getString("style_name")
-      Element element = ThemeManager.getElementById(id)
+      Element element = null;
+      if (id) {
+          element = ThemeManager.getElementById(id)
+      }
     try {
         Editor.createNamedStyle(element, styleName, themeName)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("create_style")
   public void createStyle() {
@@ -418,25 +526,25 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("delete_element")
   public void deleteElement() {
       FormData form = ctx.getForm()
-      String id = form.getString("id")
+      String id = form.getString("id")      
       Element element = ThemeManager.getElementById(id)
     try {
         Editor.deleteElement(element)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
-      }
+      }            
   }
-
+  
   @POST
   @Path("delete_named_style")
   public void deleteNamedStyle() {
       FormData form = ctx.getForm()
-      String id = form.getString("id")
+      String id = form.getString("id")        
       String themeName = form.getString("theme_name")
       String styleName = form.getString("style_name")
       Element element = ThemeManager.getElementById(id)
@@ -444,14 +552,14 @@ public class Main extends ModuleRoot {
         Editor.deleteNamedStyle(element, styleName, themeName)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
-      }
+      }           
   }
-
+  
   @POST
   @Path("duplicate_element")
   public String duplicateElement() {
       FormData form = ctx.getForm()
-      String id = form.getString("id")
+      String id = form.getString("id")        
       Element element = ThemeManager.getElementById(id)
     try {
         return Editor.duplicateElement(element)
@@ -459,7 +567,7 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("expire_themes")
   public void expireThemes() {
@@ -469,65 +577,65 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("insert_fragment")
   public void insertFragment() {
       FormData form = ctx.getForm()
-      String destId = form.getString("dest_id")
-      String typeName = form.getString("type_name")
+      String destId = form.getString("dest_id")    
+      String typeName = form.getString("type_name")             
       Element destElement = ThemeManager.getElementById(destId)
     try {
         Editor.insertFragment(destElement, typeName)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
-      }
+      }       
   }
-
+  
   @POST
   @Path("insert_section_after")
   public void insertSectionAfter() {
       FormData form = ctx.getForm()
-      String id = form.getString("id")
+      String id = form.getString("id")           
       Element element = ThemeManager.getElementById(id)
     try {
         Editor.insertSectionAfter(element)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
-      }
+      } 
   }
 
   @POST
   @Path("select_preset_manager_mode")
   public void selectPresetManagerMode() {
       FormData form = ctx.getForm()
-      String mode = form.getString("mode")
+      String mode = form.getString("mode")        
       SessionManager.setPresetManagerMode(mode)
   }
-
+  
   @POST
   @Path("select_fragment_type")
   public void selectFragmentType() {
       FormData form = ctx.getForm()
-      String type = form.getString("type")
+      String type = form.getString("type")        
       SessionManager.setFragmentType(type)
       SessionManager.setFragmentView(null)
   }
-
+  
   @POST
   @Path("select_fragment_view")
   public void selectFragmentView() {
       FormData form = ctx.getForm()
-      String view = form.getString("view")
+      String view = form.getString("view")        
       SessionManager.setFragmentView(view)
   }
-
+  
   @POST
   @Path("add_preset")
   public String addPreset() {
       FormData form = ctx.getForm()
       String themeName = form.getString("theme_name")
-      String presetName = form.getString("preset_name")
+      String presetName = form.getString("preset_name")      
       String category = form.getString("category")
       String value = form.getString("value")
       if (value == null) {
@@ -539,13 +647,13 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("convert_to_preset")
     public void convertValueToPreset() {
       FormData form = ctx.getForm()
       String themeName = form.getString("theme_name")
-      String presetName = form.getString("preset_name")
+      String presetName = form.getString("preset_name")      
       String category = form.getString("category")
       String value = form.getString("value")
       if (value == null) {
@@ -557,13 +665,13 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("edit_preset")
   public void editPreset() {
       FormData form = ctx.getForm()
       String themeName = form.getString("theme_name")
-      String presetName = form.getString("preset_name")
+      String presetName = form.getString("preset_name")        
       String value = form.getString("value")
     try {
         Editor.editPreset(themeName, presetName, value)
@@ -571,7 +679,7 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("rename_preset")
   public void renamePreset() {
@@ -583,7 +691,7 @@ public class Main extends ModuleRoot {
         Editor.renamePreset(themeName, oldName, newName)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
-      }
+      }           
   }
 
   @POST
@@ -598,7 +706,7 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("make_element_use_named_style")
   public void makeElementUseNamedStyle() {
@@ -613,7 +721,7 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("move_element")
   public void moveElement() {
@@ -627,14 +735,14 @@ public class Main extends ModuleRoot {
        Editor.moveElement(srcElement, destElement, order)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
-      }
+      }       
   }
-
+  
   @POST
   @Path("paste_element")
   public String pasteElement() {
       FormData form = ctx.getForm()
-      String destId = form.getString("dest_id")
+      String destId = form.getString("dest_id")      
       String id = getClipboardElement()
       if (id == null) {
           throw new ThemeEditorException("Nothing to paste")
@@ -644,9 +752,9 @@ public class Main extends ModuleRoot {
         return Editor.pasteElement(element, destId)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
-      }
+      }      
   }
-
+  
   @POST
   @Path("repair_theme")
   public void repairTheme() {
@@ -658,7 +766,7 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("save_theme")
   public void saveTheme() {
@@ -676,65 +784,75 @@ public class Main extends ModuleRoot {
   @Path("load_theme")
   public void loadTheme() {
       FormData form = ctx.getForm()
-      String src = form.getString("src")
+      String src = form.getString("src")      
       try {
           Editor.loadTheme(src)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("delete_theme")
   public void deleteTheme() {
       FormData form = ctx.getForm()
-      String src = form.getString("src")
+      String src = form.getString("src")      
       try {
           Editor.deleteTheme(src)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
-  @Path("save_changes")
-  public void saveChanges() {
+  @Path("delete_page")
+  public void deletePage() {
+      FormData form = ctx.getForm()
+      String pagePath = form.getString("page_path")      
       try {
-          Editor.saveChanges()
+          Editor.deletePage(pagePath)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("select_preset_group")
   public void selectPresetGroup() {
       FormData form = ctx.getForm()
-      String group = form.getString("group")
+      String group = form.getString("group")        
       SessionManager.setPresetGroup(group)
   }
-
+  
+  @POST
+  @Path("select_preset_category")
+  public void selectPresetCategory() {
+      FormData form = ctx.getForm()
+      String category = form.getString("category")        
+      SessionManager.setPresetCategory(category)
+  }
+  
   @POST
   @Path("select_style_category")
   public void selectStyleCategory() {
       FormData form = ctx.getForm()
-      String category = form.getString("category")
+      String category = form.getString("category")      
       SessionManager.setStyleCategory(category)
   }
-
+  
   @POST
   @Path("select_style_edit_mode")
   public void selectStyleEditMode() {
       FormData form = ctx.getForm()
-      String mode = form.getString("mode")
+      String mode = form.getString("mode")        
       SessionManager.setStyleEditMode(mode)
   }
-
+  
   @POST
   @Path("select_style_layer")
   public void selectStyleLayer() {
       FormData form = ctx.getForm()
-      String uid = form.getString("uid")
+      String uid = form.getString("uid")      
       Style layer = (Style) ThemeManager.getFormatById(uid)
       if (layer != null) {
           SessionManager.setStyleLayerId(uid)
@@ -745,37 +863,37 @@ public class Main extends ModuleRoot {
   @Path("select_named_style")
   public void selectNamedStyle() {
       FormData form = ctx.getForm()
-      String uid = form.getString("uid")
+      String uid = form.getString("uid")      
       Style style = (Style) ThemeManager.getFormatById(uid)
       if (style != null) {
           SessionManager.setNamedStyleId(uid)
       }
   }
-
+  
   @POST
   @Path("select_style_property_category")
   public void selectStylePropertyCategory() {
       FormData form = ctx.getForm()
-      String category = form.getString("category")
+      String category = form.getString("category")           
       SessionManager.setStylePropertyCategory(category)
   }
-
+  
   @POST
   @Path("select_style_selector")
   public void selectStyleSelector() {
       FormData form = ctx.getForm()
-      String selector = form.getString("selector")
-      SessionManager.setStyleSelector(selector)
+      String selector = form.getString("selector")      
+      SessionManager.setStyleSelector(selector)      
   }
-
+  
   @POST
   @Path("select_style_manager_mode")
   public void selectStyleManagerMode() {
       FormData form = ctx.getForm()
-      String mode = form.getString("mode")
+      String mode = form.getString("mode")        
       SessionManager.setStyleManagerMode(mode)
   }
-
+    
   @POST
   @Path("update_element_description")
   public void updateElementDescription() {
@@ -789,7 +907,7 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("update_element_properties")
   public void updateElementProperties() {
@@ -802,7 +920,7 @@ public class Main extends ModuleRoot {
         Editor.updateElementProperties(element, propertyMap)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
-      }
+      }      
   }
 
   @POST
@@ -810,7 +928,7 @@ public class Main extends ModuleRoot {
   public void updateElementWidth() {
       FormData form = ctx.getForm()
       String id = form.getString("id")
-      String width = form.getString("width")
+      String width = form.getString("width")         
       Format layout = ThemeManager.getFormatById(id)
     try {
         Editor.updateElementWidth(layout, width)
@@ -825,26 +943,29 @@ public class Main extends ModuleRoot {
       FormData form = ctx.getForm()
       String id = form.getString("id")
       String viewName = form.getString("view_name")
-      String cssSource = form.getString("css_source")
+      String cssSource = form.getString("css_source")      
       Element element = ThemeManager.getElementById(id)
       Style selectedStyleLayer = getSelectedStyleLayer()
-    try {
-        Editor.updateElementStyleCss(element, selectedStyleLayer, viewName, cssSource)
-    } catch (Exception e) {
+
+      
+      try {
+          Editor.updateElementStyleCss(element, selectedStyleLayer, viewName, cssSource) 
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("update_named_style_css")
   public void updateNamedStyleCss() {
       FormData form = ctx.getForm()
       String style_uid = form.getString("style_uid")
       String cssSource = form.getString("css_source")
+      String themeName = form.getString("theme_name")
       Style style = (Style) ThemeManager.getFormatById(style_uid)
       try {
-        Editor.updateNamedStyleCss(style, cssSource)
-    } catch (Exception e) {
+        Editor.updateNamedStyleCss(style, cssSource, themeName) 
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -853,7 +974,7 @@ public class Main extends ModuleRoot {
   @Path("split_element")
   public void splitElement() {
       FormData form = ctx.getForm()
-      String id = form.getString("id")
+      String id = form.getString("id")      
       Element element = ThemeManager.getElementById(id)
     try {
         Editor.splitElement(element)
@@ -867,9 +988,9 @@ public class Main extends ModuleRoot {
   public void updateElementStyle() {
       FormData form = ctx.getForm()
       String id = form.getString("id")
-      String path = form.getString("path")
-      String viewName = form.getString("view_name")
-      String property_map = form.getString("property_map")
+      String path = form.getString("path")           
+      String viewName = form.getString("view_name")      
+      String property_map = form.getString("property_map")      
       Map propertyMap = JSONObject.fromObject(property_map)
       Element element = ThemeManager.getElementById(id)
       Style currentStyleLayer = getSelectedStyleLayer()
@@ -894,21 +1015,21 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
+  
   @POST
   @Path("update_element_layout")
   public void updateElementPadding() {
       FormData form = ctx.getForm()
-      String property_map = form.getString("property_map")
+      String property_map = form.getString("property_map")      
       Map propertyMap = JSONObject.fromObject(property_map)
       Element element = getSelectedElement()
     try {
         Editor.updateElementLayout(element, propertyMap)
     } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
-      }
+      }          
   }
-
+  
   @POST
   @Path("update_element_widget")
   public void updateElementWidget() {
@@ -920,9 +1041,9 @@ public class Main extends ModuleRoot {
         Editor.updateElementWidget(element, viewName)
     } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
-      }
+      }          
   }
-
+  
   @POST
   @Path("delete_style_view")
   public void deleteStyleView() {
@@ -935,21 +1056,63 @@ public class Main extends ModuleRoot {
         Editor.deleteStyleView(style, viewName)
     } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
+      }          
+  }
+  
+  @POST
+  @Path("add_theme_to_workspace")
+  public void addThemeToWorkspace() {
+      FormData form = ctx.getForm()
+      String name = form.getString("name")
+      def themes = SessionManager.getWorkspaceThemes()
+      if (themes == null) {
+          themes = []
+      }
+      if (! themes.contains(name)) {
+          themes.add(name)
+      }
+      SessionManager.setWorkspaceThemes(themes)
+  }
+  
+  @POST
+  @Path("remove_theme_from_workspace")
+  public void removeThemeFromWorkspace() {
+      FormData form = ctx.getForm()
+      String name = form.getString("name")
+      def themes = SessionManager.getWorkspaceThemes()
+      if (themes == null) {
+          themes = []
+      }
+      if (themes.contains(name)) {
+          themes.remove(name)
+      }
+      SessionManager.setWorkspaceThemes(themes)
+  }
+  
+  @POST
+  @Path("undo")
+  public String undo() {
+      FormData form = ctx.getForm()
+      String themeName = form.getString("theme_name")
+      try {
+          return Editor.undo(themeName)
+      } catch (Exception e) {
+          throw new ThemeEditorException(e.getMessage(), e)
       }
   }
-
-
+  
+  
   /* API */
-
+   
   public static ThemeDescriptor getThemeDescriptor(String themeName) {
       return ThemeManager.getThemeDescriptor(themeName)
   }
-
+  
   public static List<Style> getNamedStyles(String applicationPath, name) {
       String currentThemeName = getCurrentThemeName(applicationPath, name)
       return Manager.getThemeManager().getNamedObjects(currentThemeName, "style")
   }
-
+  
   public static List<FragmentType> getFragments(applicationPath) {
       def fragments = []
       String templateEngine = getTemplateEngine(applicationPath)
@@ -962,7 +1125,7 @@ public class Main extends ModuleRoot {
       }
       return fragments
   }
-
+  
   public static List<ViewType> getViews(fragmentTypeName, applicationPath) {
       String templateEngine = getTemplateEngine(applicationPath)
       def views = []
@@ -980,27 +1143,27 @@ public class Main extends ModuleRoot {
       }
       return views
   }
-
+  
   public static String getSelectedElementId() {
       return SessionManager.getElementId()
   }
-
+  
   public static Element getSelectedElement() {
     String id = getSelectedElementId()
     if (id == null) {
       return null
     }
     return ThemeManager.getElementById(id)
-  }
-
+  } 
+  
   public static String getClipboardElement() {
       return SessionManager.getClipboardElementId()
   }
-
+  
   public static String getClipboardPreset() {
       return SessionManager.getClipboardPresetId()
   }
-
+  
   public static List<StyleLayer> getStyleLayersOfSelectedElement() {
       Style style = getStyleOfSelectedElement()
       if (style == null) {
@@ -1014,16 +1177,16 @@ public class Main extends ModuleRoot {
       }
       return layers
   }
-
+  
   public static boolean isSelectedElementAlwaysVisible() {
       Element selectedElement = getSelectedElement()
       return Manager.getPerspectiveManager().isAlwaysVisible(selectedElement)
   }
-
+  
   public static List<PerspectiveType> getPerspectives() {
       return PerspectiveManager.listPerspectives()
   }
-
+  
   public static List<PerspectiveType> getPerspectivesOfSelectedElement() {
       Element selectedElement = getSelectedElement()
       def perspectives = []
@@ -1032,11 +1195,11 @@ public class Main extends ModuleRoot {
       }
       return perspectives
   }
-
+  
   public static String getStyleEditMode() {
       return SessionManager.getStyleEditMode()
   }
-
+  
   public static List<String> getStyleSelectorsForSelectedElement() {
       Element element = getSelectedElement()
       String viewName = getViewNameOfSelectedElement()
@@ -1061,7 +1224,7 @@ public class Main extends ModuleRoot {
       }
       return selectors
   }
-
+  
   public static List<StyleFieldProperty> getElementStyleProperties() {
       Style style = getStyleOfSelectedElement()
       Style selectedStyleLayer = getSelectedStyleLayer()
@@ -1094,9 +1257,9 @@ public class Main extends ModuleRoot {
               fieldProperties.add(new StyleFieldProperty(name, value, type))
           }
       }
-      return fieldProperties
+      return fieldProperties    
   }
-
+  
   public static List getStylePropertiesForSelectedElement() {
       String viewName = getViewNameOfSelectedElement()
       Style style = getStyleOfSelectedElement()
@@ -1130,7 +1293,7 @@ public class Main extends ModuleRoot {
       }
       return fieldProperties
   }
-
+  
   public static String getSelectedStylePropertyCategory() {
       String category = SessionManager.getStylePropertyCategory()
       if (!category) {
@@ -1138,7 +1301,7 @@ public class Main extends ModuleRoot {
       }
       return category
   }
-
+  
   public static List<StyleCategory> getStyleCategories() {
       String selectedStyleCategory = getSelectedStylePropertyCategory()
       Map<String, StyleCategory> categories = new LinkedHashMap<String, StyleCategory>()
@@ -1149,7 +1312,7 @@ public class Main extends ModuleRoot {
       }
       return new ArrayList<StyleCategory>(categories.values())
   }
-
+  
   public static String getInheritedStyleNameOfSelectedElement() {
       Style style = getStyleOfSelectedElement()
       Style ancestor = (Style) ThemeManager.getAncestorFormatOf(style)
@@ -1162,7 +1325,7 @@ public class Main extends ModuleRoot {
   public static String getSelectedStyleSelector() {
       return SessionManager.getStyleSelector()
   }
-
+  
   public static Style getSelectedStyleLayer() {
       String selectedStyleLayerId = getSelectedStyleLayerId()
       if (selectedStyleLayerId == null) {
@@ -1170,14 +1333,14 @@ public class Main extends ModuleRoot {
       }
       return (Style) ThemeManager.getFormatById(selectedStyleLayerId)
   }
-
+  
   public static String getSelectedStyleLayerId() {
       return SessionManager.getStyleLayerId()
-  }
+  } 
 
   public static String getSelectedNamedStyleId() {
       return SessionManager.getNamedStyleId()
-  }
+  } 
 
   public static Style getSelectedNamedStyle() {
       String selectedNamedStyleId = getSelectedNamedStyleId()
@@ -1185,8 +1348,8 @@ public class Main extends ModuleRoot {
         return null
       }
       return (Style) ThemeManager.getFormatById(selectedNamedStyleId)
-  }
-
+  } 
+  
   public static Style getStyleOfSelectedElement() {
       Element element = getSelectedElement()
       if (element == null) {
@@ -1195,7 +1358,7 @@ public class Main extends ModuleRoot {
       FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "style")
       return (Style) ElementFormatter.getFormatByType(element, styleType)
   }
-
+  
   public static PaddingInfo getPaddingOfSelectedElement() {
       Element element = getSelectedElement()
       String top = ""
@@ -1233,7 +1396,7 @@ public class Main extends ModuleRoot {
       boolean INDENT = true
       return org.nuxeo.theme.html.Utils.styleToCss(style, viewNames, RESOLVE_PRESETS, IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT)
   }
-
+  
   public static String getRenderedPropertiesForNamedStyle(Style style) {
       if (style == null) {
           return ""
@@ -1253,7 +1416,7 @@ public class Main extends ModuleRoot {
     FormatType widgetType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "widget")
     return (Widget) ElementFormatter.getFormatByType(element, widgetType)
   }
-
+  
   public static String getViewNameOfSelectedElement() {
     Widget widget = getWidgetOfSelectedElement()
     if (widget == null) {
@@ -1282,18 +1445,18 @@ public class Main extends ModuleRoot {
       }
       return viewNames
   }
-
+  
   public static List<FieldProperty> getSelectedElementProperties() {
       Element selectedElement = getSelectedElement()
-      return org.nuxeo.theme.editor.Utils.getPropertiesOf(selectedElement)
+      return org.nuxeo.theme.editor.Utils.getPropertiesOf(selectedElement) 
   }
-
+  
   /* Presets */
-
+  
   public static List<String> getPresetGroupsForSelectedCategory() {
       return getPresetGroups(getSelectedStyleCategory())
   }
-
+  
   public static List<String> getPresetGroups(String category) {
       def groups = []
       def groupNames = []
@@ -1306,7 +1469,7 @@ public class Main extends ModuleRoot {
       }
       return groups
   }
-
+      
   public static List<PresetInfo> getGlobalPresets(String group) {
       def presets = []
       for (preset in  PresetManager.getGlobalPresets(group, null)) {
@@ -1314,10 +1477,10 @@ public class Main extends ModuleRoot {
       }
       return presets
   }
-
-  public static List<PresetInfo> getCustomPresets(String themeName) {
+  
+  public static List<PresetInfo> getCustomPresets(String themeName, String category) {
       def presets = []
-      for (preset in PresetManager.getCustomPresets(themeName, null)) {
+      for (preset in PresetManager.getCustomPresets(themeName, category)) {
           presets.add(new PresetInfo(preset))
       }
       return presets
@@ -1338,41 +1501,51 @@ public class Main extends ModuleRoot {
   public static String getFragmentFactoryMode() {
       return SessionManager.getFragmentFactoryMode()
   }
-
+  
   public static String getPresetManagerMode() {
       return SessionManager.getPresetManagerMode()
   }
-
+  
   public static String getStyleManagerMode() {
       return SessionManager.getStyleManagerMode()
   }
-
+  
+  public static String getThemeManagerMode() {
+      return SessionManager.getThemeManagerMode()
+  }
+  
   public static List<String> getUnidentifiedPresetNames(String themeName) {
       return PresetManager.getUnidentifiedPresetNames(themeName)
   }
-
+    
   public static String renderStyleView(Style style, String viewName) {
       List<String> viewNames = new ArrayList<String>()
       viewNames.add(viewName)
       return org.nuxeo.theme.html.Utils.styleToCss(style,
               viewNames, false, true, true, true)
   }
-
+  
   public static List<String> getHardcodedColors(final themeName) {
-      return Editor.getHardcodedColors(themeName)
-  }
+      return Editor.getHardcodedColors(themeName)    
+  }  
 
   public static List<String> getHardcodedImages(final themeName) {
-      return Editor.getHardcodedImages(themeName)
+      return Editor.getHardcodedImages(themeName)    
   }
-
+  
   /* Session */
-
+  
   public static String getSelectedPresetGroup() {
       String category = SessionManager.getPresetGroup()
       return category
   }
-
+  
+  public static String getSelectedPresetCategory() {
+      String category = SessionManager.getPresetCategory()
+      return category
+  }
+  
+  
   public static String getSelectedStyleCategory() {
         String category = SessionManager.getStyleCategory()
         if (!category) {
@@ -1380,19 +1553,19 @@ public class Main extends ModuleRoot {
         }
         return category
   }
-
+  
   public static String getSelectedFragmentType() {
       return SessionManager.getFragmentType()
   }
-
+  
   public static String getSelectedFragmentView() {
       return SessionManager.getFragmentView()
   }
-
+  
   public static String getTemplateEngine(applicationPath) {
       return ThemeManager.getTemplateEngineName(applicationPath)
   }
-
+  
   public static String getDefaultTheme(applicationPath, name) {
       String defaultTheme = ThemeManager.getDefaultTheme(applicationPath)
       if(defaultTheme == null || defaultTheme.equals("")) {
@@ -1402,7 +1575,17 @@ public class Main extends ModuleRoot {
       }
       return defaultTheme
   }
-
+  
+  public static String getCurrentPagePath(applicationPath, name) {
+      String defaultTheme = getDefaultTheme(applicationPath, name)
+      def ctx = WebEngine.getActiveContext()
+      String currentPagePath = ctx.getCookie("nxthemes.theme")
+      if (currentPagePath == null) {
+          currentPagePath = defaultTheme
+      }
+      return currentPagePath
+  }   
+  
   public static String getCurrentThemeName(applicationPath, name) {
     String defaultTheme = getDefaultTheme(applicationPath, name)
     def ctx = WebEngine.getActiveContext()
@@ -1433,6 +1616,7 @@ public class Main extends ModuleRoot {
       return pages
     }
 
+    boolean first = true;
     for (PageElement page : ThemeManager.getPagesOf(currentTheme)) {
       String pageName = page.getName()
       String link = String.format("%s/%s", currentThemeName, pageName)
@@ -1440,11 +1624,15 @@ public class Main extends ModuleRoot {
       if (defaultPageName.equals(pageName)) {
         className += " default"
       }
+      if (first) {
+        className += " first"
+        first = false
+      }
       pages.add(new PageInfo(pageName, link, className))
     }
     return pages
   }
-
+  
   public static List<ThemeInfo> getThemes(applicationPath, name) {
     def themes = []
     String defaultTheme = getDefaultTheme(applicationPath, name)
@@ -1458,9 +1646,31 @@ public class Main extends ModuleRoot {
     }
     return themes
   }
-
+    
   public static ThemeManager getThemeManager() {
       return Manager.getThemeManager()
   }
+  
+  public static List<ThemeInfo> getWorkspaceThemes(path, name) {
+      def themes = []
+      String currentThemeName = getCurrentThemeName(path, name)
+      String templateEngine = getTemplateEngine(path)
+      def workspaceThemes = SessionManager.getWorkspaceThemes()
+      def compatibleThemes = ThemeManager.getThemeNames(templateEngine)
+      if (workspaceThemes == null) {
+          workspaceThemes = []
+      }
+      if (!workspaceThemes.contains(currentThemeName)) {
+          workspaceThemes.add(currentThemeName);
+      }
+      for (String themeName: workspaceThemes) {
+          if (compatibleThemes.contains(themeName)) { 
+              String pagePath = String.format("%s/default", themeName)
+              themes.add(new ThemeInfo(themeName, pagePath, themeName == currentThemeName))
+          }
+      }
+      return themes
+  }
 
 }
+
