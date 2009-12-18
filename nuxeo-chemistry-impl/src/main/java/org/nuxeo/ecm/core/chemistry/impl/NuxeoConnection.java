@@ -328,7 +328,8 @@ public class NuxeoConnection implements Connection, SPI {
         // don't mutate properties -> cannot remove TYPE_ID
         for (Entry<String, Serializable> e : properties.entrySet()) {
             String key = e.getKey();
-            if (Property.TYPE_ID.equals(key)) {
+            if (Property.TYPE_ID.equals(key)
+                    || Property.LAST_MODIFICATION_DATE.equals(key)) {
                 continue;
             }
             entry.setValue(key, e.getValue());
