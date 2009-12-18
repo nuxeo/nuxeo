@@ -27,22 +27,22 @@
 
   <div class="frame">
     <#if !selected_preset_group>
-      <a class="addPreset" href="javascript:void(0)" onclick="NXThemesEditor.addPreset('${current_theme_name}', '${style_category}', 'style picker')">ADD PRESET</a>
+      <a class="addPreset" href="javascript:void(0)" onclick="NXThemesEditor.addPreset('${current_theme_name?js_string}', '${style_category?js_string}', 'style picker')">ADD PRESET</a>
     </#if>
     <#list presets_for_selected_group as preset_info>
       <div>
         <#if !selected_preset_group>
-          <a class="editPreset" href="javascript:void(0)" onclick="NXThemesEditor.editPreset('${current_theme_name}', '${preset_info.effectiveName}', '${preset_info.value}', 'style picker');">
+          <a class="editPreset" href="javascript:void(0)" onclick="NXThemesEditor.editPreset('${current_theme_name?js_string}', '${preset_info.effectiveName?js_string}', '${preset_info.value?js_string}', 'style picker');">
 	      <img src="${basePath}/skin/nxthemes-editor/img/edit-12.png" /></a>
         </#if>
         <#if preset_info.value>
-          <div class="selection" title="${preset_info.effectiveName}" onclick="NXThemesStyleEditor.updateFormField('&quot;${preset_info.effectiveName}&quot;')">
+          <div class="selection" title="${preset_info.effectiveName}" onclick="NXThemesStyleEditor.updateFormField('&quot;${preset_info.effectiveName?js_string}&quot;')">
             <div class="name">${preset_info.name}</div>
             <div class="preview">${preset_info.preview}</div>
             <div class="value">${preset_info.value}</div>
           </div>
         <#else>
-          <div class="selection" title="${preset_info.effectiveName}" onclick="NXThemesEditor.editPreset('${current_theme_name}', '${preset_info.effectiveName}', '${preset_info.value}', 'style picker');">
+          <div class="selection" title="${preset_info.effectiveName}" onclick="NXThemesEditor.editPreset('${current_theme_name?js_string}', '${preset_info.effectiveName?js_string}', '${preset_info.value?js_string}', 'style picker');">
             <div class="name">${preset_info.name}</div>
             <div class="preview">${preset_info.preview}</div>
             <div class="value">???</div>

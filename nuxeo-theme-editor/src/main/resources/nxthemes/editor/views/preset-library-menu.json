@@ -1,0 +1,19 @@
+    {"id": "preset library menu",
+     "area": "nxthemesPresetLibrary",
+     "widget": {
+       "type": "contextmenu",
+       "noIcon": "/skin/nxthemes-editor/img/noicon-16.png",
+       "arrow":  "/skin/nxthemes-editor/img/arrow-16.png",
+       "showDisabledItems": false,
+       "targetType": "preset",
+       "items": [            
+         {"type": "item",
+          "label": "Copy",
+          "icon": "/skin/nxthemes-editor/img/copy-16.png",
+          "action": "copy preset",
+          "visible": "copyable"
+         }
+       ]
+     },
+     "controllers": ["toggle context menu", "context menu actions"]
+    }

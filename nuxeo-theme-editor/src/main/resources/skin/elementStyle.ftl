@@ -33,7 +33,7 @@
 	    </#list>
 	  </select>
 
-          <button onclick="NXThemesStyleEditor.createNamedStyle('#{selected_element.uid}', '${current_theme_name}')">New style</button>
+          <button onclick="NXThemesStyleEditor.createNamedStyle('#{selected_element.uid}', '${current_theme_name}', 'element style')">New style</button>
           <#if inherited_style_name_of_selected_element>
             <button onclick="NXThemesStyleEditor.deleteNamedStyle('#{selected_element.uid}', '${current_theme_name}', '${inherited_style_name_of_selected_element}')">Delete '${inherited_style_name_of_selected_element}'</button>
           </#if>
@@ -43,7 +43,9 @@
       
       <div class="nxthemesButtonSelector"
         style="text-align: left; padding: 4px 15px;">
-        <span>Layers: </span>
+        <span>
+          <img style="vertical-align: middle" src="${skinPath}/img/layers-16.png" width="16" height="16" />
+          Layers: </span>
         <#list style_layers_of_selected_element as layer>
           <span>${layer.rendered}</span>
         </#list>

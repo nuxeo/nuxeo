@@ -51,7 +51,7 @@ ins.model, ins.view, ins.controller {
   border: 1px solid #333;
   background: #fff;
   color: #000;
-  z-index: 10;
+  z-index: 40;
   width: 135px;
   padding: 2px;
   -moz-border-radius: 3px;
@@ -81,7 +81,8 @@ ins.model, ins.view, ins.controller {
 }
 
 .nxthemesContextMenu .title {
-  display: none;
+  height: 13px;
+  overflow: hidden;
 }
 
 .nxthemesContextMenu .separator {
@@ -187,53 +188,156 @@ html, body {
   height: 100%;
 }
 
-/* Top header */
+/* Header */
 #nxthemesHeader {
-  background: #fff url(${basePath}/skin/nxthemes-editor/img/header-bg.png) top left
+  background: #444 url(${basePath}/skin/nxthemes-editor/img/header-bg.png) top left
     repeat-x;
   text-decoration: none;
   position: fixed;
   z-index: 10;
   top: 0;
   left: 0;
-  height: 80px;
+  height: 60px;
   width: 100%;
 }
 
-#nxthemesTopButtons {
-  position: absolute;
-  top: 7px;
-  left: 4px;
-}
-
-#nxthemesPerspectiveSelector {
-  position: absolute;
-  top: 8px;
-  right: 4px;
-}
-
-#nxthemesThemeSelector {
-  position: absolute;
-  top: 8px;
-  right: 270px;
-}
-
+/* Main area */
 #nxthemesCanvasArea {
   padding: 0;
   position: absolute;
   z-index: 1;
-  top: 110px;
+  top: 60px;
   min-height:100%;
   width: 100%;
+  padding-bottom: 35px;
 }
 
-/* Page selector tabs */
-#nxthemesPageSelectorArea {
+#nxthemesThemeActions {
   position: absolute;
-  top: 35px;
+  width: 150px;
+  margin-top: 10px;
+  margin-left: 2px;
+  z-index: 2; 
+}
+
+/* Footer */
+
+#nxthemesPageSelector {
+  position: fixed;
+  z-index: 10;
+  bottom: 18px;
+  left: 0;
+  height: 18px;
+  width: 100%;
+  background: url(${basePath}/skin/nxthemes-editor/img/page-selector-bg.png) repeat-x;
+}
+
+#nxthemesStatusBar {
+  position: fixed;
+  z-index: 10;
+  bottom: 0;
+  left: 0;
+  height: 18px;
+  width: 100%;	
+  color: #000;
+  font: 12px Arial, sans-serif;
+  background: url(${basePath}/skin/nxthemes-editor/img/status-bar-bg.png) repeat-x;
+}
+
+#nxthemesStatusMessage {
+  font: bold 11px Arial;
+  color: #000;
+  background: url(${basePath}/skin/nxthemes-editor/img/info.png) no-repeat 5px 2px;
+  z-index: 10;
+  padding: 4px 0px;
+  padding-left: 25px;
+}
+
+#nxthemesCanvasModeArea {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 1px;
+}
+
+#nxthemesEditorInfo {
+  position: absolute;
+  right: 6px;
+  top: 3px;
+  padding: 0;
+  font:  10px Arial, sans-serif;
+  color: #333;
+}
+
+#nxthemesWaitAnimation {
+  position: absolute;
+  top: 65px;
+  right: 15px;
+  padding: 1px 12px;
+  z-index: 10;
+  font: 12px Arial, sans-serif;
+  color: #000;
+  background-color: #eee;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+}
+
+#nxthemesWaitAnimation img {
+  vertical-align: bottom;
+}
+
+#nxthemesMainButtons {
+  position: absolute; 
+  right: 10px; 
+  top: 9px
+}
+
+#nxthemesLocalButtons {
+  top: 28px;
+  position: absolute;
+  margin: 8px;
   width: 100%;
 }
+	
+#nxthemesLocalButtons a {
+  font-size: 11px;
+}
 
+.nxthemesButtonHeader {
+  float: left; 
+  font: bold 12px Arial; 
+  color: #eee; 
+  padding: 3px 3px 0 15px;
+}
+
+#nxthemesPerspectiveSelector {
+  float: left;
+  padding: 1px;
+  margin-left: 10px;
+  margin-top: 9px;
+}
+	
+/* Theme selector drop-down list */
+#nxthemesThemeSelector {
+  float: left;
+  padding: 1px;
+  margin-left: 14px;
+  margin-top: 9px;
+  padding: 1px;
+  font: 12px Arial, sans-serif;
+  color: #eee;
+}
+
+#nxthemesThemeSelector select {
+  font: 11px Arial, sans-serif;
+  border: 1px solid #000;
+  width: 150px;
+  background-color: #eee;
+}
+
+#nxthemesThemeSelector option.selected {
+}
 
 /* Perspective selector drop-down list */
 .nxthemesPerspectiveSelector {
@@ -245,19 +349,9 @@ html, body {
   font: 11px Arial, sans-serif;
   border: 1px solid #000;
   width: 180px;
+  background-color: #eee;
 }
 
-/* Theme selector drop-down list */
-.nxthemesThemeSelector {
-  font: 12px Arial, sans-serif;
-  color: #fff;
-}
-
-.nxthemesThemeSelector select {
-  font: 11px Arial, sans-serif;
-  border: 1px solid #000;
-  width: 150px;
-}
 
 .nxthemesAreaStyle {
   text-align: center !important;
@@ -306,15 +400,6 @@ html, body {
 }
 
 
-/* canvas mode */
-#nxthemesCanvasModeArea {
-  position: absolute;
-  top: 54px;
-  right: 0;
-  background-color: #fff;
-  padding: 4px 10px;
-}
-
 div.nxthemesButtonSelector {
   font: 11px Arial, sans-serif;
   padding: 1px;
@@ -361,12 +446,6 @@ h1.nxthemesEditor, h2.nxthemesEditor, h3.nxthemesEditor {
 
 h1.nxthemesEditor {
   font-size: 20px;
-  color: #600;
-  background-color: #fc3;
-  padding: 0 8px;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  border-radius: 3px;
 }
 	
 h2.nxthemesEditor {
@@ -588,56 +667,66 @@ div.nxthemesEditorFrame {
 .nxthemesPageTabs {
   font: 12px Arial, sans-serif;
   margin: 0;
-  padding: 0;
-  padding-top: 20px;
-  padding-left: 15px;
-  border-bottom: 1px solid #999;
 }
 
+.nxthemesPageTabs div.themeName {
+  float: left;
+  padding: 3px;
+  margin-left: 4px;
+  color: #fff;
+  font-weight: bold;
+}
+	
 .nxthemesPageTabs ul {
+  list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.nxthemesPageTabs li {
-  float: left;
-  margin-bottom: -1px;
-  margin-left: 3px;
-  padding: 0 0 0 14px;
-  background-image: url(${basePath}/skin/nxthemes-editor/img/page-tab.png);
-  background-position: 0 -28px;
+.nxthemesPageTabs ul li.first {
+  margin-left: 4px;
 }
 
-.nxthemesPageTabs li.selected {
-  background-position: 0 0;
-  border-bottom: 1px dotted #eee;
+.nxthemesPageTabs ul li.first span {
+    background: url(${basePath}/skin/nxthemes-editor/img/bottom-tabs.png) no-repeat;
+}
+
+.nxthemesPageTabs ul li {
+  float: left;
+  display: block;
+  height: 17px;
+  padding-right: 25px;
+  margin-left: -15px;
+  position: relative;
+  background: url(${basePath}/skin/nxthemes-editor/img/bottom-tabs.png) 100% 0 no-repeat;
+  white-space: nowrap;
+}
+
+.nxthemesPageTabs ul span {
+  height: 17px;
+  line-height: 17px;
+  padding-left: 20px;
+  background: url(${basePath}/skin/nxthemes-editor/img/bottom-tabs.png) 0 -34px no-repeat;
+  display: block;
+}
+
+.nxthemesPageTabs ul li.selected {
+  z-index: 1;
+  height: 17px;
+  background: url(${basePath}/skin/nxthemes-editor/img/bottom-tabs.png) 100% -17px no-repeat;
+}
+
+.nxthemesPageTabs ul li.selected span {
+  background: url(${basePath}/skin/nxthemes-editor/img/bottom-tabs.png) 0 -17px no-repeat;
+}
+
+.nxthemesPageTabs ul a {
+  color: #000;
+  text-decoration: none;
 }
 
 .nxthemesPageTabs li.default a {
-  text-decoration: underline !important;
-}
-
-.nxthemesPageTabs li a {
-  display: block;
-  padding: 2px 14px 0 0;
-  background-image: url(${basePath}/skin/nxthemes-editor/img/page-tab.png);
-  background-position: 100% -28px;
-  color: #444 !important;
-}
-
-.nxthemesPageTabs li:hover a {
-  color: #000 !important;
-  background-position: 100% 0;
-}
-
-.nxthemesPageTabs li:hover {
-  background-position: 0 0;
-}
-
-.nxthemesPageTabs li.selected a {
-  background-position: 100% 0;
-  font-weight: normal;
-  color: #000 !important;
+  font-style: italic;
 }
 
 .nxthemesPageTabs img {
@@ -649,25 +738,8 @@ div.nxthemesEditorFrame {
 
 .nxthemesButton b, .nxthemesButton a {
   background-image: url(${basePath}/skin/nxthemes-editor/img/button.png);
-  font: 12px arial;
   color: #000 !important;
-  padding-top: 3px;
-  padding-bottom: 3px;
 }
-
-.nxthemesButton b {
-  margin-left: 3px;
-  padding-left: 15px;
-}
-
-.nxthemesButton a {
-  padding-right: 15px;
-}
-
-.nxthemesButton.dropList a {
-  padding-right: 20px;
-}
-
 
 /* Form elements used in the element editor */
 .nxthemesForm {
@@ -765,20 +837,6 @@ div.nxthemesEditorFrame {
   font: 0.8em Arial;
 }
 
-#nxthemesStatusMessage {
-  position: absolute;
-  z-index: 150;
-  padding: 7px 28px;
-  top: 2px;
-  right: 2px;
-  color: #000;
-  font: 12px Arial, sans-serif;
-  background-color: #ff9;
-  background-image: url(${basePath}/skin/nxthemes-editor/img/info.png);
-  background-repeat: no-repeat;
-  background-position: 7px 6px;
-  border: 2px solid #000;
-}
 
 /* layout */
 .nxthemesSizer {
@@ -855,15 +913,15 @@ div.nxthemesFragment, div.nxthemesFragmentHidden {
 }
 
 div.nxthemesFragment {
-  border-color: #999 #000 #000 #999;
-  background: #ffe;
+  border-color: #666 #000 #000 #666;
+  background: #fffff9;
   color: #333;
 }
 
 div.nxthemesFragmentHidden {
-  border-color: #ccc #999 #999 #ccc;
-  background: #ffe;
-  color: #ccc;
+  border-color: #999 #999 #999 #999;
+  background: #fcfcf6;
+  color: #999;
 }
 
 div.nxthemesFragment b, div.nxthemesFragmentHidden b {
@@ -873,8 +931,9 @@ div.nxthemesFragment b, div.nxthemesFragmentHidden b {
 /* style editor */
 #stylePreviewArea {
   width: auto;
-  overflow: hidden;
-  background: #fff url(${basePath}/skin/nxthemes-editor/img/checker.png) repeat; 
+  overflow: scroll;
+  background: #fff url(${basePath}/skin/nxthemes-editor/img/checker.png) repeat;
+  height: 300px;
 }
 
 #stylePreviewArea, #stylePreviewArea a {
@@ -892,29 +951,29 @@ div.nxthemesFragment b, div.nxthemesFragmentHidden b {
   font:  12px Arial, sans-serif;
 }
 
-#nxthemesThemeManager, #nxthemesPresetManager, #nxthemesStyleManager {
+.nxthemesScreen {
   position: absolute;
-  top: 80px;
-  left: 0;
-  right: 0;
+  top: 65px;
+  left: 10px;
+  right: 10px;
   background-color: #fff;
-  padding: 0 20px;
+  padding: 10px;
+  padding-bottom: 25px;
   font-family: Arial, sans-serif;
   z-index: 1;
 }
 
-#nxthemesPresetManager div.name {
+.nxthemesPresets div.name {
   color: #333;
-  font-weight: bold;
   font-size: 11px;
 }
 
-#nxthemesPresetManager div.category {
+.nxthemesPresets div.category {
   font-size: 11px;
   font-style: italic;
 }
 
-#nxthemesPresetManager div.preview {
+.nxthemesPresets div.preview {
   color: #000;
   text-align: center;
   border: 1px solid #ccc;
@@ -925,28 +984,28 @@ div.nxthemesFragment b, div.nxthemesFragmentHidden b {
   border-radius: 3px;
 }
 
-#nxthemesPresetManager table {
+.nxthemesPresets table {
   vertical-align:top;
 }
 
-#nxthemesPresetManager table td.preset {
+.nxthemesPresets table td.preset {
   vertical-align:top;
   text-align: center;
-  cursor: default;
+  cursor: pointer;
   width: 10%;
   border: 2px solid #fff;
 }
 
-#nxthemesPresetManager table td.preset:hover {
+.nxthemesPresets table td.preset:hover {
   border: 2px solid #ff0;
   background-color: #ffc;
 }
 
-#nxthemesPresetManager table td.presetTarget {
+.nxthemesPresets table td.presetTarget {
   height: 100px;
 }
 
-#nxthemesPresetManager div.preview div {
+.nxthemesPresets div.preview div {
   height: 65px;
 }
 
@@ -978,11 +1037,30 @@ ul.nxthemesSelector li a:hover {
   color: #000;
 }
 
+ul.nxthemesSelector li a span.info {
+  visibility: hidden;
+}
+
+ul.nxthemesSelector li a:hover span.info {
+  font-weight: bold;
+  visibility: visible;
+  margin-right: 15px;
+  float: right;
+}
+
 ul.nxthemesSelector li.selected a {
   background-color: #eee;
   border: 1px solid #ccc;
 }
 
+ul.nxthemesSelector li.disabled a {
+  color: #999;
+  font-style: italic;
+}
+
+ul.nxthemesSelector li.disabled a:hover span.info {
+  visibility: hidden;
+}
 ul.nxthemesSelector img {
   border: none;
   vertical-align: middle;	
@@ -1111,29 +1189,6 @@ img.nxthemesAlignSection:hover {
   padding: 30px;
 }
 
-#nxthemesWaitAnimation {
-  position: absolute;
-  top: 38px;
-  right: 5px;
-  padding: 0;
-  font:  12px Arial, sans-serif;
-  color: #666;
-  text-transform: uppercase;  
-  background-color: #fff;
-}
-
-#nxthemesWaitAnimation img {
-  vertical-align: bottom;
-}
-
-#nxthemesEditorInfo {
-  position: absolute;
-  top: 38px;
-  right: 10px;
-  padding: 0 4px;
-  font:  11px bold Arial, sans-serif;
-  color: #999;
-}
 
 #nxthemesElementPadding {
   left: 100px;
@@ -1182,25 +1237,9 @@ img.nxthemesAlignSection:hover {
 }
 
 #nxthemesFragmentFactory {
-  position: absolute;
-  top: 100px;
-  left: 0;
-  right: 0;
-  background-color: #fff;
-  padding: 0 20px;
-  font-family: Arial, sans-serif;
-  z-index: 1;  
 }
 
 #nxthemesElementEditor {
-  position: absolute;
-  top: 80px;
-  left: 0;
-  right: 0;
-  background-color: #fff;
-  padding: 0 20px;
-  font-family: Arial, sans-serif;
-  z-index: 1;  
 }
 
 #nxthemesPaddingEditor {
@@ -1354,6 +1393,8 @@ option.locked {
  text-decoration: none;
  font: 13px Arial;
  color: #fff;
+ margin-top: 10px;
+ display: block;
 }
 
 .nxthemesAddSection:hover div {
@@ -1434,27 +1475,125 @@ ul.namedStyleSelector li a.selected {
 
 table.fragmentFactory {
   width: 100%;
+  border-left: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
 }
 
 table.fragmentFactory th {
-  border: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-top: 1px solid #ccc;
   text-align: left;
-  padding: 3px 7px;
+  padding: 5px 7px;
   background-color: #eee;
+  color: #333;
+  font-size: 11px;
 }
 
 table.fragmentFactory td {
-  border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;
+}
+
+.nxthemesDropDownMenu {
+  background-color: #fff;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  border-width: 1px 3px 3px 1px;
+  border-style: solid;
+  border-color: #000;
+  padding: 5px 10px;
+}
+
+.nxthemesDropDownMenu ul {
+  margin: 0;
+  padding: 0;
+}
+
+.nxthemesDropDownMenu li {
+  list-style: none;
 
 }
-.nxthemesBack {
-  background: url(${basePath}/skin/nxthemes-editor/img/back-16.png) no-repeat;
-  padding: 2px 20px;
-  cursor: pointer;
-  text-transform: uppercase;
-  color: #030 !important;
-  font-size: 11px;
+
+.nxthemesDropDownMenu li.selected a {
+  font-weight: bold !important;
+}
+
+.nxthemesDropDownMenu li.selected a {
+  font-weight: bold !important;
+}
+
+.nxthemesDropDownMenu li a {
+  color: #000;
+  font: 12px Arial, sans-serif;
+  text-decoration: none;
   display: block;
-  margin: 0px 0 14px 0;
+  padding: 4px 6px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  border: 1px solid #fff;
+}
+
+.nxthemesDropDownMenu li a:hover {
+  border: 1px solid #999;
+  background-color: #eee;
+  color: #000;
+}
+
+.nxthemesRoundButton {
+  border: 1px solid #999;
+  background-color: #ddd;
+  cursor: pointer;
+  padding: 0px 8px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+
+.nxthemesExplanation {
+  font: italic 12px Arial, sans-serif;
+  margin: 0;
+  margin-bottom: 15px;
+  padding: 0;
+  color: #666;
+}
+
+.nxthemesUndoButtons {
+  background-color: #ccc;
+  position: absolute;
+  right: 210px;
+  top: 9px;
+  padding: 2px 4px; 
+  font: bold 11px Arial;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+
+.nxthemesUndoButtons img {
+  border: none;
+}
+
+.nxthemesUndoButtons a {
+  text-decoration: none;
+  color: #000;
+}
+
+.nxthemesUndoButtons a:hover {
+  color: #666;
+}
+
+.nxthemesActionButton {
+  background-color: #eee;
+  padding: 2px 3px;
+  border: 1px solid #ccc;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  color: #000 !important;
+  font-size: 11px;
+}
+
+.nxthemesActionButton img {
+  vertical-align: top;
 }

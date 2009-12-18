@@ -4,5 +4,5 @@
      },
      "model": "theme editor",
      "controllers": ["editor perspectives"],
-     "perspectives": ["edit canvas","add fragments","edit padding"]
+     "perspectives": ["canvas editor","fragment factory","padding editor"]
     }

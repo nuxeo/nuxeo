@@ -321,8 +321,7 @@ public class NotificationEventListener implements PostCommitEventListener {
                         } else {
                             // it is a group - get all users and send
                             // notifications to them
-                            List<String> usersOfGroup = NotificationServiceHelper.getUsersService().getUsersInGroup(
-                                    subscriptor.substring(6));
+                            List<String> usersOfGroup = getGroupMembers(subscriptor.substring(6));
                             if (usersOfGroup != null && !usersOfGroup.isEmpty()) {
                                 for (String usr : usersOfGroup) {
                                     storeUserForNotification(notification, usr,

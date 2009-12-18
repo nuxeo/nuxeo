@@ -14,21 +14,14 @@
 
 package org.nuxeo.theme.editor;
 
-import java.util.Properties;
-
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Preview;
 import org.nuxeo.theme.PreviewType;
-import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 
 public class PresetInfo {
-
-    private static final String PREVIEW_PROPERTIES_RESOURCE = "/nxthemes/editor/styles/previews.properties";
-
-    private final Properties previewProperties = new Properties();
 
     final PresetType preset;
 

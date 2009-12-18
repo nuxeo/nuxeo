@@ -61,7 +61,7 @@ public class GroupsSubscriptionsAction extends InputController implements
     private static final Labeler labeler = new Labeler("label.subscriptions");
 
     @In(create = true, required = false)
-    private transient CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
     protected Principal currentUser;
@@ -71,7 +71,7 @@ public class GroupsSubscriptionsAction extends InputController implements
     private List<String> selectedNotifications;
 
     @In(create = true)
-    private transient NotificationManager notificationManager;
+    protected transient NotificationManager notificationManager;
 
     private String selectedGrant;
 
