@@ -21,6 +21,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
@@ -30,7 +32,11 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.NegotiationDef;
+import org.nuxeo.theme.types.TypeFamily;
+import org.nuxeo.theme.types.TypeRegistry;
 
 @Name("WebcontainerThemeActions")
 @Scope(ScopeType.PAGE)
@@ -61,4 +67,14 @@ public class ThemeActionsBean implements ThemeActions, Serializable {
         return pages;
     }
 
+    public String getDefaultTheme() {
+        FacesContext fContext = FacesContext.getCurrentInstance();
+        // get the negotiation strategy
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        final ExternalContext external = fContext.getExternalContext();
+        ApplicationType app = (ApplicationType) typeRegistry.lookup(
+                TypeFamily.APPLICATION, external.getRequestContextPath());
+        NegotiationDef negotiation = app.getNegotiation();
+        return negotiation.getDefaultTheme();
+    }
 }

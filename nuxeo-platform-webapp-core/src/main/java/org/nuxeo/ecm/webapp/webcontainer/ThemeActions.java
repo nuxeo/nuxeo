@@ -26,5 +26,6 @@ public interface ThemeActions {
     List<SelectItem> getAvailableThemes();
 
     List<SelectItem> getAvailablePages(String page);
-
+     
+    String getDefaultTheme();
 }
