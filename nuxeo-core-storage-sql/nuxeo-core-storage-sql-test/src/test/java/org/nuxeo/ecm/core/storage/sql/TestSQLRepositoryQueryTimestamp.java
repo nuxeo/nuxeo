@@ -34,7 +34,7 @@ public class TestSQLRepositoryQueryTimestamp extends SQLRepositoryTestCase {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.query.test",
                 "OSGI-INF/core-types-contrib.xml");
-        session = openSessionAs(null); // system
+        session = openSessionAs((String) null); // system
     }
 
     protected Date setupDocTest() throws ClientException {
