@@ -43,7 +43,7 @@
         <type>Note</type>
       </subtypes>
       <layouts mode="any">
-        <layout>heading</layout>
+        <layout>importset_heading</layout>
         <layout>damc</layout>
         <layout>dublincore</layout>
       </layouts>

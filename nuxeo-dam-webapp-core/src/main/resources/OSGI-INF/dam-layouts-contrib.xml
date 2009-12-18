@@ -44,7 +44,6 @@
 
     </layout>
 
-
     <layout name="dublincore">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
@@ -113,7 +112,46 @@
           <property name="styleClass">dataInputTextDate</property>
         </properties>
       </widget>
+    </layout>
 
+    <layout name="importset_heading">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>title</widget>
+        </row>
+        <row>
+          <widget>description</widget>
+        </row>
+      </rows>
+      <widget name="title" type="template">
+        <labels>
+          <label mode="any">label.dublincore.importset.title</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/importset_title_widget.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="description" type="textarea">
+        <labels>
+          <label mode="any">label.dublincore.description</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:description</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>    
     </layout>
 
     <layout name="heading">

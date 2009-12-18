@@ -1,0 +1,26 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="#{widget.id}">
+
+  <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
+
+    <h:outputText value="#{field_0}"  />
+    
+  </c:if>
+  
+  <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
+
+  	<a4j:outputPanel id="importset_title">
+      <h:inputText value="#{field_0}" id="#{widget.id}_title">
+        <a4j:support event="onclick" focus="#{widget.id}_title" action="#{importActions.resetImportSetTitle}" reRender="importset_title" />
+      </h:inputText>
+    </a4j:outputPanel>
+
+  </c:if>
+
+</f:subview>

@@ -18,6 +18,8 @@
 package org.nuxeo.dam.platform.context;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import javax.faces.application.FacesMessage;
@@ -35,6 +37,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -58,6 +61,11 @@ public class ImportActionsBean implements Serializable {
     public static final String IMPORTSET_CREATED = "importSetCreated";
 
     protected DocumentModel newImportSet;
+
+    protected boolean titleChanged;
+
+    @In(create = true)
+    private transient NuxeoPrincipal currentNuxeoPrincipal;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -92,7 +100,24 @@ public class ImportActionsBean implements Serializable {
                     context);
         }
 
+        if (!titleChanged) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddMMyyHHmmss");
+            Calendar calendar = Calendar.getInstance();
+            String username = currentNuxeoPrincipal.getName();
+            String defaultTitle = username
+                    + simpleDateFormat.format(calendar.getTime());
+            newImportSet.setPropertyValue("dc:title", defaultTitle);
+        }
+
         return newImportSet;
+    }
+
+    public void resetImportSetTitle() throws ClientException {
+        if (newImportSet != null && !titleChanged) {
+            newImportSet.setPropertyValue("dc:title", null);
+        }
+
+        titleChanged = true;
     }
 
     public String createImportSet() throws Exception {
@@ -144,6 +169,7 @@ public class ImportActionsBean implements Serializable {
 
     public void invalidateImportContext() {
         newImportSet = null;
+        titleChanged = false;
     }
 
     /**
