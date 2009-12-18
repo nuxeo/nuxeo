@@ -101,7 +101,7 @@ public class NavigationContextBean implements NavigationContextLocal,
     private static final Log log = LogFactory.getLog(NavigationContextBean.class);
 
     @In
-    private transient Context conversationContext;
+    protected transient Context conversationContext;
 
     @In
     protected transient Context eventContext;
@@ -121,13 +121,13 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     private DocumentModel currentWorkspace;
 
-    private DocumentModel currentDocument;
+    protected DocumentModel currentDocument;
 
-    private DocumentModel currentSuperSpace;
+    protected DocumentModel currentSuperSpace;
 
-    private DocumentModelList currentDocumentChildren;
+    protected DocumentModelList currentDocumentChildren;
 
-    private List<DocumentModel> currentDocumentParents;
+    protected List<DocumentModel> currentDocumentParents;
 
     // document model that is not persisted yet (useful for creation)
     private DocumentModel changeableDocument;
@@ -135,11 +135,11 @@ public class NavigationContextBean implements NavigationContextLocal,
     private List<PathElement> parents;
 
     @In(create = true, required = false)
-    private transient CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @Out(required = false)
     @Deprecated
-    private PagedDocumentsProvider resultsProvider;
+    protected PagedDocumentsProvider resultsProvider;
 
     @Create
     @PostActivate
@@ -860,7 +860,7 @@ public class NavigationContextBean implements NavigationContextLocal,
         log.debug("<destroy> ");
     }
 
-    private void resetCurrentPath() throws ClientException {
+    protected void resetCurrentPath() throws ClientException {
         final String logPrefix = "<resetCurrentPath> ";
 
         parents = new ArrayList<PathElement>();

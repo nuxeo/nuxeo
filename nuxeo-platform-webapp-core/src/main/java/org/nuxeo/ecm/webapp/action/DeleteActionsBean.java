@@ -95,12 +95,12 @@ public class DeleteActionsBean extends InputController implements
 
     private static final String DELETE_OUTCOME = "after_delete";
 
-    private static final String DELETE_TRANSITION = "delete";
+    protected static final String DELETE_TRANSITION = "delete";
 
-    private static final String UNDELETE_TRANSITION = "undelete";
+    protected static final String UNDELETE_TRANSITION = "undelete";
 
     @In(create = true, required = false)
-    private transient CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true, required = false)
     protected RepositoryLocation currentServerLocation;
@@ -499,7 +499,7 @@ public class DeleteActionsBean extends InputController implements
      * @param docsThatCanBeDeleted
      * @throws ClientException
      */
-    private void moveDocumentsToTrash(List<DocumentModel> docsThatCanBeDeleted)
+    protected void moveDocumentsToTrash(List<DocumentModel> docsThatCanBeDeleted)
             throws ClientException {
         for (DocumentModel docModel : docsThatCanBeDeleted) {
             // check if transition is available
@@ -610,7 +610,7 @@ public class DeleteActionsBean extends InputController implements
         return trashManager.isTrashManagementEnabled();
     }
 
-    private void undeleteDocumentsFromTrash(
+    protected void undeleteDocumentsFromTrash(
             List<DocumentModel> docsToBeUndeleted) throws ClientException {
         // TODO Notify all concerned documents...
         for (DocumentModel docModel : docsToBeUndeleted) {
