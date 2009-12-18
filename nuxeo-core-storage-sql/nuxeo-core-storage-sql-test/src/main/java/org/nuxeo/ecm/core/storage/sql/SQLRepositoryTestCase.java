@@ -24,6 +24,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.runtime.api.Framework;
@@ -79,6 +80,13 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
     public CoreSession openSessionAs(String username) throws ClientException {
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         context.put("username", username);
+        return CoreInstance.getInstance().open(REPOSITORY_NAME, context);
+    }
+
+    public CoreSession openSessionAs(NuxeoPrincipal principal)
+            throws ClientException {
+        Map<String, Serializable> context = new HashMap<String, Serializable>();
+        context.put("principal", principal);
         return CoreInstance.getInstance().open(REPOSITORY_NAME, context);
     }
 
