@@ -81,6 +81,10 @@ public class NuxeoConnection implements Connection, SPI {
 
     private static final Log log = LogFactory.getLog(NuxeoConnection.class);
 
+    protected static final String DUBLINCORE = "dublincore";
+
+    protected static final String DC_TITLE = "dc:title";
+
     protected final NuxeoRepository repository;
 
     protected final CoreSession session;
@@ -333,6 +337,11 @@ public class NuxeoConnection implements Connection, SPI {
                 continue;
             }
             entry.setValue(key, e.getValue());
+        }
+        // set dc:title from name if missing
+        if (!properties.containsKey(DC_TITLE)
+                && doc.getDocumentType().hasSchema(DUBLINCORE)) {
+            entry.setValue(DC_TITLE, entry.getValue(Property.NAME));
         }
         try {
             doc = session.createDocument(doc);
