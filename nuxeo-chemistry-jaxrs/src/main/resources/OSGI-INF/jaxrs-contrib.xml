@@ -3,14 +3,29 @@
 
   <require>org.nuxeo.ecm.webengine.WebEngineComponent</require>
 
-  <implementation class="org.nuxeo.ecm.core.chemistry.jaxrs.JaxrsNuxeoComponent" />
+  <implementation
+    class="org.nuxeo.ecm.core.chemistry.jaxrs.JaxrsNuxeoComponent" />
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="resource">
     <resource class="org.apache.chemistry.atompub.server.jaxrs.AbderaResource" />
   </extension>
 
-  <!-- should configure providers also, but not yet implemented,
-       so currently done using component activation -->
+  <!--
+    should configure providers also, but not yet implemented, so
+    currently done using component activation
+  -->
+
+  <!-- make sure no redirect for authentication happens -->
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+    <authenticationPlugin name="BASIC_AUTH" enabled="true"
+        class="org.nuxeo.ecm.platform.ui.web.auth.plugins.BasicAuthenticator">
+      <parameters>
+        <parameter name="ForcePromptURL_CMISAtomPub">site/cmis/</parameter>
+      </parameters>
+    </authenticationPlugin>
+  </extension>
 
 </component>
