@@ -54,6 +54,7 @@ import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
+import org.apache.chemistry.Updatability;
 import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.impl.base.BaseRepository;
 import org.apache.chemistry.impl.simple.SimpleConnection;
@@ -80,8 +81,6 @@ import org.nuxeo.runtime.api.Framework;
 public class NuxeoConnection implements Connection, SPI {
 
     private static final Log log = LogFactory.getLog(NuxeoConnection.class);
-
-    protected static final String DUBLINCORE = "dublincore";
 
     protected static final String DC_TITLE = "dc:title";
 
@@ -328,21 +327,8 @@ public class NuxeoConnection implements Connection, SPI {
             ObjectId folder, BaseType baseType) {
         String typeId = (String) properties.get(Property.TYPE_ID);
         DocumentModel doc = createDoc(typeId, folder, baseType);
-        NuxeoObjectEntry entry = new NuxeoObjectEntry(doc, this);
-        // don't mutate properties -> cannot remove TYPE_ID
-        for (Entry<String, Serializable> e : properties.entrySet()) {
-            String key = e.getKey();
-            if (Property.TYPE_ID.equals(key)
-                    || Property.LAST_MODIFICATION_DATE.equals(key)) {
-                continue;
-            }
-            entry.setValue(key, e.getValue());
-        }
-        // set dc:title from name if missing
-        if (!properties.containsKey(DC_TITLE)
-                && doc.getDocumentType().hasSchema(DUBLINCORE)) {
-            entry.setValue(DC_TITLE, entry.getValue(Property.NAME));
-        }
+        ObjectEntry entry = new NuxeoObjectEntry(doc, this);
+        updateProperties(entry, null, properties, true);
         try {
             doc = session.createDocument(doc);
             session.save();
@@ -458,12 +444,42 @@ public class NuxeoConnection implements Connection, SPI {
 
     public ObjectId updateProperties(ObjectId object, String changeToken,
             Map<String, Serializable> properties) {
+        return updateProperties(object, changeToken, properties);
+    }
+
+    protected ObjectId updateProperties(ObjectId object, String changeToken,
+            Map<String, Serializable> properties, boolean creation) {
         // TODO changeToken
-        ObjectEntry objectEntry = getObjectEntry(object);
+        ObjectEntry entry = getObjectEntry(object);
         for (Entry<String, Serializable> en : properties.entrySet()) {
-            objectEntry.setValue(en.getKey(), en.getValue());
+            String key = en.getKey();
+            Type type = getRepository().getType(entry.getTypeId());
+            PropertyDefinition prop = type.getPropertyDefinition(key);
+            if (prop == null) {
+                log.error("Unknown property, ignored: " + key);
+                continue;
+            }
+            Updatability updatability = prop.getUpdatability();
+            if (updatability == Updatability.READ_ONLY
+                    || (updatability == Updatability.ON_CREATE && !creation)) {
+                // log.error("Read-only property, ignored: " + key);
+                continue;
+            }
+            if (Property.TYPE_ID.equals(key)
+                    || Property.LAST_MODIFICATION_DATE.equals(key)) {
+                continue;
+            }
+            entry.setValue(key, en.getValue());
         }
-        return objectEntry;
+        // set dc:title from name if missing
+        try {
+            if (entry.getValue(DC_TITLE) == null) {
+                entry.setValue(DC_TITLE, entry.getValue(Property.NAME));
+            }
+        } catch (IllegalArgumentException e) {
+            // ignore, no dc:title
+        }
+        return entry;
     }
 
     public ObjectId moveObject(ObjectId object, ObjectId targetFolder,
