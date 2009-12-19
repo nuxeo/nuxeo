@@ -15,6 +15,9 @@
 
     <div id="nxthemesHeader">
 
+      <!--  Status message -->
+      <div id="nxthemesStatusMessage" style="display: none"></div>   
+      
       <!--  theme selector -->
       <@nxthemes_panel identifier="theme selector"
         url="${basePath}/nxthemes-editor/themeSelector"
@@ -89,12 +92,11 @@
 
     </div>
 
-
     <div id="nxthemesEditorArea">
                   
       <div id="nxthemesWaitAnimation" style="display:none">
           <img src="${basePath}/skin/nxthemes-editor/img/loader.gif" alt="" width="16" height="16" /> LOADING ...
-      </div>
+      </div>   
         
       <@nxthemes_model resource="theme-editor.json" />
 
@@ -122,11 +124,6 @@
         controlledBy="editor perspectives,page switcher"
         visibleInPerspectives="canvas editor,padding editor" />
 
-      <!--  Status message -->
-      <div id="nxthemesStatusBar">
-        <div id="nxthemesStatusMessage" style="display: none"></div>      
-        <div id="nxthemesEditorInfo">FREEMARKER</div>
-      </div>
     </div>
 
     <@nxthemes_controller resource="perspective-selector.json" />

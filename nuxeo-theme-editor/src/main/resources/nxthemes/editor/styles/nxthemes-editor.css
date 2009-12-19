@@ -225,32 +225,25 @@ html, body {
 #nxthemesPageSelector {
   position: fixed;
   z-index: 10;
-  bottom: 18px;
+  bottom: 0;
   left: 0;
   height: 18px;
   width: 100%;
   background: url(${basePath}/skin/nxthemes-editor/img/page-selector-bg.png) repeat-x;
 }
 
-#nxthemesStatusBar {
-  position: fixed;
-  z-index: 10;
-  bottom: 0;
-  left: 0;
-  height: 18px;
-  width: 100%;	
-  color: #000;
-  font: 12px Arial, sans-serif;
-  background: url(${basePath}/skin/nxthemes-editor/img/status-bar-bg.png) repeat-x;
-}
-
 #nxthemesStatusMessage {
-  font: bold 11px Arial;
+  font: 12px Arial;
   color: #000;
-  background: url(${basePath}/skin/nxthemes-editor/img/info.png) no-repeat 5px 2px;
+  background-color: #ffc;
   z-index: 10;
-  padding: 4px 0px;
-  padding-left: 25px;
+  padding: 3px 16px;
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
 }
 
 #nxthemesCanvasModeArea {
