@@ -30,11 +30,7 @@
   <modules>
     <module>nuxeo-platform-annotations</module>
     <module>nuxeo-platform-audit</module>
-    <module>nuxeo-platform-comment-api</module>
     <module>nuxeo-platform-comment</module>
-    <module>nuxeo-platform-comment-web</module>
-    <module>nuxeo-platform-comment-core</module>
-    <module>nuxeo-platform-comment-workflow</module>
     <module>nuxeo-platform-imaging</module>
     <module>nuxeo-platform-imaging-tiling</module>
     <module>nuxeo-platform-jbpm</module>
