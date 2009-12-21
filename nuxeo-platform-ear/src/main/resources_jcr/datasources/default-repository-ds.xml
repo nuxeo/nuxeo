@@ -16,7 +16,7 @@
 
     <jndi-name>NXRepository/default</jndi-name>
     <adapter-display-name>NX Repository Adapter</adapter-display-name>
-    <rar-name>nuxeo.ear#nuxeo-core-jca-1.6.1-SNAPSHOT.rar</rar-name>
+    <rar-name>nuxeo.ear#nuxeo-core-jca-1.6.1-I20091221_0116.rar</rar-name>
     <connection-definition>org.nuxeo.ecm.core.model.Repository</connection-definition>
     <xa-transaction/>
 
