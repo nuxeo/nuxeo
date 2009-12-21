@@ -20,9 +20,9 @@ package org.nuxeo.ecm.spaces.core.impl.docwrapper;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.spaces.api.Univers;
 
-public class UniversDocumentWrapper extends DocumentWrapper implements Univers {
+public class DocUniversImpl extends DocumentWrapper implements Univers {
 
-  UniversDocumentWrapper(DocumentModel doc) {
+  DocUniversImpl(DocumentModel doc) {
     super(doc);
   }
 

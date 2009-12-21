@@ -17,62 +17,78 @@
 
 package org.nuxeo.ecm.spaces.core.impl;
 
+import java.util.regex.Pattern;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.spaces.api.SpaceProvider;
 
-
 @XObject("spaceContrib")
-public class SpaceContribDescriptor  {
+public class SpaceContribDescriptor implements
+        Comparable<SpaceContribDescriptor> {
 
-  @XNode("@name")
-  private String name;
+    @XNode("@name")
+    private String name;
 
-  @XNode("@remove")
-  private boolean remove;
+    @XNode("@remove")
+    private boolean remove;
 
-  @XNode("className")
-  private Class<? extends SpaceProvider> klass;
+    @XNode("className")
+    private Class<? extends SpaceProvider> klass;
 
-  @XNode("order")
-  private int order;
+    @XNode("order")
+    private int order;
 
-  @XNode("restrictToUniverse")
-  private String pattern;
+    @XNode("restrictToUniverse")
+    private String pattern;
 
-  private SpaceProvider provider;
+    private SpaceProvider provider;
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public boolean isRemove() {
-    return remove;
-  }
+    public boolean isRemove() {
+        return remove;
+    }
 
-  public void setRemove(boolean remove) {
-    this.remove = remove;
-  }
+    public void setRemove(boolean remove) {
+        this.remove = remove;
+    }
 
+    public int getOrder() {
+        return order;
+    }
 
-  public int getOrder() {
-    return order;
-  }
+    public String getPattern() {
+        return pattern;
+    }
 
-  public String getPattern() {
-    return pattern;
-  }
+    public SpaceProvider getProvider() throws InstantiationException,
+            IllegalAccessException {
+        if (provider == null) {
+            provider = klass.newInstance();
+        }
+        return provider;
+    }
 
+    public int compareTo(SpaceContribDescriptor o) {
+        return ((SpaceContribDescriptor) o).getOrder() - this.getOrder();
+    }
 
-  public SpaceProvider getProvider() throws InstantiationException, IllegalAccessException {
-      if(provider == null) {
-          provider = klass.newInstance();
-      }
-      return provider;
-  }
+    public boolean matches(String universName) {
+        if (pattern == null || pattern.equals("*")) {
+            return true;
+        }
+        if (Pattern.matches(pattern, universName)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 }

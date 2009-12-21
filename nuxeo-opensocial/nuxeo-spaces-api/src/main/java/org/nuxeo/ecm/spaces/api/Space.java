@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.spaces.api;
 
 import java.net.URL;
+import java.util.Calendar;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -31,7 +32,7 @@ import org.nuxeo.ecm.core.api.ClientException;
  * SpaceManager service = Framework.getService(SpaceManager.class)<br/>
  * List&lt;Space&gt; gadgets = service.getGadgetsForSpace(space,coreSession);
  */
-public interface Space extends List<Gadget> {
+public interface Space {
 
   /**
    * Unique identifier of a space instance
@@ -98,6 +99,8 @@ public interface Space extends List<Gadget> {
    */
   String getViewer();
 
+  boolean isReadOnly();
+
   /**
    * Create and adds the gadget to the space
    * @param g
@@ -109,7 +112,11 @@ public interface Space extends List<Gadget> {
 
   void updateGadget(Gadget gagdet) throws ClientException;
 
+  List<Gadget> getGagets() throws ClientException;
+
   boolean hasPermission(String permissionName);
+
+  Calendar getDatePublication();
 
 
 

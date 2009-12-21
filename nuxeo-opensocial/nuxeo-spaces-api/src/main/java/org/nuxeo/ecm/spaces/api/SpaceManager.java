@@ -19,6 +19,7 @@ package org.nuxeo.ecm.spaces.api;
 
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
 import org.nuxeo.ecm.spaces.api.exceptions.UniversNotFoundException;
@@ -38,7 +39,7 @@ public interface SpaceManager {
    * @return the list of all accessible universes
    * @throws SpaceException a bug has happened
    */
-   List<Univers> getUniversList() throws SpaceException;
+   List<Univers> getUniversList(CoreSession session) throws SpaceException;
 
   /**
    * Retrieve a specific universe  from its name
@@ -48,7 +49,7 @@ public interface SpaceManager {
    * @throws UniversNotFoundException when no universe with such a name can be found
    * @throws SpaceException when a bug has happened
    */
-   Univers getUnivers(String name)
+   Univers getUnivers(String name, CoreSession session)
     throws UniversNotFoundException,SpaceException;
 
   /**
@@ -58,7 +59,7 @@ public interface SpaceManager {
    * @throws UniversNotFoundException
    * @throws SpaceException
    */
-   Univers getUniversFromId(String universId)
+   Univers getUniversFromId(String universId, CoreSession session)
     throws SpaceException;
 
   /**
@@ -70,16 +71,8 @@ public interface SpaceManager {
    Space updateSpace( Space newSpace)
       throws SpaceException;
 
-  /**
-   * Delete operation on a univers
-   * @param univers the univers to be deleted
-   * @return true if update operation has been successfull , else a SpaceException should have happened
-   * @throws SpaceException true if update operation has been successfull , else a SpaceException should have happened
-   */
-   void deleteUnivers(Univers univers)
-      throws SpaceException;
 
-   List<SpaceProvider> getSpacesProvider(Univers univers);
+   List<SpaceProvider> getSpacesProvider(Univers univers, CoreSession session);
 
   /**
    * List of all accesible spaces for a given univers
@@ -87,9 +80,8 @@ public interface SpaceManager {
    * @return all accessible univers
    * @throws UniversNotFoundException when no univers was found with the given universe id
    * @throws SpaceException when a bug has happened
-   * @deprecated use getSpace from SpaceProvider
    */
-   List<Space> getSpacesForUnivers(Univers universe)
+   List<Space> getSpacesForUnivers(Univers universe, CoreSession session)
       throws UniversNotFoundException,SpaceException;
 
   /**
@@ -99,20 +91,11 @@ public interface SpaceManager {
    * @return the space if found , else a spaceexception is thrown
    * @throws SpaceNotFoundException when the space was not found
    */
-   Space getSpace(String name, SpaceProvider provider)
+   Space getSpace(String name, SpaceProvider provider, CoreSession session)
       throws SpaceException;
 
-   Space getSpace(String spaceId) throws SpaceException;
+   Space getSpace(String spaceId, CoreSession session) throws SpaceException;
 
-  /**
-   * Delete operation on a space
-   * @param space the univers to be deleted
-   * @param univers the parent univers
-   * @return true if delete operation has been successfull , else a SpaceException should have happened
-   * @throws SpaceException true if delete operation has been successfull , else a SpaceException should have happened
-   */
-   void deleteSpace(Space space)
-      throws SpaceException;
 
 
 

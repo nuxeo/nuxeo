@@ -18,26 +18,22 @@
 package org.nuxeo.ecm.spaces.core.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
 import org.nuxeo.ecm.spaces.api.SpaceProvider;
 import org.nuxeo.ecm.spaces.api.Univers;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
-import org.nuxeo.ecm.spaces.api.exceptions.SpaceSecurityException;
 import org.nuxeo.ecm.spaces.api.exceptions.UniversNotFoundException;
-import org.nuxeo.ecm.spaces.core.impl.exceptions.NoElementFoundException;
-import org.nuxeo.ecm.spaces.core.impl.exceptions.OperationNotSupportedException;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -76,51 +72,32 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
 
     }
 
-    @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
-
-        // TODO
-
+    private void removeUniversDescriptor(UniversContribDescriptor descriptor) {
+        for (UniversContribDescriptor contrib : universProvider) {
+            if (descriptor.getName().equals(contrib.getName())) {
+                universProvider.remove(contrib);
+                break;
+            }
+        }
     }
 
     private synchronized void manageUniversDescriptor(
             UniversContribDescriptor descriptor) {
-        if (provider != null) {
-            registeredUniversProviders.add(getOrderOrMax(descriptor.getOrder(),
-                    registeredUniversProviders.size()),
-                    new DescriptorUniversProviderPair(provider, descriptor));
-        }
+        universProvider.add(descriptor);
     }
 
     private synchronized void manageSpaceDescriptor(
             SpaceContribDescriptor descriptor) {
-        registeredSpacesProviders.add(getOrderOrMax(descriptor.getOrder(),
-                registeredSpacesProviders.size()),
-                new DescriptorSpaceProviderPair(descriptor, provider));
 
-    }
+        spaceProvider.add(descriptor.getOrder(), descriptor);
+        Collections.sort(spaceProvider);
 
-    private int getOrderOrMax(String value, int max) {
-        int order = 0;
-        try {
-            if (value != null)
-                order = Integer.parseInt(value);
-        } catch (Exception e) {
-            LOGGER.error(e);
-        }
-        if (order <= max) {
-            return order;
-        } else {
-            return max;
-        }
     }
 
     /**
      * Universe list
      */
-    public List<Univers> getUniversList() throws SpaceException {
+    public List<Univers> getUniversList(CoreSession session) throws SpaceException {
         List<Univers> list = new ArrayList<Univers>();
 
         for (UniversContribDescriptor descriptor : universProvider) {
@@ -170,62 +147,61 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
         List<Space> list = new ArrayList<Space>();
 
         for (SpaceContribDescriptor descriptor : spaceProvider) {
-
-            String pattern = descriptor.getPattern();
-            if (pattern == null || pattern.equals("*"))
-                pattern = ".*";
-            if (Pattern.matches(pattern, univers.getName())) {
+            if (descriptor.matches(univers.getName())) {
                 try {
-                    list.addAll(descriptor.getProvider());
+                    list.addAll(descriptor.getProvider().getAll(coreSession));
                 } catch (Exception e) {
-                        LOGGER.error("Unable to get the provider for : "
-                                + descriptor.getName());
+                    LOGGER.warn("Unable to get space for provider : "
+                            + descriptor.getName(),e);
                 }
-
             }
         }
         return list;
     }
 
-    public void deleteSpace(Space space) throws SpaceException {
-        // TODO Auto-generated method stub
-
+    public Space getSpace(String spaceId, CoreSession session) throws SpaceException {
+        DocumentRef spaceRef = new IdRef(spaceId);
+        try {
+            if(session.exists(spaceRef)) {
+                return session.getDocument(spaceRef).getAdapter(Space.class);
+            } else {
+                throw new SpaceNotFoundException();
+            }
+        } catch (ClientException e) {
+            throw new SpaceNotFoundException();
+        }
     }
 
-    public void deleteUnivers(Univers univers) throws SpaceException {
-        // TODO Auto-generated method stub
-
-    }
-
-    public Space getSpace(String spaceId) throws SpaceException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Space getSpace(String name, SpaceProvider provider)
+    public Space getSpace(String name, SpaceProvider provider, CoreSession session)
             throws SpaceException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<Space> getSpacesForUnivers(Univers universe)
-            throws UniversNotFoundException, SpaceException {
-        // TODO Auto-generated method stub
-        return null;
+        for(SpaceContribDescriptor desc : spaceProvider) {
+            try {
+                Space space = desc.getProvider().getSpace(name, session);
+                if(space != null) {
+                    return space;
+                }
+            } catch (Exception e) {
+                LOGGER.error("Unable to query provider "+ desc.getName(),e);
+            }
+        }
+        throw new SpaceNotFoundException();
     }
 
     public List<SpaceProvider> getSpacesProvider(Univers univers) {
-        // TODO Auto-generated method stub
-        return null;
+        List<SpaceProvider> result = new ArrayList<SpaceProvider>();
+        for (SpaceContribDescriptor desc : spaceProvider) {
+            try {
+                if(desc.matches(univers.getName()))
+                result.add(desc.getProvider());
+            } catch (Exception e) {
+                LOGGER.warn("Unable to instanciate " + desc.getName(), e);
+            }
+        }
+        return result;
     }
 
-    public Univers getUnivers(String name) throws UniversNotFoundException,
-            SpaceException {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
-    public Univers getUniversFromId(String universId) throws SpaceException {
+    public Univers getUniversFromId(String universId, CoreSession session) throws SpaceException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -235,7 +211,10 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
         return null;
     }
 
-
-
+    public List<SpaceProvider> getSpacesProvider(Univers univers,
+            CoreSession session) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }
