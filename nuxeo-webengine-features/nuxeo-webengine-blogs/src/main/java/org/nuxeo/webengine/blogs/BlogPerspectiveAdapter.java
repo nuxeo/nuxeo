@@ -25,7 +25,6 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.webengine.sites.PerspectiveAdapter;
 
 /**
- * 
  * Adapter used to change theme perspectives.
  * 
  * @author rux

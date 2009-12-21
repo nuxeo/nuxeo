@@ -29,7 +29,7 @@ import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.webengine.blogs.models.BlogSiteArchiveListModel;
 import org.nuxeo.webengine.blogs.models.BlogSiteArchiveMonthModel;
 import org.nuxeo.webengine.blogs.models.BlogSiteArchiveYearModel;
-import org.nuxeo.webengine.blogs.utils.BlogQueriesColection;
+import org.nuxeo.webengine.blogs.utils.BlogQueriesCollection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
@@ -37,7 +37,6 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  * archive of a certain <b>BlogSite</b>
  * 
  * @author rux
- * 
  */
 public class BlogSiteArchiveFragment extends AbstractFragment {
 
@@ -52,30 +51,25 @@ public class BlogSiteArchiveFragment extends AbstractFragment {
             DocumentModel documentModel = ctx.getTargetObject().getAdapter(
                     DocumentModel.class);
 
-            BlogSiteArchiveYearModel archiveYearModel = null;
-            BlogSiteArchiveMonthModel archiveMonthModel = null;
-            Calendar creationDate = null;
-
-            String[] dateDetails = null;
             SimpleDateFormat simpleMonthFormat = new SimpleDateFormat(
                     "MMMM MM yyyy", WebEngine.getActiveContext().getLocale());
 
             try {
                 DocumentModel blogSite = SiteUtils.getFirstWebSiteParent(
                         session, documentModel);
-                DocumentModelList blogPosts = BlogQueriesColection.getAllBlogPosts(
+                DocumentModelList blogPosts = BlogQueriesCollection.getAllBlogPosts(
                         session, blogSite.getPathAsString());
                 for (DocumentModel blogPost : blogPosts) {
 
-                    creationDate = SiteUtils.getGregorianCalendar(blogPost,
+                    Calendar creationDate = SiteUtils.getGregorianCalendar(blogPost,
                             "dc:created");
                     if (creationDate == null) {
                         // no creation date nothing to do
                         continue;
                     }
-                    dateDetails = simpleMonthFormat.format(
+                    String[] dateDetails = simpleMonthFormat.format(
                             creationDate.getTime()).split(" ");
-                    archiveYearModel = getYearModel(model, dateDetails[2]);
+                    BlogSiteArchiveYearModel archiveYearModel = getYearModel(model, dateDetails[2]);
                     if (archiveYearModel == null) {
                         archiveYearModel = new BlogSiteArchiveYearModel(
                                 dateDetails[2], path, 0);
@@ -83,7 +77,7 @@ public class BlogSiteArchiveFragment extends AbstractFragment {
                         model.addItem(archiveYearModel);
                     }
                     archiveYearModel.increaseCount();
-                    archiveMonthModel = getMonthModel(archiveYearModel,
+                    BlogSiteArchiveMonthModel archiveMonthModel = getMonthModel(archiveYearModel,
                             dateDetails[1]);
                     if (archiveMonthModel == null) {
                         archiveMonthModel = new BlogSiteArchiveMonthModel(
@@ -104,8 +98,8 @@ public class BlogSiteArchiveFragment extends AbstractFragment {
     /**
      * Returns the model corresponding to the year received as parameter.
      * 
-     * @param model - the model list in which the year model will be searched
-     * @param year - the name of the year
+     * @param model the model list in which the year model will be searched
+     * @param year the name of the year
      * @return the model corresponding to the year received as parameter.
      */
     private BlogSiteArchiveYearModel getYearModel(Model model, String year) {
@@ -125,8 +119,8 @@ public class BlogSiteArchiveFragment extends AbstractFragment {
     /**
      * Returns the model corresponding to the month received as parameter.
      * 
-     * @param model - the model list in which the month model will be searched
-     * @param month - the name of the month
+     * @param model the model list in which the month model will be searched
+     * @param month the name of the month
      * @return the model corresponding to the month received as parameter
      */
     private BlogSiteArchiveMonthModel getMonthModel(Model model, String month) {

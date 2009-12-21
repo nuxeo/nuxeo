@@ -24,8 +24,6 @@ import org.wikimodel.wem.WikiPrinter;
 
 public class WordExtractor extends PrintListener {
 
-    protected final StringBuilder words = new StringBuilder();
-
     final StringBuffer collector;
 
     public WordExtractor(StringBuffer collector) {

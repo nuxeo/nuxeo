@@ -42,7 +42,6 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  *
  * @author rux
  */
-
 @WebObject(type = BLOG_POST_DOC_TYPE, facets = { BLOG_POST_DOC_TYPE })
 @Produces("text/html;charset=UTF-8")
 public class BlogPost extends Page {
@@ -60,25 +59,25 @@ public class BlogPost extends Page {
         String year = ctx.getRequest().getParameter("year");
         String month = ctx.getRequest().getParameter("month");
         if (year != null) {
-            Calendar c = null;
+            Calendar calendar;
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
                     "yyyy-MM-dd", WebEngine.getActiveContext().getLocale());
             if (month != null) {
-                c = new GregorianCalendar(new Integer(year).intValue(),
+                calendar = new GregorianCalendar(new Integer(year).intValue(),
                         new Integer(month).intValue()-1, 1);
                 ctx.setProperty(DATE_AFTER,
-                        simpleDateFormat.format(c.getTime()));
-                c.add(Calendar.MONTH, 1);
+                        simpleDateFormat.format(calendar.getTime()));
+                calendar.add(Calendar.MONTH, 1);
                 ctx.setProperty(DATE_BEFORE,
-                        simpleDateFormat.format(c.getTime()));
+                        simpleDateFormat.format(calendar.getTime()));
             } else {
-                c = new GregorianCalendar(new Integer(year).intValue(),
+                calendar = new GregorianCalendar(new Integer(year).intValue(),
                         Calendar.JANUARY, 1);
                 ctx.setProperty(DATE_AFTER,
-                        simpleDateFormat.format(c.getTime()));
-                c.add(Calendar.YEAR, 1);
+                        simpleDateFormat.format(calendar.getTime()));
+                calendar.add(Calendar.YEAR, 1);
                 ctx.setProperty(DATE_BEFORE,
-                        simpleDateFormat.format(c.getTime()));
+                        simpleDateFormat.format(calendar.getTime()));
             }
 
         }
@@ -111,4 +110,5 @@ public class BlogPost extends Page {
             throw WebException.wrap(e);
         }
     }
+
 }

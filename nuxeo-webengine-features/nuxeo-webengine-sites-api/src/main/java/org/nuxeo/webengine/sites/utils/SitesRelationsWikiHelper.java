@@ -75,7 +75,6 @@ public class SitesRelationsWikiHelper {
 
         for (String word : list) {
             if (word.startsWith(".")) {
-
                 word = basePath + "/" + siteName + word.replace(".", "/");
             } else {
                 word = targetBasePath + "/" + word;

@@ -21,18 +21,14 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
  * Collection of the queries used in the blogs module.
- * 
  */
-public class BlogQueriesColection {
+public class BlogQueriesCollection {
+
+    private BlogQueriesCollection() {
+    }
 
     /**
      * Queries all blog posts within a blog site.
-     * 
-     * @param session
-     * @param parent
-     * @param numberLimit
-     * @return
-     * @throws ClientException
      */
     public static DocumentModelList getAllBlogPosts(CoreSession session,
             String parent) throws ClientException {

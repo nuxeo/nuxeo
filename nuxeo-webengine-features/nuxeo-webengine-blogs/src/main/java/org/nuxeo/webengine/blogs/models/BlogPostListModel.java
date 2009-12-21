@@ -18,14 +18,10 @@ import org.nuxeo.theme.models.AbstractModel;
 
 /**
  * Model related to the <b>BlogPost</b>-s in the fragment initialization
- * mechanism
+ * mechanism.
  *
  * @author rux
- *
  */
 public class BlogPostListModel extends AbstractModel {
-
-    public BlogPostListModel() {
-    }
 
 }

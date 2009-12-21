@@ -39,15 +39,13 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 /**
  * Action fragment for initializing the fragment related to retrieving a certain
  * number of blog posts with information about the last <b>BlogPost</b>-s that
- * are made under an <b>BlogSite</b>
+ * are made under an <b>BlogSite</b>.
  * 
  * @author rux
- * 
  */
 public class RecentBlogPostsFragment extends AbstractFragment {
 
     public static final int noForBlogSite = 15;
-
     public static final int noForBlogPost = 5;
 
     private static String weekDays[];
@@ -66,16 +64,6 @@ public class RecentBlogPostsFragment extends AbstractFragment {
             DocumentModel documentModel = ctx.getTargetObject().getAdapter(
                     DocumentModel.class);
 
-            BlogPostModel blogPostModel = null;
-            BlogSiteArchiveDayModel dayModel = null;
-            GregorianCalendar creationDate = null;
-            String title = null;
-            String path = null;
-            String description = null;
-            String content = null;
-            String author = null;
-            String day = null;
-
             SimpleDateFormat simpleMonthFormat = new SimpleDateFormat(
                     "dd MMMM yyyy", WebEngine.getActiveContext().getLocale());
             try {
@@ -89,23 +77,22 @@ public class RecentBlogPostsFragment extends AbstractFragment {
                                 : noForBlogSite);
 
                 for (DocumentModel blogPost : blogPosts) {
+                    String title = SiteUtils.getString(blogPost, "dc:title");
+                    String path = SiteUtils.getPagePath(blogSite, blogPost);
 
-                    title = SiteUtils.getString(blogPost, "dc:title");
-                    path = SiteUtils.getPagePath(blogSite, blogPost);
-
-                    description = SiteUtils.getString(blogPost,
+                    String description = SiteUtils.getString(blogPost,
                             "dc:description");
 
-                    content = SiteUtils.getFistNWordsFromString(
+                    String content = SiteUtils.getFistNWordsFromString(
                             SiteUtils.getString(blogPost, WEBPAGE_CONTENT),
                             Integer.MAX_VALUE);
-                    author = SiteUtils.getString(blogPost, "dc:creator");
+                    String author = SiteUtils.getString(blogPost, "dc:creator");
 
-                    creationDate = SiteUtils.getGregorianCalendar(blogPost,
+                    GregorianCalendar creationDate = SiteUtils.getGregorianCalendar(blogPost,
                             "dc:created");
 
-                    day = getWeekDay(creationDate.get(Calendar.DAY_OF_WEEK));
-                    dayModel = getYearModel(model, day);
+                    String day = getWeekDay(creationDate.get(Calendar.DAY_OF_WEEK));
+                    BlogSiteArchiveDayModel dayModel = getYearModel(model, day);
                     if (dayModel == null) {
                         dayModel = new BlogSiteArchiveDayModel(
                                 day,
@@ -115,7 +102,7 @@ public class RecentBlogPostsFragment extends AbstractFragment {
                     }
                     dayModel.increaseCount();
 
-                    blogPostModel = new BlogPostModel(title, path, description,
+                    BlogPostModel blogPostModel = new BlogPostModel(title, path, description,
                             content, author);
                     dayModel.addItem(blogPostModel);
                 }
@@ -131,7 +118,7 @@ public class RecentBlogPostsFragment extends AbstractFragment {
      * Utility method used to return the day of the week as a string
      * representation.
      * 
-     * @param day - day of the week as integer
+     * @param day day of the week as integer
      * @return day of the week as string
      */
     private static String getWeekDay(int day) {
@@ -146,8 +133,8 @@ public class RecentBlogPostsFragment extends AbstractFragment {
     /**
      * Returns the model corresponding to the day received as parameter.
      * 
-     * @param model - the model list in which the day model will be searched
-     * @param year - the name of the day
+     * @param model the model list in which the day model will be searched
+     * @param day the name of the day
      * @return the model corresponding to the day received as parameter.
      */
     private BlogSiteArchiveDayModel getYearModel(Model model, String day) {
@@ -163,4 +150,5 @@ public class RecentBlogPostsFragment extends AbstractFragment {
         }
         return dayModel;
     }
+
 }

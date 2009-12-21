@@ -33,7 +33,7 @@ public class BlogActionListener implements EventListener {
 
     /**
      * Sets the url field and the blog name (if not already set) to the name,
-     * respectively the title of the document model.Also the default theme
+     * respectively the title of the document model. Also the default theme
      * settings are set depending of the received document type.
      */
     public void handleEvent(Event event) throws ClientException {
