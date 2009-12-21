@@ -65,7 +65,7 @@ public class WatermarkServiceImpl implements WatermarkService {
             defaultWatermarkFile = new File(System.getProperty("java.io.tmpdir"), UUID
                     .randomUUID().toString());
             InputStream is = getClass().getClassLoader().getResourceAsStream(
-                    "watermark/image/dam_logo.png");
+                    "watermark/image/dam_watermark.png");
             FileUtils.copyToFile(is, defaultWatermarkFile);
             is.close();
             defaultWatermarkFile.deleteOnExit();
