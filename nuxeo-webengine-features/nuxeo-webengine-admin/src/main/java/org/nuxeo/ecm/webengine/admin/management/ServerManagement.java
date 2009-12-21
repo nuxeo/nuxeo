@@ -231,10 +231,10 @@ public class ServerManagement {
         return buf.toString();
     }
 
-
     protected void checkActivation() {
         if (!"true".equals(Framework.getProperty(ACTIVATION_PROPERTY, "false"))) {
             throw new WebException(403);
         }
     }
+
 }

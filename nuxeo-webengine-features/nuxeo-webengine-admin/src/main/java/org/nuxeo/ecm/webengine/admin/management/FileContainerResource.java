@@ -66,7 +66,6 @@ public class FileContainerResource {
     @Produces("application/atom+xml")
     public Object listFiles() {
         File[] files = root.listFiles();
-        files = root.listFiles();
         if (files == null) {
             files = new File[0];
         }
@@ -77,13 +76,13 @@ public class FileContainerResource {
     @POST
     public Response postFile(@QueryParam("file") String file, @QueryParam("dir") String dir) {
         if (isReadOnly) {
-            return Response.ok(403).build();
+            return Response.status(403).build();
         }
         boolean isDir = false;
         String name = null;
         if (file == null) {
             if (dir == null) {
-                return Response.ok(403).build();
+                return Response.status(403).build();
             }
             name = dir;
             isDir = true;
@@ -91,7 +90,7 @@ public class FileContainerResource {
             name = file;
         }
         if (name.contains("..")) {
-            return Response.ok(403).build();
+            return Response.status(403).build();
         }
         File f = new File(root, name);
         if (isDir) {
@@ -122,7 +121,7 @@ public class FileContainerResource {
     @PUT
     public Response updateFile() {
         if (isReadOnly) {
-            return Response.ok(403).build();
+            return Response.status(403).build();
         }
         if (!root.exists()) {
             root.mkdirs();
@@ -135,10 +134,10 @@ public class FileContainerResource {
     @DELETE
     public Response deleteFile() {
         if (isReadOnly) {
-            return Response.ok(403).build();
+            return Response.status(403).build();
         }
         if (!root.isDirectory()) {
-            return Response.ok(404).build();
+            return Response.status(404).build();
         }
         FileUtils.deleteTree(root);
         return Response.ok().build();

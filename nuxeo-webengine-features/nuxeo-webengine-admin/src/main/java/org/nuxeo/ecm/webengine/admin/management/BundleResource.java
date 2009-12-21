@@ -52,7 +52,7 @@ public class BundleResource {
     @GET
     @Produces("application/xml+atom")
     public Object getDefinition() {
-        OSGiRuntimeService runtime = (OSGiRuntimeService)Framework.getRuntime();
+        OSGiRuntimeService runtime = (OSGiRuntimeService) Framework.getRuntime();
         List<RegistrationInfo> comps = new ArrayList<RegistrationInfo>();
         for (RegistrationInfo ri :runtime.getComponentManager().getRegistrations()) {
             if (ri.getContext().getBundle().getSymbolicName().equals(bundle.getSymbolicName())) {
@@ -101,7 +101,6 @@ public class BundleResource {
     public Response switchBundleState() {
         return Response.ok().build();
     }
-
 
     @DELETE
     public Response removeBundle() {

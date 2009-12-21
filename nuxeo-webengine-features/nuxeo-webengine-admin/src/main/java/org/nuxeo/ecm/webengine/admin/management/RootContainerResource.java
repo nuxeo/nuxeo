@@ -32,17 +32,14 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class RootContainerResource extends FileContainerResource {
 
-
     public RootContainerResource(File root) {
-        super (root);
+        super(root);
     }
-
 
     @GET
     @Produces("application/atom+xml")
     public Object listFiles() {
         File[] files = root.listFiles();
-        files = root.listFiles();
         if (files == null) {
             files = new File[0];
         }
@@ -72,6 +69,5 @@ public class RootContainerResource extends FileContainerResource {
             throw WebException.wrap(e);
         }
     }
-
 
 }

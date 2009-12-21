@@ -49,10 +49,10 @@ public class FileResource {
     @GET
     public Response get() {
         if (file.isDirectory()) {
-            return Response.ok(404).build();
+            return Response.status(404).build();
         }
         if (!file.isFile()) {
-            return Response.ok(404).build();
+            return Response.status(404).build();
         }
         String name = file.getName();
         int p = name.lastIndexOf('.');
@@ -71,10 +71,10 @@ public class FileResource {
     @DELETE
     public Response deleteFile() {
         if (isReadOnly) {
-            return Response.ok(403).build();
+            return Response.status(403).build();
         }
         if (!file.isFile()) {
-            return Response.ok(404).build(); //TODO send correct code
+            return Response.status(404).build(); //TODO send correct code
         }
         file.delete();
         return Response.ok().build();
@@ -83,10 +83,10 @@ public class FileResource {
     @PUT
     public Response updateFile() {
         if (isReadOnly) {
-            return Response.ok(403).build();
+            return Response.status(403).build();
         }
         if (!file.isFile()) {
-            return Response.ok(404).build(); //TODO send correct code
+            return Response.status(404).build(); //TODO send correct code
         }
         HttpServletRequest req = WebEngine.getActiveContext().getRequest();
         try {

@@ -61,12 +61,10 @@ public class ExtensionPointResource {
         return new TemplateView(this, "xp-contribs.ftl").arg("xp", xp).arg("contribs", xts).arg("ri", ri);
     }
 
-
     @GET
     @Path("{id}")
     public Object getContribution(@PathParam("id") String id) {
         return null;
     }
-
 
 }
