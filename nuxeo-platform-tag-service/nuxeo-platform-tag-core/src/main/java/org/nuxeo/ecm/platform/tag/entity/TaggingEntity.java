@@ -54,7 +54,6 @@ import javax.persistence.TemporalType;
         @NamedQuery(name = GET_VOTE_CLOUD, query = GET_VOTE_CLOUD_QUERY),
         @NamedQuery(name = LIST_DOCUMENTS_FOR_TAG, query = LIST_DOCUMENTS_FOR_TAG_QUERY),
         @NamedQuery(name = GET_TAGGING, query = GET_TAGGING_QUERY)
-
 })
 public class TaggingEntity implements Serializable{
 

@@ -42,7 +42,7 @@ public interface TagService {
     /**
      * Gets (and creates if not existing) the RootTag in the selected
      * repository.
-     *
+     * <p>
      * The current functionality is to keep all tags inside
      * "/repository/default-domain/Tags". If this will be changed this method is
      * simply obsoleted, anyway the API requests to provide the parents of the
@@ -56,7 +56,7 @@ public interface TagService {
 
     /**
      * Lists all tags in the specified tag group.
-     *
+     * <p>
      * Tags are saved in a tree structure, any tag can actually contains other
      * tags. This way it is possible to have for instance categories of tags, or
      * any other organization the user would want (e.g a tag "car" could contain
@@ -77,7 +77,7 @@ public interface TagService {
 
     /**
      * Lists tags applied on a document.
-     *
+     * <p>
      * The private tags or tagging are not selected, but the ones owned by the
      * current principal.
      *
@@ -116,7 +116,7 @@ public interface TagService {
     /**
      * Gets and creates if needed a tag in the provided tag group (or in tag
      * root).
-     *
+     * <p>
      * Interprets label as sequence of labels '/' separated.
      *
      * @param session the user session
@@ -131,7 +131,7 @@ public interface TagService {
 
     /**
      * Retrieves the "vote" weight of tag.
-     *
+     * <p>
      * More about Vote Tag Cloud {@link WeightedTag}. The private taggings are
      * not selected, but the ones owned by the current principal.
      *
@@ -146,7 +146,7 @@ public interface TagService {
 
     /**
      * Retrieves the "popular" weight of tag.
-     *
+     * <p>
      * More about Vote Tag Cloud {@link WeightedTag}. The private tagging are
      * not selected, but the ones owned by the current principal.
      *
@@ -174,7 +174,7 @@ public interface TagService {
 
     /**
      * Retrieves the "popular" tag cloud.
-     *
+     * <p>
      * More about Popular Tag Cloud {@link WeightedTag}. The private tags or
      * tagging are not selected, but the ones owned by the current principal.
      *
@@ -189,7 +189,7 @@ public interface TagService {
 
     /**
      * Retrieves the "popular" tag cloud without Document context.
-     *
+     * <p>
      * Compared to getPopularCloud, this method does not filter on documents
      * accessible by the user.
      * This makes this feature usable on big doc DB.
@@ -203,7 +203,7 @@ public interface TagService {
 
     /**
      * Tags a document.
-     *
+     * <p>
      * It only creates the tagging entry, if not already a tagging exists for
      * the set document / tag / current principal. Otherwise silently ignore.
      *
@@ -253,8 +253,8 @@ public interface TagService {
 
     /**
      * Defines if tag service is enable.
-     * Returns true is the underlying repository supports tag feature.
-     * @return
+     *
+     * @return true is the underlying repository supports tag feature.
      */
     boolean isEnabled() throws ClientException;
 }
