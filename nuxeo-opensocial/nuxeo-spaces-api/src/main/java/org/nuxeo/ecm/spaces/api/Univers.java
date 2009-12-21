@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.spaces.api;
 
+import org.nuxeo.ecm.spaces.api.exceptions.ReadOnlyUniversException;
+
 
 /**
  * Global container corresponding to a site . A univers can contain
@@ -55,6 +57,14 @@ package org.nuxeo.ecm.spaces.api;
    */
    String getDescription();
 
+   boolean isReadOnly();
+
+   /**
+    *
+    * @return
+    */
+   Space createSpace() throws ReadOnlyUniversException;
+   Space saveSpace(Space space);
 
   /**
    * for comparison
