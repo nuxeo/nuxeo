@@ -29,11 +29,7 @@
 
   <modules>
     <module>nuxeo-platform-annotations</module>
-    <module>nuxeo-platform-audit-api</module>
-    <module>nuxeo-platform-audit-client</module>
-    <module>nuxeo-platform-audit-core</module>
-    <module>nuxeo-platform-audit-facade</module>
-    <module>nuxeo-platform-audit-search</module>
+    <module>nuxeo-platform-audit</module>
     <module>nuxeo-platform-comment-api</module>
     <module>nuxeo-platform-comment</module>
     <module>nuxeo-platform-comment-web</module>
