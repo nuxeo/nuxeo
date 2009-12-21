@@ -53,7 +53,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
  * <li>GET - get the attached file
  * <li>POST - create an attachment
  * </ul>
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @WebAdapter(name = "file", type = "FileService", targetType = "Document")

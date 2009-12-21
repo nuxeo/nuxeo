@@ -23,7 +23,7 @@ import org.nuxeo.webengine.sites.webcomments.WebCommentService;
 /**
  * Blog Comment Service - extension of base's WebCommentService with specifics
  * of sites module.
- * 
+ *
  * @author rux
  */
 @WebAdapter(name = "webcomments", type = "BlogCommentService", targetType = "Document", targetFacets = { "Commentable" })

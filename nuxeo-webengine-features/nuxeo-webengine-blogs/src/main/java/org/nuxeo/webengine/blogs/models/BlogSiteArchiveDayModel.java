@@ -20,9 +20,9 @@ import org.nuxeo.theme.models.AbstractModel;
 /**
  * Model related to the <b>BlogSite</b>-s archive in the fragment initialization
  * mechanism
- * 
+ *
  * @author rux
- * 
+ *
  */
 public class BlogSiteArchiveDayModel extends AbstractModel {
 

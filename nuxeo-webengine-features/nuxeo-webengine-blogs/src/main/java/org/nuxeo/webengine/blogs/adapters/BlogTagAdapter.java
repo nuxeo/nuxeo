@@ -25,9 +25,9 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.webengine.sites.TagAdapter;
 
 /**
- * 
+ *
  * Adapter used to display all documents for a certain tag.
- * 
+ *
  * @author rux
  */
 @WebAdapter(name = "tag", type = "BlogTagAdapter", targetType = "Document")

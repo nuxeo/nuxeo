@@ -26,7 +26,7 @@ import org.nuxeo.webengine.sites.PerspectiveAdapter;
 
 /**
  * Adapter used to change theme perspectives.
- * 
+ *
  * @author rux
  */
 @WebAdapter(name = "perspective", type = "BlogPerspectiveAdapter", targetType = "Document")

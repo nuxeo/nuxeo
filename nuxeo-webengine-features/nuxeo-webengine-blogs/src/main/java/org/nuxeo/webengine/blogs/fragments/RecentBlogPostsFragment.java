@@ -40,7 +40,7 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  * Action fragment for initializing the fragment related to retrieving a certain
  * number of blog posts with information about the last <b>BlogPost</b>-s that
  * are made under an <b>BlogSite</b>.
- * 
+ *
  * @author rux
  */
 public class RecentBlogPostsFragment extends AbstractFragment {
@@ -117,7 +117,7 @@ public class RecentBlogPostsFragment extends AbstractFragment {
     /**
      * Utility method used to return the day of the week as a string
      * representation.
-     * 
+     *
      * @param day day of the week as integer
      * @return day of the week as string
      */
@@ -132,7 +132,7 @@ public class RecentBlogPostsFragment extends AbstractFragment {
 
     /**
      * Returns the model corresponding to the day received as parameter.
-     * 
+     *
      * @param model the model list in which the day model will be searched
      * @param day the name of the day
      * @return the model corresponding to the day received as parameter.

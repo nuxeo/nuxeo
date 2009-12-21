@@ -19,7 +19,7 @@ import org.nuxeo.theme.models.AbstractModel;
 /**
  * Model related to the <b>BlogPost</b>-s in the fragment initialization
  * mechanism.
- * 
+ *
  * @author rux
  */
 public class BlogPostModel extends AbstractModel {

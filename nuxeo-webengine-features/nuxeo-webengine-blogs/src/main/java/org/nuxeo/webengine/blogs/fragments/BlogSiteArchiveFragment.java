@@ -35,7 +35,7 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 /**
  * Action fragment for initializing the fragment related to retrieving the
  * archive of a certain <b>BlogSite</b>
- * 
+ *
  * @author rux
  */
 public class BlogSiteArchiveFragment extends AbstractFragment {
@@ -97,7 +97,7 @@ public class BlogSiteArchiveFragment extends AbstractFragment {
 
     /**
      * Returns the model corresponding to the year received as parameter.
-     * 
+     *
      * @param model the model list in which the year model will be searched
      * @param year the name of the year
      * @return the model corresponding to the year received as parameter.
@@ -118,7 +118,7 @@ public class BlogSiteArchiveFragment extends AbstractFragment {
 
     /**
      * Returns the model corresponding to the month received as parameter.
-     * 
+     *
      * @param model the model list in which the month model will be searched
      * @param month the name of the month
      * @return the model corresponding to the month received as parameter

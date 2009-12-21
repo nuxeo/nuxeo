@@ -26,7 +26,7 @@ import org.nuxeo.webengine.sites.utils.SiteConstants;
 
 /**
  * Blog related actions listener.
- * 
+ *
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
  */
 public class BlogActionListener implements EventListener {

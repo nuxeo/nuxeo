@@ -16,11 +16,11 @@
 package org.nuxeo.webengine.blogs.utils;
 
 /**
- * 
+ *
  * Utility class used for registering constants.
- * 
+ *
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- * 
+ *
  */
 public final class BlogConstants {
 
