@@ -40,18 +40,11 @@
     <module>nuxeo-platform-preview</module>
     <module>nuxeo-platform-publisher</module>
     <module>nuxeo-platform-publishing</module>
-    <module>nuxeo-platform-relations-api</module>
-    <module>nuxeo-platform-relations-default-config</module>
-    <module>nuxeo-platform-relations-core</module>
-    <module>nuxeo-platform-relations-core-listener</module>
-    <module>nuxeo-platform-relations-jena-plugin</module>
-    <module>nuxeo-platform-relations-web</module>
-    <module>nuxeo-platform-relations-facade</module>
+    <module>nuxeo-platform-relations</module>
     <module>nuxeo-platform-syndication</module>
     <module>nuxeo-platform-forum</module>
     <module>nuxeo-platform-domsync-core</module>
     <module>nuxeo-platform-io</module>
-    <module>nuxeo-platform-relations-io</module>
     <!--<module>nuxeo-platform-wiki</module>-->
     <module>nuxeo-theme-editor</module>
     <module>nuxeo-platform-webwidgets</module>
