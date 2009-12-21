@@ -3,19 +3,15 @@
 
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-features-parent</artifactId>
+    <artifactId>nuxeo-platform-comment-parent</artifactId>
     <version>5.3.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-platform-comment-api</artifactId>
-  <name>Nuxeo Comment Service API</name>
-  <description>Nuxeo Enterprise Platform: Comment Service API.</description>
+  <artifactId>nuxeo-platform-comment-core</artifactId>
+  <name>Nuxeo Comment Service Core Contrib</name>
+  <description>Nuxeo Enterprise Platform: Comment Service Core.</description>
 
   <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-api</artifactId>
-    </dependency>
   </dependencies>
 
 </project>
