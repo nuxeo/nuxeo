@@ -57,10 +57,7 @@
     <module>nuxeo-platform-forum-workflow</module>
     <module>nuxeo-platform-forum</module>
     <module>nuxeo-platform-domsync-core</module>
-    <module>nuxeo-platform-io-api</module>
-    <module>nuxeo-platform-io-core</module>
-    <module>nuxeo-platform-io-facade</module>
-    <module>nuxeo-platform-io-client</module>
+    <module>nuxeo-platform-io</module>
     <module>nuxeo-platform-relations-io</module>
     <!--<module>nuxeo-platform-wiki</module>-->
     <module>nuxeo-theme-editor</module>
