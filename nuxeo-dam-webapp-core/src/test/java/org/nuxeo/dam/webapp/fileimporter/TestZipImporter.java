@@ -34,6 +34,7 @@ import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestZipImporter extends SQLRepositoryJUnit4 {
 
@@ -141,6 +142,10 @@ public class TestZipImporter extends SQLRepositoryJUnit4 {
                 service);
 
         DocumentModel importSet = importActions.getNewImportSet();
+        // test that we have a default title
+        String defaultTitle = (String) importSet.getProperty("dublincore", "title");
+        assertNotNull(defaultTitle);
+        assertTrue(defaultTitle.startsWith("Administrator"));
 
         File file = getTestFile("test-data/test.zip");
         UploadEvent event = UploadItemMock.getUploadEvent(file);

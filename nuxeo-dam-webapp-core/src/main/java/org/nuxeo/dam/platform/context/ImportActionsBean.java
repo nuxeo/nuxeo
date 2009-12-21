@@ -103,7 +103,13 @@ public class ImportActionsBean implements Serializable {
         if (!titleChanged) {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddMMyyHHmmss");
             Calendar calendar = Calendar.getInstance();
-            String username = currentNuxeoPrincipal.getName();
+
+            String username;
+            if (currentNuxeoPrincipal != null) {
+                username = currentNuxeoPrincipal.getName();
+            } else {
+                username = documentManager.getPrincipal().getName();
+            }
             String defaultTitle = username
                     + simpleDateFormat.format(calendar.getTime());
             newImportSet.setPropertyValue("dc:title", defaultTitle);
