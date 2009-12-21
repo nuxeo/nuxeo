@@ -3,16 +3,13 @@
 
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-features-parent</artifactId>
+    <artifactId>nuxeo-platform-transform-parent</artifactId>
     <version>5.3.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-platform-transform-core</artifactId>
-  <name>Nuxeo Content Transformation Service - Core</name>
-  <description>DEPRECATED - Nuxeo Enterprise Platform: Content Transformation Service (Core).
-    This service handles content transformation (ex: MSWord -&gt; PDF).
-    Effective transformation is handled by transformer plugins registered
-    through extension points to the transformation service.</description>
+  <artifactId>nuxeo-platform-transform-compat</artifactId>
+  <name>Nuxeo Content Transformation Service - Compatibility package</name>
+  <description>DEPRECATED - Provide backward compatibility with the deprecated transformers API</description>
 
   <dependencies>
     <dependency>
@@ -24,24 +21,32 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-transform-api</artifactId>
     </dependency>
-
     <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb-api</artifactId>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert-api</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert</artifactId>
+    </dependency>
     <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-mimetype-core</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jnp-client</artifactId>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert-plugins</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <!-- needed for convert plugins -->
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
 </project>
