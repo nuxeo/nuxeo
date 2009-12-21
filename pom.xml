@@ -28,14 +28,7 @@
     <module>nuxeo-platform-api</module>
     <module>nuxeo-platform-api-test</module>
     <module>nuxeo-platform-commandline-executor</module>
-    <module>nuxeo-platform-directory-api</module>
-    <module>nuxeo-platform-directory-core</module>
-    <module>nuxeo-platform-directory-ldap</module>
-    <module>nuxeo-platform-directory-facade</module>
-    <module>nuxeo-platform-directory-sql</module>
-    <module>nuxeo-platform-directory-multi</module>
-    <module>nuxeo-platform-directory-types-contrib</module>
-    <module>nuxeo-platform-directory-web</module>
+    <module>nuxeo-platform-directory</module>
     <module>nuxeo-platform-dublincore</module>
     <module>nuxeo-platform-search-api</module>
     <module>nuxeo-platform-search-core</module>
@@ -567,11 +560,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-usermanager-facade</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-usermanager-core</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>

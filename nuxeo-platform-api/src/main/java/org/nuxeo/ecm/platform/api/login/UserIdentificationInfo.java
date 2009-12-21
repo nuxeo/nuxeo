@@ -100,8 +100,6 @@ public class UserIdentificationInfo implements Serializable {
 
     /**
      * Return the name of the LoginModule plugin that must be used to create the Principal.
-     *
-     * @return
      */
     public String getLoginPluginName() {
         return loginPluginName;

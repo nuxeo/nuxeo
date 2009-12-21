@@ -37,11 +37,6 @@
       <artifactId>nuxeo-runtime-osgi</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency><!-- For LocalSessionFactory -->
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency><!-- For RepositoryFactory -->
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector</artifactId>
