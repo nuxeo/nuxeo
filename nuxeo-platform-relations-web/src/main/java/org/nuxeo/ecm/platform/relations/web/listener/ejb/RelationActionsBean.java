@@ -553,7 +553,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
                 if (!searchKeywords.equals("*")) {
                     // full text search
                     constraints.add(String.format("ecm:fulltext LIKE '%s'",
-                            searchKeywords));
+                            searchKeywords.replaceAll("'", "\\\\'")));
                 }
             }
         }
