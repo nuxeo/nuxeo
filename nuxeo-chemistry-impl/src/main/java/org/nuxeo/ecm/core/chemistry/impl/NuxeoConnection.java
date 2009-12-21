@@ -44,6 +44,7 @@ import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.ObjectNotFoundException;
 import org.apache.chemistry.Paging;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
@@ -70,11 +71,17 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.FacetFilter;
+import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.security.SecurityPolicyService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -244,12 +251,20 @@ public class NuxeoConnection implements Connection, SPI {
         // TODO orderBy
         DocumentModelList docs;
         try {
-            docs = session.getChildren(new IdRef(folder.getId()));
+            IdRef docRef = new IdRef(folder.getId());
+            if (!session.exists(docRef)) {
+                throw new ObjectNotFoundException("No such folder: "
+                        + folder.getId());
+            }
+            // hide HiddenInNavigation and deleted objects from children listing
+            Filter facetFilter = new FacetFilter(
+                    FacetNames.HIDDEN_IN_NAVIGATION, false);
+            Filter lcFilter = new LifeCycleFilter(
+                    LifeCycleConstants.DELETED_STATE, false);
+            docs = session.getChildren(docRef, null, new CompoundFilter(
+                    facetFilter, lcFilter), null);
         } catch (ClientException e) {
-            throw new RuntimeException(e.toString(), e); // TODO
-        }
-        if (docs == null) {
-            throw new IllegalArgumentException(folder.getId());
+            throw new CMISRuntimeException(e.toString(), e);
         }
         List<ObjectEntry> all = new ArrayList<ObjectEntry>(docs.size());
         for (DocumentModel child : docs) {
