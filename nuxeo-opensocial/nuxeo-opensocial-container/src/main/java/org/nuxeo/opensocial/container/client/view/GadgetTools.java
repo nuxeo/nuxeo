@@ -113,6 +113,7 @@ public class GadgetTools {
             }
             ;
             maximizedCol.show();
+            canvas.show();
             canvas.updateGadgetPortlet();
             canvas.doLayout();
             maximizedCol.doLayout();
