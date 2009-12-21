@@ -33,7 +33,7 @@ import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.webengine.blogs.models.BlogPostListModel;
 import org.nuxeo.webengine.blogs.models.BlogPostModel;
 import org.nuxeo.webengine.blogs.models.BlogSiteArchiveDayModel;
-import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
+import org.nuxeo.webengine.sites.utils.SiteQueriesCollection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
@@ -69,7 +69,7 @@ public class RecentBlogPostsFragment extends AbstractFragment {
             try {
                 DocumentModel blogSite = SiteUtils.getFirstWebSiteParent(
                         session, documentModel);
-                DocumentModelList blogPosts = SiteQueriesColection.queryLastModifiedPages(
+                DocumentModelList blogPosts = SiteQueriesCollection.queryLastModifiedPages(
                         session,
                         blogSite.getPathAsString(),
                         BLOG_POST_DOC_TYPE,

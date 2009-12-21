@@ -88,11 +88,6 @@ public class SiteUtils {
     /**
      * Gets the number of comment added on a page (published actually, if the
      * moderation is on).
-     *
-     * @param session
-     * @param page
-     * @return
-     * @throws Exception
      */
     public static int getNumberCommentsForPage(CoreSession session,
             DocumentModel page) throws Exception {
@@ -151,22 +146,15 @@ public class SiteUtils {
      */
     public static String getPagePath(DocumentModel ws,
             DocumentModel documentModel) {
-        StringBuilder path = new StringBuilder(getWebContainersPath()).append("/");
+        StringBuilder path = new StringBuilder(getWebContainersPath()).append('/');
         path.append(ws.getPath().segment(ws.getPath().segmentCount() - 1)).append(
-                "/");
+                '/');
         path.append(JsonAdapter.getRelativePath(ws, documentModel));
         return path.toString();
     }
 
     /**
      * Creates a document type that is received as parameter, as document model.
-     *
-     * @param request
-     * @param session
-     * @param parentPath
-     * @param documentType
-     * @return
-     * @throws Exception
      */
     public static DocumentModel createDocument(HttpServletRequest request,
             CoreSession session, String parentPath, String documentType)
@@ -211,7 +199,6 @@ public class SiteUtils {
 
     /**
      * @return all users with a given permission for the corresponding workspace
-     * @throws Exception
      */
     public static ArrayList<String> getUsersWithPermission(CoreSession session,
             DocumentModel doc, Set<String> permissions) throws Exception {
@@ -228,7 +215,6 @@ public class SiteUtils {
      * @return true if the corresponding workspace is moderated : there is at
      *         least one user with moderate permission on this workspace and the
      *         moderationType is a priori
-     * @throws Exception
      */
     public static boolean isCurrentModerated(CoreSession session,
             DocumentModel doc) throws Exception {
@@ -252,8 +238,7 @@ public class SiteUtils {
     }
 
     /**
-     * @return true if the current user is between moderators
-     * @throws Exception
+     * @return true if the current user is among moderators
      */
     public static boolean isModeratedByCurrentUser(CoreSession session,
             DocumentModel doc) throws Exception {
@@ -289,7 +274,7 @@ public class SiteUtils {
             throws Exception {
         List<DocumentModel> list = getCommentManager().getDocumentsForComment(
                 comment);
-        if (list.size() != 0) {
+        if (!list.isEmpty()) {
             DocumentModel page = list.get(0);
             if (!SiteConstants.DELETED.equals(page.getCurrentLifeCycleState())) {
                 return page;
@@ -300,8 +285,7 @@ public class SiteUtils {
 
     /**
      * @return all the moderators for the corresponding workspace
-     * @throws Exception
-     * */
+     */
     public static ArrayList<String> getModerators(CoreSession session,
             DocumentModel doc) throws Exception {
         Set<String> moderatePermissions = new HashSet<String>();
@@ -312,8 +296,7 @@ public class SiteUtils {
     /**
      * @return the moderation type for the corresponding workspace ; default is
      *         aposteriori
-     * @throws Exception
-     * */
+     */
     public static String getModerationType(CoreSession session,
             DocumentModel doc) throws Exception {
         DocumentModel parentWebSite = getFirstWebSiteParent(session, doc);
@@ -424,9 +407,6 @@ public class SiteUtils {
 
     /**
      * Computes the arguments for rss feed.
-     *
-     * @return
-     * @throws Exception
      */
     public static Map<String, Object> getRssFeedArguments(WebContext ctx,
             String key) throws Exception {

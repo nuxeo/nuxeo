@@ -28,17 +28,11 @@ import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
  *
  * @author rux
  */
-public class SiteQueriesColection {
+public class SiteQueriesCollection {
 
     /**
      * Queries sites by URL and document type. It should be exactly one
      * returned.
-     *
-     * @param session
-     * @param url
-     * @param documentType
-     * @return
-     * @throws ClientException
      */
     public static DocumentModelList querySitesByUrlAndDocType(
             CoreSession session, String url, String documentType)
@@ -56,11 +50,6 @@ public class SiteQueriesColection {
 
     /**
      * Queries all sites of the given document type.
-     *
-     * @param session
-     * @param documentType
-     * @return
-     * @throws ClientException
      */
     public static DocumentModelList queryAllSites(CoreSession session,
             String documentType) throws ClientException {
@@ -74,12 +63,6 @@ public class SiteQueriesColection {
 
     /**
      * Queries the modified pages within a limit.
-     *
-     * @param session
-     * @param parent
-     * @param numberLimit
-     * @return
-     * @throws ClientException
      */
     public static DocumentModelList queryLastModifiedPages(CoreSession session,
             String parent, String documentType, int numberLimit)
@@ -95,13 +78,6 @@ public class SiteQueriesColection {
     /**
      * Queries the added comments within a limit. Query differs if moderated or
      * not.
-     *
-     * @param session
-     * @param parent
-     * @param numberLimit
-     * @param isModerated
-     * @return
-     * @throws ClientException
      */
     public static DocumentModelList queryLastComments(CoreSession session,
             String parent, int numberLimit, boolean isModerated)
@@ -128,12 +104,6 @@ public class SiteQueriesColection {
 
     /**
      * Queries the pages based on a search string.
-     *
-     * @param session
-     * @param query
-     * @param parent
-     * @return
-     * @throws ClientException
      */
     public static DocumentModelList querySearchPages(CoreSession session,
             String query, String parent, String documentType, String dateAfter,

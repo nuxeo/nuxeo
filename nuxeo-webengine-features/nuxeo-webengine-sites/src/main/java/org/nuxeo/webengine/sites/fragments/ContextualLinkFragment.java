@@ -54,10 +54,6 @@ public class ContextualLinkFragment extends AbstractFragment {
             if (documentModel.hasFacet(SiteConstants.WEB_VIEW_FACET)
                     || SiteConstants.WEBPAGE.equals(documentModel.getType())) {
                 // Is WebSite (has 'WebView' facet) or WebPage.
-                ContextualLinkModel linkModel;
-                String title;
-                String description;
-                String link;
 
                 try {
                     for (DocumentModel document : session.getChildren(
@@ -66,11 +62,11 @@ public class ContextualLinkFragment extends AbstractFragment {
                         if (!document.getCurrentLifeCycleState().equals(
                                 SiteConstants.DELETED)) {
 
-                            title = SiteUtils.getString(document, "dc:title");
-                            description = SiteUtils.getString(document,
+                            String title = SiteUtils.getString(document, "dc:title");
+                            String description = SiteUtils.getString(document,
                                     "dc:description");
-                            link = SiteUtils.getString(document, "clink:link");
-                            linkModel = new ContextualLinkModel(title,
+                            String link = SiteUtils.getString(document, "clink:link");
+                            ContextualLinkModel linkModel = new ContextualLinkModel(title,
                                     description, link);
                             model.addItem(linkModel);
                         }
@@ -83,4 +79,5 @@ public class ContextualLinkFragment extends AbstractFragment {
         }
         return model;
     }
+
 }

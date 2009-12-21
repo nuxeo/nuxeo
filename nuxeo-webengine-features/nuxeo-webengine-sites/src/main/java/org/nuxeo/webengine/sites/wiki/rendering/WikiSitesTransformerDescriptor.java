@@ -33,7 +33,6 @@ import org.nuxeo.ecm.webengine.rendering.RenderingExtensionDescriptor;
 
 /**
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- *
  */
 @XObject("rendering-extension")
 public class WikiSitesTransformerDescriptor extends

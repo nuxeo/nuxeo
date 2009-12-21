@@ -44,7 +44,7 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
+import org.nuxeo.webengine.sites.utils.SiteQueriesCollection;
 
 /**
  * Web object implementation corresponding to Site. It is resolved from module
@@ -88,9 +88,9 @@ public class Site extends AbstractSiteDocumentObject {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
         try {
-            DocumentModelList list = SiteQueriesColection.querySitesByUrlAndDocType(
+            DocumentModelList list = SiteQueriesCollection.querySitesByUrlAndDocType(
                     session, url, getWebSiteDocumentType());
-            if (list.size() != 0) {
+            if (!list.isEmpty()) {
                 return list.get(0);
             }
         } catch (ClientException e) {

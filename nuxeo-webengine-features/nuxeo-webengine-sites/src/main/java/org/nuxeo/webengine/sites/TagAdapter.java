@@ -36,7 +36,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
- *
  * Adapter used to display all documents for a certain tag.
  *
  * @author mcedica
@@ -83,8 +82,8 @@ public class TagAdapter extends DefaultAdapter {
                 // Insert multiple tags if separated by commas
                 String[] tagLabelArray = tagLabel.split(",");
 
-                for (int i = 0; i < tagLabelArray.length; i++) {
-                    String currentTagLabel = tagLabelArray[i].trim();
+                for (String currentTagLabel : tagLabelArray) {
+                    currentTagLabel = tagLabel.trim();
                     if (currentTagLabel.length() > 0) {
                         DocumentModel tagDocument = tagService.getOrCreateTag(
                                 session, tagService.getRootTag(session),

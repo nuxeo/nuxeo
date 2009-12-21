@@ -26,7 +26,4 @@ import org.nuxeo.theme.models.AbstractModel;
  */
 public class CommentListModel extends AbstractModel {
 
-    public CommentListModel() {
-    }
-
 }

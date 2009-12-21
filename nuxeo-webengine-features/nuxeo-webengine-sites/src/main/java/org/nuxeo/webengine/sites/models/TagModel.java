@@ -33,9 +33,9 @@ public class TagModel extends AbstractModel {
     private String id;
 
     public TagModel(String label, Boolean isPrivate, Boolean canModify) {
-        setLabel(label);
-        setIsPrivate(isPrivate);
-        setCanModify(canModify);
+        this.label = label;
+        this.isPrivate = isPrivate;
+        this.canModify = canModify;
     }
 
     public String getLabel() {

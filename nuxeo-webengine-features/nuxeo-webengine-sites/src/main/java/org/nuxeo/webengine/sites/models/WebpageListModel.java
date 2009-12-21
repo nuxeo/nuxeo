@@ -26,7 +26,4 @@ import org.nuxeo.theme.models.AbstractModel;
  */
 public class WebpageListModel extends AbstractModel {
 
-    public WebpageListModel() {
-    }
-
 }

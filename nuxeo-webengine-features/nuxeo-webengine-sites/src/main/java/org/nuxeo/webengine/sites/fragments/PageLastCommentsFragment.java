@@ -50,14 +50,13 @@ public class PageLastCommentsFragment extends AbstractFragment {
             DocumentModel documentModel = ctx.getTargetObject().getAdapter(
                     DocumentModel.class);
 
-            CommentModel commentModel;
-            String creationDate;
-            String author;
-            String commentText;
-
             try {
                 CommentManager commentManager = SiteUtils.getCommentManager();
                 // get published comments
+                CommentModel commentModel;
+                String creationDate;
+                String author;
+                String commentText;
                 for (DocumentModel doc : commentManager.getComments(documentModel)) {
                     if (CommentsConstants.PUBLISHED_STATE.equals(doc.getCurrentLifeCycleState())) {
                         GregorianCalendar modificationDate = (GregorianCalendar) doc.getProperty(

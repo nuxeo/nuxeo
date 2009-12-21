@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentService;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
 import org.nuxeo.webengine.sites.utils.SiteConstants;
-import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
+import org.nuxeo.webengine.sites.utils.SiteQueriesCollection;
 
 /**
  * Unit tests for the query site utils methods.
@@ -176,35 +176,35 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
     }
 
     public void testQueryAllSites() throws Exception {
-        List<DocumentModel> allSites = SiteQueriesColection.queryAllSites(
+        List<DocumentModel> allSites = SiteQueriesCollection.queryAllSites(
                 session, WEBSITE);
         assertEquals(2, allSites.size());
     }
 
     public void testQueryAllSitesByUrl() throws Exception {
-        List<DocumentModel> allWorkspaceSitesByUrlList = SiteQueriesColection.querySitesByUrlAndDocType(
+        List<DocumentModel> allWorkspaceSitesByUrlList = SiteQueriesCollection.querySitesByUrlAndDocType(
                 session, workspaceSiteUrl, WEBSITE);
         assertEquals(1, allWorkspaceSitesByUrlList.size());
-        List<DocumentModel> allWebSitesByUrlList = SiteQueriesColection.querySitesByUrlAndDocType(
+        List<DocumentModel> allWebSitesByUrlList = SiteQueriesCollection.querySitesByUrlAndDocType(
                 session, webSiteUrl, WEBSITE);
         assertEquals(1, allWebSitesByUrlList.size());
     }
 
     public void testQueryLastModifiedWebPages() throws Exception {
-        List<DocumentModel> lastWorkspaceSitePages = SiteQueriesColection.queryLastModifiedPages(
+        List<DocumentModel> lastWorkspaceSitePages = SiteQueriesCollection.queryLastModifiedPages(
                 session, workspaceSite.getPathAsString(), WEBPAGE, 5);
         assertEquals(1, lastWorkspaceSitePages.size());
-        List<DocumentModel> lastWebSitePages = SiteQueriesColection.queryLastModifiedPages(
+        List<DocumentModel> lastWebSitePages = SiteQueriesCollection.queryLastModifiedPages(
                 session, webSite.getPathAsString(), WEBPAGE, 5);
         assertEquals(1, lastWebSitePages.size());
     }
 
     public void testQueryLastComments() throws Exception {
-        List<DocumentModel> lastWorkspaceSiteComments = SiteQueriesColection.queryLastComments(
+        List<DocumentModel> lastWorkspaceSiteComments = SiteQueriesCollection.queryLastComments(
                 session, workspaceSite.getPathAsString(), 5, false);
         assertEquals(1, lastWorkspaceSiteComments.size());
 
-        List<DocumentModel> lastWebSiteComments = SiteQueriesColection.queryLastComments(
+        List<DocumentModel> lastWebSiteComments = SiteQueriesCollection.queryLastComments(
                 session, webSite.getPathAsString(), 5, false);
         assertEquals(1, lastWebSiteComments.size());
     }

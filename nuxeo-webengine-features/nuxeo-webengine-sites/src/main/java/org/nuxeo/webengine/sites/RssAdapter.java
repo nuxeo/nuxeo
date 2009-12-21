@@ -41,11 +41,11 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.webengine.sites.models.CommentModel;
 import org.nuxeo.webengine.sites.models.WebpageModel;
-import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
+import org.nuxeo.webengine.sites.utils.SiteQueriesCollection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
- * Adapter used as a RSS feed. The version of the RSS format is 2.0
+ * Adapter used as a RSS feed. The version of the RSS format is 2.0.
  *
  * @author mcedica
  */
@@ -72,7 +72,7 @@ public class RssAdapter extends DefaultAdapter {
 
             DocumentModel doc = session.getDocument(new IdRef(docId));
 
-            DocumentModelList paged = SiteQueriesColection.queryLastModifiedPages(
+            DocumentModelList paged = SiteQueriesCollection.queryLastModifiedPages(
                     session, doc.getPathAsString(), getWebPageDocumentType(),
                     NO_PAGES);
             for (DocumentModel documentModel : paged) {
@@ -112,17 +112,13 @@ public class RssAdapter extends DefaultAdapter {
             Template rssEntryTpl = getTemplate("includes/rss_comment_item.ftl");
             CoreSession session = ctx.getCoreSession();
 
-            CommentModel commentModel;
-            String creationDate;
-            String author;
-            String commentText;
             DocumentModelList comments = null;
 
             String docId = ctx.getRequest().getParameter("docId");
             DocumentModel doc = session.getDocument(new IdRef(docId));
 
             if (doc.getType().equals(getWebSiteDocumentType())) {
-                comments = SiteQueriesColection.queryLastComments(session,
+                comments = SiteQueriesCollection.queryLastComments(session,
                         doc.getPathAsString(), NO_COMMENTS,
                         SiteUtils.isCurrentModerated(session, doc));
             } else if (doc.getType().equals(getWebPageDocumentType())) {
@@ -137,12 +133,12 @@ public class RssAdapter extends DefaultAdapter {
                             CommentsConstants.COMMENT_CREATION_DATE).getValue();
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
                             "dd MMMM", WebEngine.getActiveContext().getLocale());
-                    creationDate = simpleDateFormat.format(modificationDate.getTime());
-                    author = (String) documentModel.getProperty(
+                    String creationDate = simpleDateFormat.format(modificationDate.getTime());
+                    String author = (String) documentModel.getProperty(
                             CommentsConstants.COMMENT_AUTHOR).getValue();
-                    commentText = (String) documentModel.getProperty(
+                    String commentText = (String) documentModel.getProperty(
                             CommentsConstants.COMMENT_TEXT).getValue();
-                    commentModel = new CommentModel(creationDate, author,
+                    CommentModel commentModel = new CommentModel(creationDate, author,
                             commentText, documentModel.getRef().toString(),
                             false);
                     String entryXml = rssEntryTpl.arg("item", commentModel).render();

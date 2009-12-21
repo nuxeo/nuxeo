@@ -29,7 +29,7 @@ import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.webengine.sites.JsonAdapter;
 import org.nuxeo.webengine.sites.models.WebpageCommentListModel;
 import org.nuxeo.webengine.sites.models.WebpageCommentModel;
-import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
+import org.nuxeo.webengine.sites.utils.SiteQueriesCollection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
@@ -57,40 +57,34 @@ public class MinisiteLastCommentsFragment extends AbstractFragment {
             DocumentModel documentModel = ctx.getTargetObject().getAdapter(
                     DocumentModel.class);
 
-            WebpageCommentModel webpageCommentModel;
-            DocumentModel parentPage;
-            SimpleDateFormat simpleDateFormat;
-            String pageTitle = null;
-            String pagePath = null;
-            String content;
-            String author;
-
             try {
                 DocumentModel ws = SiteUtils.getFirstWebSiteParent(session,
                         documentModel);
-                DocumentModelList comments = SiteQueriesColection.queryLastComments(
+                DocumentModelList comments = SiteQueriesCollection.queryLastComments(
                         session, ws.getPathAsString(), noComments,
                         SiteUtils.isCurrentModerated(session, ws));
 
+                String pageTitle = null;
+                String pagePath = null;
                 for (DocumentModel comment : comments) {
-                    parentPage = SiteUtils.getPageForComment(comment);
-                    author = SiteUtils.getUserDetails(SiteUtils.getString(
+                    DocumentModel parentPage = SiteUtils.getPageForComment(comment);
+                    String author = SiteUtils.getUserDetails(SiteUtils.getString(
                             comment, "comment:author"));
                     if (parentPage != null) {
                         pageTitle = parentPage.getTitle();
                         pagePath = JsonAdapter.getRelativePath(ws, parentPage).toString();
                     }
-                    content = SiteUtils.getFistNWordsFromString(
+                    String content = SiteUtils.getFistNWordsFromString(
                             SiteUtils.getString(comment, "comment:text"),
                             noWordsFromContent);
 
-                    simpleDateFormat = new SimpleDateFormat("dd MMMM",
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM",
                             WebEngine.getActiveContext().getLocale());
                     String formattedString = simpleDateFormat.format(SiteUtils.getGregorianCalendar(
                             comment, "comment:creationDate").getTime());
                     String[] splitFormattedString = formattedString.split(" ");
 
-                    webpageCommentModel = new WebpageCommentModel(pageTitle,
+                    WebpageCommentModel webpageCommentModel = new WebpageCommentModel(pageTitle,
                             pagePath, content, author,
                             splitFormattedString[0],
                             splitFormattedString[1]);

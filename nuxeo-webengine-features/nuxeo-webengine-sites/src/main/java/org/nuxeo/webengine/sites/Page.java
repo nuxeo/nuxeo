@@ -85,8 +85,6 @@ public class Page extends AbstractSiteDocumentObject {
 
     /**
      * Updates the current modified web page.
-     *
-     * @return
      */
     @POST
     @Path("modifyWebPage")
@@ -99,7 +97,7 @@ public class Page extends AbstractSiteDocumentObject {
             String description = request.getParameter("description");
             Boolean isRichtext = SiteUtils.getBoolean(doc, WEBPAGE_EDITOR,
                     false);
-            String content = null;
+            String content;
             if (isRichtext) {
                 content = request.getParameter("richtextEditorEdit");
             } else {

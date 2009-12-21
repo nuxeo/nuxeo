@@ -51,4 +51,5 @@ public class BlogTagAdapter extends TagAdapter {
     public Object removeTagging() {
         return super.removeTagging();
     }
+
 }

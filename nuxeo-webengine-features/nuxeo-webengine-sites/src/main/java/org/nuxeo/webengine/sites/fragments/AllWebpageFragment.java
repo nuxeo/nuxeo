@@ -50,22 +50,16 @@ public class AllWebpageFragment extends AbstractFragment {
             DocumentModel documentModel = ctx.getTargetObject().getAdapter(
                     DocumentModel.class);
 
-            WebpageModel webpageModel;
-            String name;
-            String path;
-
             try {
                 for (DocumentModel webPage : session.getChildren(
                         documentModel.getRef(), SiteConstants.WEBPAGE)) {
                     if (!webPage.getCurrentLifeCycleState().equals(
                             SiteConstants.DELETED)) {
-
-                        name = SiteUtils.getString(webPage, "dc:title");
-                        path = JsonAdapter.getRelativePath(documentModel,
+                        String name = SiteUtils.getString(webPage, "dc:title");
+                        String path = JsonAdapter.getRelativePath(documentModel,
                                 webPage).toString();
-                        webpageModel = new WebpageModel(name, path);
+                        WebpageModel webpageModel = new WebpageModel(name, path);
                         model.addItem(webpageModel);
-
                     }
                 }
             } catch (Exception e) {
@@ -75,4 +69,5 @@ public class AllWebpageFragment extends AbstractFragment {
         }
         return model;
     }
+
 }

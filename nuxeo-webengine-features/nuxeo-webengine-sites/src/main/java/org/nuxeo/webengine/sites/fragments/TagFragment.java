@@ -59,9 +59,6 @@ public class TagFragment extends AbstractFragment {
                 DocumentModel documentModel = ctx.getTargetObject().getAdapter(
                         DocumentModel.class);
 
-                TagModel tagModel;
-                String label;
-                Boolean isPrivate;
                 List<Tag> tags = tagService.listTagsAppliedOnDocument(session,
                         documentModel);
                 if (tags != null && !tags.isEmpty()) {
@@ -70,14 +67,14 @@ public class TagFragment extends AbstractFragment {
                                 tag.tagId));
                         if (!document.getCurrentLifeCycleState().equals(
                                 SiteConstants.DELETED)) {
-                            label = SiteUtils.getString(document, TagConstants.TAG_LABEL_FIELD, "");
-                            isPrivate = SiteUtils.getNumber(document,
+                            String label = SiteUtils.getString(document, TagConstants.TAG_LABEL_FIELD, "");
+                            Boolean isPrivate = SiteUtils.getNumber(document,
                                     TagConstants.TAG_IS_PRIVATE_FIELD) != 0;
 
                             boolean canModify = canModify(documentModel, label,
                                     tagService, session);
 
-                            tagModel = new TagModel(label, isPrivate, canModify);
+                            TagModel tagModel = new TagModel(label, isPrivate, canModify);
                             tagModel.setId(tag.tagId);
                             model.addItem(tagModel);
                         }

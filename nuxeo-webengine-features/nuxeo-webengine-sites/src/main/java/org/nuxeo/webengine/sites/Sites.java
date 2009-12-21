@@ -46,7 +46,7 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
-import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
+import org.nuxeo.webengine.sites.utils.SiteQueriesCollection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
@@ -85,7 +85,7 @@ public class Sites extends DefaultObject {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
 
-        DocumentModelList webSites = SiteQueriesColection.queryAllSites(
+        DocumentModelList webSites = SiteQueriesCollection.queryAllSites(
                 session, getWebSiteDocumentType());
         List<Object> sites = new ArrayList<Object>();
         for (DocumentModel webSite : webSites) {
@@ -104,8 +104,6 @@ public class Sites extends DefaultObject {
 
     /**
      * Returns the theme name used for Sites document object type.
-     *
-     * @return
      */
     protected String getThemePage() {
         return SITES_THEME_PAGE;
@@ -113,8 +111,6 @@ public class Sites extends DefaultObject {
 
     /**
      * Returns the document type of the web site.
-     *
-     * @return
      */
     public String getWebSiteDocumentType() {
         return WEBSITE;
@@ -122,8 +118,6 @@ public class Sites extends DefaultObject {
 
     /**
      * Returns the name of the web site document object.
-     *
-     * @return
      */
     public String getWebSiteObjectTypeName() {
         return WEBSITE;
@@ -131,10 +125,9 @@ public class Sites extends DefaultObject {
 
     /**
      * Returns the document type of the child
-     *
-     * @return
      */
     public String getWebPageDocumentType() {
         return WEBPAGE;
     }
+
 }

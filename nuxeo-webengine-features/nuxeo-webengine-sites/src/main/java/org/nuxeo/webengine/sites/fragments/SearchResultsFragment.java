@@ -42,7 +42,7 @@ import org.nuxeo.theme.models.Model;
 import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.webengine.sites.models.SearchListModel;
 import org.nuxeo.webengine.sites.models.SearchModel;
-import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
+import org.nuxeo.webengine.sites.utils.SiteQueriesCollection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
@@ -80,15 +80,6 @@ public class SearchResultsFragment extends AbstractFragment {
                 String dateBefore = (String) ctx.getProperty(DATE_BEFORE);
 
                 TagService tagService = Framework.getService(TagService.class);
-                SearchModel searchModel;
-                GregorianCalendar date;
-                SimpleDateFormat simpleDateFormat;
-                String created;
-                String modified;
-                String author;
-                String path;
-                String name;
-                String description;
 
                 // get first workspace parent
                 DocumentModel ws = SiteUtils.getFirstWebSiteParent(session,
@@ -98,7 +89,7 @@ public class SearchResultsFragment extends AbstractFragment {
                 if ((!StringUtils.isEmpty(searchParam) || (dateAfter != null && dateBefore != null))
                         && ws != null && StringUtils.isEmpty(tagDocumentId)) {
 
-                    results = SiteQueriesColection.querySearchPages(session,
+                    results = SiteQueriesCollection.querySearchPages(session,
                             searchParam, ws.getPathAsString(), documentType,
                             dateAfter, dateBefore);
                 }
@@ -121,25 +112,25 @@ public class SearchResultsFragment extends AbstractFragment {
                 }
 
                 for (DocumentModel document : results) {
-                    date = SiteUtils.getGregorianCalendar(document,
+                    GregorianCalendar date = SiteUtils.getGregorianCalendar(document,
                             "dc:created");
-                    simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy",
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy",
                             WebEngine.getActiveContext().getLocale());
-                    created = simpleDateFormat.format(date.getTime());
+                    String created = simpleDateFormat.format(date.getTime());
 
                     date = SiteUtils.getGregorianCalendar(document,
                             "dc:modified");
-                    modified = simpleDateFormat.format(date.getTime());
+                    String modified = simpleDateFormat.format(date.getTime());
 
-                    author = SiteUtils.getUserDetails(SiteUtils.getString(
+                    String author = SiteUtils.getUserDetails(SiteUtils.getString(
                             document, "dc:creator"));
-                    path = SiteUtils.getPagePath(ws, document);
-                    name = SiteUtils.getString(document, "dc:title");
-                    description = SiteUtils.getFistNWordsFromString(
+                    String path = SiteUtils.getPagePath(ws, document);
+                    String name = SiteUtils.getString(document, "dc:title");
+                    String description = SiteUtils.getFistNWordsFromString(
                             SiteUtils.getString(document, "dc:description"),
                             nrWordsFromDescription);
 
-                    searchModel = new SearchModel(name, description, path,
+                    SearchModel searchModel = new SearchModel(name, description, path,
                             author, created, modified);
                     model.addItem(searchModel);
                 }
@@ -150,4 +141,5 @@ public class SearchResultsFragment extends AbstractFragment {
         }
         return model;
     }
+
 }

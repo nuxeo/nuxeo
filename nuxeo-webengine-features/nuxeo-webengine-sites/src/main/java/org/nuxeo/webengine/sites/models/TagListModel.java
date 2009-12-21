@@ -24,7 +24,4 @@ import org.nuxeo.theme.models.AbstractModel;
  */
 public class TagListModel extends AbstractModel {
 
-    public TagListModel() {
-    }
-
 }

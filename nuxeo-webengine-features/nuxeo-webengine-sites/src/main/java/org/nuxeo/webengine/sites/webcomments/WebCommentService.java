@@ -49,7 +49,7 @@ public class WebCommentService extends CommentService {
             DocumentModel comment) throws Exception {
         //CommentsModerationService commentsModerationService = getCommentsModerationService();
         if (SiteUtils.isCurrentModerated(session, target)
-                && (!SiteUtils.isModeratedByCurrentUser(session, target))) {
+                && !SiteUtils.isModeratedByCurrentUser(session, target)) {
             // if current page is moderated
             // get all moderators
             ArrayList<String> moderators = SiteUtils.getModerators(

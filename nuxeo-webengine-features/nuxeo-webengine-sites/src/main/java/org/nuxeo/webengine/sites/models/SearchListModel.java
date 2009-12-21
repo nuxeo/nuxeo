@@ -28,7 +28,4 @@ import org.nuxeo.theme.models.AbstractModel;
  */
 public class SearchListModel extends AbstractModel {
 
-    public SearchListModel() {
-    }
-
 }

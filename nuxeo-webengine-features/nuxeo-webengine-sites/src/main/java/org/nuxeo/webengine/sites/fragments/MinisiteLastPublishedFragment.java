@@ -33,7 +33,7 @@ import org.nuxeo.theme.models.Model;
 import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.webengine.sites.models.WebpageListModel;
 import org.nuxeo.webengine.sites.models.WebpageModel;
-import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
+import org.nuxeo.webengine.sites.utils.SiteQueriesCollection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
@@ -63,32 +63,24 @@ public class MinisiteLastPublishedFragment extends AbstractFragment {
             DocumentModel documentModel = ctx.getTargetObject().getAdapter(
                     DocumentModel.class);
 
-            WebpageModel webpageModel;
-            String name;
-            String path;
-            String description;
-            String content;
-            String author;
-            String numberComments;
-
             try {
                 DocumentModel ws = SiteUtils.getFirstWebSiteParent(session,
                         documentModel);
-                DocumentModelList webPages = SiteQueriesColection.queryLastModifiedPages(
+                DocumentModelList webPages = SiteQueriesCollection.queryLastModifiedPages(
                         session, ws.getPathAsString(), WEBPAGE, noPages);
 
                 for (DocumentModel webPage : webPages) {
                     if (!webPage.getCurrentLifeCycleState().equals(DELETED)) {
 
-                        name = SiteUtils.getString(webPage, "dc:title");
-                        path = SiteUtils.getPagePath(ws, webPage);
-                        description = SiteUtils.getString(webPage,
+                        String name = SiteUtils.getString(webPage, "dc:title");
+                        String path = SiteUtils.getPagePath(ws, webPage);
+                        String description = SiteUtils.getString(webPage,
                                 "dc:description");
 
-                        content = SiteUtils.getFistNWordsFromString(
+                        String content = SiteUtils.getFistNWordsFromString(
                                 SiteUtils.getString(webPage, WEBPAGE_CONTENT),
                                 noWordsFromContent);
-                        author = SiteUtils.getString(webPage, "dc:creator");
+                        String author = SiteUtils.getString(webPage, "dc:creator");
                         GregorianCalendar modificationDate = SiteUtils.getGregorianCalendar(
                                 webPage, "dc:modified");
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
@@ -96,10 +88,10 @@ public class MinisiteLastPublishedFragment extends AbstractFragment {
                                 WebEngine.getActiveContext().getLocale());
                         String formattedString = simpleDateFormat.format(modificationDate.getTime());
                         String[] splitFormattedString = formattedString.split(" ");
-                        numberComments = Integer.toString(SiteUtils.getNumberCommentsForPage(
+                        String numberComments = Integer.toString(SiteUtils.getNumberCommentsForPage(
                                 session, webPage));
 
-                        webpageModel = new WebpageModel(name, path,
+                        WebpageModel webpageModel = new WebpageModel(name, path,
                                 description, content, author,
                                 splitFormattedString[0],
                                 splitFormattedString[1], numberComments);
@@ -114,4 +106,5 @@ public class MinisiteLastPublishedFragment extends AbstractFragment {
         }
         return model;
     }
+
 }

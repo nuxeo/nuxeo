@@ -49,13 +49,13 @@ public class SiteContentProvider extends DocumentContentProvider {
         Object[] objects = super.getChildren(obj);
         List<Object> v = new Vector<Object>();
         for (Object o : objects) {
-            DocumentModel d = (DocumentModel) o;
+            DocumentModel doc = (DocumentModel) o;
             // filter pages
             // WEB-214
             try {
-                if (SiteUtils.getBoolean(d, SiteConstants.WEBPAGE_PUSHTOMENU, false)
-                        && !SiteConstants.DELETED.equals(d.getCurrentLifeCycleState())) {
-                    v.add(d);
+                if (SiteUtils.getBoolean(doc, SiteConstants.WEBPAGE_PUSHTOMENU, false)
+                        && !SiteConstants.DELETED.equals(doc.getCurrentLifeCycleState())) {
+                    v.add(doc);
                 }
             } catch (ClientException e) {
                 log.error(e);

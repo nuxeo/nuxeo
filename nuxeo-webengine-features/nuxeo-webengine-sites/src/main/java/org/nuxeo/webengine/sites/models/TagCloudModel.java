@@ -31,7 +31,6 @@ public class TagCloudModel extends AbstractModel {
     private int weight;
 
     public TagCloudModel(String label, String href, int weight) {
-        super();
         this.label = label;
         this.href = href;
         this.weight = weight;
