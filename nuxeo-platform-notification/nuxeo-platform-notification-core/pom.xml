@@ -141,11 +141,6 @@
       <artifactId>nuxeo-core-persistence</artifactId>
       <scope>test</scope>
     </dependency>
-        <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
