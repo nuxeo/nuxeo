@@ -41,7 +41,6 @@ import org.nuxeo.ecm.webapp.base.InputController;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 @Name("editorLinkActions")
 @Scope(CONVERSATION)

@@ -85,7 +85,6 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  * @author M.-A. Darche
- *
  */
 @Name("documentActions")
 @Scope(CONVERSATION)

@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.FieldDescripto
 
 @XObject("resultColumns")
 public class ResultColumnsDescriptor {
+
     @XNode("@name")
     private String name;
 

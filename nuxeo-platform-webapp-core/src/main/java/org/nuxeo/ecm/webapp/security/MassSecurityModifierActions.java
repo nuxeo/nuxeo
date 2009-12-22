@@ -105,4 +105,5 @@ public class MassSecurityModifierActions implements Serializable {
         // navigate
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
     }
+
 }

@@ -36,4 +36,5 @@ public interface ConversionAction {
     ConverterCheckResult getPdfConverterAvailability() throws Exception;
 
     void reCheckConverterAvailability();
+
 }

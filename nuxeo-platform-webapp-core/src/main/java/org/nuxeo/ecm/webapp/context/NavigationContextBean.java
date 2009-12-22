@@ -88,7 +88,6 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 
 /**
  * Implementation for the navigationContext component available on the session.
- *
  */
 @Name("navigationContext")
 @Scope(CONVERSATION)
@@ -400,10 +399,7 @@ public class NavigationContextBean implements NavigationContextLocal,
     }
 
     public RepositoryLocation getCurrentServerLocation() {
-
-        RepositoryLocation currentRepository = serverLocator.getCurrentServerLocation();
-
-        return currentRepository;
+        return serverLocator.getCurrentServerLocation();
     }
 
     /**

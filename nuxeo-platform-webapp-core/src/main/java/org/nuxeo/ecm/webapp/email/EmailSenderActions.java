@@ -36,14 +36,21 @@ public interface EmailSenderActions extends StatefulBaseLifeCycle {
     @Remove
     @PermitAll
     void destroy();
+
     void saveState();
+
     void readState();
+
     void initialize();
 
     void send();
+
     String getMailSubject();
+
     void setMailSubject(String mailSubject);
+
     String getMailContent();
+
     void setMailContent(String mailContent);
 
 }

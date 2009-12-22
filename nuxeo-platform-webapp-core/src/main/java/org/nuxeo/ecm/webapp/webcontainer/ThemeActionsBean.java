@@ -77,4 +77,5 @@ public class ThemeActionsBean implements ThemeActions, Serializable {
         NegotiationDef negotiation = app.getNegotiation();
         return negotiation.getDefaultTheme();
     }
+
 }

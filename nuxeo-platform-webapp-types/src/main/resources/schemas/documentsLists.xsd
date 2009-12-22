@@ -3,7 +3,6 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:nxs="http://www.nuxeo.org/ecm/schemas/common/">
 
-
   <xs:element name="id" type="xs:string" />
   <xs:element name="userid" type="xs:string"/>
   <xs:element name="listid" type="xs:string"/>

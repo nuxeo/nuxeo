@@ -43,7 +43,6 @@ import static org.jboss.seam.ScopeType.STATELESS;
  * @author Anahide Tchertchian
  * @author rux added the site name validation
  */
-
 @Name("siteActions")
 @Scope(STATELESS)
 public class SiteActionsBean {
@@ -56,9 +55,6 @@ public class SiteActionsBean {
      * because it will block the validation no matter if the checkbox is set or
      * not. As result, the widget validation is used. The both values need to be
      * available in layout to be used.
-     * @param context
-     * @param component
-     * @param value
      */
     public void validateName(FacesContext context, UIComponent component,
             Object value) {

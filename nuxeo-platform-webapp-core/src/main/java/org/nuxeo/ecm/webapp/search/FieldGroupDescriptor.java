@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.FieldDescripto
 
 @XObject("fieldGroup")
 public class FieldGroupDescriptor {
+
     @XNode("@name")
     private String name;
 

@@ -516,8 +516,9 @@ public class FileManageActionsBean extends InputController implements
     public void validateMultiplesUpload() throws ClientException,
             FileNotFoundException {
         DocumentModel current = navigationContext.getCurrentDocument();
-        if (!current.hasSchema("files"))
+        if (!current.hasSchema("files")) {
             return;
+        }
         Collection files = (Collection) current.getProperty("files", "files");
         for (UploadItem file : getUploadedFiles()) {
             String filename = FileUtils.getCleanFileName(file.getFileName());
@@ -527,15 +528,15 @@ public class FileManageActionsBean extends InputController implements
             HashMap<String, Object> fileMap = new HashMap<String, Object>(2);
             fileMap.put("file", blob);
             fileMap.put("filename", filename);
-            if (!files.contains(fileMap))
+            if (!files.contains(fileMap)) {
                 files.add(fileMap);
+            }
         }
         current.setProperty("files", "files", files);
         documentManager.saveDocument(current);
         documentManager.save();
 
         Contexts.getConversationContext().remove("fileUploadHolder");
-
     }
 
     public void performAction(ActionEvent event) {
@@ -545,8 +546,9 @@ public class FileManageActionsBean extends InputController implements
 
         try {
             DocumentModel current = navigationContext.getCurrentDocument();
-            if (!current.hasSchema("files"))
+            if (!current.hasSchema("files")) {
                 return;
+            }
             Collection files = (Collection) current.getProperty("files",
                     "files");
             Object file = CollectionUtils.get(files, new Integer(index));
@@ -573,8 +575,9 @@ public class FileManageActionsBean extends InputController implements
                                 "fileImporter.error.unsupportedFile"));
                 return null;
             } finally {
-                if (stream != null)
+                if (stream != null) {
                     IOUtils.closeQuietly(stream);
+                }
             }
         } else {
             facesMessages.add(FacesMessage.SEVERITY_ERROR, resourcesAccessor
@@ -634,7 +637,6 @@ public class FileManageActionsBean extends InputController implements
 
     @WebRemote
     public String removeSingleUploadedFile() throws ClientException {
-
         if (fileUploadHolder != null) {
             fileUploadHolder.setFileName(null);
             fileUploadHolder.setTempFile(null);
@@ -645,7 +647,6 @@ public class FileManageActionsBean extends InputController implements
 
     @WebRemote
     public String removeAllUploadedFile() throws ClientException {
-
         if (fileUploadHolder != null) {
             fileUploadHolder.getUploadedFiles().clear();
         }
@@ -655,7 +656,6 @@ public class FileManageActionsBean extends InputController implements
 
     @WebRemote
     public String removeUploadedFile(String fileName) throws ClientException {
-
         UploadItem fileToDelete = null;
 
         for (UploadItem file : getUploadedFiles()) {
@@ -666,8 +666,9 @@ public class FileManageActionsBean extends InputController implements
             }
         }
 
-        if (null != fileToDelete)
+        if (null != fileToDelete) {
             getUploadedFiles().remove(fileToDelete);
+        }
 
         return "";
     }

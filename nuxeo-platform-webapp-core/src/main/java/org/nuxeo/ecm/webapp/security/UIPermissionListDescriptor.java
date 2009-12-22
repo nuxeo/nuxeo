@@ -30,6 +30,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @Deprecated
 @XObject("uiPermissionList")
 public class UIPermissionListDescriptor {
+
     @XNode("@documentType")
     protected String documentType;
 
@@ -38,4 +39,5 @@ public class UIPermissionListDescriptor {
 
     @XNode("@default")
     protected boolean isDefault = false;
+
 }

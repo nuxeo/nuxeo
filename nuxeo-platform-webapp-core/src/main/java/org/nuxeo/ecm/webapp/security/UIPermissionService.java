@@ -34,7 +34,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author <a href='mailto:glefter@nuxeo.com'>George Lefter</a>
  * @deprecated use the PermissionProvider that is part of the core
  *             SecurityService instead
- *
  */
 @Deprecated
 public class UIPermissionService extends DefaultComponent {

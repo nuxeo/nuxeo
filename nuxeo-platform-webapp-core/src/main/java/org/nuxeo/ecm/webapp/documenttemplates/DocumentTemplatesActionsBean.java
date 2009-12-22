@@ -56,7 +56,6 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 /**
  * Implementation for the documentTemplatesBean component available on the
  * session.
- *
  */
 @Name("documentTemplatesActions")
 @Scope(CONVERSATION)
@@ -179,7 +178,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
             created.setProperty("dublincore", "title", title);
 
             String descr = (String) doc.getProperty("dublincore", "description");
-            if (!descr.equals("")) {
+            if (descr.length() != 0) {
                 created.setProperty("dublincore", "description", descr);
             }
 

@@ -37,7 +37,6 @@ import org.nuxeo.runtime.api.Framework;
  * Directory UI manager business delegate
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 @Name("directoryUIManager")
 @Scope(SESSION)

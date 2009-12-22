@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.api.DataModel;
  * non-constraining way.
  *
  * @author DM
- *
  */
 public class FictiveDataModel implements DataModel {
 

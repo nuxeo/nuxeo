@@ -53,7 +53,6 @@ public interface ContentRootsActions extends StatefulBaseLifeCycle {
      * selected info on the context.
      *
      * @return the page that is going to be displayed next
-     * @throws ClientException
      */
     String selectWorkspace() throws ClientException;
 
@@ -62,7 +61,6 @@ public interface ContentRootsActions extends StatefulBaseLifeCycle {
      * selected info on the context.
      *
      * @return the page that is going to be displayed next
-     * @throws ClientException
      */
     String selectSection() throws ClientException;
 
@@ -70,7 +68,6 @@ public interface ContentRootsActions extends StatefulBaseLifeCycle {
      * Called when user wants to edit a selected document.
      *
      * @return the edit page
-     * @throws ClientException
      */
     String editWorkspace() throws ClientException;
 
@@ -78,21 +75,16 @@ public interface ContentRootsActions extends StatefulBaseLifeCycle {
      * Called when the user finishes editing.
      *
      * @return the page after edit
-     * @throws ClientException
      */
     String updateWorkspace() throws ClientException;
 
     /**
      * Gets the workspaces contained in the selected domain.
-     *
-     * @throws ClientException
      */
     void getWorkspaces() throws ClientException;
 
     /**
      * Gets the sections contained in the selected domain.
-     *
-     * @throws ClientException
      */
     void getSections() throws ClientException;
 
@@ -100,9 +92,6 @@ public interface ContentRootsActions extends StatefulBaseLifeCycle {
 
     /**
      * Indicates if the current user can create a workspace.
-     *
-     * @return true/false
-     * @throws ClientException
      */
     Boolean getCanAddWorkspaces() throws ClientException;
 

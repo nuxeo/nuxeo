@@ -179,8 +179,6 @@ public class SecurityActionsBean extends InputController implements
     /**
      * @return update the dataTableModel from the current {@link SecurityData}
      *         this method is automatically called by rebuildSecurityData method
-     *
-     * @throws ClientException
      */
     protected UserPermissionsTableModel reconstructTableModel()
             throws ClientException {
@@ -620,10 +618,6 @@ public class SecurityActionsBean extends InputController implements
     /**
      * Validates user/group against userManager in order to remove obsolete
      * entries (ie: deleted groups/users).
-     *
-     * @param usersGroups2Validate
-     * @return
-     * @throws ClientException
      */
     private List<String> validateUserGroupList(List<String> usersGroups2Validate)
             throws ClientException {
@@ -694,9 +688,6 @@ public class SecurityActionsBean extends InputController implements
     /**
      * Checks if the current user can still read and write access rights. If he
      * can't, then the security data are rebuilt.
-     *
-     * @return
-     * @throws ClientException
      */
     private boolean checkPermissions() throws ClientException {
         List<String> principals = new ArrayList<String>();

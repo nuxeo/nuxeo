@@ -47,9 +47,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
  * Logs the user in/out.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
-
 @Name("loginLogoutAction")
 @Scope(ScopeType.STATELESS)
 public class LogoutAction extends InputController implements Serializable {
@@ -67,7 +65,6 @@ public class LogoutAction extends InputController implements Serializable {
      * anymore.
      *
      * @return the next page that is going to be displayed
-     * @throws Exception
      */
     public static String logout() throws Exception {
         Map<String, String> parameters = new HashMap<String, String>();

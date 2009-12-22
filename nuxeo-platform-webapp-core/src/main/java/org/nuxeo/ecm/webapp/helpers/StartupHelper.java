@@ -87,7 +87,6 @@ public class StartupHelper implements Serializable {
      * choose.
      *
      * @return the view_id of the contextually computed startup page
-     * @throws ClientException
      */
     public String initServerAndFindStartupPage() throws ClientException {
 

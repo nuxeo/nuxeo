@@ -39,14 +39,13 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
      * Submits the security changes to the backend.
      *
      * @return the page that will be displayed next
-     * @throws ClientException
      */
     String updateSecurityOnDocument() throws ClientException;
 
     /**
      * Adds a permission to the list of permissions for the current document.
      * After all client side changes are made, then the list of permissions need
-     * to be sumitted on backend using <code>updateSecurityOnDocument()></code>.
+     * to be submitted on backend using <code>updateSecurityOnDocument()></code>.
      *
      * @return the page that needs to be displayed next
      */
@@ -55,7 +54,7 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
     /**
      * Adds a list of permission to the list of permissions for the current
      * document. After all client side changes are made, then the list of
-     * permissions need to be sumitted on backend using
+     * permissions need to be submitted on backend using
      * <code>updateSecurityOnDocument()></code>.
      *
      * @return the page that needs to be displayed next
@@ -68,7 +67,7 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
     /**
      * Removes a permission from the list of permissions for the current
      * document. After all client side changes are made, then the list of
-     * permissions need to be sumitted on backend using
+     * permissions need to be submitted on backend using
      * <code>updateSecurityOnDocument()></code>.
      *
      * @return the page that needs to be displayed next
@@ -81,7 +80,6 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
      * <code>updateSecurityOnDocument()></code>.
      *
      * @return the page that needs to be displayed next
-     * @throws ClientException
      */
     String addPermissionAndUpdate() throws ClientException;
 
@@ -91,7 +89,6 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
      * <code>updateSecurityOnDocument()></code>.
      *
      * @return the page that needs to be displayed next
-     * @throws ClientException
      */
     String addPermissionsAndUpdate() throws ClientException;
 
@@ -101,7 +98,6 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
      * <code>updateSecurityOnDocument()></code>.
      *
      * @return the page that needs to be displayed next
-     * @throws ClientException
      */
     String removePermissionAndUpdate() throws ClientException;
 
@@ -110,26 +106,20 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
     /**
      * Marks the current security data info as obsolete so that it gets lazily
      * recomputed from the backend the next time it is accessed.
-     *
-     * @throws ClientException
      */
     void resetSecurityData();
 
     /**
      * Rebuilds the security displayable data from the current selected
      * document.
-     *
-     * @throws ClientException
      */
     void rebuildSecurityData() throws ClientException;
 
     void destroy();
 
     /**
-     *
      * @return a UserPermissionsTableModel used to build a checkboxable listing
      *         of managed permissions
-     * @throws ClientException
      */
     UserPermissionsTableModel getDataTableModel() throws ClientException;
 
@@ -137,48 +127,35 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
      * @return the SecurityData object that manages a stateful representation of
      *         the permissions mapping that apply to the current document
      *         (inherited or not)
-     *
-     * @throws ClientException
      */
     SecurityData getSecurityData() throws ClientException;
 
     /**
      * Returns true if the implementator if the principal has the permission to
      * add new security rules on currentItem.
-     *
-     * @return
-     * @throws ClientException
      */
     boolean getCanAddSecurityRules() throws ClientException;
 
     /**
-     * Returns true if the implementator can provide provide a list of
+     * Returns true if the implementator can provide a list of
      * permissions delete now and the principal has WriteSecurity permission on
      * the currentItem.
-     *
-     * @return
-     * @throws ClientException
      */
     boolean getCanRemoveSecurityRules() throws ClientException;
 
     /**
      * @return the list of permissions the users can set through the rights
      *         management tab
-     * @throws ClientException
      */
     List<SelectItem> getSettablePermissions() throws ClientException;
 
     /**
      * Maps the principal type to the icon path.
-     *
-     * @return
      */
     Map<String, String> getIconPathMap();
 
     /**
      * Maps the principal type to the icon alt text.
-     *
-     * @return
      */
     Map<String, String> getIconAltMap();
 
@@ -196,8 +173,6 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
     /**
      * Returns true if inherited permissions have to be displayed (depending on
      * rights blocking)
-     *
-     * @throws ClientException
      */
     boolean getDisplayInheritedPermissions() throws ClientException;
 

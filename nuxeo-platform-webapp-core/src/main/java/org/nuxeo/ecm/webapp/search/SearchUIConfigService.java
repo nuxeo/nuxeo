@@ -33,9 +33,9 @@ import org.nuxeo.runtime.model.Extension;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class SearchUIConfigService extends DefaultComponent {
+
     public static final ComponentName NAME = new ComponentName(SearchUIConfigService.class.getName());
 
     private static final Log log = LogFactory.getLog(SearchUIConfigService.class);

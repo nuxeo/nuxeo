@@ -30,14 +30,12 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.richfaces.model.UploadItem;
 
-@Name("fileUploadHolder")
-@Scope(ScopeType.CONVERSATION)
 /**
- *
  * Holds FileUpload data at CONVERSATION scope level
  * (Can not be part of FileManager that can not be CONVERSATION Scoped because of Seam remoting)
- *
  */
+@Name("fileUploadHolder")
+@Scope(ScopeType.CONVERSATION)
 public class UploadItemHolder implements Serializable {
 
     private static final long serialVersionUID = 1L;

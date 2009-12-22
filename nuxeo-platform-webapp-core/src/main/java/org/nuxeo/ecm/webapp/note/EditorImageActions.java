@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * Provides actions related to inserting an image for Note documents.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public interface EditorImageActions {
 

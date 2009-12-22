@@ -27,7 +27,6 @@ import org.nuxeo.theme.negotiation.Scheme;
  * one domain.
  *
  * @author arussel
- *
  */
 public class MultipleDomainsPerspectiveNegotiator implements Scheme {
 

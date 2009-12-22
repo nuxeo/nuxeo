@@ -34,7 +34,6 @@ import  org.jboss.seam.faces.Redirect;
  * Seam component to handle rendering of error pages.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
 @Name("errorPageActionListener")
 @Scope(SESSION)

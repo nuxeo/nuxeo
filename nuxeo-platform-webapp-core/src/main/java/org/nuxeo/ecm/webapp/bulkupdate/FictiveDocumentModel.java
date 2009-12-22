@@ -91,7 +91,6 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
      * @param schema
      * @param create if <code>true</code> creates the dataModel corresponding
      *               to the given schema if doesn't exist
-     * @return
      */
     public DataModel getDataModel(String schema, boolean create) {
         // if not available, create

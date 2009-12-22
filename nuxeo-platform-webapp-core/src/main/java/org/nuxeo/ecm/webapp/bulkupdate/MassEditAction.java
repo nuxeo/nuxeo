@@ -37,15 +37,13 @@ public interface MassEditAction {
 
     /**
      * Documents for which mass edition will be performed.
-     *
-     * @return
      */
     List<DocumentModel> getDocumentsList();
+
     void setDocumentsList(List<DocumentModel> docsList) throws ClientException;
 
     /**
      * Gets common schemas for selected documents.
-     * @throws ClientException
      */
     FieldWidget[] getCommonLayout() throws ClientException;
 
@@ -53,13 +51,11 @@ public interface MassEditAction {
      * Gets the layout (widgets list) corresponding to properties that will
      * be set on documents. The list of documents that would be changed
      * can be retrieved with <code>getChangingDocuments</code> method.
-     * @throws ClientException
      */
     FieldWidget[] getChangeLayout() throws ClientException;
 
     /**
      * @return the fields that will be changed for at least a document
-     * @throws ClientException
      */
     FieldWidget[] getPreviewLayout() throws ClientException;
 
@@ -82,7 +78,6 @@ public interface MassEditAction {
     String previewChanges();
 
     /**
-     *
      * @return the view associated with mass edit page
      */
     String cancelChanges();
@@ -90,8 +85,6 @@ public interface MassEditAction {
     /**
      * Updates properties (only non-empty values for string properties) for
      * the currently edited documents.
-     *
-     * @throws ClientException
      */
     String updateDocuments() throws ClientException;
 
@@ -99,7 +92,6 @@ public interface MassEditAction {
      * Displays one document from the selected documents for bulk editing.
      *
      * @return the view associated with document page
-     * @throws ClientException
      */
     String viewDocument() throws ClientException;
 
@@ -107,7 +99,6 @@ public interface MassEditAction {
      * Mass editing for documents in the clipboard.
      *
      * @return the view for mass edition
-     * @throws ClientException
      */
     String massEditWorkList() throws ClientException;
 

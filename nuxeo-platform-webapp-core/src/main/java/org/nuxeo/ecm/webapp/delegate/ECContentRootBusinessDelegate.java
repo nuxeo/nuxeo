@@ -58,9 +58,6 @@ public class ECContentRootBusinessDelegate implements Serializable {
     /**
      * Acquires a new {@link ECContentRoot} reference. The related EJB may be
      * deployed on a local or remote AppServer.
-     *
-     * @return
-     * @throws ClientException
      */
     @Unwrap
     public ECContentRoot getECContentRoot() throws ClientException {
@@ -93,4 +90,5 @@ public class ECContentRootBusinessDelegate implements Serializable {
 
         log.info("Destroyed the seam component...");
     }
+
 }

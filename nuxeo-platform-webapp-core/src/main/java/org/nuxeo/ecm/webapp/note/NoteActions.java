@@ -74,9 +74,9 @@ public class NoteActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected final static Pattern PATTERN_TO_CHECK = Pattern.compile("(.*<img.*/files:files/.*/>.*)?");
+    protected static final Pattern PATTERN_TO_CHECK = Pattern.compile("(.*<img.*/files:files/.*/>.*)?");
 
-    protected final static String PATTERN_TO_REPLACE = "((<img.*?)%s(/files:files/.*?/>))";
+    protected static final String PATTERN_TO_REPLACE = "((<img.*?)%s(/files:files/.*?/>))";
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -91,7 +91,6 @@ public class NoteActions implements Serializable {
      *
      * @param note the note content
      * @return the translated note content
-     * @throws ClientException
      */
     public String translateImageLinks(String note) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();

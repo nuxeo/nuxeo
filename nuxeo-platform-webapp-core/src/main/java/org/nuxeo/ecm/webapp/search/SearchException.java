@@ -23,7 +23,6 @@ package org.nuxeo.ecm.webapp.search;
  * A local usable exception.
  *
  * @author DM
- *
  */
 public class SearchException extends Exception {
 

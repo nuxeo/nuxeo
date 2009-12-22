@@ -30,7 +30,6 @@ import org.nuxeo.runtime.api.Framework;
  * (schema:field) and prefixed name.
  *
  * @author <a href='mailto:glefter@nuxeo.com'>George Lefter</a>
- *
  */
 public final class FieldHelper {
 

@@ -43,10 +43,9 @@ import org.nuxeo.ecm.core.api.Filter;
  * and offers services to different action beans (like search action bean).
  * <p>
  * It delegates the calls to the server side and insure consistency over
- * multiple independent calls
+ * multiple independent calls.
  *
  * @author DM
- *
  */
 @Name("searchDelegate")
 @Scope(SESSION)
@@ -69,9 +68,6 @@ public class SearchBusinessDelegate implements Serializable {
     /**
      * Performs an NXQL search for the given query and filter.
      *
-     * @param nxql
-     * @param filter
-     * @return
      * @throws ClientException
      *             this can be thrown further to be intercepted
      * @throws SearchException
@@ -105,8 +101,6 @@ public class SearchBusinessDelegate implements Serializable {
     /**
      * Performs an NXQL search with limit for the given query.
      *
-     * @param nxql
-     * @return
      * @throws ClientException
      *             this can be thrown further to be intercepted
      * @throws SearchException
@@ -140,8 +134,6 @@ public class SearchBusinessDelegate implements Serializable {
     /**
      * Performs an NXQL search with limit for the given query.
      *
-     * @param nxql
-     * @return
      * @throws ClientException
      *             this can be thrown further to be intercepted
      * @throws SearchException
@@ -177,8 +169,6 @@ public class SearchBusinessDelegate implements Serializable {
      * <p>
      * The result consists of a list of DocumentModel that can be rendered to UI.
      *
-     * @throws SearchException
-     *
      * @see org.nuxeo.ecm.webapp.search.SearchActions#searchForText(String)
      */
     public DocumentModelList searchForText(String keywords)
@@ -192,7 +182,6 @@ public class SearchBusinessDelegate implements Serializable {
      * The result consists of a list of DocumentModel that can be rendered to UI.
      *
      * @return a list of DocumentModels (a DocumentModelList) matching the request.
-     * @throws SearchException
      *
      * @see org.nuxeo.ecm.webapp.search.SearchActions#searchForText(java.lang.String)
      */
@@ -227,7 +216,6 @@ public class SearchBusinessDelegate implements Serializable {
      * Searches the repository by the given keywords.
      *
      * @return DocumentModelIterator lazy loading iterator over the result containing DocumentModel objects
-     * @throws SearchException
      *
      * @see org.nuxeo.ecm.webapp.search.SearchActions#searchForText(java.lang.String)
      */

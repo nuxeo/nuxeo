@@ -50,8 +50,6 @@ public interface DomainActions extends StatefulBaseLifeCycle,
 
     /**
      * Gets the available domains for the selected contentRoot.
-     *
-     * @throws ClientException
      */
     DocumentModelList getDomains() throws ClientException;
 
@@ -62,9 +60,6 @@ public interface DomainActions extends StatefulBaseLifeCycle,
 
     /**
      * Indicates if the current user can create a domain.
-     *
-     * @return true/false
-     * @throws ClientException
      */
     Boolean getCanAddDomains() throws ClientException;
 

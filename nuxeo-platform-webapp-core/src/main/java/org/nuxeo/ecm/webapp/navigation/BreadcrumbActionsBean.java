@@ -66,7 +66,6 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
  * current one so that its parent is not found in the current branch
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
 @Name("breadcrumbActions")
 @Scope(STATELESS)
@@ -159,7 +158,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
     /**
      * Computes the current path by making calls to backend. TODO: need to
      * change to compute the path from the seam context state.
-     *
+     * <p>
      * GR: removed the Factory annotation because it made the method be called
      * too early in case of processing that involves changing the current
      * document. Multiple invocation of this method is anyway very cheap.

@@ -99,7 +99,7 @@ public class ConversionActionBean implements ConversionAction {
     }
 
     private String getMimetypeFromDocument(String propertyName)
-            throws PropertyException, ClientException {
+            throws ClientException {
         Blob blob = (Blob) getDocument().getPropertyValue(propertyName);
         return blob.getMimeType();
     }
@@ -173,10 +173,8 @@ public class ConversionActionBean implements ConversionAction {
             }
             return isSupported;
         } catch (Exception e) {
-            log
-                    .error(
-                            "Error while trying to check PDF conversion against a filename",
-                            e);
+            log.error("Error while trying to check PDF conversion against a filename",
+                    e);
             return false;
         }
     }
@@ -191,7 +189,7 @@ public class ConversionActionBean implements ConversionAction {
 
             String fname = new Path(bh.getFilePath()).lastSegment();
             String name;
-            if (fname == null || fname.equals("")) {
+            if (fname == null || fname.length() == 0) {
                 name = "file";
             } else {
                 name = fname;
@@ -206,8 +204,7 @@ public class ConversionActionBean implements ConversionAction {
             }
 
             if (result == null) {
-                log
-                        .error("Transform service didn't return any resulting documents which is not normal.");
+                log.error("Transform service didn't return any resulting documents which is not normal.");
                 return "pdf_generation_error";
             }
 
@@ -248,12 +245,6 @@ public class ConversionActionBean implements ConversionAction {
     /**
      * Simply sends what to be downloaded or shown at screen via
      * HttpServletResponse.
-     *
-     * @param header
-     * @param headerContent
-     * @param contentType
-     * @param value
-     * @throws IOException
      */
     private void writeResponse(String header, String headerContent,
             String contentType, byte[] value) throws IOException {

@@ -35,17 +35,12 @@ import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
  * server.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
-
 public interface ServerActions extends StatefulBaseLifeCycle {
 
     /**
      * Returns the list of available {@link RepositoryLocation}s the user can
      * connect to.
-     *
-     * @throws ClientException
-     *
      */
     List<Repository> getAvailableRepositories() throws ClientException;
 
@@ -54,7 +49,6 @@ public interface ServerActions extends StatefulBaseLifeCycle {
      *
      * @return the page that displays the domains ( found at the selected
      *         {@link RepositoryLocation}.
-     * @throws ClientException
      */
     String selectRepository(String repositoryName) throws ClientException;
 
@@ -68,7 +62,6 @@ public interface ServerActions extends StatefulBaseLifeCycle {
 
     /**
      * Removes the reference.
-     *
      */
     @Destroy
     @Remove

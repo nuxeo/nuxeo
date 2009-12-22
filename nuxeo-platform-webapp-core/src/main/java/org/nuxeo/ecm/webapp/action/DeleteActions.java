@@ -33,62 +33,38 @@ public interface DeleteActions {
 
     /**
      * Definitively deletes selected documents.
-     *
-     * @return
-     * @throws ClientException
      */
     String purgeSelection() throws ClientException;
 
     /**
      * Definitively deletes param documents.
-     *
-     * @param docsToPurge
-     * @return
-     * @throws ClientException
      */
     String purgeSelection(List<DocumentModel> docsToPurge)
             throws ClientException;
 
     /**
      * Moves to trash (delete state) the selected documents.
-     *
-     * @return
-     * @throws ClientException
      */
     String deleteSelection() throws ClientException;
 
     /**
      * Moves to trash (delete state) the selected sections.
-     *
-     * @return
-     * @throws ClientException
      */
     String deleteSelectionSections() throws ClientException;
 
     /**
      * Moves to trash (delete state) the documents.
-     *
-     * @param docsToDelete
-     * @return
-     * @throws ClientException
      */
     String deleteSelection(List<DocumentModel> docsToDelete)
             throws ClientException;
 
     /**
      * Undeletes the selected documents from trash (recycle bin).
-     *
-     * @return
-     * @throws ClientException
      */
     String undeleteSelection() throws ClientException;
 
     /**
      * Undeletes the args docs from trash (recycle bin).
-     *
-     * @param docsToUndelete
-     * @return
-     * @throws ClientException
      */
     String undeleteSelection(List<DocumentModel> docsToUndelete)
             throws ClientException;
@@ -119,19 +95,17 @@ public interface DeleteActions {
     void create();
 
     Boolean getSearchDeletedDocuments();
+
     void setSearchDeletedDocuments(Boolean searchDeletedDocuments) throws ClientException;
 
     /**
      * Undeletes the current document and its children
      * and his deleted parents.
-     *
      */
     void restoreCurrentDocument() throws ClientException;
 
     /**
      * Checks if the document is "deleted".
-     *
-     * @return
      */
     boolean getCanRestoreCurrentDoc() throws ClientException;
 

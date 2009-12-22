@@ -91,6 +91,7 @@ public class EditorImageActionsBean extends InputController implements
 
     private static final Log log = LogFactory.getLog(EditorImageActionsBean.class);
 
+
     @In(create = true, required = false)
     private transient CoreSession documentManager;
 

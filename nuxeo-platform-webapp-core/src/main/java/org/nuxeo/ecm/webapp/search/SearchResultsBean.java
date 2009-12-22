@@ -59,15 +59,14 @@ import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.runtime.api.Framework;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
 /**
- *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 @Name("searchResults")
 @Scope(ScopeType.CONVERSATION)
@@ -195,7 +194,7 @@ public class SearchResultsBean extends InputController implements
     }
 
     // GR TODO use a provider invalidation event
-    @Observer(value = { org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false)
+    @Observer(value = { EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false)
     @BypassInterceptors
     public void refreshSelectModels() {
         Context context = Contexts.getEventContext();

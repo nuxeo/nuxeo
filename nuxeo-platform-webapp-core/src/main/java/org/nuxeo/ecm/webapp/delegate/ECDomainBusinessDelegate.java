@@ -37,7 +37,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
 @Name("ecDomain")
 @Scope(CONVERSATION)
@@ -57,9 +56,6 @@ public class ECDomainBusinessDelegate implements Serializable {
     /**
      * Acquires a new {@link ECDomain} reference. The related EJB may be
      * deployed on a local or remote AppServer.
-     *
-     * @return
-     * @throws ClientException
      */
     @Unwrap
     public ECDomain getECDomain() throws ClientException {

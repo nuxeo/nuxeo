@@ -153,33 +153,28 @@ public class MassEditActionsBean extends InputController implements
         return NAVIGATION_MASS_EDIT;
     }
 
-    @Factory(value="fictiveDocumentModel", scope=ScopeType.EVENT)
-    public DocumentModel getFictiveDocumentModel()
-    {
+    @Factory(value = "fictiveDocumentModel", scope = ScopeType.EVENT)
+    public DocumentModel getFictiveDocumentModel() {
         return fictiveDocumentModel;
     }
 
-    @Factory(value="docModelExistingSelect", scope=ScopeType.EVENT)
-    public DocumentModel getDocModelExistingSelect()
-    {
+    @Factory(value = "docModelExistingSelect", scope = ScopeType.EVENT)
+    public DocumentModel getDocModelExistingSelect() {
         return docModelExistingSelect;
     }
 
-    @Factory(value="changeCheckboxes", scope=ScopeType.EVENT)
-    public DocumentModel getChangeCheckboxes()
-    {
+    @Factory(value = "changeCheckboxes", scope = ScopeType.EVENT)
+    public DocumentModel getChangeCheckboxes() {
         return changeCheckboxes;
     }
 
-    @Factory(value="currentFieldValues", scope=ScopeType.EVENT)
-    public DocumentModel getCurrentFieldValues()
-    {
+    @Factory(value = "currentFieldValues", scope = ScopeType.EVENT)
+    public DocumentModel getCurrentFieldValues() {
         return currentFieldValues;
     }
 
-    @Factory(value="docModelExistingSelectVerbose", scope=ScopeType.EVENT)
-    public DocumentModel getDocModelExistingSelectVerbose()
-    {
+    @Factory(value = "docModelExistingSelectVerbose", scope = ScopeType.EVENT)
+    public DocumentModel getDocModelExistingSelectVerbose() {
         return docModelExistingSelectVerbose;
     }
 
@@ -333,9 +328,6 @@ public class MassEditActionsBean extends InputController implements
     /**
      * Adds existing values from the selected documents to a list from which the
      * user will select a value that he/she wants to be changed only.
-     *
-     * @param schemaName
-     * @param fieldName
      */
     private void addExistingValues(String schemaName, String fieldName) {
         final List<SelectItem> existingValues = new ArrayList<SelectItem>();
@@ -410,9 +402,6 @@ public class MassEditActionsBean extends InputController implements
 
     /**
      * Returns an intersection of schemas declared for given documents.
-     *
-     * @param docsList
-     * @return
      */
     private static String[] getCommonSchemas(List<DocumentModel> docsList) {
         // TODO optimize this: cache the schemas list
@@ -501,8 +490,6 @@ public class MassEditActionsBean extends InputController implements
 
     /**
      * For now it just goes back.
-     *
-     * @return
      */
     public String cancelChanges() {
         return NAVIGATION_MASS_EDIT;
@@ -593,10 +580,6 @@ public class MassEditActionsBean extends InputController implements
 
     /**
      * Copies data from srcDocModel to destDocModel for the given schemas.
-     *
-     * @param srcDocModel
-     * @param destDocModel
-     * @param schemas
      */
     private void copyDocData(DocumentModel srcDocModel,
             DocumentModel destDocModel, String[] schemas, boolean previewOnly) {
@@ -750,11 +733,6 @@ public class MassEditActionsBean extends InputController implements
      * Checks if the given document has the specified property value matching
      * the replacement criteria. (i.e. the property value is matching the
      * selected value or the selected item specifies to replace any value).
-     *
-     * @param destDocModel
-     * @param schemaName
-     * @param propName
-     * @return
      */
     private boolean isSelectedValueMatching(DocumentModel destDocModel,
             String schemaName, String propName) {
@@ -835,7 +813,6 @@ public class MassEditActionsBean extends InputController implements
     }
 
     public String massEditWorkList() throws ClientException {
-
         final String logPrefix = "<massEditWorkList> ";
 
         // List<DocumentModel> clipboardSelection =
@@ -863,4 +840,5 @@ public class MassEditActionsBean extends InputController implements
     public void destroy() {
         log.debug("Removing SEAM component: lockActions");
     }
+
 }

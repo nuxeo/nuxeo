@@ -222,8 +222,6 @@ public class SearchActionsBean extends InputController implements
     /**
      * A page can set searchType by simply specifying a 'searchType' request
      * parameter with value <code>KEYWORDS</code> or <code>NXQL</code>.
-     *
-     * @param type
      */
     @RequestParameter("searchType")
     public void setSearchType(String type) {

@@ -57,10 +57,6 @@ public interface SearchResults extends SelectDataModelListener {
 
     /**
      * This will be called with Seam remoting...
-     *
-     * @param docRef
-     * @param selection
-     * @return
      */
     @WebRemote
     String processSelectRow(String docRef, String providerName, Boolean selection)

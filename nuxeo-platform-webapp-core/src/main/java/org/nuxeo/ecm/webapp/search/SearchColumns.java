@@ -32,9 +32,7 @@ import org.nuxeo.ecm.platform.types.FieldWidget;
 import org.nuxeo.ecm.platform.ui.web.directory.VocabularyEntryList;
 
 /**
- *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 @Local
 public interface SearchColumns {

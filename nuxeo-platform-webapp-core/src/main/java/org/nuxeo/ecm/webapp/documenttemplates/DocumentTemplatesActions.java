@@ -32,14 +32,11 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  * <li> lookup of document templates
  * <li> creation of document from a template
  * </ul>
- *   *
  */
 public interface DocumentTemplatesActions {
 
-
     /**
      * Removes the components.
-     *
      */
     @Remove
     void destroy();
@@ -48,16 +45,13 @@ public interface DocumentTemplatesActions {
      *
      * @return list of DocumentModels of available templates
      *         of currently selected type.
-     * @throws ClientException
      */
     DocumentModelList getTemplates() throws ClientException;
 
     DocumentModelList getTemplates(String targetTypeName) throws ClientException;
 
     /**
-     * Factory Accessor on the getter.
-     *
-     * @return
+     * Factory accessor on the getter.
      */
     DocumentModelList templatesListFactory();
 
@@ -66,71 +60,48 @@ public interface DocumentTemplatesActions {
      *
      * @param doc the DocumentModel with edited data
      * @param templateId the template id
-     * @return
-     * @throws ClientException
      */
     String createDocumentFromTemplate(DocumentModel doc, String templateId)
             throws ClientException;
 
     /**
      * Creates a Document from a template using the selectedTemplateId.
-     *
-     * @param doc
-     * @return
-     * @throws ClientException
      */
     String createDocumentFromTemplate(DocumentModel doc) throws ClientException;
 
-
     /**
-     * Create a Document from a template using the selectedTemplateId
+     * Creates a Document from a template using the selectedTemplateId
      * and the changeableDocument.
-     *
-     * @return
-     * @throws ClientException
      */
     String createDocumentFromTemplate() throws ClientException;
 
     /**
      * Getter of the selected template id.
-     *
-     * @return
      */
     String getSelectedTemplateId();
 
     /**
      * Setter for the template to use.
-     *
-     * @param requestedId
      */
     void setSelectedTemplateId(String requestedId);
 
     /**
      * Getter for type of the document to be created.
-     *
-     * @return
      */
     String getTargetType();
 
     /**
      * Setter for the type of document to be created.
-     *
-     * @param targetType
      */
     void setTargetType(String targetType);
 
-
     /**
      * Listener to children changed event.
-     *
-     * @param targetDoc
      */
     void documentChildrenChanged(DocumentModel targetDoc);
 
     /**
      * Listener for domain changed event.
-     *
-     * @param targetDoc
      */
     void domainChanged(DocumentModel targetDoc);
 
