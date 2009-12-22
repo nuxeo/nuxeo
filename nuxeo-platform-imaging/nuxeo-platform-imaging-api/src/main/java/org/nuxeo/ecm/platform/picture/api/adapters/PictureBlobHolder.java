@@ -60,9 +60,10 @@ public class PictureBlobHolder extends DocumentBlobHolder {
         }
         // upload blob and create views
         PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
+        String filename = blob == null ? null : blob.getFilename();
         String title = (String) doc.getProperty("dublincore", "title"); // re-set
         try {
-            picture.createPicture(blob, blob.getFilename(), title, pictureTemplates);
+            picture.createPicture(blob, filename, title, pictureTemplates);
         } catch (IOException e) {
             throw new ClientException(e.toString(), e);
         }

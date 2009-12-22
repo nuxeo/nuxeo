@@ -176,7 +176,7 @@ public class PictureManagerBean extends InputController implements
                         "picturebook", "picturetemplates");
             }
             PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
-            Boolean status = picture.createPicture(fileContent, filename,
+            boolean status = picture.createPicture(fileContent, filename,
                     title, pictureTemplates);
             if (!status) {
                 documentManager.cancel();

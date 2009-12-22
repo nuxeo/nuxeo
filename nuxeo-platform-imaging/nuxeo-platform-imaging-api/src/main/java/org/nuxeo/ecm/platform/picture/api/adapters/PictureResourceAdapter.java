@@ -32,7 +32,7 @@ public interface PictureResourceAdapter {
 
     void setDocumentModel(DocumentModel doc);
 
-    Boolean createPicture(Blob fileContent, String filename, String title,
+    boolean createPicture(Blob fileContent, String filename, String title,
             ArrayList<Map<String, Object>> pictureTemplates) throws IOException, ClientException;
 
     void doRotate(int angle) throws ClientException;

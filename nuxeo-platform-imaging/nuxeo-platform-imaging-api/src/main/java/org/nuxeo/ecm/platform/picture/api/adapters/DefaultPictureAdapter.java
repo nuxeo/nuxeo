@@ -48,22 +48,26 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
     private static final String FILENAME_PROPERTY = "filename";
 
-    public Boolean createPicture(Blob fileContent, String filename,
-            String title, ArrayList<Map<String, Object>> pictureTemplates)
+    public boolean createPicture(Blob blob, String filename, String title,
+            ArrayList<Map<String, Object>> pictureTemplates)
             throws IOException, ClientException {
-        this.fileContent = fileContent;
+        this.fileContent = blob;
+        if (blob == null) {
+            clearViews();
+            return true;
+        }
 
         file = File.createTempFile(
                 "nuxeo-platform-imaging-DefaultPictureAdapter", ".jpg");
         Framework.trackFile(file, this);
 
-        fileContent.transferTo(file);
-        type = fileContent.getMimeType();
+        blob.transferTo(file);
+        type = blob.getMimeType();
 
         if (type == null) {
             // TODO : use MimetypeRegistry instead
             type = getImagingService().getImageMimeType(file);
-            fileContent.setMimeType(type);
+            blob.setMimeType(type);
         }
         if (type == null || type.equals("application/octet-stream")) {
             return false;
