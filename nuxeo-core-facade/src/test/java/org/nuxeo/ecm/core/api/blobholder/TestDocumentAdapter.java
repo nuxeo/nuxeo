@@ -68,14 +68,18 @@ public class TestDocumentAdapter extends RepositoryOSGITestCase {
         session.save();
 
         // reread
-        bh = file.getAdapter(BlobHolder.class);
-        assertNotNull(bh);
-        assertTrue(bh instanceof DocumentBlobHolder);
         assertEquals("/TestFile/other.txt", bh.getFilePath());
         b = bh.getBlob();
         assertEquals("other.txt", b.getFilename());
         assertEquals("text/html", b.getMimeType());
         assertEquals("OtherContent", b.getString());
+
+        // test set null blob
+        bh.setBlob(null);
+        session.saveDocument(file);
+        session.save();
+        b = bh.getBlob();
+        assertNull(b);
     }
 
     public void testNoteAdapters() throws Exception {
@@ -106,14 +110,18 @@ public class TestDocumentAdapter extends RepositoryOSGITestCase {
         session.save();
 
         // reread
-        bh = note.getAdapter(BlobHolder.class);
-        assertNotNull(bh);
-        assertTrue(bh instanceof DocumentBlobHolder);
         assertEquals("/TestNote/Title.html", bh.getFilePath());
         b = bh.getBlob();
         assertEquals("Title.html", b.getFilename());
         assertEquals("text/html", b.getMimeType());
         assertEquals("Other text for note", b.getString());
+
+        // test set null blob
+        bh.setBlob(null);
+        session.saveDocument(note);
+        session.save();
+        b = bh.getBlob();
+        assertNull(b);
     }
 
     public void testFolderAdapters() throws Exception {

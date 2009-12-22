@@ -48,8 +48,11 @@ public class DocumentStringBlobHolder extends DocumentBlobHolder {
 
     @Override
     public Blob getBlob() throws ClientException {
-        Blob blob = new StringBlob((String) doc.getProperty(xPath).getValue(),
-                mt);
+        String string = (String) doc.getProperty(xPath).getValue();
+        if (string == null) {
+            return null;
+        }
+        Blob blob = new StringBlob(string, mt);
         String ext = ".txt";
         if ("text/html".equals(mt)) {
             ext = ".html";
@@ -63,14 +66,19 @@ public class DocumentStringBlobHolder extends DocumentBlobHolder {
     @Override
     public void setBlob(Blob blob) throws ClientException {
         xPathFilename = null;
-        String string;
-        try {
-            string = blob.getString();
-        } catch (IOException e) {
-            throw new ClientException(e);
+        if (blob == null) {
+            doc.getProperty(xPath).setValue(null);
+            mt = null;
+        } else {
+            String string;
+            try {
+                string = blob.getString();
+            } catch (IOException e) {
+                throw new ClientException(e);
+            }
+            doc.getProperty(xPath).setValue(string);
+            mt = blob.getMimeType();
         }
-        doc.getProperty(xPath).setValue(string);
-        mt = blob.getMimeType();
     }
 
 }
