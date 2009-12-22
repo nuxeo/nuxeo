@@ -38,6 +38,7 @@
 </td>
 <td>
 
+<#if selected_named_style>
 <form id="nxthemesNamedStyleCSSEditor" class="nxthemesForm" style="padding: 0"
       onsubmit="NXThemesStyleManager.updateNamedStyleCSS(this); return false">
 <div>
@@ -50,6 +51,7 @@
   <button type="submit">Save</button>
 </div>
 </form>
+</#if>
 
 </td>
 </tr>
@@ -98,4 +100,46 @@
 </#list>
 
 </#if>
+
+
+
+<#if style_manager_mode = 'page styles'>
+
+  <p class="nxthemesExplanation">Set page styles.<p>
+
+  <form class="nxthemesForm" action="javascript:void(0)"
+    onsubmit="NXThemesStyleManager.setPageStyles('${current_theme_name}', this); return false">
+  <table style="width: 100%;" cellpadding="3" cellspacing="1">
+  <tr>
+    <th style="text-align: left; width: 25%; background-color: #999; color: #fff">Page</th>
+    <th style="text-align: left; width: 75%; background-color: #999; color: #fff">Style</th>
+  </tr>
+    
+  <#list page_styles?keys as page_name>
+  <#assign current_style_name=page_styles[page_name]>
+  <tr>
+  <td style="vertical-align: top">
+    ${page_name} 
+  </td>
+  <td>
+    <select name="style_${page_name}">
+    <option value=""></option>
+    <#list named_styles as style>
+      <option value="${style.name}" <#if current_style_name=style.name>selected="selected"</#if>>${style.name}</option>
+    </#list>
+    </select>
+  </td>
+  </tr>
+  </#list>
+  
+  <tr>
+    <td></td>
+    <td><button type="submit">Save</button></td>
+  </tr>
+  
+  </table>
+  </form>
+  
+</#if>
+
 </div>

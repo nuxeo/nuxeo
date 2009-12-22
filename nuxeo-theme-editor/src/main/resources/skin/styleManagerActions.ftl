@@ -8,9 +8,14 @@
   classNames="selected"
   label="List by name" />
     
+<@nxthemes_button identifier="set page styles"
+  controlledBy="theme buttons"
+  link="javascript:NXThemesStyleManager.setEditMode('page styles')"
+  label="Set page styles" />  
+    
 <@nxthemes_button identifier="show_unused_styles"
   controlledBy="theme buttons"
   link="javascript:NXThemesStyleManager.setEditMode('unused styles')"
-  label="Find unused styles" />  
+  label="Find unused styles" />
 
 </#if>

@@ -1949,6 +1949,34 @@ NXThemesStyleManager.updateNamedStyleCSS = function(form) {
     });   
 }
 
+NXThemesStyleManager.setPageStyles = function(themeName, form) {
+    var propertyMap = $H();
+    $A(Form.getElements(form)).each(function(i) {
+        var name = i.name;
+        var value = Form.Element.getValue(i);
+        if (name.startsWith('style_')) {
+            propertyMap.set(name.substr(6), value);
+        }
+    });
+    var url = nxthemesBasePath + "/nxthemes-editor/set_page_styles"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             theme_name: themeName,
+             property_map: propertyMap.toJSON()
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("style manager").refresh();
+             NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Page styles changed.");
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+    });    
+}
+
 NXThemesStyleManager.selectNamedStyle = function(uid) {
     var url = nxthemesBasePath + "/nxthemes-editor/select_named_style"; 
       new Ajax.Request(url, {

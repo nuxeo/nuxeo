@@ -31,6 +31,7 @@ import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.elements.SectionElement;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.Format;
+import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.formats.FormatType;
 import org.nuxeo.theme.formats.layouts.Layout;
 import org.nuxeo.theme.formats.styles.Style;
@@ -136,6 +137,33 @@ public class Editor {
         }
         style.setPropertiesFor(viewName, path, properties);
 
+        saveTheme(themeName);
+    }
+
+    public static void setPageStyles(String themeName,
+            Map<String, String> propertyMap) throws ThemeException {
+
+        saveToUndoBuffer(themeName, "set page styles");
+
+        ThemeManager themeManager = Manager.getThemeManager();
+        for (Map.Entry<String, String> entry : propertyMap.entrySet()) {
+            String pageName = entry.getKey();
+            String styleName = entry.getValue();
+            if ("".equals(styleName)) {
+                styleName = null;
+            }
+            String pagePath = String.format("%s/%s", themeName, pageName);
+            PageElement page = themeManager.getPageByPath(pagePath);
+            if (page != null) {
+                Style pageStyle = (Style) ElementFormatter.getFormatFor(page,
+                        "style");
+                if (pageStyle == null) {
+                    pageStyle = (Style) FormatFactory.create("style");
+                    ElementFormatter.setFormat(page, pageStyle);
+                }
+                makeElementUseNamedStyle(page, styleName, themeName);
+            }
+        }
         saveTheme(themeName);
     }
 
@@ -265,10 +293,10 @@ public class Editor {
             ThemeException {
         final String themeName = pagePath.split("/")[0];
         saveToUndoBuffer(themeName, "delete theme");
-        
+
         ThemeManager themeManager = Manager.getThemeManager();
         themeManager.deletePage(pagePath);
-        
+
         saveTheme(themeName);
     }
 
@@ -366,23 +394,24 @@ public class Editor {
 
     public static void makeElementUseNamedStyle(Element element,
             String styleName, String themeName) throws ThemeException {
+
+        Style currentStyle = (Style) ElementFormatter.getFormatFor(element,
+                "style");
+        if (currentStyle == null) {
+            throw new ThemeException(String.format(
+                    "Element %s has no style format.", element.computeXPath()));
+        }
+
         saveToUndoBuffer(themeName, "change element style");
 
-        FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(
-                TypeFamily.FORMAT, "style");
-        Style style = (Style) ElementFormatter.getFormatByType(element,
-                styleType);
         ThemeManager themeManager = Manager.getThemeManager();
-        // Make the style no longer inherits from other another style if
-        // 'inheritedName' is null
         if (styleName == null) {
-            ThemeManager.removeInheritanceTowards(style);
+            ThemeManager.removeInheritanceTowards(currentStyle);
         } else {
-            String themeId = themeName.split("/")[0];
-            Style inheritedStyle = (Style) themeManager.getNamedObject(themeId,
+            Style namedStyle = (Style) themeManager.getNamedObject(themeName,
                     "style", styleName);
-            if (inheritedStyle != null) {
-                themeManager.makeFormatInherit(style, inheritedStyle);
+            if (namedStyle != null) {
+                themeManager.makeFormatInherit(currentStyle, namedStyle);
             }
         }
         saveTheme(themeName);
@@ -622,6 +651,18 @@ public class Editor {
         }
 
         saveTheme(themeName);
+    }
+
+    public static Style getNamedStyleOf(Element element) throws ThemeException {
+        Style style = (Style) ElementFormatter.getFormatFor(element, "style");
+        if (style == null) {
+            return null;
+        }
+        Style ancestorStyle = (Style) ThemeManager.getAncestorFormatOf(style);
+        if (ancestorStyle == null || !ancestorStyle.isNamed()) {
+            return null;
+        }
+        return ancestorStyle;
     }
 
     public static void deleteNamedStyle(Element element, String styleName,

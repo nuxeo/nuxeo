@@ -100,7 +100,8 @@ public class Main extends ModuleRoot {
             "style_manager_mode", getStyleManagerMode()).arg(
             "selected_named_style", selectedStyle).arg(
             "selected_named_style_css", getRenderedPropertiesForNamedStyle(selectedStyle)).arg(
-            "current_theme_name", currentThemeName)
+            "current_theme_name", currentThemeName).arg(
+            "page_styles", getPageStyles(currentThemeName))
   }  
   
   @GET
@@ -715,8 +716,8 @@ public class Main extends ModuleRoot {
       String styleName = form.getString("style_name")
       String themeName = form.getString("theme_name")
       Element element = ThemeManager.getElementById(id)
-    try {
-        Editor.makeElementUseNamedStyle(element, styleName, themeName)
+      try {
+          Editor.makeElementUseNamedStyle(element, styleName, themeName)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
@@ -831,7 +832,21 @@ public class Main extends ModuleRoot {
       String category = form.getString("category")        
       SessionManager.setPresetCategory(category)
   }
-  
+
+  @POST
+  @Path("set_page_styles")
+  public void setPageStyles() {
+      FormData form = ctx.getForm()
+      String themeName = form.getString("theme_name")
+      String property_map = form.getString("property_map")
+      Map propertyMap = JSONObject.fromObject(property_map)
+      try {
+          Editor.setPageStyles(themeName, propertyMap)
+      } catch (Exception e) {
+          throw new ThemeEditorException(e.getMessage(), e)
+      }      
+  }
+    
   @POST
   @Path("select_style_category")
   public void selectStyleCategory() {
@@ -922,6 +937,7 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException(e.getMessage(), e)
       }      
   }
+
 
   @POST
   @Path("update_element_width")
@@ -1108,9 +1124,23 @@ public class Main extends ModuleRoot {
       return ThemeManager.getThemeDescriptor(themeName)
   }
   
-  public static List<Style> getNamedStyles(String applicationPath, name) {
+  public static List<Style> getNamedStyles(String applicationPath, String name) {
       String currentThemeName = getCurrentThemeName(applicationPath, name)
       return Manager.getThemeManager().getNamedObjects(currentThemeName, "style")
+  }
+  
+    
+  public static Map<String, String> getPageStyles(String themeName) {
+      Map<String, String> pageStyles = new LinkedHashMap<String, String>()
+      List<PageElement> pages = Manager.getThemeManager().getPagesOf(themeName)
+      if (pages) {
+          for (PageElement page : pages) {
+              Style namedStyle = Editor.getNamedStyleOf(page)
+              String styleName = namedStyle == null ? "" : namedStyle.getName()
+              pageStyles.put(page.getName(), styleName)
+          }
+      }
+      return pageStyles
   }
   
   public static List<FragmentType> getFragments(applicationPath) {
@@ -1301,6 +1331,7 @@ public class Main extends ModuleRoot {
       }
       return category
   }
+
   
   public static List<StyleCategory> getStyleCategories() {
       String selectedStyleCategory = getSelectedStylePropertyCategory()
