@@ -487,13 +487,22 @@ public class NuxeoConnection implements Connection, SPI {
 
     public ObjectId updateProperties(ObjectId object, String changeToken,
             Map<String, Serializable> properties) {
-        return updateProperties(object, changeToken, properties, false);
+        NuxeoObjectEntry entry = updateProperties(object, changeToken,
+                properties, false);
+        try {
+            session.saveDocument(entry.doc);
+            session.save();
+        } catch (ClientException e) {
+            throw new CMISRuntimeException(e.toString(), e);
+        }
+        return entry;
     }
 
-    protected ObjectId updateProperties(ObjectId object, String changeToken,
-            Map<String, Serializable> properties, boolean creation) {
+    protected NuxeoObjectEntry updateProperties(ObjectId object,
+            String changeToken, Map<String, Serializable> properties,
+            boolean creation) {
         // TODO changeToken
-        ObjectEntry entry = getObjectEntry(object);
+        NuxeoObjectEntry entry = getObjectEntry(object);
         for (Entry<String, Serializable> en : properties.entrySet()) {
             String key = en.getKey();
             Type type = getRepository().getType(entry.getTypeId());

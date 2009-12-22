@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -88,7 +87,7 @@ public class NuxeoProperty implements Property {
         if (Property.ID.equals(name)) {
             value = doc.getId();
         } else if (Property.TYPE_ID.equals(name)) {
-            value = doc.getType();
+            value = NuxeoType.mappedId(doc.getType());
         } else if (Property.BASE_TYPE_ID.equals(name)) {
             if (doc.isFolder()) {
                 value = BaseType.FOLDER.getId();
@@ -147,11 +146,10 @@ public class NuxeoProperty implements Property {
             value = null;
         } else if (Property.PARENT_ID.equals(name)) {
             // TODO cache this
-            DocumentRef parentRef = doc.getParentRef();
-            if (parentRef == null) {
-                value = null;
+            if (doc.getName() == null) {
+                value = null; // root
             } else {
-                value = session.getDocument(parentRef).getId();
+                value = session.getDocument(doc.getParentRef()).getId();
             }
         } else if (Property.PATH.equals(name)) {
             value = doc.getPathAsString();
@@ -293,13 +291,16 @@ public class NuxeoProperty implements Property {
         }
 
         public Serializable getValue() {
-            return doc.getName();
+            String name = doc.getName();
+            return name == null ? "" : name; // Nuxeo root has null name
         }
 
         public void setValue(Serializable value) {
             if (doc.getId() != null) {
-                throw new UnsupportedOperationException("Read-only property: "
-                        + propertyDefinition.getId());
+                // throw new
+                // UnsupportedOperationException("Read-only property: " +
+                // propertyDefinition.getId());
+                return;
             }
             if (value == null || "".equals(value)) {
                 throw new IllegalArgumentException("Illegal empty name");

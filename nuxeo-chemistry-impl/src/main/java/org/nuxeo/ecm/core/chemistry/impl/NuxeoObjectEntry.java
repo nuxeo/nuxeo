@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 public class NuxeoObjectEntry implements ObjectEntry {
 
-    private final DocumentModel doc;
+    protected final DocumentModel doc;
 
     private final NuxeoConnection connection;
 

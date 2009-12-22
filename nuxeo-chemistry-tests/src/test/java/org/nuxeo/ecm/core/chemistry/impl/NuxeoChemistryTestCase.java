@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.core.chemistry.impl;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -37,14 +36,14 @@ import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Property;
+import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
-import org.apache.chemistry.impl.base.BaseRepository;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -55,33 +54,39 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.chemistry.impl.NuxeoRepository;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
-public class TestNuxeoChemistry extends SQLRepositoryTestCase {
-
-    public static final String REPOSITORY_NAME = "test";
+public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
 
     public static final String ROOT_TYPE_ID = "Root"; // from Nuxeo
 
-    protected NuxeoRepository repository;
+    public static final String ROOT_FOLDER_NAME = ""; // from NuxeoProperty
 
-    protected String folder1id;
+    protected Repository repository;
 
-    protected String folder2id;
+    protected Connection conn;
 
-    protected String file4id;
+    protected SPI spi;
+
+    /**
+     * Must be implemented by actual testing classes.
+     */
+    public abstract Repository makeRepository() throws Exception;
 
     // needed to change the repo config to add CMISQLQueryMaker
     @Override
-    public void deployContrib(String bundle, String contrib) throws Exception {
-        if (bundle.equals("org.nuxeo.ecm.core.storage.sql.test")
-                && contrib.startsWith("OSGI-INF/test-repo-repository")) {
-            bundle = "org.nuxeo.ecm.core.chemistry.impl.tests";
+    protected void deployRepositoryContrib() throws Exception {
+        if (database instanceof DatabaseH2) {
+            String contrib = "OSGI-INF/test-repo-repository-h2-contrib.xml";
+            deployContrib("org.nuxeo.ecm.core.chemistry.tests", contrib);
+        } else {
+            super.deployRepositoryContrib();
         }
-        super.deployContrib(bundle, contrib);
     }
 
     @Override
@@ -93,16 +98,33 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
         deployBundle("org.nuxeo.ecm.core.storage.sql"); // event listener
-
         openSession();
-        makeRepository();
-        repository = new NuxeoRepository(REPOSITORY_NAME);
+
+        // cmis
+        repository = makeRepository();
+        openConn();
     }
 
     @Override
     public void tearDown() throws Exception {
+        closeConn();
         closeSession();
         super.tearDown();
+    }
+
+    protected void openConn() {
+        openConn(null);
+    }
+
+    protected void openConn(Map<String, Serializable> parameters) {
+        conn = repository.getConnection(parameters);
+        spi = conn.getSPI();
+    }
+
+    protected void closeConn() {
+        conn.close();
+        conn = null;
+        spi = null;
     }
 
     protected static Calendar getCalendar(int year, int month, int day,
@@ -117,13 +139,13 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         return cal;
     }
 
-    public void makeRepository() throws IOException, ClientException {
+    public static Repository makeNuxeoRepository(CoreSession session)
+            throws Exception {
 
         DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1",
                 "Folder");
         folder1.setPropertyValue("dc:title", "testfolder1_Title");
         folder1 = session.createDocument(folder1);
-        folder1id = folder1.getId();
 
         DocumentModel file1 = new DocumentModelImpl("/testfolder1",
                 "testfile1", "File");
@@ -164,7 +186,6 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2",
                 "Folder");
         folder2 = session.createDocument(folder2);
-        folder2id = folder2.getId();
 
         DocumentModel folder3 = new DocumentModelImpl("/testfolder2",
                 "testfolder3", "Folder");
@@ -176,26 +197,23 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         file4.setPropertyValue("dc:title", "testfile4_Title");
         file4.setPropertyValue("dc:description", "testfile4_DESCRIPTION4");
         file4 = session.createDocument(file4);
-        file4id = file4.getId();
 
         session.save();
 
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         DatabaseHelper.DATABASE.sleepForFulltext();
+
+        return new NuxeoRepository(session.getRepositoryName());
     }
 
     public void testBasic() throws Exception {
-        assertNotNull(repository);
-        Connection conn = repository.getConnection(null);
-        assertNotNull(conn);
-
         Folder root = conn.getRootFolder();
         assertNotNull(root);
         Type rootType = root.getType();
         assertNotNull(rootType);
         assertEquals(ROOT_TYPE_ID, rootType.getId());
         assertEquals(ROOT_TYPE_ID, root.getTypeId());
-        assertEquals(BaseRepository.ROOT_FOLDER_NAME, root.getName());
+        assertEquals(ROOT_FOLDER_NAME, root.getName());
         assertEquals(null, root.getParent());
         Map<String, Property> props = root.getProperties();
         assertNotNull(props);
@@ -229,13 +247,11 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
     }
 
     public void testCreateSPI() throws Exception {
-        Connection conn = repository.getConnection(null);
-        SPI spi = conn.getSPI();
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(Property.TYPE_ID, "cmis:folder");
         properties.put(Property.NAME, "myfolder");
         ObjectId folderId = spi.createFolder(properties,
-                repository.getRootFolderId());
+                repository.getInfo().getRootFolderId());
         assertNotNull(folderId);
         // create a doc in it
         properties.put(Property.TYPE_ID, "Note");
@@ -251,9 +267,6 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
     }
 
     public void testUpdateSPI() throws Exception {
-        Connection conn = repository.getConnection(null);
-        SPI spi = conn.getSPI();
-
         ObjectEntry ob = spi.getObjectByPath("/testfolder1/testfile1", null);
         assertEquals("testfile1_Title", ob.getValue("dc:title"));
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
@@ -265,9 +278,6 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
     }
 
     public void testContentStreamSPI() throws Exception {
-        Connection conn = repository.getConnection(null);
-        SPI spi = conn.getSPI();
-
         // set
         ObjectEntry ob = spi.getObjectByPath("/testfolder1/testfile2", null);
         SimpleObjectId id = new SimpleObjectId(ob.getId());
@@ -298,8 +308,6 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
     }
 
     public void testQuery() throws Exception {
-        Connection conn = repository.getConnection(null);
-        SPI spi = conn.getSPI();
         String query;
         Collection<CMISObject> res;
         Collection<ObjectEntry> col;
@@ -374,7 +382,6 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
     }
 
     public void testQueryAny() throws Exception {
-        Connection conn = repository.getConnection(null);
         Collection<CMISObject> res;
         res = conn.query(
                 "SELECT * FROM cmis:document WHERE 'pete' = ANY dc:contributors",
@@ -387,7 +394,6 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
     }
 
     public void TODOtestQueryFulltext() throws Exception {
-        Connection conn = repository.getConnection(null);
         Collection<CMISObject> res;
         res = conn.query(
                 "SELECT * FROM cmis:document WHERE CONTAINS('restaurant')",
@@ -396,7 +402,9 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
     }
 
     public void TODOtestQueryInTree() throws Exception {
-        Connection conn = repository.getConnection(null);
+        String folder1id = spi.getObjectByPath("/testfolder1", null).getId();
+        String folder2id = spi.getObjectByPath("/testfolder2", null).getId();
+
         Collection<CMISObject> res;
         res = conn.query(
                 String.format(
@@ -410,7 +418,10 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
     }
 
     public void testQuerySpecial() throws Exception {
-        Connection conn = repository.getConnection(null);
+        String folder1id = spi.getObjectByPath("/testfolder1", null).getId();
+        String file4id = spi.getObjectByPath(
+                "/testfolder2/testfolder3/testfile4", null).getId();
+
         Collection<CMISObject> res;
         res = conn.query(String.format(
                 "SELECT * FROM cmis:document WHERE cmis:objectId = '%s'",
@@ -431,8 +442,6 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
     }
 
     public void testQuerySecurity() throws Exception {
-        Connection conn = repository.getConnection(null);
-        SPI spi = conn.getSPI();
         String query;
         Collection<ObjectEntry> col;
 
@@ -451,14 +460,13 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         DocumentModel folder = session.getDocument(new PathRef("/testfolder2"));
         folder.setACP(acp, true);
         session.save();
-        conn.close();
+        closeConn();
 
         // query as someone in group members
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
         parameters.put("principal", new UserPrincipal("a_member",
                 Arrays.asList("members")));
-        conn = repository.getConnection(parameters);
-        spi = conn.getSPI();
+        openConn(parameters);
 
         query = "SELECT * FROM cmis:document";
         col = spi.query(query, false, null, null);
@@ -472,8 +480,6 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.core.query.test",
                 "OSGI-INF/security-policy-contrib.xml");
 
-        Connection conn = repository.getConnection(null);
-        SPI spi = conn.getSPI();
         String query;
         Collection<ObjectEntry> col;
 
