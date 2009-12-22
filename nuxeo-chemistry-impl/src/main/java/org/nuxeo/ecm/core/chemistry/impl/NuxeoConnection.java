@@ -37,6 +37,7 @@ import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.Connection;
+import org.apache.chemistry.ContentAlreadyExistsException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
@@ -251,10 +252,9 @@ public class NuxeoConnection implements Connection, SPI {
         // TODO orderBy
         DocumentModelList docs;
         try {
-            IdRef docRef = new IdRef(folder.getId());
+            DocumentRef docRef = new IdRef(folder.getId());
             if (!session.exists(docRef)) {
-                throw new ObjectNotFoundException("No such folder: "
-                        + folder.getId());
+                throw new ObjectNotFoundException(folder.getId());
             }
             // hide HiddenInNavigation and deleted objects from children listing
             Filter facetFilter = new FacetFilter(
@@ -372,13 +372,20 @@ public class NuxeoConnection implements Connection, SPI {
             }
             return new NuxeoObjectEntry(session.getDocument(docRef), this);
         } catch (ClientException e) {
-            throw new RuntimeException(e); // TODO
+            throw new CMISRuntimeException(e.toString(), e);
         }
     }
 
     public Folder getFolder(String path) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        try {
+            DocumentRef docRef = new PathRef(path);
+            if (!session.exists(docRef)) {
+                return null;
+            }
+            return new NuxeoFolder(session.getDocument(docRef), this);
+        } catch (ClientException e) {
+            throw new CMISRuntimeException(e.toString(), e);
+        }
     }
 
     public CMISObject getObject(ObjectId object) {
@@ -436,25 +443,46 @@ public class NuxeoConnection implements Connection, SPI {
         // TODO contentStreamId
         DocumentModel doc;
         try {
-            doc = session.getDocument(new IdRef(object.getId()));
+            DocumentRef docRef = new IdRef(object.getId());
+            if (!session.exists(docRef)) {
+                throw new ObjectNotFoundException(object.getId());
+            }
+            doc = session.getDocument(docRef);
         } catch (ClientException e) {
-            throw new RuntimeException("Not found: " + object.getId(), e); // TODO
+            throw new CMISRuntimeException(e.toString(), e);
         }
-        if (doc == null) {
-            throw new RuntimeException("Not found: " + object.getId()); // TODO
-        }
-        return NuxeoProperty.extractContentStream(doc);
+        return NuxeoProperty.getContentStream(doc);
     }
 
-    public ObjectId setContentStream(ObjectId document, boolean overwrite,
-            ContentStream contentStream) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+    public ObjectId setContentStream(ObjectId document,
+            ContentStream contentStream, boolean overwrite) throws IOException,
+            ContentAlreadyExistsException {
+        DocumentModel doc;
+        try {
+            DocumentRef docRef = new IdRef(document.getId());
+            if (!session.exists(docRef)) {
+                throw new ObjectNotFoundException(document.getId());
+            }
+            doc = session.getDocument(docRef);
+            NuxeoProperty.setContentStream(doc, contentStream, overwrite);
+            session.saveDocument(doc);
+            session.save();
+        } catch (ClientException e) {
+            throw new CMISRuntimeException(e.toString(), e);
+        }
+        return document;
     }
 
     public ObjectId deleteContentStream(ObjectId document) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        try {
+            return setContentStream(document, null, true);
+        } catch (ContentAlreadyExistsException e) {
+            // cannot happen, overwrite = true;
+            return null;
+        } catch (IOException e) {
+            // cannot happen, contentStream = null;
+            return null;
+        }
     }
 
     public ObjectId updateProperties(ObjectId object, String changeToken,

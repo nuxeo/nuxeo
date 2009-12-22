@@ -18,15 +18,19 @@
  */
 package org.nuxeo.ecm.core.chemistry.impl;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.chemistry.BaseType;
+import org.apache.chemistry.CMISRuntimeException;
+import org.apache.chemistry.ContentAlreadyExistsException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.StreamNotSupportedException;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Updatability;
 import org.nuxeo.ecm.core.api.Blob;
@@ -35,6 +39,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
@@ -129,14 +134,14 @@ public class NuxeoProperty implements Property {
         } else if (Property.CHECK_IN_COMMENT.equals(name)) {
             value = null;
         } else if (Property.CONTENT_STREAM_LENGTH.equals(name)) {
-            ContentStream contentStream = extractContentStream(doc);
+            ContentStream contentStream = getContentStream(doc);
             value = contentStream == null ? null
                     : Integer.valueOf((int) contentStream.getLength());
         } else if (Property.CONTENT_STREAM_MIME_TYPE.equals(name)) {
-            ContentStream contentStream = extractContentStream(doc);
+            ContentStream contentStream = getContentStream(doc);
             value = contentStream == null ? null : contentStream.getMimeType();
         } else if (Property.CONTENT_STREAM_FILE_NAME.equals(name)) {
-            ContentStream contentStream = extractContentStream(doc);
+            ContentStream contentStream = getContentStream(doc);
             value = contentStream == null ? null : contentStream.getFileName();
         } else if (Property.CONTENT_STREAM_ID.equals(name)) {
             value = null;
@@ -175,21 +180,47 @@ public class NuxeoProperty implements Property {
         }
     }
 
-    protected static ContentStream extractContentStream(DocumentModel doc) {
+    protected static ContentStream getContentStream(DocumentModel doc)
+            throws CMISRuntimeException {
         BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
         if (blobHolder == null) {
-            return null;
+            throw new StreamNotSupportedException();
         }
         Blob blob;
         try {
             blob = blobHolder.getBlob();
         } catch (ClientException e) {
-            throw new RuntimeException(e.toString(), e); // TODO
+            throw new CMISRuntimeException(e.toString(), e);
         }
-        if (blob == null) {
-            return null;
+        return blob == null ? null : new NuxeoContentStream(blob);
+    }
+
+    protected static void setContentStream(DocumentModel doc,
+            ContentStream contentStream, boolean overwrite) throws IOException,
+            ContentAlreadyExistsException, CMISRuntimeException {
+        BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
+        if (blobHolder == null) {
+            throw new StreamNotSupportedException();
         }
-        return new NuxeoContentStream(blob);
+        if (!overwrite) {
+            Blob blob;
+            try {
+                blob = blobHolder.getBlob();
+            } catch (ClientException e) {
+                throw new CMISRuntimeException(e.toString(), e);
+            }
+            if (blob != null) {
+                throw new ContentAlreadyExistsException();
+            }
+        }
+        Blob blob = contentStream == null ? null : new InputStreamBlob(
+                contentStream.getStream(), contentStream.getMimeType(), null,
+                contentStream.getFileName(), null);
+        try {
+            blobHolder.setBlob(blob);
+        } catch (ClientException e) {
+            throw new CMISRuntimeException(e.toString(), e);
+        }
     }
 
     public PropertyDefinition getDefinition() {

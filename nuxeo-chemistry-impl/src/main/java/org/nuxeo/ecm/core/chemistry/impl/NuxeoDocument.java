@@ -21,6 +21,9 @@ package org.nuxeo.ecm.core.chemistry.impl;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.apache.chemistry.CMISRuntimeException;
+import org.apache.chemistry.ConstraintViolationException;
+import org.apache.chemistry.ContentAlreadyExistsException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.Document;
@@ -29,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 
 public class NuxeoDocument extends NuxeoObject implements Document {
 
@@ -69,17 +71,6 @@ public class NuxeoDocument extends NuxeoObject implements Document {
         throw new UnsupportedOperationException();
     }
 
-    protected Blob getBlob() {
-        if (!doc.hasSchema("file")) {
-            return null;
-        }
-        try {
-            return (Blob) doc.getProperty("file", "content");
-        } catch (ClientException e) {
-            throw new RuntimeException(e.toString(), e); // TODO
-        }
-    }
-
     // TODO put in API?
     public boolean hasContentStream() {
         if (getType().getContentStreamAllowed() == ContentStreamPresence.NOT_ALLOWED) {
@@ -97,34 +88,22 @@ public class NuxeoDocument extends NuxeoObject implements Document {
     }
 
     public ContentStream getContentStream() {
-        Blob blob = getBlob();
-        if (blob == null) {
-            return null;
-        }
-        return new NuxeoContentStream(blob);
+        return NuxeoProperty.getContentStream(doc);
     }
 
     public void setContentStream(ContentStream contentStream)
-            throws IOException {
+            throws IOException, CMISRuntimeException {
         ContentStreamPresence csa = getType().getContentStreamAllowed();
         if (csa == ContentStreamPresence.NOT_ALLOWED && contentStream != null) {
-            throw new RuntimeException("Content stream not allowed"); // TODO
+            throw new ConstraintViolationException("Content stream not allowed");
         } else if (csa == ContentStreamPresence.REQUIRED
                 && contentStream == null) {
-            throw new RuntimeException("Content stream required"); // TODO
-        }
-        Blob blob;
-        if (contentStream == null) {
-            blob = null;
-        } else {
-            blob = new InputStreamBlob(contentStream.getStream(),
-                    contentStream.getMimeType(), null,
-                    contentStream.getFileName(), null);
+            throw new ConstraintViolationException("Content stream required");
         }
         try {
-            doc.setProperty("file", "content", blob);
-        } catch (ClientException e) {
-            throw new RuntimeException(e.toString(), e); // TODO
+            NuxeoProperty.setContentStream(doc, contentStream, true);
+        } catch (ContentAlreadyExistsException e) {
+            // cannot happen, overwrite = true
         }
     }
 

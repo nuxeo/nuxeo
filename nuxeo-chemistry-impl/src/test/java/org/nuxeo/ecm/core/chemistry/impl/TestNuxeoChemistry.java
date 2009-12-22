@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.chemistry.impl;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -29,6 +30,8 @@ import java.util.TimeZone;
 
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
+import org.apache.chemistry.ContentStream;
+import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectEntry;
@@ -37,6 +40,10 @@ import org.apache.chemistry.Property;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.impl.base.BaseRepository;
+import org.apache.chemistry.impl.simple.SimpleContentStream;
+import org.apache.chemistry.impl.simple.SimpleObjectId;
+import org.apache.commons.io.IOUtils;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -122,12 +129,12 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
                 "testfile1", "File");
         file1.setPropertyValue("dc:title", "testfile1_Title");
         file1.setPropertyValue("dc:description", "testfile1_description");
-        String content = "Some caf\u00e9 in a restaurant.\nDrink!.\n";
+        String content = "Noodles with rice";
         String filename = "testfile.txt";
         ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"),
                 "text/plain");
+        blob1.setFilename(filename);
         file1.setPropertyValue("content", blob1);
-        file1.setPropertyValue("filename", filename);
         Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);
         file1.setPropertyValue("dc:created", cal1);
         file1.setPropertyValue("dc:coverage", "foo/bar");
@@ -177,7 +184,7 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         DatabaseHelper.DATABASE.sleepForFulltext();
     }
 
-    public void testBasic() {
+    public void testBasic() throws Exception {
         assertNotNull(repository);
         Connection conn = repository.getConnection(null);
         assertNotNull(conn);
@@ -196,6 +203,29 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
 
         List<CMISObject> entries = root.getChildren();
         assertEquals(2, entries.size());
+
+        Folder folder = conn.getFolder("/testfolder1");
+        Document file = null;
+        for (CMISObject child : folder.getChildren()) {
+            String name = child.getName();
+            if (name.equals("testfile1")) {
+                file = (Document) child;
+            }
+        }
+        assertNotNull(file);
+
+        // get stream
+        ContentStream cs = file.getContentStream();
+        assertNotNull(cs);
+        assertEquals("testfile.txt", cs.getFileName());
+        assertEquals("text/plain", cs.getMimeType());
+        assertEquals(17, cs.getLength());
+        assertEquals("Noodles with rice", FileUtils.read(cs.getStream()));
+
+        // set stream
+        cs = new SimpleContentStream("foo".getBytes(), "text/html", "foo.html");
+        file.setContentStream(cs);
+        file.save();
     }
 
     public void testCreateSPI() throws Exception {
@@ -232,6 +262,39 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         assertEquals(ob.getId(), id.getId());
         ob = spi.getProperties(id, null);
         assertEquals("foo", ob.getValue("dc:title"));
+    }
+
+    public void testContentStreamSPI() throws Exception {
+        Connection conn = repository.getConnection(null);
+        SPI spi = conn.getSPI();
+
+        // set
+        ObjectEntry ob = spi.getObjectByPath("/testfolder1/testfile2", null);
+        SimpleObjectId id = new SimpleObjectId(ob.getId());
+        assertFalse(spi.hasContentStream(id)); // unfetched
+        assertFalse(spi.hasContentStream(ob)); // fetched
+        byte[] blobBytes = "A file...\n".getBytes("UTF-8");
+        String filename = "doc.txt";
+        ContentStream cs = new SimpleContentStream(blobBytes,
+                "text/plain;charset=UTF-8", filename);
+        spi.setContentStream(ob, cs, true);
+
+        // refetch
+        assertTrue(spi.hasContentStream(id));
+        cs = spi.getContentStream(id, null);
+        assertNotNull(cs);
+        assertEquals(filename, cs.getFileName());
+        assertEquals("text/plain;charset=UTF-8", cs.getMimeType().replace(" ",
+                ""));
+        InputStream in = cs.getStream();
+        assertNotNull(in);
+        byte[] array = IOUtils.toByteArray(in);
+        assertEquals(blobBytes.length, array.length);
+        assertEquals(blobBytes.length, cs.getLength());
+
+        // delete
+        spi.deleteContentStream(id);
+        assertFalse(spi.hasContentStream(id));
     }
 
     public void testQuery() throws Exception {
