@@ -395,7 +395,7 @@
       </selector>
       <selector path=".banner_actions ul li a">
         <display>block</display>
-        <padding>8px 10px 7px</padding>
+        <padding>9px 10px 8px</padding>
         <background>transparent url(/nuxeo/img/headerLink_bg.png) repeat-x top left</background>
       </selector>
       <selector path=".banner_actions ul li a:hover">
@@ -469,6 +469,17 @@
         <padding>2px 5px</padding>
         <height>18px</height>
       </selector>
+      <selector path=".resultViewMode">
+        <float>left</float>
+      </selector>
+      <selector path=".clipboard">
+        <float>right</float>
+      </selector>
+      <selector path=".clipboard .button">
+        <margin>1px 3px</margin>
+        <padding>1px 5px</padding>
+        <font-size>9px</font-size>
+      </selector>
       <!-- style for Rich Faces thumb panel -->
       <selector path=".dr-pnl">
         <border>none</border>
@@ -481,7 +492,8 @@
         <padding>8px</padding>
         <width>130px</width>
         <height>155px</height>
-        <border>2px solid #BED6F8</border>
+        <border>1px solid #BED6F8</border>
+        <margin>auto</margin>
       </selector>
       <selector path=".thumbViewElement table">
         <font-size>10px</font-size>
@@ -702,6 +714,12 @@
       <selector path=".actionBar">
         <background-color>#a0a8b4</background-color>
         <border-bottom>1px solid #7e848c</border-bottom>
+        <padding>1px 5px</padding>
+      </selector>
+      <selector path=".actionBar .button">
+        <margin>1px 3px</margin>
+        <padding>1px 5px</padding>
+        <font-size>9px</font-size>
       </selector>
       <selector path="a">
         <white-space>normal</white-space>

@@ -12,27 +12,31 @@
     <a4j:outputPanel id="filterResultTable">
       <a4j:form id="toggleList">
         <div class="actionPanelViews">
-          <a4j:commandLink id="showListLink"
-            action="#{webActions.showListLink}"
-            reRender="filterResultTable"
-            styleClass="ListViewIcon">
-            <h:graphicImage id="showList" url="/icons/list_view.png"
-              rendered="#{!webActions.showList}" />
-            <h:graphicImage id="showListSelected"
-              url="/icons/list_view_selected.png"
-              rendered="#{webActions.showList}" />
-          </a4j:commandLink>
-          
-          <a4j:commandLink id="showThumbnailLink"
-            action="#{webActions.showThumbnailLink}"
-            reRender="filterResultTable"
-            styleClass="ThumbViewIcon">
-            <h:graphicImage id="showThumbnail" url="/icons/thumbnail_view.png"
-              rendered="#{!webActions.showThumbnail}" />
-            <h:graphicImage id="showThumbnailSelected"
-              url="/icons/thumbnail_view_selected.png"
-              rendered="#{webActions.showThumbnail}" />
-          </a4j:commandLink>
+          <div class="resultViewMode">
+	          <a4j:commandLink id="showListLink"
+	            action="#{webActions.showListLink}"
+	            reRender="filterResultTable"
+	            styleClass="ListViewIcon">
+	            <h:graphicImage id="showList" url="/icons/list_view.png"
+	              rendered="#{!webActions.showList}" />
+	            <h:graphicImage id="showListSelected"
+	              url="/icons/list_view_selected.png"
+	              rendered="#{webActions.showList}" />
+	          </a4j:commandLink>
+	          
+	          <a4j:commandLink id="showThumbnailLink"
+	            action="#{webActions.showThumbnailLink}"
+	            reRender="filterResultTable"
+	            styleClass="ThumbViewIcon">
+	            <h:graphicImage id="showThumbnail" url="/icons/thumbnail_view.png"
+	              rendered="#{!webActions.showThumbnail}" />
+	            <h:graphicImage id="showThumbnailSelected"
+	              url="/icons/thumbnail_view_selected.png"
+	              rendered="#{webActions.showThumbnail}" />
+	          </a4j:commandLink>
+	        </div>
+          <ui:include src="/incl/clipboard.xhtml" />
+          <div style="clear:both;" />
         </div>
       </a4j:form>  
             
