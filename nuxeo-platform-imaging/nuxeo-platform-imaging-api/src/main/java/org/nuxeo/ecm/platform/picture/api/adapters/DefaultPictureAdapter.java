@@ -41,8 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 public class DefaultPictureAdapter extends AbstractPictureAdapter {
     private static final Log log = LogFactory.getLog(DefaultPictureAdapter.class);
 
-    private static final String VIEWS_PROPERTY = "picture:views";
-
+    // needs trailing slash
     private static final String VIEW_XPATH = "picture:views/item[%d]/";
 
     private static final String TITLE_PROPERTY = "title";
@@ -75,7 +74,8 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
             log.debug("An error occured while trying to set metadata for "
                     + filename, e);
         }
-        if (width != null && height != null) {            
+        if (width != null && height != null) {
+            clearViews();
             addViews(pictureTemplates, filename, title);
         }
         return true;

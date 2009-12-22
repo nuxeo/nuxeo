@@ -19,14 +19,66 @@
 
 package org.nuxeo.ecm.platform.picture.api.adapters;
 
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.*;
-import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.*;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.CONVERSION_FORMAT;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.JPEG_CONVERSATION_FORMAT;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPERATION_CROP;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPERATION_RESIZE;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_CROP_X;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_CROP_Y;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_DEPTH;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_HEIGHT;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_WIDTH;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_BY_LINE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_BY_LINE_TITLE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CAPTION;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CATEGORY;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CITY;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COLORSPACE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COMMENT;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COPYRIGHT;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COPYRIGHT_NOTICE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COUNTRY_OR_PRIMARY_LOCATION;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CREDIT;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_DATE_CREATED;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_DESCRIPTION;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_EQUIPMENT;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_EXPOSURE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_FNUMBER;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_FOCALLENGTH;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_HEADLINE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_HEIGHT;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_HRESOLUTION;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ICCPROFILE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ISOSPEED;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_KEYWORDS;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_LANGUAGE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_OBJECT_NAME;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ORIENTATION;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ORIGINALDATE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ORIGINAL_TRANSMISSION_REFERENCE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ORIGINATING_PROGRAM;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_PIXEL_XDIMENSION;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_PIXEL_YDIMENSION;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_PROVINCE_OR_STATE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_RECORD_VERSION;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_RELEASE_DATE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_RELEASE_TIME;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_SOURCE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_SPECIAL_INSTRUCTIONS;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_SUPPLEMENTAL_CATEGORIES;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_TIME_CREATED;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_URGENCY;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_VRESOLUTION;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WHITEBALANCE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WIDTH;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WRITER;
 
 import java.awt.Point;
 import java.awt.color.ICC_Profile;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -52,6 +104,10 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
 
     private static final Log log = LogFactory.getLog(PictureResourceAdapter.class);
+
+    public static final String VIEWS_PROPERTY = "picture:views";
+
+    public static final String CONTENT_XPATH = "picture:views/view[%d]/content";
 
     public static final String FIELD_HEADLINE = "headline";
 
@@ -278,6 +334,11 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         doc.setPropertyValue("iptc:writer", (String) metadata.get(META_WRITER));
     }
 
+    protected void clearViews() throws ClientException {
+        List<Map<String, Object>> viewsList = new ArrayList<Map<String, Object>>();
+        doc.getProperty(VIEWS_PROPERTY).setValue(viewsList);
+    }
+
     protected void addViews(List<Map<String, Object>> pictureTemplates,
             String filename, String title) throws IOException, ClientException {
         doc.setProperty("dublincore", "title", title);
@@ -360,10 +421,10 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             blob.setFilename(title + "_" + viewFilename);
             map.put("content", blob);
         }
-        Serializable views = doc.getPropertyValue("picture:views");
+        Serializable views = doc.getPropertyValue(VIEWS_PROPERTY);
         List<Map<String, Object>> viewsList = (List<Map<String, Object>>) views;
         viewsList.add(map);
-        doc.getProperty("picture:views").setValue(viewsList);
+        doc.getProperty(VIEWS_PROPERTY).setValue(viewsList);
     }
 
     protected static Point getSize(Point current, int max) {
@@ -394,8 +455,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
     }
 
     protected Blob getContentFromViews(Integer i) throws ClientException {
-        return (Blob) doc.getPropertyValue("picture:views/view[" + i
-                + "]/content");
+        return (Blob) doc.getPropertyValue(String.format(CONTENT_XPATH, i));
     }
 
     protected FileBlob crop(Blob blob, Map<String, Serializable> coords)

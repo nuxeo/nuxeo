@@ -15,7 +15,8 @@
  *     Laurent Doguin
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.platform.picture.core.test;
+
+package org.nuxeo.ecm.platform.picture.convert.test;
 
 import java.io.File;
 import java.io.Serializable;
@@ -28,42 +29,29 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
+import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.ecm.platform.picture.api.adapters.PictureBlobHolder;
-import org.nuxeo.ecm.platform.picture.api.adapters.PictureBookBlobHolder;
-import org.nuxeo.runtime.api.Framework;
 
-public class TestPictureBlobHolder extends RepositoryOSGITestCase {
+public class TestBlobHolderSet extends RepositoryOSGITestCase {
 
-    DocumentModel root;
-
-    BlobHolderAdapterService service;
+    protected DocumentModel root;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.picture.api");
+        deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
+        deployBundle("org.nuxeo.ecm.platform.picture.convert");
         openRepository();
         root = getCoreSession().getRootDocument();
-        assertNotNull(root);
-        service = Framework.getLocalService(BlobHolderAdapterService.class);
-        assertNotNull(service);
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-        service = null;
     }
 
     private static File getFileFromPath(String path) {
-        File file = FileUtils.getResourceFileFromContext(path);
-        assertTrue(file.length() > 0);
-        return file;
+        return FileUtils.getResourceFileFromContext(path);
     }
 
     private List<Map<String, Serializable>> createViews() {
@@ -71,57 +59,47 @@ public class TestPictureBlobHolder extends RepositoryOSGITestCase {
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put("title", "Original");
         map.put("content", new FileBlob(
-                getFileFromPath("images/exif_sample.jpg"), "image/jpeg", null,
+                getFileFromPath("test-data/sample.jpeg"), "image/jpeg", null,
                 "mysample.jpg", null));
         map.put("filename", "mysample.jpg");
         views.add(map);
         return views;
     }
 
-    public void testBasics() {
-        DocumentModel pictureDoc = new DocumentModelImpl("Picture");
-        BlobHolder bh = pictureDoc.getAdapter(BlobHolder.class);
-        assertTrue(bh instanceof PictureBlobHolder);
-
-        DocumentModel pictureBookDoc = new DocumentModelImpl("PictureBook");
-        BlobHolder pbbh = service.getBlobHolderAdapter(pictureBookDoc);
-        assertTrue(pbbh instanceof PictureBookBlobHolder);
-        pbbh = pictureBookDoc.getAdapter(BlobHolder.class);
-        assertTrue(pbbh instanceof PictureBookBlobHolder);
-    }
-
-    public void testBlobHolder() throws Exception {
-        DocumentModel picturebook = new DocumentModelImpl(
-                root.getPathAsString(), "picturebook", "PictureBook");
-        coreSession.createDocument(picturebook);
-        DocumentModel picture = new DocumentModelImpl(
-                picturebook.getPathAsString(), "pic1", "Picture");
+    public void testBlobHolderSet() throws Exception {
+        DocumentModel picture = new DocumentModelImpl(root.getPathAsString(),
+                "pic", "Picture");
         picture.setPropertyValue("picture:views", (Serializable) createViews());
         picture = coreSession.createDocument(picture);
-        DocumentModel picture2 = new DocumentModelImpl(
-                picturebook.getPathAsString(), "pic2", "Picture");
-        picture2.setPropertyValue("picture:views", (Serializable) createViews());
-        coreSession.createDocument(picture2);
         coreSession.save();
 
-        BlobHolder bh = picturebook.getAdapter(BlobHolder.class);
+        BlobHolder bh = picture.getAdapter(BlobHolder.class);
         assertNotNull(bh);
         Blob blob = bh.getBlob();
         assertNotNull(blob);
-        assertEquals(2, bh.getBlobs().size());
-
-        bh = picture.getAdapter(BlobHolder.class);
-        assertNotNull(bh);
-        blob = bh.getBlob();
-        assertNotNull(blob);
         assertEquals(1, bh.getBlobs().size());
 
-        // test blob content
-        assertEquals("mysample.jpg", blob.getFilename());
+        // test write
+        blob = new FileBlob(getFileFromPath("test-data/big_nuxeo_logo.jpg"),
+                "image/jpeg", null, "logo.jpg", null);
+        bh.setBlob(blob);
+        coreSession.saveDocument(picture);
+        coreSession.save();
+
+        // reread
+        bh = picture.getAdapter(BlobHolder.class);
+        assertNotNull(bh);
+        assertTrue(bh instanceof DocumentBlobHolder);
+        assertEquals("/pic/logo.jpg", bh.getFilePath());
+        blob = bh.getBlob();
+        assertEquals("logo.jpg", blob.getFilename());
         assertEquals("image/jpeg", blob.getMimeType());
         byte[] bytes = FileUtils.readBytes(blob.getStream());
-        assertEquals(134561, bytes.length);
+        assertEquals(36830, bytes.length);
         bytes = null;
+
+        // generated views
+        assertEquals(4, bh.getBlobs().size());
     }
 
 }

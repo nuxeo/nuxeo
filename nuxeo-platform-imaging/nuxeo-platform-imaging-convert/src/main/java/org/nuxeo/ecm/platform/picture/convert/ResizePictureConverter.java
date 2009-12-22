@@ -51,9 +51,12 @@ public class ResizePictureConverter implements Converter {
             ImagingService service = Framework.getService(ImagingService.class);
             List<Blob> results = new ArrayList<Blob>();
             List<Blob> sources = blobHolder.getBlobs();
-            int height = (Integer) parameters.get(OPTION_RESIZE_HEIGHT);
-            int width = (Integer) parameters.get(OPTION_RESIZE_WIDTH);
-            int depth = (Integer) parameters.get(OPTION_RESIZE_DEPTH);
+            Serializable h = parameters.get(OPTION_RESIZE_HEIGHT);
+            int height = h == null ? 0 : (Integer) h;
+            Serializable w = parameters.get(OPTION_RESIZE_WIDTH);
+            int width = w == null ? 0 : (Integer) w;
+            Serializable d = parameters.get(OPTION_RESIZE_DEPTH);
+            int depth = d == null ? 0 : (Integer) d;
             // use the registered conversion format
             String format = (String) parameters.get(CONVERSION_FORMAT);
 

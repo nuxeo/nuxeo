@@ -19,9 +19,11 @@
 
 package org.nuxeo.ecm.platform.picture.api.adapters;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -40,6 +42,33 @@ public class PictureBlobHolder extends DocumentBlobHolder {
         return getBlob("Original");
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public void setBlob(Blob blob) throws ClientException {
+        xPathFilename = null;
+        // check if there are templates
+        ArrayList<Map<String, Object>> pictureTemplates = null;
+        DocumentModel parent = doc.getCoreSession().getParentDocument(
+                doc.getRef());
+        if (parent.getType().equals("PictureBook")) {
+            // use PictureBook Properties
+            pictureTemplates = (ArrayList<Map<String, Object>>) parent.getProperty(
+                    "picturebook", "picturetemplates");
+            if (pictureTemplates.size() == 0) {
+                pictureTemplates = null;
+            }
+        }
+        // upload blob and create views
+        PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
+        String title = (String) doc.getProperty("dublincore", "title"); // re-set
+        try {
+            picture.createPicture(blob, blob.getFilename(), title, pictureTemplates);
+        } catch (IOException e) {
+            throw new ClientException(e.toString(), e);
+        }
+    }
+
+    @Override
     public List<Blob> getBlobs() throws ClientException {
         List<Blob> blobList = new ArrayList<Blob>();
         Collection<Property> views = doc.getProperty("picture:views").getChildren();
