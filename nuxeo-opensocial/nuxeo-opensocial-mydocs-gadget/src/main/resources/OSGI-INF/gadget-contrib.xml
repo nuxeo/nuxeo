@@ -7,7 +7,7 @@
     <internalGadget name="mydocs">
       <mountPoint>/mydocs</mountPoint>
       <entryPoint>mydocs.xml</entryPoint>
-      <category>Utilitaires</category>
+      <category>gadget.category.collaborative</category>
       <icon>documents.jpg</icon>
     </internalGadget>
 

@@ -6,8 +6,7 @@
       <#if nxthemesInfo.model.categories>
       <#list nxthemesInfo.model.categories as category>
           <div class="button-container">
-              <!--button class="nv-category" category="${category}">${category}</button-->
-              <a class="nv-category" category="${category}">${category}</a>
+              <a class="nv-category" category="${Context.getMessage(category)}">${Context.getMessage(category)}</a>
           </div>
        </#list>
       </#if>
@@ -18,7 +17,7 @@
         <#list nxthemesInfo.model.gadgets as gadget>
           <li class="invisible">
             <div class="nameGadget">${gadget.name}</div>
-            <a href="#_" name="${gadget.name}" class="typeGadget" category="${gadget.category}" style="background-image:url(${gadget.iconUrl})"></a>
+            <a href="#_" name="${gadget.name}" class="typeGadget" category="${Context.getMessage(gadget.category)}" style="background-image:url(${gadget.iconUrl})"></a>
             <div class="directAdd">
               <a href="#" class="directAddLink linkAdd" name="${gadget.name}">
                   <span class="addGadgetButton">ajouter</span>

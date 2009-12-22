@@ -4,56 +4,56 @@
     <internalGadget name="mappy">
       <mountPoint>/mappy</mountPoint>
       <entryPoint>mappy.xml</entryPoint>
-      <category>Utilitaires</category>
+      <category>gadget.category.utilities</category>
       <icon>mappy_icon.png</icon>
     </internalGadget>
     
      <internalGadget name="meteo">
       <mountPoint>/meteo</mountPoint>
       <entryPoint>meteo.xml</entryPoint>
-      <category>Utilitaires</category>
+      <category>gadget.category.utilities</category>
       <icon>meteo_icon.png</icon>
     </internalGadget>
     
     <internalGadget name="photo">
       <mountPoint>/photo</mountPoint>
       <entryPoint>photo.xml</entryPoint>
-      <category>Multimedia</category>
+      <category>gadget.category.utilities</category>
       <icon>photo_icon.png</icon>
     </internalGadget>
     
-    <internalGadget name="flash">
+    <!-- <internalGadget name="flash">
       <mountPoint>/flash</mountPoint>
       <entryPoint>flash.xml</entryPoint>
       <category>Multimedia</category>
       <icon>flash_icon.png</icon>
-    </internalGadget>
+    </internalGadget>-->
     
     <internalGadget name="todolist">
       <mountPoint>/todolist</mountPoint>
       <entryPoint>toDoList.xml</entryPoint>
-      <category>Utilitaires</category>
+      <category>gadget.category.collaborative</category>
       <icon>todolist_icon.png</icon>
     </internalGadget>
 
     <internalGadget name="note">
       <mountPoint>/note</mountPoint>
       <entryPoint>note.xml</entryPoint>
-      <category>Utilitaires</category>
+      <category>gadget.category.collaborative</category>
       <icon>note_icon.png</icon>
     </internalGadget>
 
     <internalGadget name="video">
       <mountPoint>/video</mountPoint>
       <entryPoint>video.xml</entryPoint>
-      <category>Multimedia</category>
+      <category>gadget.category.utilities</category>
       <icon>video_icon.png</icon>
     </internalGadget>
     
     <internalGadget name="bookmarks">
       <mountPoint>/bookmarks</mountPoint>
       <entryPoint>bookmarks.xml</entryPoint>
-      <category>Utilitaires</category>
+      <category>gadget.category.utilities</category>
       <icon>bookmarks_icon.png</icon>
     </internalGadget>
     
