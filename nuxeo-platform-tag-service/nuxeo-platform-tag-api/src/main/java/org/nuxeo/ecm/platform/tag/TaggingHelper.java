@@ -33,7 +33,6 @@ import org.nuxeo.runtime.api.Framework;
  * used both in the JSF backoffice UI and webengine UI.
  *
  * @author btatar
- *
  */
 public class TaggingHelper {
 
@@ -42,11 +41,7 @@ public class TaggingHelper {
     private TagService tagService;
 
     public static boolean isStringBlank(String string) {
-        if  (string == null || string.trim().length() == 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return string == null || string.trim().length() == 0;
     }
 
     public boolean isTagServiceEnabled() throws ClientException {
@@ -56,9 +51,9 @@ public class TaggingHelper {
     /**
      * Tags the received <b>document</b> parameter.
      *
-     * @param session - the Nuxeo core session
-     * @param document - the document model that will be tagged
-     * @param tagLabel - the label of the tagging
+     * @param session the Nuxeo core session
+     * @param document the document model that will be tagged
+     * @param tagLabel the label of the tagging
      * @throws ClientException
      */
     public void addTagging(CoreSession session, DocumentModel document,
@@ -94,10 +89,10 @@ public class TaggingHelper {
     /**
      * Removes tagging from a document.
      *
-     * @param session - the Nuxeo core session
-     * @param document - the document model from which the tagging will be
+     * @param session the Nuxeo core session
+     * @param document the document model from which the tagging will be
      *            removed
-     * @param taggingId - the id of the tagging that will be removed
+     * @param taggingId the id of the tagging that will be removed
      * @throws ClientException
      */
     public void removeTagging(CoreSession session, DocumentModel document,
@@ -128,8 +123,8 @@ public class TaggingHelper {
      * Returns the list with distinct public tags (or owned by user) that are
      * applied on received <b>document</b> parameter.
      *
-     * @param session - the Nuxeo core session
-     * @param document - the document for which to retrieve the list with tags
+     * @param session the Nuxeo core session
+     * @param document the document for which to retrieve the list with tags
      * @return
      * @throws ClientException
      */
@@ -145,7 +140,7 @@ public class TaggingHelper {
      * Returns the details about the tag cloud that have been created under a
      * document.
      *
-     * @param session - the Nuxeo core session
+     * @param session the Nuxeo core session
      * @param document
      * @return
      * @throws ClientException
@@ -169,8 +164,8 @@ public class TaggingHelper {
      * Returns the list with documents which are tagged with a particular tag
      * that has the received <b>tagDocumentId</b> id.
      *
-     * @param session - the nuxeo core session
-     * @param tagDocumentId - the id of the tag
+     * @param session the nuxeo core session
+     * @param tagDocumentId the id of the tag
      * @return
      * @throws ClientException
      */
@@ -194,9 +189,9 @@ public class TaggingHelper {
      * Specify whether the current logged user has enough rights to modify a tag
      * that is applied on the received <b>document</b> parameter
      *
-     * @param session - the Nuxeo core session
-     * @param document - the document on which the tag was applied
-     * @param tag - the tag that is applied on the document
+     * @param session the Nuxeo core session
+     * @param document the document on which the tag was applied
+     * @param tag the tag that is applied on the document
      * @return
      * @throws ClientException
      */
@@ -208,7 +203,7 @@ public class TaggingHelper {
                         SecurityConstants.WRITE)) {
             return true;
         }
-        if ((document==null) || (tag==null)) {
+        if (document == null || tag == null) {
             return false;
         }
         return getTagService().getTaggingId(session, document.getId(), tag.tagLabel,
@@ -217,8 +212,6 @@ public class TaggingHelper {
 
     /**
      * Returns the TagService service which is provided by Nuxeo.
-     *
-     * @return
      */
     private TagService getTagService() {
         if (tagService == null) {
@@ -232,4 +225,5 @@ public class TaggingHelper {
         }
         return tagService;
     }
+
 }

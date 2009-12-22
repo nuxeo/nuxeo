@@ -65,7 +65,7 @@ public class TaggingProvider {
      * Persists to the 'NXP_TAGGING' table the information contained in the
      * received parameter.
      *
-     * @param tagging - the information about the 'tagging' that will be
+     * @param tagging the information about the 'tagging' that will be
      *            persisted
      */
     public void addTagging(TaggingEntity tagging) {
@@ -128,8 +128,8 @@ public class TaggingProvider {
      * Lists distinct the public tags (or owned by user) that are applied on
      * document.
      *
-     * @param docId - the UUID of the tagged document
-     * @param userName - the user name of the current logged user
+     * @param docId the UUID of the tagged document
+     * @param userName the user name of the current logged user
      * @return tags applied as list of simple tags
      */
     @SuppressWarnings("unchecked")
@@ -168,8 +168,8 @@ public class TaggingProvider {
      * Lists distinct the public tags (or owned by user) that are applied on
      * document by the user only.
      *
-     * @param docId - the UUID of the tagged document
-     * @param userName - the user name of the current logged user
+     * @param docId the UUID of the tagged document
+     * @param userName the user name of the current logged user
      * @return tags applied as list of simple tags
      */
     @SuppressWarnings("unchecked")
@@ -192,9 +192,9 @@ public class TaggingProvider {
      * Gets vote tag (basically count of how many times the tag was applied on a
      * document).
      *
-     * @param docId - the UUID of the tagged document
-     * @param tagId - the UUID of the tag document
-     * @param userName - the user name of the current logged user
+     * @param docId the UUID of the tagged document
+     * @param tagId the UUID of the tag document
+     * @param userName the user name of the current logged user
      * @return how many times a tag was applied on a document by different users
      */
     public Long getVoteTag(String docId, String tagId, String userName) {
@@ -215,9 +215,9 @@ public class TaggingProvider {
      * <b>userName</b> received parameter. The method returns true in case the
      * deleting was successful or false otherwise.
      *
-     * @param docId - the UUID of the tagged document
-     * @param tagId - the UUID of the tag document
-     * @param userName - the user name of the current logged user
+     * @param docId the UUID of the tagged document
+     * @param tagId the UUID of the tag document
+     * @param userName the user name of the current logged user
      * @return true in case the deleting was successful or false otherwise.
      */
     public boolean removeTagging(String docId, String tagId, String userName) {
@@ -239,8 +239,8 @@ public class TaggingProvider {
      * <b>userName</b> received parameter. The method returns true in case the
      * deleting was successful or false otherwise.
      *
-     * @param docId - the UUID of the tagged document
-     * @param tagId - the UUID of the tag document
+     * @param docId the UUID of the tagged document
+     * @param tagId the UUID of the tag document
      *
      * @return true in case the deleting was successful or false otherwise.
      */
@@ -290,16 +290,14 @@ public class TaggingProvider {
         List<String> params = new LinkedList<String>();
         for (DocumentModel document : documents) {
             params.add(document.getId());
-            sb.append('?').append(count).append(count < documents.size() ? ',' : "");
+            sb.append('?').append(count).append(count < documents.size() ? "," : "");
             count++;
         }
-        sb.append(") AND (tg.isPrivate=0 OR tg.author=");
-        sb.append('?');
+        sb.append(") AND (tg.isPrivate=0 OR tg.author=?");
         sb.append(count);
         count++;
         sb.append(") AND ");
-        sb.append("(tg.tag.private1 = 0 OR dc.creator = ");
-        sb.append('?');
+        sb.append("(tg.tag.private1=0 OR dc.creator=?");
         sb.append(count);
         count++;
         sb.append(") GROUP BY tag.id , tag.label");

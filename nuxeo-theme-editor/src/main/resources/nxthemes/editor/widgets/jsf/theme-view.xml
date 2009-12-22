@@ -20,6 +20,9 @@
 
     <div id="nxthemesHeader">
 
+      <!--  Status message -->
+      <div id="nxthemesStatusMessage" style="display: none"></div>  
+
       <!--  theme selector -->
       <nxthemes:panel identifier="theme selector"
         url="/nuxeo/site/nxthemes-editor/themeSelector"
@@ -127,11 +130,6 @@
         controlledBy="editor perspectives,page switcher"
         visibleInPerspectives="canvas editor,padding editor" />
 
-      <!--  Status message -->
-      <div id="nxthemesStatusBar">
-        <div id="nxthemesStatusMessage" style="display: none"></div>           
-        <div id="nxthemesEditorInfo">JSF/FACELETS</div>
-      </div>
     </div>
 
     <nxthemes:controller resource="perspective-selector.json" />

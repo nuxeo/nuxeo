@@ -1509,8 +1509,9 @@ NXThemesStyleEditor.renderElement = function(id, area) {
     if (i > 0) {
       var query_string = url.substr(i+1);
       query_params = query_params.update($H(query_string.toQueryParams()));
+      url = url.substr(0, i);
     }
-    url = url.substr(0, i) + '?' + query_params.toQueryString();
+    url = url + '?' + query_params.toQueryString();
     new Ajax.Request(url, options);
 };
 

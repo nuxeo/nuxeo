@@ -80,10 +80,6 @@
       <groupId>jdom</groupId>
       <artifactId>jdom</artifactId>
     </dependency>
-    <dependency>
-      <groupId>rome</groupId>
-      <artifactId>rome</artifactId>
-    </dependency>
   </dependencies>
 
 </project>
