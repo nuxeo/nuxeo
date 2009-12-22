@@ -781,8 +781,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>3.8.2</version>
-        <!-- <version>4.5</version> -->
+        <version>4.7</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
