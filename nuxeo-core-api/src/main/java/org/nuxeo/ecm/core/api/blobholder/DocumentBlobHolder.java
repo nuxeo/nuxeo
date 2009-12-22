@@ -25,6 +25,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.Property;
 
 /**
  * {@link BlobHolder} implementation based on a {@link DocumentModel} and a
@@ -38,7 +39,7 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
 
     protected final String xPath;
 
-    protected final String xPathFilename;
+    protected String xPathFilename;
 
     public DocumentBlobHolder(DocumentModel doc, String xPath) {
         this.doc = doc;
@@ -73,6 +74,12 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
             }
         }
         return blob;
+    }
+
+    @Override
+    public void setBlob(Blob blob) throws ClientException {
+        xPathFilename = null;
+        doc.getProperty(xPath).setValue(blob);
     }
 
     @Override

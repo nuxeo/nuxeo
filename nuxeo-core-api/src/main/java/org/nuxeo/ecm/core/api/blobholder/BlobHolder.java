@@ -12,8 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.api.blobholder;
 
@@ -27,8 +27,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Interface for an object that holds a {@link Blob}.
- *
- * @author tiry
  */
 public interface BlobHolder {
 
@@ -36,6 +34,13 @@ public interface BlobHolder {
      * Returns the Blob held inside the object.
      */
     Blob getBlob() throws ClientException;
+
+    /**
+     * Sets a blob in the object.
+     * <p>
+     * The underlying document must be saved by the caller.
+     */
+    void setBlob(Blob blob) throws ClientException;
 
     /**
      * Returns a filesystem-like path to represent the held blob.

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.api.blobholder;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
@@ -35,7 +36,8 @@ public class TestDocumentAdapter extends RepositoryOSGITestCase {
     }
 
     public void testFileAdapters() throws Exception {
-        DocumentModel file = getCoreSession().createDocumentModel("File");
+        CoreSession session = getCoreSession();
+        DocumentModel file = session.createDocumentModel("File");
         file.setPathInfo("/", "TestFile");
 
         Blob blob = new StringBlob("BlobContent");
@@ -43,29 +45,75 @@ public class TestDocumentAdapter extends RepositoryOSGITestCase {
         blob.setMimeType("text/plain");
         file.setProperty("dublincore", "title", "TestFile");
         file.setProperty("file", "content", blob);
-
-        file = getCoreSession().createDocument(file);
-        getCoreSession().save();
+        file = session.createDocument(file);
+        session.save();
 
         BlobHolder bh = file.getAdapter(BlobHolder.class);
         assertNotNull(bh);
         assertTrue(bh instanceof DocumentBlobHolder);
-
         assertEquals("/TestFile/TestFile.txt", bh.getFilePath());
+
+        // test blob content
+        Blob b = bh.getBlob();
+        assertEquals("TestFile.txt", b.getFilename());
+        assertEquals("text/plain", b.getMimeType());
+        assertEquals("BlobContent", b.getString());
+
+        // test write
+        blob = new StringBlob("OtherContent");
+        blob.setFilename("other.txt");
+        blob.setMimeType("text/html");
+        bh.setBlob(blob);
+        session.saveDocument(file);
+        session.save();
+
+        // reread
+        bh = file.getAdapter(BlobHolder.class);
+        assertNotNull(bh);
+        assertTrue(bh instanceof DocumentBlobHolder);
+        assertEquals("/TestFile/other.txt", bh.getFilePath());
+        b = bh.getBlob();
+        assertEquals("other.txt", b.getFilename());
+        assertEquals("text/html", b.getMimeType());
+        assertEquals("OtherContent", b.getString());
     }
 
     public void testNoteAdapters() throws Exception {
-        DocumentModel note = getCoreSession().createDocumentModel("Note");
+        CoreSession session = getCoreSession();
+        DocumentModel note = session.createDocumentModel("Note");
         note.setPathInfo("/", "TestNote");
 
-        note.setProperty("dublincore", "title", "TestNote");
+        note.setProperty("dublincore", "title", "Title");
         note.setProperty("note", "note", "Text of the note");
-
-        note = getCoreSession().createDocument(note);
+        note = session.createDocument(note);
 
         BlobHolder bh = note.getAdapter(BlobHolder.class);
         assertNotNull(bh);
         assertTrue(bh instanceof DocumentStringBlobHolder);
+
+        // test blob content
+        Blob b = bh.getBlob();
+        assertEquals("Title.txt", b.getFilename());
+        assertEquals("text/plain", b.getMimeType());
+        assertEquals("Text of the note", b.getString());
+
+        // test write
+        StringBlob blob = new StringBlob("Other text for note");
+        blob.setFilename("other.txt");
+        blob.setMimeType("text/html");
+        bh.setBlob(blob);
+        session.saveDocument(note);
+        session.save();
+
+        // reread
+        bh = note.getAdapter(BlobHolder.class);
+        assertNotNull(bh);
+        assertTrue(bh instanceof DocumentBlobHolder);
+        assertEquals("/TestNote/Title.html", bh.getFilePath());
+        b = bh.getBlob();
+        assertEquals("Title.html", b.getFilename());
+        assertEquals("text/html", b.getMimeType());
+        assertEquals("Other text for note", b.getString());
     }
 
     public void testFolderAdapters() throws Exception {

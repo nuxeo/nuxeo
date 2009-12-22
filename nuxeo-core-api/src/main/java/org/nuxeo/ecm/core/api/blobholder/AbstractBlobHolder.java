@@ -12,8 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.api.blobholder;
@@ -27,13 +27,14 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Base class for {@link BlobHolder} implementers
- *
- * @author tiry
- *
  */
 public abstract class AbstractBlobHolder implements BlobHolder {
 
     public abstract Blob getBlob() throws ClientException;
+
+    public void setBlob(Blob blob) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
 
     public List<Blob> getBlobs() throws ClientException {
         List<Blob> blobs = null;

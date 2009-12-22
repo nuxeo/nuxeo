@@ -18,10 +18,13 @@
 
 package org.nuxeo.ecm.core.api.blobholder;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.model.Property;
 
 /**
  * {@link BlobHolder} implemention based on a {@link DocumentModel} and a Xpath
@@ -55,6 +58,19 @@ public class DocumentStringBlobHolder extends DocumentBlobHolder {
         }
         blob.setFilename(doc.getTitle() + ext);
         return blob;
+    }
+
+    @Override
+    public void setBlob(Blob blob) throws ClientException {
+        xPathFilename = null;
+        String string;
+        try {
+            string = blob.getString();
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
+        doc.getProperty(xPath).setValue(string);
+        mt = blob.getMimeType();
     }
 
 }

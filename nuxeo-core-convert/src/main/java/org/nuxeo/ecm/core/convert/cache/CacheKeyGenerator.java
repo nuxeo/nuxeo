@@ -50,7 +50,7 @@ public class CacheKeyGenerator {
         if (parameters!=null) {
             for (String key : parameters.keySet()) {
                 sb.append(":").append(key);
-                sb.append(":").append(parameters.get(key).toString());
+                sb.append(":").append(String.valueOf(parameters.get(key)));
             }
         }
         return sb.toString();
