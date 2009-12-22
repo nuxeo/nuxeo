@@ -255,6 +255,14 @@ public final class ThemeManager implements Registrable {
         }
         return themePages;
     }
+    
+    public  List<PageElement> getPagesOf(final String themeName) {
+        final ThemeElement theme = getThemeByName(themeName);
+        if (theme == null) {
+            return null;
+        }
+        return getPagesOf(theme);
+    }
 
     public static ThemeElement getThemeOf(final Element element) {
         ThemeElement theme = null;
