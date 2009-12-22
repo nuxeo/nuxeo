@@ -605,11 +605,17 @@
       <selector path=".commentInfo">
         <margin>0px 0px 3px</margin>
       </selector>
-      <selector path=".commentInfo .date">
+      <selector path=".commentRef">
+        <float>left</float>
+      </selector>
+      <selector path=".commentRef .date">
         <color>#727272</color>
       </selector>
-      <selector path=".commentInfo .author">
+      <selector path=".commentRef .author">
         <color>#4b4d68</color>
+      </selector>
+      <selector path=".commentAction">
+        <float>right</float>
       </selector>
     </style>
     <style name="settings style" inherit="common style">
