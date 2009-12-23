@@ -246,6 +246,13 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         file.save();
     }
 
+    public void testDefaultProperties() throws Exception {
+        Folder root = conn.getRootFolder();
+        CMISObject child = root.getChildren().get(0);
+        assertNotNull(child.getProperty("dc:coverage"));
+        assertNull(child.getString("dc:coverage"));
+    }
+
     public void testCreateSPI() throws Exception {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(Property.TYPE_ID, "cmis:folder");

@@ -263,7 +263,14 @@ public class NuxeoProperty implements Property {
             return value;
         }
 
-        public void setValue(Serializable value) {
+        public void setValue(Serializable v) {
+            if (value == null) {
+                if (v == null) {
+                    return;
+                }
+            } else if (value.equals(v)) {
+                return;
+            }
             throw new UnsupportedOperationException("Read-only property: "
                     + propertyDefinition.getId());
         }
