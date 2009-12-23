@@ -157,6 +157,19 @@ public final class ComponentUtils {
         return value;
     }
 
+    public static Object getAttributeOrExpressionValue(FacesContext context,
+            UIComponent component, String attributeName, Object defaultValue) {
+        Object value = component.getAttributes().get(attributeName);
+        if (value == null) {
+            ValueExpression schemaExpr = component.getValueExpression(attributeName);
+            value = schemaExpr.getValue(context.getELContext());
+        }
+        if (value == null) {
+            value = defaultValue;
+        }
+        return value;
+    }
+
     public static String download(FacesContext faces, Blob blob, String filename) {
         if (!faces.getResponseComplete()) {
             ExternalContext econtext = faces.getExternalContext();
@@ -181,8 +194,8 @@ public final class ComponentUtils {
                 log.debug("Downloading with mime/type : " + blob.getMimeType());
                 response.setContentType(blob.getMimeType());
                 long fileSize = blob.getLength();
-                if (fileSize>0) {
-                    response.setContentLength((int)fileSize);
+                if (fileSize > 0) {
+                    response.setContentLength((int) fileSize);
                 }
                 try {
                     blob.transferTo(response.getOutputStream());

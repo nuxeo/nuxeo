@@ -92,7 +92,7 @@
                 <h:outputText value="#{result.id}" />
               </f:subview>
               <f:subview rendered="#{empty result.type}" id="#{widget.id}_result">
-                <h:outputText value="#{item}" />
+                <h:outputText value="#{result}" />
               </f:subview>
             </h:column>
           </rich:suggestionbox>
@@ -126,7 +126,7 @@
                       <h:outputText value="#{info.id}" />
                     </f:subview>
                     <f:subview rendered="#{empty info.type}">
-                      <h:outputText value="#{item}" />
+                      <h:outputText value="#{info}" />
                     </f:subview>
                   </nxu:methodResult>
                 </h:panelGrid>

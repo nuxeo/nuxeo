@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.convert.Converter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -60,10 +61,15 @@ public class UserSuggestionActionsBean implements Serializable {
     private static final Log log = LogFactory.getLog(UserSuggestionActionsBean.class);
 
     public static final String USER_TYPE = "USER_TYPE";
+
     public static final String GROUP_TYPE = "GROUP_TYPE";
+
     public static final String TYPE_KEY_NAME = "type";
+
     public static final String PREFIXED_ID_KEY_NAME = "prefixed_id";
+
     public static final String ID_KEY_NAME = "id";
+
     public static final String ENTRY_KEY_NAME = "entry";
 
     @In(create = true)
@@ -228,6 +234,10 @@ public class UserSuggestionActionsBean implements Serializable {
             res.put(ENTRY_KEY_NAME, userManager.getUserModel(id));
         }
         return res;
+    }
+
+    public Converter getUserConverter() {
+        return new UserDisplayConverter();
     }
 
 }
