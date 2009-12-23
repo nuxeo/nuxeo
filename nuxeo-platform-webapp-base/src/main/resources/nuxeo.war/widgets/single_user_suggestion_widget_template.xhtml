@@ -122,8 +122,10 @@
           <f:attribute name="firstNameField" value="firstName" />
           <f:attribute name="lastNameField" value="lastName" />
         </h:outputText>
-        <h:inputHidden id="#{widget.id}" value="#{field_0}" />
+        <h:inputHidden id="#{widget.id}" value="#{field_0}"
+          required="#{widget.required}" />
       </h:panelGroup>
+      <h:message for="#{widget.id}" styleClass="errorMessage" />
 
     </h:panelGrid>
 
