@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -78,9 +79,8 @@ public class ThemeParser {
         return registerTheme(themeDescriptor, null);
     }
 
-    public static String registerTheme(
-            final ThemeDescriptor themeDescriptor, final String xmlSource)
-            throws ThemeIOException {
+    public static String registerTheme(final ThemeDescriptor themeDescriptor,
+            final String xmlSource) throws ThemeIOException {
         final String src = themeDescriptor.getSrc();
         String themeName = null;
         InputStream in = null;
@@ -122,8 +122,9 @@ public class ThemeParser {
         return themeName;
     }
 
-    private static String registerThemeFromInputStream(final ThemeDescriptor themeDescriptor,
-            final InputStream in) throws ThemeIOException, ThemeException {
+    private static String registerThemeFromInputStream(
+            final ThemeDescriptor themeDescriptor, final InputStream in)
+            throws ThemeIOException, ThemeException {
         String themeName = null;
 
         final InputSource is = new InputSource(in);
@@ -217,12 +218,18 @@ public class ThemeParser {
     }
 
     public static void parseLayout(final Element parent, Node node)
-            throws ThemeIOException {
+            throws ThemeIOException, ThemeException {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        ThemeManager themeManager = Manager.getThemeManager();
         for (String formatName : typeRegistry.getTypeNames(TypeFamily.FORMAT)) {
-            Object format = node.getUserData(formatName);
+            Format format = (Format) node.getUserData(formatName);
             if (format != null) {
-                ElementFormatter.setFormat(parent, (Format) format);
+                if (ElementFormatter.getElementsFor(format).isEmpty()) {
+                    ElementFormatter.setFormat(parent, format);
+                } else {
+                    Format duplicatedFormat = themeManager.duplicateFormat(format);
+                    ElementFormatter.setFormat(parent, duplicatedFormat);
+                }
             }
         }
 

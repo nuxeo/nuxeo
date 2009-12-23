@@ -123,7 +123,9 @@
         <font-size>1.1em</font-size>
       </selector>
     </style>
-    <style element="page[1]/section[1]|page[1]/section[1]/cell[1]" inherit="common style 1"/>
-    <style element="page[1]|page[1]/section[1]/cell[2]" inherit="default colors"/>
+    <style element="page[1]/section[1]" inherit="common style 1"/>
+    <style element="page[1]" inherit="default colors"/>
+    <style element="page[1]/section[1]/cell[1]" inherit="common style 1"/>
+    <style element="page[1]/section[1]/cell[2]" inherit="default colors"/>
   </formats>
 </theme>
