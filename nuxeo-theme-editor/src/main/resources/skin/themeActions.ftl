@@ -30,7 +30,9 @@
 <div id="nxthemesThemeActions" style="display: none"> 
   <ul class="nxthemesDropDownMenu">
     <#if theme.exportable>
-      <li><a href="javascript:void(0)" onclick="window.location='${basePath}/nxthemes-editor/xml_export?src=${theme.src?url}&amp;download=1&amp;indent=2'">Download theme</a></li>  
+      <#if theme.saveable>
+        <li><a href="javascript:void(0)" onclick="window.location='${basePath}/nxthemes-editor/xml_export?src=${theme.src?url}&amp;download=1&amp;indent=2'">Download theme</a></li>  
+      </#if>
       <li><a href="javascript:void(0)" onclick="window.location='${basePath}/nxthemes-editor/xml_export?src=${theme.src?url}'">Show source XML</a></li>
     </#if>
     <#if theme.repairable><li><a href="javascript:void(0)" onclick="NXThemesEditor.repairTheme('${theme.src?js_string}')">Repair theme</a></li></#if>
