@@ -589,11 +589,27 @@ public class NuxeoConnection implements Connection, SPI {
         while (it.hasNext()) {
             Map<String, Serializable> next = it.next();
             SimpleData data = new SimpleData(null, null);
-            // don't use putAll, null values are forbidden
+            String typeId = null;
             for (Entry<String, Serializable> entry : next.entrySet()) {
+                String key = entry.getKey();
                 Serializable value = entry.getValue();
+                if (key.endsWith(Property.TYPE_ID)
+                        || key.endsWith(Property.TYPE_ID)) {
+                    // do type replacement
+                    value = NuxeoType.mappedId((String) value);
+                    if (key.endsWith(Property.TYPE_ID) && typeId == null) {
+                        typeId = (String) value;
+                    }
+                }
                 if (value != null) {
-                    data.put(entry.getKey(), value);
+                    data.put(key, value);
+                }
+            }
+            // synthesize cmis:baseTypeId
+            if (typeId != null) {
+                Type type = repository.getType(typeId);
+                if (type != null) {
+                    data.put(Property.BASE_TYPE_ID, type.getBaseType().getId());
                 }
             }
             page.add(new SimpleObjectEntry(data, this));
