@@ -63,7 +63,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 query, null);
         assertNotNull(q);
         sql = q.selectInfo.sql.replace("\"", ""); // more readable
-        expected = "SELECT HIERARCHY.ID, DUBLINCORE.TITLE"
+        expected = "SELECT HIERARCHY.ID, DUBLINCORE.TITLE, HIERARCHY.PRIMARYTYPE"
                 + " FROM HIERARCHY"
                 + " LEFT JOIN DUBLINCORE ON DUBLINCORE.ID = HIERARCHY.ID"
                 + " WHERE HIERARCHY.PRIMARYTYPE IN (?, ?, ?)"
@@ -83,7 +83,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 query, null);
         assertNotNull(q);
         sql = q.selectInfo.sql.replace("\"", ""); // more readable
-        expected = "SELECT HIERARCHY.ID" //
+        expected = "SELECT HIERARCHY.ID, HIERARCHY.PRIMARYTYPE" //
                 + " FROM HIERARCHY"
                 + " WHERE HIERARCHY.PRIMARYTYPE IN (?, ?, ?)"
                 + "   AND (EXISTS (SELECT 1 FROM DC_CONTRIBUTORS _nxm1_DC_CONTRIBUTORS" //
@@ -103,7 +103,8 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 query, null);
         assertNotNull(q);
         sql = q.selectInfo.sql.replace("\"", ""); // more readable
-        expected = "SELECT _A_HIERARCHY.ID, _B_DUBLINCORE.TITLE, _B_HIERARCHY.ID"
+        expected = "SELECT _A_HIERARCHY.ID, _B_DUBLINCORE.TITLE,"
+                + " _A_HIERARCHY.PRIMARYTYPE, _B_HIERARCHY.ID, _B_HIERARCHY.PRIMARYTYPE"
                 + " FROM HIERARCHY _A_HIERARCHY"
                 + " LEFT JOIN DUBLINCORE _A_DUBLINCORE ON _A_DUBLINCORE.ID = _A_HIERARCHY.ID"
                 + " JOIN HIERARCHY _B_HIERARCHY ON _A_HIERARCHY.ID = _B_HIERARCHY.PARENTID"
@@ -127,7 +128,9 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 query, null);
         assertNotNull(q);
         sql = q.selectInfo.sql.replace("\"", ""); // more readable
-        expected = "SELECT _A_HIERARCHY.ID, _B_DUBLINCORE.TITLE, _B_HIERARCHY.ID"
+        expected = "SELECT _A_HIERARCHY.ID, _B_DUBLINCORE.TITLE,"
+                + " _A_HIERARCHY.PRIMARYTYPE, _B_HIERARCHY.ID,"
+                + " _B_HIERARCHY.PRIMARYTYPE"
                 + " FROM HIERARCHY _A_HIERARCHY"
                 + " LEFT JOIN DUBLINCORE _A_DUBLINCORE ON _A_DUBLINCORE.ID = _A_HIERARCHY.ID"
                 + " JOIN HIERARCHY _B_HIERARCHY ON _A_HIERARCHY.ID = _B_HIERARCHY.PARENTID"
