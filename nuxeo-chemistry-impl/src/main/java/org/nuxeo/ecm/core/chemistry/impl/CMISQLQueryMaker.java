@@ -153,9 +153,12 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         // add main id to all qualifiers
         for (String qual : new ArrayList<String>(walker.columnsPerQual.keySet())) {
-            String col = walker.referToColumn(Property.ID, qual);
-            if (!walker.select_what.contains(col)) {
-                walker.select_what.add(col);
+            for (String propertyId : Arrays.asList(Property.ID,
+                    Property.TYPE_ID)) {
+                String col = walker.referToColumn(propertyId, qual);
+                if (!walker.select_what.contains(col)) {
+                    walker.select_what.add(col);
+                }
             }
         }
 

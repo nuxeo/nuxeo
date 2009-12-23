@@ -140,8 +140,7 @@ public class NuxeoProperty implements Property {
             ContentStream contentStream = getContentStream(doc);
             value = contentStream == null ? null : contentStream.getMimeType();
         } else if (Property.CONTENT_STREAM_FILE_NAME.equals(name)) {
-            ContentStream contentStream = getContentStream(doc);
-            value = contentStream == null ? null : contentStream.getFileName();
+            return new FileNameProperty(doc, pd);
         } else if (Property.CONTENT_STREAM_ID.equals(name)) {
             value = null;
         } else if (Property.PARENT_ID.equals(name)) {
@@ -270,17 +269,13 @@ public class NuxeoProperty implements Property {
         }
     }
 
-    /**
-     * Property for NAME. Allows writing before the document is saved.
-     */
+    protected static abstract class DefinedProperty implements Property {
 
-    public static class NameProperty implements Property {
+        protected final DocumentModel doc;
 
-        private final DocumentModel doc;
+        protected final PropertyDefinition propertyDefinition;
 
-        private final PropertyDefinition propertyDefinition;
-
-        public NameProperty(DocumentModel doc,
+        public DefinedProperty(DocumentModel doc,
                 PropertyDefinition propertyDefinition) {
             this.doc = doc;
             this.propertyDefinition = propertyDefinition;
@@ -288,6 +283,17 @@ public class NuxeoProperty implements Property {
 
         public PropertyDefinition getDefinition() {
             return propertyDefinition;
+        }
+    }
+
+    /**
+     * Property for cmis:name. Allows writing before the document is saved.
+     */
+    public static class NameProperty extends DefinedProperty {
+
+        public NameProperty(DocumentModel doc,
+                PropertyDefinition propertyDefinition) {
+            super(doc, propertyDefinition);
         }
 
         public Serializable getValue() {
@@ -307,6 +313,36 @@ public class NuxeoProperty implements Property {
             }
             doc.setPathInfo(doc.getPath().removeLastSegments(1).toString(),
                     (String) value);
+        }
+    }
+
+    /**
+     * Property for cmis:contentStreamFileName.
+     */
+    public static class FileNameProperty extends DefinedProperty {
+
+        public FileNameProperty(DocumentModel doc,
+                PropertyDefinition propertyDefinition) {
+            super(doc, propertyDefinition);
+        }
+
+        public Serializable getValue() {
+            ContentStream cs = getContentStream(doc);
+            return cs == null ? null : cs.getFileName();
+        }
+
+        public void setValue(Serializable value) {
+            BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
+            if (blobHolder == null) {
+                throw new StreamNotSupportedException();
+            }
+            Blob blob;
+            try {
+                blob = blobHolder.getBlob();
+            } catch (ClientException e) {
+                throw new CMISRuntimeException(e.toString(), e);
+            }
+            blob.setFilename((String) value);
         }
     }
 
