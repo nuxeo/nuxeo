@@ -27,6 +27,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -36,6 +37,8 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
@@ -54,6 +57,8 @@ import org.nuxeo.ecm.core.storage.sql.db.Table;
  */
 public class DialectOracle extends Dialect {
 
+    private static final Log log = LogFactory.getLog(DialectOracle.class);
+
     protected final String fulltextParameters;
 
     public DialectOracle(DatabaseMetaData metadata,
@@ -61,6 +66,20 @@ public class DialectOracle extends Dialect {
         super(metadata, repositoryDescriptor);
         fulltextParameters = repositoryDescriptor.fulltextAnalyzer == null ? ""
                 : repositoryDescriptor.fulltextAnalyzer;
+    }
+
+    @Override
+    public String getConnectionSchema(Connection connection)
+            throws SQLException {
+        Statement st = connection.createStatement();
+        String sql = "SELECT SYS_CONTEXT('USERENV', 'SESSION_USER') FROM DUAL";
+        log.trace("SQL: " + sql);
+        ResultSet rs = st.executeQuery(sql);
+        rs.next();
+        String user = rs.getString(1);
+        log.trace("SQL:   -> " + user);
+        st.close();
+        return user;
     }
 
     @Override

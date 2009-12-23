@@ -115,6 +115,14 @@ public abstract class Dialect {
     }
 
     /**
+     * Gets the schema to use to query metadata about existing tables.
+     */
+    public String getConnectionSchema(Connection connection)
+            throws SQLException {
+        return null;
+    }
+
+    /**
      * Gets the JDBC type and string from Nuxeo's type abstraction.
      */
     public abstract JDBCInfo getJDBCTypeAndString(ColumnType type);

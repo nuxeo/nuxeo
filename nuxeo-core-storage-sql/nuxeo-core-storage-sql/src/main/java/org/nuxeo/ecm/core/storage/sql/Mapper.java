@@ -381,8 +381,9 @@ public class Mapper {
     }
 
     protected void createTables() throws SQLException {
+        String schemaName = sqlInfo.dialect.getConnectionSchema(connection);
         DatabaseMetaData metadata = connection.getMetaData();
-        Set<String> tableNames = findTableNames(metadata);
+        Set<String> tableNames = findTableNames(metadata, schemaName);
         Statement st = connection.createStatement();
 
         for (Table table : sqlInfo.getDatabase().getTables()) {
@@ -421,7 +422,7 @@ public class Mapper {
             /*
              * Get existing columns.
              */
-            ResultSet rs = metadata.getColumns(null, null, tableName, "%");
+            ResultSet rs = metadata.getColumns(null, schemaName, tableName, "%");
             Map<String, Integer> columnTypes = new HashMap<String, Integer>();
             Map<String, String> columnTypeNames = new HashMap<String, String>();
             Map<String, Integer> columnTypeSizes = new HashMap<String, Integer>();
@@ -480,10 +481,10 @@ public class Mapper {
         st.close();
     }
 
-    protected static Set<String> findTableNames(DatabaseMetaData metadata)
-            throws SQLException {
+    protected static Set<String> findTableNames(DatabaseMetaData metadata,
+            String schemaName) throws SQLException {
         Set<String> tableNames = new HashSet<String>();
-        ResultSet rs = metadata.getTables(null, null, "%",
+        ResultSet rs = metadata.getTables(null, schemaName, "%",
                 new String[] { "TABLE" });
         while (rs.next()) {
             String tableName = rs.getString("TABLE_NAME");
