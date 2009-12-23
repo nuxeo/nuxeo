@@ -127,19 +127,19 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements
             return new DocumentBlobHolder(doc, "file:content", "file:filename");
         } else if (doc.hasSchema("note")) {
             try {
-                String noteContent = (String) doc.getPropertyValue("note:note");
-                if (noteContent != null && !"".equals(noteContent)) {
-                    try {
-                        String mt = (String) doc.getPropertyValue("note:mime_type");
-                        if (mt == null) {
-                            mt = "text/plain";
+                String mt = null;
+                try {
+                    mt = (String) doc.getPropertyValue("note:mime_type");
+                    if (mt == null) {
+                        String note = (String) doc.getPropertyValue("note:note");
+                        if (note != null && !"".equals(note)) {
+                            mt = "text/plain"; // BBB
                         }
-                        return new DocumentStringBlobHolder(doc, "note:note",
-                                mt);
-                    } catch (PropertyException e) {
-                        return new DocumentStringBlobHolder(doc, "note:note");
                     }
+                } catch (PropertyException e) {
+                    // mt = null;
                 }
+                return new DocumentStringBlobHolder(doc, "note:note", mt);
             } catch (Exception e) {
                 log.error(e);
             }
