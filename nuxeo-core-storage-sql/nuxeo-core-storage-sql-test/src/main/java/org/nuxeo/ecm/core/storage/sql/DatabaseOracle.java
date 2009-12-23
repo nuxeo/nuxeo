@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,8 +52,15 @@ public class DatabaseOracle extends DatabaseHelper {
                 System.getProperty(URL_PROPERTY),
                 System.getProperty(USER_PROPERTY),
                 System.getProperty(PASSWORD_PROPERTY));
-        doOnAllTables(connection, null, System.getProperty(USER_PROPERTY),
+        doOnAllTables(connection, null,
+                System.getProperty(USER_PROPERTY).toUpperCase(),
                 "DROP TABLE \"%s\" CASCADE CONSTRAINTS");
+        Statement st = connection.createStatement();
+        String sql = "PURGE RECYCLEBIN";
+        log.trace("SQL: " + sql);
+        st.execute(sql);
+        st.close();
+
         connection.close();
     }
 

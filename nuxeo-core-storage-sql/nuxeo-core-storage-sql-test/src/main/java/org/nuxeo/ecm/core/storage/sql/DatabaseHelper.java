@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 public abstract class DatabaseHelper {
 
-    private static final Log log = LogFactory.getLog(DatabaseHelper.class);
+    protected static final Log log = LogFactory.getLog(DatabaseHelper.class);
 
     public static final String DB_PROPERTY = "nuxeo.test.vcs.db";
 
@@ -116,7 +116,7 @@ public abstract class DatabaseHelper {
         Statement st = connection.createStatement();
         for (String tableName : tableNames) {
             String sql = String.format(statement, tableName);
-            log.debug(sql);
+            log.trace("SQL: " + sql);
             st.execute(sql);
         }
         st.close();
