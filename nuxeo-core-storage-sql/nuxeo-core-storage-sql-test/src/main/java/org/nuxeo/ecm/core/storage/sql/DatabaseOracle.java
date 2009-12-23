@@ -54,13 +54,7 @@ public class DatabaseOracle extends DatabaseHelper {
                 System.getProperty(PASSWORD_PROPERTY));
         doOnAllTables(connection, null,
                 System.getProperty(USER_PROPERTY).toUpperCase(),
-                "DROP TABLE \"%s\" CASCADE CONSTRAINTS");
-        Statement st = connection.createStatement();
-        String sql = "PURGE RECYCLEBIN";
-        log.trace("SQL: " + sql);
-        st.execute(sql);
-        st.close();
-
+                "DROP TABLE \"%s\" CASCADE CONSTRAINTS PURGE");
         connection.close();
     }
 
