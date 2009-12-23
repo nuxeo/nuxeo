@@ -43,6 +43,8 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
   private String name;
   private String spaceName;
   private Map<String, GadgetView> gadgetViews;
+  private String htmlContent;
+  private Integer height;
 
   /**
    * Default construcor (Specification of Gwt)
@@ -57,7 +59,7 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
   public GadgetBean(Integer shindigId, String ref, String title, String viewer,
       List<PreferencesBean> defaultPrefs, List<PreferencesBean> userPrefs,
       Boolean permission, Boolean collapsed, String name, String spaceName,
-      Map<String, GadgetView> gadgetViews) {
+      Map<String, GadgetView> gadgetViews, String htmlContent, Integer height) {
     this.shindigId = shindigId;
     this.ref = ref;
     this.title = title;
@@ -69,6 +71,8 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
     this.name = name;
     this.spaceName = spaceName;
     this.gadgetViews = gadgetViews;
+    this.htmlContent = htmlContent;
+    this.height = height;
   }
 
   public void setRenderUrl(String renderUrl) {
@@ -166,6 +170,22 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
     else if (pos1 == pos2)
       return 0;
     return 1;
+  }
+
+  public String getHtmlContent() {
+    return htmlContent;
+  }
+
+  public int getHeight() {
+    return height.intValue();
+  }
+
+  public void setHeight(Integer height) {
+    this.height = height;
+  }
+
+  public void setHtmlContent(String htmlContent) {
+    this.htmlContent = htmlContent;
   }
 
 }

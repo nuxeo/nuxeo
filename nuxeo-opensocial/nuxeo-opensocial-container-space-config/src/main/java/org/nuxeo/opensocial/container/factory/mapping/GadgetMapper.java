@@ -60,6 +60,8 @@ public class GadgetMapper extends GadgetBean implements Gadget {
   private boolean permission;
   private String name;
   private String spaceName;
+  private int height;
+  private String htmlContent;
 
   /**
    * Constructor for convert GadgetBean to Gadget
@@ -79,6 +81,8 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     this.preferences = createPreferences(bean);
     this.defaultPrefs = bean.getDefaultPrefs();
     this.userPrefs = bean.getUserPrefs();
+    this.height = bean.getHeight();
+    this.htmlContent = bean.getHtmlContent();
     this.viewer = bean.getViewer();
     this.shindigId = bean.getShindigId();
     this.permission = bean.getPermission();
@@ -112,13 +116,15 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     this.owner = gadget.getOwner();
     this.viewer = viewer;
     this.shindigId = shindigId;
+    this.height = gadget.getHeight();
+    this.htmlContent = gadget.getHtmlContent();
     this.permission = permission;
     createGadgetBean();
   }
 
   @Override
   public Boolean getPermission() {
-    return true;
+    return permission;
   }
 
   @Override
@@ -247,11 +253,12 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     this.userPrefs = PreferenceManager.getPreferences(this);
     this.defaultPrefs = PreferenceManager.getDefaultPreferences(this);
     updateTitleInPreference();
-    bean = new GadgetBean(shindigId, ref, title, viewer, defaultPrefs,
-        userPrefs, permission, collapsed, name, spaceName, createGadgetViews());
+    this.bean = new GadgetBean(shindigId, ref, title, viewer, defaultPrefs,
+        userPrefs, permission, collapsed, name, spaceName, createGadgetViews(),
+        htmlContent, height);
     this.renderUrl = updateRenderUrl();
-    bean.setRenderUrl(renderUrl);
-    bean.setPosition(this.position);
+    this.bean.setRenderUrl(renderUrl);
+    this.bean.setPosition(this.position);
   }
 
   private Map<String, GadgetView> createGadgetViews() {
@@ -305,9 +312,20 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     this.name = spaceName;
   }
 
+<<<<<<< local
 public Space getParent() {
     // TODO Auto-generated method stub
     return null;
+=======
+  public int getHeight() {
+    return height;
+  }
+
+  public String getHtmlContent() {
+    return htmlContent;
+  }
+
+>>>>>>> other
 }
 
 }

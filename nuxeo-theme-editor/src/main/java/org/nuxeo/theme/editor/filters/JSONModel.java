@@ -81,6 +81,7 @@ public class JSONModel extends StandaloneFilter {
         model_data.put("has padding", false);
 
         if (element instanceof Fragment) {
+            model_data.put("title", info.getElement().getDescription());
             model_data.put("can add fragment", true);
             model_data.put("editable", true);
             model_data.put("duplicable", true);
@@ -98,6 +99,8 @@ public class JSONModel extends StandaloneFilter {
         }
 
         else if (element instanceof CellElement) {
+            model_data.put("title", String.format("Cell %s",
+                    element.getOrder() + 1));
             if ("layout".equals(viewMode)) {
                 model_data.put("splittable", true);
                 model_data.put("deletable", true);

@@ -38,6 +38,7 @@ public class GadgetPortlet extends Portlet {
     buildPortlet();
     this.form = new GadgetForm(this);
     this.tools.setGadgetForm(form);
+    this.setVisible(false);
   }
 
   public GadgetPortlet(GadgetBean bean) {
@@ -54,13 +55,13 @@ public class GadgetPortlet extends Portlet {
       this.setDraggable(gadget.getPermission());
       this.setHideCollapseTool(!this.gadget.getPermission());
     }
+    this.setHeight(this.gadget.getHeight());
     this.addListener(new PortletListener(this));
     this.frame = buildFrame();
     this.add(frame);
     this.setId(getIdWithRefAndView(gadget.getRef(), view));
     this.tools = new GadgetTools(this);
     this.setTools(tools.getButtons());
-
     GadgetService.setAuthToken(getIframeId(), this.gadget.getRef());
     GadgetService.setRelayRpc(getIframeId(), this.gadget.getRef());
   }
@@ -184,7 +185,6 @@ public class GadgetPortlet extends Portlet {
     if (this.gadget.isCollapse())
       collapse(getIdWithRefAndView(gadget.getRef(), view));
     super.afterRender();
-    JsLibrary.updateFrameWidth();
     renderDefaultPreferences();
     updateFrameHeightIfContentTypeIsUrl();
   }
@@ -258,7 +258,6 @@ public class GadgetPortlet extends Portlet {
     $wnd.jQuery("#"+id).find("div.x-panel-tl").css("border-bottom","1px solid #"+color);
     $wnd.jQuery("#"+id).attr("style","border:1px solid #"+color);
   }-*/;
-
 
   static native void removeBorderColor(String id)
   /*-{

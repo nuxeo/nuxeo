@@ -23,6 +23,6 @@ specific language governing permissions and limitations under the License.
 
   </container>
   <gadget>
-     <script src="nuxeo-getid.js"/>
+     <script src="nuxeo.js"/>
   </gadget>
 </feature>

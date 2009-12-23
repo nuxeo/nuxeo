@@ -67,8 +67,6 @@ public class Table implements Serializable {
      */
     public String getCreateSql(Dialect dialect) {
         StringBuilder buf = new StringBuilder();
-        char openQuote = dialect.openQuote();
-        char closeQuote = dialect.closeQuote();
 
         buf.append("create table");
         buf.append(' ');

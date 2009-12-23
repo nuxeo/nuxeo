@@ -55,7 +55,6 @@ import org.nuxeo.runtime.api.DataSourceHelper;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.com>"
- *
  */
 public class TagSchemaUpdater {
 

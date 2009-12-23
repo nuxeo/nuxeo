@@ -1,5 +1,5 @@
 /**** GWT Container ****/
-.containerPanel { /*background-color: transparent;*/
+.containerPanel {
   color: #000000;
 }
 
@@ -33,6 +33,7 @@
 .x-panel-body {
   background: transparent;
   min-width:100%;
+  height:100%;
 }
 
 .x-panel-tl {

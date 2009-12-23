@@ -7,6 +7,8 @@
        "showDisabledItems": false,
        "targetType": "element",
        "items": [
+         {"type": "title"
+         },
          {"type": "item",
           "label": "Edit",
           "icon": "/skin/nxthemes-editor/img/edit-16.png",
@@ -34,7 +36,7 @@
          },
          {"type": "item",
           "label": "Add fragment",
-          "icon": "/skin/nxthemes-editor/img/add-16.png",
+          "icon": "/skin/nxthemes-editor/img/add-fragment-16.png",
           "action": "insert fragment",
           "visible": "can add fragment"
          },             

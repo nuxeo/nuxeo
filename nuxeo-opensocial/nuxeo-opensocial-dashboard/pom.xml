@@ -76,6 +76,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-spaces-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-opensocial-gadgets-core</artifactId>
     </dependency>
     <dependency>
@@ -85,22 +89,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-opensocial-container-space-config</artifactId>
-    </dependency>
-    <dependency>
-	<groupId>org.nuxeo.theme</groupId>
-	<artifactId>nuxeo-theme-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-spaces-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-spaces-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-spaces-web</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>

@@ -10,20 +10,9 @@
   </script>
   <script type="text/javascript" language="javascript" src="/nuxeo/org.nuxeo.opensocial.container.ContainerEntryPoint/org.nuxeo.opensocial.container.ContainerEntryPoint.nocache.js"></script>
     <div id="content">
-            <div id="gwtContainer" />
+            <div id="gwtContainer"/>
     </div>
   </div>
 </div>
- <script type="text/javascript">
-    loading_show();
-
-    <#if nxthemesInfo.model.isAnonymous == true>
-     $(document).ready( function() {
-       loading_remove();
-       });
-    </#if>
-
-
-  </script>
 </@block>
 </div>

@@ -1,4 +1,3 @@
-<div>
 
 <!--  Style picker -->
 <@nxthemes_panel identifier="style picker"
@@ -6,7 +5,7 @@
   controlledBy="style editor perspectives,toolbox mover"
   visibleInPerspectives="style picker" />
 
-<div id="nxthemesElementEditor">
+<div id="nxthemesElementEditor" class="nxthemesScreen">
 
 <@nxthemes_controller resource="element-form-actions.json" />
 <@nxthemes_controller resource="element-editor-perspectives.json" />
@@ -14,8 +13,6 @@
 <@nxthemes_controller resource="style-editor-actions.json" />
 
 <h1 class="nxthemesEditor">Element editor</h1>
-
-<a onclick="NXThemesEditor.editCanvas()" class="nxthemesBack">Back to canvas</a>
 
 <#if selected_element>
 
@@ -65,5 +62,4 @@
 
 </div>
 
-</div>
 

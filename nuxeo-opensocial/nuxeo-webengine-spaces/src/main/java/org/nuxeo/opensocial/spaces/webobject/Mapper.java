@@ -70,10 +70,6 @@ public final class Mapper {
       return null;
     }
 
-    public String getUrl() {
-      return null;
-    }
-
     public String getId() {
       if (id == null)
         return IdUtils.generateId(formData.getString("name"));
@@ -94,18 +90,23 @@ public final class Mapper {
     }
 
     public boolean isCollapsed() {
-      // TODO Auto-generated method stub
       return false;
     }
 
     public String getOwner() {
-      // TODO Auto-generated method stub
       return null;
     }
 
     public boolean isEqualTo(Gadget gadget) {
-      // TODO Auto-generated method stub
       return false;
+    }
+
+    public int getHeight() {
+      return 0;
+    }
+
+    public String getHtmlContent() {
+      return null;
     }
   }
 

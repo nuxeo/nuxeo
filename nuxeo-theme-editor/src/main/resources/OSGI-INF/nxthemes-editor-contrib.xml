@@ -25,12 +25,12 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="resources">
 
-    <resource name="nxthemes-editor-authoring.js">
-      <path>nxthemes/editor/scripts/authoring.js</path>
+    <resource name="nxthemes-editor.js">
+      <path>nxthemes/editor/scripts/nxthemes-editor.js</path>
     </resource>
 
-    <resource name="nxthemes-editor-authoring.css">
-      <path>nxthemes/editor/styles/authoring.css</path>
+    <resource name="nxthemes-editor.css">
+      <path>nxthemes/editor/styles/nxthemes-editor.css</path>
     </resource>
 
     <resource name="theme-editor.json">
@@ -63,6 +63,12 @@
       </path>
     </resource>
 
+    <resource name="theme-buttons.json">
+      <path>
+        nxthemes/editor/controllers/theme-buttons.json
+      </path>
+    </resource>    
+
     <resource name="fragment-inserter.json">
       <path>
         nxthemes/editor/controllers/fragment-inserter.json
@@ -90,12 +96,6 @@
     <resource name="fragment-factory-expander.json">
       <path>
         nxthemes/editor/controllers/fragment-factory-expander.json
-      </path>
-    </resource>
-
-    <resource name="theme-switcher.json">
-      <path>
-        nxthemes/editor/controllers/theme-switcher.json
       </path>
     </resource>
 
@@ -147,6 +147,12 @@
       </path>
     </resource>
 
+    <resource name="theme-switcher.json">
+      <path>
+        nxthemes/editor/controllers/theme-switcher.json
+      </path>
+    </resource>
+
     <resource name="context-menu-actions.json">
       <path>
         nxthemes/editor/controllers/context-menu-actions.json
@@ -171,6 +177,10 @@
 
     <resource name="preset-menu.json">
       <path>nxthemes/editor/views/preset-menu.json</path>
+    </resource>
+    
+    <resource name="preset-library-menu.json">
+      <path>nxthemes/editor/views/preset-library-menu.json</path>
     </resource>
     
     <resource name="style-manager-actions.json">
@@ -247,8 +257,8 @@
       <resource>nxthemes.css</resource>
       <resource>nxthemes-widgets.js</resource>
       <resource>nxthemes-controllers.js</resource>
-      <resource>nxthemes-editor-authoring.js</resource>
-      <resource>nxthemes-editor-authoring.css</resource>
+      <resource>nxthemes-editor.js</resource>
+      <resource>nxthemes-editor.css</resource>
     </view>
 
     <view name="page frame" template-engine="freemarker">
@@ -380,8 +390,8 @@
       <resource>nxthemes.css</resource>
       <resource>nxthemes-widgets.js</resource>
       <resource>nxthemes-controllers.js</resource>
-      <resource>nxthemes-editor-authoring.js</resource>
-      <resource>nxthemes-editor-authoring.css</resource>
+      <resource>nxthemes-editor.js</resource>
+      <resource>nxthemes-editor.css</resource>
     </view>
 
     <view name="page frame" template-engine="jsf-facelets">

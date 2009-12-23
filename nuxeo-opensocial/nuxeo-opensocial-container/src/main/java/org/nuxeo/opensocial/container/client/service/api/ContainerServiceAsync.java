@@ -17,7 +17,7 @@
 
 package org.nuxeo.opensocial.container.client.service.api;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.opensocial.container.client.bean.Container;
@@ -28,14 +28,14 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * ContainerServiceAsync
- *
+ * 
  * @author Guillaume Cusnieux
  */
 public interface ContainerServiceAsync {
 
   /**
    * Retrieve a specific container
-   *
+   * 
    * @param gwtParams
    * @param AsyncCallback
    *          <Container>
@@ -46,7 +46,7 @@ public interface ContainerServiceAsync {
 
   /**
    * Save layout of container
-   *
+   * 
    * @param gwtParams
    * @param layoutName
    * @param AsyncCallback
@@ -57,7 +57,7 @@ public interface ContainerServiceAsync {
 
   /**
    * Save preferences of gadget with form parameter
-   *
+   * 
    * @param gadget
    * @param form
    *          : new preferences
@@ -70,7 +70,7 @@ public interface ContainerServiceAsync {
 
   /**
    * Remove gadget
-   *
+   * 
    * @param gadget
    * @param gwtParams
    * @param AsyncCallback
@@ -81,7 +81,7 @@ public interface ContainerServiceAsync {
 
   /**
    * Add gadget
-   *
+   * 
    * @param gadgetName
    * @param gwtParams
    * @param AsyncCallback
@@ -91,34 +91,34 @@ public interface ContainerServiceAsync {
       AsyncCallback<GadgetBean> callback);
 
   /**
-   * Save gadget position
-   *
+   * Save collection of gadgets
+   * 
    * @param beans
    * @param gwtParams
    * @param AsyncCallback
    *          <GadgetBean>
    */
-  void saveGadgetPosition(ArrayList<GadgetBean> beans,
+  void saveGadgetsCollection(List<GadgetBean> beans,
       Map<String, String> gwtParams, AsyncCallback<GadgetBean> callback);
 
   /**
-   * Save collapsed
-   *
+   * Save Gadget
+   * 
    * @param gadget
    * @param gwtParams
    * @param AsyncCallback
    *          <GadgetBean>
    */
-  void saveGadgetCollapsed(GadgetBean gadgetBean,
-      Map<String, String> gwtParams, AsyncCallback<GadgetBean> callback);
+  void saveGadget(GadgetBean gadgetBean, Map<String, String> gwtParams,
+      AsyncCallback<GadgetBean> callback);
 
   /**
    * Get collection of gadget name sorted by category
-   *
+   * 
    * @param gwtParams
    * @param AsyncCallback
    *          <Map<String, ArrayList<String>>>
    */
   void getGadgetList(Map<String, String> gwtParams,
-      AsyncCallback<Map<String, ArrayList<String>>> asyncCallback);
+      AsyncCallback<Map<String, List<String>>> asyncCallback);
 }

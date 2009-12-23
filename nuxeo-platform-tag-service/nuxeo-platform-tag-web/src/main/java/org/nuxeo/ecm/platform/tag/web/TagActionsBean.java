@@ -14,6 +14,7 @@
  */
 package org.nuxeo.ecm.platform.tag.web;
 
+import static org.jboss.seam.ScopeType.APPLICATION;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
 
@@ -107,7 +108,7 @@ public class TagActionsBean implements Serializable {
         log.debug("Removing 'tagActions' Seam component...");
     }
 
-    @Factory(value = "tagServiceEnabled", scope = ScopeType.APPLICATION)
+    @Factory(value = "tagServiceEnabled", scope = APPLICATION)
     public boolean isTagServiceEnabled() throws ClientException {
         return taggingHelper.isTagServiceEnabled();
     }
@@ -116,7 +117,7 @@ public class TagActionsBean implements Serializable {
      * Returns the list with distinct public tags (or owned by user) that are
      * applied on the current document.
      */
-    @Factory(value = "currentDocumentTags", scope = ScopeType.EVENT)
+    @Factory(value = "currentDocumentTags", scope = EVENT)
     public List<Tag> getDocumentTags() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
@@ -137,8 +138,8 @@ public class TagActionsBean implements Serializable {
      * Performs the tagging on the current document.
      */
     public String addTagging() throws ClientException {
-        String messageKey = null;
         tagsLabel = cleanTag(tagsLabel);
+        String messageKey;
         if (StringUtils.isBlank(tagsLabel)) {
             messageKey = "message.add.new.tagging.not.empty";
         } else {
@@ -214,7 +215,7 @@ public class TagActionsBean implements Serializable {
      * Returns tag cloud info for the whole repository.
      * For performance reasons, the security on underlying documents is not tested.
      */
-    @Factory(value = "tagCloudOnAllDocuments", scope = ScopeType.EVENT)
+    @Factory(value = "tagCloudOnAllDocuments", scope = EVENT)
     public List<WeightedTag> getPopularCloudOnAllDocuments() throws ClientException {
         List<WeightedTag> tagCloud = new ArrayList<WeightedTag>();
         int min, max;
