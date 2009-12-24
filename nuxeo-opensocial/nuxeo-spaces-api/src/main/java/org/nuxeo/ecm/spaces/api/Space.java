@@ -100,11 +100,15 @@ public interface Space {
 
   void save(Gadget gadget) throws ClientException;
 
+  void remove(Gadget gadget) throws ClientException;
+
   List<Gadget> getGadgets() throws ClientException;
 
   boolean hasPermission(String permissionName) throws ClientException;
 
   Calendar getDatePublication() throws ClientException;
+
+
 
 
 

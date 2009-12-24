@@ -36,7 +36,7 @@ public class GadgetManagerImpl implements GadgetManager {
     private static final Log log = LogFactory.getLog(GadgetManagerImpl.class);
     public static final String TITLE_KEY_PREF = "title";
 
-    private SpaceManager spaceManager() throws Exception {
+    protected SpaceManager spaceManager() throws Exception {
         return Framework.getService(SpaceManager.class);
     }
 
@@ -68,19 +68,8 @@ public class GadgetManagerImpl implements GadgetManager {
                 .get(ContainerManagerImpl.REPO_NAME));
     }
 
-    /**
-     * Save Collapse
-     *
-     * @param gadget
-     *            : Gadget to save
-     * @param gwtParams
-     *            : container paramters
-     */
-    public void saveCollapsed(GadgetBean gadget, Map<String, String> gwtParams) {
-        updateFullGadget(gadget, gwtParams);
-    }
 
-    private void updateFullGadget(GadgetBean gadget,
+    public void saveGadget(GadgetBean gadget,
             Map<String, String> gwtParams) {
         try {
             String spaceId = getParamValue(ContainerManagerImpl.DOC_REF,
@@ -88,15 +77,10 @@ public class GadgetManagerImpl implements GadgetManager {
             Space space = spaceManager().getSpace(spaceId, getCoreSession(gwtParams));
 
             GadgetMapper gadgetMapper = new GadgetMapper(gadget);
-            space.updateGadget(gadgetMapper);
+            space.save(gadgetMapper);
         } catch (Exception e) {
             log.error(e);
         }
-    }
-
-    public void savePosition(GadgetBean gadget, Map<String, String> gwtParams)
-            throws ClientException {
-        updateFullGadget(gadget, gwtParams);
     }
 
     /**
@@ -107,13 +91,7 @@ public class GadgetManagerImpl implements GadgetManager {
             Map<String, String> updatePrefs, Map<String, String> gwtParams)
             throws Exception {
         try {
-            CoreSession session  = getCoreSession(gwtParams);
-
-
-            String spaceId = getParamValue(ContainerManagerImpl.DOC_REF,
-                    gwtParams, true, null);
-            Space space = spaceManager().getSpace(spaceId, session);
-
+            Space space = getCurrentSpace(gwtParams);
             GadgetMapper gadgetMapper = new GadgetMapper(gadget);
 
             if (updatePrefs != null) {
@@ -123,12 +101,22 @@ public class GadgetManagerImpl implements GadgetManager {
                 }
             }
             gadgetMapper.setName(gadget.getSpaceName());
-            space.updateGadget(gadgetMapper);
+            space.save(gadgetMapper);
 
         } catch (Exception e) {
             log.error("GadgetManagerUImlp - savePreferences : "
                     + e.fillInStackTrace());
         }
+
+    }
+
+
+    private Space getCurrentSpace(Map<String,String> gwtParams) throws Exception {
+        CoreSession session  = getCoreSession(gwtParams);
+
+        String spaceId = getParamValue(ContainerManagerImpl.DOC_REF,
+                gwtParams, true, null);
+        return spaceManager().getSpace(spaceId, session);
 
     }
 
@@ -147,5 +135,8 @@ public class GadgetManagerImpl implements GadgetManager {
             retour = value;
         return retour;
     }
+
+
+
 
 }

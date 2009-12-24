@@ -21,6 +21,7 @@ import org.nuxeo.runtime.api.Framework;
 public class DocGadgetImpl extends AbstractGadget {
 
     private static final String GADGET_CATEGORY = "gadget:category";
+
     private static final String GADGET_PLACEID = "gadget:placeID";// html
                                                                     // division
                                                                     // id

@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.opensocial.container.client.bean.PreferencesBean;
 import org.nuxeo.opensocial.container.factory.mapping.GadgetMapper;
 import org.nuxeo.opensocial.container.utils.SecureTokenBuilder;
@@ -69,7 +70,7 @@ public class UrlBuilder {
 
     private static final String PARENT_KEY = "parent";
 
-    public static String buildShindigUrl(GadgetMapper gadget) throws Exception {
+    public static String buildShindigUrl(GadgetMapper gadget) throws ClientException  {
 
         // TODO: get away prefs definition from the url
         // TODO: Better implementation of RPC_Token that relies now on gadget id
@@ -101,8 +102,12 @@ public class UrlBuilder {
         sb.append("up_" + gadget.getHeight() + "&");
 
         // st=qdlfjqsmfkjqf&
-        sb.append(SECURITY_TOKEN_KEY + "="
+        try {
+            sb.append(SECURITY_TOKEN_KEY + "="
                 + getSecurityToken(gadget, gadgetDef));
+        } catch (Exception e) {
+            throw new ClientException("Unable to getSecurity Token",e);
+        }
 
         //#rpctoken=123415
         sb.append("#" + RPC_TOKEN + "=" + gadget.getId());

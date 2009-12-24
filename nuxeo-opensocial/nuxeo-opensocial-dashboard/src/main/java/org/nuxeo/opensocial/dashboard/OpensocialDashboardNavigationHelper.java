@@ -80,16 +80,11 @@ public class OpensocialDashboardNavigationHelper implements
                 log.warn("unable to find space manager!");
             } else {
 
-                Univers universe;
-                universe = spaceManager.getUnivers(
-                        DashboardUniverseProvider.DASHBOARD_UNIVERSE_NAME,
-                        documentManager);
+
                 return spaceManager.getSpace(
-                        DashboardSpaceProvider.DASHBOARD_SPACE_NAME, universe,
+                        DashboardSpaceProvider.DASHBOARD_SPACE_NAME,
                         documentManager).getId();
             }
-        } catch (UniversNotFoundException e) {
-            log.error("Unable to find the default universe for our space!", e);
         } catch (SpaceException e) {
             log.error("Unable to access space correctly for our dashboard!", e);
         } catch (Exception e) {

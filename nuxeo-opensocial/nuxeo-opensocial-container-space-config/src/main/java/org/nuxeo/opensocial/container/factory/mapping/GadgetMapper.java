@@ -23,11 +23,11 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.gadgets.spec.View;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
@@ -100,7 +100,7 @@ public class GadgetMapper extends GadgetBean implements Gadget {
      * @param bean
      */
     public GadgetMapper(Gadget gadget, String viewer, int shindigId,
-            boolean permission) {
+            boolean permission) throws ClientException {
         this.title = gadget.getTitle();
         this.spaceName = gadget.getName();
         this.name = gadget.getName();
@@ -190,16 +190,20 @@ public class GadgetMapper extends GadgetBean implements Gadget {
 
 
     public void setPreferences(Map<String, String> updatePrefs)
-            throws Exception {
-        this.preferences = updatePrefs;
-        for (PreferencesBean p : userPrefs) {
-            updatePrefValue(updatePrefs, p);
+            throws ClientException {
+        try {
+            this.preferences = updatePrefs;
+            for (PreferencesBean p : userPrefs) {
+                updatePrefValue(updatePrefs, p);
+            }
+            for (PreferencesBean p : defaultPrefs) {
+                updatePrefValue(updatePrefs, p);
+            }
+            this.bean.setRenderUrl(UrlBuilder.buildShindigUrl(this));
+            this.bean.setUserPrefs(userPrefs);
+        } catch (UnsupportedEncodingException e) {
+            throw new ClientException("Unable to decode pref value");
         }
-        for (PreferencesBean p : defaultPrefs) {
-            updatePrefValue(updatePrefs, p);
-        }
-        this.bean.setRenderUrl(UrlBuilder.buildShindigUrl(this));
-        this.bean.setUserPrefs(userPrefs);
     }
 
     private void updatePrefValue(Map<String, String> updatePrefs,
@@ -247,7 +251,7 @@ public class GadgetMapper extends GadgetBean implements Gadget {
         updateTitleInPreference();
         bean = new GadgetBean(shindigId, ref, title, viewer, defaultPrefs,
                 userPrefs, permission, collapsed, name, spaceName,
-                createGadgetViews());
+                createGadgetViews(), "", getHeight());
         this.renderUrl = updateRenderUrl();
         bean.setRenderUrl(renderUrl);
         bean.setPosition(this.position);
@@ -311,6 +315,41 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     public URL getDefinitionUrl() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    public String getPref(String prefKey) throws ClientException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void setCategory(String category) throws ClientException {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void setCollapsed(boolean collapsed) throws ClientException {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void setDefinitionUrl(URL url) throws ClientException {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void setDescription(String description) throws ClientException {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void setPlaceId(String placeId) throws ClientException {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void setPosition(int position) throws ClientException {
+        // TODO Auto-generated method stub
+
     }
 
 }

@@ -21,12 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
@@ -34,6 +30,7 @@ import org.nuxeo.opensocial.container.client.bean.Container;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 import org.nuxeo.opensocial.container.factory.api.ContainerManager;
 import org.nuxeo.opensocial.container.factory.mapping.GadgetMapper;
+import org.nuxeo.opensocial.container.factory.utils.CoreSessionHelper;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -41,158 +38,160 @@ import com.ibm.icu.util.StringTokenizer;
 
 public class ContainerManagerImpl implements ContainerManager {
 
-  private static final Log log = LogFactory.getLog(ContainerManagerImpl.class);
+    /**
+     * Constant of default container params key
+     */
+    public static final String DOC_REF = "docRef";
+    public static final String REPO_NAME = "repoName";
 
-  /**
-   * Constant of default container params key
-   */
-  public static final String DOC_REF = "docRef";
-  public static final String REPO_NAME = "repoName";
+    private static final String LAYOUT_PREFIX = "x-";
+    private static final String LAYOUT_SEPARATOR = "-";
+    public static final int DEFAULT_STRUCTURE = 3;
+    public static final String DEFAULT_LAYOUT = LAYOUT_PREFIX
+            + DEFAULT_STRUCTURE + LAYOUT_SEPARATOR + "default";
 
-  private static final String LAYOUT_PREFIX = "x-";
-  private static final String LAYOUT_SEPARATOR = "-";
-  public static final int DEFAULT_STRUCTURE = 3;
-  public static final String DEFAULT_LAYOUT = LAYOUT_PREFIX + DEFAULT_STRUCTURE
-      + LAYOUT_SEPARATOR + "default";
+    private int shindigId = 0;
 
-  private int shindigId = 0;
+    protected SpaceManager spaceManager() throws Exception {
+        return Framework.getService(SpaceManager.class);
+    }
 
+    public Container createContainer(Map<String, String> containerParams)
+            throws ClientException {
+        try {
+            String spaceId = getParamValue(DOC_REF, containerParams, true, null);
+            Space space = spaceManager().getSpace(spaceId, getCoreSession(containerParams));
+            return createContainer(space);
+        } catch (Exception e) {
+            throw new ClientException("Space not found");
+        }
 
-  protected SpaceManager spaceManager() throws Exception {
-      return Framework.getService(SpaceManager.class);
-  }
+    }
 
-  public Container createContainer(Map<String, String> containerParams)
-      throws ClientException {
-    try {
+    /**
+     *
+     * @param key
+     * @param containerParams
+     * @param required
+     * @param defaultValue
+     * @return
+     */
+    private String getParamValue(String key,
+            Map<String, String> containerParams, boolean required,
+            String defaultValue) {
+        String value = containerParams.get(key);
+        String retour = null;
+        if (value == null) {
+            if (required)
+                throw new RuntimeException("Container param for key '" + key
+                        + "' is required");
+            else
+                retour = defaultValue;
+        } else
+            retour = value;
+        return retour;
+    }
+
+    private int getStructure(Space space) throws ClientException {
+        int structure = DEFAULT_STRUCTURE;
+        if (space.getLayout() != null) {
+            try {
+                StringTokenizer st = new StringTokenizer(space.getLayout(),
+                        LAYOUT_SEPARATOR);
+                if (st.hasMoreTokens()) {
+                    st.nextToken();
+                    structure = Integer.parseInt(st.nextToken());
+                }
+
+            } catch (NumberFormatException nfe) {
+            }
+        }
+        return structure;
+    }
+
+    /**
+     * Add Gadget to Container
+     *
+     * @param gadgetName
+     *            : Name of gadget
+     * @param gwtParams
+     *            : Container parameters
+     * @return GadgetBean
+     */
+    public GadgetBean addGadget(final String gadgetName,
+            Map<String, String> gwtParams) throws ClientException {
+
+        String spaceId = getParamValue(DOC_REF, gwtParams, true, null);
+        Space space;
+        try {
+            space = spaceManager().getSpace(spaceId, getCoreSession(gwtParams));
+        } catch (Exception e) {
+            throw new ClientException("Space not found");
+        }
+        Gadget createGadget = space.createGadget(gadgetName);
+        return new GadgetMapper(createGadget, space.getViewer(), shindigId++,
+                space.hasPermission("Write")).getGadgetBean();
+
+    }
+
+    /**
+     * Get a list of gadget
+     *
+     * @return Map of gadgets, key is category and value is list of gadget name
+     */
+    public Map<String, ArrayList<String>> getGadgetList()
+            throws ClientException {
+        try {
+            return Framework.getService(GadgetService.class)
+                    .getGadgetNameByCategory();
+        } catch (Exception e) {
+            throw new ClientException();
+        }
+    }
+
+    protected CoreSession getCoreSession(Map<String, String> gwtParams)
+            throws Exception {
+        return CoreSessionHelper.getCoreSession(gwtParams
+                .get(ContainerManagerImpl.REPO_NAME));
+    }
+
+    public Container saveLayout(Map<String, String> containerParams,
+            final String layout) throws ClientException {
+
         String spaceId = getParamValue(DOC_REF, containerParams, true, null);
-        Space space = spaceManager().getSpace(spaceId);
+        Space space;
+        try {
+            space = spaceManager().getSpace(spaceId, getCoreSession(containerParams));
+
+        } catch (Exception e) {
+            throw new ClientException("Space not found");
+        }
+        space.setLayout(layout);
         return createContainer(space);
-    } catch (Exception e) {
-        // TODO Auto-generated catch block
-        throw new ClientException("Space not found");
     }
 
+    private Container createContainer(Space space) {
+        try {
+            if (space != null) {
+                ArrayList<GadgetBean> gadgets = new ArrayList<GadgetBean>();
+                Boolean perm = space.hasPermission("Write");
+                for (Gadget g : space.getGadgets()) {
+                    gadgets.add(new GadgetMapper(g, space.getViewer(),
+                            shindigId++, perm).getGadgetBean());
+                }
+                Collections.sort(gadgets);
+                String layout = space.getLayout();
+                if (layout == null || layout.equals(""))
+                    layout = DEFAULT_LAYOUT;
 
-
-  }
-
-  /**
-   *
-   * @param key
-   * @param containerParams
-   * @param required
-   * @param defaultValue
-   * @return
-   */
-  private String getParamValue(String key, Map<String, String> containerParams,
-      boolean required, String defaultValue) {
-    String value = containerParams.get(key);
-    String retour = null;
-    if (value == null) {
-      if (required)
-        throw new RuntimeException("Container param for key '" + key
-            + "' is required");
-      else
-        retour = defaultValue;
-    } else
-      retour = value;
-    return retour;
-  }
-
-  private int getStructure(Space space) {
-    int structure = DEFAULT_STRUCTURE;
-    if (space.getLayout() != null) {
-      try {
-        StringTokenizer st = new StringTokenizer(space.getLayout(),
-            LAYOUT_SEPARATOR);
-        if (st.hasMoreTokens()) {
-          st.nextToken();
-          structure = Integer.parseInt(st.nextToken());
+                return new Container(gadgets, getStructure(space), layout,
+                        perm, space.getId());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-      } catch (NumberFormatException nfe) {
-      }
+        return null;
     }
-    return structure;
-  }
-
-  /**
-   * Add Gadget to Container
-   *
-   * @param gadgetName
-   *          : Name of gadget
-   * @param gwtParams
-   *          : Container parameters
-   * @return GadgetBean
-   */
-  public GadgetBean addGadget(final String gadgetName,
-      Map<String, String> gwtParams) throws ClientException {
-
-    String spaceId = getParamValue(DOC_REF, gwtParams, true, null);
-    Space space;
-    try {
-        space = spaceManager().getSpace(spaceId);
-    } catch (Exception e) {
-        throw new ClientException("Space not found");
-    }
-    Gadget createGadget = space.createGadget(gadgetName);
-    return new GadgetMapper(createGadget, space.getViewer(), shindigId++,
-            space.hasPermission("Write")).getGadgetBean();
-
-  }
-
-  /**
-   * Get a list of gadget
-   *
-   * @return Map of gadgets, key is category and value is list of gadget name
-   */
-  public Map<String, ArrayList<String>> getGadgetList() throws ClientException {
-    try {
-      return Framework.getService(GadgetService.class)
-          .getGadgetNameByCategory();
-    } catch (Exception e) {
-      throw new ClientException();
-    }
-  }
-
-  public Container saveLayout(Map<String, String> containerParams,
-      final String layout) throws ClientException {
-
-      String spaceId = getParamValue(DOC_REF, containerParams, true, null);
-      Space space;
-    try {
-        space = spaceManager().getSpace(spaceId);
-
-    } catch (Exception e) {
-        throw new ClientException("Space not found");
-    }
-      space.setLayout(layout);
-      return createContainer(space);
-    }
-
-  private Container createContainer(Space space) {
-    try {
-      if (space != null) {
-        ArrayList<GadgetBean> gadgets = new ArrayList<GadgetBean>();
-        Boolean perm = space.hasPermission("Write");
-        for (Gadget g : space) {
-          gadgets.add(new GadgetMapper(g, space.getViewer(), shindigId++, perm).getGadgetBean());
-        }
-        Collections.sort(gadgets);
-        String layout = space.getLayout();
-        if (layout == null || layout.equals(""))
-          layout = DEFAULT_LAYOUT;
-
-        return new Container(gadgets, getStructure(space), layout, perm,
-            space.getId());
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    return null;
-  }
-
 
 }

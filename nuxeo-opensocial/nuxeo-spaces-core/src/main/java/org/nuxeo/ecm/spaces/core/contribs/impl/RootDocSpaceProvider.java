@@ -48,7 +48,7 @@ public class RootDocSpaceProvider extends AbstractSpaceProvider {
 
     public void add(Space o, CoreSession session) throws ClientException {
         DocSpaceImpl space = DocSpaceImpl.createFromSpace(o, rootDoc.getPathAsString(), session);
-        session.saveDocument(space.getDoc());
+        session.saveDocument(space.getDocument());
         session.save();
     }
 

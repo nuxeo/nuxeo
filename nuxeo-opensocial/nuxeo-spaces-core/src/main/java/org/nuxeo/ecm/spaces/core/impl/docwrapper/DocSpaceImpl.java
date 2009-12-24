@@ -29,6 +29,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
@@ -226,7 +228,7 @@ public class DocSpaceImpl implements Space {
 
     }
 
-    public DocumentModel getDoc() {
+    public DocumentModel getDocument() {
         return doc;
     }
 
@@ -239,6 +241,16 @@ public class DocSpaceImpl implements Space {
 
         return new DocSpaceImpl(doc);
 
+    }
+
+    public void remove(Gadget gadget) throws ClientException {
+        CoreSession session  = doc.getCoreSession();
+        DocumentRef ref = new IdRef(gadget.getId());
+        DocumentModel gadgetDoc = session.getDocument(ref);
+
+        if(gadgetDoc != null && gadgetDoc.getParentRef().equals(doc.getRef())) {
+            session.removeDocument(ref);
+        }
     }
 
     // public boolean isCurrentVersion() {
