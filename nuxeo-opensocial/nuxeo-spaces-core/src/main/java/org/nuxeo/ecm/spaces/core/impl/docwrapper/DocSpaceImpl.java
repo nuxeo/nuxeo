@@ -31,13 +31,19 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
-import org.nuxeo.ecm.spaces.core.impl.Constants;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
 import org.nuxeo.runtime.api.Framework;
 
 public class DocSpaceImpl implements Space {
 
     private final DocumentModel doc;
+
+    public static final String TYPE = "Space";
+    private static final String SPACE_THEME = "space:theme";
+    private static final String SPACE_LAYOUT = "space:layout";
+    private static final String SPACE_CATEGORY = "space:categoryId";
+    private static final String SPACE_VERSIONNABLE = "space:versionnable";
+    private static final String PUBLICATION_DATE = "dc:valid";
 
     private static final Log LOGGER = LogFactory.getLog(DocSpaceImpl.class);
 
@@ -54,12 +60,12 @@ public class DocSpaceImpl implements Space {
     }
 
     public String getLayout() throws ClientException {
-        return (String) doc.getPropertyValue(Constants.Space.SPACE_LAYOUT);
+        return (String) doc.getPropertyValue(SPACE_LAYOUT);
 
     }
 
     public String getCategory() throws ClientException {
-        return (String) doc.getPropertyValue(Constants.Space.SPACE_CATEGORY);
+        return (String) doc.getPropertyValue(SPACE_CATEGORY);
     }
 
     public boolean isEqualTo(Space space) {
@@ -67,7 +73,7 @@ public class DocSpaceImpl implements Space {
     }
 
     public String getTheme() {
-        return getInternalStringProperty(Constants.Space.SPACE_THEME);
+        return getInternalStringProperty(SPACE_THEME);
     }
 
     protected boolean getBooleanProperty(String xpath) {
@@ -84,14 +90,14 @@ public class DocSpaceImpl implements Space {
     }
 
     public boolean isVersionnable() {
-        return getBooleanProperty(Constants.Space.SPACE_VERSIONNABLE);
+        return getBooleanProperty(SPACE_VERSIONNABLE);
     }
 
     public List<Space> getVersions() {
         if (isVersionnable()) {
             try {
                 List<DocumentModel> docs = doc.getCoreSession().getChildren(
-                        doc.getParentRef(), Constants.Space.TYPE, null,
+                        doc.getParentRef(), TYPE, null,
                         new SpaceSorter());
                 List<Space> spaces = new ArrayList<Space>();
                 for (DocumentModel doc : docs) {
@@ -164,7 +170,7 @@ public class DocSpaceImpl implements Space {
     }
 
     public String setLayout(String name) throws ClientException {
-        return (String) doc.getPropertyValue(Constants.Space.SPACE_LAYOUT);
+        return (String) doc.getPropertyValue(SPACE_LAYOUT);
     }
 
     public void save(Gadget gadget) throws ClientException {
@@ -216,7 +222,7 @@ public class DocSpaceImpl implements Space {
     public Calendar getDatePublication() throws ClientException {
 
         return (Calendar) doc
-                .getPropertyValue(Constants.Document.PUBLICATION_DATE);
+                .getPropertyValue(PUBLICATION_DATE);
 
     }
 
@@ -228,7 +234,7 @@ public class DocSpaceImpl implements Space {
             CoreSession session) throws ClientException {
 
         DocumentModel doc = session.createDocumentModel(path, o.getName(),
-                Constants.Space.TYPE);
+                TYPE);
         // TODO: fill the doc with space properties
 
         return new DocSpaceImpl(doc);
