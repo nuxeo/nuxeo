@@ -36,7 +36,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
-public class NuxeoObject extends BaseObject implements CMISObject {
+public class NuxeoObject extends BaseObject implements CMISObject,
+        DocumentModelHolder {
 
     protected DocumentModel doc;
 
@@ -45,6 +46,16 @@ public class NuxeoObject extends BaseObject implements CMISObject {
     protected NuxeoObject(DocumentModel doc, NuxeoConnection connection) {
         this.doc = doc;
         this.connection = connection;
+    }
+
+    // ----- DocumentModelHolder -----
+    public void setDocumentModel(DocumentModel doc) {
+        this.doc = doc;
+    }
+
+    // ----- DocumentModelHolder -----
+    public DocumentModel getDocumentModel() {
+        return doc;
     }
 
     protected static NuxeoObject construct(DocumentModel doc,
@@ -128,8 +139,7 @@ public class NuxeoObject extends BaseObject implements CMISObject {
 
     public Property getProperty(String name) {
         try {
-            return NuxeoProperty.getProperty(doc, getType(), name,
-                    connection.session);
+            return NuxeoProperty.construct(name, getType(), this);
         } catch (ClientException e) {
             throw new RuntimeException(e.toString(), e); // TODO
         }

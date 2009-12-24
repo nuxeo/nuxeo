@@ -490,7 +490,7 @@ public class NuxeoConnection implements Connection, SPI {
         NuxeoObjectEntry entry = updateProperties(object, changeToken,
                 properties, false);
         try {
-            session.saveDocument(entry.doc);
+            entry.save();
             session.save();
         } catch (ClientException e) {
             throw new CMISRuntimeException(e.toString(), e);
@@ -792,9 +792,9 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId checkIn(ObjectId document, Map<String, Serializable> properties,
-            ContentStream contentStream, boolean major,
-            String comment) {
+    public ObjectId checkIn(ObjectId document,
+            Map<String, Serializable> properties, ContentStream contentStream,
+            boolean major, String comment) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

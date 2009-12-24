@@ -37,9 +37,10 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
@@ -47,11 +48,11 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
  *
  * @author Florent Guillaume
  */
-public class NuxeoProperty implements Property {
+public class NuxeoProperty extends NuxeoPropertyBase {
 
-    private final org.nuxeo.ecm.core.api.model.Property prop;
+    protected final String name;
 
-    private final PropertyDefinition propertyDefinition;
+    protected final boolean readOnly;
 
     public static final Map<String, String> propertyNameToNXQL;
     static {
@@ -67,113 +68,112 @@ public class NuxeoProperty implements Property {
         propertyNameToNXQL = Collections.unmodifiableMap(map);
     }
 
-    public NuxeoProperty(org.nuxeo.ecm.core.api.model.Property prop,
-            PropertyDefinition propertyDefinition) {
-        this.prop = prop;
-        this.propertyDefinition = propertyDefinition;
+    public NuxeoProperty(PropertyDefinition propertyDefinition,
+            DocumentModelHolder docHolder, String name, boolean readOnly) {
+        super(propertyDefinition, docHolder);
+        this.name = name;
+        this.readOnly = readOnly;
+    }
+
+    public Serializable getValue() {
+        try {
+            return docHolder.getDocumentModel().getPropertyValue(name);
+        } catch (ClientException e) {
+            throw new CMISRuntimeException(e.toString(), e);
+        }
+    }
+
+    @Override
+    public void setValue(Serializable value) {
+        try {
+            if (readOnly) {
+                super.setValue(value);
+            } else {
+                docHolder.getDocumentModel().setPropertyValue(name, value);
+            }
+        } catch (ClientException e) {
+            throw new CMISRuntimeException(e.toString(), e);
+        }
     }
 
     /**
      * Factory for a new Property.
      */
-    public static Property getProperty(DocumentModel doc, Type type,
-            String name, CoreSession session) throws ClientException {
+    protected static Property construct(String name, Type type,
+            DocumentModelHolder docHolder) throws ClientException {
         PropertyDefinition pd = type.getPropertyDefinition(name);
         if (pd == null) {
             throw new IllegalArgumentException(name);
         }
-        Serializable value;
-        org.nuxeo.ecm.core.api.model.Property prop = null;
+        DocumentModel doc = docHolder.getDocumentModel();
         if (Property.ID.equals(name)) {
-            value = doc.getId();
+            return new FixedProperty(pd, doc.getId());
         } else if (Property.TYPE_ID.equals(name)) {
-            value = NuxeoType.mappedId(doc.getType());
+            return new FixedProperty(pd, NuxeoType.mappedId(doc.getType()));
         } else if (Property.BASE_TYPE_ID.equals(name)) {
-            if (doc.isFolder()) {
-                value = BaseType.FOLDER.getId();
-            } else {
-                value = BaseType.DOCUMENT.getId();
-            }
+            return new FixedProperty(pd,
+                    doc.isFolder() ? BaseType.FOLDER.getId()
+                            : BaseType.DOCUMENT.getId());
         } else if (Property.CREATED_BY.equals(name)) {
-            value = doc.getPropertyValue(NuxeoType.NX_DC_CREATOR);
+            return new NuxeoProperty(pd, docHolder, NuxeoType.NX_DC_CREATOR,
+                    true);
         } else if (Property.CREATION_DATE.equals(name)) {
-            value = doc.getPropertyValue(NuxeoType.NX_DC_CREATED);
+            return new NuxeoProperty(pd, docHolder, NuxeoType.NX_DC_CREATED,
+                    true);
         } else if (Property.LAST_MODIFIED_BY.equals(name)) {
-            value = doc.getPropertyValue("dc:contributors");
-            if (value == null || ((String[]) value).length == 0) {
-                value = null;
-            } else {
-                value = ((String[]) value)[0];
-            }
+            return new LastModifiedByProperty(pd, docHolder);
         } else if (Property.LAST_MODIFICATION_DATE.equals(name)) {
-            value = doc.getPropertyValue(NuxeoType.NX_DC_MODIFIED);
+            return new NuxeoProperty(pd, docHolder, NuxeoType.NX_DC_MODIFIED,
+                    true);
         } else if (Property.CHANGE_TOKEN.equals(name)) {
-            value = null;
+            return new FixedProperty(pd, null);
         } else if (Property.NAME.equals(name)) {
-            return new NameProperty(doc, pd);
+            return new NameProperty(pd, docHolder);
         } else if (Property.IS_IMMUTABLE.equals(name)) {
-            value = Boolean.FALSE; // TODO check write permission
+            return new FixedProperty(pd, Boolean.FALSE); // TODO check write
         } else if (Property.IS_LATEST_VERSION.equals(name)) {
-            value = Boolean.TRUE;
+            return new FixedProperty(pd, Boolean.TRUE);
         } else if (Property.IS_MAJOR_VERSION.equals(name)) {
-            value = Boolean.FALSE;
+            return new FixedProperty(pd, Boolean.FALSE);
         } else if (Property.IS_LATEST_MAJOR_VERSION.equals(name)) {
-            value = Boolean.FALSE;
+            return new FixedProperty(pd, Boolean.FALSE);
         } else if (Property.VERSION_LABEL.equals(name)) {
             // value = doc.getVersionLabel();
-            value = null;
+            return new FixedProperty(pd, null);
         } else if (Property.VERSION_SERIES_ID.equals(name)) {
-            value = doc.getId();
+            return new FixedProperty(pd, doc.getId());
         } else if (Property.IS_VERSION_SERIES_CHECKED_OUT.equals(name)) {
-            value = Boolean.FALSE;
+            return new FixedProperty(pd, Boolean.FALSE);
         } else if (Property.VERSION_SERIES_CHECKED_OUT_BY.equals(name)) {
-            value = null;
+            return new FixedProperty(pd, null);
         } else if (Property.VERSION_SERIES_CHECKED_OUT_ID.equals(name)) {
-            value = null;
+            return new FixedProperty(pd, null);
         } else if (Property.CHECK_IN_COMMENT.equals(name)) {
-            value = null;
+            return new FixedProperty(pd, null);
         } else if (Property.CONTENT_STREAM_LENGTH.equals(name)) {
-            ContentStream contentStream = getContentStream(doc);
-            value = contentStream == null ? null
-                    : Integer.valueOf((int) contentStream.getLength());
+            return new ContentStreamLengthProperty(pd, docHolder);
         } else if (Property.CONTENT_STREAM_MIME_TYPE.equals(name)) {
-            ContentStream contentStream = getContentStream(doc);
-            value = contentStream == null ? null : contentStream.getMimeType();
+            return new ContentStreamMimeTypeProperty(pd, docHolder);
         } else if (Property.CONTENT_STREAM_FILE_NAME.equals(name)) {
-            return new FileNameProperty(doc, pd);
+            return new ContentStreamFileNameProperty(pd, docHolder);
         } else if (Property.CONTENT_STREAM_ID.equals(name)) {
-            value = null;
+            return new FixedProperty(pd, null);
         } else if (Property.PARENT_ID.equals(name)) {
-            // TODO cache this
-            if (doc.getName() == null) {
-                value = null; // root
-            } else {
-                value = session.getDocument(doc.getParentRef()).getId();
-            }
+            return new ParentIdProperty(pd, docHolder);
         } else if (Property.PATH.equals(name)) {
-            value = doc.getPathAsString();
+            return new PathProperty(pd, docHolder);
         } else if (Property.ALLOWED_CHILD_OBJECT_TYPE_IDS.equals(name)) {
-            value = null;
+            return new FixedProperty(pd, null);
         } else if (Property.SOURCE_ID.equals(name)) {
-            value = null;
+            return new FixedProperty(pd, null);
         } else if (Property.TARGET_ID.equals(name)) {
-            value = null;
+            return new FixedProperty(pd, null);
         } else if (Property.POLICY_TEXT.equals(name)) {
-            value = null;
-        } else if (pd.getUpdatability() == Updatability.READ_WRITE) {
-            // read/write property
-            value = null;
-            prop = doc.getProperty(name);
+            return new FixedProperty(pd, null);
         } else {
-            // read-only property
-            value = doc.getPropertyValue(name);
-        }
-
-        if (prop == null) {
-            // read-only
-            return new ReadOnlyProperty(value, pd);
-        } else {
-            return new NuxeoProperty(prop, pd);
+            boolean readOnly = pd.getUpdatability() != Updatability.READ_WRITE;
+            // TODO WHEN_CHECKED_OUT, ON_CREATE
+            return new NuxeoProperty(pd, docHolder, name, readOnly);
         }
     }
 
@@ -220,39 +220,19 @@ public class NuxeoProperty implements Property {
         }
     }
 
-    public PropertyDefinition getDefinition() {
-        return propertyDefinition;
-    }
-
-    public Serializable getValue() {
-        try {
-            return prop.getValue();
-        } catch (PropertyException e) {
-            throw new RuntimeException(e.toString(), e); // TODO
-        }
-    }
-
-    public void setValue(Serializable value) {
-        try {
-            prop.setValue(value);
-        } catch (PropertyException e) {
-            throw new RuntimeException(e.toString(), e); // TODO
-        }
-    }
-
     /**
-     * A read-only property.
+     * A fixed property.
      */
-    public static class ReadOnlyProperty implements Property {
+    protected static class FixedProperty implements Property {
 
-        private final Serializable value;
+        protected final PropertyDefinition propertyDefinition;
 
-        private final PropertyDefinition propertyDefinition;
+        protected final Serializable value;
 
-        public ReadOnlyProperty(Serializable value,
-                PropertyDefinition propertyDefinition) {
-            this.value = value;
+        public FixedProperty(PropertyDefinition propertyDefinition,
+                Serializable value) {
             this.propertyDefinition = propertyDefinition;
+            this.value = value;
         }
 
         public PropertyDefinition getDefinition() {
@@ -264,11 +244,10 @@ public class NuxeoProperty implements Property {
         }
 
         public void setValue(Serializable v) {
-            if (value == null) {
-                if (v == null) {
-                    return;
-                }
-            } else if (value.equals(v)) {
+            if (value == null && v == null) {
+                return;
+            }
+            if (value != null && value.equals(v)) {
                 return;
             }
             throw new UnsupportedOperationException("Read-only property: "
@@ -276,70 +255,97 @@ public class NuxeoProperty implements Property {
         }
     }
 
-    protected static abstract class DefinedProperty implements Property {
+    /**
+     * Property for cmis:path.
+     */
+    protected static class PathProperty extends NuxeoPropertyBase {
 
-        protected final DocumentModel doc;
-
-        protected final PropertyDefinition propertyDefinition;
-
-        public DefinedProperty(DocumentModel doc,
-                PropertyDefinition propertyDefinition) {
-            this.doc = doc;
-            this.propertyDefinition = propertyDefinition;
+        public PathProperty(PropertyDefinition propertyDefinition,
+                DocumentModelHolder docHolder) {
+            super(propertyDefinition, docHolder);
         }
 
-        public PropertyDefinition getDefinition() {
-            return propertyDefinition;
+        public Serializable getValue() {
+            String path = docHolder.getDocumentModel().getPathAsString();
+            return path == null ? "" : path;
         }
     }
 
     /**
-     * Property for cmis:name. Allows writing before the document is saved.
+     * Property for cmis:parentId.
      */
-    public static class NameProperty extends DefinedProperty {
+    protected static class ParentIdProperty extends NuxeoPropertyBase {
 
-        public NameProperty(DocumentModel doc,
-                PropertyDefinition propertyDefinition) {
-            super(doc, propertyDefinition);
+        public ParentIdProperty(PropertyDefinition propertyDefinition,
+                DocumentModelHolder docHolder) {
+            super(propertyDefinition, docHolder);
         }
 
         public Serializable getValue() {
-            String name = doc.getName();
-            return name == null ? "" : name; // Nuxeo root has null name
+            DocumentModel doc = docHolder.getDocumentModel();
+            if (doc.getName() == null) {
+                return null;
+            } else {
+                DocumentRef parentRef = doc.getParentRef();
+                if (parentRef instanceof IdRef) {
+                    return ((IdRef) parentRef).value;
+                } else {
+                    try {
+                        return doc.getCoreSession().getDocument(parentRef).getId();
+                    } catch (ClientException e) {
+                        throw new CMISRuntimeException(e.toString(), e);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Property for cmis:lastModifiedBy.
+     */
+    protected static class LastModifiedByProperty extends NuxeoPropertyBase {
+
+        public LastModifiedByProperty(PropertyDefinition propertyDefinition,
+                DocumentModelHolder docHolder) {
+            super(propertyDefinition, docHolder);
         }
 
-        public void setValue(Serializable value) {
-            if (doc.getId() != null) {
-                // throw new
-                // UnsupportedOperationException("Read-only property: " +
-                // propertyDefinition.getId());
-                return;
+        public Serializable getValue() {
+            DocumentModel doc = docHolder.getDocumentModel();
+            try {
+                String[] value = (String[]) doc.getPropertyValue("dc:contributors");
+                if (value == null || value.length == 0) {
+                    return null;
+                } else {
+                    return value[0];
+                }
+            } catch (ClientException e) {
+                throw new CMISRuntimeException(e.toString(), e);
             }
-            if (value == null || "".equals(value)) {
-                throw new IllegalArgumentException("Illegal empty name");
-            }
-            doc.setPathInfo(doc.getPath().removeLastSegments(1).toString(),
-                    (String) value);
         }
     }
 
     /**
      * Property for cmis:contentStreamFileName.
      */
-    public static class FileNameProperty extends DefinedProperty {
+    protected static class ContentStreamFileNameProperty extends
+            NuxeoPropertyBase {
 
-        public FileNameProperty(DocumentModel doc,
-                PropertyDefinition propertyDefinition) {
-            super(doc, propertyDefinition);
+        public ContentStreamFileNameProperty(
+                PropertyDefinition propertyDefinition,
+                DocumentModelHolder docHolder) {
+            super(propertyDefinition, docHolder);
         }
 
         public Serializable getValue() {
-            ContentStream cs = getContentStream(doc);
+            ContentStream cs = getContentStream(docHolder.getDocumentModel());
             return cs == null ? null : cs.getFileName();
         }
 
+        @Override
         public void setValue(Serializable value) {
-            BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
+            BlobHolder blobHolder = docHolder.getDocumentModel().getAdapter(
+                    BlobHolder.class);
             if (blobHolder == null) {
                 throw new StreamNotSupportedException();
             }
@@ -350,6 +356,88 @@ public class NuxeoProperty implements Property {
                 throw new CMISRuntimeException(e.toString(), e);
             }
             blob.setFilename((String) value);
+        }
+    }
+
+    /**
+     * Property for cmis:contentStreamLength.
+     */
+    protected static class ContentStreamLengthProperty extends
+            NuxeoPropertyBase {
+
+        public ContentStreamLengthProperty(
+                PropertyDefinition propertyDefinition,
+                DocumentModelHolder docHolder) {
+            super(propertyDefinition, docHolder);
+        }
+
+        public Serializable getValue() {
+            ContentStream cs = getContentStream(docHolder.getDocumentModel());
+            return cs == null ? null : Integer.valueOf((int) cs.getLength());
+        }
+    }
+
+    /**
+     * Property for cmis:contentMimeTypeLength.
+     */
+    protected static class ContentStreamMimeTypeProperty extends
+            NuxeoPropertyBase {
+
+        public ContentStreamMimeTypeProperty(
+                PropertyDefinition propertyDefinition,
+                DocumentModelHolder docHolder) {
+            super(propertyDefinition, docHolder);
+        }
+
+        public Serializable getValue() {
+            ContentStream cs = getContentStream(docHolder.getDocumentModel());
+            return cs == null ? null : cs.getMimeType();
+        }
+    }
+
+    /**
+     * Property for cmis:name. Allows writing before the document is saved,
+     * otherwise does a move.
+     */
+    protected static class NameProperty extends NuxeoPropertyBase {
+
+        public NameProperty(PropertyDefinition propertyDefinition,
+                DocumentModelHolder docHolder) {
+            super(propertyDefinition, docHolder);
+        }
+
+        public Serializable getValue() {
+            String name = docHolder.getDocumentModel().getName();
+            return name == null ? "" : name; // Nuxeo root has null name
+        }
+
+        @Override
+        public void setValue(Serializable value) {
+            Serializable name = getValue();
+            if (name.equals(value)) {
+                return;
+            }
+            if (value == null || "".equals(value)) {
+                throw new IllegalArgumentException("Illegal empty name");
+            }
+            DocumentModel doc = docHolder.getDocumentModel();
+            if (doc.getId() == null) {
+                // not saved yet
+                doc.setPathInfo(doc.getPath().removeLastSegments(1).toString(),
+                        (String) value);
+            } else {
+                // do a move
+                CoreSession session = doc.getCoreSession();
+                DocumentModel newDoc;
+                try {
+                    newDoc = session.move(doc.getRef(), doc.getParentRef(),
+                            (String) value);
+                } catch (ClientException e) {
+                    throw new CMISRuntimeException(e.toString(), e);
+                }
+                // set the new document
+                docHolder.setDocumentModel(newDoc);
+            }
         }
     }
 

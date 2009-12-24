@@ -31,20 +31,28 @@ import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Type;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
-public class NuxeoObjectEntry implements ObjectEntry {
+public class NuxeoObjectEntry implements ObjectEntry, DocumentModelHolder {
 
-    protected final DocumentModel doc;
+    private DocumentModel doc;
 
-    private final NuxeoConnection connection;
-
-    private Type type;
+    private final Type type;
 
     protected NuxeoObjectEntry(DocumentModel doc, NuxeoConnection connection) {
         this.doc = doc;
-        this.connection = connection;
         type = connection.repository.getType(NuxeoType.mappedId(doc.getType()));
+    }
+
+    // ----- DocumentModelHolder -----
+    public void setDocumentModel(DocumentModel doc) {
+        this.doc = doc;
+    }
+
+    // ----- DocumentModelHolder -----
+    public DocumentModel getDocumentModel() {
+        return doc;
     }
 
     public String getId() {
@@ -66,7 +74,7 @@ public class NuxeoObjectEntry implements ObjectEntry {
     public Serializable getValue(String id) {
         try {
             // TODO avoid constructing property object
-            return NuxeoProperty.getProperty(doc, type, id, connection.session).getValue();
+            return NuxeoProperty.construct(id, type, this).getValue();
         } catch (ClientException e) {
             throw new RuntimeException(e.toString(), e); // TODO
         }
@@ -75,8 +83,7 @@ public class NuxeoObjectEntry implements ObjectEntry {
     public void setValue(String id, Serializable value) {
         try {
             // TODO avoid constructing property object
-            NuxeoProperty.getProperty(doc, type, id, connection.session).setValue(
-                    value);
+            NuxeoProperty.construct(id, type, this).setValue(value);
         } catch (ClientException e) {
             throw new RuntimeException(e.toString(), e); // TODO
         }
@@ -105,6 +112,10 @@ public class NuxeoObjectEntry implements ObjectEntry {
     public Collection<ObjectEntry> getRelationships() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
+    }
+
+    protected void save() throws ClientException {
+        doc.getCoreSession().saveDocument(doc);
     }
 
 }
