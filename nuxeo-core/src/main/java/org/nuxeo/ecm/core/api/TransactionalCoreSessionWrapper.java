@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.api;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
@@ -99,6 +100,12 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
             if (TransactionHelper.isTransactionActive()
                     && needsRollback(method, t)) {
                 TransactionHelper.setTransactionRollbackOnly();
+            }
+            if (t instanceof InvocationTargetException) {
+                Throwable tt = ((InvocationTargetException)t).getTargetException();
+                if (tt != null) {
+                    throw tt;
+                }
             }
             throw t;
         }
