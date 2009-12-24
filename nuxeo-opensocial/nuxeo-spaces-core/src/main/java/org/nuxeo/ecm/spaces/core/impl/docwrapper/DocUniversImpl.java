@@ -17,18 +17,49 @@
 
 package org.nuxeo.ecm.spaces.core.impl.docwrapper;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.spaces.api.Univers;
 
-public class DocUniversImpl extends DocumentWrapper implements Univers {
+public class DocUniversImpl implements Univers {
 
-  DocUniversImpl(DocumentModel doc) {
-    super(doc);
-  }
+    private final DocumentModel doc;
 
-  public boolean isEqualTo(Univers univers) {
-    return univers.getId()!=null && univers.getId().equals(getId());
-  }
+    DocUniversImpl(DocumentModel doc) {
+        this.doc = doc;
+    }
 
+    public DocumentModel getDocument() {
+        return doc;
+    }
+
+    public boolean isEqualTo(Univers univers) {
+        return univers.getId() != null && univers.getId().equals(getId());
+    }
+
+
+    public String getDescription() {
+        try {
+            return (String) doc.getPropertyValue("dc:description");
+        } catch (ClientException e) {
+            return "";
+        }
+    }
+
+    public String getId() {
+        return doc.getId();
+    }
+
+    public String getName() {
+        return doc.getName();
+    }
+
+    public String getTitle() {
+        try {
+            return doc.getTitle();
+        } catch (ClientException e) {
+            return "";
+        }
+    }
 
 }

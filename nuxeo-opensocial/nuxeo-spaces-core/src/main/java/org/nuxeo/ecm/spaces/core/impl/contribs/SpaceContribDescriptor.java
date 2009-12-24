@@ -15,11 +15,14 @@
  *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
  */
 
-package org.nuxeo.ecm.spaces.core.impl;
+package org.nuxeo.ecm.spaces.core.impl.contribs;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.spaces.api.SpaceProvider;
 
@@ -41,6 +44,9 @@ public class SpaceContribDescriptor implements
 
     @XNode("restrictToUniverse")
     private String pattern;
+
+    @XNodeMap(value = "param", key="@key", type = HashMap.class, componentType = String.class)
+    protected Map<String, String> params;
 
     private SpaceProvider provider;
 
@@ -72,6 +78,11 @@ public class SpaceContribDescriptor implements
             IllegalAccessException {
         if (provider == null) {
             provider = klass.newInstance();
+            try {
+                provider.initialize(params);
+            } catch (Exception e) {
+                throw new InstantiationException("Unable to initialize provider " + name);
+            }
         }
         return provider;
     }

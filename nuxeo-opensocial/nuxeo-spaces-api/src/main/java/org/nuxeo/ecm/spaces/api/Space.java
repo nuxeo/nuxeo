@@ -23,15 +23,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 
-/**
- * Gadget container corresponding to a sub-part of an universe . A
- * <code>Space</code> can contain <code>Gadget</code> elements .
- * <code>Gadget</code> elements contained in this space are retrieved via the
- * SpaceManager framework service : <br/>
- * <br/>
- * SpaceManager service = Framework.getService(SpaceManager.class)<br/>
- * List&lt;Space&gt; gadgets = service.getGadgetsForSpace(space,coreSession);
- */
+
 public interface Space {
 
   /**
@@ -53,70 +45,66 @@ public interface Space {
    *
    * @return
    */
-  String getTheme();
+  String getTheme() throws ClientException;
 
   /**
    * Title of the space
    *
    * @return
    */
-  String getTitle();
+  String getTitle() throws ClientException;
 
   /**
    * description of the space
    *
    * @return
    */
-  String getDescription();
+  String getDescription() throws ClientException;
 
   /**
    * A key for displaying elements in this space
    *
    * @return
    */
-  String getLayout();
+  String getLayout() throws ClientException;
 
 
-  String setLayout(String name);
+  String setLayout(String name) throws ClientException;
 
   /**
    * Family/category of this space
    *
    * @return
    */
-  String getCategory();
+  String getCategory() throws ClientException;
 
   /**
    * Name of the creator of this space
    *
    * @return
    */
-  String getOwner();
+  String getOwner() throws ClientException;
 
   /**
    * Name of the viewer of this space
    * @return
    */
-  String getViewer();
+  String getViewer() throws ClientException;
 
-  boolean isReadOnly();
+  boolean isReadOnly() throws ClientException;
 
-  /**
-   * Create and adds the gadget to the space
-   * @param g
-   * @return
-   */
+
   Gadget createGadget(String gadgetName) throws ClientException;
 
   Gadget createGadget(URL gadgetDefUrl)  throws ClientException;
 
-  void updateGadget(Gadget gagdet) throws ClientException;
+  void save(Gadget gadget) throws ClientException;
 
-  List<Gadget> getGagets() throws ClientException;
+  List<Gadget> getGadgets() throws ClientException;
 
-  boolean hasPermission(String permissionName);
+  boolean hasPermission(String permissionName) throws ClientException;
 
-  Calendar getDatePublication();
+  Calendar getDatePublication() throws ClientException;
 
 
 

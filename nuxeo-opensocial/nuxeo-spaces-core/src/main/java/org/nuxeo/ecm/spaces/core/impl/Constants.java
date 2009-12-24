@@ -39,13 +39,4 @@ public interface Constants {// TODO à compléter
         String SPACE_VERSIONNABLE = "space:versionnable";
     }
 
-    public interface Gadget {
-        String TYPE = "Gadget";
-        // String GADGET_TYPE = "gadget:type";
-        String GADGET_CATEGORY = "gadget:category";
-        String GADGET_PLACEID = "gadget:placeID";// html division id
-        String GADGET_POSITION = "gadget:position";// position in the div
-        String GADGET_COLLAPSED = "gadget:collapsed";// is the gadget collapsed
-        String GADGET_PREFERENCES = "gadget:props";
-    }
 }

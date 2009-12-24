@@ -17,7 +17,10 @@
 
 package org.nuxeo.ecm.spaces.api;
 
+import java.net.URL;
 import java.util.Map;
+
+import org.nuxeo.ecm.core.api.ClientException;
 
 public interface Gadget {
 
@@ -30,56 +33,81 @@ public interface Gadget {
    * name
    * @return
    */
-  String getName();
+  String getName() throws ClientException;
+
+  void setName(String name) throws ClientException;
+
+  URL getDefinitionUrl()  throws ClientException;
+
+  void setDefinitionUrl(URL url) throws ClientException;
 /**
  * description
  * @return
  */
-  String getDescription();
+  String getDescription() throws ClientException;
+
+  void setDescription(String description) throws ClientException;
   /**
    * title
    * @return
    */
-  String getTitle();
+  String getTitle() throws ClientException;
+
+  void setTitle(String title) throws ClientException;
 
   /**
    * creator name
    * @return
    */
-  String getOwner();
+  String getOwner() throws ClientException;
 
   /**
    * category of a gadget
    * @return
    */
-  String getCategory();
+  String getCategory() throws ClientException;
+
+  void setCategory(String category) throws ClientException;
 
   /**
    * preferences values
    * @return
    */
-  public Map<String, String> getPreferences();
+  Map<String, String> getPreferences() throws ClientException;
+
+  void setPreferences(Map<String,String> prefs) throws ClientException;
+
+  String getPref(String prefKey) throws ClientException;
 
   /**
    * Key corresponding to the place where the gadget will be positionned in the view
    * @return
    */
-  String getPlaceID();
+  String getPlaceID() throws ClientException;
+
+
+  void setPlaceId(String placeId) throws ClientException;
 
   /**
    * Relative position in the parent container at the place id  "getPlaceID()"
    * @return
    */
-  int getPosition();
+  int getPosition() throws ClientException;
+
+  public void setPosition(int position) throws ClientException;
 
   /**
    * Determines if the display state of the gadget
    * @return
    */
-  boolean isCollapsed();
+  boolean isCollapsed() throws ClientException;
+
+  void setCollapsed(boolean collapsed) throws ClientException;
 
 
-  public boolean isEqualTo(Gadget gadget);
+  boolean isEqualTo(Gadget gadget) throws ClientException;
 
-  Space getParent();
+  Space getParent() throws ClientException;
+
+
 }

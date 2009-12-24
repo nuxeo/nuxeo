@@ -9,5 +9,4 @@ Require-Bundle: org.nuxeo.ecm.core,
  org.nuxeo.ecm.spaces.api
 Nuxeo-Component: OSGI-INF/spaces-manager-service.xml,
  OSGI-INF/spaces-adapter-contrib.xml,
- OSGI-INF/spaces-core-contrib.xml,
- OSGI-INF/default-spaces-contrib.xml
+ OSGI-INF/spaces-core-contrib.xml

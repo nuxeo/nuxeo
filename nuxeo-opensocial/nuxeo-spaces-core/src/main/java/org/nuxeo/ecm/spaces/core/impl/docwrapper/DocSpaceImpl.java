@@ -23,18 +23,23 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.core.impl.Constants;
+import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
+import org.nuxeo.runtime.api.Framework;
 
 public class DocSpaceImpl implements Space {
 
     private final DocumentModel doc;
+
+    private static final Log LOGGER = LogFactory.getLog(DocSpaceImpl.class);
 
     DocSpaceImpl(DocumentModel doc) {
         this.doc = doc;
@@ -48,12 +53,13 @@ public class DocSpaceImpl implements Space {
         }
     }
 
-    public String getLayout() {
-        return getInternalStringProperty(Constants.Space.SPACE_LAYOUT);
+    public String getLayout() throws ClientException {
+        return (String) doc.getPropertyValue(Constants.Space.SPACE_LAYOUT);
+
     }
 
-    public String getCategory() {
-        return getInternalStringProperty(Constants.Space.SPACE_CATEGORY);
+    public String getCategory() throws ClientException {
+        return (String) doc.getPropertyValue(Constants.Space.SPACE_CATEGORY);
     }
 
     public boolean isEqualTo(Space space) {
@@ -107,14 +113,16 @@ public class DocSpaceImpl implements Space {
         }
     }
 
-    public List<Gadget> getGagets() throws ClientException {
+    public List<Gadget> getGadgets() throws ClientException {
         List<Gadget> result = new ArrayList<Gadget>();
         CoreSession session = doc.getCoreSession();
-        DocumentModelList gadgets = session.getChildren(doc.getRef(), "Gadget");
+        DocumentModelList gadgets = session.getChildren(doc.getRef(), DocGadgetImpl.TYPE);
         for (DocumentModel gadget : gadgets) {
             Gadget item = gadget.getAdapter(Gadget.class);
             if (item != null) {
                 result.add(item);
+            } else {
+                LOGGER.warn("Unable to find gadget adapter for doc : " + gadget.getId());
             }
         }
         return result;
@@ -129,72 +137,87 @@ public class DocSpaceImpl implements Space {
         return doc.getName();
     }
 
-    public String getOwner() {
-        try {
-            return doc.getProperty("dc:creator").toString();
-        } catch (ClientException e) {
-            return "";
-        }
+    public String getOwner() throws ClientException {
+        return (String) doc.getPropertyValue("dc:creator");
     }
 
-    public String getTitle() {
-        try {
-            return doc.getTitle();
-        } catch (ClientException e) {
-            return "";
-        }
+    public String getTitle() throws ClientException {
+
+        return doc.getTitle();
+
+    }
+
+    private CoreSession session() {
+        return doc.getCoreSession();
     }
 
     public String getViewer() {
-        CoreSession session = doc.getCoreSession();
-        return session.getPrincipal().getName();
+        return session().getPrincipal().getName();
     }
 
-    public boolean hasPermission(String permissionName) {
-        CoreSession session = doc.getCoreSession();
-        try {
-            return session.hasPermission(doc.getRef(), permissionName);
-        } catch (ClientException e) {
-            return false;
-        }
+    public boolean hasPermission(String permissionName) throws ClientException {
+        return session().hasPermission(doc.getRef(), permissionName);
     }
 
-    public boolean isReadOnly() {
+    public boolean isReadOnly() throws ClientException {
         return hasPermission("Write");
     }
 
-    public String setLayout(String name) {
-        try {
-            return doc.getProperty(Constants.Space.SPACE_LAYOUT).toString();
-        } catch (ClientException e) {
-            return "";
-        }
+    public String setLayout(String name) throws ClientException {
+        return (String) doc.getPropertyValue(Constants.Space.SPACE_LAYOUT);
     }
 
-    public void updateGadget(Gadget gagdet) throws ClientException {
-        // TODO Auto-generated method stub
+    public void save(Gadget gadget) throws ClientException {
+        if(DocGadgetImpl.class.isAssignableFrom(gadget.getClass())) {
+            DocumentModel docGadget = ((DocGadgetImpl) gadget).getDocument();
+            session().saveDocument(docGadget);
+            session().save();
+        }
 
     }
 
     public Gadget createGadget(String gadgetName) throws ClientException {
-        // TODO Auto-generated method stub
-        return null;
+        CoreSession session = session();
+        DocumentModel doc = session.createDocumentModel(this.doc
+                .getPathAsString(), gadgetName, DocGadgetImpl.TYPE);
+        doc = session.createDocument(doc);
+        Gadget gadget = doc.getAdapter(Gadget.class);
+
+        // Sets the gadget Url
+        try {
+            GadgetService service = Framework.getService(GadgetService.class);
+            URL def = service.getGadgetDefinition(gadgetName);
+            gadget.setDefinitionUrl(new URL(def.toString()));
+            gadget.setName(gadgetName);
+        } catch (Exception e) {
+            LOGGER.error("Unable to find gadget URL for " + gadgetName
+                    + " (ID:" + doc.getId() + ")");
+        }
+
+        session.saveDocument(doc);
+        session.save();
+        return gadget;
+
     }
 
     public Gadget createGadget(URL gadgetDefUrl) throws ClientException {
-        // TODO Auto-generated method stub
-        return null;
+        CoreSession session = session();
+        DocumentModel doc = session.createDocumentModel(this.doc
+                .getPathAsString(), "url", DocGadgetImpl.TYPE);
+        doc = session.createDocument(doc);
+
+        doc.setPropertyValue("gadget:url", gadgetDefUrl.toString());
+
+        session.saveDocument(doc);
+        session.save();
+        return doc.getAdapter(Gadget.class);
     }
 
-    public Calendar getDatePublication() {
+    public Calendar getDatePublication() throws ClientException {
 
-        try {
-            Serializable ser = doc.getProperty(Constants.Document.PUBLICATION_DATE).getValue();
-            if (ser != null)
-                return (Calendar) ser;
-        } catch (ClientException e) {
-        }
-        return null;
+        return (Calendar) doc
+                .getPropertyValue(Constants.Document.PUBLICATION_DATE);
+
     }
 
     public DocumentModel getDoc() {
@@ -204,8 +227,9 @@ public class DocSpaceImpl implements Space {
     public static DocSpaceImpl createFromSpace(Space o, String path,
             CoreSession session) throws ClientException {
 
-        DocumentModel doc = session.createDocumentModel(path, o.getName(), Constants.Space.TYPE);
-        //TODO: fill the doc with space properties
+        DocumentModel doc = session.createDocumentModel(path, o.getName(),
+                Constants.Space.TYPE);
+        // TODO: fill the doc with space properties
 
         return new DocSpaceImpl(doc);
 

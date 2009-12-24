@@ -15,10 +15,11 @@
  *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
  */
 
-package org.nuxeo.ecm.spaces.core.impl;
+package org.nuxeo.ecm.spaces.core.impl.contribs;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.spaces.core.impl.UniversProvider;
 
 @XObject("universContrib")
 public class UniversContribDescriptor {

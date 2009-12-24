@@ -34,6 +34,8 @@ import org.nuxeo.ecm.spaces.api.Univers;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
 import org.nuxeo.ecm.spaces.api.exceptions.UniversNotFoundException;
+import org.nuxeo.ecm.spaces.core.impl.contribs.SpaceContribDescriptor;
+import org.nuxeo.ecm.spaces.core.impl.contribs.UniversContribDescriptor;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -49,8 +51,8 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
     private static final String UNIVERS_CONTRIB = "universContrib";
     private static final String SPACE_CONTRIB = "spaceContrib";
 
-    private List<UniversContribDescriptor> universProvider;
-    private List<SpaceContribDescriptor> spaceProvider;
+    private List<UniversContribDescriptor> universProvider = new ArrayList<UniversContribDescriptor>();
+    private List<SpaceContribDescriptor> spaceProvider = new ArrayList<SpaceContribDescriptor>();
 
     @Override
     public void registerContribution(Object contribution,
@@ -207,12 +209,6 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
     }
 
     public Space updateSpace(Space newSpace) throws SpaceException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<SpaceProvider> getSpacesProvider(Univers univers,
-            CoreSession session) {
         // TODO Auto-generated method stub
         return null;
     }

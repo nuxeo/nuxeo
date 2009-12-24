@@ -15,7 +15,7 @@
           UniversProvider</className>
       </universContrib>
     </documentation>
-    <object class="org.nuxeo.ecm.spaces.core.impl.UniversContribDescriptor" />
+    <object class="org.nuxeo.ecm.spaces.core.impl.contribs.UniversContribDescriptor" />
   </extension-point>
 
    <extension-point name="spaceContrib">
@@ -27,7 +27,7 @@
         <className>class name of the contribution - must implements SpaceProvider</className>
       </spaceContrib>
     </documentation>
-    <object class="org.nuxeo.ecm.spaces.core.impl.SpaceContribDescriptor" />
+    <object class="org.nuxeo.ecm.spaces.core.impl.contribs.SpaceContribDescriptor" />
   </extension-point>
 
 

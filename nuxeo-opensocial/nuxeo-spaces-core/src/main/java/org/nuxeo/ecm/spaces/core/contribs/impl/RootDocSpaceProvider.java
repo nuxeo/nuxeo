@@ -40,6 +40,7 @@ public class RootDocSpaceProvider extends AbstractSpaceProvider {
     private final DocumentModel rootDoc;
 
 
+
     public RootDocSpaceProvider(DocumentModel rootDoc) {
         this.rootDoc = rootDoc;
     }

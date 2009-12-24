@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.spaces.api;
 
-import org.nuxeo.ecm.spaces.api.exceptions.ReadOnlyUniversException;
 
 
 /**
@@ -56,15 +55,6 @@ import org.nuxeo.ecm.spaces.api.exceptions.ReadOnlyUniversException;
    * @return the description of this universe
    */
    String getDescription();
-
-   boolean isReadOnly();
-
-   /**
-    *
-    * @return
-    */
-   Space createSpace() throws ReadOnlyUniversException;
-   Space saveSpace(Space space);
 
   /**
    * for comparison

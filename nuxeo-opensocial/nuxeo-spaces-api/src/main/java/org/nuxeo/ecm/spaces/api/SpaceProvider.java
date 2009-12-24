@@ -2,13 +2,14 @@ package org.nuxeo.ecm.spaces.api;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 public interface SpaceProvider {
 
-    public void initialize(String... params) throws Exception;
+    public void initialize(Map<String,String> params) throws Exception;
 
     Space getSpace(String spaceName, CoreSession session) throws ClientException;
 

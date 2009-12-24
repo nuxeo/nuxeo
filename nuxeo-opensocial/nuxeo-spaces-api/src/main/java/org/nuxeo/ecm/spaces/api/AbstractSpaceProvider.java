@@ -1,7 +1,7 @@
 package org.nuxeo.ecm.spaces.api;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -24,7 +24,7 @@ abstract public class AbstractSpaceProvider implements SpaceProvider {
     }
 
 
-    public void initialize(String... params) throws Exception {
+    public void initialize(Map<String,String> params) throws Exception {
 
     }
 

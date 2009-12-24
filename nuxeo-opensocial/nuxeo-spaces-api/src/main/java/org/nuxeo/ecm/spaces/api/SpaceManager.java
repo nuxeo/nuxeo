@@ -72,7 +72,7 @@ public interface SpaceManager {
       throws SpaceException;
 
 
-   List<SpaceProvider> getSpacesProvider(Univers univers, CoreSession session);
+   List<SpaceProvider> getSpacesProvider(Univers univers);
 
   /**
    * List of all accesible spaces for a given univers

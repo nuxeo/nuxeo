@@ -19,17 +19,22 @@ package org.nuxeo.ecm.spaces.core.impl.docwrapper;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
-import org.nuxeo.ecm.spaces.core.impl.Constants.Space;
-import org.nuxeo.ecm.spaces.core.impl.Constants.Univers;
+import org.nuxeo.ecm.spaces.api.Gadget;
+import org.nuxeo.ecm.spaces.api.Space;
+import org.nuxeo.ecm.spaces.api.Univers;
+import org.nuxeo.ecm.spaces.core.impl.Constants;
 
-public class BeansDocumentAdapterFactory implements DocumentAdapterFactory {
+
+public class SpacesAdapterFactory implements DocumentAdapterFactory {
 
     @SuppressWarnings("unchecked")
     public Object getAdapter(DocumentModel doc, Class itf) {
-        if (doc.getType().equals(Univers.TYPE) && itf.isAssignableFrom(Univers.class)) {
+        if (doc.getType().equals(Constants.Univers.TYPE) && Univers.class.isAssignableFrom(itf)) {
             return new DocUniversImpl(doc);
-        } else if (doc.getType().equals(Space.TYPE) && itf.isAssignableFrom(Space.class)) {
+        } else if (doc.getType().equals(Constants.Space.TYPE) && Space.class.isAssignableFrom(itf) ) {
             return new DocSpaceImpl(doc);
+        } else if (doc.getType().equals(DocGadgetImpl.TYPE) && Gadget.class.isAssignableFrom(itf)) {
+            return new DocGadgetImpl(doc);
         }
         return null;
     }
