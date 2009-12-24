@@ -792,8 +792,8 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public ObjectId checkIn(ObjectId document, boolean major,
-            Map<String, Serializable> properties, ContentStream contentStream,
+    public ObjectId checkIn(ObjectId document, Map<String, Serializable> properties,
+            ContentStream contentStream, boolean major,
             String comment) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
