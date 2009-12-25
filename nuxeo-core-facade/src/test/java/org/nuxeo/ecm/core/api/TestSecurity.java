@@ -26,6 +26,9 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -42,39 +45,39 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TestSecurity extends NXRuntimeTestCase {
+public class TestSecurity extends BaseTestCase {
 
     private static final String REPO_NAME = "default";
 
-    private CoreSession remote;
+    @BeforeClass
+    public static void startRuntime() throws Exception {
+        runtime = new NXRuntimeTestCase() {};
+        runtime.setUp();
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle(Constants.SCHEMA_BUNDLE);
-        deployContrib(Constants.CORE_BUNDLE,
+        runtime.deployBundle(Constants.SCHEMA_BUNDLE);
+        runtime.deployContrib(Constants.CORE_BUNDLE,
                 "OSGI-INF/CoreService.xml");
-        deployContrib(Constants.CORE_BUNDLE,
+        runtime.deployContrib(Constants.CORE_BUNDLE,
                 "OSGI-INF/SecurityService.xml");
-        deployContrib(Constants.CORE_BUNDLE,
+        runtime.deployContrib(Constants.CORE_BUNDLE,
                 "OSGI-INF/RepositoryService.xml");
 
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
+        runtime.deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "test-CoreExtensions.xml");
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
+        runtime.deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "DemoRepository.xml");
 
-        deployBundle("org.nuxeo.ecm.core.event");
+        runtime.deployBundle("org.nuxeo.ecm.core.event");
 
-        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
-        ctx.put("username", "anonymous");
-        remote = CoreInstance.getInstance().open(REPO_NAME, ctx);
     }
 
+    @Before
     @Override
-    public void tearDown() throws Exception {
-        CoreInstance.getInstance().close(remote);
-        super.tearDown();
+    public void setUp() throws Exception {
+        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
+        ctx.put("username", "anonymous");
+        session = CoreInstance.getInstance().open(REPO_NAME, ctx);
+        root = getRootDocument();
     }
 
     private static void setPermissionToAnonymous(String perm) throws ClientException {
@@ -138,16 +141,17 @@ public class TestSecurity extends NXRuntimeTestCase {
         CoreInstance.getInstance().close(rootSession);
     }
 
+    @Test
     public void testSecurity() throws ClientException {
         // temporary set an Everything privileges on the root for anonymous
         // so that we can create a folder
         setPermissionToAnonymous(SecurityConstants.EVERYTHING);
 
-        DocumentModel root = remote.getRootDocument();
+        DocumentModel root = session.getRootDocument();
 
         DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
                 "folder#1", "Folder");
-        folder = remote.createDocument(folder);
+        folder = session.createDocument(folder);
 
         ACP acp = folder.getACP();
         assertNotNull(acp); // the acp inherited from root is returned
@@ -199,7 +203,7 @@ public class TestSecurity extends NXRuntimeTestCase {
         try {
             DocumentModel folder2 = new DocumentModelImpl(
                     folder.getPathAsString(), "folder#2", "Folder");
-            folder2 = remote.createDocument(folder2);
+            folder2 = session.createDocument(folder2);
             fail("privilege is granted but should not be");
         } catch (DocumentSecurityException e) {
             // ok
@@ -207,12 +211,12 @@ public class TestSecurity extends NXRuntimeTestCase {
 
         setPermissionToAnonymous(SecurityConstants.EVERYTHING);
 
-        root = remote.getRootDocument();
+        root = session.getRootDocument();
 
         // and try again - this time it should work
         DocumentModel folder2 = new DocumentModelImpl(folder.getPathAsString(),
                 "folder#2", "Folder");
-        folder2 = remote.createDocument(folder2);
+        folder2 = session.createDocument(folder2);
 
         ACP acp2 = new ACPImpl();
         acl = new ACLImpl();
@@ -236,13 +240,13 @@ public class TestSecurity extends NXRuntimeTestCase {
         setPermissionToEveryone(SecurityConstants.WRITE,
                 SecurityConstants.REMOVE, SecurityConstants.ADD_CHILDREN,
                 SecurityConstants.REMOVE_CHILDREN, SecurityConstants.READ);
-        root = remote.getRootDocument();
+        root = session.getRootDocument();
 
         DocumentModel folder3 = new DocumentModelImpl(folder.getPathAsString(),
                 "folder#3", "Folder");
-        folder3 = remote.createDocument(folder3);
+        folder3 = session.createDocument(folder3);
 
-        remote.removeDocument(folder3.getRef());
+        session.removeDocument(folder3.getRef());
 
         removePermissionToEveryone();
         setPermissionToEveryone(SecurityConstants.REMOVE);
@@ -250,23 +254,24 @@ public class TestSecurity extends NXRuntimeTestCase {
         try {
             folder3 = new DocumentModelImpl(folder.getPathAsString(),
                     "folder#3", "Folder");
-            folder3 = remote.createDocument(folder3);
+            folder3 = session.createDocument(folder3);
             Assert.fail();
         } catch (Exception e) {
 
         }
     }
 
+    @Test
     public void testACLEscaping() throws ClientException {
         // temporary set an Everything privileges on the root for anonymous
         // so that we can create a folder
         setPermissionToAnonymous(SecurityConstants.EVERYTHING);
 
-        DocumentModel root = remote.getRootDocument();
+        DocumentModel root = session.getRootDocument();
 
         DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
                 "folder1", "Folder");
-        folder = remote.createDocument(folder);
+        folder = session.createDocument(folder);
 
         ACP acp = new ACPImpl();
         ACL acl = new ACLImpl();
@@ -291,31 +296,31 @@ public class TestSecurity extends NXRuntimeTestCase {
 
     /**
      * Test for method 'org.nuxeo.ecm.core.api.AbstractSession.getParentDocuments(DocumentRef)'
-     * @throws ClientException
      */
+    @Test
     public void testGetParentDocuments() throws ClientException {
 
         setPermissionToAnonymous(SecurityConstants.EVERYTHING);
 
-        DocumentModel root = remote.getRootDocument();
+        DocumentModel root = session.getRootDocument();
 
         String name = "Workspaces#1";
         DocumentModel workspaces = new DocumentModelImpl(
                 root.getPathAsString(), name, "Workspace");
-        remote.createDocument(workspaces);
+        session.createDocument(workspaces);
         String name2 = "repositoryWorkspace2#";
         DocumentModel repositoryWorkspace = new DocumentModelImpl(
                 workspaces.getPathAsString(), name2, "Workspace");
-        repositoryWorkspace = remote.createDocument(repositoryWorkspace);
+        repositoryWorkspace = session.createDocument(repositoryWorkspace);
 
         String name3 = "ws#3";
         DocumentModel ws1 = new DocumentModelImpl(
                 repositoryWorkspace.getPathAsString(), name3, "Workspace");
-        ws1 = remote.createDocument(ws1);
+        ws1 = session.createDocument(ws1);
         String name4 = "ws#4";
         DocumentModel ws2 = new DocumentModelImpl(ws1.getPathAsString(), name4,
                 "Workspace");
-        remote.createDocument(ws2);
+        session.createDocument(ws2);
 
         ACP acp = new ACPImpl();
         ACE denyRead = new ACE("test", SecurityConstants.READ, false);
@@ -325,11 +330,11 @@ public class TestSecurity extends NXRuntimeTestCase {
         repositoryWorkspace.setACP(acp, true);
         ws1.setACP(acp, true);
 
-        remote.save();
+        session.save();
 
-        List<DocumentModel> ws2ParentsUnderAdministrator = remote.getParentDocuments(ws2.getRef());
+        List<DocumentModel> ws2ParentsUnderAdministrator = session.getParentDocuments(ws2.getRef());
         assertTrue("list parents for" + ws2.getName() + "under "
-                + remote.getPrincipal().getName() + " is not empty:",
+                + session.getPrincipal().getName() + " is not empty:",
                 !ws2ParentsUnderAdministrator.isEmpty());
 
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();

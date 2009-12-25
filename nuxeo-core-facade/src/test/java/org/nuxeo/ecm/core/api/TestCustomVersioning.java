@@ -19,16 +19,21 @@
 
 package org.nuxeo.ecm.core.api;
 
+import org.junit.Before;
+
+import static org.nuxeo.ecm.core.api.Constants.CORE_FACADE_TESTS_BUNDLE;
+
 
 /**
  * @author <a href="mailto:dms@nuxeo.com">Dragos Mihalache</a>
  */
 public class TestCustomVersioning  extends TestVersioning {
 
+    @Before
     @Override
-    protected void deployCustomVersioning() throws Exception {
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
-                "CustomVersioningService.xml");
+    public void setUp() throws Exception {
+        super.setUp();
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "CustomVersioningService.xml");
     }
 
 }

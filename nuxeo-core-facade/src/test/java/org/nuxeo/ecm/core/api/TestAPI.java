@@ -248,20 +248,20 @@ public class TestAPI extends BaseTestCase {
         assertEquals(name2, returnedChildDocs.get(1).getName());
 
         // get file childs
-        List<DocumentModel> retrievedChilds = session.getChildren(root.getRef(),
+        List<DocumentModel> retrievedChildren = session.getChildren(root.getRef(),
                 "File");
 
-        assertNotNull(retrievedChilds);
-        assertEquals(1, retrievedChilds.size());
+        assertNotNull(retrievedChildren);
+        assertEquals(1, retrievedChildren.size());
 
-        assertNotNull(retrievedChilds.get(0));
-        assertNotNull(retrievedChilds.get(0).getId());
-        assertNotNull(retrievedChilds.get(0).getName());
-        assertNotNull(retrievedChilds.get(0).getPathAsString());
-        assertNotNull(retrievedChilds.get(0).getRef());
+        assertNotNull(retrievedChildren.get(0));
+        assertNotNull(retrievedChildren.get(0).getId());
+        assertNotNull(retrievedChildren.get(0).getName());
+        assertNotNull(retrievedChildren.get(0).getPathAsString());
+        assertNotNull(retrievedChildren.get(0).getRef());
 
-        assertEquals(name2, retrievedChilds.get(0).getName());
-        assertEquals("File", retrievedChilds.get(0).getType());
+        assertEquals(name2, retrievedChildren.get(0).getName());
+        assertEquals("File", retrievedChildren.get(0).getType());
     }
 
     @Test

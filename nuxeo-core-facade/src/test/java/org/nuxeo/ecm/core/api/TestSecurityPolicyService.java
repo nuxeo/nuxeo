@@ -32,6 +32,11 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
+import static org.nuxeo.ecm.core.api.Constants.CORE_BUNDLE;
+import static org.nuxeo.ecm.core.api.Constants.CORE_FACADE_TESTS_BUNDLE;
+import static org.nuxeo.ecm.core.api.Constants.SCHEMA_BUNDLE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.*;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -43,18 +48,18 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployBundle(Constants.SCHEMA_BUNDLE);
+        deployBundle(SCHEMA_BUNDLE);
 
-        deployContrib(Constants.CORE_BUNDLE,
+        deployContrib(CORE_BUNDLE,
                 "OSGI-INF/CoreService.xml");
-        deployContrib(Constants.CORE_BUNDLE,
+        deployContrib(CORE_BUNDLE,
                 "OSGI-INF/SecurityService.xml");
-        deployContrib(Constants.CORE_BUNDLE,
+        deployContrib(CORE_BUNDLE,
                 "OSGI-INF/RepositoryService.xml");
 
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(CORE_FACADE_TESTS_BUNDLE,
                 "test-CoreExtensions.xml");
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(CORE_FACADE_TESTS_BUNDLE,
                 "DemoRepository.xml");
 
         deployBundle("org.nuxeo.ecm.core.event");
@@ -91,8 +96,8 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
     public static void checkCorePolicy() throws Exception {
         // create document
-        CoreSession session = openSession(SecurityConstants.ADMINISTRATOR);
-        setTestPermissions(SecurityConstants.ANONYMOUS, SecurityConstants.READ);
+        CoreSession session = openSession(ADMINISTRATOR);
+        setTestPermissions(ANONYMOUS, READ);
         DocumentModel root = session.getRootDocument();
         DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
                 "folder#1", "Folder");
@@ -102,52 +107,44 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         saveAndCloseSession(session);
 
         // open session as anonymous and set access on user info
-        session = openSession(SecurityConstants.ANONYMOUS);
+        session = openSession(ANONYMOUS);
         DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("accessLevel", 3L);
         documentModelImpl.addDataModel(new DataModelImpl("user", data));
         ((NuxeoPrincipal) session.getPrincipal()).setModel(documentModelImpl);
         // access level is too low for this doc
-        assertFalse(session.hasPermission(folder.getRef(),
-                SecurityConstants.READ));
+        assertFalse(session.hasPermission(folder.getRef(), READ));
         // change user access level => can read
         ((NuxeoPrincipal) session.getPrincipal()).getModel().setProperty(
                 "user", "accessLevel", 5L);
-        assertTrue(session.hasPermission(folder.getRef(),
-                SecurityConstants.READ));
+        assertTrue(session.hasPermission(folder.getRef(), READ));
         saveAndCloseSession(session);
     }
 
     public void testNewSecurityPolicy() throws Exception {
         // standard permissions
-        deployContrib(Constants.CORE_BUNDLE,
-                "OSGI-INF/permissions-contrib.xml");
+        deployContrib(CORE_BUNDLE, "OSGI-INF/permissions-contrib.xml");
         // deploy custom security policy
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
-                "test-security-policy-contrib.xml");
+        deployContrib(CORE_FACADE_TESTS_BUNDLE, "test-security-policy-contrib.xml");
         checkCorePolicy();
     }
 
     public static void checkLockPermissions(CoreSession session, DocumentRef docRef,
             boolean canWrite) throws ClientException {
-        assertEquals(canWrite, session.hasPermission(docRef,
-                SecurityConstants.WRITE));
+        assertEquals(canWrite, session.hasPermission(docRef, WRITE));
         // test WRITE_PROPERTIES as it used to be granted when locked
-        assertEquals(canWrite, session.hasPermission(docRef,
-                SecurityConstants.WRITE_PROPERTIES));
-        assertTrue(session.hasPermission(docRef, SecurityConstants.READ));
+        assertEquals(canWrite, session.hasPermission(docRef, WRITE_PROPERTIES));
+        assertTrue(session.hasPermission(docRef, READ));
     }
 
     public void testLockSecurityPolicy() throws Exception {
         // deploy standard contribs
-        deployContrib(Constants.CORE_BUNDLE,
-                "OSGI-INF/permissions-contrib.xml");
-        deployContrib(Constants.CORE_BUNDLE,
-                "OSGI-INF/security-policy-contrib.xml");
+        deployContrib(CORE_BUNDLE, "OSGI-INF/permissions-contrib.xml");
+        deployContrib(CORE_BUNDLE, "OSGI-INF/security-policy-contrib.xml");
 
         // create document
-        CoreSession session = openSession(SecurityConstants.ADMINISTRATOR);
+        CoreSession session = openSession(ADMINISTRATOR);
         DocumentModel root = session.getRootDocument();
         DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
                 "folder#1", "Folder");
@@ -158,12 +155,11 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         checkLockPermissions(session, docRef, true);
 
         // add read/write to anonymous
-        setTestPermissions(SecurityConstants.ANONYMOUS,
-                SecurityConstants.READ_WRITE);
+        setTestPermissions(ANONYMOUS, READ_WRITE);
 
         saveAndCloseSession(session);
 
-        session = openSession(SecurityConstants.ANONYMOUS);
+        session = openSession(ANONYMOUS);
         // write granted to anonymous
         checkLockPermissions(session, docRef, true);
 
@@ -178,7 +174,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         saveAndCloseSession(session);
 
         // write denied to admin
-        session = openSession(SecurityConstants.ADMINISTRATOR);
+        session = openSession(ADMINISTRATOR);
         checkLockPermissions(session, docRef, false);
         saveAndCloseSession(session);
     }

@@ -26,6 +26,7 @@ public abstract class BaseTestCase extends Assert {
 
     protected final Random random = new Random(new Date().getTime());
 
+    protected CoreSession rootSession;
     protected CoreSession session;
 
     protected DocumentModel root;
@@ -37,7 +38,7 @@ public abstract class BaseTestCase extends Assert {
 
     @Before
     public void setUp() throws Exception {
-        openSession();
+        session = getRootSession();
         root = getRootDocument();
     }
 
@@ -47,11 +48,12 @@ public abstract class BaseTestCase extends Assert {
         closeSession();
     }
 
-    public void openSession() throws ClientException {
+    public CoreSession getRootSession() throws ClientException {
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("username", SecurityConstants.ADMINISTRATOR);
-        session = CoreInstance.getInstance().open("default", ctx);
+        CoreSession session = CoreInstance.getInstance().open("default", ctx);
         assertNotNull(session);
+        return session;
     }
 
     public void closeSession() {
@@ -111,6 +113,7 @@ public abstract class BaseTestCase extends Assert {
     }
 
     protected void cleanUp(DocumentRef ref) throws ClientException {
+        CoreSession session = getRootSession();
         session.removeChildren(ref);
         session.save();
     }
