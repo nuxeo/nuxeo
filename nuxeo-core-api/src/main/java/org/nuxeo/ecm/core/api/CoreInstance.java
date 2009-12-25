@@ -59,7 +59,7 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * So a client session looks something like this:
  * <p>
- * 
+ *
  * <pre>
  * &lt;code&gt;
  * CoreInstance server = CoreInstance.getInstance();
@@ -70,7 +70,7 @@ import org.nuxeo.runtime.api.Framework;
  * server.close(client);
  * &lt;/code&gt;
  * </pre>
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class CoreInstance implements Serializable {
@@ -95,7 +95,7 @@ public class CoreInstance implements Serializable {
 
     /**
      * Gets the CoreInstance singleton.
-     * 
+     *
      * @return the server instance
      */
     public static CoreInstance getInstance() {
@@ -141,7 +141,7 @@ public class CoreInstance implements Serializable {
     /**
      * Obsolete method only for compatibility with existing tests. Should be
      * removed.
-     * 
+     *
      * @deprecated remove it
      */
     @Deprecated
@@ -186,7 +186,7 @@ public class CoreInstance implements Serializable {
 
     /**
      * Gets the client bound to the given session.
-     * 
+     *
      * @param sid the session id
      * @return the client
      */

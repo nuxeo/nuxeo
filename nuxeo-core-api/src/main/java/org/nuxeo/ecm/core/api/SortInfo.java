@@ -25,7 +25,6 @@ import java.io.Serializable;
  * This class holds the details for sorting.
  *
  * @author <a href='mailto:glefter@nuxeo.com'>George Lefter</a>
- *
  */
 public class SortInfo implements Serializable {
 

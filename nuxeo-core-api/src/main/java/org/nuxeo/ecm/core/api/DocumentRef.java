@@ -33,7 +33,6 @@ import java.io.Serializable;
  * </ul>
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface DocumentRef extends Serializable {
 
@@ -52,9 +51,9 @@ public interface DocumentRef extends Serializable {
     /**
      * Gets the reference value.
      * <p>
-     * For an ID reference this is the document UUID.
+     * For an ID reference, this is the document UUID.
      * <p>
-     * For an ID reference this is the document path.
+     * For an ID reference, this is the document path.
      * <p>
      * For an INSTANCE reference this is the document itself.
      *

@@ -23,7 +23,6 @@ package org.nuxeo.ecm.core.api;
  * An ID reference to a document.
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class IdRef implements DocumentRef {
 
@@ -57,7 +56,7 @@ public class IdRef implements DocumentRef {
         if (obj instanceof IdRef) {
             return ((IdRef) obj).value.equals(value);
         }
-        // it is not possible to compare an IdREf compare it with a PathRef
+        // it is not possible to compare an IdRef with a PathRef
         return false;
     }
 

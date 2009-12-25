@@ -18,13 +18,12 @@ package org.nuxeo.ecm.core.api;
 
 /**
  * An application that should rollback the transaction if any.
- *
+ * <p>
  * In an ejb container, the nuxeo-core-api module is package with the
  * nuxeo-core-facade module. The facade has a ejb-jar.xml that declare this
  * exception has rollback=true.
  *
  * @author arussel
- *
  */
 public class RollbackClientException extends ClientException {
 

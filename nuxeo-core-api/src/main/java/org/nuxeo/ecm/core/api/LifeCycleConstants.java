@@ -25,14 +25,14 @@ package org.nuxeo.ecm.core.api;
  */
 public interface LifeCycleConstants {
 
-    public static final String DELETED_STATE = "deleted";
+    static final String DELETED_STATE = "deleted";
 
-    public static final String TRANSITION_EVENT = "lifecycle_transition_event";
+    static final String TRANSITION_EVENT = "lifecycle_transition_event";
 
-    public static final String TRANSTION_EVENT_OPTION_FROM = "from";
+    static final String TRANSTION_EVENT_OPTION_FROM = "from";
 
-    public static final String TRANSTION_EVENT_OPTION_TO = "to";
+    static final String TRANSTION_EVENT_OPTION_TO = "to";
 
-    public static final String TRANSTION_EVENT_OPTION_TRANSITION = "transition";
+    static final String TRANSTION_EVENT_OPTION_TRANSITION = "transition";
 
 }

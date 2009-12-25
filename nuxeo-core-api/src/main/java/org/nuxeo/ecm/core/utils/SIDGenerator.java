@@ -27,7 +27,6 @@ package org.nuxeo.ecm.core.utils;
  * unique ID (unique relative to the current running JVM).
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public final class SIDGenerator {
 

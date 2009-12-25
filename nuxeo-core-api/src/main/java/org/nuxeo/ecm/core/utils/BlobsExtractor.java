@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Extractor for all the blobs of a document.
- * 
+ *
  * @author Florent Guillaume
  * @author Benjamin Jalon
  */
@@ -66,11 +66,7 @@ public class BlobsExtractor {
 
     /**
      * Get properties of the given document that contain a blob value. This
-     * method use the cache engine to find these properties.
-     * 
-     * @param doc
-     * @return
-     * @throws Exception
+     * method uses the cache engine to find these properties.
      */
     public List<Property> getBlobsProperties(DocumentModel doc)
             throws Exception {
@@ -82,7 +78,7 @@ public class BlobsExtractor {
             for (String path : pathsList) {
                 List<String> pathSplitted = Arrays.asList(path.split("/[*]/"));
                 if (pathSplitted.size() == 0) {
-                    throw new Exception("Path detected not wellformed: "
+                    throw new IllegalStateException("Path detected not wellformed: "
                             + pathsList);
                 }
                 Property prop = doc.getProperty(schema + ":" + pathSplitted.get(0));
@@ -101,7 +97,7 @@ public class BlobsExtractor {
     /**
      * Get path list of properties that may contain a blob for the given
      * document type.
-     * 
+     *
      * @param documentType document type name
      * @return return the property names that contain blob
      * @throws Exception
@@ -150,7 +146,7 @@ public class BlobsExtractor {
      * Blob,
      * {@link BlobsExtractor#containsBlob(DocumentType, Schema, String, Field)}
      * is called
-     * 
+     *
      * @param schema The parent schema that contains the field
      * @param ct Current type parsed
      * @return {@code true} if the passed complex type contains at least one
@@ -211,7 +207,7 @@ public class BlobsExtractor {
      * Call during the parsing of the schema structure in
      * {@link BlobsExtractor#findInteresting} if field is a
      * Blob Type. This method stores the path to that Field.
-     * 
+     *
      * @param schema The parent schema that contains the field
      * @param field Field that is a BlobType
      */
@@ -231,7 +227,7 @@ public class BlobsExtractor {
      * Call during the parsing of the schema structure in
      * {@link BlobsExtractor#findInteresting if field
      * contains a subfield of type Blob. This method do nothing.
-     * 
+     *
      * @param schema The parent schema that contains the field
      * @param field Field that contains a subField of type BlobType
      */
@@ -267,7 +263,7 @@ public class BlobsExtractor {
      * Finds all the blobs of the document.
      * <p>
      * This method is not thread-safe.
-     * 
+     *
      * @param doc the document
      * @return the list of blobs in the document
      */
@@ -284,4 +280,5 @@ public class BlobsExtractor {
         }
         return result;
     }
+
 }
