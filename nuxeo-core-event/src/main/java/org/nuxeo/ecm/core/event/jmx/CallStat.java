@@ -19,10 +19,9 @@
 package org.nuxeo.ecm.core.event.jmx;
 
 /**
- * Simple class to store Listeners call statistics
+ * Simple class to store Listeners call statistics.
  *
  * @author Thierry Delprat
- *
  */
 public class CallStat {
 
@@ -52,4 +51,5 @@ public class CallStat {
     public String getLabel() {
         return label;
     }
+
 }

@@ -42,7 +42,6 @@ import java.io.Serializable;
  * bundle will be fired. TYhe COMMIT flag is ignored while in a transaction.
  * </ul>
  *
- *
  * More flags may be added in the future.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -70,8 +69,6 @@ public interface Event extends Serializable {
      * The name must be unique. It is recommended to use prefixes in the style
      * of java package names to differentiate between similar events that are
      * sent by different components.
-     *
-     * @return
      */
     String getName();
 
@@ -213,10 +210,7 @@ public interface Event extends Serializable {
     boolean isImmediate();
 
     /**
-     *
-     * Set the immediate flag
-     *
-     * @param immediate
+     * Sets the immediate flag
      */
     void setImmediate(boolean immediate);
 

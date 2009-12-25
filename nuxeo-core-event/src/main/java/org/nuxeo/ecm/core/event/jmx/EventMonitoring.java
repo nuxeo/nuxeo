@@ -24,11 +24,9 @@ import org.nuxeo.ecm.core.event.impl.EventListenerList;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- * Monitoring MBean implementation
+ * Monitoring MBean implementation.
  *
  * @author Thierry Delprat
- *
  */
 public class EventMonitoring implements EventMonitoringMBean {
 

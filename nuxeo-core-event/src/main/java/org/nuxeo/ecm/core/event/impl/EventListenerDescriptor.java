@@ -51,7 +51,7 @@ public class EventListenerDescriptor {
     @XNode("@class")
     protected Class<?> clazz;
 
-     /**
+    /**
      * A script reference: URL, file path, or bundle entry.
      * Runtime variable are expanded. To specify a bundle entry use the URL schema "bundle:"
      */
@@ -89,12 +89,12 @@ public class EventListenerDescriptor {
 
     protected RuntimeContext rc;
 
-    protected EventListener inLineListener = null;
+    protected EventListener inLineListener;
 
-    protected PostCommitEventListener postCommitEventListener = null;
+    protected PostCommitEventListener postCommitEventListener;
 
     public int getPriority() {
-        if (priority==null) {
+        if (priority == null) {
             return 0;
         }
         return priority;
@@ -130,31 +130,28 @@ public class EventListenerDescriptor {
         if (clazz != null) {
             if (EventListener.class.isAssignableFrom(clazz)) {
                 inLineListener = (EventListener) clazz.newInstance();
-                   isPostCommit=false;
+                isPostCommit = false;
+            } else if (PostCommitEventListener.class.isAssignableFrom(clazz)) {
+                postCommitEventListener = (PostCommitEventListener) clazz.newInstance();
+                isPostCommit = true;
             }
-            else if (PostCommitEventListener.class.isAssignableFrom(clazz)) {
-                postCommitEventListener =  (PostCommitEventListener) clazz.newInstance();
-                isPostCommit=true;
-            }
-        }
-        else if (script != null) {
+        } else if (script != null) {
             if (isPostCommit) {
-                postCommitEventListener =  new ScriptingPostCommitEventListener(getScript());
-            }
-            else {
-                inLineListener =  new ScriptingEventListener(getScript());
+                postCommitEventListener = new ScriptingPostCommitEventListener(getScript());
+            } else {
+                inLineListener = new ScriptingEventListener(getScript());
             }
         } else {
             throw new IllegalArgumentException("Listener extension must define either a class or a script");
         }
     }
 
-    public EventListener asEventListener(){
+    public EventListener asEventListener() {
         return inLineListener;
     }
 
     public PostCommitEventListener asPostCommitListener() {
-           return postCommitEventListener;
+        return postCommitEventListener;
     }
 
     public Script getScript() throws Exception {
@@ -192,33 +189,32 @@ public class EventListenerDescriptor {
 
     public void merge(EventListenerDescriptor other) {
 
-        this.isEnabled=other.isEnabled;
+        this.isEnabled = other.isEnabled;
 
-        if (other.clazz!=null) {
-            this.clazz=other.clazz;
-            this.rc=other.rc;
-        }else if (other.script!=null) {
-            this.script=other.script;
-            this.clazz=null;
-            this.rc=other.rc;
+        if (other.clazz != null) {
+            this.clazz = other.clazz;
+            this.rc = other.rc;
+        } else if (other.script != null) {
+            this.script = other.script;
+            this.clazz = null;
+            this.rc = other.rc;
         }
 
-        if (other.isAsync!=null) {
-            this.isAsync=other.isAsync;
+        if (other.isAsync != null) {
+            this.isAsync = other.isAsync;
         }
 
-        if (other.events!=null) {
-            this.events=other.events;
+        if (other.events != null) {
+            this.events = other.events;
         }
 
-        if (other.transactionTimeOut!=null) {
-            this.transactionTimeOut=other.transactionTimeOut;
+        if (other.transactionTimeOut != null) {
+            this.transactionTimeOut = other.transactionTimeOut;
         }
 
-        if (other.priority!=null) {
-            other.priority=this.priority;
+        if (other.priority != null) {
+            other.priority = this.priority;
         }
-
     }
 
     public final boolean acceptEvent(String eventName) {
@@ -229,14 +225,12 @@ public class EventListenerDescriptor {
         this.isAsync = isAsync;
     }
 
-
-    public boolean getIsAsync(){
+    public boolean getIsAsync() {
         return isAsync;
     }
 
     public boolean isSingleThreaded() {
         return singleThreaded;
     }
-
 
 }

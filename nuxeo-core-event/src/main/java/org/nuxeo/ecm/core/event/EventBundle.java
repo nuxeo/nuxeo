@@ -62,8 +62,6 @@ public interface EventBundle extends Iterable<Event>, Serializable {
 
     /**
      * Tests whether or not this bundle is empty.
-     *
-     * @return
      */
     boolean isEmpty();
 
@@ -76,21 +74,20 @@ public interface EventBundle extends Iterable<Event>, Serializable {
 
     /**
      * Tests whether or not this event bundle was created on a remote machine.
+     *
      * @return  true if the event bundle was fired from a remote machine, false otherwise
      */
     boolean hasRemoteSource();
 
     /**
-     * Returns the VMID of the JVM where the bundle was created
-     * @return
+     * Returns the VMID of the JVM where the bundle was created.
      */
     VMID getSourceVMID();
 
 
     /**
-     * Check is bundle contains the specified event
-     * @param eventName
-     * @return
+     * Check is bundle contains the specified event.
      */
     boolean containsEventName(String eventName);
+
 }

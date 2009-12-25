@@ -33,17 +33,13 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 
 /**
- *
- * Light Event implementation
- * Used to reduce memory footprint of {@link Event} stacked in {@link EventBundle}
+ * Light Event implementation.
+ * Used to reduce memory footprint of {@link Event} stacked in {@link EventBundle}.
  *
  * @author Thierry Delprat
- *
  */
 public class ShallowEvent extends EventImpl {
-    /**
-     *
-     */
+
     private static final long serialVersionUID = 1L;
 
     public static ShallowEvent create(Event event) {

@@ -49,11 +49,13 @@ public class EventListenerTest extends NXRuntimeTestCase {
         EventImpl event = new EventImpl("test", null);
         assertTrue(event.isPublic());
         assertEquals(Event.FLAG_NONE, event.getFlags());
+
         event.setLocal(true);
         event.setInline(true);
         assertEquals(Event.FLAG_LOCAL | Event.FLAG_INLINE, event.getFlags());
         assertTrue(event.isInline());
         assertTrue(event.isLocal());
+
         event.setLocal(false);
         assertEquals(Event.FLAG_INLINE, event.getFlags());
         assertTrue(event.isInline());
@@ -137,16 +139,21 @@ public class EventListenerTest extends NXRuntimeTestCase {
                 "test-listeners.xml");
         RuntimeContext rc = deployTestContrib("org.nuxeo.ecm.core.event", url);
         assertEquals(0, SCRIPT_CNT);
+
         EventService service = Framework.getService(EventService.class);
         service.fireEvent("test", new EventContextImpl(null, null));
         assertEquals(1, SCRIPT_CNT);
+
         rc.undeploy(url);
         assertEquals(1, SCRIPT_CNT);
+
         service.fireEvent("test", new EventContextImpl(null, null));
         assertEquals(1, SCRIPT_CNT);
+
         rc = deployTestContrib("org.nuxeo.ecm.core.event", url);
         service.fireEvent("test1", new EventContextImpl(null, null));
         assertEquals(2, SCRIPT_CNT);
+
         // test not accepted event
         service.fireEvent("some-event", new EventContextImpl(null, null));
         assertEquals(2, SCRIPT_CNT);

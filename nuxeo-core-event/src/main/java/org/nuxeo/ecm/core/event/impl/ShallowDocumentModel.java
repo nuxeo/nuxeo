@@ -45,13 +45,11 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.schema.DocumentType;
 
 /**
- *
  * Light weight {@link DocumentModel} implementation Only holds
  * {@link DocumentRef}, RepositoryName, name and path. Used to reduce memory
- * footprint of {@link Event} stacked in {@link EventBundle}
+ * footprint of {@link Event} stacked in {@link EventBundle}.
  *
  * @author Thierry Delprat
- *
  */
 public class ShallowDocumentModel implements DocumentModel {
 

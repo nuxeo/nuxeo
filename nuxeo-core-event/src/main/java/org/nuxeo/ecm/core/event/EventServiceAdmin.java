@@ -21,11 +21,9 @@ package org.nuxeo.ecm.core.event;
 import org.nuxeo.ecm.core.event.impl.EventListenerList;
 
 /**
- *
  * Interface for EventService administration
  *
  * @author Thierry Delprat
- *
  */
 public interface EventServiceAdmin {
 

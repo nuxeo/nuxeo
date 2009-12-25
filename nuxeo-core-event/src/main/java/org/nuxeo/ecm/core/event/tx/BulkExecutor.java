@@ -28,9 +28,7 @@ import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * @author Thierry Delprat
- *
  */
 public class BulkExecutor extends PostCommitSynchronousRunner {
 
@@ -39,23 +37,22 @@ public class BulkExecutor extends PostCommitSynchronousRunner {
     protected static Integer timeout = null;
 
     protected static int getExecTimeOutInS() {
-        if (timeout==null) {
-            String strTimeout = Framework.getProperty("org.nuxeo.ecm.core.event.tx.BulkExecutor.timeout","600");
-            timeout= Integer.parseInt(strTimeout);
+        if (timeout == null) {
+            String strTimeout = Framework.getProperty("org.nuxeo.ecm.core.event.tx.BulkExecutor.timeout", "600");
+            timeout = Integer.parseInt(strTimeout);
         }
         return timeout;
     }
 
     public BulkExecutor(List<EventListenerDescriptor> listeners,
             EventBundle event) {
-        super(listeners, event, getExecTimeOutInS()*1000);
+        super(listeners, event, getExecTimeOutInS() * 1000);
     }
 
     @Override
     protected Runnable getExecutor() {
         return new MonoThreadBulkExecutor();
     }
-
 
     protected void handleUnfinishedThread(Thread runner) {
         log.error("Bulk execution of event handlers is too long, exiting by killing thread");
@@ -84,4 +81,5 @@ public class BulkExecutor extends PostCommitSynchronousRunner {
                     + (System.currentTimeMillis() - t0) + "ms");
         }
     }
+
 }

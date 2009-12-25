@@ -39,7 +39,6 @@ public interface PostCommitEventListener {
      * committed.
      *
      * @param events the events to handle
-     * @throws ClientException
      */
     void handleEvent(EventBundle events) throws ClientException;
 

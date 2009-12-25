@@ -76,7 +76,6 @@ public interface EventService extends EventProducer {
      *
      * @param name the event name
      * @param context the event context
-     * @throws ClientException
      */
     void fireEvent(String name, EventContext context) throws ClientException;
 
@@ -87,7 +86,6 @@ public interface EventService extends EventProducer {
      * sent after the transaction commit.
      *
      * @param event the event to fire
-     * @throws ClientException
      */
     void fireEvent(Event event) throws ClientException;
 
@@ -98,7 +96,6 @@ public interface EventService extends EventProducer {
      * are fired in the form of an event bundle.
      *
      * @param event the event bundle
-     * @throws ClientException
      */
     void fireEventBundle(EventBundle event) throws ClientException;
 
@@ -106,9 +103,6 @@ public interface EventService extends EventProducer {
      * Fires an event bundle in synchronous mode. Used by the framework.
      * <p>
      * This means that asynchronous listeners will be run synchronously.
-     *
-     * @param event
-     * @throws ClientException
      */
     void fireEventBundleSync(EventBundle event) throws ClientException;
 
@@ -147,8 +141,6 @@ public interface EventService extends EventProducer {
      * This will fire the events collected during the transaction in the form of
      * a {@link EventBundle}. After this the recording will stop and recorded
      * events discarded.
-     *
-     * @throws ClientException
      */
     void transactionCommitted() throws ClientException;
 
@@ -170,16 +162,14 @@ public interface EventService extends EventProducer {
      * Waits until all asynchronous tasks are finished.
      */
     void waitForAsyncCompletion();
-    
+
     /**
-     * Add an event transaction listener 
-     * @param listener
+     * Adds an event transaction listener.
      */
     void addTransactionListener(EventTransactionListener listener);
 
     /**
-     * Remove the given event transaction listener
-     * @param listener
+     * Removes the given event transaction listener.
      */
     void removeTransactionListener(EventTransactionListener listener);
 }

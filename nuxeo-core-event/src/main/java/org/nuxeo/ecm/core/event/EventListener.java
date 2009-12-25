@@ -36,7 +36,6 @@ public interface EventListener {
      * {@link Event#cancel()}
      *
      * @param event the event
-     * @throws ClientException
      */
     void handleEvent(Event event) throws ClientException;
 

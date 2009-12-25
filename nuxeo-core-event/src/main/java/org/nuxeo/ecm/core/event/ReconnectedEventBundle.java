@@ -42,13 +42,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 public interface ReconnectedEventBundle extends EventBundle {
 
     /**
-     * Manage cleanup after processing
+     * Manage cleanup after processing.
      */
     void disconnect();
 
     /**
-     * marker for Bundles comming from JMS
-     * @return
+     * Marker for Bundles coming from JMS.
      */
     boolean comesFromJMS();
 

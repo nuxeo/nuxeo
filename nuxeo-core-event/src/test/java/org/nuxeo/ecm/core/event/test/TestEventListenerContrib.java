@@ -39,9 +39,7 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.event");
     }
 
-
     public void testMerge() throws Exception {
-
         URL url = EventListenerTest.class.getClassLoader().getResource(
         "test-listeners.xml");
         RuntimeContext rc = deployTestContrib("org.nuxeo.ecm.core.event", url);
@@ -58,6 +56,7 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
         desc.setEnabled(false);
         serviceImpl.addEventListener(desc);
         assertEquals(0, serviceImpl.getEventListenerList().getInLineListeners().size());
+
         desc.setEnabled(true);
         serviceImpl.addEventListener(desc);
         assertEquals(1, serviceImpl.getEventListenerList().getInLineListeners().size());
@@ -73,6 +72,7 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
         deployTestContrib("org.nuxeo.ecm.core.event", url);
         assertEquals(0, serviceImpl.getEventListenerList().getAsyncPostCommitListeners().size());
         assertEquals(1, serviceImpl.getEventListenerList().getSyncPostCommitListeners().size());
+
         boolean isScriptListener = false;
         PostCommitEventListener listener = serviceImpl.getEventListenerList().getSyncPostCommitListeners().get(0);
         if ( listener instanceof ScriptingPostCommitEventListener) {
@@ -84,14 +84,10 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
         deployTestContrib("org.nuxeo.ecm.core.event", url);
         assertEquals(1, serviceImpl.getEventListenerList().getAsyncPostCommitListeners().size());
         assertEquals(0, serviceImpl.getEventListenerList().getSyncPostCommitListeners().size());
-        listener = serviceImpl.getEventListenerList().getAsyncPostCommitListeners().get(0);
-        if ( listener instanceof ScriptingPostCommitEventListener) {
-            isScriptListener=true;
-        } else {
-            isScriptListener=false;
-        }
-        assertFalse(isScriptListener);
 
+        listener = serviceImpl.getEventListenerList().getAsyncPostCommitListeners().get(0);
+        isScriptListener = listener instanceof ScriptingPostCommitEventListener;
+        assertFalse(isScriptListener);
     }
 
 }

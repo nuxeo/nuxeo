@@ -148,7 +148,7 @@ public interface EventContext extends Serializable {
      *
      * @param name the event name
      * @param flags the event flags to use
-     * @return the event the event
+     * @return the event
      */
     Event newEvent(String name, int flags);
 

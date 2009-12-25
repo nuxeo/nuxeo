@@ -19,133 +19,97 @@
 package org.nuxeo.ecm.core.event.jmx;
 
 /**
- * Monitoring interface
+ * Monitoring interface.
  *
  * @author Thierry Delprat
- *
  */
 public interface EventMonitoringMBean {
 
     /**
-     * Get the number of events in process or waiting for available slots
-     *
-     * @return
+     * Gets the number of events in process or waiting for available slots.
      */
     int getEventsInQueueCount();
 
     /**
-     * Get number of active threads
-     *
-     * @return
+     * Gets number of active threads.
      */
     int getActiveThreadsCount();
 
     /**
-     * Tells if time tracking is active for Async event handlers
-     *
-     * @return
+     * Tells if time tracking is active for Async event handlers.
      */
     boolean isAsyncHandlersTrackingEnabled();
 
-
     /**
-     * Enables or disables time tracking for Async event handlers
-     *
-     * @return
+     * Enables or disables time tracking for Async event handlers.
      */
     void setAsyncHandlersTrackingEnabled(boolean collectAsyncHandlersExecTime);
 
 
     /**
-     * Tells if time tracking is active for Sync event handlers
-     *
-     * @return
+     * Tells if time tracking is active for Sync event handlers.
      */
     boolean isSyncHandlersTrackingEnabled();
 
     /**
-     * Enables or disables time tracking for Sync event handlers
-     *
-     * @return
+     * Enables or disables time tracking for Sync event handlers.
      */
     void setSyncHandlersTrackingEnabled(boolean collectSyncHandlersExecTime);
 
     /**
-     * Returns the statistics for Async Handlers
-     *
-     * @return
+     * Returns the statistics for Async Handlers.
      */
     String getAsyncHandlersExecTime();
 
     /**
-     * Returns the statistics for Sync Handlers
-     *
-     * @return
+     * Returns the statistics for Sync Handlers.
      */
     String getSyncHandlersExecTime();
 
     /**
-     * reset the statistics
+     * Resets the statistics.
      */
     void resetHandlersExecTime();
 
-
     /**
-     * Tells if async handlers execution is blocked
-     *
-     * @return
+     * Tells if async handlers execution is blocked.
      */
     boolean isBlockAsyncHandlers();
 
     /**
-     * Blocks or enables async handlers execution
-     *
-     * @return
+     * Blocks or enables async handlers execution.
      */
     void setBlockAsyncHandlers(boolean blockAsyncHandlers);
 
     /**
-     * Tells if post-commit sync handlers execution is blocked
-     *
-     * @return
+     * Tells if post-commit sync handlers execution is blocked.
      */
     boolean isBlockSyncPostCommitHandlers();
 
     /**
-     * Blocks or enables post-commit sync handlers execution
-     *
-     * @return
+     * Blocks or enables post-commit sync handlers execution.
      */
     void setBlockSyncPostCommitHandlers(boolean blockSyncPostCommitHandlers);
 
     /**
-     * get a summary of all registred listeners
-     * (name - type - enabled)
-     *
-     * @return
+     * Get a summary of all registered listeners
+     * (name - type - enabled).
      */
     String getListenersConfig();
 
     /**
-     * Enables or disables a listener by it's name
-     *
-     * @param listenerName
-     * @param enabled
+     * Enables or disables a listener by its name.
      */
     void setListenerEnabledFlag(String listenerName, boolean enabled);
 
     /**
-     * getter for bulkMode processing
-     * Bulk mode may be used by listeners to drop some processing
-     *
-     * @return
+     * Getter for bulkMode processing.
+     * Bulk mode may be used by listeners to drop some processing.
      */
     boolean isBulkModeEnabled();
 
     /**
-     * Enables/Disables bulkMode processing
-     *
-     * @param bulkModeEnabled
+     * Enables/Disables bulkMode processing.
      */
     void setBulkModeEnabled(boolean bulkModeEnabled);
 

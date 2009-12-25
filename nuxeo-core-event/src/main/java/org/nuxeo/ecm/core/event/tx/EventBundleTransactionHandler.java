@@ -88,7 +88,7 @@ public class EventBundleTransactionHandler {
             return null;
         }
 
-        UserTransaction ut = null;
+        UserTransaction ut;
         try {
             ut = TransactionHelper.lookupUserTransaction();
         } catch (NamingException e) {

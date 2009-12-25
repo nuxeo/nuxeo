@@ -22,11 +22,9 @@ import org.nuxeo.runtime.management.AbstractResourceFactory;
 import org.nuxeo.runtime.management.ObjectNameFactory;
 
 /**
- *
  * Factory for Monitoring MBean
  *
  * @author Thierry Delprat
- *
  */
 public class EventMonitoringFactory extends AbstractResourceFactory {
 

@@ -59,7 +59,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
     };
 
     protected ListenerList txListeners;
-    
+
     protected final EventListenerList listenerDescriptors;
 
     protected final AsyncEventExecutor asyncExec;
@@ -202,7 +202,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
             }
         }
 
-
         if (blockAsyncProcessing) {
             log.debug("Dopping bundle");
             return;
@@ -211,14 +210,13 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         // fire async listeners
         if (AsyncProcessorConfig.forceJMSUsage() && !comesFromJMS) {
             log.debug("Skipping async exec, this will be triggered via JMS");
-        }else {
+        } else {
             asyncExec.run(listenerDescriptors.getEnabledAsyncPostCommitListenersDescriptors(), event);
         }
     }
 
     @SuppressWarnings("unchecked")
     public void fireEventBundleSync(EventBundle event) throws ClientException {
-
         for (EventListenerDescriptor desc : listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors()) {
             desc.asPostCommitListener().handleEvent(event);
         }
@@ -265,21 +263,17 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         return bundle.get().isTransacted();
     }
 
-
     public EventListenerList getEventListenerList() {
         return listenerDescriptors;
     }
 
-
     // methods for monitoring
-
 
     public EventListenerList getListenerList() {
         return listenerDescriptors;
     }
 
     public void setListenerEnabledFlag(String listenerName, boolean enabled) {
-
         if (!listenerDescriptors.getListenerNames().contains(listenerName)) {
             return;
         }
@@ -313,7 +307,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
                 return;
             }
         }
-
     }
 
     public int getActiveThreadsCount() {
@@ -334,7 +327,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
 
     public void setBlockAsyncHandlers(boolean blockAsyncHandlers) {
         blockAsyncProcessing = blockAsyncHandlers;
-
     }
 
     public void setBlockSyncPostCommitHandlers(boolean blockSyncPostComitHandlers) {
@@ -356,7 +348,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
     public void removeTransactionListener(EventTransactionListener listener) {
         txListeners.remove(listener);
     }
-    
+
     protected void fireTxStarted() {
         for (Object listener : txListeners.getListeners()) {
             ((EventTransactionListener)listener).transactionStarted();
@@ -366,7 +358,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
     protected void fireTxRollbacked() {
         for (Object listener : txListeners.getListeners()) {
             ((EventTransactionListener)listener).transactionRollbacked();
-        }        
+        }
     }
 
     protected void fireTxCommited() {

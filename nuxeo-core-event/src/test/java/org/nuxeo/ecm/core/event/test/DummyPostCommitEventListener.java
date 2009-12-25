@@ -27,7 +27,6 @@ public class DummyPostCommitEventListener implements PostCommitEventListener {
 
     public void handleEvent(EventBundle events) throws ClientException {
         // TODO Auto-generated method stub
-
     }
 
 }

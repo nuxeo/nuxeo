@@ -22,10 +22,10 @@ package org.nuxeo.ecm.core.event;
  */
 public interface EventTransactionListener {
 
-    public void transactionStarted();
-    
-    public void transactionRollbacked();
-    
-    public void transactionCommitted();
-    
+    void transactionStarted();
+
+    void transactionRollbacked();
+
+    void transactionCommitted();
+
 }

@@ -48,8 +48,8 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default implementation for an {@link EventBundle} that need to be reconnected
- * to a usable Session
- * 
+ * to a usable Session.
+ *
  * @author tiry
  */
 public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
@@ -229,4 +229,5 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
     public boolean containsEventName(String eventName) {
         return sourceEventBundle.containsEventName(eventName);
     }
+
 }

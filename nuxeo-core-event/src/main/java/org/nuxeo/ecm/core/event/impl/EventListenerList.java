@@ -27,11 +27,9 @@ import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 
 /**
- *
- * Utility class used to manage event listeners descriptors
+ * Utility class used to manage event listeners descriptors.
  *
  * @author Thierry Delprat
- *
  */
 public class EventListenerList {
 
@@ -83,18 +81,15 @@ public class EventListenerList {
         return existingDesc;
     }
 
-
     public void removeDescriptor(EventListenerDescriptor descriptor) {
         enabledFilteringDone=false;
         if (listenerNames.contains(descriptor.getName())) {
             if (descriptor.isPostCommit) {
                 if (descriptor.isAsync) {
                     asyncPostCommitListenersDescriptors.remove(descriptor);
-                }
-                else {
+                } else {
                     syncPostCommitListenersDescriptors.remove(descriptor);
                 }
-
             } else {
                 inlineListenersDescriptors.remove(descriptor);
             }
@@ -102,9 +97,7 @@ public class EventListenerList {
         }
     }
 
-
     public EventListenerDescriptor getDescriptor(String listenerName) {
-
         if (!listenerNames.contains(listenerName)) {
             return null;
         }
@@ -162,7 +155,6 @@ public class EventListenerList {
         return asyncPostCommitListenersDescriptors;
     }
 
-
     public synchronized void recomputeEnabledListeners() {
         enabledAsyncPostCommitListenersDescriptors.clear();
         for (EventListenerDescriptor desc : asyncPostCommitListenersDescriptors) {
@@ -209,6 +201,5 @@ public class EventListenerList {
     public List<String> getListenerNames() {
         return listenerNames;
     }
-
 
 }

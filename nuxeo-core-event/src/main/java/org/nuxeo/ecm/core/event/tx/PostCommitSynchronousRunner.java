@@ -30,12 +30,10 @@ import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
 import org.nuxeo.ecm.core.event.jmx.EventStatsHolder;
 
 /**
- *
  * Runs synchronous Listeners in a separated thread in order to enable TX
  * management
  *
  * @author Thierry Delprat
- *
  */
 public class PostCommitSynchronousRunner {
 
@@ -119,7 +117,6 @@ public class PostCommitSynchronousRunner {
             log.debug("End of all post commit sync executions : "
                     + (System.currentTimeMillis() - t0) + "ms");
         }
-
     }
 
 }
