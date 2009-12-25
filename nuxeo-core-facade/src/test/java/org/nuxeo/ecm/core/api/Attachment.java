@@ -29,7 +29,7 @@ public class Attachment {
 
     private final Map<String, Object> map = new HashMap<String, Object>();
 
-    Attachment(String name, String content) {
+    public Attachment(String name, String content) {
         map.put("name", name);
         map.put("content", new StringBlob(content));
     }

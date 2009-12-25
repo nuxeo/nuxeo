@@ -28,62 +28,57 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.Attachment;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
-import org.nuxeo.runtime.RuntimeService;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
+import static org.nuxeo.ecm.core.api.Constants.CORE_BUNDLE;
+import static org.nuxeo.ecm.core.api.Constants.CORE_FACADE_TESTS_BUNDLE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.*;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
+import static org.nuxeo.ecm.core.lifecycle.LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME;
 
 /**
- *
  * @author Razvan Caraghin
- *
  */
-public class TestLocalAPI extends TestAPI {
+public class TestLocalAPI extends BaseTestCase {
 
-    protected RuntimeService runtime;
+    @BeforeClass
+    public static void startRuntime() throws Exception {
+        runtime = new NXRuntimeTestCase() {};
+        runtime.setUp();
 
-    protected void doDeployments() throws Exception {
-        deployContrib(Constants.CORE_BUNDLE, "OSGI-INF/CoreService.xml");
-        deployContrib(Constants.CORE_BUNDLE, "OSGI-INF/SecurityService.xml");
-        deployContrib(Constants.CORE_BUNDLE, "OSGI-INF/RepositoryService.xml");
+        runtime.deployContrib(CORE_BUNDLE, "OSGI-INF/CoreService.xml");
+        runtime.deployContrib(CORE_BUNDLE, "OSGI-INF/SecurityService.xml");
+        runtime.deployContrib(CORE_BUNDLE, "OSGI-INF/RepositoryService.xml");
 
-        deployBundle("org.nuxeo.ecm.core.event");
+        runtime.deployBundle("org.nuxeo.ecm.core.event");
 
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
-                "TypeService.xml");
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
-                "permissions-contrib.xml");
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
-                "test-CoreExtensions.xml");
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
-                "CoreTestExtensions.xml");
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
-                "DemoRepository.xml");
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
-                "LifeCycleService.xml");
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
-                "LifeCycleServiceExtensions.xml");
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
-                "DocumentAdapterService.xml");
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "TypeService.xml");
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "permissions-contrib.xml");
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "test-CoreExtensions.xml");
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "CoreTestExtensions.xml");
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "DemoRepository.xml");
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "LifeCycleService.xml");
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "LifeCycleServiceExtensions.xml");
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "DocumentAdapterService.xml");
     }
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        doDeployments();
-        openSession();
-    }
+    // Tests
 
+    @Test
     public void testPropertyModel() throws Exception {
         DocumentModel root = getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -127,8 +122,8 @@ public class TestLocalAPI extends TestAPI {
         assertNull(p.getValue());
     }
 
+    @Test
     public void testOrdering() throws Exception {
-        DocumentModel root = getRootDocument();
         DocumentModel parent = new DocumentModelImpl(root.getPathAsString(),
                 "theParent", "OrderedFolder");
 
@@ -164,8 +159,8 @@ public class TestLocalAPI extends TestAPI {
         assertEquals(name2, children.get(1).getName());
     }
 
+    @Test
     public void testPropertyXPath() throws Exception {
-        DocumentModel root = getRootDocument();
         DocumentModel parent = new DocumentModelImpl(root.getPathAsString(),
                 "theParent", "OrderedFolder");
 
@@ -183,8 +178,8 @@ public class TestLocalAPI extends TestAPI {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testComplexList() throws Exception {
-        DocumentModel root = getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
                 "mydoc", "MyDocType");
 
@@ -204,8 +199,7 @@ public class TestLocalAPI extends TestAPI {
         assertNotNull(list);
         assertEquals(2, list.size());
 
-        Blob blob;
-        blob = (Blob) ((Map) list.get(0)).get("content");
+        Blob blob = (Blob) ((Map) list.get(0)).get("content");
         assertEquals("value1", blob.getString());
         blob = (Blob) ((Map) list.get(1)).get("content");
         assertEquals("value2", blob.getString());
@@ -248,8 +242,8 @@ public class TestLocalAPI extends TestAPI {
         assertEquals(0, list.size());
     }
 
+    @Test
     public void testDataModel() throws Exception {
-        DocumentModel root = getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
                 "mydoc", "Book");
 
@@ -305,8 +299,8 @@ public class TestLocalAPI extends TestAPI {
         assertEquals("at2-modif2", dm.getValue("attachments/item[1]/name"));
     }
 
+    @Test
     public void testGetChildrenRefs() throws Exception {
-        DocumentModel root = getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
                 "mydoc", "Book");
         doc = session.createDocument(doc);
@@ -316,6 +310,7 @@ public class TestLocalAPI extends TestAPI {
         List<DocumentRef> childrenRefs = session.getChildrenRefs(root.getRef(),
                 null);
         assertEquals(2, childrenRefs.size());
+
         Set<String> expected = new HashSet<String>();
         expected.add(doc.getId());
         expected.add(doc2.getId());
@@ -331,8 +326,8 @@ public class TestLocalAPI extends TestAPI {
         return bytes;
     }
 
+    @Test
     public void testLazyBlob() throws Exception {
-        DocumentModel root = getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
                 "mydoc", "File");
 
@@ -353,8 +348,8 @@ public class TestLocalAPI extends TestAPI {
         assertTrue(Arrays.equals(bytes, blob.getByteArray()));
     }
 
+    @Test
     public void testProxy() throws Exception {
-        DocumentModel root = getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
                 "proxy_test", "File");
 
@@ -410,6 +405,7 @@ public class TestLocalAPI extends TestAPI {
         session.save();
         folder = session.getDocument(folder.getRef());
         assertTrue(session.isCheckedOut(doc.getRef()));
+
         // publishDocument API
         proxy = session.publishDocument(doc, root);
         session.save(); // needed for publish-by-copy to work
@@ -439,6 +435,7 @@ public class TestLocalAPI extends TestAPI {
         assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
     }
 
+    @Test
     public void testPermissionChecks() throws Exception {
 
         CoreSession joeReaderSession = null;
@@ -518,9 +515,7 @@ public class TestLocalAPI extends TestAPI {
             // joe local manager cannot move the doc
             joeLocalManagerSession.move(childRef, ref, "child2_move");
 
-            joeLocalManagerSession.removeDocument(ref);
             joeLocalManagerSession.save();
-
         } finally {
             if (joeReaderSession != null) {
                 CoreInstance.getInstance().close(joeReaderSession);
@@ -531,6 +526,8 @@ public class TestLocalAPI extends TestAPI {
             if (joeLocalManagerSession != null) {
                 CoreInstance.getInstance().close(joeLocalManagerSession);
             }
+            session.removeDocument(ref);
+            session.save();
         }
     }
 
@@ -544,7 +541,6 @@ public class TestLocalAPI extends TestAPI {
 
     protected DocumentRef createDocumentModelWithSamplePermissions(String name)
             throws ClientException {
-        DocumentModel root = getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), name,
                 "Folder");
         doc = session.createDocument(doc);
@@ -552,37 +548,33 @@ public class TestLocalAPI extends TestAPI {
         ACP acp = doc.getACP();
         ACL localACL = acp.getOrCreateACL();
 
-        localACL.add(new ACE("joe_reader", SecurityConstants.READ, true));
+        localACL.add(new ACE("joe_reader", READ, true));
 
-        localACL.add(new ACE("joe_contributor", SecurityConstants.READ, true));
-        localACL.add(new ACE("joe_contributor",
-                SecurityConstants.WRITE_PROPERTIES, true));
-        localACL.add(new ACE("joe_contributor", SecurityConstants.ADD_CHILDREN,
-                true));
+        localACL.add(new ACE("joe_contributor", READ, true));
+        localACL.add(new ACE("joe_contributor", WRITE_PROPERTIES, true));
+        localACL.add(new ACE("joe_contributor", ADD_CHILDREN, true));
 
-        localACL.add(new ACE("joe_localmanager", SecurityConstants.READ, true));
-        localACL.add(new ACE("joe_localmanager", SecurityConstants.WRITE, true));
-        localACL.add(new ACE("joe_localmanager",
-                SecurityConstants.WRITE_SECURITY, true));
+        localACL.add(new ACE("joe_localmanager", READ, true));
+        localACL.add(new ACE("joe_localmanager", WRITE, true));
+        localACL.add(new ACE("joe_localmanager", WRITE_SECURITY, true));
 
         acp.addACL(localACL);
         doc.setACP(acp, true);
 
         // add the permission to remove children on the root
-        ACP rootACP = root.getACP();
-        ACL rootACL = rootACP.getOrCreateACL();
-        rootACL.add(new ACE("joe_localmanager",
-                SecurityConstants.REMOVE_CHILDREN, true));
-        rootACP.addACL(rootACL);
-        root.setACP(rootACP, true);
+        //ACP rootACP = root.getACP();
+        //ACL rootACL = rootACP.getOrCreateACL();
+        //rootACL.add(new ACE("joe_localmanager", REMOVE_CHILDREN, true));
+        //rootACP.addACL(rootACL);
+        //root.setACP(rootACP, true);
 
         // make it visible for others
         session.save();
         return doc.getRef();
     }
 
+    @Test
     public void testDocumentInitialLifecycleState() throws Exception {
-        DocumentModel root = getRootDocument();
         DocumentModel docProject = new DocumentModelImpl(
                 root.getPathAsString(), "DocWork", "File");
         docProject = session.createDocument(docProject);
@@ -590,17 +582,16 @@ public class TestLocalAPI extends TestAPI {
 
         DocumentModel docApproved = new DocumentModelImpl(
                 root.getPathAsString(), "DocApproved", "File");
-        docApproved.putContextData(
-                LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME,
-                "approved");
+        docApproved.putContextData(INITIAL_LIFECYCLE_STATE_OPTION_NAME, "approved");
         docApproved = session.createDocument(docApproved);
         assertEquals("approved", docApproved.getCurrentLifeCycleState());
     }
 
     // see identical test in TestSQLRepositoryVersioning
 
+    @Test
     public void testVersionSecurity() throws Exception {
-        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        DocumentModel folder = new DocumentModelImpl("/", "folder123", "Folder");
         folder = session.createDocument(folder);
         ACP acp = new ACPImpl();
         ACE ace = new ACE("princ1", "perm1", true);
@@ -608,8 +599,9 @@ public class TestLocalAPI extends TestAPI {
         acl.add(ace);
         acp.addACL(acl);
         session.setACP(folder.getRef(), acp, true);
-        DocumentModel file = new DocumentModelImpl("/folder", "file", "File");
+        DocumentModel file = new DocumentModelImpl("/folder123", "file123", "File");
         file = session.createDocument(file);
+
         // set security
         acp = new ACPImpl();
         ace = new ACE("princ2", "perm2", true);
@@ -618,20 +610,22 @@ public class TestLocalAPI extends TestAPI {
         acp.addACL(acl);
         session.setACP(file.getRef(), acp, true);
         session.save();
+
         VersionModel vm = new VersionModelImpl();
         vm.setLabel("v1");
         session.checkIn(file.getRef(), vm);
         session.checkOut(file.getRef());
 
         // check security on version
-        DocumentModel version = session.getDocumentWithVersion(file.getRef(),
-                vm);
+        DocumentModel version = session.getDocumentWithVersion(file.getRef(), vm);
         acp = session.getACP(version.getRef());
         ACL[] acls = acp.getACLs();
-        if (getClass().getName().equals(TestLocalAPI.class.getName())) {
+
+        if (!usingCustomVersioning) {
             // JCR versioning (unused) does something incorrect here
             return;
         }
+
         // the following is only run with TestLocalAPIWithCustomVersioning
         assertEquals(2, acls.length);
         acl = acls[0];

@@ -25,12 +25,12 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.FileUtils;
@@ -45,12 +45,16 @@ import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
+import static org.nuxeo.ecm.core.api.Constants.CORE_BUNDLE;
+import static org.nuxeo.ecm.core.api.Constants.CORE_FACADE_TESTS_BUNDLE;
 
 /**
  * @author Razvan Caraghin
- *
+ * @author Stefane Fermigier
  */
-public abstract class TestAPI extends TestConnection {
+public class TestAPI extends BaseTestCase {
     /*
      * if: java.io.InvalidClassException: javax.resource.ResourceException;
      * local class incompatible: stream classdesc serialVersionUID see
@@ -59,73 +63,31 @@ public abstract class TestAPI extends TestConnection {
      * probably this is because too many opened JCR sessions
      */
 
-    protected final Random random = new Random(new Date().getTime());
+    @BeforeClass
+    public static void startRuntime() throws Exception {
+        runtime = new NXRuntimeTestCase() {};
+        runtime.setUp();
 
-    @Override
-    public void tearDown() throws Exception {
-        cleanUp(getRootDocument().getRef());
-        closeSession();
-        super.tearDown();
+        runtime.deployContrib(CORE_BUNDLE, "OSGI-INF/CoreService.xml");
+        runtime.deployContrib(CORE_BUNDLE, "OSGI-INF/SecurityService.xml");
+        runtime.deployContrib(CORE_BUNDLE, "OSGI-INF/RepositoryService.xml");
+
+        runtime.deployBundle("org.nuxeo.ecm.core.event");
+
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "TypeService.xml");
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "permissions-contrib.xml");
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "test-CoreExtensions.xml");
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "CoreTestExtensions.xml");
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "DemoRepository.xml");
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "LifeCycleService.xml");
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "LifeCycleServiceExtensions.xml");
+        runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "DocumentAdapterService.xml");
     }
 
-    protected String generateUnique() {
-        return String.valueOf(random.nextLong());
-    }
+    // Test methods start here
 
-    protected DocumentModel getRootDocument() throws ClientException {
-        DocumentModel root = session.getRootDocument();
-
-        assertNotNull(root);
-        assertNotNull(root.getId());
-        assertNotNull(root.getRef());
-        assertNotNull(root.getPathAsString());
-
-        return root;
-    }
-
-    protected DocumentModel createChildDocument(DocumentModel childFolder)
-            throws ClientException {
-
-        DocumentModel ret = session.createDocument(childFolder);
-
-        assertNotNull(ret);
-        assertNotNull(ret.getName());
-        assertNotNull(ret.getId());
-        assertNotNull(ret.getRef());
-        assertNotNull(ret.getPathAsString());
-
-        return ret;
-    }
-
-    protected List<DocumentModel> createChildDocuments(
-            List<DocumentModel> childFolders) throws ClientException {
-        List<DocumentModel> rets = new ArrayList<DocumentModel>();
-        Collections.addAll(
-                rets,
-                session.createDocument(childFolders.toArray(new DocumentModel[childFolders.size()])));
-
-        assertNotNull(rets);
-        assertEquals(childFolders.size(), rets.size());
-
-        for (DocumentModel createdChild : rets) {
-            assertNotNull(createdChild);
-            assertNotNull(createdChild.getName());
-            assertNotNull(createdChild.getRef());
-            assertNotNull(createdChild.getPathAsString());
-            assertNotNull(createdChild.getId());
-        }
-
-        return rets;
-    }
-
-    protected void cleanUp(DocumentRef ref) throws ClientException {
-        session.removeChildren(ref);
-        session.save();
-    }
-
+    @Test
     public void testCancel() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), "folder#" + generateUnique(), "Folder");
         childFolder = createChildDocument(childFolder);
@@ -135,10 +97,9 @@ public abstract class TestAPI extends TestConnection {
         assertFalse(session.exists(childFolder.getRef()));
     }
 
+    @Test
     public void testCreateDomainDocumentRefDocumentModel()
             throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "domain#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Domain");
@@ -148,10 +109,9 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(name, childFolder.getName());
     }
 
+    @Test
     public void testCreateFolderDocumentRefDocumentModel()
             throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -161,9 +121,8 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(name, childFolder.getName());
     }
 
+    @Test
     public void testCreateFileDocumentRefDocumentModel() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name, "File");
@@ -174,10 +133,9 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(name, childFile.getName());
     }
 
+    @Test
     public void testCreateFolderDocumentRefDocumentModelArray()
             throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -195,10 +153,9 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(name2, returnedChildFolders.get(1).getName());
     }
 
+    @Test
     public void testCreateFileDocumentRefDocumentModelArray()
             throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name, "File");
@@ -216,15 +173,13 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(name2, returnedChildFiles.get(1).getName());
     }
 
+    @Test
     public void testExists() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         assertTrue(session.exists(root.getRef()));
     }
 
+    @Test
     public void testGetChild() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -262,25 +217,20 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(name2, retrievedChild.getName());
     }
 
+    @Test
     public void testGetChildrenDocumentRef() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         List<DocumentModel> docs = session.getChildren(root.getRef());
-
         assertEquals(0, docs.size());
     }
 
+    @Test
     public void testGetChildrenDocumentRef2() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         DocumentModelIterator docs = session.getChildrenIterator(root.getRef());
-
         assertFalse(docs.hasNext());
     }
 
+    @Test
     public void testGetFileChildrenDocumentRefString() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -314,9 +264,8 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("File", retrievedChilds.get(0).getType());
     }
 
+    @Test
     public void testGetFileChildrenDocumentRefString2() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -353,9 +302,8 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("File", doc.getType());
     }
 
+    @Test
     public void testGetFolderChildrenDocumentRefString() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -389,10 +337,9 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("Folder", retrievedChilds.get(0).getType());
     }
 
+    @Test
     public void testGetFolderChildrenDocumentRefString2()
             throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -429,9 +376,8 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("Folder", doc.getType());
     }
 
+    @Test
     public void testGetChildrenDocumentRefStringFilter() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -467,10 +413,9 @@ public abstract class TestAPI extends TestConnection {
     }
 
     // FIXME: same as testGetChildrenDocumentRefStringFilter. Remove?
+    @Test
     public void testGetChildrenDocumentRefStringFilter2()
             throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -510,12 +455,9 @@ public abstract class TestAPI extends TestConnection {
 
     /**
      * Test for NXP-741: Search based getChildren.
-     *
-     * @throws ClientException
      */
+    @Test
     public void testGetChildrenInFolderWithSearch() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
                 name, "FolderWithSearch");
@@ -541,9 +483,8 @@ public abstract class TestAPI extends TestConnection {
         }
     }
 
+    @Test
     public void testGetDocumentDocumentRef() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -575,8 +516,6 @@ public abstract class TestAPI extends TestConnection {
     // TODO: fix this test.
     public void XXXtestGetDocumentDocumentRefStringArray()
             throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name2, "File");
@@ -638,9 +577,8 @@ public abstract class TestAPI extends TestConnection {
                 "filename"));
     }
 
+    @Test
     public void testGetFilesDocumentRef() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -673,9 +611,8 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("File", retrievedChilds.get(0).getType());
     }
 
+    @Test
     public void testGetFilesDocumentRef2() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -716,9 +653,8 @@ public abstract class TestAPI extends TestConnection {
     //
     // }
 
+    @Test
     public void testGetFoldersDocumentRef() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -751,9 +687,8 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("Folder", retrievedChilds.get(0).getType());
     }
 
+    @Test
     public void testGetFoldersDocumentRef2() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -793,9 +728,8 @@ public abstract class TestAPI extends TestConnection {
     // not used at the moment
     // }
 
+    @Test
     public void testGetParentDocument() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -818,20 +752,14 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(root.getPathAsString(), shouldBeRoot.getPathAsString());
     }
 
-    public void testGetRootDocument() throws ClientException {
-        getRootDocument();
-    }
-
+    @Test
     public void testHasChildren() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         // the root document at the moment has no children
         assertFalse(session.hasChildren(root.getRef()));
     }
 
+    @Test
     public void testRemoveChildren() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -854,9 +782,8 @@ public abstract class TestAPI extends TestConnection {
         assertFalse(session.exists(returnedChildDocs.get(1).getRef()));
     }
 
+    @Test
     public void testRemoveDocument() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -878,9 +805,8 @@ public abstract class TestAPI extends TestConnection {
         assertFalse(session.exists(returnedChildDocs.get(0).getRef()));
     }
 
+    @Test
     public void testQuery() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -969,9 +895,8 @@ public abstract class TestAPI extends TestConnection {
         session.removeDocument(returnedChildDocs.get(1).getRef());
     }
 
+    @Test
     public void testQueryAfterEdit() throws ClientException, IOException {
-        DocumentModel root = getRootDocument();
-
         String fname1 = "file1#" + generateUnique();
         DocumentModel childFile1 = new DocumentModelImpl(
                 root.getPathAsString(), fname1, "File");
@@ -1025,9 +950,8 @@ public abstract class TestAPI extends TestConnection {
         session.removeDocument(docModel.getRef());
     }
 
+    @Test
     public void testRemoveDocuments() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -1056,9 +980,8 @@ public abstract class TestAPI extends TestConnection {
      * case where some documents are actually children of other ones from the
      * list
      */
+    @Test
     public void testRemoveDocumentsWithDeps() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -1117,9 +1040,8 @@ public abstract class TestAPI extends TestConnection {
      * Same as testRemoveDocumentWithDeps with a different given ordering of
      * documents to delete
      */
+    @Test
     public void testRemoveDocumentsWithDeps2() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -1175,9 +1097,8 @@ public abstract class TestAPI extends TestConnection {
         assertFalse(session.exists(returnedChildDocs.get(4).getRef()));
     }
 
+    @Test
     public void testSave() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -1195,9 +1116,8 @@ public abstract class TestAPI extends TestConnection {
         assertTrue(session.exists(childFile.getRef()));
     }
 
+    @Test
     public void testSaveFolder() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
 
         DocumentModel childFolder = new DocumentModelImpl(
@@ -1217,9 +1137,8 @@ public abstract class TestAPI extends TestConnection {
                 "description"));
     }
 
+    @Test
     public void testSaveFile() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "file#" + generateUnique();
 
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
@@ -1244,9 +1163,8 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("filename1", retrievedFile.getProperty("file", "filename"));
     }
 
+    @Test
     public void testSaveDocuments() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -1266,9 +1184,8 @@ public abstract class TestAPI extends TestConnection {
         assertTrue(session.exists(childFile.getRef()));
     }
 
+    @Test
     public void testGetVersionsForDocument() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name2, "File");
@@ -1323,9 +1240,8 @@ public abstract class TestAPI extends TestConnection {
         assertNull(versions2.get(1).getDescription());
     }
 
-    public void testRetreiveVersion() throws ClientException {
-        DocumentModel root = getRootDocument();
-
+    @Test
+    public void testRetrieveVersion() throws ClientException {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name2, "File");
@@ -1366,8 +1282,6 @@ public abstract class TestAPI extends TestConnection {
 
     // TODO: fix and reenable SF 2007/05/23
     public void XXXtestRestoreToVersion() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name2, "File");
@@ -1420,9 +1334,8 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("second name", restoredDoc.getProperty("file", "filename"));
     }
 
+    @Test
     public void testCheckIn() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name2, "File");
@@ -1445,9 +1358,8 @@ public abstract class TestAPI extends TestConnection {
         XXXtestRestoreToVersion();
     }
 
+    @Test
     public void testGetCheckedOut() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name2, "File");
@@ -1468,8 +1380,6 @@ public abstract class TestAPI extends TestConnection {
 
     // TODO: fix and reenable SF 2007/05/23
     public void XXXtestGetDocumentWithVersion() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name2, "File");
@@ -1527,9 +1437,8 @@ public abstract class TestAPI extends TestConnection {
         assertTrue(permissions.contains("Everything"));
     }
 
+    @Test
     public void testGetDataModel() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name2, "File");
@@ -1561,9 +1470,8 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("second name", dm.getData("filename"));
     }
 
+    @Test
     public void testGetDataModelField() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name2, "File");
@@ -1585,9 +1493,8 @@ public abstract class TestAPI extends TestConnection {
                 childFile.getRef(), "file", "filename"));
     }
 
+    @Test
     public void testGetDataModelFields() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name2, "File");
@@ -1620,10 +1527,9 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("second name", values[0]);
     }
 
+    @Test
     public void testDocumentReferenceEqualityDifferentInstances()
             throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -1664,17 +1570,15 @@ public abstract class TestAPI extends TestConnection {
     }
 
     @SuppressWarnings( { "SimplifiableJUnitAssertion" })
+    @Test
     public void testDocumentReferenceEqualitySameInstance()
             throws ClientException {
-        DocumentModel root = getRootDocument();
-
         assertTrue(root.getRef().equals(root.getRef()));
     }
 
+    @Test
     public void testDocumentReferenceNonEqualityDifferentInstances()
             throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name = "folder#" + generateUnique();
         DocumentModel childFolder = new DocumentModelImpl(
                 root.getPathAsString(), name, "Folder");
@@ -1705,9 +1609,8 @@ public abstract class TestAPI extends TestConnection {
                 retrievedChild.getParentRef()));
     }
 
+    @Test
     public void testFacets() throws Exception {
-        DocumentModel root = getRootDocument();
-
         assertTrue(root.isFolder());
 
         String name = "file#" + generateUnique();
@@ -1733,8 +1636,8 @@ public abstract class TestAPI extends TestConnection {
         assertTrue(returnedChildFiles.get(2).isFolder());
     }
 
+    @Test
     public void testLifeCycleAPI() throws ClientException {
-        DocumentModel root = getRootDocument();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 "file#" + generateUnique(), "File");
         childFile = createChildDocument(childFile);
@@ -1761,9 +1664,8 @@ public abstract class TestAPI extends TestConnection {
         assertFalse(session.exists(childFile.getRef()));
     }
 
-    // TODO: fix and reenable SF 2007/05/23
+    @Test
     public void testDataModelLifeCycleAPI() throws ClientException {
-        DocumentModel root = getRootDocument();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 "file#" + generateUnique(), "File");
         childFile = createChildDocument(childFile);
@@ -1787,8 +1689,8 @@ public abstract class TestAPI extends TestConnection {
         assertFalse(session.exists(childFile.getRef()));
     }
 
+    @Test
     public void testCopy() throws Exception {
-        DocumentModel root = getRootDocument();
         DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(),
                 "folder1", "Folder");
 
@@ -1852,9 +1754,9 @@ public abstract class TestAPI extends TestConnection {
         session.cancel();
     }
 
+    @Test
     public void testCopyProxyAsDocument() throws Exception {
         // create a folder tree
-        DocumentModel root = getRootDocument();
         DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(),
                 "folder1", "Folder");
         DocumentModel folder2 = new DocumentModelImpl(root.getPathAsString(),
@@ -1905,6 +1807,7 @@ public abstract class TestAPI extends TestConnection {
         session.cancel();
     }
 
+    @Test
     public void testCopyVersionable() throws Exception {
         DocumentModel note = new DocumentModelImpl("/", "note", "Note");
         DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
@@ -1941,8 +1844,8 @@ public abstract class TestAPI extends TestConnection {
         session.cancel();
     }
 
+    @Test
     public void testCopyFolderOfVersionable() throws Exception {
-        DocumentModel root = getRootDocument();
         DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
         DocumentModel note = new DocumentModelImpl("/folder", "note", "Note");
         folder = session.createDocument(folder);
@@ -1979,8 +1882,8 @@ public abstract class TestAPI extends TestConnection {
         session.cancel();
     }
 
+    @Test
     public void testMove() throws Exception {
-        DocumentModel root = getRootDocument();
         DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(),
                 "folder1", "Folder");
 
@@ -2025,8 +1928,6 @@ public abstract class TestAPI extends TestConnection {
 
     // TODO: fix this test
     public void XXXtestScalarList() throws Exception {
-        DocumentModel root = getRootDocument();
-
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name2, "File");
@@ -2063,9 +1964,8 @@ public abstract class TestAPI extends TestConnection {
         assertTrue(list.contains("b"));
     }
 
+    @Test
     public void testBlob() throws Exception {
-        DocumentModel root = getRootDocument();
-
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name2, "File");
@@ -2104,8 +2004,6 @@ public abstract class TestAPI extends TestConnection {
      * This test should be done on a repo that contains deprecated blob node
      * types (nt:resource blobs) You should specify the File document UID to
      * test
-     *
-     * @throws Exception
      */
     public void xxx_testBlobCompat() throws Exception {
         String UID = "6c0f8723-25b2-4a28-a93f-d03096057b92";
@@ -2150,8 +2048,6 @@ public abstract class TestAPI extends TestConnection {
     }
 
     public void xxx__testUploadBigBlob() throws Exception {
-        DocumentModel root = getRootDocument();
-
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name2, "File");
@@ -2171,8 +2067,8 @@ public abstract class TestAPI extends TestConnection {
         session.save();
     }
 
+    @Test
     public void testRetrieveSamePropertyInAncestors() throws ClientException {
-        DocumentModel root = getRootDocument();
         DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(),
                 "folder1", "Folder");
         folder1 = createChildDocument(folder1);
@@ -2224,8 +2120,8 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("folder #1", fieldValuesBis[2]);
     }
 
+    @Test
     public void testLock() throws Exception {
-        DocumentModel root = getRootDocument();
         DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(),
                 "folder1", "Folder");
 
@@ -2247,7 +2143,6 @@ public abstract class TestAPI extends TestConnection {
 
     // TODO: fix and reenable.
     public void XXXtestDocumentAdapter() throws Exception {
-        DocumentModel root = getRootDocument();
         DocumentModel file = new DocumentModelImpl(root.getPathAsString(),
                 "file", "File");
 
@@ -2265,9 +2160,8 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("val2", adoc.getAnnotation("key2"));
     }
 
+    @Test
     public void testGetSourceId() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name2, "File");
@@ -2295,9 +2189,8 @@ public abstract class TestAPI extends TestConnection {
         // assertFalse(childFile.getId().equals(childFile.getSourceId()));
     }
 
+    @Test
     public void testGetRepositoryName() throws ClientException {
-        DocumentModel root = getRootDocument();
-
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name2, "File");
@@ -2306,6 +2199,7 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("default", childFile.getRepositoryName());
     }
 
+    @Test
     public void testCreateDocumentModel() throws ClientException {
         // first method: only the typename
         DocumentModel docModel = session.createDocumentModel("File");
@@ -2333,8 +2227,8 @@ public abstract class TestAPI extends TestConnection {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testCopyContent() throws ClientException {
-        DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
                 "original", "File");
         doc.setProperty("dublincore", "title", "t");
@@ -2385,9 +2279,9 @@ public abstract class TestAPI extends TestConnection {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testDocumentModelTreeSort() throws Exception {
         // create a folder tree
-        DocumentModel root = getRootDocument();
         DocumentModel a_folder = new DocumentModelImpl(root.getPathAsString(),
                 "a_folder", "Folder");
         a_folder.setProperty("dublincore", "title", "Z title for a_folder");

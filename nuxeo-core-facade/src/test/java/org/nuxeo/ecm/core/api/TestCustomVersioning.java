@@ -21,9 +21,7 @@ package org.nuxeo.ecm.core.api;
 
 
 /**
- *
  * @author <a href="mailto:dms@nuxeo.com">Dragos Mihalache</a>
- *
  */
 public class TestCustomVersioning  extends TestVersioning {
 

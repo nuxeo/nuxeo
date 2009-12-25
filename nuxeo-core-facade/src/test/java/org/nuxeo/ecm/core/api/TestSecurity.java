@@ -116,7 +116,7 @@ public class TestSecurity extends NXRuntimeTestCase {
         if (acp == null) {
             acp = new ACPImpl();
         }
-        UserEntryImpl userEntry = new UserEntryImpl(SecurityConstants.EVERYONE);
+        UserEntry userEntry = new UserEntryImpl(SecurityConstants.EVERYONE);
         for (String perm : perms) {
             userEntry.addPrivilege(perm, true, false);
         }

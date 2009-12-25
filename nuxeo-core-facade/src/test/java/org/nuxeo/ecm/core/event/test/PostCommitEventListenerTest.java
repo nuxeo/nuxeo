@@ -47,6 +47,7 @@ public class PostCommitEventListenerTest extends RepositoryOSGITestCase {
                 "test-PostCommitListeners.xml");
         deployTestContrib("org.nuxeo.ecm.core.event", url);
         assertEquals(0, SCRIPT_CNT);
+
         EventContextImpl customContext = new EventContextImpl(null, null);
         customContext.setProperty("cle", "valeur");
         customContext.setProperty("cle2", "valeur2");
@@ -54,6 +55,7 @@ public class PostCommitEventListenerTest extends RepositoryOSGITestCase {
         EventService service = Framework.getService(EventService.class);
         service.fireEvent("test", customContext);
         assertEquals(0, SCRIPT_CNT);
+
         service.fireEvent("test1", customContext);
         assertEquals(0, SCRIPT_CNT);
 
@@ -61,6 +63,7 @@ public class PostCommitEventListenerTest extends RepositoryOSGITestCase {
         // bundle with all
         service.fireEvent("some-event", customContext);
         assertEquals(0, SCRIPT_CNT);
+
         getCoreSession().save();
         waitForAsyncExec();
         assertTrue(3 <= SCRIPT_CNT);

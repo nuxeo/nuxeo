@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -33,9 +34,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- *
  * @author <a href="mailto:dms@nuxeo.com">Dragos Mihalache</a>
- *
  */
 public class TestVersioning extends NXRuntimeTestCase {
 
@@ -84,6 +83,9 @@ public class TestVersioning extends NXRuntimeTestCase {
         super.tearDown();
     }
 
+    // Tests
+
+    @Test
     public void testRemoveSingleDocVersion() throws ClientException {
 
         DocumentModel root = coreSession.getRootDocument();
@@ -118,6 +120,7 @@ public class TestVersioning extends NXRuntimeTestCase {
     /**
      * Creates 3 versions and removes the first.
      */
+    @Test
     public void testRemoveFirstDocVersion() throws ClientException {
 
         DocumentModel root = coreSession.getRootDocument();
@@ -148,6 +151,7 @@ public class TestVersioning extends NXRuntimeTestCase {
     /**
      * Creates 3 versions and removes the second.
      */
+    @Test
     public void testRemoveMiddleDocVersion() throws ClientException {
 
         DocumentModel root = coreSession.getRootDocument();
@@ -177,6 +181,7 @@ public class TestVersioning extends NXRuntimeTestCase {
     /**
      * Creates 3 versions and removes the last.
      */
+    @Test
     public void testRemoveLastDocVersion() throws ClientException {
 
         DocumentModel root = coreSession.getRootDocument();

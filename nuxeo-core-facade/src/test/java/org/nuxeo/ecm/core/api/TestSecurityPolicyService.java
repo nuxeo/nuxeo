@@ -66,7 +66,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         return CoreInstance.getInstance().open(REPO_NAME, ctx);
     }
 
-    private static void saveAndcloseSession(CoreSession session)
+    private static void saveAndCloseSession(CoreSession session)
             throws ClientException {
         session.save();
         CoreInstance.getInstance().close(session);
@@ -86,7 +86,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         }
         acp.setRules("test", new UserEntry[] { userEntry });
         doc.setACP(acp, true);
-        saveAndcloseSession(session);
+        saveAndCloseSession(session);
     }
 
     public static void checkCorePolicy() throws Exception {
@@ -99,7 +99,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         // set access security
         folder.setProperty("secupolicy", "securityLevel", 4L);
         folder = session.createDocument(folder);
-        saveAndcloseSession(session);
+        saveAndCloseSession(session);
 
         // open session as anonymous and set access on user info
         session = openSession(SecurityConstants.ANONYMOUS);
@@ -116,7 +116,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
                 "user", "accessLevel", 5L);
         assertTrue(session.hasPermission(folder.getRef(),
                 SecurityConstants.READ));
-        saveAndcloseSession(session);
+        saveAndCloseSession(session);
     }
 
     public void testNewSecurityPolicy() throws Exception {
@@ -161,7 +161,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         setTestPermissions(SecurityConstants.ANONYMOUS,
                 SecurityConstants.READ_WRITE);
 
-        saveAndcloseSession(session);
+        saveAndCloseSession(session);
 
         session = openSession(SecurityConstants.ANONYMOUS);
         // write granted to anonymous
@@ -175,12 +175,12 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         // write still granted
         checkLockPermissions(session, docRef, true);
 
-        saveAndcloseSession(session);
+        saveAndCloseSession(session);
 
         // write denied to admin
         session = openSession(SecurityConstants.ADMINISTRATOR);
         checkLockPermissions(session, docRef, false);
-        saveAndcloseSession(session);
+        saveAndCloseSession(session);
     }
 
 }
