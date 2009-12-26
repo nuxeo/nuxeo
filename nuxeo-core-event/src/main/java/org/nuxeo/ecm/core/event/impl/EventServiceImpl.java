@@ -177,7 +177,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
             if (!blockAsyncProcessing) {
                 listeners.addAll(listenerDescriptors.getEnabledAsyncPostCommitListenersDescriptors());
             }
-            if (listeners.size()>0) {
+            if (!listeners.isEmpty()) {
                 BulkExecutor bulkExecutor = new BulkExecutor(listeners, event);
                 bulkExecutor.run();
             }
@@ -190,12 +190,12 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         }
         else if (comesFromJMS) {
             // when called from JMS we must skip sync listeners
-            // - postComit listerers should be on the core
+            // - postComit listeners should be on the core
             // - there is no transaction started by JMS listener
-            log.debug("Desactivating sync post-commit listener since we are called from JMS");
+            log.debug("Deactivating sync post-commit listener since we are called from JMS");
         } else {
             List<EventListenerDescriptor> syncPCDescs = listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors();
-            if (syncPCDescs!=null && syncPCDescs.size()>0) {
+            if (syncPCDescs!=null && !syncPCDescs.isEmpty()) {
                 PostCommitSynchronousRunner syncRunner = new PostCommitSynchronousRunner(
                         syncPCDescs, event);
                 syncRunner.run();

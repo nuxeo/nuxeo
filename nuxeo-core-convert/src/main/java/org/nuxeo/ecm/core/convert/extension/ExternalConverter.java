@@ -34,8 +34,6 @@ public interface ExternalConverter extends Converter {
 
     /**
      * Checks if the converter is available.
-     *
-     * @return
      */
     ConverterCheckResult isConverterAvailable();
 

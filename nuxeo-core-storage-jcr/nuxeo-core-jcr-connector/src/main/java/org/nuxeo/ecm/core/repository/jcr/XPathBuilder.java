@@ -135,7 +135,7 @@ public class XPathBuilder {
         if (query.where != null) {
             Expression expr = query.where.predicate;
             if (expr != null) {
-// the lookahead of path expression is depreciated. see lookaheadxxx method                
+// the lookahead of path expression is depreciated. see lookaheadxxx method
 //                if (expr.isPathExpression()) {
 //                    pathExpression(expr);
 //                } else {
@@ -146,7 +146,7 @@ public class XPathBuilder {
     }
 
 // This method is depreciated since ecm:path handling changed. Before the XPATH support for path were used
-// now the virtual ecm:path property is used instead.    
+// now the virtual ecm:path property is used instead.
 //    private Operand lookaheadPathExpression(Expression expr)
 //            throws QueryException {
 //        if (expr.lvalue instanceof Expression) {

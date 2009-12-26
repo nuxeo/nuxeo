@@ -28,9 +28,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 
 /**
  * @author <a href="mailto:lgiura@nuxeo.com">Leonard Giura</a>
- *
  */
-
 public class TestMapField extends RepositoryTestCase {
 
     private Document doc;

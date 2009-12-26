@@ -298,7 +298,6 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
         throw new UnsupportedOperationException();
     }
 
-
     /*
      * ----- equals/hashcode -----
      */
@@ -322,7 +321,5 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
     public int hashCode() {
         return getHierarchyNode().getId().hashCode();
     }
-
- 
 
 }

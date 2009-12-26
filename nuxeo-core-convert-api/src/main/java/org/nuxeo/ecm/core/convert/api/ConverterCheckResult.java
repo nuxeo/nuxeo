@@ -55,6 +55,7 @@ public class ConverterCheckResult implements Serializable {
         return available;
     }
 
+    // Never used. Remove?
     public void setAvailable(boolean available) {
         this.available = available;
     }

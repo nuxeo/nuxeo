@@ -123,8 +123,7 @@ public class EventStatsHolder {
                 sb.append(" calls - ");
                 sb.append(stat.getAccumulatedTime());
                 sb.append("ms - ");
-                String pcent = String.format("%.2f", (new Float(stat
-                        .getAccumulatedTime()) / totalTime) * 100);
+                String pcent = String.format("%.2f", 100.0 * stat.getAccumulatedTime() / totalTime);
                 sb.append(pcent);
                 sb.append("%\n");
             }

@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.schema.TypeConstants;
  * @author <a href="mailto:lgiura@nuxeo.com">Leonard Giura</a>
  */
 public class TestDocument extends RepositoryTestCase {
+
     private Session session;
 
     private Document root;
@@ -64,10 +65,7 @@ public class TestDocument extends RepositoryTestCase {
     /**
      * Prepares each test by getting the root doc, adding a a folder under the
      * root and a document under this folder.
-     *
-     * @throws Exception
      */
-
     public void prepareTest() throws Exception {
         // creating the session
         session = getRepository().getSession(null);
@@ -80,8 +78,6 @@ public class TestDocument extends RepositoryTestCase {
     /**
      * Closes the session, then opens it again in order to test the preservation
      * of the actions made in the first step of the testing.
-     *
-     * @throws Exception
      */
     public void prepareReTest() throws Exception {
         session.close();
@@ -93,8 +89,6 @@ public class TestDocument extends RepositoryTestCase {
 
     /**
      * Closes the session, after deleting newly created documents.
-     *
-     * @throws Exception
      */
     public void finalizeTest() throws Exception {
         if (parent != null) {
@@ -173,7 +167,6 @@ public class TestDocument extends RepositoryTestCase {
     }
 
     public void testPathResolver() throws Exception {
-
         assertEquals(root, root.resolvePath("/"));
         assertEquals(root, parent.resolvePath("/"));
         assertEquals(parent, doc.resolvePath("../"));
@@ -181,14 +174,12 @@ public class TestDocument extends RepositoryTestCase {
         assertEquals(doc, doc.resolvePath(""));
         assertEquals(parent, root.resolvePath("/parent"));
         assertEquals(parent, root.resolvePath(parent.getPath()));
-
     }
 
     public void testGetPath() throws Exception {
         assertEquals("/", root.getPath());
         assertEquals("/" + parent.getName(), parent.getPath());
-        assertEquals("/" + parent.getName() + "/" + doc.getName(), doc
-                .getPath());
+        assertEquals("/" + parent.getName() + "/" + doc.getName(), doc.getPath());
     }
 
     public void testGetType() throws Exception {

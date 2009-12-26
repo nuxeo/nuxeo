@@ -29,7 +29,6 @@ public class PropertyExistsException extends DocumentException {
 
     private static final long serialVersionUID = -2744378981592186415L;
 
-
     public PropertyExistsException() {
         super("The property already exists");
     }

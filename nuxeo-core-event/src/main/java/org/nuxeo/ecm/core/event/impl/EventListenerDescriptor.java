@@ -126,7 +126,6 @@ public class EventListenerDescriptor {
     }
 
     public void initListener() throws Exception {
-
         if (clazz != null) {
             if (EventListener.class.isAssignableFrom(clazz)) {
                 inLineListener = (EventListener) clazz.newInstance();

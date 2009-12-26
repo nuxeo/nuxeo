@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
  * @author <a href="mailto:lgiura@nuxeo.com">Leonard Giura</a>
  */
 public class TestQuery extends RepositoryTestCase {
+
     private Session session;
     private Document root;
 

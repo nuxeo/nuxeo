@@ -39,14 +39,13 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 
 /**
  * @author matic
- *
  */
 @SuppressWarnings("unchecked")
 public class RepositorySessionLockStress extends RepositoryOSGITestCase {
 
     public static final String PREFIX = RepositorySessionLockStress.class.getSimpleName();
 
-    protected static Log log = LogFactory.getLog(RepositorySessionLockStress.class);
+    protected static final Log log = LogFactory.getLog(RepositorySessionLockStress.class);
 
     private final int numberOfDocuments;
 

@@ -34,10 +34,10 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
  * Listener for life cycle change events.
- *
+ * <p>
  * If event occurs on a folder, it will recurse on children to perform the same
  * transition if possible.
- *
+ * <p>
  * If the transition event is about marking documents as "deleted", and a child
  * cannot perform the transition, it will be removed.
  */

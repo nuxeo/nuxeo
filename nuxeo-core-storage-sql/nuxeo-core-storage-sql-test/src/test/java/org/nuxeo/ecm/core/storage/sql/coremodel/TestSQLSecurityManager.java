@@ -40,22 +40,29 @@ public class TestSQLSecurityManager extends TestCase {
 
         ACL[] acls = acp.getACLs();
         assertEquals(2, acls.length);
+
         ACL acl = acls[0];
         assertEquals("local", acl.getName());
+
         ACE[] aces = acl.getACEs();
         assertEquals(1, aces.length);
+
         ACE ace = aces[0];
         assertTrue(ace.isGranted());
         assertEquals("Read", ace.getPermission());
         assertEquals("bob", ace.getUsername());
+
         acl = acls[1];
         assertEquals("wf", acl.getName());
+
         aces = acl.getACEs();
         assertEquals(2, aces.length);
+
         ace = aces[0];
         assertFalse(ace.isGranted());
         assertEquals("Write", ace.getPermission());
         assertEquals("steve", ace.getUsername());
+
         ace = aces[1];
         assertTrue(ace.isGranted());
         assertEquals("Zap", ace.getPermission());
@@ -81,8 +88,8 @@ public class TestSQLSecurityManager extends TestCase {
         acl.add(ace);
         acp.addACL(acl);
         ACLRow[] aclrows = SQLSecurityManager.acpToAclRows(acp);
-
         assertEquals(3, aclrows.length);
+
         ACLRow aclrow = aclrows[0];
         assertEquals(0, aclrow.pos);
         assertEquals("local", aclrow.name);
@@ -90,8 +97,10 @@ public class TestSQLSecurityManager extends TestCase {
         assertEquals("Read", aclrow.permission);
         assertEquals("bob", aclrow.user);
         assertNull(aclrow.group);
+
         aclrow = aclrows[1];
         assertEquals("steve", aclrow.user);
+
         aclrow = aclrows[2];
         assertEquals("pete", aclrow.user);
     }
@@ -121,6 +130,7 @@ public class TestSQLSecurityManager extends TestCase {
                 acl1, acl2, acl3 }, acp);
 
         assertEquals(5, aclrows.length);
+
         ACLRow aclrow = aclrows[0];
         assertEquals(0, aclrow.pos);
         assertEquals("local", aclrow.name);
@@ -128,6 +138,7 @@ public class TestSQLSecurityManager extends TestCase {
         assertEquals("Read", aclrow.permission);
         assertEquals("bob", aclrow.user);
         assertNull(aclrow.group);
+
         aclrow = aclrows[1];
         assertEquals(1, aclrow.pos);
         assertEquals("local", aclrow.name);
@@ -135,14 +146,17 @@ public class TestSQLSecurityManager extends TestCase {
         assertEquals("All", aclrow.permission);
         assertEquals("me", aclrow.user);
         assertNull(aclrow.group);
+
         aclrow = aclrows[2];
         assertEquals(2, aclrow.pos);
         assertEquals("wf", aclrow.name);
         assertEquals("steve", aclrow.user);
+
         aclrow = aclrows[3];
         assertEquals(3, aclrow.pos);
         assertEquals("wf", aclrow.name);
         assertEquals("pete", aclrow.user);
+
         aclrow = aclrows[4];
         assertEquals(4, aclrow.pos);
         assertEquals("legal", aclrow.name);

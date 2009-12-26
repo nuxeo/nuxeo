@@ -76,22 +76,18 @@ public class HtmlParser extends AbstractSAXParser {
             char c = text.charAt(i);
 
             if (c == '\n' || c == ' ' || Character.isWhitespace(c)) {
-                if (space) {
-                    continue;
-                } else {
+                if (!space) {
                     space = true;
                     buffer.append(' ');
-                    continue;
                 }
-            } else {
-                if (!Character.isLetter(c) && !Character.isDigit(c)) {
-                    if (!space) {
-                        space = true;
-                        buffer.append(' ');
-                        continue;
-                    }
-                    continue;
+                continue;
+            }
+            if (!Character.isLetter(c) && !Character.isDigit(c)) {
+                if (!space) {
+                    space = true;
+                    buffer.append(' ');
                 }
+                continue;
             }
             space = false;
             buffer.append(c);

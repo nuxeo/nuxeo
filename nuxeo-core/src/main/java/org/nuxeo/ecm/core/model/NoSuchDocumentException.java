@@ -23,22 +23,17 @@ import org.nuxeo.ecm.core.api.DocumentException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class NoSuchDocumentException extends DocumentException {
 
-
     private static final long serialVersionUID = -5072868555418278491L;
-
 
     public NoSuchDocumentException(String path) {
         this(path, null);
     }
 
-
     public NoSuchDocumentException(String path, Throwable cause) {
         super("No such document: " + path, cause);
     }
-
 
 }

@@ -62,7 +62,6 @@ public class TestFtsQuery extends RepositoryTestCase {
 
     @Override
     public void setUp() throws Exception {
-        log.info("Initializing NX Core for local tests");
         super.setUp();
         session = getRepository().getSession(null);
         root = session.getRootDocument();
@@ -71,7 +70,6 @@ public class TestFtsQuery extends RepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        log.info("Shutting down NX Core for local tests");
         removeDocs();
 
         //if (session != null)
@@ -122,25 +120,11 @@ public class TestFtsQuery extends RepositoryTestCase {
         file3.setString("description", "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
 
         session.save();
-
-//        try {
-//            Thread.currentThread().sleep(5000);
-//        } catch (InterruptedException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
     }
 
     private void removeDocs() throws DocumentException {
         root.getChild("testfolder1").remove();
-
         session.save();
-//        try {
-//            Thread.currentThread().sleep(5000);
-//        } catch (InterruptedException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
     }
 
     // Doesn't work. TODO: make it pass of remove if irrelevant
@@ -183,17 +167,10 @@ public class TestFtsQuery extends RepositoryTestCase {
      * Tests selection with full text by node extracted binary content.
      */
     public void testXPathWithDocTypeExtractedContent_file1() throws Exception {
-        final String logPrefix = "<testJCRXPathContainProp_file1> ";
-
-        log.info(logPrefix + "...");
-
-        //createDocs();
-
         // will select the first file by document name
         final String xpathQ = "//element(*, ecmnt:document)[jcr:contains(.,'*testfile1*')]";
         final Query qry = session.createQuery(xpathQ, Query.Type.XPATH);
         QueryResult qr = qry.execute();
-        printResults(qr, logPrefix);
         assertEquals(1, qr.count());
 
         // check we have the good object
@@ -205,20 +182,12 @@ public class TestFtsQuery extends RepositoryTestCase {
     }
 
     public void testXPathContainAndJoin() throws Exception {
-        final String logPrefix = "<testJCRXPathContainAndJoin> ";
-
-        log.info(logPrefix + "...");
-
-        //createDocs();
-
         final String xpathQ = "//element(*, ecmnt:document)[jcr:contains(.,'*testfile1*')]";
 
         // + "order by jcr:score() descending"
 
         Query qry = session.createQuery(xpathQ, Query.Type.XPATH);
         QueryResult qr = qry.execute();
-
-        printResults(qr, logPrefix);
 
         assertEquals(1, qr.count());
     }
@@ -227,17 +196,10 @@ public class TestFtsQuery extends RepositoryTestCase {
      * Tests selection with full text by node properties values.
      */
     public void testXPathContainProp_file1() throws Exception {
-        final String logPrefix = "<testJCRXPathContainProp_file1> ";
-
-        log.info(logPrefix + "...");
-
-        //createDocs();
-
         // will select the first file by document name
         final String xpathQ = "//element(*)[jcr:contains(.,'*testfile1*')]";
         final Query qry = session.createQuery(xpathQ, Query.Type.XPATH);
         QueryResult qr = qry.execute();
-        printResults(qr, logPrefix);
         assertEquals(1, qr.count());
 
         // check we have the good object
@@ -252,17 +214,10 @@ public class TestFtsQuery extends RepositoryTestCase {
      * Test selection with full text by node properties values.
      */
     public void testXPathWithDocTypeContainProp_file1() throws Exception {
-        final String logPrefix = "<testJCRXPathContainProp_file1> ";
-
-        log.info(logPrefix + "...");
-
-        //createDocs();
-
         // will select the first file by document name
         final String xpathQ = "//element(*, ecmnt:document)[jcr:contains(.,'*testfile1*')]";
         final Query qry = session.createQuery(xpathQ, Query.Type.XPATH);
         QueryResult qr = qry.execute();
-        printResults(qr, logPrefix);
         assertEquals(1, qr.count());
 
         // check we have the good object
@@ -277,17 +232,10 @@ public class TestFtsQuery extends RepositoryTestCase {
      * Test selection with full text by node properties values.
      */
     public void testXPathContainProp_file2() throws Exception {
-        final String logPrefix = "<testJCRXPathContainProp_file2> ";
-
-        log.info(logPrefix + "...");
-
-        //createDocs();
-
         // will select the second file by description
         final String xpathQ = "//element(*)[jcr:contains(.,'*testfile2_DESCRIPTION2*')]";
         final Query qry = session.createQuery(xpathQ, Query.Type.XPATH);
         QueryResult qr = qry.execute();
-        printResults(qr, logPrefix);
         assertEquals(1, qr.count());
 
         // check we have the good object
@@ -299,10 +247,6 @@ public class TestFtsQuery extends RepositoryTestCase {
     }
 
     public void OBSOLETEtestXPathInPath() throws Exception {
-        final String logPrefix = "<testXPathStartingWith> ";
-
-        log.info(logPrefix + "...");
-
         // will select the second file by description
         // real jcr path : //ecm:root/element(*)
         // real jcr path : //ecm:root/ecm:children/element(*)
@@ -311,15 +255,10 @@ public class TestFtsQuery extends RepositoryTestCase {
         final String xpathQ = "/testfolder1/element(*)[jcr:contains(.,'*testfile2_DESCRIPTION2*')]";
         final Query qry = session.createQuery(xpathQ, Query.Type.XPATH);
         QueryResult qr = qry.execute();
-        printResults(qr, logPrefix);
         assertEquals(1, qr.count());
     }
 
     public void __testXPathInPathAgainstExtractedText() throws Exception {
-        final String logPrefix = "<testXPathStartingWith> ";
-
-        log.info(logPrefix + "...");
-
         // will select the second file by description
         // real jcr path : //ecm:root/element(*)
         // real jcr path : //ecm:root/ecm:children/element(*)
@@ -328,19 +267,13 @@ public class TestFtsQuery extends RepositoryTestCase {
         final String xpathQ = "/testfolder1/element(*)[jcr:contains(.,'*nuxeo*')]";
         final Query qry = session.createQuery(xpathQ, Query.Type.XPATH);
         QueryResult qr = qry.execute();
-        printResults(qr, logPrefix);
         assertEquals(1, qr.count());
     }
 
     public void OBSOLETEtestXPathQueryAfterEdit() throws Exception {
-        final String logPrefix = "<testXPathQueryAfterEdit> ";
-
-        log.info(logPrefix + "...");
-
         final String xpathQ = "/testfolder1/element(*)[jcr:contains(.,'*testfile1_description*')]";
         final Query qry = session.createQuery(xpathQ, Query.Type.XPATH);
         QueryResult qr = qry.execute();
-        printResults(qr, logPrefix);
         assertEquals(1, qr.count());
 
         final Document doc = (Document) qr.getObject();
@@ -358,7 +291,6 @@ public class TestFtsQuery extends RepositoryTestCase {
         final String xpathQ2 = "/testfolder1/element(*)[jcr:contains(.,'*testfile1_description_CHANGED*')]";
         final Query qry2 = session.createQuery(xpathQ2, Query.Type.XPATH);
         QueryResult qr2 = qry.execute();
-        printResults(qr2, logPrefix);
         assertEquals(1, qr2.count());
     }
 
@@ -429,13 +361,10 @@ public class TestFtsQuery extends RepositoryTestCase {
      *
      * @param qr the QueryResult object
      * @param logPrefix
-     * @throws RepositoryException
-     * @throws QueryException
      */
     private static void printResults(final QueryResult qr, final String logPrefix)
-            throws RepositoryException, QueryException {
+            throws Exception {
         while (qr.next()) {
-
             final JCRDocument doc = (JCRDocument) qr.getObject();
             final String str = getNodeDesc(doc.getNode(), "\n");
             log.info(logPrefix + '\n' + str + '\n');
@@ -447,8 +376,6 @@ public class TestFtsQuery extends RepositoryTestCase {
      *
      * @param node
      * @param sep a node props separator
-     * @return
-     * @throws RepositoryException
      */
     @SuppressWarnings({"StringConcatenationInsideStringBufferAppend"})
     private static String getNodeDesc(Node node, final String sep)
@@ -456,7 +383,6 @@ public class TestFtsQuery extends RepositoryTestCase {
         PropertyIterator pi = node.getProperties();
 
         final StringBuilder buf = new StringBuilder();
-
         buf.append("node path : " + node.getPath());
 
         // list some properties

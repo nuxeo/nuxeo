@@ -156,7 +156,6 @@ public abstract class AbstractSession implements CoreSession,
      * Internal method: Gets the current session based on the client session id.
      *
      * @return the repository session
-     * @throws ClientException
      */
     public abstract Session getSession() throws ClientException;
 
@@ -245,8 +244,6 @@ public abstract class AbstractSession implements CoreSession,
      * the system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>
-     *
-     * @return
      */
     protected String createSessionId() {
         return repositoryName + '-' + SIDGenerator.next();
@@ -261,7 +258,6 @@ public abstract class AbstractSession implements CoreSession,
      *
      * @return the String representation of an auto-incremented counter that not
      *         used in any label of docRef
-     * @throws ClientException
      */
     public String generateVersionLabelFor(DocumentRef docRef)
             throws ClientException {
@@ -478,7 +474,6 @@ public abstract class AbstractSession implements CoreSession,
      * @param doc the document
      * @param schemas the schemas if any, null otherwise
      * @return the document model
-     * @throws ClientException
      */
     protected DocumentModel readModel(Document doc, String[] schemas)
             throws ClientException {
@@ -885,8 +880,6 @@ public abstract class AbstractSession implements CoreSession,
      * If name is null, a name is generated. If name is already used, a random
      * suffix is appended to it.
      *
-     * @param parent
-     * @param name
      * @return a unique name within given parent's children
      */
     public String generateDocumentName(Document parent, String name)

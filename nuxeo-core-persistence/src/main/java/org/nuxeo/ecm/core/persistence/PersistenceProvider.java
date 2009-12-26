@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
- *
  */
 public class PersistenceProvider {
 

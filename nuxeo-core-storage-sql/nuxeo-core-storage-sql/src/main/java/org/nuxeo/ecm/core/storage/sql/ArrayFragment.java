@@ -254,6 +254,6 @@ public class ArrayFragment extends CollectionFragment {
                 }
             }
         }
-
     }
+
 }

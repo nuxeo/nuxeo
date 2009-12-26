@@ -186,4 +186,5 @@ public class SQLDocumentProxy extends SQLDocumentVersion implements
     public int hashCode() {
         return proxyNode.getId().hashCode();
     }
+
 }

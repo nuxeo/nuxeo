@@ -49,4 +49,5 @@ public class LifeCycleTypesDescriptor {
         LifeCycleTypesConfiguration conf = new LifeCycleTypesConfiguration(typesElement);
         return conf.getTypesMapping();
     }
+
 }

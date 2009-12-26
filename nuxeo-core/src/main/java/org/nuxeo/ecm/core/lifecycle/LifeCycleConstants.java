@@ -24,7 +24,6 @@ package org.nuxeo.ecm.core.lifecycle;
  * @see org.nuxeo.ecm.core.schema.BuiltinTypes
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public final class LifeCycleConstants {
 

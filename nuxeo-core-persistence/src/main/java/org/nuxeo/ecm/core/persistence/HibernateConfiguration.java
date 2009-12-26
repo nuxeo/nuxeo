@@ -35,8 +35,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.cfg.Environment;
 import org.hibernate.ejb.Ejb3Configuration;
 import org.hibernate.ejb.HibernatePersistence;
-import org.hibernate.transaction.JBossTransactionManagerLookup;
-import org.hibernate.transaction.JNDITransactionManagerLookup;
 import org.hibernate.transaction.JTATransactionFactory;
 import org.hibernate.transaction.TransactionManagerLookup;
 import org.nuxeo.common.xmap.XMap;
@@ -50,17 +48,17 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
- *
- *
  */
 @XObject("hibernateConfiguration")
 public class HibernateConfiguration implements EntityManagerFactoryProvider {
 
-    public static final Log log = LogFactory.getLog(HibernateConfiguration.class);
+    public static final String RESOURCE_LOCAL = PersistenceUnitTransactionType.RESOURCE_LOCAL.name();
 
-    public HibernateConfiguration() {
-        super();
-    }
+    public static final String JTA = PersistenceUnitTransactionType.JTA.name();
+
+    public static final String TXTYPE_PROPERTY_NAME = "org.nuxeo.runtime.txType";
+
+    private static final Log log = LogFactory.getLog(HibernateConfiguration.class);
 
     @XNode("@name")
     public String name;
@@ -150,7 +148,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
             try {
                 return TransactionHelper.lookupTransactionManager();
             } catch (NamingException e) {
-                throw new HibernateException(e.getMessage());
+                throw new HibernateException(e.getMessage(), e);
             }
         }
 
@@ -162,12 +160,6 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     public EntityManagerFactory getFactory() {
         return getFactory(null);
     }
-
-    public static final String RESOURCE_LOCAL = PersistenceUnitTransactionType.RESOURCE_LOCAL.name();
-
-    public static final String JTA = PersistenceUnitTransactionType.JTA.name();
-
-    public static final String TXTYPE_PROPERTY_NAME = "org.nuxeo.runtime.txType";
 
     public static String getTxType() {
         String txType;

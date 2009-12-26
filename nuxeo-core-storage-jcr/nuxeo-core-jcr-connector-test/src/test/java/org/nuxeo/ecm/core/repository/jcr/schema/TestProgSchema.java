@@ -44,7 +44,6 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
  * programmatic registration of types.
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TestProgSchema extends RepositoryTestCase {
 

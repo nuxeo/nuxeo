@@ -68,5 +68,4 @@ public class TestContentField extends RepositoryTestCase {
         assertEquals("text/plain", cs.getMimeType());
     }
 
-
 }

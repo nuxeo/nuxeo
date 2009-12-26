@@ -251,7 +251,7 @@ public class TestQuery extends RepositoryTestCase {
 
     public void testDoublePathQuery() throws Exception {
         final String sql = "SELECT * FROM document WHERE ecm:path STARTSWITH '/testfolder2' AND NOT (ecm:path STARTSWITH '/testfolder2/testfolder3')";
-        // testfolder2/testfolder3  - 1 doc 
+        // testfolder2/testfolder3  - 1 doc
         Query qry = session.createQuery(sql, Query.Type.NXQL);
         QueryResult qr = qry.execute();
 
@@ -260,14 +260,14 @@ public class TestQuery extends RepositoryTestCase {
 
     public void testNotPathQuery() throws Exception {
         final String sql = "SELECT * FROM document WHERE NOT ecm:path STARTSWITH '/testfolder1'";
-        // testfolder1, testfolder2, testfolder2/testfolder3, testfolder2/testfolder3/testfolder4 - 4 docs 
+        // testfolder1, testfolder2, testfolder2/testfolder3, testfolder2/testfolder3/testfolder4 - 4 docs
         Query qry = session.createQuery(sql, Query.Type.NXQL);
         QueryResult qr = qry.execute();
 
         assertEquals(4, qr.getDocumentModels().size());
     }
 
-    
+
     public void OBSOLETEtestSQLSubpathWithLike1() throws Exception {
         final String logPrefix = "<testJCRXPathContain> ";
         log.info(logPrefix + "...");
@@ -507,5 +507,5 @@ public class TestQuery extends RepositoryTestCase {
         return buf.toString();
     }
 
-    
+
 }

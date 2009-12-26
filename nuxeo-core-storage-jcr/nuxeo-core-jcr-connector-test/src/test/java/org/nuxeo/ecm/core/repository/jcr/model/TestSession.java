@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.schema.TypeConstants;
  * @author <a href="mailto:lgiura@nuxeo.com">Leonard Giura</a>
  */
 public class TestSession extends RepositoryTestCase {
+
     private Session session;
     private Document root;
 

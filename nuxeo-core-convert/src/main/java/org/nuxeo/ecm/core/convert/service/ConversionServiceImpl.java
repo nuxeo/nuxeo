@@ -145,8 +145,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
     public BlobHolder convert(String converterName, BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
-
-        // exist if not registred
+        // exist if not registered
         ConverterCheckResult check = isConverterAvailable(converterName);
         if (!check.isAvailable()) {
             // exist is not installed / configured

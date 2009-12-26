@@ -90,7 +90,6 @@ public class ExportedDocumentImpl implements ExportedDocument {
     }
 
     /**
-     *
      * @param doc
      * @param path the path to use for this document this is used to remove full
      *            paths

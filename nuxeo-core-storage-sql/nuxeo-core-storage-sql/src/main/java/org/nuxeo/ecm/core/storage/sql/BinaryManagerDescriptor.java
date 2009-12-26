@@ -96,4 +96,5 @@ public class BinaryManagerDescriptor {
             throw (IOException) new IOException().initCause(e);
         }
     }
+
 }

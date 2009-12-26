@@ -23,9 +23,7 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 
 /**
- *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
- *
  */
 interface DocsQueryProvider {
 

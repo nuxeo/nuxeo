@@ -34,7 +34,7 @@ public class BulkExecutor extends PostCommitSynchronousRunner {
 
     private static final Log log = LogFactory.getLog(BulkExecutor.class);
 
-    protected static Integer timeout = null;
+    protected static Integer timeout;
 
     protected static int getExecTimeOutInS() {
         if (timeout == null) {

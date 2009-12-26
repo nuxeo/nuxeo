@@ -24,16 +24,22 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-management</artifactId>
+      <artifactId>nuxeo-runtime</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-event</artifactId>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-management</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-event</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>persistence</artifactId>
@@ -46,6 +52,16 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate</artifactId>
     </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+    </dependency>
+
+    <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-osgi</artifactId>
@@ -65,19 +81,6 @@
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
     </dependency>
 
   </dependencies>

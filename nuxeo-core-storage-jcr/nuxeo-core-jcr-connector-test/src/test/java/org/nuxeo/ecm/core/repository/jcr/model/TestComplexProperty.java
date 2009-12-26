@@ -120,9 +120,11 @@ public class TestComplexProperty extends RepositoryTestCase {
         doc = parent.getChild("child_document_from_test");
         prop = doc.getProperty("testlist:persons");
         assertNotNull(prop);
+
         JCRComplexListProperty clprop = (JCRComplexListProperty) prop;
         List<Object> cl = clprop.getList();
         assertNotNull(cl);
+
         Map<String, String> m = (Map<String, String>) cl.get(0);
         assertEquals("foo", m.get("firstname"));
 

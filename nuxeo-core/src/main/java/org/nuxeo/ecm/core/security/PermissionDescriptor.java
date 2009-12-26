@@ -35,9 +35,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("permission")
 public class PermissionDescriptor implements Serializable{
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     @XNode("@name")

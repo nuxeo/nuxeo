@@ -125,8 +125,6 @@ public abstract class AbstractDocumentModelWriter extends
      *
      * @param xdoc the document containing
      * @param toPath the path of the doc to create
-     * @return
-     * @throws ClientException
      */
     protected DocumentModel createDocument(ExportedDocument xdoc, Path toPath)
             throws ClientException {
@@ -155,11 +153,6 @@ public abstract class AbstractDocumentModelWriter extends
 
     /**
      * Updates an existing document.
-     *
-     * @param xdoc
-     * @param doc
-     * @return
-     * @throws ClientException
      */
     protected DocumentModel updateDocument(ExportedDocument xdoc,
             DocumentModel doc) throws ClientException {

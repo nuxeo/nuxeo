@@ -24,15 +24,13 @@ import org.nuxeo.ecm.core.api.DocumentException;
 /**
  * Is thrown when an exception related to the security manager occurs.
  * <p>
- * For more specific exceptions see derived classes
+ * For more specific exceptions see derived classes.
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class SecurityException extends DocumentException {
 
     private static final long serialVersionUID = -961763618434457799L;
-
 
     public SecurityException() {
     }

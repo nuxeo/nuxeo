@@ -41,7 +41,8 @@ public class DocumentEventContext extends EventContextImpl {
         super(session, principal, source, null);
     }
 
-    public DocumentEventContext(CoreSession session, Principal principal, DocumentModel source, DocumentRef destDoc) {
+    public DocumentEventContext(CoreSession session, Principal principal, DocumentModel source,
+            DocumentRef destDoc) {
         super(session, principal, source, destDoc);
     }
 

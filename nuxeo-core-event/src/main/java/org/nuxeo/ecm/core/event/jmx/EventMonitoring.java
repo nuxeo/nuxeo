@@ -92,7 +92,7 @@ public class EventMonitoring implements EventMonitoringMBean {
     public String getListenersConfig() {
 
         EventListenerList listenerList = getAdminService().getListenerList();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (EventListenerDescriptor desc : listenerList
                 .getAsyncPostCommitListenersDescriptors()) {
             sb.append(desc.getName());

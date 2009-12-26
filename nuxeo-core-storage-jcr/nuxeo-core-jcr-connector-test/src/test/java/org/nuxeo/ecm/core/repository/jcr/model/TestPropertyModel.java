@@ -48,7 +48,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Anahide Tchertchian
- *
  */
 @SuppressWarnings("unchecked")
 public class TestPropertyModel extends RepositoryOSGITestCase {
@@ -146,7 +145,7 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
     // NXP-912
     public void testNewBlob() throws Exception {
         // simple
-        Object value = null;
+        Object value;
         SchemaManager tm = Framework.getService(SchemaManager.class);
         Field field = tm.getField("tp:fileList");
         Type type = field.getType();
@@ -305,7 +304,7 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
         assertTrue(blob instanceof Blob);
         assertEquals("Hello External Blob", ((Blob) blob).getString());
         assertEquals(file.getName(), ((Blob) blob).getFilename());
-        assertEquals(null, doc.getPropertyValue("tp:externalcontent/name"));
+        assertNull(doc.getPropertyValue("tp:externalcontent/name"));
         assertEquals(uri, doc.getPropertyValue("tp:externalcontent/uri"));
     }
 
@@ -317,7 +316,7 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
 
         File file = createTempFile();
         ArrayList<Map> values = new ArrayList<Map>();
-        HashMap<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<String, String>();
         String uri = String.format("fs:%s", file.getName());
         map.put(ExternalBlobProperty.URI, uri);
         map.put(ExternalBlobProperty.FILE_NAME, "hello.txt");

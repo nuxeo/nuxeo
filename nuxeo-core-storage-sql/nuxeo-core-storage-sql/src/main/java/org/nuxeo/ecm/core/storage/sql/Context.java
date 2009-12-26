@@ -206,8 +206,8 @@ public class Context {
      * @param id the fragment id
      * @param allowAbsent {@code true} to return an absent fragment as an object
      *            instead of {@code null}
-     * @return the fragment, or {@code null} if none is found and {@value
-     *         allowAbsent} was {@code false}
+     * @return the fragment, or {@code null} if none is found and {@value allowAbsent}
+     *            was {@code false}
      * @throws StorageException
      */
     public Fragment get(Serializable id, boolean allowAbsent)
@@ -231,8 +231,8 @@ public class Context {
      * @param id the fragment id
      * @param allowAbsent {@code true} to return an absent fragment as an object
      *            instead of {@code null}
-     * @return the fragment, or {@code null} if none is found and {@value
-     *         allowAbsent} was {@code false}
+     * @return the fragment, or {@code null} if none is found and {@value allowAbsent}
+     *            was {@code false}
      * @throws StorageException
      */
     public List<Fragment> getMulti(List<Serializable> ids, boolean allowAbsent)

@@ -29,9 +29,7 @@ import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
 
 /**
- *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
- *
  */
 @SuppressWarnings({"SuppressionAnnotation"})
 final class DocsQueryProviderFactory {

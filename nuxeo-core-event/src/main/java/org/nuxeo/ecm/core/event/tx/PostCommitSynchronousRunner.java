@@ -105,7 +105,7 @@ public class PostCommitSynchronousRunner {
                     listener.asPostCommitListener().handleEvent(event);
                     txh.commitOrRollbackTransaction();
                     EventStatsHolder.logAsyncExec(listener, System.currentTimeMillis()-t1);
-                    log.debug("End of post commit sync execution for listener " + listener.getName() + " " +
+                    log.debug("End of post commit sync execution for listener " + listener.getName() + " "
                             + (System.currentTimeMillis() - t1) + "ms");
                 } catch (Throwable t) {
                     log.error(

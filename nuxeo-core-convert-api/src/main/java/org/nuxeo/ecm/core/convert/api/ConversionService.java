@@ -24,50 +24,30 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
 /**
- * Interface for the Conversion Service
+ * Interface for the Conversion Service.
  *
  * @author tiry
  */
 public interface ConversionService {
 
     /**
-     * Gets the convertName given a source and destination MimeType
-     *
-     * @param sourceMimeType
-     * @param destinationMimeType
-     * @return
+     * Gets the convertName given a source and destination MimeType.
      */
     String getConverterName(String sourceMimeType, String destinationMimeType);
 
     /**
-     * Gets the available convertNames given a source and destination MimeType
-     *
-     * @param sourceMimeType
-     * @param destinationMimeType
-     * @return
+     * Gets the available convertNames given a source and destination MimeType.
      */
     List<String> getConverterNames(String sourceMimeType, String destinationMimeType);
 
     /**
      * Do a Blob conversion given a converter name.
-     *
-     * @param converterName
-     * @param blobHolder
-     * @param parameters
-     * @return
-     * @throws ConversionException
      */
     BlobHolder convert(String converterName, BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException;
 
     /**
      * Do a Blob conversion given a target destination MimeType.
-     *
-     * @param destinationMimeType
-     * @param blobHolder
-     * @param parameters
-     * @return
-     * @throws ConversionException
      */
     BlobHolder convertToMimeType(String destinationMimeType,
             BlobHolder blobHolder, Map<String, Serializable> parameters)
@@ -75,8 +55,6 @@ public interface ConversionService {
 
     /**
      * Returns the names of the registered converters.
-     *
-     * @return
      */
     List<String> getRegistredConverters();
 
@@ -89,10 +67,6 @@ public interface ConversionService {
      * <li>Error Message / Installation message if converter dependencies are
      * not available an successful check.
      * </ul>
-     *
-     * @param converterName
-     * @param refresh
-     * @return
      */
     ConverterCheckResult isConverterAvailable(String converterName,
             boolean refresh) throws ConversionException;
@@ -108,9 +82,6 @@ public interface ConversionService {
      * </ul>
      * <p>
      * Result can be taken from an internal cache.
-     *
-     * @param converterName
-     * @return
      */
     ConverterCheckResult isConverterAvailable(String converterName)
             throws ConversionException;

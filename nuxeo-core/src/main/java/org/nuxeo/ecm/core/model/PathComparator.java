@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.DocumentException;
 
 /**
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
- *
  */
 public class PathComparator implements Comparator<Document>, Serializable {
 

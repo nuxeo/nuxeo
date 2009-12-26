@@ -87,8 +87,7 @@ public class AsyncEventExecutor {
         for (EventListenerDescriptor listener : listeners) {
             if (listener.isSingleThreaded()) {
                 mono_executor.execute(new Job(listener, event));
-            }
-            else {
+            } else {
                 executor.execute(new Job(listener, event));
             }
         }
@@ -108,8 +107,7 @@ public class AsyncEventExecutor {
 
     public void setMaxPoolSize(int maxSize) {
         int coreSize = executor.getCorePoolSize();
-        if (coreSize>maxSize) {
-
+        if (coreSize > maxSize) {
         }
         executor.getMaximumPoolSize();
     }

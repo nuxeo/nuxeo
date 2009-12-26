@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.ecm.core.persistence.PersistenceComponent">
+
   <documentation>
     Service that deals with JPA persistence setup.
   </documentation>
@@ -12,12 +13,11 @@
   </service>
 
   <extension-point name="hibernate">
-   <documentation>This services use hibernate as JPA provider.
-   That extension point lets you overring the default hibernate configuration.
-   </documentation>
-   <object class="org.nuxeo.ecm.core.persistence.HibernateConfiguration"/>
+    <documentation>This service uses hibernate as JPA provider.
+      This extension point lets you override the default hibernate configuration.
+    </documentation>
+
+     <object class="org.nuxeo.ecm.core.persistence.HibernateConfiguration"/>
   </extension-point>
-  
-  
   
 </component>

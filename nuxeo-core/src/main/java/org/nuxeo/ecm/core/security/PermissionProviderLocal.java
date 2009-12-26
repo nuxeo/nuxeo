@@ -23,10 +23,6 @@ import org.nuxeo.ecm.core.api.security.PermissionProvider;
 
 public interface PermissionProviderLocal extends PermissionProvider {
 
-    /**
-     * @param descriptor
-     * @throws Exception
-     */
     void registerDescriptor(PermissionDescriptor descriptor)
             throws Exception;
 

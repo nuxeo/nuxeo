@@ -66,8 +66,8 @@ public class TransactedEventServiceImpl implements TransactedEventService, Event
         EventService es = Framework.getLocalService(EventService.class);
         es.addTransactionListener(this);
     }
-    
-    
+
+
     public void addListener(TransactedListener listener) {
         if (listener instanceof OnSaveListener) {
             saveListeners.add(listener);
@@ -243,6 +243,6 @@ public class TransactedEventServiceImpl implements TransactedEventService, Event
         }
     }
 
-    
-    
+
+
 }

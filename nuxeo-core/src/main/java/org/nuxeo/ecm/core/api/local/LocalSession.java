@@ -46,10 +46,7 @@ public class LocalSession extends AbstractSession {
 
     private Session session;
 
-    private Boolean supportsTags = null;
-
-    public LocalSession() {
-    }
+    private Boolean supportsTags;
 
     public static CoreSession createInstance() {
         CoreSession session = new LocalSession();
@@ -136,8 +133,6 @@ public class LocalSession extends AbstractSession {
      * were used only for testing - but now it is used by webengine and a
      * security fix that break tests was done. This method is checking if we are
      * in a testing context
-     *
-     * @return
      */
     public boolean isTestingContext() { // neither in jboss nor in nuxeo
         // launcher

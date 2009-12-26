@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.repository.jcr.lock;
 import org.nuxeo.ecm.core.api.ClientException;
 
 interface RepositoryOperation {
+
     void operateWith() throws ClientException;
 
 }

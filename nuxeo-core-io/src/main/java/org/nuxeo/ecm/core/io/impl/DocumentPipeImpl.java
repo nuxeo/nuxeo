@@ -101,7 +101,7 @@ public class DocumentPipeImpl implements DocumentPipe {
         if (pageSize == 0) {
             // handle single doc case
 
-            ExportedDocument doc = null;
+            ExportedDocument doc;
             while ((doc = reader.read()) != null) {
                 applyTransforms(doc);
                 DocumentTranslationMap map = writer.write(doc);
@@ -110,8 +110,8 @@ public class DocumentPipeImpl implements DocumentPipe {
 
         } else {
             // handle multiple doc case
-            ExportedDocument[] docs = null;
-            DocumentTranslationMap map = null;
+            ExportedDocument[] docs;
+            DocumentTranslationMap map;
             while ((docs = reader.read(pageSize)) != null) {
                 if (docs.length != 0) {
                     applyTransforms(docs);

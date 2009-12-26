@@ -231,14 +231,16 @@ public interface Document extends DocumentContainer, PropertyContainer,
 
 
     /**
-     * Load document part properties from storage and fill them inside the given document part
+     * Load document part properties from storage and fill them inside the given document part.
+     *
      * @param dp
      * @throws Exception
      */
     void readDocumentPart(DocumentPart dp) throws Exception;
 
     /**
-     * Read modifications in the given document part and write them on storage
+     * Read modifications in the given document part and write them on storage.
+     *
      * @param dp
      * @throws Exception
      */

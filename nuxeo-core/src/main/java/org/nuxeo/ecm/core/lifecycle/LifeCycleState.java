@@ -55,4 +55,5 @@ public interface LifeCycleState {
      * Returns true if state is a valid initial state
      */
     boolean isInitial();
+
 }

@@ -29,10 +29,8 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
 /**
  * A binary object that can be read, and has a length and a digest.
  *
- *
  * @author Florent Guillaume
  * @author Bogdan Stefanescu
- *
  */
 public class Binary implements Serializable {
 

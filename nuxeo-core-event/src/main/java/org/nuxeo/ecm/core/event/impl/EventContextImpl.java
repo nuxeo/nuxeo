@@ -71,12 +71,11 @@ public class EventContextImpl extends AbstractEventContext {
     public void setCoreSession(CoreSession session) {
         this.session = session;
         updateRepositoryName();
-
     }
 
     protected void updateRepositoryName() {
-        if (session!=null) {
-            repositoryName=session.getRepositoryName();
+        if (session != null) {
+            repositoryName = session.getRepositoryName();
         }
     }
 

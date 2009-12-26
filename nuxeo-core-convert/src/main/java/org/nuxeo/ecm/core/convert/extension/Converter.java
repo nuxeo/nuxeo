@@ -39,8 +39,6 @@ public interface Converter {
      * <p>
      * This can be used to retrieve some configuration information from the XMap
      * Descriptor.
-     *
-     * @param descriptor
      */
     void init(ConverterDescriptor descriptor);
 
@@ -49,11 +47,6 @@ public interface Converter {
      * <p>
      * Returned {@link BlobHolder} must implement {@link CachableBlobHolder},
      * otherwise result won't be cached.
-     *
-     * @param blobHolder
-     * @param parameters
-     * @return
-     * @throws ConversionException
      */
     BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException;

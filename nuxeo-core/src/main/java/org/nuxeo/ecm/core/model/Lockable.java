@@ -34,7 +34,7 @@ public interface Lockable {
     /**
      * Set a lock on the current document.
      * <p>
-     * The lock key cannot be null
+     * The lock key cannot be null.
      *
      * @param key the lock key
      */

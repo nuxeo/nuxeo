@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.model;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class NoSuchRepositoryException extends Exception {
 

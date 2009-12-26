@@ -152,7 +152,6 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
 
     /**
      * Register extensions.
-     *
      */
     @Override
     public void registerExtension(Extension extension) throws Exception {
@@ -180,7 +179,6 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
 
     /**
      * Unregisters an extension.
-     *
      */
     @Override
     public void unregisterExtension(Extension extension) throws Exception {

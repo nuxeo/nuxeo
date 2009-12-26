@@ -26,13 +26,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.nuxeo.osgi.application.client.NuxeoApp;
 
 /**
  * @author <a href="mailto:gbamberger@nuxeo.com">Ga‘lle Bamberger</a>
- *
  */
 public class Launcher implements Runnable {
 
@@ -59,10 +59,10 @@ public class Launcher implements Runnable {
     }
 
     public static Collection<File> getBundles() throws Exception {
-        ArrayList<File> bundles = new ArrayList<File>();
+        List<File> bundles = new ArrayList<File>();
         File libDir = getLibDir();
         for (String name : libDir.list()) {
-            if (name.startsWith("nuxeo-") && name.indexOf("osgi") == -1 && name.indexOf(".jar-") == -1) {
+            if (name.startsWith("nuxeo-") && !name.contains("osgi") && !name.contains(".jar-")) {
                 bundles.add(new File(libDir, name));
             }
         }
@@ -84,7 +84,7 @@ public class Launcher implements Runnable {
     }
 
     /**
-     * Create an nuxeo application
+     * Creates a nuxeo application.
      */
     protected static NuxeoApp setup() throws Exception {
         File home = Launcher.setProperties();
@@ -93,9 +93,7 @@ public class Launcher implements Runnable {
     }
 
     /**
-     * Launch application
-     * @param args
-     * @throws Exception
+     * Launch application.
      */
     public static void main(String[] args) throws Exception {
         NuxeoApp app = setup();

@@ -48,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Listener that does fulltext extraction from the blobs of documents whose ids
  * have been recorded in the bundle's events.
- * 
+ *
  * @author Florent Guillaume
  * @author Stephane Lacoin
  */
@@ -109,7 +109,7 @@ public class BinaryTextListener implements PostCommitEventListener {
         BlobsExtractor extractor = new BlobsExtractor();
         final DocumentRef rootRef = session.getRootDocument().getRef();
         for (Serializable id : ids) {
-            IdRef docRef = new IdRef(((String) id));
+            IdRef docRef = new IdRef((String) id);
             // if the runtime has shutdown (normally because tests are finished)
             // this can happen, see NXP-4009
             if (session.getPrincipal() == null) {

@@ -35,10 +35,10 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 
 /**
- *
  * @author <a href="mailto:lgiura@nuxeo.com">Leonard Giura</a>
  */
 public class TestReRegister extends RepositoryTestCase {
+
     private Session session;
     private Document root;
 

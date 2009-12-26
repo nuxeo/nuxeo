@@ -396,20 +396,20 @@ public interface Session extends Connection {
      * automatically at save time.
      *
      */
-    public void requireReadAclsUpdate();
+    void requireReadAclsUpdate();
 
     /**
      * Update only the read ACLs that have changed.
      *
      * @throws StorageException
      */
-    public void updateReadAcls() throws StorageException;
+    void updateReadAcls() throws StorageException;
 
     /**
      * Rebuild the read ACLs for the wall repository.
      *
      * @throws StorageException
      */
-    public void rebuildReadAcls() throws StorageException;
+    void rebuildReadAcls() throws StorageException;
 
 }

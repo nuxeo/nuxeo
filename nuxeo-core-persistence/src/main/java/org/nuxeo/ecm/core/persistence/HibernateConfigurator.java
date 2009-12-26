@@ -18,8 +18,9 @@ package org.nuxeo.ecm.core.persistence;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
- *
  */
 public interface HibernateConfigurator {
+
     HibernateConfiguration getHibernateConfiguration(String name);
+
 }

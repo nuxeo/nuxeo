@@ -89,7 +89,7 @@ public class ACLsFragment extends ArrayFragment {
             return res;
         }
 
-        protected ACLRow getValue(ResultSet rs, List<Column> columns,
+        private ACLRow getValue(ResultSet rs, List<Column> columns,
                 Model model, Serializable[] returnId) throws SQLException {
             int pos = 0;
             String name = null;

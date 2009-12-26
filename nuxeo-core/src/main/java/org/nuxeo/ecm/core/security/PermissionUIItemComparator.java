@@ -22,9 +22,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 /**
- *
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
- *
  */
 public class PermissionUIItemComparator implements
         Comparator<PermissionUIItemDescriptor>, Serializable {

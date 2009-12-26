@@ -30,6 +30,8 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
+
 /**
  * @author Florent Guillaume
  */
@@ -73,7 +75,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
     }
 
     public void openSession() throws ClientException {
-        session = openSessionAs(SecurityConstants.ADMINISTRATOR);
+        session = openSessionAs(ADMINISTRATOR);
         assertNotNull(session);
     }
 

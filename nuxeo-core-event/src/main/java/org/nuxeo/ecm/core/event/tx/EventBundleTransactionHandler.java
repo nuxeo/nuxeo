@@ -27,8 +27,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
@@ -36,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Helper class to encapsulate Transaction management
+ * Helper class to encapsulate Transaction management.
  *
  * @author Thierry Delprat
  * @author Florent Guillaume

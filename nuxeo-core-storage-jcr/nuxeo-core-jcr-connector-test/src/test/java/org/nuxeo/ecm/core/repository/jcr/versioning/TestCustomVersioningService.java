@@ -217,8 +217,6 @@ public class TestCustomVersioningService extends TestVersioning {
      * Can't restore some node structures with custom versioning</a>.
      *
      * Check for version documents having "ecm:frozenNode" property.
-     *
-     * @throws Exception
      */
     public void testUseCaseNXP1522() throws Exception {
         prepareTest("child_from_testIsCheckOut", "parent_from_testIsCheckOut");

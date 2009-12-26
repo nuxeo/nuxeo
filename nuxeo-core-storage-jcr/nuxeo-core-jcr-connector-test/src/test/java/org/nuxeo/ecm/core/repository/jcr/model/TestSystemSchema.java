@@ -41,46 +41,30 @@ public class TestSystemSchema extends RepositoryTestCase {
 
     Session session;
 
-    protected void start() throws Exception {
-        super.setUp();
-    }
-
-    protected void shutdown() throws Exception {
-        super.tearDown();
-    }
-
     public void testProps() throws Exception {
-        start();
+        session = getRepository().getSession(null);
+        doc = session.getRootDocument().addChild("mydoc", "File");
 
+        // set String prop
+        doc.setSystemProp("randomNameProperty", "Aaa");
+
+        String val = doc.getSystemProp("randomNameProperty", String.class);
+        log.info(val);
+        assertEquals("Aaa", val);
+
+        // set Integer prop
+        doc.setSystemProp("randomNameProperty", 123);
+
+        Long val2 = doc.getSystemProp("randomNameProperty",
+                Long.class);
+        assertEquals(123, val2.intValue());
+
+        BigDecimal notSupported = new BigDecimal(123);
         try {
-
-            session = getRepository().getSession(null);
-            doc = session.getRootDocument().addChild("mydoc", "File");
-
-            // set String prop
-            doc.setSystemProp("randomNameProperty", "Aaa");
-
-            String val = doc.getSystemProp("randomNameProperty", String.class);
-            log.info(val);
-            assertEquals("Aaa", val);
-
-            // set Integer prop
-            doc.setSystemProp("randomNameProperty", 123);
-
-            Long val2 = doc.getSystemProp("randomNameProperty",
-                    Long.class);
-            assertEquals(123, val2.intValue());
-
-            BigDecimal notSupported = new BigDecimal(123);
-            try {
-                doc.setSystemProp("randomNameProperty", notSupported);
-                fail("type should not be supported");
-            } catch (DocumentException e) {
-                // ok
-            }
-
-        } finally {
-            shutdown();
+            doc.setSystemProp("randomNameProperty", notSupported);
+            fail("type should not be supported");
+        } catch (DocumentException e) {
+            // ok
         }
     }
 

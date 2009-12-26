@@ -23,17 +23,14 @@ import org.nuxeo.ecm.core.api.DocumentException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class NoSuchPropertyException extends DocumentException {
-
 
     private static final long serialVersionUID = 4955736921750647945L;
 
     public NoSuchPropertyException() {
         super("The property doesn't exists");
     }
-
 
     public NoSuchPropertyException(String path) {
         super("The property at '" + path + "' doesn't exists");
@@ -42,6 +39,5 @@ public class NoSuchPropertyException extends DocumentException {
     public NoSuchPropertyException(String path, Throwable cause) {
         super("The property at '" + path + "' doesn't exists", cause);
     }
-
 
 }

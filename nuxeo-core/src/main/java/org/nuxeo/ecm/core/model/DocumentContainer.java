@@ -114,9 +114,8 @@ public interface DocumentContainer {
      */
     Document addChild(String name, String typeName) throws DocumentException;
 
-
     /**
-     * Remove the child having the given name
+     * Removes the child having the given name
      * <p>
      * If this is not a folder does nothing.
      * <p>
@@ -128,10 +127,11 @@ public interface DocumentContainer {
     void removeChild(String name) throws DocumentException;
 
     /**
-     * Order the given source child before the destination child.
-     * Both source and destinatin must be names that point to child documents
+     * Orders the given source child before the destination child.
+     * Both source and destination must be names that point to child documents
      * of the current document. The source document will be placed before the destination one.
-     * If destination is null the source document will be appended at the end of the children list
+     * If destination is null the source document will be appended at the end of the children list.
+     *
      * @param src the document to move
      * @param dest the document before which to place the source document
      * @throws DocumentException if this document is not an orderable folder or any other exception occurs

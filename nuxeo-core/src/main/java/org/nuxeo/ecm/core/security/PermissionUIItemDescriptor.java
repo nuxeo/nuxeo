@@ -157,9 +157,8 @@ public class PermissionUIItemDescriptor implements Serializable{
         // do not merge unset attributes
         show = pid.show != null ? pid.show : show;
         order = pid.order != null ? pid.order : order;
-        id = pid.id !=null ? pid.id : id;
-        denyPermission = pid.denyPermission !=null ? pid.denyPermission : denyPermission;
-
+        id = pid.id != null ? pid.id : id;
+        denyPermission = pid.denyPermission != null ? pid.denyPermission : denyPermission;
     }
 
     @Override

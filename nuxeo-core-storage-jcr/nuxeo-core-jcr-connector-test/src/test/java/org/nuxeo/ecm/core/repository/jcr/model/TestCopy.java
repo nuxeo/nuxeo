@@ -52,8 +52,7 @@ public class TestCopy extends RepositoryTestCase {
         doc.setString("dc:title", "my title");
 
         Node node = JCRHelper.copy((JCRDocument) doc, (JCRDocument) folder);
-
-        Assert.assertEquals("my title", node.getProperty("dc:title").getString());
+        assertEquals("my title", node.getProperty("dc:title").getString());
     }
 
 }

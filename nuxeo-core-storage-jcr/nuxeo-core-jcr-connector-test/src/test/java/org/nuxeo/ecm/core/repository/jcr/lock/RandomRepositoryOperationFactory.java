@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author matic
- *
  */
 public class RandomRepositoryOperationFactory {
 
@@ -52,4 +51,5 @@ public class RandomRepositoryOperationFactory {
             throw new RuntimeException(e);
         }
     }
+
 }

@@ -27,24 +27,27 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
- *
  */
-public class PersistenceComponent extends DefaultComponent  implements HibernateConfigurator, PersistenceProviderFactory  {
+public class PersistenceComponent extends DefaultComponent
+        implements HibernateConfigurator, PersistenceProviderFactory {
 
-    protected final Map<String,HibernateConfiguration> registry =
-        new HashMap<String,HibernateConfiguration>();
+    protected final Map<String, HibernateConfiguration> registry =
+            new HashMap<String, HibernateConfiguration>();
 
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) throws Exception {
+    public void registerContribution(Object contribution, String extensionPoint,
+            ComponentInstance contributor) throws Exception {
         if ("hibernate".equals(extensionPoint)) {
-            registerHibernateContribution((HibernateConfiguration)contribution, contributor.getName());
+            registerHibernateContribution((HibernateConfiguration) contribution, contributor.getName());
         }
     }
 
-    protected void registerHibernateContribution(HibernateConfiguration contribution, ComponentName contributorName) {
+    protected void registerHibernateContribution(HibernateConfiguration contribution,
+            ComponentName contributorName) {
         if (contribution.name == null) {
-            throw new PersistenceError(contributorName + " should set the 'name' attribute of hibernate configurations");
+            throw new PersistenceError(
+                    contributorName + " should set the 'name' attribute of hibernate configurations");
         }
         if (contribution.hibernateProperties != null) {
             doPatchForTests(contribution.hibernateProperties);
@@ -67,7 +70,8 @@ public class PersistenceComponent extends DefaultComponent  implements Hibernate
     public PersistenceProvider newProvider(String name) {
         EntityManagerFactoryProvider emfProvider = registry.get(name);
         if (emfProvider == null) {
-            throw new PersistenceError("no hibernate configuration identified by '" + name + "' is available");
+            throw new PersistenceError(
+                    "no hibernate configuration identified by '" + name + "' is available");
         }
         return new PersistenceProvider(emfProvider);
     }
@@ -75,7 +79,8 @@ public class PersistenceComponent extends DefaultComponent  implements Hibernate
     public HibernateConfiguration getHibernateConfiguration(String name) {
         HibernateConfiguration config = registry.get(name);
         if (config == null) {
-            throw new PersistenceError("no hibernate configuration identified by '" + name + "' is available");
+            throw new PersistenceError(
+                    "no hibernate configuration identified by '" + name + "' is available");
         }
         return config;
     }
