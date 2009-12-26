@@ -50,7 +50,8 @@ public class XLX2TextConverter implements Converter {
         InputStream stream = null;
         StringBuffer sb = new StringBuffer();
         try {
-            OPCPackage p = OPCPackage.open(blobHolder.getBlob().getStream());
+            stream = blobHolder.getBlob().getStream();
+            OPCPackage p = OPCPackage.open(stream);
             XSSFWorkbook workbook = new XSSFWorkbook(p);
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
                 XSSFSheet sheet = workbook.getSheetAt(i);
@@ -80,7 +81,7 @@ public class XLX2TextConverter implements Converter {
     }
 
     protected void appendTextFromCell(XSSFCell cell, StringBuffer sb) {
-        String cellValue=null;
+        String cellValue = null;
         switch (cell.getCellType()) {
         case XSSFCell.CELL_TYPE_NUMERIC:
             cellValue = Double.toString(cell.getNumericCellValue()).trim();
