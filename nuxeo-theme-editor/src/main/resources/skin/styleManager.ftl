@@ -1,3 +1,5 @@
+
+
 <div id="nxthemesStyleManager" class="nxthemesScreen">
 
 <#assign themeManager=This.getThemeManager()>
@@ -62,9 +64,9 @@
 
 
 
-<#if style_manager_mode = 'unused styles'>
+<#if style_manager_mode = 'clean up'>
 
-<p class="nxthemesExplanation">Find unused styles.<p>
+<p class="nxthemesExplanation">Clean up styles by removing those associated with unused widgets.<p>
 
 <#assign styles=themeManager.getStyles(current_theme_name)>
 <#list styles as style>
@@ -105,7 +107,7 @@
 
 <#if style_manager_mode = 'page styles'>
 
-  <p class="nxthemesExplanation">Set page styles.<p>
+  <p class="nxthemesExplanation">Page styles.<p>
 
   <form class="nxthemesForm" action="javascript:void(0)"
     onsubmit="NXThemesStyleManager.setPageStyles('${current_theme_name}', this); return false">
@@ -141,5 +143,30 @@
   </form>
   
 </#if>
+
+
+
+<#if style_manager_mode = 'style dependencies'>
+
+  <p class="nxthemesExplanation">Style dependencies.<p>
+
+  <#macro listTree (objects)>
+  <#if (objects?size > 0)>
+    <ul>
+      <#list objects as s>
+        <li>${s.name}
+          <@listTree Root.listNamedStylesDirectlyInheritingFrom(s) />
+        </li>
+      </#list>
+    </ul>
+  </#if>
+  </#macro> 
+  
+  <div class="nxthemesStyleTree">
+    <@listTree root_styles/>
+  </div>
+  
+</#if>
+
 
 </div>

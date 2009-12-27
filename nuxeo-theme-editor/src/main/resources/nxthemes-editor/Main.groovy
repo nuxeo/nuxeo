@@ -87,10 +87,18 @@ public class Main extends ModuleRoot {
   public Object renderStyleManager(@QueryParam("org.nuxeo.theme.application.path") String path,
           @QueryParam("org.nuxeo.theme.application.name") String name) {
     def styles = getNamedStyles(path, name)
+
     Style selectedStyle = getSelectedNamedStyle()
     if (!styles.contains(selectedStyle) && !styles.isEmpty()) {
         selectedStyle = styles[0];
     }
+    def rootStyles = []
+    for (Style style : styles) {
+        if (ThemeManager.getAncestorFormatOf(style) == null) {
+            rootStyles.add(style)
+        }
+    }
+    
     String currentThemeName = getCurrentThemeName(path, name)
     String templateEngine = getTemplateEngine(path)
     ThemeDescriptor currentThemeDef = themeManager.getThemeDescriptorByThemeName(templateEngine, currentThemeName) 
@@ -101,7 +109,8 @@ public class Main extends ModuleRoot {
             "selected_named_style", selectedStyle).arg(
             "selected_named_style_css", getRenderedPropertiesForNamedStyle(selectedStyle)).arg(
             "current_theme_name", currentThemeName).arg(
-            "page_styles", getPageStyles(currentThemeName))
+            "page_styles", getPageStyles(currentThemeName)).arg(
+            "root_styles", rootStyles)
   }  
   
   @GET
@@ -1129,6 +1138,15 @@ public class Main extends ModuleRoot {
       return Manager.getThemeManager().getNamedObjects(currentThemeName, "style")
   }
   
+  public static List<Style> listNamedStylesDirectlyInheritingFrom(Style style) {
+      def styles = []
+      for (Format format : ThemeManager.listFormatsDirectlyInheritingFrom(style)) {
+          if (format.isNamed()) {
+              styles.add((Style) format)
+          }
+      }
+      return styles
+  }
     
   public static Map<String, String> getPageStyles(String themeName) {
       Map<String, String> pageStyles = new LinkedHashMap<String, String>()
@@ -1371,7 +1389,11 @@ public class Main extends ModuleRoot {
 
   public static String getSelectedNamedStyleId() {
       return SessionManager.getNamedStyleId()
-  } 
+  }
+  
+  public List<Style> listFormatsInheritedFrom(Format format) {
+      return ThemeManager.listFormatsInheritedFrom(format)
+  }
 
   public static Style getSelectedNamedStyle() {
       String selectedNamedStyleId = getSelectedNamedStyleId()

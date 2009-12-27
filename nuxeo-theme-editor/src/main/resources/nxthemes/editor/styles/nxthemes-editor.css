@@ -1590,3 +1590,36 @@ table.fragmentFactory td {
 .nxthemesActionButton img {
   vertical-align: top;
 }
+
+.nxthemesStyleTree { 
+  font: 12px arial;
+  color: #000;
+}       
+
+.nxthemesStyleTree ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}       
+
+.nxthemesStyleTree li {
+  position: relative;
+  width: 120px;
+  padding: 10px 10px 10px 28px;
+  margin-bottom: 3px;
+  border-style: solid;
+  border-width: 1px 2px 2px 1px;
+  border-color: #666;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  border-radius: 7px;
+  background: #ffc url(${basePath}/skin/nxthemes-editor/img/style-16.png) 7px 8px no-repeat;
+}       
+
+.nxthemesStyleTree ul ul { 
+  margin-top: -15px;
+}
+       
+.nxthemesStyleTree ul ul li { 
+  left: 110px;
+}
