@@ -390,7 +390,7 @@
             <id>antbuild</id>
             <phase>package</phase>
             <configuration>
-              <buildFile>${basedir}/assembly.xml</buildFile>
+              <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
             </configuration>
             <goals>
               <goal>build</goal>
