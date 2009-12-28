@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<theme name="default">
+<theme name="portal">
   <layout>
     <page name="default">
       <!-- Top bar -->
@@ -9,7 +9,7 @@
       </section>
       <section>
         <cell>
-          <fragment type="nav tabs"/>
+          <fragment type="region fragment"/>
         </cell>
       </section>
       <section>
@@ -17,13 +17,13 @@
       </section>
       <section>
         <cell>
-          <fragment type="layoutManager"/>
-          <fragment type="gadgetManager"/>
+          <fragment type="region fragment"/>
+          <fragment type="region fragment"/>
         </cell>
       </section>
       <section>
         <cell>
-          <fragment type="main content"/>
+          <fragment type="region fragment"/>
         </cell>
       </section>
       <section>
@@ -33,33 +33,30 @@
         <cell/>
       </section>
     </page>
-    <page name="perso">
-      <section>
-        <cell/>
-        <cell/>
-      </section>
-      <section>
-        <cell>
-          <fragment type="nav tabs"/>
-        </cell>
-      </section>
-      <section>
-        <cell/>
-      </section>
-      <section>
-        <cell>
-          <fragment type="main content"/>
-        </cell>
-      </section>
-      <section>
-        <cell/>
-      </section>
-      <section>
-        <cell/>
-      </section>
-    </page>
-    
+
   </layout>
+  <properties element="page[1]/section[2]/cell[1]/fragment[1]">
+    <name>navTabs</name>
+    <defaultBody/>
+    <defaultSrc>Space/navTabs.ftl</defaultSrc>
+  </properties>
+  <properties element="page[1]/section[4]/cell[1]/fragment[1]">
+    <name>gadgetManager</name>
+    <defaultBody/>
+    <defaultSrc>Space/gadgetManager.ftl</defaultSrc>
+  </properties>
+  <properties element="page[1]/section[4]/cell[1]/fragment[2]">
+    <name>gadgetManager</name>
+    <defaultBody/>
+    <defaultSrc>Space/layoutManager.ftl</defaultSrc>
+  </properties>
+  <properties element="page[1]/section[5]/cell[1]/fragment[1]">
+    <name>content</name>
+    <defaultBody>Main content block</defaultBody>
+    <defaultSrc/>
+  </properties>
+
+
   <formats>
     <layout element="page[1]"/>
     <layout element="page[1]/section[1]">
@@ -113,66 +110,6 @@
       <width>100%</width>
     </layout>
     <layout element="page[1]/section[6]/cell[1]">
-      <width>100%</width>
-    </layout>
-    <layout element="page[2]"/>
-    <layout element="page[2]/section[1]">
-      <margin-left>auto</margin-left>
-      <margin-right>auto</margin-right>
-      <width>100%</width>
-    </layout>
-    <layout element="page[2]/section[1]/cell[1]">
-      <width>40%</width>
-    </layout>
-    <layout element="page[2]/section[1]/cell[2]">
-      <width>50%</width>
-    </layout>
-    <layout element="page[2]/section[2]">
-      <margin-left>auto</margin-left>
-      <margin-right>auto</margin-right>
-      <width>100%</width>
-    </layout>
-    <layout element="page[2]/section[2]/cell[1]">
-      <width>100%</width>
-      <text-align>right</text-align>
-    </layout>
-    <layout element="page[2]/section[3]">
-      <margin-left>auto</margin-left>
-      <margin-right>auto</margin-right>
-      <width>100%</width>
-    </layout>
-    <layout element="page[2]/section[3]/cell[1]">
-      <width>100%</width>
-    </layout>
-    <layout element="page[2]/section[4]">
-      <margin-left>auto</margin-left>
-      <margin-right>auto</margin-right>
-      <width>100%</width>
-    </layout>
-    <layout element="page[2]/section[4]/cell[1]">
-      <width>100%</width>
-    </layout>
-    <layout element="page[2]/section[6]">
-      <margin-left>auto</margin-left>
-      <margin-right>auto</margin-right>
-      <width>100%</width>
-    </layout>
-    <layout element="page[2]/section[6]/cell[1]">
-      <width>100%</width>
-    </layout>
-    <layout element="page[2]/section[5]">
-      <margin-left>auto</margin-left>
-      <margin-right>auto</margin-right>
-      <width>100%</width>
-    </layout>
-    <layout element="page[2]/section[5]/cell[1]">
-      <width>100%</width>
-    </layout>
-    <layout element="page[3]"/>
-    <layout element="page[3]/section[1]">
-      <width>100%</width>
-    </layout>
-    <layout element="page[3]/section[1]/cell[1]">
       <width>100%</width>
     </layout>
     <layout element="page[1]/section[4]">
@@ -239,51 +176,6 @@
     <widget element="page[2]">
       <view>page frame</view>
     </widget>
-    <widget element="page[2]/section[1]">
-      <view>section frame</view>
-    </widget>
-    <widget element="page[2]/section[1]/cell[1]">
-      <view>cell frame</view>
-    </widget>
-    <widget element="page[2]/section[1]/cell[2]">
-      <view>cell frame</view>
-    </widget>
-    <widget element="page[2]/section[2]">
-      <view>section frame</view>
-    </widget>
-    <widget element="page[2]/section[2]/cell[1]">
-      <view>cell frame</view>
-    </widget>
-    <widget element="page[2]/section[2]/cell[1]/fragment[1]">
-      <view>module onglets</view>
-    </widget>
-    <widget element="page[2]/section[3]">
-      <view>section frame</view>
-    </widget>
-    <widget element="page[2]/section[3]/cell[1]">
-      <view>cell frame</view>
-    </widget>
-    <widget element="page[2]/section[4]">
-      <view>section frame</view>
-    </widget>
-    <widget element="page[2]/section[4]/cell[1]">
-      <view>cell frame</view>
-    </widget>
-    <widget element="page[2]/section[6]">
-      <view>section frame</view>
-    </widget>
-    <widget element="page[2]/section[6]/cell[1]">
-      <view>cell frame</view>
-    </widget>
-    <widget element="page[2]/section[5]">
-      <view>section frame</view>
-    </widget>
-    <widget element="page[2]/section[5]/cell[1]">
-      <view>cell frame</view>
-    </widget>
-    <widget element="page[2]/section[4]/cell[1]/fragment[1]">
-      <view>contenu principal</view>
-    </widget>
     <widget element="page[1]/section[4]">
       <view>section frame</view>
     </widget>
@@ -296,18 +188,6 @@
     <widget element="page[1]/section[4]/cell[1]/fragment[2]">
       <view>module gadget manager</view>
     </widget>
-    <style element="page[2]/section[4]/cell[1]">
-      <selector path="" view="cell frame">
-        <background preset="fond_gris (intralm background)"/>
-      </selector>
-    </style>
-    <style element="page[2]/section[6]"/>
-    <style element="page[2]/section[6]/cell[1]">
-      <selector path="" view="cell frame">
-        <background preset="fond_gris (intralm background)"/>
-      </selector>
-    </style>
-    <style element="page[2]/section[5]"/>
     <style name="onglets">
       <selector path="ul.listOnglets">
         <margin-left>10px</margin-left>
@@ -376,13 +256,6 @@
         <font-weight>bold</font-weight>
       </selector>
     </style>
-    <style element="page[2]/section[5]/cell[1]">
-      <selector path="" view="cell frame">
-        <background preset="fond_gris (intralm background)"/>
-      </selector>
-    </style>
-    <style element="page[2]/section[1]/cell[1]/fragment[1]"/>
-    <style element="page[2]/section[1]/cell[2]/fragment[1]"/>
     <style name="layoutManager">
       <selector path="*#layoutManagerContainer">
         <height>130px</height>
@@ -709,50 +582,6 @@
         <background preset="fond_gris (intralm background)"/>
       </selector>
     </style>
-    <style element="page[2]">
-      <selector path="" view="page frame">
-        <font preset="default (intralm fonts)"/>
-      </selector>
-    </style>
-    <style element="page[2]/section[1]">
-      <selector path="" view="section frame">
-        <background preset="header (intralm background)"/>
-      </selector>
-    </style>
-    <style element="page[2]/section[1]/cell[1]"/>
-    <style element="page[2]/section[1]/cell[2]"/>
-    <style element="page[2]/section[2]">
-      <selector path="" view="section frame">
-        <background preset="logoPerso (intralm background)"/>
-      </selector>
-    </style>
-    <style element="page[2]/section[2]/cell[1]"/>
-    <style element="page[2]/section[3]"/>
-    <style element="page[2]/section[3]/cell[1]">
-      <selector path="" view="cell frame">
-        <background preset="logo_bottom (intralm background)"/>
-      </selector>
-    </style>
-    <style element="page[2]/section[4]"/>
-    <style element="page[2]/section[4]/cell[1]">
-      <selector path="" view="cell frame">
-        <background preset="fond_gris (intralm background)"/>
-      </selector>
-    </style>
-    <style element="page[2]/section[6]"/>
-    <style element="page[2]/section[6]/cell[1]">
-      <selector path="" view="cell frame">
-        <background preset="fond_gris (intralm background)"/>
-      </selector>
-    </style>
-    <style element="page[2]/section[5]"/>
-    <style element="page[2]/section[5]/cell[1]">
-      <selector path="" view="cell frame">
-        <background preset="fond_gris (intralm background)"/>
-      </selector>
-    </style>
-    <style element="page[2]/section[2]/cell[1]/fragment[1]" inherit="onglets"/>
-    <style element="page[2]/section[4]/cell[1]/fragment[1]"/>
     <style element="page[1]/section[4]"/>
     <style element="page[1]/section[4]/cell[1]"/>
     <style element="page[1]/section[4]/cell[1]/fragment[1]" inherit="layoutManager"/>

@@ -23,94 +23,93 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 
-
 public interface Space {
 
-  /**
-   * Unique identifier of a space instance
-   *
-   * @return
-   */
-  String getId();
+    /**
+     * Unique identifier of a space instance
+     *
+     * @return
+     */
+    String getId();
 
-  /**
-   * Name of the space
-   *
-   * @return
-   */
-  String getName();
+    /**
+     * Name of the space
+     *
+     * @return
+     */
+    String getName();
 
-  /**
-   * Space theme
-   *
-   * @return
-   */
-  String getTheme() throws ClientException;
+    /**
+     * Space theme
+     *
+     * @return
+     */
+    String getTheme() throws ClientException;
 
-  /**
-   * Title of the space
-   *
-   * @return
-   */
-  String getTitle() throws ClientException;
+    /**
+     * Title of the space
+     *
+     * @return
+     */
+    String getTitle() throws ClientException;
 
-  /**
-   * description of the space
-   *
-   * @return
-   */
-  String getDescription() throws ClientException;
+    /**
+     * description of the space
+     *
+     * @return
+     */
+    String getDescription() throws ClientException;
 
-  /**
-   * A key for displaying elements in this space
-   *
-   * @return
-   */
-  String getLayout() throws ClientException;
+    /**
+     * A key for displaying elements in this space
+     *
+     * @return
+     */
+    String getLayout() throws ClientException;
 
+    String setLayout(String name) throws ClientException;
 
-  String setLayout(String name) throws ClientException;
+    /**
+     * Family/category of this space
+     *
+     * @return
+     */
+    String getCategory() throws ClientException;
 
-  /**
-   * Family/category of this space
-   *
-   * @return
-   */
-  String getCategory() throws ClientException;
+    /**
+     * Name of the creator of this space
+     *
+     * @return
+     */
+    String getOwner() throws ClientException;
 
-  /**
-   * Name of the creator of this space
-   *
-   * @return
-   */
-  String getOwner() throws ClientException;
+    /**
+     * Name of the viewer of this space
+     *
+     * @return
+     */
+    String getViewer() throws ClientException;
 
-  /**
-   * Name of the viewer of this space
-   * @return
-   */
-  String getViewer() throws ClientException;
+    boolean isReadOnly() throws ClientException;
 
-  boolean isReadOnly() throws ClientException;
+    Gadget createGadget(String gadgetName) throws ClientException;
 
+    Gadget createGadget(URL gadgetDefUrl) throws ClientException;
 
-  Gadget createGadget(String gadgetName) throws ClientException;
+    void save(Gadget gadget) throws ClientException;
 
-  Gadget createGadget(URL gadgetDefUrl)  throws ClientException;
+    void remove(Gadget gadget) throws ClientException;
 
-  void save(Gadget gadget) throws ClientException;
+    List<Gadget> getGadgets() throws ClientException;
 
-  void remove(Gadget gadget) throws ClientException;
+    boolean hasPermission(String permissionName) throws ClientException;
 
-  List<Gadget> getGadgets() throws ClientException;
+    Calendar getDatePublication() throws ClientException;
 
-  boolean hasPermission(String permissionName) throws ClientException;
+    void setDatePublication(Calendar cal) throws ClientException;
 
-  Calendar getDatePublication() throws ClientException;
+    Space createVersion(Calendar cal) throws ClientException;
 
-
-
-
-
+    void save() throws ClientException;
 
 }

@@ -18,7 +18,7 @@
       }
 </style>
   <ul class="listOnglets">
-    <#list This.spaces as currentSpace>
+    <#list This.univers.spaces as currentSpace>
       <li class="onglet tab_0 <#if This.space ><#if This.space.id == currentSpace.id >current</#if></#if> accueil">
 
         <#if This.space>
@@ -37,14 +37,6 @@ tb_init("a.nav-tabs-thickbox");
 });</script>
 
 
-    <!--#if nxthemesInfo.model.anonymous == false-->
-
-       <!--li class="onglet tab_0">
-         <a id="addTabLink" title="Ajouter un nouvel onglet" href="{Context.root.path}/{This.univers.name}/@views/create?theme=intralm/popup&amp;height=300&amp;width=300" class="thickbox">+</a>
-       </li-->
-
-
-     <!--/#if-->
 
 
   </ul>

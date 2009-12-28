@@ -253,6 +253,22 @@ public class DocSpaceImpl implements Space {
         }
     }
 
+    public void save() throws ClientException {
+        doc.getCoreSession().saveDocument(doc);
+        doc.getCoreSession().save();
+
+    }
+
+    public void setDatePublication(Calendar cal) throws ClientException {
+        doc.setPropertyValue(PUBLICATION_DATE, cal);
+
+    }
+
+    public Space createVersion(Calendar cal) throws ClientException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     // public boolean isCurrentVersion() {
     // List<Space> spaces = getVersions();
     // if (spaces != null

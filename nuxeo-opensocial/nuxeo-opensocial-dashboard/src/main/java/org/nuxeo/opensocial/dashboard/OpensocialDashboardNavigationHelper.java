@@ -15,9 +15,7 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
-import org.nuxeo.ecm.spaces.api.Univers;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
-import org.nuxeo.ecm.spaces.api.exceptions.UniversNotFoundException;
 import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 import org.nuxeo.runtime.api.Framework;
 
