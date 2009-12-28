@@ -1,15 +1,12 @@
 package editor
 
-import java.io.*
 import javax.ws.rs.*
 import javax.ws.rs.core.*
 import javax.ws.rs.core.Response.ResponseBuilder
 import net.sf.json.JSONObject
-import org.nuxeo.ecm.core.rest.*
 import org.nuxeo.ecm.webengine.forms.*
 import org.nuxeo.ecm.webengine.model.*
 import org.nuxeo.ecm.webengine.model.impl.*
-import org.nuxeo.ecm.webengine.model.exceptions.*
 import org.nuxeo.ecm.webengine.*
 import org.nuxeo.theme.*
 import org.nuxeo.theme.elements.*
@@ -17,15 +14,11 @@ import org.nuxeo.theme.formats.*
 import org.nuxeo.theme.formats.widgets.*
 import org.nuxeo.theme.formats.styles.*
 import org.nuxeo.theme.formats.layouts.*
-import org.nuxeo.theme.events.*
 import org.nuxeo.theme.fragments.*
 import org.nuxeo.theme.presets.*
-import org.nuxeo.theme.properties.*
-import org.nuxeo.theme.templates.*
 import org.nuxeo.theme.themes.*
 import org.nuxeo.theme.types.*
 import org.nuxeo.theme.perspectives.*
-import org.nuxeo.theme.uids.*
 import org.nuxeo.theme.views.*
 import org.nuxeo.theme.editor.*
 
@@ -195,13 +188,9 @@ public class Main extends ModuleRoot {
           @QueryParam("org.nuxeo.theme.application.name") String name) {
     String themeName =  getCurrentThemeName(path, name)
     UndoBuffer undoBuffer = SessionManager.getUndoBuffer(themeName)
-    boolean canUndo = false
-    if (undoBuffer) {
-        canUndo = undoBuffer.canUndo()
-    }   
     return getTemplate("undoActions.ftl").arg(
         "current_theme_name", themeName).arg(
-        "can_undo", canUndo)
+        "undo_buffer", undoBuffer) 
   }  
   
   @GET
