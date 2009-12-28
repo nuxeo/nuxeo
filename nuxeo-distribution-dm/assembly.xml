@@ -195,11 +195,13 @@
       <artifact:file groupId="backport-util-concurrent"
         artifactId="backport-util-concurrent" />
     </copy>
-    <!-- Ideal way of retrieving third-party libraries -->
     <!--
-      Not usable for now, requires NXBT-72 <copy todir="${nuxeo.ear}/lib"
-      overwrite="true"> <artifact:set> <includes> <artifact
-      groupId="!org.nuxeo*" /> </includes> <excludes> <artifact
+      Ideal way of retrieving third-party libraries; not usable for now,
+      requires NXBT-72
+    -->
+    <!--
+      <copy todir="${nuxeo.ear}/lib" overwrite="true"> <artifact:set> <includes>
+      <artifact groupId="!org.nuxeo*" /> </includes> <excludes> <artifact
       artifactId="jackrabbit-jcr-commons" /> <artifact artifactId="stax-api" />
       <artifact artifactId="xercesImpl" /> <artifact artifactId="xmlParserAPIs"
       /> <artifact artifactId="hibernate" /> <artifact artifactId="log4j" />
