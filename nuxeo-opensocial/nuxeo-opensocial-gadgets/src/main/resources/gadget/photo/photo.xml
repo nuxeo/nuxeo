@@ -9,76 +9,80 @@
     <Require feature="nuxeo" />
     <Require feature="setprefs"/>
     <Require feature="jquery" />
+    <Require feature="settitle" />
     <Require feature="form" />
   </ModulePrefs>
-  
+  <UserPref name="title" display_name="Title" required="false" default_value="Photo"/>
+
   <UserPref name="picTitle" datatype="hidden"/>
   <UserPref name="link" datatype="hidden"/>
   <UserPref name="legend" datatype="hidden"/>
   <UserPref name="id" datatype="hidden"/>
-  
+
   <Content type="html" view="default">
 <![CDATA[
  <style type='text/css'>
- 	*{
-  		font-family:Arial,Verdana;
+   *{
+      font-family:Arial,Verdana;
         font-size:11px;
     }
-    
+
     #show{
-    	margin-bottom:10px;
+      margin-bottom:10px;
     }
-    
+
   </style>
   <script type="text/javascript" language="javascript" src="photo.js"></script>
    <script type="text/javascript">
    var prefs = new _IG_Prefs(__MODULE_ID__);
-   
+
+
   gadgets.util.registerOnLoadHandler( function() {
-  	launchGadget();
+    _IG_SetTitle(prefs.getString("title"));
+    launchGadget();
   });
    </script>
    <div id="title"></div>
-   	<div style="text-align:center;margin:auto;">
-   		<img id="loader" src="/nuxeo/img/standart_waiter.gif"/>
-		<a id="link" href="#" target="_tab" style="display:none;">
-    		<img style="border:0;" id="photo" src="">
-    	</a>
-    	<div id="legend"></div>
+     <div style="text-align:center;margin:auto;">
+       <img id="loader" src="/nuxeo/img/standart_waiter.gif"/>
+    <a id="link" href="#" target="_tab" style="display:none;">
+        <img style="border:0;" id="photo" src="">
+      </a>
+      <div id="legend"></div>
     </div>
     <div id="perm">
     <div id="show"><a href="#">Modifier</a></div>
-    
-	<div style="display:none;margin:auto" id="form">
-	<div id="hide"><a href="#">Masquer</a></div>
-	<table>
-	<tr>
-		<td>Photo : </td>
-		<td>
-		<form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="/nuxeo/site/gadgetDocumentAPI/setFile/">
-			<input type="file" name="file" id="file" size="20" />
-		</form>
-	</td>
-	</tr>
-	<tr>
-		<td><label for="title">Titre : </label></td>
-		<td><input type="text" name="title" id="title-field" /></td>
-	</tr>
-	<tr>
-		<td><label for="link">Lien : </label></td>
-		<td><input type="text" name="link" id="link-field" /></td>
-	</tr>
-	<tr>
-		<td><label for="legend">Légende :</label></td>
-		<td><textarea type="text" name="legend" id="legend-field" /></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td><input  style="float:right;" id="upload" type="submit" value="Valider" /></td>
-	</tr>
-	</table>
-	</div>
-	</div>
+
+  <div style="display:none;margin:auto" id="form">
+  <div id="hide"><a href="#">Masquer</a></div>
+  <table>
+  <tr>
+    <td>Photo : </td>
+    <td>
+    <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="/nuxeo/site/gadgetDocumentAPI/setFile/">
+      <input type="file" name="file" id="file" size="20" />
+    </form>
+  </td>
+  </tr>
+  <tr>
+    <td><label for="title">Titre : </label></td>
+    <td><input type="text" name="title" id="title-field" /></td>
+  </tr>
+  <tr>
+    <td><label for="link">Lien : </label></td>
+    <td><input type="text" name="link" id="link-field" /></td>
+  </tr>
+  <tr>
+    <td><label for="legend">Légende :</label></td>
+    <td><textarea type="text" name="legend" id="legend-field" /></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><input  style="float:right;" id="upload" type="submit" value="Valider" /></td>
+  </tr>
+  </table>
+  </div>
+  </div>
   ]]>
   </Content>
 
