@@ -28,6 +28,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.spaces.api.AbstractSpaceProvider;
 import org.nuxeo.ecm.spaces.api.Space;
+import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
+import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
 import org.nuxeo.ecm.spaces.core.impl.docwrapper.DocSpaceImpl;
 
 /**
@@ -46,14 +48,18 @@ public class RootDocSpaceProvider extends AbstractSpaceProvider {
     }
 
 
-    public void add(Space o, CoreSession session) throws ClientException {
-        DocSpaceImpl space = DocSpaceImpl.createFromSpace(o, rootDoc.getPathAsString(), session);
-        session.saveDocument(space.getDocument());
-        session.save();
+    public void add(Space o, CoreSession session) throws SpaceException {
+        try {
+            DocSpaceImpl space = DocSpaceImpl.createFromSpace(o, rootDoc.getPathAsString(), session);
+            session.saveDocument(space.getDocument());
+            session.save();
+        } catch (ClientException e) {
+            throw new SpaceException(e);
+        }
     }
 
 
-    public void addAll(Collection<? extends Space> c, CoreSession session) throws ClientException {
+    public void addAll(Collection<? extends Space> c, CoreSession session) throws SpaceException {
         try {
             for( Space o : c) {
                 add(o,session);
@@ -64,48 +70,69 @@ public class RootDocSpaceProvider extends AbstractSpaceProvider {
     }
 
 
-    public void clear(CoreSession session) throws ClientException {
-        session.removeChildren(rootDoc.getRef());
+    public void clear(CoreSession session) throws SpaceException {
+        try {
+            session.removeChildren(rootDoc.getRef());
+        } catch (ClientException e) {
+            throw new SpaceException("Unable to complete clear",e);
+        }
 
     }
 
 
-    public Space getSpace(String spaceName, CoreSession session) throws ClientException {
-        DocumentModel doc = session.getChild(rootDoc.getRef(), spaceName);
+    public Space getSpace(String spaceName, CoreSession session) throws SpaceException {
+        DocumentModel doc;
+        try {
+            doc = session.getChild(rootDoc.getRef(), spaceName);
+        } catch (ClientException e) {
+            throw new SpaceNotFoundException(e);
+        }
         return doc.getAdapter(Space.class);
 
     }
 
 
-    public boolean isEmpty(CoreSession session) throws ClientException {
+    public boolean isEmpty(CoreSession session) throws SpaceException {
         return this.size(session) == 0;
     }
 
 
 
-    public boolean remove(Space space, CoreSession session) throws ClientException {
+    public boolean remove(Space space, CoreSession session) throws SpaceException {
         DocumentRef spaceRef = new PathRef(rootDoc.getPathAsString() + "/" + space.getName());
-        if(session.exists(spaceRef)) {
-            session.removeDocument(spaceRef);
-            return true;
-        } else {
-            return false;
+        try {
+            if(session.exists(spaceRef)) {
+                session.removeDocument(spaceRef);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (ClientException e) {
+            throw new SpaceNotFoundException(e);
         }
     }
 
 
-    public long size(CoreSession session) throws ClientException {
-        return session.getChildrenIterator(rootDoc.getRef()).hashCode();
+    public long size(CoreSession session) throws SpaceException {
+        try {
+            return session.getChildrenIterator(rootDoc.getRef()).size();
+        } catch (ClientException e) {
+            throw new SpaceException(e);
+        }
     }
 
 
-    public List<Space> getAll(CoreSession session) throws ClientException {
+    public List<Space> getAll(CoreSession session) throws SpaceException {
         List<Space> spaces = new ArrayList<Space>();
-        for(DocumentModel doc : session.getChildren(rootDoc.getRef())) {
-            Space space = doc.getAdapter(Space.class);
-            if(space != null) {
-                spaces.add(space);
+        try {
+            for(DocumentModel doc : session.getChildren(rootDoc.getRef())) {
+                Space space = doc.getAdapter(Space.class);
+                if(space != null) {
+                    spaces.add(space);
+                }
             }
+        } catch (ClientException e) {
+            throw new SpaceException("Unable to query childrens",e);
         }
         return spaces;
     }

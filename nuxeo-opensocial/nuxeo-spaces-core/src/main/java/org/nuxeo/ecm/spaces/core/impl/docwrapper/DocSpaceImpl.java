@@ -20,7 +20,6 @@ package org.nuxeo.ecm.spaces.core.impl.docwrapper;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -38,18 +37,18 @@ import org.nuxeo.runtime.api.Framework;
 
 public class DocSpaceImpl implements Space {
 
-    private final DocumentModel doc;
+    protected final DocumentModel doc;
 
     public static final String TYPE = "Space";
-    private static final String SPACE_THEME = "space:theme";
-    private static final String SPACE_LAYOUT = "space:layout";
-    private static final String SPACE_CATEGORY = "space:categoryId";
-    private static final String SPACE_VERSIONNABLE = "space:versionnable";
-    private static final String PUBLICATION_DATE = "dc:valid";
+    protected static final String SPACE_THEME = "space:theme";
+    protected static final String SPACE_LAYOUT = "space:layout";
+    protected static final String SPACE_CATEGORY = "space:categoryId";
+    protected static final String SPACE_VERSIONNABLE = "space:versionnable";
+    protected static final String PUBLICATION_DATE = "dc:valid";
 
     private static final Log LOGGER = LogFactory.getLog(DocSpaceImpl.class);
 
-    DocSpaceImpl(DocumentModel doc) {
+    protected DocSpaceImpl(DocumentModel doc) {
         this.doc = doc;
     }
 
@@ -91,27 +90,6 @@ public class DocSpaceImpl implements Space {
         }
     }
 
-    public boolean isVersionnable() {
-        return getBooleanProperty(SPACE_VERSIONNABLE);
-    }
-
-    public List<Space> getVersions() {
-        if (isVersionnable()) {
-            try {
-                List<DocumentModel> docs = doc.getCoreSession().getChildren(
-                        doc.getParentRef(), TYPE, null,
-                        new SpaceSorter());
-                List<Space> spaces = new ArrayList<Space>();
-                for (DocumentModel doc : docs) {
-                    spaces.add(doc.getAdapter(Space.class));
-                }
-                return spaces;
-            } catch (ClientException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
 
     public String getDescription() {
         try {
@@ -171,8 +149,8 @@ public class DocSpaceImpl implements Space {
         return hasPermission("Write");
     }
 
-    public String setLayout(String name) throws ClientException {
-        return (String) doc.getPropertyValue(SPACE_LAYOUT);
+    public void setLayout(String name) throws ClientException {
+        doc.setPropertyValue(SPACE_LAYOUT, name);
     }
 
     public void save(Gadget gadget) throws ClientException {
@@ -221,13 +199,6 @@ public class DocSpaceImpl implements Space {
         return doc.getAdapter(Gadget.class);
     }
 
-    public Calendar getDatePublication() throws ClientException {
-
-        return (Calendar) doc
-                .getPropertyValue(PUBLICATION_DATE);
-
-    }
-
     public DocumentModel getDocument() {
         return doc;
     }
@@ -259,14 +230,33 @@ public class DocSpaceImpl implements Space {
 
     }
 
-    public void setDatePublication(Calendar cal) throws ClientException {
-        doc.setPropertyValue(PUBLICATION_DATE, cal);
+
+    public Space copyFrom(Space space) throws ClientException {
+        setLayout(space.getLayout());
+        setTheme(space.getTheme());
+        setDescription(space.getDescription());
+        setTitle(space.getTitle());
+        return this;
+    }
+
+    public void setDescription(String description) throws ClientException {
+        doc.setPropertyValue("dc:description", description);
 
     }
 
-    public Space createVersion(Calendar cal) throws ClientException {
-        // TODO Auto-generated method stub
-        return null;
+    public void setTheme(String theme) throws ClientException {
+        doc.setPropertyValue(SPACE_THEME, theme);
+
+    }
+
+    public void setTitle(String title) throws ClientException {
+        doc.setPropertyValue("dc:title", title);
+
+    }
+
+    public void setCategory(String category) throws ClientException {
+        doc.setPropertyValue(SPACE_CATEGORY, category);
+
     }
 
     // public boolean isCurrentVersion() {

@@ -11,6 +11,8 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.spaces.api.AbstractSpaceProvider;
 import org.nuxeo.ecm.spaces.api.Space;
+import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
+import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
 
 public class SingleDocSpaceProvider extends AbstractSpaceProvider {
 
@@ -31,7 +33,7 @@ public class SingleDocSpaceProvider extends AbstractSpaceProvider {
         }
     }
 
-    public long size(CoreSession session) throws ClientException {
+    public long size(CoreSession session) {
         return 1;
     }
 
@@ -39,55 +41,60 @@ public class SingleDocSpaceProvider extends AbstractSpaceProvider {
         return true;
     }
 
-    public List<Space> getAll(CoreSession session) throws ClientException {
+    public List<Space> getAll(CoreSession session) throws SpaceException {
         List<Space> result = new ArrayList<Space>();
         result.add(getSpace("", session));
         return result;
     }
 
     public Space getSpace(String spaceName, CoreSession session)
-            throws ClientException {
+            throws SpaceException {
         return getOrCreateSingleSpace(session).getAdapter(Space.class);
     }
 
-    public boolean isEmpty(CoreSession session) throws ClientException {
+    public boolean isEmpty(CoreSession session) {
         return false;
     }
 
-    private DocumentModel getOrCreateSingleSpace(CoreSession session) throws ClientException {
+    private DocumentModel getOrCreateSingleSpace(CoreSession session)
+            throws SpaceException {
         PathRef docRef = new PathRef(path);
-        if(session.exists(docRef)) {
-            return session.getDocument(docRef);
-        } else {
-            if(!session.exists(new PathRef(getParentPath(path)))) {
-                throw new ClientException("Parent path does not exist : unable to get or create space");
-            }
-
-
-            UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(session) {
-                @Override
-                public void run() throws ClientException {
-                    DocumentModel doc = session.createDocumentModel(getParentPath(path), getDocName(path), "Space");
-                    doc.setPropertyValue("dc:title", title);
-                    doc = session.createDocument(doc);
-                    session.save();
-
+        try {
+            if (session.exists(docRef)) {
+                return session.getDocument(docRef);
+            } else {
+                if (!session.exists(new PathRef(getParentPath(path)))) {
+                    throw new ClientException(
+                            "Parent path does not exist : unable to get or create space");
                 }
-            };
 
-            runner.runUnrestricted();
-            return session.getDocument(docRef);
+                UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(
+                        session) {
+                    @Override
+                    public void run() throws ClientException {
+                        DocumentModel doc = session.createDocumentModel(
+                                getParentPath(path), getDocName(path), "Space");
+                        doc.setPropertyValue("dc:title", title);
+                        doc = session.createDocument(doc);
+                        session.save();
+
+                    }
+                };
+
+                runner.runUnrestricted();
+                return session.getDocument(docRef);
+            }
+        } catch (ClientException e) {
+            throw new SpaceNotFoundException(e);
         }
     }
-
-
 
     static String getParentPath(String fullPath) {
         int firstCharOfDocName = fullPath.lastIndexOf("/");
         if (firstCharOfDocName == -1) {
             return fullPath;
         } else {
-            if(firstCharOfDocName > 0) {
+            if (firstCharOfDocName > 0) {
                 return fullPath.substring(0, firstCharOfDocName);
             } else {
                 return "/";

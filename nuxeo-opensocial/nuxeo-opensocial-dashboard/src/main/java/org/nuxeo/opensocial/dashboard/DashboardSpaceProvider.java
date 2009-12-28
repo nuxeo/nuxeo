@@ -41,16 +41,23 @@ public class DashboardSpaceProvider extends SingleDocSpaceProvider {
 
     @Override
     public Space getSpace(String name, CoreSession session)
-            throws ClientException {
+            throws SpaceException {
         if (!name.equals(DASHBOARD_SPACE_NAME)) {
-            throw new ClientException("Only one space is supported by the "
+            throw new SpaceException("Only one space is supported by the "
                     + "dashboard space provider!");
         }
 
-        getOrCreateParentUnivers(session);
-        DocumentModel space = getOrCreateSpace(session);
 
+        try {
+            getOrCreateParentUnivers(session);
+        DocumentModel space = getOrCreateSpace(session);
         return space.getAdapter(Space.class);
+        } catch (ClientException e) {
+            log.error("Unable to create or get personal dashboard",e);
+            return null;
+        }
+
+
 
     }
 

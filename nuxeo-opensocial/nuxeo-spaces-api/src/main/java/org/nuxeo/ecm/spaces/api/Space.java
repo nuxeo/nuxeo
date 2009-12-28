@@ -18,10 +18,11 @@
 package org.nuxeo.ecm.spaces.api;
 
 import java.net.URL;
-import java.util.Calendar;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
+
+
 
 public interface Space {
 
@@ -46,12 +47,16 @@ public interface Space {
      */
     String getTheme() throws ClientException;
 
+    void setTheme(String theme) throws ClientException;
+
     /**
      * Title of the space
      *
      * @return
      */
     String getTitle() throws ClientException;
+
+    void setTitle(String title) throws ClientException;
 
     /**
      * description of the space
@@ -60,6 +65,8 @@ public interface Space {
      */
     String getDescription() throws ClientException;
 
+    void setDescription(String description) throws ClientException;
+
     /**
      * A key for displaying elements in this space
      *
@@ -67,7 +74,7 @@ public interface Space {
      */
     String getLayout() throws ClientException;
 
-    String setLayout(String name) throws ClientException;
+    void setLayout(String name) throws ClientException;
 
     /**
      * Family/category of this space
@@ -75,6 +82,8 @@ public interface Space {
      * @return
      */
     String getCategory() throws ClientException;
+
+    void setCategory(String category) throws ClientException;
 
     /**
      * Name of the creator of this space
@@ -104,12 +113,8 @@ public interface Space {
 
     boolean hasPermission(String permissionName) throws ClientException;
 
-    Calendar getDatePublication() throws ClientException;
-
-    void setDatePublication(Calendar cal) throws ClientException;
-
-    Space createVersion(Calendar cal) throws ClientException;
-
     void save() throws ClientException;
+
+    Space copyFrom(Space space) throws ClientException;
 
 }

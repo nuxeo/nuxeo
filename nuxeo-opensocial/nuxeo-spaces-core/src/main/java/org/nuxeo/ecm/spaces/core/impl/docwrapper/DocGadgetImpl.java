@@ -44,7 +44,7 @@ public class DocGadgetImpl extends AbstractGadget {
 
     }
 
-    DocumentModel getDocument() {
+    public DocumentModel getDocument() {
         return doc;
     }
 
