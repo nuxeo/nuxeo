@@ -634,7 +634,7 @@
       </dependencies>
     </profile>
     <profile>
-      <id>vsc-profile</id>
+      <id>vcs-profile</id>
       <activation>
         <activeByDefault>true</activeByDefault>
         <property>

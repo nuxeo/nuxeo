@@ -16,12 +16,6 @@
     Nuxeo Enterprise Platform: The Nuxeo Document Management application.
   </description>
 
-  <properties>
-    <nuxeo.ear.assembly>nuxeo</nuxeo.ear.assembly>
-    <nuxeo.ear>${nuxeo.ear.assembly}.ear</nuxeo.ear>
-    <prop>test</prop>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -231,38 +225,74 @@
       <artifactId>nuxeo-webengine-gadgets</artifactId>
       <version>${nuxeo.features.version}</version>
     </dependency>
+    
+    <!-- Are they required ? Imported from old packaging but were not present in dependency graph -->
+    <!-- TODO : find where are those libraries needed from and add them to the module's dependencies -->
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-cache-jdk50</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam-remoting</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam-mail</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam-debug</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jgroups</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>bouncycastle</groupId>
+      <artifactId>bcmail-jdk14</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>bouncycastle</groupId>
+      <artifactId>bcprov-jdk14</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.openoffice</groupId>
+      <artifactId>jurt</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.fontbox</groupId>
+      <artifactId>fontbox</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jempbox</groupId>
+      <artifactId>jempbox</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>ooxml-schemas</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+    </dependency>
   </dependencies>
 
   <profiles>
     <profile>
       <id>derby</id>
-      <properties>
-        <nuxeo.ear>${nuxeo.ear.assembly}-derby.ear</nuxeo.ear>
-      </properties>
     </profile>
     <profile>
       <id>mysql</id>
-      <properties>
-        <nuxeo.ear>${nuxeo.ear.assembly}-mysql.ear</nuxeo.ear>
-      </properties>
     </profile>
     <profile>
       <id>postgresql</id>
-      <properties>
-        <nuxeo.ear>${nuxeo.ear.assembly}-postgresql.ear</nuxeo.ear>
-      </properties>
     </profile>
     <profile>
       <id>oracle</id>
-      <properties>
-        <nuxeo.ear>${nuxeo.ear.assembly}-oracle.ear</nuxeo.ear>
-      </properties>
     </profile>
     <profile>
       <id>h2</id>
-      <properties>
-        <nuxeo.ear>${nuxeo.ear.assembly}-h2.ear</nuxeo.ear>
-      </properties>
     </profile>
 
     <!--
@@ -317,7 +347,7 @@
       </dependencies>
     </profile>
     <profile>
-      <id>vsc-profile</id>
+      <id>vcs-profile</id>
       <activation>
         <activeByDefault>true</activeByDefault>
         <property>
@@ -352,36 +382,19 @@
         <extensions>true</extensions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-nuxeo-plugin</artifactId>
-        <extensions>false</extensions>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <version>0.3-SNAPSHOT</version>
         <executions>
           <execution>
-            <id>assemble-ear</id>
+            <id>antbuild</id>
             <phase>package</phase>
-            <goals>
-              <goal>assembly</goal>
-            </goals>
             <configuration>
-              <runPreprocessor>false</runPreprocessor>
-              <format>directory,zip</format>
-              <outputDirectory>target</outputDirectory>
-              <targetFile>${nuxeo.ear}</targetFile>
-              <descriptor>
-                ${basedir}/src/main/assemble/${nuxeo.ear.assembly}.xml
-              </descriptor>
+              <buildFile>${basedir}/assembly.xml</buildFile>
             </configuration>
-          </execution>
-          <execution>
-            <id>attach-app</id>
-            <phase>package</phase>
             <goals>
-              <goal>attach</goal>
+              <goal>build</goal>
             </goals>
-            <configuration>
-              <file>${build.directory}/${nuxeo.ear}.zip</file>
-              <type>zip</type>
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -389,114 +402,114 @@
         copy nuxeo libraries that must go into
         $JBOSS/server/default/lib/
       -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <configuration>
-          <outputDirectory>${jboss.lib}</outputDirectory>
-          <artifactItems>
-            <artifactItem>
-              <groupId>org.nuxeo.common</groupId>
-              <artifactId>nuxeo-common</artifactId>
-              <version>${nuxeo.common.version}</version>
-              <overWrite>true</overWrite>
-            </artifactItem>
-            <artifactItem>
-              <groupId>org.nuxeo.runtime</groupId>
-              <artifactId>nuxeo-runtime-deploy</artifactId>
-              <version>${nuxeo.runtime.version}</version>
-              <overWrite>true</overWrite>
-            </artifactItem>
-            <artifactItem>
-              <groupId>org.nuxeo.runtime</groupId>
-              <artifactId>nuxeo-runtime-jboss-extensions</artifactId>
-              <version>${nuxeo.runtime.version}</version>
-              <overWrite>true</overWrite>
-            </artifactItem>
-            <artifactItem>
-              <groupId>org.nuxeo.ecm.core</groupId>
-              <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
-              <version>${nuxeo.core.version}</version>
-              <overWrite>true</overWrite>
-            </artifactItem>
-            <artifactItem>
-              <groupId>com.h2database</groupId>
-              <artifactId>h2</artifactId>
-            </artifactItem>
-            <artifactItem>
-              <groupId>org.apache.derby</groupId>
-              <artifactId>derby</artifactId>
-            </artifactItem>
-            <artifactItem>
-              <groupId>org.apache.lucene</groupId>
-              <artifactId>lucene-core</artifactId>
-            </artifactItem>
-            <artifactItem>
-              <groupId>org.apache.lucene</groupId>
-              <artifactId>lucene-analyzers</artifactId>
-            </artifactItem>
-            <!-- WSS dependencies -->
-            <artifactItem>
-              <groupId>org.nuxeo.ecm.platform</groupId>
-              <artifactId>nuxeo-generic-wss-handler</artifactId>
-            </artifactItem>
-            <artifactItem>
-              <groupId>org.freemarker</groupId>
-              <artifactId>freemarker</artifactId>
-            </artifactItem>
-            <artifactItem>
-              <groupId>commons-lang</groupId>
-              <artifactId>commons-lang</artifactId>
-            </artifactItem>
-          </artifactItems>
-        </configuration>
-        <executions>
-          <execution>
-            <id>copy-installed</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/lib</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-jdbc-drivers</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>
-                ${project.build.directory}/thirdparty-jdbc-lib
-              </outputDirectory>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>postgresql</groupId>
-                  <artifactId>postgresql</artifactId>
-                  <version>8.3-604.jdbc3</version>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>postgresql</groupId>
-                  <artifactId>postgresql</artifactId>
-                  <version>8.2-507.jdbc3</version>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>mysql</groupId>
-                  <artifactId>mysql-connector-java</artifactId>
-                  <version>5.1.6</version>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.apache.derby</groupId>
-                  <artifactId>derby</artifactId>
-                  <version>10.5.3.0_1</version>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+<!--      <plugin>-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-dependency-plugin</artifactId>-->
+<!--        <configuration>-->
+<!--          <outputDirectory>${jboss.lib}</outputDirectory>-->
+<!--          <artifactItems>-->
+<!--            <artifactItem>-->
+<!--              <groupId>org.nuxeo.common</groupId>-->
+<!--              <artifactId>nuxeo-common</artifactId>-->
+<!--              <version>${nuxeo.common.version}</version>-->
+<!--              <overWrite>true</overWrite>-->
+<!--            </artifactItem>-->
+<!--            <artifactItem>-->
+<!--              <groupId>org.nuxeo.runtime</groupId>-->
+<!--              <artifactId>nuxeo-runtime-deploy</artifactId>-->
+<!--              <version>${nuxeo.runtime.version}</version>-->
+<!--              <overWrite>true</overWrite>-->
+<!--            </artifactItem>-->
+<!--            <artifactItem>-->
+<!--              <groupId>org.nuxeo.runtime</groupId>-->
+<!--              <artifactId>nuxeo-runtime-jboss-extensions</artifactId>-->
+<!--              <version>${nuxeo.runtime.version}</version>-->
+<!--              <overWrite>true</overWrite>-->
+<!--            </artifactItem>-->
+<!--            <artifactItem>-->
+<!--              <groupId>org.nuxeo.ecm.core</groupId>-->
+<!--              <artifactId>nuxeo-core-storage-sql-extensions</artifactId>-->
+<!--              <version>${nuxeo.core.version}</version>-->
+<!--              <overWrite>true</overWrite>-->
+<!--            </artifactItem>-->
+<!--            <artifactItem>-->
+<!--              <groupId>com.h2database</groupId>-->
+<!--              <artifactId>h2</artifactId>-->
+<!--            </artifactItem>-->
+<!--            <artifactItem>-->
+<!--              <groupId>org.apache.derby</groupId>-->
+<!--              <artifactId>derby</artifactId>-->
+<!--            </artifactItem>-->
+<!--            <artifactItem>-->
+<!--              <groupId>org.apache.lucene</groupId>-->
+<!--              <artifactId>lucene-core</artifactId>-->
+<!--            </artifactItem>-->
+<!--            <artifactItem>-->
+<!--              <groupId>org.apache.lucene</groupId>-->
+<!--              <artifactId>lucene-analyzers</artifactId>-->
+<!--            </artifactItem>-->
+<!--             WSS dependencies -->
+<!--            <artifactItem>-->
+<!--              <groupId>org.nuxeo.ecm.platform</groupId>-->
+<!--              <artifactId>nuxeo-generic-wss-handler</artifactId>-->
+<!--            </artifactItem>-->
+<!--            <artifactItem>-->
+<!--              <groupId>org.freemarker</groupId>-->
+<!--              <artifactId>freemarker</artifactId>-->
+<!--            </artifactItem>-->
+<!--            <artifactItem>-->
+<!--              <groupId>commons-lang</groupId>-->
+<!--              <artifactId>commons-lang</artifactId>-->
+<!--            </artifactItem>-->
+<!--          </artifactItems>-->
+<!--        </configuration>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <id>copy-installed</id>-->
+<!--            <phase>package</phase>-->
+<!--            <goals>-->
+<!--              <goal>copy</goal>-->
+<!--            </goals>-->
+<!--            <configuration>-->
+<!--              <outputDirectory>${project.build.directory}/lib</outputDirectory>-->
+<!--            </configuration>-->
+<!--          </execution>-->
+<!--          <execution>-->
+<!--            <id>copy-jdbc-drivers</id>-->
+<!--            <phase>package</phase>-->
+<!--            <goals>-->
+<!--              <goal>copy</goal>-->
+<!--            </goals>-->
+<!--            <configuration>-->
+<!--              <outputDirectory>-->
+<!--                ${project.build.directory}/thirdparty-jdbc-lib-->
+<!--              </outputDirectory>-->
+<!--              <artifactItems>-->
+<!--                <artifactItem>-->
+<!--                  <groupId>postgresql</groupId>-->
+<!--                  <artifactId>postgresql</artifactId>-->
+<!--                  <version>8.3-604.jdbc3</version>-->
+<!--                </artifactItem>-->
+<!--                <artifactItem>-->
+<!--                  <groupId>postgresql</groupId>-->
+<!--                  <artifactId>postgresql</artifactId>-->
+<!--                  <version>8.2-507.jdbc3</version>-->
+<!--                </artifactItem>-->
+<!--                <artifactItem>-->
+<!--                  <groupId>mysql</groupId>-->
+<!--                  <artifactId>mysql-connector-java</artifactId>-->
+<!--                  <version>5.1.6</version>-->
+<!--                </artifactItem>-->
+<!--                <artifactItem>-->
+<!--                  <groupId>org.apache.derby</groupId>-->
+<!--                  <artifactId>derby</artifactId>-->
+<!--                  <version>10.5.3.0_1</version>-->
+<!--                </artifactItem>-->
+<!--              </artifactItems>-->
+<!--            </configuration>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
     </plugins>
   </build>
 
