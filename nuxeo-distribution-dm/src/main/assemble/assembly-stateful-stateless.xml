@@ -1,4 +1,4 @@
-<project name="nuxeo-assembly" default="build" xmlns:nx="urn:nuxeo-build"
+<project name="nuxeo-assembly-2parts" default="build" xmlns:nx="urn:nuxeo-build"
   xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
@@ -12,106 +12,80 @@
     <property name="nuxeo.ear" value="${stagedir}/nuxeo.ear" />
     <mkdir dir="${nuxeo.ear}" />
 
-    <antcall target="build-standard" />
-    <delete failonerror="false" dir="${outdir}/nuxeo.ear" />
-    <copy todir="${outdir}/nuxeo.ear">
+    <antcall target="build-stateless" />
+    <delete failonerror="false" dir="${outdir}/nuxeo.ear-web-stateless" />
+    <copy todir="${outdir}/nuxeo-web-stateless.ear">
+      <fileset dir="${nuxeo.ear}" />
+    </copy>
+    <antcall target="build-stateful" />
+    <delete failonerror="false" dir="${outdir}/nuxeo.ear-platform-stateful" />
+    <copy todir="${outdir}/nuxeo-platform-stateful.ear">
       <fileset dir="${nuxeo.ear}" />
     </copy>
 
-    <antcall target="build-distribution">
+    <antcall target="build-distribution-stateful">
       <param name="distribution" value="derby" />
     </antcall>
-    <antcall target="build-distribution">
+    <antcall target="build-distribution-stateful">
       <param name="distribution" value="mysql" />
     </antcall>
-    <antcall target="build-distribution">
+    <antcall target="build-distribution-stateful">
       <param name="distribution" value="postgresql" />
     </antcall>
-    <antcall target="build-distribution">
+    <antcall target="build-distribution-stateful">
       <param name="distribution" value="oracle" />
     </antcall>
-    <antcall target="build-distribution">
+    <antcall target="build-distribution-stateful">
       <param name="distribution" value="h2" />
     </antcall>
-    <antcall target="build-distribution">
-      <param name="distribution" value="jcr" />
-      <param name="storage.jcr" value="true" />
-    </antcall>
-    <antcall target="build-distribution">
-      <param name="distribution" value="jcr-postgresql" />
-      <param name="storage.jcr" value="true" />
-    </antcall>
 
-<!--    <antcall target="clean" />-->
+    <!--    <antcall target="clean" />-->
   </target>
 
-  <target name="build-distribution" description="Build distributions on various backends">
-    <delete failonerror="false" dir="${stagedir}/nuxeo-${distribution}.ear" />
-    <copy todir="${stagedir}/nuxeo-${distribution}.ear" overwrite="true">
+  <target name="build-distribution-stateful" description="Build stateful distributions on various backends">
+    <delete failonerror="false" dir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear" />
+    <copy todir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear" overwrite="true">
       <fileset dir="${nuxeo.ear}" />
     </copy>
-    <unzip dest="${stagedir}/nuxeo-${distribution}.ear">
+    <unzip dest="${stagedir}/nuxeo-platform-stateful-${distribution}.ear">
       <artifact:resolveFile
         key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
         classifier="resources-${distribution}" />
     </unzip>
-    <copy todir="${stagedir}/nuxeo-${distribution}.ear" overwrite="true">
+    <copy todir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear" overwrite="true">
       <fileset dir="src/main/resources" />
     </copy>
-    <antcall target="use-jcr-storage" />
-    <nx:profile name="${distribution}">
-      <delete failonerror="false" dir="${outdir}/nuxeo.ear" />
-      <copy todir="${outdir}/nuxeo.ear">
-        <fileset dir="${stagedir}/nuxeo-${distribution}.ear" />
-      </copy>
-    </nx:profile>
     <zip
-      destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
-      basedir="${stagedir}/nuxeo-${distribution}.ear" />
+      destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful-${distribution}.zip"
+      basedir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear" />
     <artifact:attach
-      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
-      classifier="${distribution}" type="zip"
+      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful-${distribution}.zip"
+      classifier="platform-stateful-${distribution}" type="zip"
       target="${maven.project.groupId}:${maven.project.artifactId}" />
   </target>
 
-  <target name="use-jcr-storage" description="Replace VCS with JCR storage"
-    if="storage.jcr">
-    <delete failonerror="false">
-      <fileset dir="${stagedir}/nuxeo-${distribution}.ear/system">
-        <include name="nuxeo-core-storage-sql*" />
-      </fileset>
-    </delete>
-    <copy todir="${stagedir}/nuxeo-${distribution}.ear/system" overwrite="true">
-      <artifact:file groupId="org.nuxeo.ecm.core" artifactId="nuxeo-core-jca" />
-      <artifact:file groupId="org.nuxeo.ecm.core" artifactId="nuxeo-core-jcr-connector" />
-    </copy>
-  </target>
-
-  <target name="build-standard" description="Build default distribution">
+  <target name="build-stateful" description="Build platform stateful distribution">
     <!-- Nuxeo resources and modules -->
+    <delete failonerror="false" dir="${nuxeo.ear}" />
     <unzip dest="${nuxeo.ear}">
       <artifact:resolveFile
         key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
-        classifier="resources-mono" />
+        classifier="resources-platform-stateful" />
     </unzip>
     <copy todir="${nuxeo.ear}" overwrite="true">
       <!-- Nuxeo DM specific properties -->
       <fileset dir="src/main/resources" />
-      <artifact:file artifactId="nuxeo-platform-webapp" />
-      <artifact:file artifactId="nuxeo-platform-webapp-core" />
     </copy>
     <copy todir="${nuxeo.ear}/system" overwrite="true">
       <artifact:set>
         <includes>
           <artifact groupId="org.nuxeo*" category="runtime,jboss4"
             dependsOnCategory="false" />
-          <artifact groupId="org.nuxeo*" category="core,search,web,stateful,stateless" />
+          <artifact groupId="org.nuxeo*" category="core,stateful" />
         </includes>
         <excludes>
           <artifact groupId="org.nuxeo.common" />
           <artifact artifactId="nuxeo-generic-wss-handler" />
-          <artifact artifactId="nuxeo-platform-webapp" />
-          <artifact artifactId="nuxeo-platform-webapp-core" />
           <artifact artifactId="nuxeo-platform-audit-facade" />
           <artifact artifactId="nuxeo-platform-placeful-facade" />
           <artifact artifactId="nuxeo-apt-extensions" />
@@ -132,34 +106,84 @@
     </unzip>
 
     <!-- Third-party libraries -->
-    <antcall target="third-party-libraries" />
+    <antcall target="common-third-party-libraries" />
+    <copy todir="${nuxeo.ear}/lib" overwrite="true">
+      <!-- Remote publication lib -->
+      <artifact:file groupId="org.apache.httpcomponents"
+        artifactId="httpclient" />
+      <artifact:file groupId="org.apache.httpcomponents"
+        artifactId="httpcore" />
 
-    <!--
-      Ideal way of retrieving third-party libraries; not usable for now,
-      requires NXBT-72
-    -->
-    <!--
-      <copy todir="${nuxeo.ear}/lib" overwrite="true"> <artifact:set> <includes>
-      <artifact groupId="!org.nuxeo*" /> </includes> <excludes> <artifact
-      artifactId="jackrabbit-jcr-commons" /> <artifact artifactId="stax-api" />
-      <artifact artifactId="xercesImpl" /> <artifact artifactId="xmlParserAPIs"
-      /> <artifact artifactId="hibernate" /> <artifact artifactId="log4j" />
-      <artifact artifactId="servlet-api" /> <artifact artifactId="xml-apis" />
-      <artifact artifactId="jta" /> <artifact artifactId="derby" /> <artifact
-      artifactId="jackrabbit-core" /> <artifact artifactId="persistence-api" />
-      <artifact artifactId="dom4j" /> <artifact groupId="org.freemarker"
-      artifactId="freemarker" /> <artifact groupId="commons-lang"
-      artifactId="commons-lang" /> </excludes> </artifact:set> </copy>
-    -->
+      <!-- Needed on platform-stateful ? -->
+      <artifact:file groupId="net.sf.ehcache" artifactId="ehcache" />
+      <artifact:file groupId="com.google.collections" artifactId="google-collections" />
+      <artifact:file groupId="backport-util-concurrent"
+        artifactId="backport-util-concurrent" />
+    </copy>
 
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+    <zip
+      destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful.zip"
       basedir="${nuxeo.ear}" />
     <artifact:attach
-      file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-      target="${maven.project.groupId}:${maven.project.artifactId}" />
+      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful.zip"
+      target="${maven.project.groupId}:${maven.project.artifactId}" classifier="platform-stateful" />
   </target>
 
-  <target name="third-party-libraries">
+  <target name="build-stateless" description="Build web stateless distribution">
+    <!-- Nuxeo resources and modules -->
+    <delete failonerror="false" dir="${nuxeo.ear}" />
+    <unzip dest="${nuxeo.ear}">
+      <artifact:resolveFile
+        key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
+        classifier="resources-web-stateless" />
+    </unzip>
+    <copy todir="${nuxeo.ear}" overwrite="true">
+      <!-- Nuxeo DM specific properties -->
+      <fileset dir="src/main/resources" />
+      <artifact:file artifactId="nuxeo-platform-webapp" />
+      <artifact:file artifactId="nuxeo-platform-webapp-core" />
+    </copy>
+    <copy todir="${nuxeo.ear}/system" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo*" category="runtime,jboss4"
+            dependsOnCategory="false" />
+          <artifact groupId="org.nuxeo*" category="stateless" />
+        </includes>
+        <excludes>
+          <artifact groupId="org.nuxeo.common" />
+          <artifact artifactId="nuxeo-generic-wss-handler" />
+          <artifact artifactId="nuxeo-platform-webapp" />
+          <artifact artifactId="nuxeo-platform-webapp-core" />
+          <artifact artifactId="nuxeo-apt-extensions" />
+          <artifact artifactId="nuxeo-webengine-apt" />
+          <!-- exclude JCR storage -->
+          <artifact artifactId="nuxeo-core-jca" />
+          <artifact artifactId="nuxeo-core-jcr-connector" />
+        </excludes>
+      </artifact:set>
+    </copy>
+
+    <!-- Third-party libraries -->
+    <antcall target="common-third-party-libraries" />
+    <copy todir="${nuxeo.ear}/lib" overwrite="true">
+      <!-- Needed on web-stateless ? -->
+      <artifact:file groupId="net.sf.ehcache" artifactId="ehcache" />
+      <artifact:file groupId="com.google.collections" artifactId="google-collections" />
+      <artifact:file groupId="backport-util-concurrent"
+        artifactId="backport-util-concurrent" />
+    </copy>
+
+    <zip
+      destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-web-stateless.zip"
+      basedir="${nuxeo.ear}" />
+    <artifact:attach
+      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-web-stateless.zip"
+      target="${maven.project.groupId}:${maven.project.artifactId}" classifier="web-stateless" />
+  </target>
+
+  <target name="common-third-party-libraries">
+    <!-- Common Third-party libraries -->
     <copy todir="${nuxeo.ear}/lib" overwrite="true">
       <artifact:file groupId="org.osgi" artifactId="osgi-core" />
       <artifact:file groupId="commons-collections" artifactId="commons-collections" />
@@ -237,18 +261,6 @@
       <artifact:file groupId="org.apache" artifactId="xmlbeans" />
       <artifact:file groupId="com.sun.xml" artifactId="relaxngDatatype" />
       <artifact:file groupId="com.sun.xml" artifactId="xsom" />
-
-      <!-- Remote publication lib -->
-      <artifact:file groupId="org.apache.httpcomponents"
-        artifactId="httpclient" />
-      <artifact:file groupId="org.apache.httpcomponents"
-        artifactId="httpcore" />
-
-      <artifact:file groupId="net.sf.ehcache" artifactId="ehcache" />
-      <artifact:file groupId="com.google.collections" artifactId="google-collections" />
-      <artifact:file groupId="com.google.gwt" artifactId="gwt-servlet" />
-      <artifact:file groupId="backport-util-concurrent"
-        artifactId="backport-util-concurrent" />
     </copy>
   </target>
 
