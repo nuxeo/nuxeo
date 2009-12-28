@@ -8,7 +8,7 @@
     <fileSet>
       <directory>src/main/resources_common</directory>
       <outputDirectory>/</outputDirectory>
-      <useDefaultExcludes>true</useDefaultExcludes>
+<!--      <useDefaultExcludes>true</useDefaultExcludes>-->
       <excludes>
         <exclude>**/unified-nuxeo-ds.xml</exclude>
       </excludes>
@@ -16,7 +16,7 @@
     <fileSet>
       <directory>src/main/resources_web-stateless</directory>
       <outputDirectory>/</outputDirectory>
-      <useDefaultExcludes>true</useDefaultExcludes>
+<!--      <useDefaultExcludes>true</useDefaultExcludes>-->
     </fileSet>
   </fileSets>
 </assembly>

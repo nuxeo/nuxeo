@@ -8,22 +8,22 @@
     <fileSet>
       <directory>src/main/resources_core</directory>
       <outputDirectory>/</outputDirectory>
-      <useDefaultExcludes>true</useDefaultExcludes>
+<!--      <useDefaultExcludes>true</useDefaultExcludes>-->
     </fileSet>
     <fileSet>
       <directory>src/main/resources_search</directory>
       <outputDirectory>/</outputDirectory>
-      <useDefaultExcludes>true</useDefaultExcludes>
+<!--      <useDefaultExcludes>true</useDefaultExcludes>-->
     </fileSet>
     <fileSet>
       <directory>src/main/resources_webplatform</directory>
       <outputDirectory>/</outputDirectory>
-      <useDefaultExcludes>true</useDefaultExcludes>
+<!--      <useDefaultExcludes>true</useDefaultExcludes>-->
     </fileSet>
     <fileSet>
       <directory>src/main/resources_common</directory>
       <outputDirectory>/</outputDirectory>
-      <useDefaultExcludes>true</useDefaultExcludes>
+<!--      <useDefaultExcludes>true</useDefaultExcludes>-->
     </fileSet>
   </fileSets>
 </assembly>

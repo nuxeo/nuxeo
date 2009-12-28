@@ -28,7 +28,7 @@
     <fileSet>
       <directory>src/main/resources_jcr</directory>
       <outputDirectory>/</outputDirectory>
-      <useDefaultExcludes>true</useDefaultExcludes>
+<!--      <useDefaultExcludes>true</useDefaultExcludes>-->
     </fileSet>
   </fileSets>
 </assembly>

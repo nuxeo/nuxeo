@@ -8,7 +8,7 @@
     <fileSet>
       <directory>src/main/resources_oracle</directory>
       <outputDirectory>/</outputDirectory>
-      <useDefaultExcludes>true</useDefaultExcludes>
+<!--      <useDefaultExcludes>true</useDefaultExcludes>-->
     </fileSet>
   </fileSets>
 </assembly>
