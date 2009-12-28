@@ -54,6 +54,7 @@
       </modules>
     </profile>
     <profile>
+      <!-- deprecated (NXP-4472) -->
       <id>nuxeo-ep-jboss</id>
       <modules>
         <module>nuxeo-platform-ear</module>
@@ -61,6 +62,7 @@
       </modules>
     </profile>
     <profile>
+      <!-- deprecated (NXP-4472) -->
       <id>nuxeo-dm-jboss</id>
       <modules>
         <module>nuxeo-platform-ear</module>
@@ -69,6 +71,7 @@
       </modules>
     </profile>
     <profile>
+      <!-- deprecated (NXP-4472) -->
       <id>nuxeo-ep-jetty</id>
       <modules>
         <module>nuxeo-platform-ear</module>
@@ -80,7 +83,29 @@
       </modules>
     </profile>
     <profile>
+      <!-- deprecated (NXP-4472) -->
       <id>nuxeo-dm-jetty</id>
+      <modules>
+        <module>nuxeo-platform-ear</module>
+        <module>nuxeo-distribution-dm</module>
+        <module>nuxeo-embedded-launcher</module>
+        <module>nuxeo-distribution-base</module>
+        <module>nuxeo-distribution-server</module>
+        <module>nuxeo-distribution-jetty</module>
+      </modules>
+    </profile>
+    <profile>
+      <!-- Build all JBoss distributions -->
+      <id>jboss</id>
+      <modules>
+        <module>nuxeo-platform-ear</module>
+        <module>nuxeo-distribution-dm</module>
+        <module>nuxeo-distribution-jboss</module>
+      </modules>
+    </profile>
+    <profile>
+      <!-- Build all Jetty distributions -->
+      <id>jetty</id>
       <modules>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>

@@ -16,6 +16,7 @@
 
   <profiles>
     <profile>
+      <!-- deprecated (NXP-4472) -->
       <id>nuxeo-dm-jboss</id>
       <activation>
         <activeByDefault>true</activeByDefault>
@@ -25,6 +26,7 @@
       </properties>
     </profile>
     <profile>
+      <!-- deprecated (NXP-4472) -->
       <id>nuxeo-ep-jboss</id>
       <properties>
         <distribution>nuxeo-ep</distribution>
