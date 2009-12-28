@@ -191,6 +191,8 @@ public final class ComponentUtils {
                 String contentDisposition = RFC2231.encodeContentDisposition(
                         filename, inline, userAgent);
                 response.setHeader("Content-Disposition", contentDisposition);
+                response.setHeader("Cache-Control", "no-cache");
+                response.setHeader("Pragma", "no-cache");
                 log.debug("Downloading with mime/type : " + blob.getMimeType());
                 response.setContentType(blob.getMimeType());
                 long fileSize = blob.getLength();
