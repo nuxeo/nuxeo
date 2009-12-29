@@ -87,7 +87,6 @@
   <properties>
     <jboss.version>4.0.4.GA</jboss.version>
     <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
-    <jboss.embedded.version>beta3</jboss.embedded.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
@@ -191,7 +190,7 @@
       <dependency>
         <groupId>javax.transaction</groupId>
         <artifactId>jta</artifactId>
-        <version>1.0.1B</version>
+        <version>1.1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -272,15 +271,15 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>commons-jexl</groupId>
-        <artifactId>commons-jexl</artifactId>
-        <version>1.1</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
         <version>1.3</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>commons-dbcp</groupId>
+        <artifactId>commons-dbcp</artifactId>
+        <version>1.3-RC1</version>
         <scope>provided</scope>
       </dependency>
 
@@ -288,13 +287,13 @@
       <dependency>
         <groupId>org.apache.derby</groupId>
         <artifactId>derby</artifactId>
-        <version>10.4.1.3</version>
+        <version>10.5.3.0_1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.derby</groupId>
         <artifactId>derbyclient</artifactId>
-        <version>10.4.1.3</version>
+        <version>10.5.3.0_1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -412,11 +411,13 @@
         <scope>provided</scope>
         <version>2.9.1</version>
       </dependency>
+      <!-- xercesImpl 2.9.1 uses xml-apis 1.3.04 -->
+      <!-- Other libraries use xml-apis 2.0.2 -->
       <dependency>
         <groupId>xml-apis</groupId>
         <artifactId>xml-apis</artifactId>
         <scope>provided</scope>
-        <version>1.0.b2</version>
+        <version>2.0.2</version>
       </dependency>
       <dependency>
         <groupId>jmimemagic</groupId>
@@ -593,22 +594,22 @@
         <artifactId>jboss-aspect-jdk50-client</artifactId>
         <version>1.5</version>
       </dependency>
-      <!-- JBoss Embedded -->
       <dependency>
-        <groupId>org.jboss.embedded</groupId>
-        <artifactId>jboss-embedded-all</artifactId>
-        <version>${jboss.embedded.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.embedded</groupId>
-        <artifactId>thirdparty-all</artifactId>
-        <version>${jboss.embedded.version}</version>
+        <groupId>org.jboss.client</groupId>
+        <artifactId>jbossall-client</artifactId>
+        <version>4.2.3.GA</version>
       </dependency>
 
       <!-- Jetty mortbay -->
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty</artifactId>
+        <version>${jetty.mortbay.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>servlet-api-2.5</artifactId>
         <version>${jetty.mortbay.version}</version>
         <scope>provided</scope>
       </dependency>
@@ -820,12 +821,6 @@
         <scope>provided</scope>
         <classifier>jdk15</classifier>
       </dependency>
-      <!-- was used by nuxeo-platform-syndication -->
-      <!--      <dependency>-->
-      <!--        <groupId>net.sf.json-lib</groupId>-->
-      <!--        <artifactId>json-lib</artifactId>-->
-      <!--        <version>0.9</version>-->
-      <!--      </dependency>-->
       <dependency>
         <groupId>net.sf.ezmorph</groupId>
         <artifactId>ezmorph</artifactId>
@@ -940,12 +935,6 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>xml-apis</groupId>
-        <artifactId>xml-apis</artifactId>
-        <scope>provided</scope>
-        <version>1.0.b2</version>
-      </dependency>
-      <dependency>
         <groupId>jsr170</groupId>
         <artifactId>jcr</artifactId>
         <version>1.0</version>
@@ -990,6 +979,24 @@
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>jaxrs-api</artifactId>
         <version>1.0.2.GA</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.components</groupId>
+        <artifactId>geronimo-connector</artifactId>
+        <version>2.1.3</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.components</groupId>
+        <artifactId>geronimo-transaction</artifactId>
+        <version>2.1.3</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-jta_1.1_spec</artifactId>
+        <version>1.1.1</version>
         <scope>provided</scope>
       </dependency>
 
@@ -1187,21 +1194,17 @@
         <version>2.0.10</version>
         <scope>provided</scope>
       </dependency>
+      <!-- org.jbpm.jbpm3:jbpm-jpdl:jar:3.3.0.GA uses ant 1.7.0 -->
       <dependency>
-        <groupId>ant</groupId>
+        <groupId>org.apache.ant</groupId>
         <artifactId>ant</artifactId>
-        <version>1.6.5</version>
+        <version>1.7.0</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jdt</groupId>
         <artifactId>core</artifactId>
         <version>3.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>backport-util-concurrent</groupId>
-        <artifactId>backport-util-concurrent</artifactId>
-        <version>3.1</version>
       </dependency>
       <dependency>
         <groupId>rhino</groupId>
@@ -1424,7 +1427,7 @@
           <excludes>
             <exclude>**/parser.java</exclude>
             <exclude>**/Base64.java</exclude>
-            <exclude>**/MockContext.java</exclude>
+            <exclude>**/NamingContext.java</exclude>
           </excludes>
           <rulesets>
             <ruleset>http://hg.nuxeo.org/nuxeo/raw-file/5.2/pmd.xml</ruleset>
@@ -1490,7 +1493,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-nuxeo-plugin</artifactId>
-          <version>1.0.13</version>
+          <version>1.0.14</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1525,7 +1528,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.4</version>
+          <version>2.5</version> <!-- 2.7 is buggy, cf MECLIPSE-576 -->
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -1563,7 +1566,7 @@
             <dependency>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-nuxeo-plugin</artifactId>
-              <version>1.0.10</version>
+              <version>1.0.14</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -1607,9 +1610,32 @@
           <artifactId>maven-source-plugin</artifactId>
           <version>2.0.2</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-idea-plugin</artifactId>
+          <version>2.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>xml-maven-plugin</artifactId>
+          <version>1.0-beta-3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <version>2.0.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.nuxeo.build</groupId>
+          <artifactId>nuxeo-distribution-tools</artifactId>
+          <version>0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.1</version>
+        </plugin>
       </plugins>
     </pluginManagement>
-    <!--finalName>${pom.artifactId}-${pom.version}-r${buildNumber}</finalName-->
   </build>
 
   <profiles>
@@ -1858,6 +1884,70 @@
         <snapshotRepository>
           <id>snapshots</id>
           <url>http://maven.in.nuxeo.com/snapshots</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+    <profile>
+      <id>qapriv</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <id>internal</id>
+          <url>http://mavenpriv.in.nuxeo.com/internal</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>internal-snapshots</id>
+          <url>http://mavenpriv.in.nuxeo.com/internal-snapshots</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>internal</id>
+          <url>http://mavenpriv.in.nuxeo.com/internal</url>
+          <name>Nuxeo virtual release repository</name>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>internal-snapshots</id>
+          <url>http://mavenpriv.in.nuxeo.com/internal-snapshots</url>
+          <name>Nuxeo virtual snapshot repository</name>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <updatePolicy>always</updatePolicy>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+      <distributionManagement>
+        <repository>
+          <id>releases</id>
+          <url>http://mavenpriv.in.nuxeo.com/releases</url>
+        </repository>
+        <snapshotRepository>
+          <id>snapshots</id>
+          <url>http://mavenpriv.in.nuxeo.com/snapshots</url>
         </snapshotRepository>
       </distributionManagement>
     </profile>
