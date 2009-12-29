@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Core Test
+Bundle-SymbolicName: org.nuxeo.emc.core.test;singleton:=true
+Bundle-Vendor: Nuxeo

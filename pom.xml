@@ -42,6 +42,7 @@
     <module>nuxeo-core-event-compat</module>
     <module>nuxeo-core-event-jms</module>
     <module>nuxeo-core-persistence</module>
+    <module>nuxeo-core-test</module>
   </modules>
 
   <profiles>
