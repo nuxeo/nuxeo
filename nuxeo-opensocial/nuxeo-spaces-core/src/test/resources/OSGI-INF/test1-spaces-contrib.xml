@@ -8,7 +8,7 @@
     <spaceContrib name="homeSpace">
       <order>0</order>
       <restrictToUniverse>main</restrictToUniverse>
-      <className>org.nuxeo.ecm.spaces.core.contribs.impl.SingleDocSpaceProvider</className>
+      <class>org.nuxeo.ecm.spaces.core.contribs.impl.SingleDocSpaceProvider</class>
       <param key="path">/home</param>
       <param key="title">Home</param>
     </spaceContrib>

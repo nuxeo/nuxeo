@@ -49,9 +49,8 @@ public class DashboardSpaceProvider extends SingleDocSpaceProvider {
 
 
         try {
-            getOrCreateParentUnivers(session);
-        DocumentModel space = getOrCreateSpace(session);
-        return space.getAdapter(Space.class);
+            DocumentModel space = getOrCreateSpace(session);
+            return space.getAdapter(Space.class);
         } catch (ClientException e) {
             log.error("Unable to create or get personal dashboard",e);
             return null;
@@ -61,7 +60,13 @@ public class DashboardSpaceProvider extends SingleDocSpaceProvider {
 
     }
 
-    protected DocumentModel getUserPersonalWorkspace(CoreSession session) {
+    public static String getSpaceId(CoreSession session) throws ClientException {
+        DocumentModel doc = getOrCreateSpace(session);
+        return doc.getId();
+    }
+
+    protected static DocumentModel getUserPersonalWorkspace(CoreSession session) {
+
         try {
             UserWorkspaceService svc = Framework
                     .getService(UserWorkspaceService.class);
@@ -82,7 +87,7 @@ public class DashboardSpaceProvider extends SingleDocSpaceProvider {
      * @param session
      * @return
      */
-    protected DocumentModel getOrCreateParentUnivers(CoreSession session)
+    protected static DocumentModel getOrCreateParentUnivers(CoreSession session)
             throws ClientException {
         DocumentModel pw = getUserPersonalWorkspace(session);
         if(pw == null) {
@@ -110,14 +115,10 @@ public class DashboardSpaceProvider extends SingleDocSpaceProvider {
         return universeDoc;
     }
 
-    protected DocumentModel getOrCreateSpace(CoreSession session)
+    protected static DocumentModel getOrCreateSpace(CoreSession session)
             throws ClientException {
-        DocumentModel pw = getUserPersonalWorkspace(session);
-        if(pw == null) {
-            throw new ClientException("Unable to get personal workspace");
-        }
-        PathRef spaceRef = new PathRef(pw.getPathAsString()
-                + "/" + DASHBOARD_UNIVERSE_NAME + "/" + DASHBOARD_SPACE_NAME);
+        DocumentModel parentUnivers = getOrCreateParentUnivers(session);
+        PathRef spaceRef = new PathRef(parentUnivers.getPathAsString() + "/" + DASHBOARD_SPACE_NAME);
 
         if (session.exists(spaceRef)) {
             return session.getDocument(spaceRef);
@@ -139,7 +140,7 @@ public class DashboardSpaceProvider extends SingleDocSpaceProvider {
 
     }
 
-    protected void createInitialGadgets(CoreSession session,
+    protected static void createInitialGadgets(CoreSession session,
             DocumentModel spaceDocument) throws ClientException {
 
         LocaleSelector localeSelector = (LocaleSelector) Component
@@ -192,7 +193,7 @@ public class DashboardSpaceProvider extends SingleDocSpaceProvider {
 
     }
 
-    protected Gadget createGadgetForInitialDashboard(CoreSession session,
+    protected static Gadget createGadgetForInitialDashboard(CoreSession session,
             Space parent, String name, String title, String placeId,
             Integer position) throws ClientException {
 

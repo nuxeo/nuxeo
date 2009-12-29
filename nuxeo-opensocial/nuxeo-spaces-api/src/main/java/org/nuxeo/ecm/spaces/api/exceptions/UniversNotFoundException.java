@@ -17,8 +17,10 @@
 
 package org.nuxeo.ecm.spaces.api.exceptions;
 
+import org.nuxeo.ecm.core.api.ClientException;
 
-public class UniversNotFoundException extends Exception {
+
+public class UniversNotFoundException extends ClientException {
 
   /**
    *

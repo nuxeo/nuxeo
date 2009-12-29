@@ -17,7 +17,11 @@
 
 package org.nuxeo.ecm.spaces.core.impl.contribs;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.spaces.core.impl.UniversProvider;
 
@@ -33,15 +37,8 @@ public class UniversContribDescriptor {
     @XNode("class")
     private Class<? extends UniversProvider> klass;
 
-    @XNode("order")
-    private String order;
-
-    @XNode("needSession")
-    private boolean needSession;
-
-    public boolean getNeedSession() {
-        return needSession;
-    }
+    @XNodeMap(value = "param", key="@key", type = HashMap.class, componentType = String.class)
+    protected Map<String, String> params;
 
     private UniversProvider provider;
 
@@ -61,18 +58,16 @@ public class UniversContribDescriptor {
         this.remove = remove;
     }
 
-    public String getOrder() {
-        return order;
-    }
-
-    public void setOrder(String order) {
-        this.order = order;
-    }
 
     public UniversProvider getProvider() throws InstantiationException,
             IllegalAccessException {
         if (provider == null) {
             provider = klass.newInstance();
+            try {
+                provider.initialize(params);
+            } catch (Exception e) {
+                throw new InstantiationException();
+            }
         }
         return provider;
     }

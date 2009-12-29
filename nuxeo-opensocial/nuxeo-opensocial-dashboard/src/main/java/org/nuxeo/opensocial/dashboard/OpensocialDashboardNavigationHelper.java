@@ -71,18 +71,8 @@ public class OpensocialDashboardNavigationHelper implements
 
     @Factory(value = "personalDashboardContainerIdRef", scope = ScopeType.SESSION)
     public String getPersonalDashboardContainerIdRef() {
-        SpaceManager spaceManager;
         try {
-            spaceManager = Framework.getService(SpaceManager.class);
-            if (spaceManager == null) {
-                log.warn("unable to find space manager!");
-            } else {
-
-
-                return spaceManager.getSpace(
-                        DashboardSpaceProvider.DASHBOARD_SPACE_NAME,
-                        documentManager).getId();
-            }
+            return DashboardSpaceProvider.getSpaceId(documentManager);
         } catch (SpaceException e) {
             log.error("Unable to access space correctly for our dashboard!", e);
         } catch (Exception e) {

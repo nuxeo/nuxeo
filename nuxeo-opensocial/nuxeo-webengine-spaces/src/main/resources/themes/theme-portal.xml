@@ -46,7 +46,7 @@
     <defaultSrc>Space/gadgetManager.ftl</defaultSrc>
   </properties>
   <properties element="page[1]/section[4]/cell[1]/fragment[2]">
-    <name>gadgetManager</name>
+    <name>layoutManager</name>
     <defaultBody/>
     <defaultSrc>Space/layoutManager.ftl</defaultSrc>
   </properties>

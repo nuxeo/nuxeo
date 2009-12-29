@@ -19,9 +19,11 @@ package org.nuxeo.opensocial.spaces.webobject;
 
 import java.util.List;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,6 +31,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
 import org.nuxeo.ecm.spaces.api.Univers;
+import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -67,6 +70,22 @@ public class UniversWebObject extends DefaultObject {
         return spaces;
     }
 
+    @GET
+    public Object doGet() {
+        List<Space> spaces;
+        try {
+            spaces = getSpaces();
+            if (spaces.size() > 0) {
+                return newObject("Space", spaces.get(0));
+            } else {
+                return Response.status(404).build();
+            }
+        } catch (Exception e) {
+            return Response.status(404).build();
+        }
+
+    }
+
     public Univers getUnivers() {
         return univers;
     }
@@ -93,11 +112,15 @@ public class UniversWebObject extends DefaultObject {
             SpaceManager spaceManager = Framework
                     .getService(SpaceManager.class);
 
-            Space mySpace = spaceManager.getSpace(spacename, coreSession);
+            Space space = spaceManager.getSpace(spacename, this.univers, coreSession);
+            if(space == null) {
+                return Response.status(404).build();
+            }
+            return newObject("Space",space);
 
-            return newObject("Space", mySpace);
-
-        } catch (Exception e) {
+        } catch (SpaceNotFoundException e) {
+            return Response.status(404).build();
+        } catch(Exception e) {
             throw WebException.wrap(e);
         }
     }

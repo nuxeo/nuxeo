@@ -4,10 +4,6 @@ import org.nuxeo.ecm.spaces.api.Univers;
 
 public class VirtualUnivers implements Univers {
 
-    /**
-     *
-     */
-    private static final String id = "4231218851217426210";
     private final String name;
 
     public VirtualUnivers(String name) {
@@ -16,12 +12,11 @@ public class VirtualUnivers implements Univers {
     }
 
     public String getDescription() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.getName();
     }
 
     public String getId() {
-        return id;
+        return "virtual-" + this.getName();
     }
 
     public String getName() {

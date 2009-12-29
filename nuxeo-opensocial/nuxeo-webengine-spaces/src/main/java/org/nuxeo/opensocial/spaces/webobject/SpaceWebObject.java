@@ -17,14 +17,13 @@
 
 package org.nuxeo.opensocial.spaces.webobject;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.Univers;
-import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -47,6 +46,11 @@ public class SpaceWebObject extends DefaultObject {
 
   public Space getSpace() {
     return space;
+  }
+
+  @GET
+  public Object doGet() {
+      return getView("index");
   }
 
   public Univers getUnivers() {
@@ -82,10 +86,6 @@ public class SpaceWebObject extends DefaultObject {
     LOGGER.debug("Space has been set");
   }
 
-  private CoreSession getSession() {
-    return WebEngine.getActiveContext()
-        .getCoreSession();
-  }
 
 
 

@@ -62,16 +62,6 @@ public interface SpaceManager {
    Univers getUniversFromId(String universId, CoreSession session)
     throws SpaceException;
 
-  /**
-   * Update of a space
-   * @param newSpace new space data object
-   * @return true if update operation has been successfull , else a SpaceException should have happened
-   * @throws SpaceNotFoundException when no space was found with the given space id
-   */
-   Space updateSpace( Space newSpace)
-      throws SpaceException;
-
-
    List<SpaceProvider> getSpacesProvider(Univers univers);
 
   /**
@@ -94,7 +84,9 @@ public interface SpaceManager {
    Space getSpace(String name, SpaceProvider provider, CoreSession session)
       throws SpaceException;
 
-   Space getSpace(String spaceId, CoreSession session) throws SpaceException;
+   Space getSpace(String name, Univers univers, CoreSession session) throws SpaceException;
+
+   Space getSpaceFromId(String spaceId, CoreSession session) throws SpaceException;
 
 
 

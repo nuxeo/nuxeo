@@ -91,7 +91,7 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
     private synchronized void manageSpaceDescriptor(
             SpaceContribDescriptor descriptor) {
 
-        spaceProvider.add(descriptor.getOrder(), descriptor);
+        spaceProvider.add(descriptor);
         Collections.sort(spaceProvider);
 
     }
@@ -104,7 +104,7 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
 
         for (UniversContribDescriptor descriptor : universProvider) {
             try {
-                list.addAll(descriptor.getProvider().values());
+                list.addAll(descriptor.getProvider().getAll(session));
             } catch (Exception e) {
                 LOGGER.debug(e.getMessage(), e);
             }
@@ -120,23 +120,22 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
      *             , SpaceException
      */
     public Univers getUnivers(String name, CoreSession coreSession)
-            throws SpaceException {
+            throws UniversNotFoundException {
 
         for (UniversContribDescriptor descriptor : universProvider) {
 
             UniversProvider provider;
             try {
                 provider = descriptor.getProvider();
-
-                if (provider.containsKey(name)) {
-                    return provider.get(name);
-                }
+                return provider.getUnivers(name, coreSession);
+            } catch (UniversNotFoundException e) {
+                //Do nothing
             } catch (Exception e) {
                 LOGGER.error("Unable to get the provider for : "
                         + descriptor.getName());
             }
         }
-        throw new SpaceException("No Univers with name : '" + name
+        throw new UniversNotFoundException("No Univers with name : '" + name
                 + "' was found");
 
     }
@@ -161,7 +160,7 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
         return list;
     }
 
-    public Space getSpace(String spaceId, CoreSession session) throws SpaceException {
+    public Space getSpaceFromId(String spaceId, CoreSession session) throws SpaceException {
         DocumentRef spaceRef = new IdRef(spaceId);
         try {
             if(session.exists(spaceRef)) {
@@ -204,13 +203,29 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
 
 
     public Univers getUniversFromId(String universId, CoreSession session) throws SpaceException {
-        // TODO Auto-generated method stub
-        return null;
+        DocumentRef spaceRef = new IdRef(universId);
+        try {
+            if(session.exists(spaceRef)) {
+                return session.getDocument(spaceRef).getAdapter(Univers.class);
+            } else {
+                throw new SpaceNotFoundException();
+            }
+        } catch (ClientException e) {
+            throw new SpaceNotFoundException();
+        }
     }
 
-    public Space updateSpace(Space newSpace) throws SpaceException {
-        // TODO Auto-generated method stub
-        return null;
+    public Space getSpace(String name, Univers univers, CoreSession session)
+            throws SpaceException {
+
+        for(SpaceProvider provider : getSpacesProvider(univers)) {
+            try {
+                return provider.getSpace(name, session);
+            } catch (SpaceNotFoundException e) {
+                continue;
+            }
+        }
+        throw new SpaceNotFoundException();
     }
 
 }

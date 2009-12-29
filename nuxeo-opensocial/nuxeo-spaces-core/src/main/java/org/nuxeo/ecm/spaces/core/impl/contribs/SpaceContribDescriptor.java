@@ -36,7 +36,7 @@ public class SpaceContribDescriptor implements
     @XNode("@remove")
     private boolean remove;
 
-    @XNode("className")
+    @XNode("class")
     private Class<? extends SpaceProvider> klass;
 
     @XNode("order")

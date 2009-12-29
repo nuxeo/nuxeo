@@ -67,17 +67,8 @@ public class Dashboard implements Serializable {
     protected DocumentModel lastAccessedDocument;
 
     public String getPersonalDashboardId() {
-        SpaceManager spaceManager;
         try {
-            spaceManager = Framework.getService(SpaceManager.class);
-            if (spaceManager == null) {
-                log.warn("unable to find space manager!");
-            } else {
-                Space dashSpace = spaceManager.getSpace(
-                        DashboardSpaceProvider.DASHBOARD_SPACE_NAME,
-                        documentManager);
-                return dashSpace.getId();
-            }
+            return DashboardSpaceProvider.getSpaceId(documentManager);
         } catch (SpaceException e) {
             log.error("Unable to access space correctly for our dashboard!", e);
         } catch (Exception e) {

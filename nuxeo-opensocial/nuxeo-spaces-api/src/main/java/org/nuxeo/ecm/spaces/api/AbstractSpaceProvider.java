@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
+import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
 
 abstract public class AbstractSpaceProvider implements SpaceProvider {
 
@@ -23,6 +24,17 @@ abstract public class AbstractSpaceProvider implements SpaceProvider {
 
     }
 
+    final public Space getSpace(String spaceName, CoreSession session) throws SpaceException{
+        Space result = doGetSpace(spaceName, session);
+        if(result == null) {
+            throw new SpaceNotFoundException();
+        } else {
+            return result;
+        }
+    }
+
+
+    abstract protected Space doGetSpace(String spaceName, CoreSession session) throws SpaceException;
 
     public void initialize(Map<String,String> params) throws Exception {
 

@@ -53,7 +53,7 @@ public class GadgetManagerImpl implements GadgetManager {
         try {
             String spaceId = getParamValue(ContainerManagerImpl.DOC_REF,
                     gwtParams, true, null);
-            Space space = spaceManager().getSpace(spaceId, getCoreSession(gwtParams));
+            Space space = spaceManager().getSpaceFromId(spaceId, getCoreSession(gwtParams));
             space.remove(new GadgetMapper(gadget));
         } catch (Exception e) {
             log.error(e);
@@ -74,7 +74,7 @@ public class GadgetManagerImpl implements GadgetManager {
         try {
             String spaceId = getParamValue(ContainerManagerImpl.DOC_REF,
                     gwtParams, true, null);
-            Space space = spaceManager().getSpace(spaceId, getCoreSession(gwtParams));
+            Space space = spaceManager().getSpaceFromId(spaceId, getCoreSession(gwtParams));
 
             GadgetMapper gadgetMapper = new GadgetMapper(gadget);
             space.save(gadgetMapper);
@@ -116,7 +116,7 @@ public class GadgetManagerImpl implements GadgetManager {
 
         String spaceId = getParamValue(ContainerManagerImpl.DOC_REF,
                 gwtParams, true, null);
-        return spaceManager().getSpace(spaceId, session);
+        return spaceManager().getSpaceFromId(spaceId, session);
 
     }
 

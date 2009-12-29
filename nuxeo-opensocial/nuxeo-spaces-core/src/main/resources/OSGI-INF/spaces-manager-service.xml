@@ -10,7 +10,6 @@
     <documentation>
       Univers provider contribution
       <universContrib name="someName">
-        <order>index of univers insertion ( java convention  so 0 for first , must be combined with 'require' component mecanism ) </order>
         <className>class name of the contribution - must implements
           UniversProvider</className>
       </universContrib>

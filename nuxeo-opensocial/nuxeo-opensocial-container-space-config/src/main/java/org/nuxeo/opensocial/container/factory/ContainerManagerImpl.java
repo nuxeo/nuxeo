@@ -60,7 +60,7 @@ public class ContainerManagerImpl implements ContainerManager {
             throws ClientException {
         try {
             String spaceId = getParamValue(DOC_REF, containerParams, true, null);
-            Space space = spaceManager().getSpace(spaceId, getCoreSession(containerParams));
+            Space space = spaceManager().getSpaceFromId(spaceId, getCoreSession(containerParams));
             return createContainer(space);
         } catch (Exception e) {
             throw new ClientException("Space not found");
@@ -124,7 +124,7 @@ public class ContainerManagerImpl implements ContainerManager {
         String spaceId = getParamValue(DOC_REF, gwtParams, true, null);
         Space space;
         try {
-            space = spaceManager().getSpace(spaceId, getCoreSession(gwtParams));
+            space = spaceManager().getSpaceFromId(spaceId, getCoreSession(gwtParams));
         } catch (Exception e) {
             throw new ClientException("Space not found");
         }
@@ -161,7 +161,7 @@ public class ContainerManagerImpl implements ContainerManager {
         String spaceId = getParamValue(DOC_REF, containerParams, true, null);
         Space space;
         try {
-            space = spaceManager().getSpace(spaceId, getCoreSession(containerParams));
+            space = spaceManager().getSpaceFromId(spaceId, getCoreSession(containerParams));
 
         } catch (Exception e) {
             throw new ClientException("Space not found");
