@@ -21,6 +21,7 @@
     <module>nuxeo-webengine-resteasy-adapter</module>
     <module>nuxeo-webengine-core</module>
     <module>nuxeo-webengine-ui</module>
+    <module>nuxeo-webengine-test</module>
     <module>nuxeo-theme-webengine</module>
   </modules>
 
@@ -51,6 +52,11 @@
         <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-test</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-core</artifactId>
         <version>${nuxeo.webengine.version}</version>
@@ -63,6 +69,21 @@
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-resteasy-adapter</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-admin</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-base</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-theme-webengine</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
       <dependency>
@@ -89,6 +110,12 @@
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-launcher</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-test</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
 
