@@ -71,6 +71,7 @@
     <module>nuxeo-platform-forms-layout-api</module>
     <module>nuxeo-platform-rendering</module>
     <module>nuxeo-shell-core</module>
+    <module>nuxeo-platform-test</module>
   </modules>
 
   <dependencyManagement>
@@ -795,6 +796,12 @@
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-test</artifactId>
         <version>${nuxeo.runtime.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-test</artifactId>
+        <version>${nuxeo.core.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
