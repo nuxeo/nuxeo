@@ -116,11 +116,15 @@ public final class ServiceManager implements org.nuxeo.runtime.ServiceManager {
                     return svc;
                 }
             } catch (NameNotFoundException e) {
-                if (J2EEContainerDescriptor.getSelected()==null || !J2EEContainerDescriptor.getSelected().preferLocalBindings) {
+                // When all facades are deployed (JBoss for now), then lookup
+                // errors are legitimate. Otherwise it may be just a bad
+                // packaging issue, so don't log. TODO fix packaging
+                if (J2EEContainerDescriptor.getSelected() == J2EEContainerDescriptor.JBOSS) {
                     log.warn("Existing binding but unreachable service for "
                             + serviceClass.getName()
                             + " ! Fallback on local service...");
-                    log.debug(e.getMessage()+" Check binding declaration: " + sd.toString());
+                    log.debug(e.getMessage() + " Check binding declaration: "
+                            + sd.toString());
                 }
             }
         }

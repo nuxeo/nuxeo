@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -29,9 +30,11 @@
     <module>nuxeo-runtime-test</module>
     <module>nuxeo-runtime-jetty-adapter</module>
     <module>nuxeo-runtime-gf3-adapter</module>
-    <module>nuxeo-runtime-tomcat-adapter</module>    
+    <module>nuxeo-runtime-tomcat-adapter</module>
     <module>nuxeo-runtime-scripting</module>
     <module>nuxeo-runtime-management</module>
+    <module>nuxeo-runtime-jtajca</module>
+    <module>nuxeo-runtime-datasource</module>
   </modules>
 
   <dependencyManagement>
@@ -92,6 +95,16 @@
         <artifactId>nuxeo-runtime-management</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-jtajca</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-datasource</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
 
       <!-- scope provided -->
       <dependency>
@@ -99,14 +112,6 @@
         <artifactId>osgi-core</artifactId>
         <version>4.1</version>
         <scope>provided</scope>
-      </dependency>
-
-      <!-- scope test -->
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-test</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

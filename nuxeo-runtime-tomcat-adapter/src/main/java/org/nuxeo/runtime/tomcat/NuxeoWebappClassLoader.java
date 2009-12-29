@@ -30,24 +30,24 @@ import org.nuxeo.osgi.application.MutableClassLoader;
  */
 public class NuxeoWebappClassLoader extends WebappClassLoader implements MutableClassLoader {
 
-    
+
     public NuxeoWebappClassLoader() {
     }
 
     public NuxeoWebappClassLoader(ClassLoader parent) {
         super(parent);
     }
-    
+
     @Override
     public void addURL(URL url) {
         super.addURL(url);
     }
-    
+
     @Override
     public void setParentClassLoader(ClassLoader pcl) {
         super.setParentClassLoader(pcl);
     }
-    
+
     public ClassLoader getParentClassLoader() {
         return parent;
     }
@@ -55,4 +55,13 @@ public class NuxeoWebappClassLoader extends WebappClassLoader implements Mutable
     public ClassLoader getClassLoader() {
         return this;
     }
+
+    @Override
+    // synchronized to avoid some race conditions
+    // see https://issues.apache.org/bugzilla/show_bug.cgi?id=44041
+    public synchronized Class<?> loadClass(String name, boolean resolve)
+            throws ClassNotFoundException {
+        return super.loadClass(name, resolve);
+    }
+
 }

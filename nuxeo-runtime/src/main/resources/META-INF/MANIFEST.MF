@@ -28,6 +28,7 @@ Export-Package: org.nuxeo.runtime,
  org.nuxeo.runtime.services.event,
  org.nuxeo.runtime.services.streaming,
  org.nuxeo.runtime.streaming,
+ org.nuxeo.runtime.transaction,
  org.nuxeo.runtime.util
 Bundle-ClassPath: .
 Require-Bundle: commons-jexl.commons-jexl,

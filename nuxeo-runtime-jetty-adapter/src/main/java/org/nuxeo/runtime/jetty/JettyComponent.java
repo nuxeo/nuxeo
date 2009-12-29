@@ -142,29 +142,7 @@ public class JettyComponent extends DefaultComponent implements FrameworkListene
         if (scanWebDir != null && scanWebDir.equals("true")) {
             logger.info("Scanning for WARs in web directory");
             File web = Environment.getDefault().getWeb();
-            File[] roots = web.listFiles();
-            if (roots != null) {
-                for (File root : roots) {
-                    String name = root.getName();
-                    if (name.endsWith(".war")) {
-                        logger.info("Found war: "+name);
-                        name = name.substring(0, name.length()-4);
-                        boolean isRoot = "root".equals(name);
-                        String ctxPath = isRoot ? "/" : "/"+name;
-                        WebAppContext ctx = new WebAppContext(root.getAbsolutePath(), ctxPath);
-                        //                    File defWebXml = new File(Environment.getDefault().getConfig(), "default-web.xml");
-                        //                    if (defWebXml.isFile()) {
-                        //                      ctx.setDefaultsDescriptor(defWebXml.getAbsolutePath());
-                        //                    }
-                        ctx.setConfigurations(new Configuration[] {new WebInfConfiguration(), new WebXmlConfiguration()});
-                        if (isRoot) {
-                            server.addHandler(ctx);
-                        } else {
-                            warContexts.addHandler(ctx);
-                        }
-                    }
-                }
-            }
+            scanForWars(web);
         }
         // start the server
         //server.start(); -> server will be start after frameworks starts to be asure all services used by web.xml filters are registered.
@@ -255,6 +233,35 @@ public class JettyComponent extends DefaultComponent implements FrameworkListene
                     server.start();
                 } catch (Exception e) {
                     logger.error("Failed to start Jetty server", e);
+                }
+            }
+        }
+    }
+
+
+    private void scanForWars(File dir) {
+        scanForWars(dir, "");
+    }
+
+    private void scanForWars(File dir, String basePath) {
+        File[] roots = dir.listFiles();
+        if (roots != null) {
+            for (File root : roots) {
+                String name = root.getName();
+                if (name.endsWith(".war")) {
+                    logger.info("Found war: "+name);
+                    name = name.substring(0, name.length()-4);
+                    boolean isRoot = "root".equals(name);
+                    String ctxPath = isRoot ? "/" : basePath+"/"+name;
+                    WebAppContext ctx = new WebAppContext(root.getAbsolutePath(), ctxPath);
+                    ctx.setConfigurations(new Configuration[] {new WebInfConfiguration(), new WebXmlConfiguration()});
+                    if (isRoot) {
+                        server.addHandler(ctx);
+                    } else {
+                        warContexts.addHandler(ctx);
+                    }
+                } else if (root.isDirectory()) {
+                    scanForWars(root, basePath+"/"+name);
                 }
             }
         }

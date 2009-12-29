@@ -32,49 +32,48 @@ import org.nuxeo.osgi.application.MutableClassLoader;
  */
 public class NuxeoLauncher implements LifecycleListener {
 
-    protected boolean shared; //TODO
+    protected boolean shared; // TODO
+
     protected String home = "nxserver";
-    
+
     protected FrameworkBootstrap bootstrap;
-    
-    
+
     public void setShared(boolean shared) {
         this.shared = shared;
     }
-    
+
     public boolean isShared() {
         return shared;
     }
-    
+
     public void setHome(String home) {
         this.home = home;
     }
-    
+
     public String getHome() {
         return home;
     }
-    
-    
-    
+
     public void lifecycleEvent(LifecycleEvent event) {
         Lifecycle lf = event.getLifecycle();
         if (lf instanceof ContainerBase) {
-            Loader loader = ((ContainerBase)lf).getLoader();
+            Loader loader = ((ContainerBase) lf).getLoader();
             if (loader instanceof NuxeoWebappLoader) {
-                handleEvent((NuxeoWebappLoader)loader, event);
+                handleEvent((NuxeoWebappLoader) loader, event);
             }
         }
     }
-    
+
     protected void handleEvent(NuxeoWebappLoader loader, LifecycleEvent event) {
         try {
             String type = event.getType();
             if (type == Lifecycle.START_EVENT) {
-                File homeDir = resolveHomeDirectory(loader); 
-                bootstrap = new FrameworkBootstrap((MutableClassLoader)(loader.getClassLoader()), homeDir);
+                File homeDir = resolveHomeDirectory(loader);
+                bootstrap = new FrameworkBootstrap(
+                        (MutableClassLoader) (loader.getClassLoader()), homeDir);
                 bootstrap.setHostName("Tomcat");
                 bootstrap.setHostVersion("6.0.20");
-                bootstrap.initialize();                
+                bootstrap.initialize();
             } else if (type == Lifecycle.AFTER_START_EVENT) {
                 bootstrap.start();
             } else if (type == Lifecycle.STOP_EVENT) {
@@ -86,13 +85,15 @@ public class NuxeoLauncher implements LifecycleListener {
         }
     }
 
-    
     protected File resolveHomeDirectory(NuxeoWebappLoader loader) {
         String path = null;
-        if (home.startsWith("/")) {
+        if (home.startsWith("/") || home.startsWith("\\")
+                || home.contains(":/") || home.contains(":\\")) {
+            // absolute
             path = home;
         } else if (home.startsWith("${catalina.base}")) {
-            path = getTomcatHome()+home.substring("${catalina.base}".length());
+            path = getTomcatHome()
+                    + home.substring("${catalina.base}".length());
         } else {
             try {
                 File baseDir = loader.getBaseDir();
@@ -103,7 +104,6 @@ public class NuxeoLauncher implements LifecycleListener {
         }
         return new File(path);
     }
-
 
     public String getTomcatHome() {
         String tomcatHome = System.getProperty("catalina.base");
