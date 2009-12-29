@@ -20,7 +20,7 @@ import org.junit.runner.Description;
 
 public class Settings {
 
-    private final Description description;
+    protected final Description description;
 
     public Settings(Description description) {
         this.description = description;

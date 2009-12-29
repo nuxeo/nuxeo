@@ -22,7 +22,7 @@ public class RuntimeModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(RuntimeHarness.class).toProvider(RTHarnessProvider.class);
+        bind(RuntimeHarness.class).toProvider(RuntimeHarnessProvider.class);
     }
 
 }

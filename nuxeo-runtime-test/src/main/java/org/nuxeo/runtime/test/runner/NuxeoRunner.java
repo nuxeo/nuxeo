@@ -125,7 +125,7 @@ public class NuxeoRunner extends BlockJUnit4ClassRunner {
 
     /**
      * Gets the harness used by the Nuxeo Runner (only used by the
-     * {@link RTHarnessProvider})
+     * {@link RuntimeHarnessProvider})
      */
     protected static RuntimeHarness getRuntimeHarness() throws Exception {
         return harness;
@@ -158,13 +158,13 @@ public class NuxeoRunner extends BlockJUnit4ClassRunner {
     /**
      * Runs once before the Nuxeo tests of this runner.
      */
-    public void beforeRun() {
+    protected void beforeRun() {
     }
 
     /**
      * Runs once after the Nuxeo tests of this runner.
      */
-    public void afterRun() {
+    protected void afterRun() {
     }
 
 }

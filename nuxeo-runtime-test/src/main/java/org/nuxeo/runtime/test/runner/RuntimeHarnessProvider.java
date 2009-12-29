@@ -21,9 +21,9 @@ import org.apache.commons.logging.LogFactory;
 
 import com.google.inject.Provider;
 
-public class RTHarnessProvider implements Provider<RuntimeHarness> {
+public class RuntimeHarnessProvider implements Provider<RuntimeHarness> {
 
-    private static final Log log = LogFactory.getLog(RTHarnessProvider.class);
+    private static final Log log = LogFactory.getLog(RuntimeHarnessProvider.class);
 
     public RuntimeHarness get() {
         try {
