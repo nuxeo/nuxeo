@@ -18,13 +18,14 @@
 package org.nuxeo.ecm.spaces.api;
 
 import java.net.URL;
+import java.util.Calendar;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 
 
 
-public interface Space {
+public interface Space extends Comparable<Space>{
 
     /**
      * Unique identifier of a space instance
@@ -116,5 +117,7 @@ public interface Space {
     void save() throws ClientException;
 
     Space copyFrom(Space space) throws ClientException;
+
+    Calendar getPublicationDate() throws ClientException;
 
 }

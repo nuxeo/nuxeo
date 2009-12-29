@@ -20,6 +20,7 @@ package org.nuxeo.ecm.spaces.core.impl.docwrapper;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -259,12 +260,19 @@ public class DocSpaceImpl implements Space {
 
     }
 
-    // public boolean isCurrentVersion() {
-    // List<Space> spaces = getVersions();
-    // if (spaces != null
-    // && getVersions().get(0).getDatePublication().equals(
-    // this.getDatePublication()))
-    // return true;
-    // return false;
-    // }
+    public Calendar getPublicationDate() throws ClientException {
+        return (Calendar) doc.getPropertyValue("dc:valid");
+    }
+
+    public int compareTo(Space o) {
+        try {
+            Calendar dte1 = getPublicationDate();
+            Calendar dte2 = o.getPublicationDate();
+            return dte1.compareTo(dte2);
+        } catch (ClientException e) {
+            return 0;
+        }
+
+    }
+
 }
