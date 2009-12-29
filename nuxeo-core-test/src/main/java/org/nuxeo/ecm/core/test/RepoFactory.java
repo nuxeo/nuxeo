@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,8 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- * $Id$
+ *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
 package org.nuxeo.ecm.core.test;
 
@@ -21,14 +20,16 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * Implements this class to provide factory for the
- * @RepositoryFactory annotation in tests.
- *
- * @author dmetzler
- *
+ * Implement this class to provide a factory for the @{@link RepositoryFactory}
+ * annotation in tests.
  */
 public interface RepoFactory {
 
-    void createRepo(CoreSession session) throws ClientException;
+    /**
+     * Creates the default objects in an empty repository.
+     *
+     * @param session the session to use to create objects
+     */
+    public void createRepo(CoreSession session) throws ClientException;
 
 }

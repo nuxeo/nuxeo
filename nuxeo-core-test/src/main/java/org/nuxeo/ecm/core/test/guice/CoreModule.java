@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,8 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- * $Id$
+ *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
 package org.nuxeo.ecm.core.test.guice;
 
@@ -25,13 +24,19 @@ import org.nuxeo.ecm.core.test.RepoType;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 
-
+/**
+ * This Guice module does the necessary bindings for Nuxeo Core tests.
+ */
 public class CoreModule extends AbstractModule {
 
+    @Override
     public void configure() {
-        bind(RepoType.class).toProvider((NuxeoCoreRunner)NuxeoCoreRunner.getInstance());
-        bind(SchemaManager.class).toProvider(SchemaManagerProvider.class).in(Scopes.SINGLETON);
-        bind(CoreSession.class).toProvider(CoreSessionProvider.class).in(Scopes.SINGLETON);
+        bind(RepoType.class).toProvider(
+                (NuxeoCoreRunner) NuxeoCoreRunner.getInstance());
+        bind(SchemaManager.class).toProvider(SchemaManagerProvider.class).in(
+                Scopes.SINGLETON);
+        bind(CoreSession.class).toProvider(CoreSessionProvider.class).in(
+                Scopes.SINGLETON);
 
     }
 

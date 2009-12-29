@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,8 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- * $Id$
+ *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
 package org.nuxeo.ecm.core.test;
 
@@ -29,40 +28,39 @@ import org.junit.runners.Suite.SuiteClasses;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.RunnerBuilder;
 import org.nuxeo.ecm.core.test.annotations.Repos;
-import org.nuxeo.runtime.test.runner.NuxeoRunner;
 
 /**
- * jUnit4.5 ParentRunner that knows how to run a test class on multiple
- * repository types
- *
+ * JUnit4 ParentRunner that knows how to run a test class on multiple repository
+ * types.
+ * <p>
  * To use it :
  *
- * <code>
- * @RunWith(MultiNuxeoCoreRunner.class)
- * @SuiteClasses({SimpleSession.class})
- * @Repos({RepoType.H2, RepoType.JCR, RepoType.POSTGRES})
+ * <pre>
+ * &#064;RunWith(MultiNuxeoCoreRunner.class)
+ * &#064;SuiteClasses(SimpleSession.class)
+ * &#064;Repos( { RepoType.H2, RepoType.JCR, RepoType.POSTGRES })
  * public class NuxeoSuiteTest {
  * }
- * </code>
+ * </pre>
  *
  * With SimpleSession.class being a class to be run with NuxeoCoreRunner
- * @author dmetzler
- *
  */
 @Repos
 public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoCoreRunner> {
 
     private List<NuxeoCoreRunner> fRunners = new ArrayList<NuxeoCoreRunner>();
+
     private RepoType[] repos;
 
     public MultiNuxeoCoreRunner(Class<?> testClass, RunnerBuilder builder)
             throws InitializationError {
-        this(builder, testClass, getAnnotatedClasses(testClass), getRepoTypes(testClass));
+        this(builder, testClass, getAnnotatedClasses(testClass),
+                getRepoTypes(testClass));
     }
 
     private static RepoType[] getRepoTypes(Class<?> testClass) {
         Repos annotation = testClass.getAnnotation(Repos.class);
-        if(annotation == null) {
+        if (annotation == null) {
             return MultiNuxeoCoreRunner.class.getAnnotation(Repos.class).value();
         } else {
             return annotation.value();
@@ -70,25 +68,34 @@ public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoCoreRunner> {
     }
 
     public MultiNuxeoCoreRunner(RunnerBuilder builder, Class<?> testClass,
-            Class<?>[] classes, RepoType[] repoTypes) throws InitializationError {
+            Class<?>[] classes, RepoType[] repoTypes)
+            throws InitializationError {
         this(null, builder.runners(null, classes), repoTypes);
     }
 
-    protected MultiNuxeoCoreRunner(Class<?> klass, List<Runner> runners, RepoType[] repoTypes) throws InitializationError {
+    protected MultiNuxeoCoreRunner(Class<?> klass, List<Runner> runners,
+            RepoType[] repoTypes) throws InitializationError {
         super(klass);
-        for(Runner nuxeoRunner : runners) {
+        for (Runner nuxeoRunner : runners) {
             fRunners.add((NuxeoCoreRunner) nuxeoRunner);
         }
         repos = repoTypes;
     }
 
-    private static Class<?>[] getAnnotatedClasses(Class<?> klass) throws InitializationError {
-        SuiteClasses annotation= klass.getAnnotation(SuiteClasses.class);
-        if (annotation == null)
-            throw new InitializationError(String.format("class '%s' must have a SuiteClasses annotation", klass.getName()));
-        for(Class<?> testClass : annotation.value()) {
-            if(!testClass.getAnnotation(RunWith.class).value().isAssignableFrom(NuxeoCoreRunner.class)) {
-                throw new InitializationError(String.format("class '%s' must be RunWith a NuxeoCoreRunner", klass.getName()));
+    private static Class<?>[] getAnnotatedClasses(Class<?> klass)
+            throws InitializationError {
+        SuiteClasses annotation = klass.getAnnotation(SuiteClasses.class);
+        if (annotation == null) {
+            throw new InitializationError(String.format(
+                    "class '%s' must have a SuiteClasses annotation",
+                    klass.getName()));
+        }
+        for (Class<?> testClass : annotation.value()) {
+            if (!testClass.getAnnotation(RunWith.class).value().isAssignableFrom(
+                    NuxeoCoreRunner.class)) {
+                throw new InitializationError(String.format(
+                        "class '%s' must be RunWith a NuxeoCoreRunner",
+                        klass.getName()));
             }
         }
         return annotation.value();
@@ -106,8 +113,7 @@ public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoCoreRunner> {
 
     @Override
     protected void runChild(NuxeoCoreRunner child, RunNotifier notifier) {
-        for(RepoType type : repos) {
-
+        for (RepoType type : repos) {
             child.setRepoType(type);
             child.resetInjector();
             child.run(notifier);

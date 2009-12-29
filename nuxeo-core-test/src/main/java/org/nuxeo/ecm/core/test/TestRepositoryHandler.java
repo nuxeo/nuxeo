@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,8 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- * $Id$
+ *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
 package org.nuxeo.ecm.core.test;
 
@@ -30,41 +29,40 @@ import org.nuxeo.ecm.core.model.Repository;
 
 public class TestRepositoryHandler {
 
-  private Repository repository;
-  private String repositoryName;
+    private Repository repository;
 
-  public TestRepositoryHandler(String name) {
-    this.repositoryName = name;
-  }
+    private String repositoryName;
 
-  public void openRepository() throws Exception {
-    this.repository = NXCore.getRepositoryService()
-        .getRepositoryManager()
-        .getRepository(repositoryName);
-  }
-
-  public CoreSession openSessionAs(String userName) throws ClientException {
-    Map<String, Serializable> ctx = new HashMap<String, Serializable>();
-    ctx.put("username", userName);
-    CoreSession coreSession = new LocalSession();
-    coreSession.connect(repositoryName, ctx);
-    return coreSession;
-  }
-
-  public CoreSession changeUser(CoreSession session, String newUser)
-      throws ClientException {
-    releaseSession(session);
-    return openSessionAs(newUser);
-  }
-
-  public void releaseRepository() {
-    if (repository != null) {
-      repository.shutdown();
+    public TestRepositoryHandler(String name) {
+        this.repositoryName = name;
     }
-  }
 
-  public void releaseSession(CoreSession session) {
-    CoreInstance.getInstance()
-        .close(session);
-  }
+    public void openRepository() throws Exception {
+        this.repository = NXCore.getRepositoryService().getRepositoryManager().getRepository(
+                repositoryName);
+    }
+
+    public CoreSession openSessionAs(String userName) throws ClientException {
+        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
+        ctx.put("username", userName);
+        CoreSession coreSession = new LocalSession();
+        coreSession.connect(repositoryName, ctx);
+        return coreSession;
+    }
+
+    public CoreSession changeUser(CoreSession session, String newUser)
+            throws ClientException {
+        releaseSession(session);
+        return openSessionAs(newUser);
+    }
+
+    public void releaseRepository() {
+        if (repository != null) {
+            repository.shutdown();
+        }
+    }
+
+    public void releaseSession(CoreSession session) {
+        CoreInstance.getInstance().close(session);
+    }
 }

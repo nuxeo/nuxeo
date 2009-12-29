@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,8 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- * $Id$
+ *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
 package org.nuxeo.ecm.core.test.guice;
 
@@ -21,9 +20,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
 import org.nuxeo.ecm.core.test.NuxeoCoreRunner;
@@ -36,12 +37,13 @@ import com.google.inject.Provider;
 
 public class CoreSessionProvider implements Provider<CoreSession> {
 
+    private static final Log log = LogFactory.getLog(CoreSessionProvider.class);
+
     private RepoType repoType;
 
-    Logger logger = Logger.getLogger(CoreSessionProvider.class);
-
     @Inject
-    public CoreSessionProvider(RepoType repoType, RuntimeHarness harness, SchemaManager sm) {
+    public CoreSessionProvider(RepoType repoType, RuntimeHarness harness,
+            SchemaManager sm) {
         assert sm != null;
         try {
             this.repoType = repoType;
@@ -52,20 +54,20 @@ public class CoreSessionProvider implements Provider<CoreSession> {
 
             DatabaseHelper dbHelper = null;
             if (repoType == RepoType.JCR) {
-                logger.info("Deploying a JCR repo implementation");
+                log.info("Deploying a JCR repo implementation");
                 harness.deployBundle("org.nuxeo.ecm.core.jcr");
                 harness.deployBundle("org.nuxeo.ecm.core.jcr-connector");
 
             } else {
-                logger.info("Deploying a VCS repo implementation");
+                log.info("Deploying a VCS repo implementation");
                 harness.deployBundle("org.nuxeo.ecm.core.storage.sql");
 
                 // TODO: should use a factory
                 if (repoType == RepoType.H2) {
-                    logger.info("VCS relies on H2");
-                    dbHelper = DatabaseHelper.DATABASE;
+                    log.info("VCS relies on H2");
+                    dbHelper = DatabaseH2.DATABASE;
                 } else {
-                    logger.info("VCS relies on Postgres");
+                    log.info("VCS relies on Postgres");
                     dbHelper = DatabasePostgreSQL.DATABASE;
                 }
                 harness.deployContrib("org.nuxeo.ecm.core.storage.sql.test",
@@ -85,11 +87,9 @@ public class CoreSessionProvider implements Provider<CoreSession> {
                     connection.close();
                 }
             }
-
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.toString(), e);
         }
-
     }
 
     private String getRepoName() {
@@ -106,13 +106,11 @@ public class CoreSessionProvider implements Provider<CoreSession> {
             TestRepositoryHandler repo = new TestRepositoryHandler(
                     getRepoName());
             repo.openRepository();
-            return repo.openSessionAs(NuxeoCoreRunner.getSettings()
-                    .getRepoUsername());
+            return repo.openSessionAs(NuxeoCoreRunner.getSettings().getRepoUsername());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.toString(), e);
             return null;
         }
-
     }
 
 }

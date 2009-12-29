@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,20 +12,25 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- * $Id$
+ *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
 package org.nuxeo.ecm.core.test;
 
+import org.nuxeo.ecm.core.test.annotations.CleanupLevel;
+
 /**
- * Repository Cleanup Level
- *  <ul>
- *    <li>CLASS : Repo is cleaned up only at class level</li>
- *    <li>METHOD : Repos is cleaned up at each test method</li>
- *  </ul>
- * @author dmetzler
+ * Repository cleanup level.
  *
+ * @see CleanupLevel
  */
 public enum Level {
-    CLASS, METHOD
+    /**
+     * The repository is cleaned up at the class level.
+     */
+    CLASS,
+
+    /**
+     * The repository is cleaned up at the method level.
+     */
+    METHOD
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,12 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- * $Id$
+ *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
 package org.nuxeo.ecm.core.test;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
@@ -31,14 +32,15 @@ import com.google.inject.Module;
 import com.google.inject.Provider;
 
 /**
- * jUnit4.5 runner that provide facilites to setup CoreSession based
+ * JUni4 runner that provide facilities to setup {@link CoreSession}-based
  * tests.
- * @author dmetzler
- *
  */
 public class NuxeoCoreRunner extends NuxeoRunner implements Provider<RepoType> {
 
+    private static final Log log = LogFactory.getLog(NuxeoCoreRunner.class);
+
     private Settings settings;
+
     private RepoType type;
 
     public NuxeoCoreRunner(Class<?> classToRun) throws InitializationError {
@@ -51,13 +53,12 @@ public class NuxeoCoreRunner extends NuxeoRunner implements Provider<RepoType> {
         settings = new Settings(getDescription());
     }
 
-    public  void setRepoType(RepoType type) {
+    public void setRepoType(RepoType type) {
         this.type = type;
     }
 
     public static Settings getSettings() {
-        NuxeoCoreRunner instance = (NuxeoCoreRunner) getInstance();
-        return instance.settings;
+        return ((NuxeoCoreRunner) getInstance()).settings;
     }
 
     @Override
@@ -65,10 +66,9 @@ public class NuxeoCoreRunner extends NuxeoRunner implements Provider<RepoType> {
         if (settings.getCleanUpLevel() == Level.CLASS) {
             cleanupSession();
         }
-
     }
 
-    private void cleanupSession() {
+    protected void cleanupSession() {
         CoreSession session = injector.getInstance(CoreSession.class);
         try {
             session.removeChildren(new PathRef("/"));
@@ -77,32 +77,30 @@ public class NuxeoCoreRunner extends NuxeoRunner implements Provider<RepoType> {
         }
         RepoFactory factory = settings.getRepoFactory();
         if (factory != null) {
-
             try {
                 factory.createRepo(session);
                 session.save();
             } catch (ClientException e) {
-                e.printStackTrace();
+                log.error(e.toString(), e);
             }
         }
     }
 
     @Override
     protected Statement methodInvoker(FrameworkMethod method, Object test) {
-        Statement stmt = super.methodInvoker(method, test);
+        Statement statement = super.methodInvoker(method, test);
         if (settings.getCleanUpLevel() == Level.METHOD) {
             cleanupSession();
         }
-        return stmt;
+        return statement;
     }
 
-
     public RepoType get() {
-        if(this.type == null) {
-            //Case the type is specified by the test class
+        if (this.type == null) {
+            // Case the type is specified by the test class
             return this.settings.getRepoType();
         } else {
-            //MultiRepo case
+            // MultiRepo case
             return type;
         }
     }

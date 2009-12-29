@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,12 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- * $Id$
+ *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
 package org.nuxeo.ecm.core.test.guice;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
@@ -24,15 +25,15 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-public class SchemaManagerProvider implements Provider<SchemaManager>{
+public class SchemaManagerProvider implements Provider<SchemaManager> {
 
+    private static final Log log = LogFactory.getLog(SchemaManagerProvider.class);
 
     private final RuntimeHarness harness;
 
     @Inject
     public SchemaManagerProvider(RuntimeHarness harness) {
         this.harness = harness;
-
     }
 
     public SchemaManager get() {
@@ -40,11 +41,9 @@ public class SchemaManagerProvider implements Provider<SchemaManager>{
             harness.deployBundle("org.nuxeo.ecm.core.schema");
             return Framework.getService(SchemaManager.class);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e.toString(), e);
             return null;
         }
-
     }
 
 }

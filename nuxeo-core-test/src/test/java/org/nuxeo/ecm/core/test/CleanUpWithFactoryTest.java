@@ -1,3 +1,19 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
+ */
 package org.nuxeo.ecm.core.test;
 
 import static org.junit.Assert.assertFalse;
@@ -13,26 +29,31 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryFactory;
 
 import com.google.inject.Inject;
 
-
 @RunWith(NuxeoCoreRunner.class)
 @CleanupLevel(Level.METHOD)
 @RepositoryFactory(DefaultRepoFactory.class)
 public class CleanUpWithFactoryTest {
-    @Inject CoreSession session;
+
+    @Inject
+    CoreSession session;
 
     @Test
     public void iCreateADoc() throws Exception {
-        DocumentModel doc = session.createDocumentModel("/default-domain/workspaces/", "myWorkspace", "Workspace");
+        DocumentModel doc = session.createDocumentModel(
+                "/default-domain/workspaces/", "myWorkspace", "Workspace");
         doc.setProperty("dublincore", "title", "My Workspace");
         doc = session.createDocument(doc);
         session.saveDocument(doc);
         session.save();
-        assertTrue(session.exists(new PathRef("/default-domain/workspaces/myWorkspace")));
+        assertTrue(session.exists(new PathRef(
+                "/default-domain/workspaces/myWorkspace")));
     }
 
     @Test
     public void myWorkspaceIsNotHereAnymore() throws Exception {
         assertTrue(session.exists(new PathRef("/default-domain/workspaces/")));
-        assertFalse(session.exists(new PathRef("/default-domain/workspaces/myWorkspace")));
+        assertFalse(session.exists(new PathRef(
+                "/default-domain/workspaces/myWorkspace")));
     }
+
 }
