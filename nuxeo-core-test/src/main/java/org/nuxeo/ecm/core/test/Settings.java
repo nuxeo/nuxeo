@@ -17,55 +17,45 @@
 package org.nuxeo.ecm.core.test;
 
 import org.junit.runner.Description;
-import org.nuxeo.ecm.core.test.annotations.CleanupLevel;
-import org.nuxeo.ecm.core.test.annotations.Repository;
-import org.nuxeo.ecm.core.test.annotations.RepositoryFactory;
+import org.nuxeo.ecm.core.test.annotations.RepositoryBackend;
+import org.nuxeo.ecm.core.test.annotations.RepositoryCleanup;
+import org.nuxeo.ecm.core.test.annotations.RepositoryInitializer;
 import org.nuxeo.ecm.core.test.annotations.Session;
-import org.nuxeo.runtime.test.runner.Bundles;
+import org.nuxeo.ecm.core.test.annotations.RepositoryBackends.BackendType;
+import org.nuxeo.ecm.core.test.annotations.RepositoryCleanup.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryInitializer.RepositoryInit;
 
 @Session
-@Repository
-// these annotations are present just to provide a simple way to lookup default
-// values
-public class Settings {
-
-    private final Description description;
+@RepositoryBackend
+@RepositoryCleanup
+// annotations present to provide a simple way to lookup default values
+public class Settings extends org.nuxeo.runtime.test.runner.Settings {
 
     public Settings(Description description) {
-        this.description = description;
+        super(description);
     }
 
-    public RepoType getRepoType() {
-        Repository repo = description.getAnnotation(Repository.class);
+    public BackendType getBackendType() {
+        RepositoryBackend repo = description.getAnnotation(RepositoryBackend.class);
         if (repo == null) {
-            return this.getClass().getAnnotation(Repository.class).value();
+            repo = this.getClass().getAnnotation(RepositoryBackend.class);
         }
         return repo.value();
     }
 
-    public String getRepoUsername() {
+    public String getRepositoryUsername() {
         Session sessionFactory = description.getAnnotation(Session.class);
         if (sessionFactory == null) {
-            return this.getClass().getAnnotation(Session.class).user();
+            sessionFactory = this.getClass().getAnnotation(Session.class);
         }
         return sessionFactory.user();
     }
 
-    public String[] getBundles() {
-        Bundles annotation = description.getAnnotation(Bundles.class);
-        if (annotation != null) {
-            return annotation.value();
-        } else {
-            return new String[0];
-        }
-    }
-
-    public RepoFactory getRepoFactory() {
-
-        RepositoryFactory annotation = description.getAnnotation(RepositoryFactory.class);
+    public RepositoryInit getRepositoryInitializer() {
+        RepositoryInitializer annotation = description.getAnnotation(RepositoryInitializer.class);
         if (annotation != null) {
             try {
-                RepoFactory instance = annotation.value().newInstance();
+                RepositoryInit instance = annotation.value().newInstance();
                 return instance;
             } catch (InstantiationException e) {
                 return null;
@@ -76,13 +66,13 @@ public class Settings {
         return null;
     }
 
-    public Level getCleanUpLevel() {
-        CleanupLevel annotation = description.getAnnotation(CleanupLevel.class);
-        if (annotation != null) {
-            return annotation.value();
-        } else {
-            return Level.CLASS;
+    public Granularity getRepositoryCleanupGranularity() {
+        RepositoryCleanup annotation = description.getAnnotation(RepositoryCleanup.class);
+        if (annotation == null) {
+            // get annotation with default
+            annotation = this.getClass().getAnnotation(RepositoryCleanup.class);
         }
+        return annotation.value();
     }
 
 }

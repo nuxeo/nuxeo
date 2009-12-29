@@ -17,17 +17,39 @@
 package org.nuxeo.ecm.core.test.annotations;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.nuxeo.ecm.core.test.RepoType;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * Defines the multiple repository types used by the tests.
+ * Defines a repository factory used to initialize an empty repository.
+ * <p>
+ * This may be called several times for the same suite when the
+ * {@link RepositoryCleanup} is set to {@link Granularity#METHOD}.
  */
+@Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.TYPE })
-public @interface Repos {
-    RepoType[] value() default { RepoType.JCR, RepoType.H2 };
+@Target( { ElementType.TYPE, ElementType.METHOD })
+public @interface RepositoryInitializer {
+    Class<? extends RepositoryInit> value();
+
+    /**
+     * Implement this class to provide an initializer for the
+     * {@link RepositoryInitializer} annotation in tests.
+     */
+    interface RepositoryInit {
+
+        /**
+         * Creates the default objects in an empty repository.
+         *
+         * @param session the session to use to create objects
+         */
+        public void populate(CoreSession session) throws ClientException;
+
+    }
+
 }

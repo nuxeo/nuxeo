@@ -19,7 +19,7 @@ package org.nuxeo.ecm.core.test.guice;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.test.NuxeoCoreRunner;
-import org.nuxeo.ecm.core.test.RepoType;
+import org.nuxeo.ecm.core.test.annotations.RepositoryBackends.BackendType;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
@@ -31,7 +31,7 @@ public class CoreModule extends AbstractModule {
 
     @Override
     public void configure() {
-        bind(RepoType.class).toProvider(
+        bind(BackendType.class).toProvider(
                 (NuxeoCoreRunner) NuxeoCoreRunner.getInstance());
         bind(SchemaManager.class).toProvider(SchemaManagerProvider.class).in(
                 Scopes.SINGLETON);

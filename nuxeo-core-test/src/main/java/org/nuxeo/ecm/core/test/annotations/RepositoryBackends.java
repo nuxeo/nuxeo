@@ -14,8 +14,27 @@
  * Contributors:
  *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
-package org.nuxeo.ecm.core.test;
+package org.nuxeo.ecm.core.test.annotations;
 
-public enum RepoType {
-    JCR, H2, POSTGRES
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Defines the multiple repository types used by the tests.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target( { ElementType.TYPE })
+public @interface RepositoryBackends {
+
+    BackendType[] value() default { BackendType.JCR, BackendType.H2 };
+
+    /**
+     * Repository backend types with which the tests can be run.
+     */
+    enum BackendType {
+        JCR, H2, POSTGRES
+    }
+
 }

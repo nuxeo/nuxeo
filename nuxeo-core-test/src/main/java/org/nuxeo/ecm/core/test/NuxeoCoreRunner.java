@@ -24,6 +24,9 @@ import org.junit.runners.model.Statement;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.test.annotations.RepositoryBackends.BackendType;
+import org.nuxeo.ecm.core.test.annotations.RepositoryCleanup.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryInitializer.RepositoryInit;
 import org.nuxeo.ecm.core.test.guice.CoreModule;
 import org.nuxeo.runtime.test.runner.NuxeoRunner;
 import org.nuxeo.runtime.test.runner.RuntimeModule;
@@ -32,16 +35,17 @@ import com.google.inject.Module;
 import com.google.inject.Provider;
 
 /**
- * JUni4 runner that provide facilities to setup {@link CoreSession}-based
+ * JUnit4 runner that provide facilities to setup {@link CoreSession}-based
  * tests.
  */
-public class NuxeoCoreRunner extends NuxeoRunner implements Provider<RepoType> {
+public class NuxeoCoreRunner extends NuxeoRunner implements
+        Provider<BackendType> {
 
     private static final Log log = LogFactory.getLog(NuxeoCoreRunner.class);
 
     private Settings settings;
 
-    private RepoType type;
+    private BackendType backendType;
 
     public NuxeoCoreRunner(Class<?> classToRun) throws InitializationError {
         this(classToRun, new RuntimeModule(), new CoreModule());
@@ -53,8 +57,8 @@ public class NuxeoCoreRunner extends NuxeoRunner implements Provider<RepoType> {
         settings = new Settings(getDescription());
     }
 
-    public void setRepoType(RepoType type) {
-        this.type = type;
+    public void setBackendType(BackendType backendType) {
+        this.backendType = backendType;
     }
 
     public static Settings getSettings() {
@@ -62,23 +66,32 @@ public class NuxeoCoreRunner extends NuxeoRunner implements Provider<RepoType> {
     }
 
     @Override
-    public void beforeRun() {
-        if (settings.getCleanUpLevel() == Level.CLASS) {
+    protected void beforeRun() {
+        if (settings.getRepositoryCleanupGranularity() == Granularity.CLASS) {
             cleanupSession();
         }
+    }
+
+    @Override
+    protected Statement methodInvoker(FrameworkMethod method, Object test) {
+        Statement statement = super.methodInvoker(method, test);
+        if (settings.getRepositoryCleanupGranularity() == Granularity.METHOD) {
+            cleanupSession();
+        }
+        return statement;
     }
 
     protected void cleanupSession() {
         CoreSession session = injector.getInstance(CoreSession.class);
         try {
             session.removeChildren(new PathRef("/"));
-        } catch (ClientException e1) {
-            System.err.println("Unable to reset repository");
+        } catch (ClientException e) {
+            log.error("Unable to reset repository", e);
         }
-        RepoFactory factory = settings.getRepoFactory();
+        RepositoryInit factory = settings.getRepositoryInitializer();
         if (factory != null) {
             try {
-                factory.createRepo(session);
+                factory.populate(session);
                 session.save();
             } catch (ClientException e) {
                 log.error(e.toString(), e);
@@ -86,22 +99,13 @@ public class NuxeoCoreRunner extends NuxeoRunner implements Provider<RepoType> {
         }
     }
 
-    @Override
-    protected Statement methodInvoker(FrameworkMethod method, Object test) {
-        Statement statement = super.methodInvoker(method, test);
-        if (settings.getCleanUpLevel() == Level.METHOD) {
-            cleanupSession();
-        }
-        return statement;
-    }
-
-    public RepoType get() {
-        if (this.type == null) {
-            // Case the type is specified by the test class
-            return this.settings.getRepoType();
+    public BackendType get() {
+        if (backendType == null) {
+            // backend type is specified by the test class
+            return settings.getBackendType();
         } else {
-            // MultiRepo case
-            return type;
+            // multi-backend case, return current one
+            return backendType;
         }
     }
 

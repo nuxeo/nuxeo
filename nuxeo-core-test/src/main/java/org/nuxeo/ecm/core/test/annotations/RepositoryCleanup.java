@@ -16,20 +16,40 @@
  */
 package org.nuxeo.ecm.core.test.annotations;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.nuxeo.ecm.core.test.RepoType;
-
 /**
- * Defines the repository type used by the tests.
+ * Defines the cleanup granularity for the repository used by the tests, either
+ * {@link Granularity#CLASS} or {@link Granularity#METHOD}.
+ * <p>
+ * When this annotation is not present, a default of {@link Granularity#CLASS}
+ * is used.
  */
+@Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.TYPE })
-public @interface Repository {
-    RepoType value() default RepoType.H2;
+@Target( { ElementType.METHOD, ElementType.TYPE })
+public @interface RepositoryCleanup {
+
+    Granularity value() default Granularity.CLASS;
+
+    /**
+     * Repository cleanup level.
+     */
+    enum Granularity {
+        /**
+         * The repository is cleaned up at the class level.
+         */
+        CLASS,
+
+        /**
+         * The repository is cleaned up at the method level.
+         */
+        METHOD
+    }
 }

@@ -27,10 +27,11 @@ import org.junit.runners.ParentRunner;
 import org.junit.runners.Suite.SuiteClasses;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.RunnerBuilder;
-import org.nuxeo.ecm.core.test.annotations.Repos;
+import org.nuxeo.ecm.core.test.annotations.RepositoryBackends;
+import org.nuxeo.ecm.core.test.annotations.RepositoryBackends.BackendType;
 
 /**
- * JUnit4 ParentRunner that knows how to run a test class on multiple repository
+ * JUnit4 ParentRunner that knows how to run a test class on multiple backend
  * types.
  * <p>
  * To use it :
@@ -38,51 +39,52 @@ import org.nuxeo.ecm.core.test.annotations.Repos;
  * <pre>
  * &#064;RunWith(MultiNuxeoCoreRunner.class)
  * &#064;SuiteClasses(SimpleSession.class)
- * &#064;Repos( { RepoType.H2, RepoType.JCR, RepoType.POSTGRES })
+ * &#064;Repositories( { RepoType.H2, RepoType.JCR, RepoType.POSTGRES })
  * public class NuxeoSuiteTest {
  * }
  * </pre>
  *
  * With SimpleSession.class being a class to be run with NuxeoCoreRunner
  */
-@Repos
+@RepositoryBackends
+// annotation present to provide an accessible default
 public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoCoreRunner> {
 
-    private List<NuxeoCoreRunner> fRunners = new ArrayList<NuxeoCoreRunner>();
+    private List<NuxeoCoreRunner> runners = new ArrayList<NuxeoCoreRunner>();
 
-    private RepoType[] repos;
+    private BackendType[] types;
 
     public MultiNuxeoCoreRunner(Class<?> testClass, RunnerBuilder builder)
             throws InitializationError {
-        this(builder, testClass, getAnnotatedClasses(testClass),
-                getRepoTypes(testClass));
-    }
-
-    private static RepoType[] getRepoTypes(Class<?> testClass) {
-        Repos annotation = testClass.getAnnotation(Repos.class);
-        if (annotation == null) {
-            return MultiNuxeoCoreRunner.class.getAnnotation(Repos.class).value();
-        } else {
-            return annotation.value();
-        }
+        this(builder, testClass, getSuiteClasses(testClass),
+                getBackendTypes(testClass));
     }
 
     public MultiNuxeoCoreRunner(RunnerBuilder builder, Class<?> testClass,
-            Class<?>[] classes, RepoType[] repoTypes)
+            Class<?>[] classes, BackendType[] repoTypes)
             throws InitializationError {
         this(null, builder.runners(null, classes), repoTypes);
     }
 
     protected MultiNuxeoCoreRunner(Class<?> klass, List<Runner> runners,
-            RepoType[] repoTypes) throws InitializationError {
+            BackendType[] types) throws InitializationError {
         super(klass);
-        for (Runner nuxeoRunner : runners) {
-            fRunners.add((NuxeoCoreRunner) nuxeoRunner);
+        for (Runner runner : runners) {
+            this.runners.add((NuxeoCoreRunner) runner);
         }
-        repos = repoTypes;
+        this.types = types;
     }
 
-    private static Class<?>[] getAnnotatedClasses(Class<?> klass)
+    protected static BackendType[] getBackendTypes(Class<?> testClass) {
+        RepositoryBackends annotation = testClass.getAnnotation(RepositoryBackends.class);
+        if (annotation == null) {
+            return MultiNuxeoCoreRunner.class.getAnnotation(RepositoryBackends.class).value();
+        } else {
+            return annotation.value();
+        }
+    }
+
+    protected static Class<?>[] getSuiteClasses(Class<?> klass)
             throws InitializationError {
         SuiteClasses annotation = klass.getAnnotation(SuiteClasses.class);
         if (annotation == null) {
@@ -108,13 +110,13 @@ public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoCoreRunner> {
 
     @Override
     protected List<NuxeoCoreRunner> getChildren() {
-        return fRunners;
+        return runners;
     }
 
     @Override
     protected void runChild(NuxeoCoreRunner child, RunNotifier notifier) {
-        for (RepoType type : repos) {
-            child.setRepoType(type);
+        for (BackendType type : types) {
+            child.setBackendType(type);
             child.resetInjector();
             child.run(notifier);
         }

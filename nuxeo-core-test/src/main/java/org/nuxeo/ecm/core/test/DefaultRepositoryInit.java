@@ -19,13 +19,14 @@ package org.nuxeo.ecm.core.test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.test.annotations.RepositoryInitializer.RepositoryInit;
 
 /**
- * Default repository factory that create the default DM doc hierarchy.
+ * Default repository initializer that create the default DM doc hierarchy.
  */
-public class DefaultRepoFactory implements RepoFactory {
+public class DefaultRepositoryInit implements RepositoryInit {
 
-    public void createRepo(CoreSession session) throws ClientException {
+    public void populate(CoreSession session) throws ClientException {
         DocumentModel doc = session.createDocumentModel("/", "default-domain",
                 "Domain");
         doc.setProperty("dublincore", "title", "Default domain");

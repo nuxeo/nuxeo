@@ -28,8 +28,8 @@ import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
 import org.nuxeo.ecm.core.test.NuxeoCoreRunner;
-import org.nuxeo.ecm.core.test.RepoType;
 import org.nuxeo.ecm.core.test.TestRepositoryHandler;
+import org.nuxeo.ecm.core.test.annotations.RepositoryBackends.BackendType;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import com.google.inject.Inject;
@@ -39,10 +39,10 @@ public class CoreSessionProvider implements Provider<CoreSession> {
 
     private static final Log log = LogFactory.getLog(CoreSessionProvider.class);
 
-    private RepoType repoType;
+    private BackendType repoType;
 
     @Inject
-    public CoreSessionProvider(RepoType repoType, RuntimeHarness harness,
+    public CoreSessionProvider(BackendType repoType, RuntimeHarness harness,
             SchemaManager sm) {
         assert sm != null;
         try {
@@ -53,7 +53,7 @@ public class CoreSessionProvider implements Provider<CoreSession> {
             harness.deployBundle("org.nuxeo.ecm.core");
 
             DatabaseHelper dbHelper = null;
-            if (repoType == RepoType.JCR) {
+            if (repoType == BackendType.JCR) {
                 log.info("Deploying a JCR repo implementation");
                 harness.deployBundle("org.nuxeo.ecm.core.jcr");
                 harness.deployBundle("org.nuxeo.ecm.core.jcr-connector");
@@ -63,7 +63,7 @@ public class CoreSessionProvider implements Provider<CoreSession> {
                 harness.deployBundle("org.nuxeo.ecm.core.storage.sql");
 
                 // TODO: should use a factory
-                if (repoType == RepoType.H2) {
+                if (repoType == BackendType.H2) {
                     log.info("VCS relies on H2");
                     dbHelper = DatabaseH2.DATABASE;
                 } else {
@@ -94,7 +94,7 @@ public class CoreSessionProvider implements Provider<CoreSession> {
 
     private String getRepoName() {
         // Small hacks since test repo name differs between implementation
-        if (repoType == RepoType.JCR) {
+        if (repoType == BackendType.JCR) {
             return "demo";
         } else {
             return "test";
@@ -106,7 +106,7 @@ public class CoreSessionProvider implements Provider<CoreSession> {
             TestRepositoryHandler repo = new TestRepositoryHandler(
                     getRepoName());
             repo.openRepository();
-            return repo.openSessionAs(NuxeoCoreRunner.getSettings().getRepoUsername());
+            return repo.openSessionAs(NuxeoCoreRunner.getSettings().getRepositoryUsername());
         } catch (Exception e) {
             log.error(e.toString(), e);
             return null;

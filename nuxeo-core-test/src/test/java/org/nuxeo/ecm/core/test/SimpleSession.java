@@ -22,14 +22,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.test.annotations.RepositoryFactory;
+import org.nuxeo.ecm.core.test.annotations.RepositoryInitializer;
 import org.nuxeo.ecm.core.test.annotations.Session;
 
 import com.google.inject.Inject;
 
 @RunWith(NuxeoCoreRunner.class)
 @Session(user = "Administrator")
-@RepositoryFactory(DefaultRepoFactory.class)
+@RepositoryInitializer(DefaultRepositoryInit.class)
 public class SimpleSession {
 
     @Inject
