@@ -97,7 +97,7 @@
       <artifact group="javax.ejb" name="ejb-api" />
       <artifact group="javax.transaction" name="jta" />
 
-      <artifact group="ant" name="ant" />
+      <artifact group="org.apache.ant" name="ant" />
       <artifact group="bsh" name="bsh" />
       <artifact group="commons-el" name="commons-el" />
       <artifact group="commons-digester" name="commons-digester" />
