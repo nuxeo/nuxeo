@@ -18,7 +18,7 @@
     <h:inputText value="#{searchActions.simpleSearchKeywords}" size="15"
       class="directoryFilter"
       rendered="#{searchEnabled}"
-      onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).click();} else return true;"
+      onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).select();} else return true;"
       />
     <h:inputHidden value="#{searchActions.searchTypeId}"
       rendered="#{searchEnabled}" >
