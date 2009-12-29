@@ -20,6 +20,7 @@
 package org.nuxeo.common.xmap;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,21 +38,28 @@ import org.w3c.dom.Element;
 public class XAnnotatedObject {
 
     final XMap xmap;
-    final Class klass;
+    final Class<?> klass;
+    final Constructor<?> ctor;
     final Path path;
 
     final List<XAnnotatedMember> members;
 
     Sorter sorter;
 
-    public XAnnotatedObject(XMap xmap, Class klass, XObject xob) {
-        this.xmap = xmap;
-        this.klass = klass;
-        path = new Path(xob.value());
-        members = new ArrayList<XAnnotatedMember>();
-        String[] order = xob.order();
-        if (order.length > 0) {
-            sorter = new Sorter(order);
+    public XAnnotatedObject(XMap xmap, Class<?> klass, XObject xob) {
+        try {
+            this.xmap = xmap;
+            this.klass = klass;
+            this.ctor = this.klass.getDeclaredConstructor();
+            ctor.setAccessible(true);
+            path = new Path(xob.value());
+            members = new ArrayList<XAnnotatedMember>();
+            String[] order = xob.order();
+            if (order.length > 0) {
+                sorter = new Sorter(order);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid xmap class - no default constructor found", e);
         }
     }
 
@@ -64,7 +72,7 @@ public class XAnnotatedObject {
     }
 
     public Object newInstance(Context ctx, Element element) throws Exception {
-        Object ob = klass.newInstance();
+        Object ob = ctor.newInstance();
         ctx.push(ob);
 
         if (sorter != null) {
@@ -94,8 +102,10 @@ class Sorter implements Comparator<XAnnotatedMember>, Serializable {
     }
 
     public int compare(XAnnotatedMember o1, XAnnotatedMember o2) {
-        Integer order1 = order.get(o1.path.path);
-        Integer order2 = order.get(o2.path.path);
+        String p1 = o1.path == null ? "" : o1.path.path;
+        String p2 = o2.path == null ? "" : o2.path.path;
+        Integer order1 = order.get(p1);
+        Integer order2 = order.get(p2);
         int n1 = order1 == null ? Integer.MAX_VALUE : order1;
         int n2 = order2 == null ? Integer.MAX_VALUE : order2;
         return n1 - n2;

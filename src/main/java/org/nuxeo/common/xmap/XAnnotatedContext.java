@@ -28,16 +28,14 @@ import org.w3c.dom.Element;
  */
 public class XAnnotatedContext extends XAnnotatedMember {
 
-    private final String key;
-
     protected XAnnotatedContext(XMap xmap, XAccessor accessor, XContext anno) {
         super(xmap, accessor);
-        key = anno.value();
+        path = new Path(anno.value());
     }
 
     @Override
     protected Object getValue(Context ctx, Element base) throws Exception {
-        return ctx.getProperty(key);
+        return ctx.getProperty(path.path);
     }
 
 }
