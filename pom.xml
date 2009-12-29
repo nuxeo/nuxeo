@@ -1528,7 +1528,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.6</version> <!-- 2.7 is buggy, cf MECLIPSE-576 -->
+          <version>2.5</version> <!-- 2.7 is buggy, cf MECLIPSE-576 -->
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
