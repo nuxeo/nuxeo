@@ -1,26 +1,80 @@
-<assembly>
+<project name="nuxeo-assembly" default="build" xmlns:nx="urn:nuxeo-build"
+  xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <artifact:expand depth="3" />
 
-  <fileSet id="jboss">
-    <directory>target/jboss</directory>
-  </fileSet>
-  <zipEntrySet id="nuxeo-ep-ear" profile="nuxeo-ep-jboss">
-    <artifact>org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip</artifact>
-  </zipEntrySet>
-  <zipEntrySet id="nuxeo-dm-ear" profile="nuxeo-dm-jboss">
-    <artifact>org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${project.version}:zip</artifact>
-  </zipEntrySet>
+  <property name="outdir" value="${maven.project.build.directory}" />
+  <property name="stagedir" value="${outdir}/stage" />
 
-  <assemble>
-    <set>jboss</set>
-    <outputFile>/</outputFile>
-  </assemble>
-  <assemble>
-    <set>nuxeo-ep-ear</set>
-    <outputFile>server/default/deploy/nuxeo.ear</outputFile>
-  </assemble>
-  <assemble>
-    <set>nuxeo-dm-ear</set>
-    <outputFile>server/default/deploy/nuxeo.ear</outputFile>
-  </assemble>
+  <target name="build">
+    <echo>Building JBoss distributions...</echo>
+    <property name="jboss" value="${stagedir}/jboss" />
 
-</assembly>
+    <antcall target="build-nuxeo-ep-jboss" />
+    <antcall target="build-nuxeo-dm-jboss" />
+  </target>
+  
+  <target name="prepare-jboss">
+    <unzip dest="${jboss}">
+      <artifact:file groupId="org.jboss" artifactId="jboss-as" classifier="light" type="zip" />
+    </unzip>
+    <ant antfile="build.xml" target="patch">
+      <property name="jboss.dir" value="${jboss}" />
+    </ant>
+    <ant antfile="build.xml" target="copy-lib">
+      <property name="jboss.dir" value="${jboss}" />
+    </ant>
+    <copy todir="${jboss}" >
+      <fileset dir="src/main/resources/jboss"/>
+    </copy>
+    <chmod dir="${jboss}/bin" perm="750" includes="*.sh" />
+    
+    <copy todir="${jboss}/server/default/lib">
+      <!-- copy jdbc drivers -->
+      <artifact:file groupid="postgresql" artifactid="postgresql" version="8.3-604.jdbc3" />
+      <artifact:file groupid="mysql" artifactid="mysql-connector-java" version="5.1.6" />
+      <!-- copy logging monitor -->
+      <artifact:file groupid="org.jboss.services" artifactid="logging-monitor" version="4.2.3.GA" />
+    </copy>
+  </target>
+  
+  <target name="build-nuxeo-ep-jboss" depends="prepare-jboss" 
+    description="Build JBoss distribution with Nuxeo EP">
+    
+    <delete failonerror="false" dir="${outdir}/nuxeo-ep-jboss" />
+    <copy todir="${outdir}/nuxeo-ep-jboss">
+      <fileset dir="${jboss}" />
+    </copy>
+    <copy todir="${outdir}/nuxeo-ep-jboss/server/default/deploy/nuxeo.ear">
+      <artifact:file groupId="org.nuxeo.ecm.platform" artifactId="nuxeo-platform-ear" type="zip" />
+    </copy>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
+      basedir="${outdir}/nuxeo-ep-jboss" />
+    <artifact:attach
+      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
+      target="${maven.project.groupId}:${maven.project.artifactId}" classifier="nuxeo-ep" />
+  </target>
+  
+  <target name="build-nuxeo-dm-jboss" depends="prepare-jboss" 
+    description="Build JBoss distribution with Nuxeo DM">
+    
+    <delete failonerror="false" dir="${outdir}/nuxeo-dm-jboss" />
+    <copy todir="${outdir}/nuxeo-dm-jboss">
+      <fileset dir="${jboss}" />
+    </copy>
+    <copy todir="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear">
+      <artifact:file groupId="org.nuxeo.ecm.distribution" artifactId="nuxeo-distribution-dm" type="zip" />
+    </copy>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
+      basedir="${outdir}/nuxeo-dm-jboss" />
+    <artifact:attach
+      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
+      target="${maven.project.groupId}:${maven.project.artifactId}" classifier="nuxeo-dm" />
+  </target>
+
+  <target name="clean">
+    <delete dir="${stagedir}" />
+  </target>
+
+</project>

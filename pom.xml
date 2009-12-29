@@ -394,6 +394,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-ear</artifactId>
+        <version>${nuxeo.features.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-forum</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
@@ -1031,6 +1037,12 @@
         <artifactId>nuxeo-distribution-dm</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-dm</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
