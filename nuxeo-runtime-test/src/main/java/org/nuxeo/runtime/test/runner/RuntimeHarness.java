@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,8 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- * $Id$
+ *     Bogdan Stefanescu
+ *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
 package org.nuxeo.runtime.test.runner;
 
@@ -54,9 +54,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.nuxeo.runtime.test.RootRuntimeBundle;
 import org.nuxeo.runtime.test.TestRuntime;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
 
+// Make sure this class is kept in sync with with NXRuntimeTestCase
 public class RuntimeHarness {
 
     private static final Log log = LogFactory.getLog(RuntimeHarness.class);
@@ -75,23 +75,20 @@ public class RuntimeHarness {
 
     private Map<String, BundleFile> bundles;
 
-
     private ClassLoader classLoader = RuntimeHarness.class.getClassLoader();
 
     private OSGiAdapter osgi;
+
     private RootRuntimeBundle runtimeBundle;
 
     public RuntimeHarness() {
         super();
     }
 
-
     /**
-     *	Starts nuxeo runtime
-     * @param startCore wether to start nuxeo core stuff (compat)
-     * @throws Exception
+     * Starts Nuxeo Runtime.
      */
-    void start() throws Exception {
+    public void start() throws Exception {
         wipeRuntime();
         initUrls();
         if (urls == null) {
@@ -102,8 +99,9 @@ public class RuntimeHarness {
         Environment.setDefault(new Environment(getWorkingDir()));
     }
 
-
-
+    /**
+     * Stops Nuxeo Runtime.
+     */
     public void stop() throws Exception {
         wipeRuntime();
         if (workingDir != null) {
@@ -138,8 +136,8 @@ public class RuntimeHarness {
         bundleLoader.setExtractNestedJARs(false);
 
         BundleFile bundleFile = lookupBundle("org.nuxeo.runtime");
-        runtimeBundle = new RootRuntimeBundle(osgi, bundleFile, bundleLoader
-                .getClass().getClassLoader(), true);
+        runtimeBundle = new RootRuntimeBundle(osgi, bundleFile,
+                bundleLoader.getClass().getClassLoader(), true);
         runtimeBundle.start();
         runtime = Framework.getRuntime();
         assertNotNull(runtime);
@@ -163,7 +161,7 @@ public class RuntimeHarness {
         if (!(classLoader instanceof URLClassLoader)) {
             log.warn("Unknow classloader type: "
                     + classLoader.getClass().getName()
-                    + "\nWon't be able to load OSGI bundles");
+                    + ", won't be able to load OSGI bundles");
             return;
         }
         urls.addAll(Arrays.asList(((URLClassLoader) classLoader).getURLs()));
@@ -216,11 +214,8 @@ public class RuntimeHarness {
     /**
      * Makes sure there is no previous runtime hanging around.
      * <p>
-     * This happens for instance if a previous test had errors in its
-     * <code>setUp()</code>, because <code>tearDown()</code> has not been
-     * called.
-     *
-     * @throws Exception
+     * This happens for instance if a previous test had errors in its {@code
+     * setUp()}, because {@code tearDown()} has not been called.
      */
     protected void wipeRuntime() throws Exception {
         // Make sure there is no active runtime (this might happen if an
@@ -243,7 +238,7 @@ public class RuntimeHarness {
         try {
             runtime.getContext().deploy(url);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.toString(), e);
             fail("Failed to deploy contrib " + url.toString());
         }
     }
@@ -260,18 +255,17 @@ public class RuntimeHarness {
     /**
      * Deploys a contribution from a given bundle.
      * <p>
-     * The path will be relative to the bundle root. Example: <code>
-   * deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreExtensions.xml")
-   * </code>
+     * The path will be relative to the bundle root. Example:
+     * <p>
+     * <code>
+     * deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreExtensions.xml")
+     * </code>
      * <p>
      * For compatibility reasons the name of the bundle may be a jar name, but
      * this use is discouraged and deprecated.
      *
-     * @param bundle
-     *            the name of the bundle to peek the contrib in
-     * @param contrib
-     *            the path to contrib in the bundle.
-     * @throws Exception
+     * @param bundle the name of the bundle to peek the contrib in
+     * @param contrib the path to contrib in the bundle.
      */
     public void deployContrib(String bundle, String contrib) throws Exception {
         deployContrib(lookupBundle(bundle), contrib);
@@ -280,15 +274,14 @@ public class RuntimeHarness {
     /**
      * Undeploys a contribution from a given bundle.
      * <p>
-     * The path will be relative to the bundle root. Example: <code>
-   * undeployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreExtensions.xml")
-   * </code>
+     * The path will be relative to the bundle root. Example:
+     * <p>
+     * <code>
+     * undeployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreExtensions.xml")
+     * </code>
      *
-     * @param bundle
-     *            the bundle
-     * @param contrib
-     *            the contribution
-     * @throws Exception
+     * @param bundle the bundle
+     * @param contrib the contribution
      */
     public void undeployContrib(String bundle, String contrib) throws Exception {
         BundleFile b = lookupBundle(bundle);
@@ -300,13 +293,6 @@ public class RuntimeHarness {
         runtime.getContext().undeploy(url);
     }
 
-    protected static boolean isVersionSuffix(String s) {
-        if (s.length() == 0) {
-            return true;
-        }
-        return s.matches("-(\\d+\\.?)+(-SNAPSHOT)?(\\.\\w+)?");
-    }
-
     /**
      * Deploys a whole OSGI bundle.
      * <p>
@@ -314,9 +300,7 @@ public class RuntimeHarness {
      * <code>MANIFEST.MF</code> and then falls back to the bundle url (e.g.,
      * <code>nuxeo-platform-search-api</code>) for backwards compatibility.
      *
-     * @param bundle
-     *            the symbolic name
-     * @throws Exception
+     * @param bundle the symbolic name
      */
     public void deployBundle(String bundle) throws Exception {
         BundleFile bundleFile = lookupBundle(bundle);
@@ -387,31 +371,27 @@ public class RuntimeHarness {
      * bundles.
      *
      * @param jar
-     * @throws MalformedURLException
      */
     public void addJar(File jar) throws MalformedURLException {
-        urls.add(jar.toURL());
+        urls.add(jar.toURI().toURL());
     }
 
     /**
      * Adds a resource to some directory in this runtime's working directory.
      *
-     * @param resourcePath
-     *            path to the resource, resolved through current thread's class
-     *            loader.
-     * @param targetDir
-     *            target directory relative to this harness working directory.
-     * @param targetFile
-     *            TODO
-     * @throws IOException
+     * @param resourcePath path to the resource, resolved through current
+     *            thread's class loader.
+     * @param targetDir target directory relative to this harness working
+     *            directory.
+     * @param targetFile the target file name
      */
     public void copyFileFromResource(String resourcePath, String targetDir,
             String targetFile) throws IOException {
         File dstDir = new File(getWorkingDir(), targetDir);
-        if (!dstDir.exists() && !dstDir.mkdirs())
+        if (!dstDir.exists() && !dstDir.mkdirs()) {
             throw new IOException("Cannot create target directory " + targetDir);
-        InputStream srcConfig = getClass().getResource(resourcePath)
-                .openStream();
+        }
+        InputStream srcConfig = getClass().getResource(resourcePath).openStream();
         File destFile = new File(dstDir, targetFile);
         FileOutputStream dstConfig = new FileOutputStream(destFile);
         FileUtils.copy(srcConfig, dstConfig);
@@ -420,26 +400,25 @@ public class RuntimeHarness {
     /**
      * Copy a resource to the configuration directory of the runtime
      *
-     * @param resourcePath
-     *            path to the resource, resolved through current thread's class
-     *            loader.
-     * @throws IOException
+     * @param resourcePath path to the resource, resolved through current
+     *            thread's class loader.
      */
     public void addConfigurationFromResource(String resourcePath)
             throws IOException {
-        copyFileFromResource(resourcePath, "config", FileUtils
-                .getFileName(resourcePath));
+        copyFileFromResource(resourcePath, "config",
+                FileUtils.getFileName(resourcePath));
     }
 
     /**
-     * Fire the event {@code FrameworkEvent.STARTED}.
-     * @throws Exception
+     * Fire the event {@link FrameworkEvent#STARTED}.
      */
     public void fireFrameworkStarted() throws Exception {
-        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, runtimeBundle, null));
+        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
+                runtimeBundle, null));
     }
 
     public boolean isStarted() {
         return runtime != null;
     }
+
 }

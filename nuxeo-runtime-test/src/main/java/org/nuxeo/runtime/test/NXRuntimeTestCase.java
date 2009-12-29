@@ -56,6 +56,7 @@ import org.osgi.framework.FrameworkEvent;
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+//Make sure this class is kept in sync with with RuntimeHarness
 public class NXRuntimeTestCase extends MockObjectTestCase {
 
     private static final Log log = LogFactory.getLog(NXRuntimeTestCase.class);

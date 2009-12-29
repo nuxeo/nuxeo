@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,14 +12,14 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- * $Id$
+ *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
 package org.nuxeo.runtime.test.runner;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -30,28 +30,26 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 
 /**
- * jUnit4 runner that can Inject class into the test class Injection is based on
- * the Guice injection framework
- *
- * @author dmetzler
- *
+ * JUnit4 runner that can inject classes into the test class.
+ * <p>
+ * Injection is based on the Guice injection framework.
  */
 public class NuxeoRunner extends BlockJUnit4ClassRunner {
 
-    private static final Logger LOG = Logger.getLogger(NuxeoRunner.class);
+    private static final Log log = LogFactory.getLog(NuxeoRunner.class);
 
     /**
-     * Runtime harness that holds all the machinery
+     * Runtime harness that holds all the machinery.
      */
     protected static RuntimeHarness harness = new RuntimeHarness();
 
     /**
-     * Guice modules to create the injector
+     * Guice modules to create the injector.
      */
     protected Module[] modules;
 
     /**
-     * Guice injector
+     * Guice injector.
      */
     protected Injector injector;
 
@@ -69,8 +67,6 @@ public class NuxeoRunner extends BlockJUnit4ClassRunner {
         // Create the Guice injector, based on modules
         this.modules = modules;
         this.injector = Guice.createInjector(modules);
-
-
     }
 
     public void resetInjector() {
@@ -79,24 +75,19 @@ public class NuxeoRunner extends BlockJUnit4ClassRunner {
 
     @Override
     public Object createTest() {
-
         // Return a Guice injected test class
         return injector.getInstance(getTestClass().getJavaClass());
     }
 
     public String[] getBundles() {
         Bundles annotation = getDescription().getAnnotation(Bundles.class);
-        if (annotation != null) {
-            return annotation.value();
-        } else {
-            return new String[0];
-        }
+        return annotation == null ? new String[0] : annotation.value();
     }
 
     /**
-     * Deploy bundles specified in the @Bundles annotation
+     * Deploys bundles specified in the @Bundles annotation.
      */
-    private void deployTestClassBundles() {
+    protected void deployTestClassBundles() {
         String[] bundles = getBundles();
         if (bundles.length > 0) {
             try {
@@ -105,10 +96,9 @@ public class NuxeoRunner extends BlockJUnit4ClassRunner {
                     harness.deployBundle(bundle);
                 }
             } catch (Exception e) {
-                LOG.error("Unable to start bundles: " + bundles);
+                log.error("Unable to start bundles: " + bundles);
             }
         }
-
     }
 
     @Override
@@ -118,39 +108,33 @@ public class NuxeoRunner extends BlockJUnit4ClassRunner {
     }
 
     /**
-     * Returns the Guice injector.
-     *
-     * @return the Guice injector
+     * Gets the Guice injector.
      */
     protected Injector getInjector() {
         return injector;
     }
 
     /**
-     * Can be useful in test class in order to reset things
-     *
-     * @return
+     * Gets the current {@link NuxeoRunner} instance.
+     * <p>
+     * Can be useful in test class in order to reset things.
      */
     public static NuxeoRunner getInstance() {
         return currentInstance;
     }
 
-
     /**
-     * Returns the harness used by the Nuxeo Runner (only used by the
-     * RTHarnessProvider)
-     *
-     * @return
-     * @throws Exception
+     * Gets the harness used by the Nuxeo Runner (only used by the
+     * {@link RTHarnessProvider})
      */
-    static RuntimeHarness getRuntimeHarness() throws Exception {
+    protected static RuntimeHarness getRuntimeHarness() throws Exception {
         return harness;
     }
 
     @Override
     public void run(final RunNotifier notifier) {
         try {
-            // Starts Nuxeo Runtim
+            // Starts Nuxeo Runtime
             harness.start();
 
             // Deploy additional bundles
@@ -160,6 +144,7 @@ public class NuxeoRunner extends BlockJUnit4ClassRunner {
             // Runs the class
             super.run(notifier);
             afterRun();
+
             // Stops the harness if needed
             if (harness.isStarted()) {
                 harness.stop();
@@ -170,10 +155,16 @@ public class NuxeoRunner extends BlockJUnit4ClassRunner {
 
     }
 
+    /**
+     * Runs once before the Nuxeo tests of this runner.
+     */
     public void beforeRun() {
-
     }
+
+    /**
+     * Runs once after the Nuxeo tests of this runner.
+     */
     public void afterRun() {
-
     }
+
 }
