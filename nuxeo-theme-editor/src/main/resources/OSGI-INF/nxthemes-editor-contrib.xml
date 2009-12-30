@@ -178,11 +178,7 @@
     <resource name="preset-menu.json">
       <path>nxthemes/editor/views/preset-menu.json</path>
     </resource>
-    
-    <resource name="preset-library-menu.json">
-      <path>nxthemes/editor/views/preset-library-menu.json</path>
-    </resource>
-    
+
     <resource name="style-manager-actions.json">
       <path>
         nxthemes/editor/controllers/style-manager-actions.json

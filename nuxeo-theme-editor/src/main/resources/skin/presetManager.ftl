@@ -6,11 +6,10 @@
 
 <#assign themeManager=This.getThemeManager()>
 <#assign themes=themeManager.getThemeDescriptors()>
-  
-
-<#if preset_manager_mode = 'theme presets'>
 
 <h1 class="nxthemesEditor">Manage presets</h1>
+
+<#if preset_manager_mode = 'theme presets'>
 
 <#if selected_preset_category>
 <div style="float: right">
@@ -19,7 +18,7 @@
 </div>
 </#if>
 
-<p class="nxthemesExplanation">List presets by category</p>
+<p class="nxthemesExplanation">List by category</p>
 
 <table style="width: 100%;" cellpadding="3" cellspacing="1">
   <tr>
@@ -41,16 +40,17 @@
          <li <#if selected_preset_category = 'image'>class="selected"</#if>>
              <a  href="javascript:NXThemesPresetManager.selectPresetCategory('image')">
              <img src="${skinPath}/img/category-16.png" width="16" height="16"/> Image</a></li>
- <li <#if selected_preset_category = ''>class="selected"</#if>>
+         <li <#if selected_preset_category = 'border'>class="selected"</#if>>
+             <a  href="javascript:NXThemesPresetManager.selectPresetCategory('border')">
+             <img src="${skinPath}/img/category-16.png" width="16" height="16"/> Border</a></li>
+         <li <#if selected_preset_category = ''>class="selected"</#if>>
              <a  href="javascript:NXThemesPresetManager.selectPresetCategory('')">
-             <img src="${skinPath}/img/category-16.png" width="16" height="16"/> <em style="color: #666">Unsorted</em></a></li>             
+             <img src="${skinPath}/img/category-16.png" width="16" height="16"/> All categories</a></li>             
        </ul>
      </td>
-    <td>
-    
+    <td style="vertical-align: top">
 
 <#assign presets = This.getCustomPresets(current_theme_name, selected_preset_category)>
-
 
 <table cellspacing="0" cellpadding="1" style="width: 100%">
 <#assign count = 0 />
@@ -69,6 +69,7 @@
   {"id": "preset_${current_theme_name}_${preset_info.name}",
    "type": "preset",
    "data": {
+     "title": "${preset_info.name}",
      "id": "${preset_info.id}",
      "theme_name": "${current_theme_name}",
      "name": "${preset_info.name}",
@@ -81,13 +82,15 @@
        {"label": "Font", "choice": "font"
         <#if preset_info.category = 'font'>, "selected": "true"</#if>},
        {"label": "Image", "choice": "image"      
-        <#if preset_info.category = 'image'>, "selected": "true"</#if>}
+        <#if preset_info.category = 'image'>, "selected": "true"</#if>},
+       {"label": "Border", "choice": "border"      
+        <#if preset_info.category = 'border'>, "selected": "true"</#if>}        
      ],
      "editable": true,
      "copyable": true,
      "pastable": true,
      "deletable": true
-     }
+    }
   }
 </ins>
 
@@ -176,12 +179,12 @@ ${preset_info.preview}
 </table>
 
 </#if>
-
 </#if>
+
+
 
 <#if preset_manager_mode = 'unregistered presets'>
 
-<h1 class="nxthemesEditor">Manage presets</h1>
 <p class="nxthemesExplanation">Find unregistered presets (colors, images, ...)</p>
 
 <#assign colors=This.getHardcodedColors(current_theme_name)>
@@ -266,7 +269,87 @@ ${preset_info.preview}
 
 </#if>
 
-</div>
+<#if preset_manager_mode = 'application presets'>
+
+<p class="nxthemesExplanation">List by palette.</p>
+
+<table style="width: 100%;" cellpadding="3" cellspacing="1">
+  <tr>
+    <th style="text-align: left; width: 25%; background-color: #999; color: #fff">Palette</th>
+    <th style="text-align: left; width: 75%; background-color: #999; color: #fff">Presets</th>
+  </tr>
+
+<tr>
+<td style="vertical-align: top; width: 200px; padding-right: 5px;">
+
+<ul class="nxthemesSelector">
+<#list preset_groups as group>
+<li <#if group = selected_preset_group>class="selected"</#if>><a href="javascript:NXThemesPresetManager.selectPresetGroup('${group}')">
+  <img src="${skinPath}/img/palette-16.png" width="16" height="16" />
+  ${group}</a></li>
+</#list>
+</ul>
+
+</td>
+<td style="padding-left: 10px; vertical-align: top;">
+
+<#if selected_preset_group>
+<!-- Palettes -->
+
+<table cellspacing="2" cellpadding="2" style="width: 100%">
+<#assign count = 0 /> 
+<#assign row = 1 /> 
+
+<#list This.getGlobalPresets(selected_preset_group) as preset_info>
+<#assign row = (count % 10) +1 /> 
+
+  <#if row == 0>
+    <tr>
+  </#if>
+<td class="preset">
+
+<div class="preview" title="${preset_info.value}">
+<ins class="model">
+  {"id": "preset_${group}_${preset_info.name}",
+   "type": "preset",
+   "data": {
+     "title": "${preset_info.name}",
+     "id": "${preset_info.id}",   
+     "group": "${selected_preset_group}",
+     "name": "${preset_info.name}",
+     "editable": false,
+     "copyable": true,
+     "pastable": false,
+     "deletable": false
+     }
+  }
+</ins>
+
+${preset_info.preview}</div>
+<div class="name">${preset_info.name}</div>
+
+</td>
+
+  <#if row == 10>
+    </tr>
+  </#if>
+  
+  <#assign count = count + 1/>
+</#list>
+
+<#if row < 10>
+  <#list row..9 as i>
+      <td></td>
+  </#list>
+  </tr>
+</#if>
+        
+</table>
+</#if>
+
+</td></tr></table>
+
+</#if>
 
 </div>
-
+</div>

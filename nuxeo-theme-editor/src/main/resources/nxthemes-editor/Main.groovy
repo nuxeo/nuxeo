@@ -57,22 +57,15 @@ public class Main extends ModuleRoot {
   }
 
   @GET
-  @Path("presetLibrary")
-  public Object renderPresetLibrary(@QueryParam("org.nuxeo.theme.application.path") String path,
-          @QueryParam("org.nuxeo.theme.application.name") String name) {
-    return getTemplate("presetLibrary.ftl").arg(           
-            "preset_groups", getPresetGroups()).arg(
-            "selected_preset_group", getSelectedPresetGroup())
-  }
-  
-  @GET
   @Path("presetManager")
   public Object renderPresetManager(@QueryParam("org.nuxeo.theme.application.path") String path,
           @QueryParam("org.nuxeo.theme.application.name") String name) {
     return getTemplate("presetManager.ftl").arg(
             "current_theme_name", getCurrentThemeName(path, name)).arg(
             "preset_manager_mode", getPresetManagerMode()).arg(
-            "selected_preset_category", getSelectedPresetCategory()) 
+            "selected_preset_category", getSelectedPresetCategory()).arg(
+            "preset_groups", getPresetGroups()).arg(
+            "selected_preset_group", getSelectedPresetGroup())
    }
 
   @GET
@@ -1522,6 +1515,9 @@ public class Main extends ModuleRoot {
   
   public static List<PresetInfo> getCustomPresets(String themeName, String category) {
       def presets = []
+      if ("".equals(category)) {
+          category = null      
+      }
       for (preset in PresetManager.getCustomPresets(themeName, category)) {
           presets.add(new PresetInfo(preset))
       }

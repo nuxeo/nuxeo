@@ -39,11 +39,6 @@
 
       <div id="nxthemesMainButtons">
                                             
-        <@nxthemes_button identifier="preset_library"
-          controlledBy="editor buttons"
-          switchTo="editor perspectives/preset library"
-          label="Factory presets" />
-                                            
         <@nxthemes_button identifier="quit"
           link="javascript:NXThemesEditor.exit()"
           icon="${basePath}/skin/nxthemes-editor/img/quit-14.png"
@@ -148,12 +143,6 @@
       url="${basePath}/nxthemes-editor/themeBrowser"
       controlledBy="editor perspectives"
       visibleInPerspectives="theme browser" />
-      
-    <!-- preset library -->
-    <@nxthemes_panel identifier="preset library"
-      url="${basePath}/nxthemes-editor/presetLibrary"
-      controlledBy="editor perspectives"
-      visibleInPerspectives="preset library" />
       
     <!-- element editor -->
     <@nxthemes_panel identifier="element editor"

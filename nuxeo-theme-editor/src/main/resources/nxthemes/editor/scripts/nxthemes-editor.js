@@ -1158,35 +1158,6 @@ NXThemes.registerFilters({
     'clean up canvas': NXThemesEditor.cleanUpCanvas
 });
 
-
-//PRESET LIBRARY
-
-if (typeof NXThemesPresetLibrary == "undefined") {
-    NXThemesPresetLibrary = {
-    }
-}
-
-NXThemesPresetLibrary.refresh = function() {
-    NXThemes.getViewById("preset library").refresh();
-};
-
-NXThemesPresetLibrary.selectPresetGroup = function(group) {
-    var url = nxthemesBasePath + "/nxthemes-editor/select_preset_group"; 
-    new Ajax.Request(url, {
-         method: 'post',
-         parameters: {
-             group: group
-         },
-         onSuccess: function(r) {
-        	 NXThemesPresetLibrary.refresh();
-         },
-         onFailure: function(r) {
-             var text = r.responseText;
-             window.alert(text);
-         }         
-    });
-};
-
 //PRESET MANAGER
 
 if (typeof NXThemesPresetManager == "undefined") {
@@ -1439,6 +1410,26 @@ NXThemesPresetManager.convertValueToPreset = function(themeName, category, prese
     });     
     
 };
+
+NXThemesPresetManager.selectPresetGroup = function(group) {
+  var url = nxthemesBasePath + "/nxthemes-editor/select_preset_group"; 
+  new Ajax.Request(url, {
+       method: 'post',
+       parameters: {
+           group: group
+       },
+       onSuccess: function(r) {
+      	 NXThemesPresetManager.refresh();
+       },
+       onFailure: function(r) {
+           var text = r.responseText;
+           window.alert(text);
+       }         
+  });
+};
+
+
+
 
 NXThemes.addActions({
     'edit preset': NXThemesPresetManager.editPreset,

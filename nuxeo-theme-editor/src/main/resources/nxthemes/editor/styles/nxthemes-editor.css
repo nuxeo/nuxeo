@@ -1554,7 +1554,7 @@ table.fragmentFactory td {
 .nxthemesUndoButtons {
   background-color: #ccc;
   position: absolute;
-  right: 210px;
+  right: 100px;
   top: 9px;
   padding: 2px 4px; 
   font: bold 11px Arial;
@@ -1614,6 +1614,7 @@ table.fragmentFactory td {
   -webkit-border-radius: 7px;
   border-radius: 7px;
   background: #ffc url(${basePath}/skin/nxthemes-editor/img/style-16.png) 7px 8px no-repeat;
+  cursor: default;
 }       
 
 .nxthemesStyleTree ul ul { 
