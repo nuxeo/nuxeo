@@ -52,7 +52,7 @@ public final class ElementRenderer {
 
     public static RenderingInfo render(RenderingInfo info, final boolean cache) {
         InfoPool.register(info);
-        
+
         final StringWriter rendered = new StringWriter();
         final URL themeUrl = info.getThemeUrl();
         if (themeUrl == null) {
@@ -74,11 +74,13 @@ public final class ElementRenderer {
             try {
                 info.setModel(fragment.getModel());
             } catch (ModelException e) {
-                final String fragmentName = fragment.getFragmentType().getTypeName();
-                log.error("Rendering of fragment '" + fragmentName
-                        + "' failed:");
-                e.printStackTrace();
-                return info;
+                if (info.isDirty()) {
+                    final String fragmentName = fragment.getFragmentType().getTypeName();
+                    log.error("Rendering of fragment '" + fragmentName
+                            + "' failed:");
+                    e.printStackTrace();
+                    return info;
+                }
             }
             if (fragment.isDynamic()) {
                 info.setDirty(true);

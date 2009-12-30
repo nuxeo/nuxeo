@@ -19,8 +19,10 @@ import java.net.URL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementType;
 import org.nuxeo.theme.engines.EngineType;
+import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.models.Model;
 import org.nuxeo.theme.models.ModelType;
 import org.nuxeo.theme.rendering.AbstractFilter;
@@ -62,7 +64,8 @@ public class FormatFilter extends AbstractFilter {
         final EngineType engine = info.getEngine();
         final TemplateEngineType templateEngineType = info.getTemplateEngine();
         final String viewMode = info.getViewMode();
-        final ElementType elementType = info.getElement().getElementType();
+        final Element element = info.getElement();
+        final ElementType elementType = element.getElementType();
 
         final Model model = info.getModel();
         final ModelType modelType = model == null ? null : model.getModelType();
@@ -74,10 +77,24 @@ public class FormatFilter extends AbstractFilter {
                 elementType, modelType, formatType, templateEngineType);
 
         if (view == null) {
-            log.warn(String.format(
-                    "No %s view named '%s' found for %s element (theme URL is: %s)",
-                    formatType.getTypeName(), format.getName(),
-                    elementType.getTypeName(), info.getThemeUrl().toString()));
+            // Sanity check
+            if (model == null) {
+                if (element instanceof Fragment) {
+                    Fragment fragment = (Fragment) element;
+                    ModelType expectedModelType = fragment.getFragmentType().getModelType();
+                    if (expectedModelType != null) {
+                        log.warn(String.format(
+                                "Fragment %s should have returned a model of type: %s",
+                                fragment.computeXPath(),
+                                expectedModelType.getTypeName()));
+                    }
+                }
+            } else {
+                log.warn(String.format(
+                        "No %s view named '%s' found for element %s (theme URL is: %s)",
+                        formatType.getTypeName(), format.getName(),
+                        element.computeXPath(), info.getThemeUrl().toString()));
+            }
         } else {
 
             final String markup = view.render(info);
@@ -140,9 +157,8 @@ public class FormatFilter extends AbstractFilter {
 
         // fall back to unspecified view name and unspecified model type
         if (view == null && !"*".equals(effectiveViewName)) {
-            view = getViewFor(formatTypeName, elementTypeName, "*",
-                    "*", engineName, effectiveViewMode,
-                    templateEngineName);
+            view = getViewFor(formatTypeName, elementTypeName, "*", "*",
+                    engineName, effectiveViewMode, templateEngineName);
         }
         return view;
     }
