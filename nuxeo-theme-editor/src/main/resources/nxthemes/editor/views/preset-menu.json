@@ -6,7 +6,9 @@
        "arrow":  "/skin/nxthemes-editor/img/arrow-16.png",
        "showDisabledItems": false,
        "targetType": "preset",
-       "items": [            
+       "items": [
+         {"type": "title"
+         },                 
          {"type": "item",
           "label": "Edit",
           "icon": "/skin/nxthemes-editor/img/edit-16.png",
