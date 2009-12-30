@@ -1,25 +1,31 @@
 var perm = gadgets.util.getUrlParameters().permission;
-var modifyLink = "<div style=\"float:left;\"><a href=\"javascript:modifyVideo();\" id=\"modifyVideo\">Modifier</a></div>";
+var modifyLink = "<div style=\"float:left;\" id=\"modifyLink\"><a href=\"javascript:modifyVideo();\" id=\"modifyVideo\">Modifier</a></div>";
 
 function validateVideo() {
   prefs.set("vidTitle",gadgets.util.escapeString(jQuery("#title-field").val()));
   gadgets.nuxeo.setHtmlContent(jQuery("#baliseVideo").val());
   if(perm == 'true')
     html = modifyLink + jQuery("#baliseVideo").val();
+
   showVideo(html);
+  jQuery("#cancelVideo").show();
+
+  return false;
 }
 
 function modifyVideo() {
+  jQuery("#modifyLink").hide();
   showForm();
 }
 
 function showForm() {
   jQuery("#addVideo").show();
-  jQuery("#showVideo").hide();
+  //jQuery("#showVideo").hide();
   gadgets.window.adjustHeight();
 }
 
 function cancelVideo(){
+  jQuery("#modifyLink").show();
   showVideo(html)
 }
 
@@ -40,6 +46,7 @@ function launchVideoWidget(balise) {
   jQuery("#title-field").val(prefs.getString("vidTitle"));
   if (balise == "") {
     // Pas de balise vidéo saisie
+  jQuery("#cancelVideo").hide();
     showForm();
   } else {
     // Vidéo présente

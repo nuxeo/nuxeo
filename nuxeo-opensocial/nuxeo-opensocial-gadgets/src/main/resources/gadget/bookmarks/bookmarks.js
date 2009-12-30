@@ -128,7 +128,7 @@ function rowClass(number) {
 
 function createAddBookmarkButton(){
 
-  var html ="<a class=\"addBookmark\" href=\"javascript: toogleForms('create')\" style=\"text-decoration:none; font-size: 80%; color: black;\">Ajouter</a>";
+  var html ="<a class=\"addBookmark\" href=\"javascript: toogleForms('create')\">Ajouter</a>";
 
   _gel("addBookmarkIcon").innerHTML = html;
   gadgets.window.adjustHeight();

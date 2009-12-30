@@ -21,24 +21,34 @@
          font-size:11px;
         }
 
+        #cancelVideo img{
+         border:0;
+         padding:5px 5px 0 0;
+       }
+
         #baliseVideo{
-         border:1px solid #000000;
-         width:80%;
+         border:1px solid #ffffff;
+         width:98%;
+         height:70px;
          display:block;
-         margin:auto;
+        }
+
+        #title-field{
+         width:98%;
+         border:1px solid #ffffff;
         }
 
         #container{
          padding:0 0 5px 0;
         }
 
-        #addVideo,#showVideo{
-         display:none;
+        #hideContainer{
+           background:#666666;
+          text-align:right;
         }
 
-        input{
-         width:250px;
-         border:1px solid #000000;
+        #addVideo,#showVideo{
+         display:none;
         }
 
         #title{
@@ -48,9 +58,38 @@
           font-weight:bold;
         }
 
+        #formVideo{
+          background:#666666;
+          color:#ffffff;
+          font-family:Tahoma, Arial, Verdana;
+          font-weight:bold;
+        }
+
         label{
-         width:40px;
-         display:inline-block;
+         padding-left:10px;
+        }
+
+        #modifyLink a{
+          text-decoration:none;
+          padding-left:20px;
+          background:url(edit.png) no-repeat 0 0;
+          color:#000000;
+          font-weight:bold;
+        }
+
+         #modifyLink a:hover{
+        text-decoration:underline;
+        }
+
+        #valid{
+          padding-left:14px;
+          background:url(accept.png) no-repeat 0 0;
+          color:#FFFFFF;
+          display:block;
+          float:right;
+          font-weight:bold;
+          padding-left:18px;
+          text-decoration:none;
         }
 
       </style>
@@ -66,25 +105,35 @@
            });
         })
       </script>
-
-      <div id="addVideo">
-        <div style="float:right;"><a href="javascript:cancelVideo();" id="cancelVideo">Annuler</a></div>
-        <span>Veuillez copier une balise vidéo</span>
-        <div>
-            <label>Titre : </label>
-          <input type="text" name="title" id="title-field" value="">
-        </div>
-        <div id="container">
-           <label>Balise : </label>
-          <textarea name="baliseVideo" id="baliseVideo"></textarea>
-        </div>
-        <div>
-          <a href="javascript:validateVideo()">Valider</a>
-        </div>
+      <div id="showVideo">
 
       </div>
-
-      <div id="showVideo">
+      <div id="addVideo">
+        <div id="hideContainer"><a href="javascript:cancelVideo();" id="cancelVideo" title="fermer"><img src="x.png"></a></div>
+        <table style="width:100%" id="formVideo">
+          <tr>
+            <td style="width:30%">
+              <label>Titre : </label>
+            </td>
+            <td style="width:70%">
+              <input type="text" name="title" id="title-field" value="">
+            </td>
+          </tr>
+          <tr>
+            <td style="width:30%">
+              <label>Balise Video : </label>
+            </td>
+            <td style="width:70%">
+               <textarea name="baliseVideo" id="baliseVideo"></textarea>
+            </td>
+          </tr>
+          <tr>
+          <td style="width:30%"></td>
+          <td style="width:70%">
+              <a href="" id="valid" onclick="javascript:validateVideo();" >Valider</a>
+          </td>
+        </tr>
+        </table>
 
       </div>
 

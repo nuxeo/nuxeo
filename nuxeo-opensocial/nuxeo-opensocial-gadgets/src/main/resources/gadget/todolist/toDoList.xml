@@ -194,6 +194,10 @@
           width:100%;
         }
 
+        #newNameInput{
+         border:1px solid #000000;
+        }
+
 
         .name_td, .owner_td, .deadline_td {
           font-size: 80%;
@@ -281,6 +285,10 @@
         text-decoration:underline;
         }
 
+        #addItemIcon{
+         padding:2px 0 0 0;
+        }
+
 
       </style>
     <div id="addItemIcon" style="visibility:visible;">
@@ -312,7 +320,7 @@
                    <span class="label"  id="labelEcheance">Echéance&nbsp;:</span>
                 </td>
                 <td width="235">
-                    <input id="newDeadLineInput" class="date-pick" type="text" style="width:165px; font-size: 11px;">
+                    <input id="newDeadLineInput" class="date-pick" type="text" style="width:100%; font-size: 11px;">
                   </td>
                </tr>
                <tr>
