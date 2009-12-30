@@ -46,9 +46,9 @@
     <copy todir="${outdir}/nuxeo-ep-jboss">
       <fileset dir="${jboss}" />
     </copy>
-    <copy todir="${outdir}/nuxeo-ep-jboss/server/default/deploy/nuxeo.ear">
+    <unzip dest="${outdir}/nuxeo-ep-jboss/server/default/deploy/nuxeo.ear">
       <artifact:file groupId="org.nuxeo.ecm.platform" artifactId="nuxeo-platform-ear" type="zip" />
-    </copy>
+    </unzip>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
       basedir="${outdir}/nuxeo-ep-jboss" />
     <artifact:attach
@@ -63,9 +63,9 @@
     <copy todir="${outdir}/nuxeo-dm-jboss">
       <fileset dir="${jboss}" />
     </copy>
-    <copy todir="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear">
+    <unzip dest="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear">
       <artifact:file groupId="org.nuxeo.ecm.distribution" artifactId="nuxeo-distribution-dm" type="zip" />
-    </copy>
+    </unzip>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
       basedir="${outdir}/nuxeo-dm-jboss" />
     <artifact:attach
