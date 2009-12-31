@@ -106,7 +106,9 @@ public class CoreSessionProvider implements Provider<CoreSession> {
             TestRepositoryHandler repo = new TestRepositoryHandler(
                     getRepoName());
             repo.openRepository();
-            return repo.openSessionAs(NuxeoCoreRunner.getSettings().getRepositoryUsername());
+            CoreSession session = repo.openSessionAs(NuxeoCoreRunner.getSettings().getRepositoryUsername());
+            NuxeoCoreRunner.onSessionInjected(session);
+            return session;
         } catch (Exception e) {
             log.error(e.toString(), e);
             return null;

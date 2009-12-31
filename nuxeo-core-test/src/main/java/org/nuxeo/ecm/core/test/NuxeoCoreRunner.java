@@ -16,14 +16,21 @@
  */
 package org.nuxeo.ecm.core.test;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
+import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.test.annotations.RepositoryBackends.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryCleanup.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInitializer.RepositoryInit;
@@ -46,6 +53,8 @@ public class NuxeoCoreRunner extends NuxeoRunner implements
     private Settings settings;
 
     private BackendType backendType;
+
+    private static Stack<CoreSession> injectedSessions = new Stack<CoreSession>();
 
     public NuxeoCoreRunner(Class<?> classToRun) throws InitializationError {
         this(classToRun, new RuntimeModule(), new CoreModule());
@@ -73,6 +82,36 @@ public class NuxeoCoreRunner extends NuxeoRunner implements
     }
 
     @Override
+    protected void afterRun() {
+        List<String> repoNames = new ArrayList<String>();
+
+        if (injectedSessions.size() > 0) {
+
+            while (injectedSessions.size() > 0) {
+                CoreSession session = injectedSessions.pop();
+
+                if (!repoNames.contains(session.getRepositoryName())) {
+                    repoNames.add(session.getRepositoryName());
+                }
+
+                CoreInstance.getInstance().close(session);
+            }
+        }
+
+        for (String repoName : repoNames) {
+            try {
+                Repository repository = NXCore.getRepositoryService()
+                        .getRepositoryManager().getRepository(repoName);
+                log.info("Shutdown repository : " + repoName);
+                repository.shutdown();
+            } catch (Exception e) {
+                log.error("Unable to get repository : " + repoName);
+            }
+        }
+
+    }
+
+    @Override
     protected Statement methodInvoker(FrameworkMethod method, Object test) {
         Statement statement = super.methodInvoker(method, test);
         if (settings.getRepositoryCleanupGranularity() == Granularity.METHOD) {
@@ -83,6 +122,7 @@ public class NuxeoCoreRunner extends NuxeoRunner implements
 
     protected void cleanupSession() {
         CoreSession session = injector.getInstance(CoreSession.class);
+
         try {
             session.removeChildren(new PathRef("/"));
         } catch (ClientException e) {
@@ -97,6 +137,7 @@ public class NuxeoCoreRunner extends NuxeoRunner implements
                 log.error(e.toString(), e);
             }
         }
+
     }
 
     public BackendType get() {
@@ -106,6 +147,13 @@ public class NuxeoCoreRunner extends NuxeoRunner implements
         } else {
             // multi-backend case, return current one
             return backendType;
+        }
+    }
+
+    //Waiting for Guice 2.0 type listeners
+    public static void onSessionInjected(CoreSession session) {
+        if (!injectedSessions.contains(session)) {
+            injectedSessions.push(session);
         }
     }
 
