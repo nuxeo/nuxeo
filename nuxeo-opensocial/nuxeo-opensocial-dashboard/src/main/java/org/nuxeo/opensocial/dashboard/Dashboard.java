@@ -28,9 +28,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
-import org.nuxeo.ecm.spaces.api.Univers;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
-import org.nuxeo.ecm.spaces.api.exceptions.UniversNotFoundException;
 import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 import org.nuxeo.opensocial.container.component.api.FactoryManager;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
@@ -69,25 +67,8 @@ public class Dashboard implements Serializable {
     protected DocumentModel lastAccessedDocument;
 
     public String getPersonalDashboardId() {
-        SpaceManager spaceManager;
         try {
-            spaceManager = Framework.getService(SpaceManager.class);
-            if (spaceManager == null) {
-                log.warn("unable to find space manager!");
-            } else {
-                Univers universe;
-                universe = spaceManager.getUnivers(
-                        DashboardUniverseProvider.DASHBOARD_UNIVERSE_NAME,
-                        documentManager);
-                // dumpDocumentInfo(universe.getId());
-                Space dashSpace = spaceManager.getSpace(
-                        DashboardSpaceProvider.DASHBOARD_SPACE_NAME, universe,
-                        documentManager);
-                dumpDocumentInfo(dashSpace.getId());
-                return dashSpace.getId();
-            }
-        } catch (UniversNotFoundException e) {
-            log.error("Unable to find the default universe for our space!", e);
+            return DashboardSpaceProvider.getSpaceId(documentManager);
         } catch (SpaceException e) {
             log.error("Unable to access space correctly for our dashboard!", e);
         } catch (Exception e) {

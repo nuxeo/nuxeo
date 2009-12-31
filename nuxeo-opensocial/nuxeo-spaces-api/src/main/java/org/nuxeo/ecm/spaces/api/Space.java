@@ -17,105 +17,107 @@
 
 package org.nuxeo.ecm.spaces.api;
 
+import java.net.URL;
 import java.util.Calendar;
 import java.util.List;
 
-/**
- * Gadget container corresponding to a sub-part of an universe . A
- * <code>Space</code> can contain <code>Gadget</code> elements .
- * <code>Gadget</code> elements contained in this space are retrieved via the
- * SpaceManager framework service : <br/>
- * <br/>
- * SpaceManager service = Framework.getService(SpaceManager.class)<br/>
- * List&lt;Space&gt; gadgets = service.getGadgetsForSpace(space,coreSession);
- */
-public interface Space {
+import org.nuxeo.ecm.core.api.ClientException;
 
-  /**
-   * Unique identifier of a space instance
-   * 
-   * @return
-   */
-  String getId();
 
-  /**
-   * Name of the space
-   * 
-   * @return
-   */
-  String getName();
 
-  /**
-   * Space theme
-   * 
-   * @return
-   */
-  String getTheme();
+public interface Space extends Comparable<Space>{
 
-  /**
-   * Title of the space
-   * 
-   * @return
-   */
-  String getTitle();
+    /**
+     * Unique identifier of a space instance
+     *
+     * @return
+     */
+    String getId();
 
-  /**
-   * description of the space
-   * 
-   * @return
-   */
-  String getDescription();
+    /**
+     * Name of the space
+     *
+     * @return
+     */
+    String getName();
 
-  /**
-   * A key for displaying elements in this space
-   * 
-   * @return
-   */
-  String getLayout();
+    /**
+     * Space theme
+     *
+     * @return
+     */
+    String getTheme() throws ClientException;
 
-  /**
-   * Family/category of this space
-   * 
-   * @return
-   */
-  String getCategory();
+    void setTheme(String theme) throws ClientException;
 
-  /**
-   * Name of the creator of this space
-   * 
-   * @return
-   */
-  String getOwner();
+    /**
+     * Title of the space
+     *
+     * @return
+     */
+    String getTitle() throws ClientException;
 
-  /**
-   * Date publication of this space
-   * 
-   * @return
-   */
-  Calendar getDatePublication();
+    void setTitle(String title) throws ClientException;
 
-  /**
-   * versionnable property
-   * 
-   * @return
-   */
-  boolean isVersionnable();
+    /**
+     * description of the space
+     *
+     * @return
+     */
+    String getDescription() throws ClientException;
 
-  /**
-   * current version property
-   * 
-   * @return
-   */
-  boolean isCurrentVersion();
+    void setDescription(String description) throws ClientException;
 
-  List<Space> getVersions();
+    /**
+     * A key for displaying elements in this space
+     *
+     * @return
+     */
+    String getLayout() throws ClientException;
 
-  /**
-   * for comparison
-   * 
-   * @param space
-   * @return
-   */
-  boolean isEqualTo(Space space);
+    void setLayout(String name) throws ClientException;
+
+    /**
+     * Family/category of this space
+     *
+     * @return
+     */
+    String getCategory() throws ClientException;
+
+    void setCategory(String category) throws ClientException;
+
+    /**
+     * Name of the creator of this space
+     *
+     * @return
+     */
+    String getOwner() throws ClientException;
+
+    /**
+     * Name of the viewer of this space
+     *
+     * @return
+     */
+    String getViewer() throws ClientException;
+
+    boolean isReadOnly() throws ClientException;
+
+    Gadget createGadget(String gadgetName) throws ClientException;
+
+    Gadget createGadget(URL gadgetDefUrl) throws ClientException;
+
+    void save(Gadget gadget) throws ClientException;
+
+    void remove(Gadget gadget) throws ClientException;
+
+    List<Gadget> getGadgets() throws ClientException;
+
+    boolean hasPermission(String permissionName) throws ClientException;
+
+    void save() throws ClientException;
+
+    Space copyFrom(Space space) throws ClientException;
+
+    Calendar getPublicationDate() throws ClientException;
 
 }
