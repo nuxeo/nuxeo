@@ -1,8 +1,9 @@
 package org.nuxeo.ecm.spaces.core.impl.docwrapper;
 
+import org.nuxeo.ecm.spaces.api.AbstractUnivers;
 import org.nuxeo.ecm.spaces.api.Univers;
 
-public class VirtualUnivers implements Univers {
+public class VirtualUnivers extends AbstractUnivers {
 
     private final String name;
 
@@ -24,12 +25,13 @@ public class VirtualUnivers implements Univers {
     }
 
     public String getTitle() {
-        // TODO Auto-generated method stub
         return getName();
     }
 
     public boolean isEqualTo(Univers univers) {
         return univers.getClass() == this.getClass() && univers.getName() == getName();
     }
+
+
 
 }

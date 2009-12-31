@@ -40,7 +40,7 @@ public class DashboardSpaceProvider extends SingleDocSpaceProvider {
             "secondCol", "thirdCol", "fourCol" };
 
     @Override
-    public Space getSpace(String name, CoreSession session)
+    public Space doGetSpace(String name, CoreSession session)
             throws SpaceException {
         if (!name.equals(DASHBOARD_SPACE_NAME)) {
             throw new SpaceException("Only one space is supported by the "

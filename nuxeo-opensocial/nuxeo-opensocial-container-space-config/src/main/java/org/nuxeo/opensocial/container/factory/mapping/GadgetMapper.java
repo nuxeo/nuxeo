@@ -39,6 +39,14 @@ import org.nuxeo.opensocial.container.factory.PreferenceManager;
 import org.nuxeo.opensocial.container.factory.utils.GadgetsUtils;
 import org.nuxeo.opensocial.container.factory.utils.UrlBuilder;
 
+/**
+ * This is the mapper between GadgetBean and Gadget interface
+ * GadgetBean (GWT) -> GadgetMapper <- Gadget (interface)
+ *
+ * TODO: leverage this model by storing all info interface
+ * and make it serializable for GWT.
+ *
+ */
 public class GadgetMapper extends GadgetBean implements Gadget {
 
     private Map<String, String> preferences = new HashMap<String, String>();
@@ -61,6 +69,10 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     private boolean permission;
     private String name;
     private String spaceName;
+
+    private URL definitionURL;
+
+
 
     /**
      * Constructor for convert GadgetBean to Gadget
@@ -114,7 +126,15 @@ public class GadgetMapper extends GadgetBean implements Gadget {
         this.viewer = viewer;
         this.shindigId = shindigId;
         this.permission = permission;
+        this.definitionURL = gadget.getDefinitionUrl();
+
         createGadgetBean();
+        bean.setRenderUrl(renderUrl);
+        bean.setPosition(this.position);
+        bean.setHeight(gadget.getHeight());
+        this.setHeight(gadget.getHeight());
+        this.renderUrl = updateRenderUrl();
+
     }
 
     @Override
@@ -251,10 +271,8 @@ public class GadgetMapper extends GadgetBean implements Gadget {
         updateTitleInPreference();
         bean = new GadgetBean(shindigId, ref, title, viewer, defaultPrefs,
                 userPrefs, permission, collapsed, name, spaceName,
-                createGadgetViews(), "", getHeight());
-        this.renderUrl = updateRenderUrl();
-        bean.setRenderUrl(renderUrl);
-        bean.setPosition(this.position);
+                createGadgetViews(), "", 300);
+
     }
 
     private Map<String, GadgetView> createGadgetViews() {
@@ -308,48 +326,61 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     }
 
     public Space getParent() {
-        // TODO Auto-generated method stub
         return null;
+
     }
 
     public URL getDefinitionUrl() {
-        // TODO Auto-generated method stub
-        return null;
+        return definitionURL;
     }
 
     public String getPref(String prefKey) throws ClientException {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, String> prefs = getPreferences();
+        if(prefs.containsKey(prefKey)) {
+            return prefs.get(prefKey);
+        } else return "";
     }
 
     public void setCategory(String category) throws ClientException {
-        // TODO Auto-generated method stub
 
     }
 
     public void setCollapsed(boolean collapsed) throws ClientException {
-        // TODO Auto-generated method stub
+        this.bean.setCollapse(collapsed);
 
     }
 
     public void setDefinitionUrl(URL url) throws ClientException {
-        // TODO Auto-generated method stub
 
     }
 
     public void setDescription(String description) throws ClientException {
-        // TODO Auto-generated method stub
 
     }
 
     public void setPlaceId(String placeId) throws ClientException {
-        // TODO Auto-generated method stub
+        GadgetPosition position = this.bean.getGadgetPosition();
+        if(position != null) {
+            position.setPlaceId(placeId);
+        } else {
+            position = new GadgetPosition(placeId, getPosition());
+            this.bean.setPosition(position);
+        }
 
     }
 
     public void setPosition(int position) throws ClientException {
-        // TODO Auto-generated method stub
+        GadgetPosition pos = this.bean.getGadgetPosition();
+        if(pos != null) {
+            pos.setPosition(position);
+        } else {
+            pos = new GadgetPosition(getPlaceID(), position);
+            this.bean.setPosition(pos);
+        }
+    }
 
+    public void setHeight(int height) throws ClientException {
+        this.bean.setHeight(height);
     }
 
 }

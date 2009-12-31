@@ -31,6 +31,8 @@ public class DocGadgetImpl extends AbstractGadget {
     private static final String GADGET_COLLAPSED = "gadget:collapsed";// is the
                                                                         // gadget
                                                                         // collapsed
+
+    private static final String GADGET_HEIGHT = "gadget:height";
     private static final String GADGET_PREFERENCES = "gadget:props";
     private static final String GADGET_NAME = "gadget:name";
     private static final String GADGET_URL = "gadget:url";
@@ -96,11 +98,21 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public String getPlaceID() throws ClientException {
-        return (String) doc.getPropertyValue(GADGET_PLACEID);
+        String result = (String) doc.getPropertyValue(GADGET_PLACEID);
+        if(result == null) {
+            return "";
+        } else {
+            return result;
+        }
     }
 
     public int getPosition() throws ClientException {
-        return (Integer) doc.getPropertyValue(GADGET_POSITION);
+        Integer result = (Integer) doc.getPropertyValue(GADGET_POSITION);
+        if(result == null) {
+            return 0;
+        } else {
+            return result;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -126,11 +138,11 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public boolean isCollapsed() throws ClientException {
-        Property p = doc.getProperty(GADGET_COLLAPSED);
-        if (p == null) {
+        Boolean result =  (Boolean) doc.getPropertyValue(GADGET_COLLAPSED);
+        if (result == null) {
             return false;
         } else {
-            return (Boolean) p.getValue();
+            return result;
         }
     }
 
@@ -188,6 +200,21 @@ public class DocGadgetImpl extends AbstractGadget {
 
     public void setTitle(String title) throws ClientException {
         doc.setPropertyValue("dc:title", title);
+
+    }
+
+    public int getHeight() throws ClientException {
+        Integer result = (Integer) doc.getPropertyValue(GADGET_HEIGHT);
+        if(result == null) {
+            return 0;
+
+        } else {
+            return result;
+        }
+    }
+
+    public void setHeight(int height) throws ClientException {
+        doc.setPropertyValue(GADGET_HEIGHT, height);
 
     }
 

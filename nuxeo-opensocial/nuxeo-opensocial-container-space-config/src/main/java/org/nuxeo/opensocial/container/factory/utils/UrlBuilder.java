@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.opensocial.container.client.bean.PreferencesBean;
+import org.nuxeo.opensocial.container.factory.PreferenceManager;
 import org.nuxeo.opensocial.container.factory.mapping.GadgetMapper;
 import org.nuxeo.opensocial.container.utils.SecureTokenBuilder;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
@@ -94,9 +95,10 @@ public class UrlBuilder {
         // perm=1 -> does the session has write perm on gadget
         sb.append(PERMISSION_KEY + "=" + gadget.getPermission() + "&");
 
+
         // url=http://.../gadget.xml?up_prefname=prefvalue
         sb.append(URL_KEY + "=" + gadgetDef
-                + getUserPrefs(gadget.getUserPrefs()) + "&");
+                + getUserPrefs(PreferenceManager.getPreferences(gadget)) + "&");
 
         // up_=150&
         sb.append("up_" + gadget.getHeight() + "&");

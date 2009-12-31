@@ -17,6 +17,11 @@
 
 package org.nuxeo.ecm.spaces.api;
 
+import java.util.List;
+
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
+
 
 
 /**
@@ -62,5 +67,7 @@ package org.nuxeo.ecm.spaces.api;
    * @return
    */
   boolean isEqualTo(Univers univers);
+
+  List<Space> getSpaces(CoreSession session) throws SpaceException;
 
 }

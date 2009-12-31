@@ -151,8 +151,14 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
             if (descriptor.matches(univers.getName())) {
                 try {
                     list.addAll(descriptor.getProvider().getAll(coreSession));
-                } catch (Exception e) {
-                    LOGGER.warn("Unable to get space for provider : "
+                } catch (SpaceNotFoundException e) {
+                    //This can be absolutely normal
+                    continue;
+                } catch (InstantiationException e) {
+                    LOGGER.warn("Unable instanciate provider : "
+                            + descriptor.getName(),e);
+                } catch (IllegalAccessException e) {
+                    LOGGER.warn("Unable to instanciate provider : "
                             + descriptor.getName(),e);
                 }
             }

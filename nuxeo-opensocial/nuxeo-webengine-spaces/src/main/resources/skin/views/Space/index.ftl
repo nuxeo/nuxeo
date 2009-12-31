@@ -1,4 +1,5 @@
-<@block name="main-content">
+<@extends src="base.ftl">
+<@block name="content">
 <div>
   <div style="min-height:300px;height:auto !important;height:300px;">
     <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/gadgets/js/rpc.js?c=1"></script>
@@ -14,3 +15,4 @@
   </div>
 </div>
 </@block>
+</@extends>

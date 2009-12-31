@@ -88,7 +88,7 @@ public class SpaceContribDescriptor implements
     }
 
     public int compareTo(SpaceContribDescriptor o) {
-        return ((SpaceContribDescriptor) o).getOrder() - this.getOrder();
+        return this.getOrder() - o.getOrder() ;
     }
 
     public boolean matches(String universName) {

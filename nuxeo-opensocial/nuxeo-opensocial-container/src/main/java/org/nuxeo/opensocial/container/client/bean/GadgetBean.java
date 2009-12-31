@@ -165,11 +165,9 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
         .getPosition();
     Integer pos2 = this.getGadgetPosition()
         .getPosition();
-    if (pos1 > pos2)
-      return -1;
-    else if (pos1 == pos2)
-      return 0;
-    return 1;
+
+    return pos2 - pos1 ;
+
   }
 
   public String getHtmlContent() {
@@ -177,7 +175,7 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
   }
 
   public int getHeight() {
-    return height.intValue();
+    return height;
   }
 
   public void setHeight(Integer height) {

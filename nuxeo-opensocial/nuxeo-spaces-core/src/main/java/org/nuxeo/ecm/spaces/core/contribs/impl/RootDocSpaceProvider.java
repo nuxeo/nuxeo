@@ -80,7 +80,7 @@ public class RootDocSpaceProvider extends AbstractSpaceProvider {
     }
 
 
-    public Space getSpace(String spaceName, CoreSession session) throws SpaceException {
+    public Space doGetSpace(String spaceName, CoreSession session) throws SpaceException {
         DocumentModel doc;
         try {
             doc = session.getChild(rootDoc.getRef(), spaceName);
@@ -141,4 +141,7 @@ public class RootDocSpaceProvider extends AbstractSpaceProvider {
     public boolean isReadOnly() {
         return false;
     }
+
+
+
 }

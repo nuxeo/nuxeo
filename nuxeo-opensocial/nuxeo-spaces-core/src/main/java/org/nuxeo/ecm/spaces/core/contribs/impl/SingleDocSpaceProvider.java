@@ -47,7 +47,7 @@ public class SingleDocSpaceProvider extends AbstractSpaceProvider {
         return result;
     }
 
-    public Space getSpace(String spaceName, CoreSession session)
+    public Space doGetSpace(String spaceName, CoreSession session)
             throws SpaceException {
         return getOrCreateSingleSpace(session).getAdapter(Space.class);
     }

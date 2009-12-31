@@ -109,5 +109,11 @@ public interface Gadget {
 
   Space getParent() throws ClientException;
 
+  int getHeight() throws ClientException;
+
+  void setHeight(int height) throws ClientException;
+
+
+
 
 }
