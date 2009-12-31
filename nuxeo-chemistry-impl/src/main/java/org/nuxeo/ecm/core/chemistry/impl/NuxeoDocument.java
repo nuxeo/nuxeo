@@ -27,15 +27,10 @@ import org.apache.chemistry.ContentAlreadyExistsException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.Document;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.apache.chemistry.StreamNotSupportedException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public class NuxeoDocument extends NuxeoObject implements Document {
-
-    private static final Log log = LogFactory.getLog(NuxeoDocument.class);
 
     public NuxeoDocument(DocumentModel doc, NuxeoConnection connection) {
         super(doc, connection);
@@ -76,13 +71,9 @@ public class NuxeoDocument extends NuxeoObject implements Document {
         if (getType().getContentStreamAllowed() == ContentStreamPresence.NOT_ALLOWED) {
             return false;
         }
-        if (!doc.hasSchema("file")) {
-            return false;
-        }
         try {
-            return (Blob) doc.getProperty("file", "content") != null;
-        } catch (ClientException e) {
-            log.error("Could not check blob presence", e);
+            return NuxeoProperty.getContentStream(doc) != null;
+        } catch (StreamNotSupportedException e) {
             return false;
         }
     }

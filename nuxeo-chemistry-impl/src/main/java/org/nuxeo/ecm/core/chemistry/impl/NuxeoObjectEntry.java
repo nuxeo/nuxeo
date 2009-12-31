@@ -31,7 +31,6 @@ import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Type;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public class NuxeoObjectEntry implements ObjectEntry, DocumentModelHolder {

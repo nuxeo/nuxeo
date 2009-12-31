@@ -73,12 +73,10 @@ public class NuxeoObject extends BaseObject implements CMISObject,
     }
 
     public void delete() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        connection.deleteObject(this, false);
     }
 
     public void unfile() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 

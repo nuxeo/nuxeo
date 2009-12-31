@@ -27,7 +27,7 @@
 
   <properties>
     <chemistry.version>1.0-SNAPSHOT</chemistry.version>
-    <nuxeo.webengine.version>5.2.1-SNAPSHOT</nuxeo.webengine.version>
+    <nuxeo.webengine.version>5.3.1-SNAPSHOT</nuxeo.webengine.version>
     <metro.version>1.4</metro.version>
   </properties>
 

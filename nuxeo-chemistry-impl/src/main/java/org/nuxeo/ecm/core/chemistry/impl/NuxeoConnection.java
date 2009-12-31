@@ -37,6 +37,7 @@ import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.Connection;
+import org.apache.chemistry.ConstraintViolationException;
 import org.apache.chemistry.ContentAlreadyExistsException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
@@ -54,6 +55,7 @@ import org.apache.chemistry.Relationship;
 import org.apache.chemistry.Rendition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
+import org.apache.chemistry.StreamNotSupportedException;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.Updatability;
@@ -256,13 +258,7 @@ public class NuxeoConnection implements Connection, SPI {
             if (!session.exists(docRef)) {
                 throw new ObjectNotFoundException(folder.getId());
             }
-            // hide HiddenInNavigation and deleted objects from children listing
-            Filter facetFilter = new FacetFilter(
-                    FacetNames.HIDDEN_IN_NAVIGATION, false);
-            Filter lcFilter = new LifeCycleFilter(
-                    LifeCycleConstants.DELETED_STATE, false);
-            docs = session.getChildren(docRef, null, new CompoundFilter(
-                    facetFilter, lcFilter), null);
+            docs = session.getChildren(docRef, null, getChildrenFilter(), null);
         } catch (ClientException e) {
             throw new CMISRuntimeException(e.toString(), e);
         }
@@ -271,6 +267,15 @@ public class NuxeoConnection implements Connection, SPI {
             all.add(new NuxeoObjectEntry(child, this));
         }
         return SimpleConnection.getListPage(all, paging);
+    }
+
+    // hide HiddenInNavigation and deleted objects from children listing
+    protected Filter getChildrenFilter() {
+        Filter facetFilter = new FacetFilter(FacetNames.HIDDEN_IN_NAVIGATION,
+                false);
+        Filter lcFilter = new LifeCycleFilter(LifeCycleConstants.DELETED_STATE,
+                false);
+        return new CompoundFilter(facetFilter, lcFilter);
     }
 
     public ObjectEntry getFolderParent(ObjectId folder, String filter) {
@@ -312,11 +317,17 @@ public class NuxeoConnection implements Connection, SPI {
     public ObjectId createDocument(Map<String, Serializable> properties,
             ObjectId folder, ContentStream contentStream,
             VersioningState versioningState) {
-        // TODO contentStream, versioningState
+        // TODO versioningState
         if (folder == null) {
             throw new IllegalArgumentException("Missing folder");
         }
-        return createObject(properties, folder, BaseType.DOCUMENT);
+        // if a cmis:document is requested, create a File instead
+        if (BaseType.DOCUMENT.getId().equals(properties.get(Property.TYPE_ID))) {
+            properties = new HashMap<String, Serializable>(properties);
+            properties.put(Property.TYPE_ID, "File");
+        }
+        return createObject(properties, folder, BaseType.DOCUMENT,
+                contentStream);
     }
 
     public ObjectId createFolder(Map<String, Serializable> properties,
@@ -324,7 +335,7 @@ public class NuxeoConnection implements Connection, SPI {
         if (folder == null) {
             throw new IllegalArgumentException("Missing folder");
         }
-        return createObject(properties, folder, BaseType.FOLDER);
+        return createObject(properties, folder, BaseType.FOLDER, null);
     }
 
     public ObjectId createRelationship(Map<String, Serializable> properties) {
@@ -338,17 +349,27 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
+    // create and save session
     protected ObjectId createObject(Map<String, Serializable> properties,
-            ObjectId folder, BaseType baseType) {
+            ObjectId folder, BaseType baseType, ContentStream contentStream) {
         String typeId = (String) properties.get(Property.TYPE_ID);
         DocumentModel doc = createDoc(typeId, folder, baseType);
         ObjectEntry entry = new NuxeoObjectEntry(doc, this);
         updateProperties(entry, null, properties, true);
         try {
+            if (contentStream != null) {
+                try {
+                    NuxeoProperty.setContentStream(doc, contentStream, true);
+                } catch (ContentAlreadyExistsException e) {
+                    // cannot happen, overwrite = true
+                }
+            }
             doc = session.createDocument(doc);
             session.save();
         } catch (ClientException e) {
-            throw new CMISRuntimeException("Cannot create folder", e);
+            throw new CMISRuntimeException("Cannot create", e);
+        } catch (IOException e) {
+            throw new CMISRuntimeException(e.toString(), e);
         }
         return NuxeoObject.construct(doc, this);
     }
@@ -419,22 +440,12 @@ public class NuxeoConnection implements Connection, SPI {
     }
 
     public boolean hasContentStream(ObjectId document) {
-        DocumentModel doc;
         try {
-            doc = session.getDocument(new IdRef(document.getId()));
-        } catch (ClientException e) {
-            throw new RuntimeException("Not found: " + document.getId(), e); // TODO
-        }
-        if (doc == null) {
-            throw new RuntimeException("Not found: " + document.getId()); // TODO
-        }
-        if (!doc.hasSchema("file")) {
+            return getContentStream(document, null) != null;
+        } catch (StreamNotSupportedException e) {
             return false;
-        }
-        try {
-            return doc.getProperty("file", "content") != null;
-        } catch (ClientException e) {
-            throw new RuntimeException(e.toString(), e); // TODO
+        } catch (IOException e) {
+            throw new CMISRuntimeException(e.toString(), e);
         }
     }
 
@@ -541,8 +552,29 @@ public class NuxeoConnection implements Connection, SPI {
     }
 
     public void deleteObject(ObjectId object, boolean allVersions) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (repository.getInfo().getRootFolderId().getId().equals(
+                object.getId())) {
+            throw new ConstraintViolationException("Cannot delete root");
+        }
+        try {
+            DocumentRef docRef = new IdRef(object.getId());
+            if (!session.exists(docRef)) {
+                throw new ObjectNotFoundException(object.getId());
+            }
+            NuxeoObjectEntry entry = getObjectEntry(object);
+            if (entry.getBaseType() == BaseType.FOLDER) {
+                // check that there are no children left
+                DocumentModelList docs = session.getChildren(docRef, null,
+                        getChildrenFilter(), null);
+                if (docs.size() > 0) {
+                    throw new ConstraintViolationException(
+                            "Cannot delete non-empty folder: " + object.getId());
+                }
+            }
+            session.removeDocument(docRef);
+        } catch (ClientException e) {
+            throw new CMISRuntimeException(e.toString(), e);
+        }
     }
 
     public Collection<ObjectId> deleteTree(ObjectId folder, Unfiling unfiling,

@@ -30,6 +30,7 @@ import java.util.Map;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Choice;
 import org.apache.chemistry.ContentStreamPresence;
+import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Type;
@@ -38,6 +39,10 @@ import org.apache.chemistry.impl.simple.SimplePropertyDefinition;
 import org.apache.chemistry.impl.simple.SimpleType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.Namespace;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -91,11 +96,7 @@ public class NuxeoType implements Type {
             map.put(def.getId(), def);
         }
 
-        boolean hasFileSchema = false;
         for (Schema schema : documentType.getSchemas()) {
-            if ("file".equals(schema.getName())) {
-                hasFileSchema = true;
-            }
             for (Field field : schema.getFields()) {
                 String prefixedName = field.getName().getPrefixedName();
 
@@ -157,11 +158,26 @@ public class NuxeoType implements Type {
                 map.put(name, def);
             }
         }
-        propertyDefinitions = map;
         contentStreamAllowed = BaseType.DOCUMENT.equals(getBaseType())
-                && hasFileSchema ? ContentStreamPresence.ALLOWED
+                && supportsBlobHolder(documentType) ? ContentStreamPresence.ALLOWED
                 : ContentStreamPresence.NOT_ALLOWED;
+        if (contentStreamAllowed == ContentStreamPresence.NOT_ALLOWED) {
+            map.remove(Property.CONTENT_STREAM_LENGTH);
+            map.remove(Property.CONTENT_STREAM_FILE_NAME);
+            map.remove(Property.CONTENT_STREAM_MIME_TYPE);
+            map.remove(Property.CONTENT_STREAM_ID);
+        }
+        propertyDefinitions = map;
+    }
 
+    // TODO update BlobHolderAdapterService to be able to do this
+    // without constructing a fake document
+    protected boolean supportsBlobHolder(DocumentType documentType) {
+        DocumentModel doc = new DocumentModelImpl(null, documentType.getName(),
+                null, new Path("/"), null, null, null,
+                documentType.getSchemaNames(), documentType.getFacets(), null,
+                "default");
+        return doc.getAdapter(BlobHolder.class) != null;
     }
 
     protected String getNuxeoTypeName() {
