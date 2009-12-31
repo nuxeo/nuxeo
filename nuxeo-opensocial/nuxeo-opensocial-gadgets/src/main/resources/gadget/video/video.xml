@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="__UP_title__" category="tools"
+    render_inline="required" scrolling="false" author="" directory_title="Video"
+    singleton="false">
+    <Require feature="opensocial-0.8" />
+    <Require feature="dynamic-height" />
+    <Require feature="setprefs" />
+    <Require feature="settitle" />
+    <Require feature="nuxeo" />
+    <Require feature="jquery" />
+  </ModulePrefs>
+  <UserPref name="title" display_name="Title" required="false"
+    default_value="Video" />
+     <UserPref name="vidTitle" datatype="hidden"/>
+  <Content type="html">
+    <![CDATA[
+      <style type='text/css'>
+        *{
+         font-family:Trebuchet, Arial,Verdana;
+         font-size:11px;
+        }
+
+        #cancelVideo img{
+         border:0;
+         padding:5px 5px 0 0;
+       }
+
+        #baliseVideo{
+         border:1px solid #ffffff;
+         width:98%;
+         height:70px;
+         display:block;
+        }
+
+        #title-field{
+         width:98%;
+         border:1px solid #ffffff;
+        }
+
+        #container{
+         padding:0 0 5px 0;
+        }
+
+        #hideContainer{
+           background:#666666;
+          text-align:right;
+        }
+
+        #addVideo,#showVideo{
+         display:none;
+        }
+
+        #title{
+          text-align:center;
+          font-size:14px;
+          color:#13506B;
+          font-weight:bold;
+        }
+
+        #formVideo{
+          background:#666666;
+          color:#ffffff;
+          font-family:Tahoma, Arial, Verdana;
+          font-weight:bold;
+        }
+
+        label{
+         padding-left:10px;
+        }
+
+        #modifyLink a{
+          text-decoration:none;
+          padding-left:20px;
+          background:url(edit.png) no-repeat 0 0;
+          color:#000000;
+          font-weight:bold;
+        }
+
+         #modifyLink a:hover{
+        text-decoration:underline;
+        }
+
+        #valid{
+          padding-left:14px;
+          background:url(accept.png) no-repeat 0 0;
+          color:#FFFFFF;
+          display:block;
+          float:right;
+          font-weight:bold;
+          padding-left:18px;
+          text-decoration:none;
+        }
+
+      </style>
+
+      <script type="text/javascript" language="javascript" src="video.js"></script>
+      <script type="text/javascript">
+        var prefs = new _IG_Prefs(__MODULE_ID__);
+        _IG_SetTitle(prefs.getString("title"));
+
+        gadgets.util.registerOnLoadHandler( function() {
+           gadgets.nuxeo.getHtmlContent(function(content) {
+             launchVideoWidget(content);
+           });
+        })
+      </script>
+      <div id="showVideo">
+
+      </div>
+      <div id="addVideo">
+        <div id="hideContainer"><a href="javascript:cancelVideo();" id="cancelVideo" title="fermer"><img src="x.png"></a></div>
+        <table style="width:100%" id="formVideo">
+          <tr>
+            <td style="width:30%">
+              <label>Titre : </label>
+            </td>
+            <td style="width:70%">
+              <input type="text" name="title" id="title-field" value="">
+            </td>
+          </tr>
+          <tr>
+            <td style="width:30%">
+              <label>Balise Video : </label>
+            </td>
+            <td style="width:70%">
+               <textarea name="baliseVideo" id="baliseVideo"></textarea>
+            </td>
+          </tr>
+          <tr>
+          <td style="width:30%"></td>
+          <td style="width:70%">
+              <a href="" id="valid" onclick="javascript:validateVideo();" >Valider</a>
+          </td>
+        </tr>
+        </table>
+
+      </div>
+
+
+    ]]>
+  </Content>
+</Module>

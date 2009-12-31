@@ -23,68 +23,96 @@ public interface Gadget {
 
   /**
    * Unique identifier of a gadget
+   * 
    * @return
    */
   String getId();
+
   /**
    * name
+   * 
    * @return
    */
   String getName();
-/**
- * description
- * @return
- */
+
+  /**
+   * description
+   * 
+   * @return
+   */
   String getDescription();
+
   /**
    * title
+   * 
    * @return
    */
   String getTitle();
 
   /**
    * creator name
+   * 
    * @return
    */
   String getOwner();
 
   /**
    * use category
+   * 
    * @return
    */
-  //@Deprecated
-  //String getType();
+  // @Deprecated
+  // String getType();
 
   /**
    * category of a gadget
+   * 
    * @return
    */
   String getCategory();
 
   /**
    * preferences values
+   * 
    * @return
    */
   public Map<String, String> getPreferences();
 
   /**
-   * Key corresponding to the place where the gadget will be positionned in the view
+   * Key corresponding to the place where the gadget will be positionned in the
+   * view
+   * 
    * @return
    */
   String getPlaceID();
 
   /**
-   * Relative position in the parent container at the place id  "getPlaceID()"
+   * Relative position in the parent container at the place id "getPlaceID()"
+   * 
    * @return
    */
   int getPosition();
 
   /**
+   * Relative height of gadget
+   * 
+   * @return
+   */
+  int getHeight();
+
+  /**
+   * Html Content of gadget
+   * 
+   * @return
+   */
+  String getHtmlContent();
+
+  /**
    * Determines if the display state of the gadget
+   * 
    * @return
    */
   boolean isCollapsed();
-
 
   public boolean isEqualTo(Gadget gadget);
 }

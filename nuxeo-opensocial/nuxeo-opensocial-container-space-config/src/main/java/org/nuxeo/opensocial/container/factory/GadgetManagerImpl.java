@@ -37,7 +37,7 @@ public class GadgetManagerImpl implements GadgetManager {
 
   /**
    * Remove gadget to container
-   *
+   * 
    * @param gadget
    *          : Gadget to delete
    * @param gwtParams
@@ -62,14 +62,14 @@ public class GadgetManagerImpl implements GadgetManager {
   }
 
   /**
-   * Save Collapse
-   *
+   * Save Gadget
+   * 
    * @param gadget
    *          : Gadget to save
    * @param gwtParams
    *          : container paramters
    */
-  public void saveCollapsed(GadgetBean gadget, Map<String, String> gwtParams) {
+  public void saveGadget(GadgetBean gadget, Map<String, String> gwtParams) {
     updateFullGadget(gadget, gwtParams);
   }
 
@@ -84,14 +84,9 @@ public class GadgetManagerImpl implements GadgetManager {
     }
   }
 
-  public void savePosition(GadgetBean gadget, Map<String, String> gwtParams)
-      throws ClientException {
-    updateFullGadget(gadget, gwtParams);
-  }
-
   /**
    * Save gadget preferences and update render url of gadget
-   *
+   * 
    */
   public void savePreferences(GadgetBean gadget,
       Map<String, String> updatePrefs, Map<String, String> gwtParams)
@@ -114,4 +109,5 @@ public class GadgetManagerImpl implements GadgetManager {
     }
 
   }
+
 }

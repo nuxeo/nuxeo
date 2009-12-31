@@ -1,6 +1,6 @@
 var spaceId="";
 var path=new Array();
-var currentPage=0;var currentPage = 0;
+var currentPage=0;
 var maxPage = 0;
 var errors = 0;
 
@@ -20,6 +20,7 @@ function getResourceUrl() {
   var url = "";
   url = "http://localhost:8080/nuxeo/site/myDocsRestAPI/";
   url += spaceId + "/";
+
   strPath = path.join();
   regEx = new RegExp(",", "g");
   strPath = strPath.replace(regEx, "/");
@@ -42,6 +43,7 @@ function getDLUrl(name) {
   url += "?ts=" + ts;
   return url;
 }
+
 
 function getImageBaseUrl() {
   return "/nuxeo";
@@ -78,9 +80,11 @@ function lastPage() {
   refresh();
 }
 
-function makeRequest(url, callback) {
+function makeRequest(url, callback, method) {
     var params = {};
     var headers = {};
+
+    params[gadgets.io.RequestParameters.METHOD] = method || gadgets.io.MethodType.GET;
 
     params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.NONE;
 
@@ -228,18 +232,18 @@ function mkRow(document, i) {
         + "\" href=\"" + DLUrl + "\" />";
   }
   htmlRow += document.title;
-  /* if (document.folderish == 0) {
-    var DLUrl = getDLUrl(document.name);
-    htmlRow += "<a href=\""
-        + DLUrl
-        + "\"><img src=\"/nuxeo/icons/download.png\" alt=\"Download\"></a>";
-  } */
+  /*
+   * if (document.folderish == 0) { var DLUrl = getDLUrl(document.name);
+   * htmlRow += "<a href=\"" + DLUrl + "\"><img
+   * src=\"/nuxeo/icons/download.png\" alt=\"Download\"></a>"; }
+   */
   htmlRow += "</a></td><td class=\"iconColumn\"/>";
   htmlRow += "<td>";
   htmlRow += getDateForDisplay(document.modified);
   htmlRow += "</td>";
 
   htmlRow += "<td class=\"iconColumn\">";
+  //htmlRow += "<a class=\"deleteaction\" href=\"" + getResourceUrl() + document.name +"\" onclick=\"return delete(this)\"><img src=\"/nuxeo/icons/action_delete_mini.gif\"></a>&nbsp;";
   htmlRow += "<a target=\"_tab\" href=\"/nuxeo/"
       + document.url
       + "\"><img src=\"/nuxeo/img/external.gif\" alt=\"Download\"></a>";
@@ -265,3 +269,33 @@ function readCookie(name) {
   return null;
 }
 
+function delete(obj) {
+  if(confirm("Voulez vous réellement supprimer le document ?")) {
+    url = this.attr('href');
+    makeRequest(url, function() { refresh();}, gadgets.io.MethodType.DELETE);
+  }
+  return false;
+
+}
+
+
+
+jQuery(document).ready(function(){
+    jQuery('#formUpload').submit(function(){
+      jQuery(this).ajaxSubmit({ beforeSubmit: control,
+                                success:function(){
+                                  refresh();
+                                   },
+                                url: getResourceUrl(),
+                                method: 'put'
+                              });
+      return false;
+    });
+
+  });
+
+  function control(){
+    if(jQuery.trim(jQuery("#uploadFile").val()) != "")
+      return true;
+    return false;
+  };

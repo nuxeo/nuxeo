@@ -197,6 +197,14 @@ public class ContainerManagerImpl implements ContainerManager {
                 .equals(getId());
           }
 
+          public int getHeight() {
+            return 0;
+          }
+
+          public String getHtmlContent() {
+            return null;
+          }
+
         };
 
         Gadget createGadget = service.createGadget(g, service.getSpaceFromId(
@@ -266,11 +274,12 @@ public class ContainerManagerImpl implements ContainerManager {
   }
 
   private boolean getPermission(Space space, CoreSession session) {
-    if (!space.isVersionnable())
+    if (!space.isVersionnable()) {
       return PermissionHelper.canWrite(space.getId(), session);
-    else
+    } else {
       return PermissionHelper.canWrite(space.getId(), session)
           && !space.isCurrentVersion();
+    }
   }
 
   private Space createUpdateSpace(String spaceId, CoreSession session,

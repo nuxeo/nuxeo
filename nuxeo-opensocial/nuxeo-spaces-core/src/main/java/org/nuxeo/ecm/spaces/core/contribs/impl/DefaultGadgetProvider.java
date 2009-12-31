@@ -42,9 +42,9 @@ import org.nuxeo.ecm.spaces.core.impl.DocumentHelper;
 import org.nuxeo.ecm.spaces.core.impl.docwrapper.DocumentWrapper;
 
 /**
- *
+ * 
  * @author 10044893
- *
+ * 
  */
 public class DefaultGadgetProvider extends AbstractProvider<Gadget, Space>
     implements GadgetProvider {
@@ -128,6 +128,11 @@ public class DefaultGadgetProvider extends AbstractProvider<Gadget, Space>
 
     docToCreate.setPropertyValue(Constants.Gadget.GADGET_POSITION,
         x.getPosition());
+
+    docToCreate.setPropertyValue(Constants.Gadget.GADGET_HEIGHT, x.getHeight());
+
+    docToCreate.setPropertyValue(Constants.Gadget.GADGET_HTMLCONTENT,
+        x.getHtmlContent());
 
     Property p = docToCreate.getProperty(Constants.Gadget.GADGET_PREFERENCES);
     if (p.isList()) {

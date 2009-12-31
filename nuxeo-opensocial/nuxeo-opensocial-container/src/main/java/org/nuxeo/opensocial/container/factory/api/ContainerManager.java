@@ -23,9 +23,10 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.opensocial.container.client.bean.Container;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
+
 /**
-* @author Guillaume Cusnieux
-*/
+ * @author Guillaume Cusnieux
+ */
 public interface ContainerManager {
 
   Container createContainer(Map<String, String> gwtParams)
