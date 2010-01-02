@@ -89,11 +89,13 @@ public class JSONModel extends StandaloneFilter {
             model_data.put("deletable", true);
             model_data.put("pastable", true);
 
-            List<Map<String, Object>> widgets = getWidgetsFor(element,
-                    templateEngine);
-            if (widgets.size() > 1) {
-                model_data.put("widgets", widgets);
-                model_data.put("has widget", true);
+            if (info.getModel() != null) {
+                List<Map<String, Object>> widgets = getWidgetsFor(element,
+                        templateEngine);
+                if (widgets.size() > 1) {
+                    model_data.put("widgets", widgets);
+                    model_data.put("has widget", true);
+                }
             }
             model_data.put("has style", true);
         }
