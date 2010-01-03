@@ -79,6 +79,7 @@ public class Resources {
                     combinedScripts.toString()));
         }
 
+        resourceManager.flush();
         return sb.toString();
     }
 

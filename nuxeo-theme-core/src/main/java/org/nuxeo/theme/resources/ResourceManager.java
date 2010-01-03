@@ -34,7 +34,12 @@ public final class ResourceManager implements Registrable {
 
     private static final Log log = LogFactory.getLog(ResourceManager.class);
 
-    private final Map<URI, List<String>> cache = new HashMap<URI, List<String>>();
+    private final ThreadLocal<HashMap<URI, List<String>>> cache = new ThreadLocal<HashMap<URI, List<String>>>() {
+        @Override
+        protected HashMap<URI, List<String>> initialValue() {
+            return new HashMap<URI, List<String>>();
+        }
+    };
 
     private final TypeRegistry typeRegistry = Manager.getTypeRegistry();
 
@@ -44,7 +49,8 @@ public final class ResourceManager implements Registrable {
                 TypeFamily.RESOURCE, name);
         if (resourceType != null) {
             for (String dependency : resourceType.getDependencies()) {
-                log.debug("  Subresource dependency: " + name + " -> " + dependency);
+                log.debug("  Subresource dependency: " + name + " -> "
+                        + dependency);
                 addResource(dependency, themeUrl);
             }
 
@@ -55,6 +61,14 @@ public final class ResourceManager implements Registrable {
         } else {
             log.warn("Resource not found: " + name);
         }
+    }
+
+    public void flush() {
+        getResourceCache().clear();
+    }
+    
+    private Map<URI, List<String>> getResourceCache() {
+        return cache.get();
     }
 
     public List<String> getResourcesFor(String themeUrl) {
@@ -74,10 +88,11 @@ public final class ResourceManager implements Registrable {
             log.warn(e);
             return null;
         }
-        if (!cache.containsKey(uri)) {
-            cache.put(uri, new ArrayList<String>());
+        Map<URI, List<String>> resourceCache = getResourceCache();
+        if (!resourceCache.containsKey(uri)) {
+            resourceCache.put(uri, new ArrayList<String>());
         }
-        return cache.get(uri);
+        return resourceCache.get(uri);
     }
 
     public void clear() {
