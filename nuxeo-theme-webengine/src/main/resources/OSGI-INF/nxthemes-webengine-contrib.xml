@@ -55,7 +55,9 @@
 
     <rendering-extension name="nxthemes_tabs"
       class="org.nuxeo.theme.webengine.fm.extensions.NXThemesTabsDirective"/>
-
+      
+    <rendering-extension name="nxthemes_require"
+      class="org.nuxeo.theme.webengine.fm.extensions.NXThemesRequireDirective"/>
   </extension>
 
 
