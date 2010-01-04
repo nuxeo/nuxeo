@@ -46,7 +46,7 @@ public class MainServlet extends SQLRepositoryTestCase {
 //            if (args.length == 0) {
 //                args = new String[] { "-p", "8082" };
 //            }
-            org.apache.chemistry.test.MainServlet.run(args, repository,
+            new org.apache.chemistry.test.MainServlet().run(args, repository,
                     "/cmis", "/repository");
         } finally {
             main.tearDown();
