@@ -17,13 +17,13 @@
 package org.nuxeo.ecm.core.test;
 
 import org.junit.runner.Description;
+import org.nuxeo.ecm.core.test.annotations.BackendType;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryBackend;
 import org.nuxeo.ecm.core.test.annotations.RepositoryCleanup;
+import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInitializer;
 import org.nuxeo.ecm.core.test.annotations.Session;
-import org.nuxeo.ecm.core.test.annotations.RepositoryBackends.BackendType;
-import org.nuxeo.ecm.core.test.annotations.RepositoryCleanup.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryInitializer.RepositoryInit;
 
 @Session
 @RepositoryBackend

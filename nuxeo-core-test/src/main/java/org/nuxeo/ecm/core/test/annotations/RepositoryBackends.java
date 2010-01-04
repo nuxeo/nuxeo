@@ -27,14 +27,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target( { ElementType.TYPE })
 public @interface RepositoryBackends {
-
     BackendType[] value() default { BackendType.JCR, BackendType.H2 };
-
-    /**
-     * Repository backend types with which the tests can be run.
-     */
-    enum BackendType {
-        JCR, H2, POSTGRES
-    }
-
 }

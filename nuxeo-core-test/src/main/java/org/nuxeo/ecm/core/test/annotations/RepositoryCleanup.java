@@ -35,21 +35,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target( { ElementType.METHOD, ElementType.TYPE })
 public @interface RepositoryCleanup {
-
     Granularity value() default Granularity.CLASS;
-
-    /**
-     * Repository cleanup level.
-     */
-    enum Granularity {
-        /**
-         * The repository is cleaned up at the class level.
-         */
-        CLASS,
-
-        /**
-         * The repository is cleaned up at the method level.
-         */
-        METHOD
-    }
 }

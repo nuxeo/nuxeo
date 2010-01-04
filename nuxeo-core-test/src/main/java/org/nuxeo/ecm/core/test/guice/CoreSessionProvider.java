@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
 import org.nuxeo.ecm.core.test.NuxeoCoreRunner;
 import org.nuxeo.ecm.core.test.TestRepositoryHandler;
-import org.nuxeo.ecm.core.test.annotations.RepositoryBackends.BackendType;
+import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import com.google.inject.Inject;

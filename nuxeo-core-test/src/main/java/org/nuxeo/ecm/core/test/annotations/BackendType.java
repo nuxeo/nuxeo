@@ -16,19 +16,9 @@
  */
 package org.nuxeo.ecm.core.test.annotations;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-
 /**
- * Defines the repository type used by the tests.
+ * Repository backend types with which the tests can be run.
  */
-@Inherited
-@Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.TYPE })
-public @interface RepositoryBackend {
-    BackendType value() default BackendType.H2;
+public enum BackendType {
+    JCR, H2, POSTGRES
 }

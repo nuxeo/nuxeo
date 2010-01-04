@@ -22,9 +22,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-
 /**
  * Defines a repository factory used to initialize an empty repository.
  * <p>
@@ -36,20 +33,4 @@ import org.nuxeo.ecm.core.api.CoreSession;
 @Target( { ElementType.TYPE, ElementType.METHOD })
 public @interface RepositoryInitializer {
     Class<? extends RepositoryInit> value();
-
-    /**
-     * Implement this class to provide an initializer for the
-     * {@link RepositoryInitializer} annotation in tests.
-     */
-    interface RepositoryInit {
-
-        /**
-         * Creates the default objects in an empty repository.
-         *
-         * @param session the session to use to create objects
-         */
-        public void populate(CoreSession session) throws ClientException;
-
-    }
-
 }

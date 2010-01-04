@@ -19,7 +19,7 @@ package org.nuxeo.ecm.core.test.guice;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.test.NuxeoCoreRunner;
-import org.nuxeo.ecm.core.test.annotations.RepositoryBackends.BackendType;
+import org.nuxeo.ecm.core.test.annotations.BackendType;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;

@@ -19,7 +19,7 @@ package org.nuxeo.ecm.core.test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.annotations.RepositoryInitializer.RepositoryInit;
+import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 
 /**
  * Default repository initializer that create the default DM doc hierarchy.

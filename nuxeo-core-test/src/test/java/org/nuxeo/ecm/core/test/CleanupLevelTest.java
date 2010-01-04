@@ -24,8 +24,8 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryCleanup;
-import org.nuxeo.ecm.core.test.annotations.RepositoryCleanup.Granularity;
 
 import com.google.inject.Inject;
 

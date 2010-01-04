@@ -27,8 +27,8 @@ import org.junit.runners.ParentRunner;
 import org.junit.runners.Suite.SuiteClasses;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.RunnerBuilder;
+import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryBackends;
-import org.nuxeo.ecm.core.test.annotations.RepositoryBackends.BackendType;
 
 /**
  * JUnit4 ParentRunner that knows how to run a test class on multiple backend

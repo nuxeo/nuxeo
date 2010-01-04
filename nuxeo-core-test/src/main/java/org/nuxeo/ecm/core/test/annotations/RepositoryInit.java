@@ -16,19 +16,20 @@
  */
 package org.nuxeo.ecm.core.test.annotations;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * Defines the repository type used by the tests.
+ * Implement this class to provide an initializer for the
+ * {@link RepositoryInitializer} annotation in tests.
  */
-@Inherited
-@Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.TYPE })
-public @interface RepositoryBackend {
-    BackendType value() default BackendType.H2;
+public interface RepositoryInit {
+
+    /**
+     * Creates the default objects in an empty repository.
+     *
+     * @param session the session to use to create objects
+     */
+    public void populate(CoreSession session) throws ClientException;
+
 }
