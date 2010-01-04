@@ -29,14 +29,17 @@ public class UIRequire extends UIOutput {
     private String resource;
 
     @Override
-    public void  encodeAll(final FacesContext context) throws IOException {
+    public void encodeAll(final FacesContext context) throws IOException {
         final ExternalContext externalContext = context.getExternalContext();
         Map<String, Object> requestMap = externalContext.getRequestMap();
         URL themeUrl = (URL) requestMap.get("org.nuxeo.theme.url");
-        
+
         Map<String, Object> attributes = getAttributes();
         String resourceName = (String) attributes.get("resource");
-        Manager.getResourceManager().addResource(resourceName, themeUrl);
+
+        // Register as a local resource
+        final boolean local = true;
+        Manager.getResourceManager().addResource(resourceName, themeUrl, local);
     }
 
     public String getResource() {
