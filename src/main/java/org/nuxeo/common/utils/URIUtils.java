@@ -63,8 +63,8 @@ public final class URIUtils {
                         if (value == null) {
                             value = "";
                         }
-                        items.add(String.format("%s=%s",
-                                URLEncoder.encode(key, "UTF-8"), URLEncoder.encode(value, "UTF-8")));
+                        items.add(String.format("%s=%s", URLEncoder.encode(key,
+                                "UTF-8"), URLEncoder.encode(value, "UTF-8")));
                     }
                 }
                 query = StringUtils.join(items, "&");
@@ -173,6 +173,23 @@ public final class URIUtils {
             r = r.replace("/", "%2F");
         }
         return r;
+    }
+
+    public static String unquoteURIPathComponent(String s) {
+        if ("".equals(s)) {
+            return s;
+        }
+        URI uri;
+        try {
+            uri = new URI("http://x/" + s);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Illegal characters in: " + s, e);
+        }
+        String path = uri.getPath();
+        if (path.startsWith("/") && !s.startsWith("/")) {
+            path = path.substring(1);
+        }
+        return path;
     }
 
 }

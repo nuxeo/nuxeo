@@ -30,8 +30,7 @@ import junit.framework.TestCase;
  */
 public class TestURIUtils extends TestCase {
 
-    private static final String URI_QUERY
-            = "currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&repositoryName=demo";
+    private static final String URI_QUERY = "currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&repositoryName=demo";
 
     private static final String PARTIAL_URI = "nuxeo/view_documents.faces?"
             + URI_QUERY;
@@ -67,26 +66,37 @@ public class TestURIUtils extends TestCase {
     // ordered (fails under Java 6)
     public void XXXtestAddParametersToPartialURIQuery() {
         String newUri = "nuxeo/view_documents.faces?currentTab=TAB_CONTENT"
-            + "&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&conversationId=0NXMAIN21&repositoryName=demo";
+                + "&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&conversationId=0NXMAIN21&repositoryName=demo";
         Map<String, String> newParams = new HashMap<String, String>();
         newParams.put("conversationId", "0NXMAIN21");
         assertEquals(newUri, URIUtils.addParametersToURIQuery(PARTIAL_URI,
                 newParams));
     }
 
+    public static String q(String s, boolean b) {
+        return URIUtils.quoteURIPathComponent(s, b);
+    }
+
     public void testQuoteURIPathComponent() throws Exception {
-        String s = "test yes:no /caf\u00e9.bin";
-        assertEquals("test%20yes%3Ano%20%2Fcaf%C3%A9.bin",
-                URIUtils.quoteURIPathComponent(s, true));
-        s = "http://foo/bar";
-        assertEquals("http%3A%2F%2Ffoo%2Fbar", URIUtils.quoteURIPathComponent(
-                s, true));
-        s = "a/b/c";
-        assertEquals("a/b/c", URIUtils.quoteURIPathComponent(s, false));
+        assertEquals("test%20yes%3Ano%20%2Fcaf%C3%A9.bin", q(
+                "test yes:no /caf\u00e9.bin", true));
+        assertEquals("http%3A%2F%2Ffoo%2Fbar", q("http://foo/bar", true));
+        assertEquals("a/b/c", q("a/b/c", false));
         // NXP-2480
-        s = "[foo] bar?";
-        assertEquals("%5Bfoo%5D%20bar%3F", URIUtils.quoteURIPathComponent(s,
-                true));
+        assertEquals("%5Bfoo%5D%20bar%3F", q("[foo] bar?", true));
+    }
+
+    public static String uq(String s) {
+        return URIUtils.unquoteURIPathComponent(s);
+    }
+
+    public void testUnquoteURIPathComponent() throws Exception {
+        assertEquals("test yes:no /caf\u00e9.bin",
+                uq("test%20yes%3Ano%20%2Fcaf%C3%A9.bin"));
+        assertEquals("http://foo/bar", uq("http%3A%2F%2Ffoo%2Fbar"));
+        assertEquals("a/b/c", uq("a/b/c"));
+        // NXP-2480
+        assertEquals("[foo] bar?", uq("%5Bfoo%5D%20bar%3F"));
     }
 
 }
