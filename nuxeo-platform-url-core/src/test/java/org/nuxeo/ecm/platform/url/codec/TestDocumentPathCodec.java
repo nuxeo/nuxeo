@@ -49,33 +49,35 @@ public class TestDocumentPathCodec extends TestCase {
 
     public void testGetUrlFromDocumentView() {
         DocumentPathCodec codec = new DocumentPathCodec();
+        String docid = "dbefd5a0-35ee-4ed2-a023-6817714f32cf";
 
-        DocumentView docView = getDocumentView("dbefd5a0-35ee-4ed2-a023-6817714f32cf", "/path/to/my/doc",
+        DocumentView docView = getDocumentView(docid, "/path/to/my/doc",
                 "view_documents");
         String url = "nxpath/demo/path/to/my/doc@view_documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
 
         // again without leading slash
-        docView = getDocumentView("dbefd5a0-35ee-4ed2-a023-6817714f32cf", "path/to/my/doc", "view_documents");
+        docView = getDocumentView(docid, "path/to/my/doc", "view_documents");
         url = "nxpath/demo/path/to/my/doc@view_documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
 
-        docView = getDocumentView("dbefd5a0-35ee-4ed2-a023-6817714f32cf","/default-domain", "view_documents");
+        docView = getDocumentView(docid, "/default-domain", "view_documents");
         url = "nxpath/demo/default-domain@view_documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
 
         // check root is handled correctly
-        docView = getDocumentView("dbefd5a0-35ee-4ed2-a023-6817714f32cf", "/", "view_domains");
+        docView = getDocumentView(docid, "/", "view_domains");
         url = "nxpath/demo@view_domains?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
 
         // again with dot in view id
-        docView = getDocumentView("dbefd5a0-35ee-4ed2-a023-6817714f32cf", "path/to/my/doc", "view.documents");
+        docView = getDocumentView(docid, "path/to/my/doc", "view.documents");
         url = "nxpath/demo/path/to/my/doc@view.documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
 
         // again with dot in repo name
-        docView = getDocumentView("dbefd5a0-35ee-4ed2-a023-6817714f32cf", "path/to/my/doc.withdot", "view_documents");
+        docView = getDocumentView(docid, "path/to/my/doc.withdot",
+                "view_documents");
         url = "nxpath/demo/path/to/my/doc.withdot@view_documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
 
@@ -86,11 +88,16 @@ public class TestDocumentPathCodec extends TestCase {
             veryLongUrl.append("/doc");
         }
 
-        DocumentView docViewMaxLength = getDocumentView("dbefd5a0-35ee-4ed2-a023-6817714f32cf", veryLongUrl.toString(),
-                "view_documents");
+        DocumentView docViewMaxLength = getDocumentView(docid,
+                veryLongUrl.toString(), "view_documents");
         url = "nxdoc/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/view_documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docViewMaxLength));
 
+        // with space in doc path, or non-ASCII chars
+        docView = getDocumentView(docid, "/path/ca f\u00e9/doc",
+                "view_documents");
+        url = "nxpath/demo/path/ca%20f%C3%A9/doc@view_documents?tabId=TAB_CONTENT";
+        assertEquals(url, codec.getUrlFromDocumentView(docView));
     }
 
     public void testGetDocumentViewFromUrl() {
@@ -156,6 +163,16 @@ public class TestDocumentPathCodec extends TestCase {
         docLoc = docView.getDocumentLocation();
         assertEquals("demo", docLoc.getServerName());
         assertEquals(new PathRef("/doc.withdot"), docLoc.getDocRef());
+        assertEquals("view_domains", docView.getViewId());
+        assertNull(docView.getSubURI());
+
+        // with space in doc path, or non-ASCII chars
+        url = "nxpath/demo/ca%20f%C3%A9doc@view_domains";
+        docView = codec.getDocumentViewFromUrl(url);
+        assertNotNull(docView);
+        docLoc = docView.getDocumentLocation();
+        assertEquals("demo", docLoc.getServerName());
+        assertEquals(new PathRef("/ca f\u00e9doc"), docLoc.getDocRef());
         assertEquals("view_domains", docView.getViewId());
         assertNull(docView.getSubURI());
     }

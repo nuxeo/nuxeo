@@ -47,13 +47,13 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
 
     private static final Log log = LogFactory.getLog(DocumentPathCodec.class);
 
-    //The maximum length of an url for Internet Explorer.
+    // The maximum length of an url for Internet Explorer.
     public static int URL_MAX_LENGTH = 2000;
 
     public static final String PREFIX = "nxpath";
 
     // nxpath/server/path/to/doc@view_id/?requestParams
-    public static final String URLPattern = "/([\\w\\.]+)(/([\\w/\\-\\.]*))?(@([\\w\\-\\.]+))(/)?(\\?(.*)?)?";
+    public static final String URL_PATTERN = "/([\\w\\.]+)(/([^@?]*))?(@([\\w\\-\\.]+))(/)?(\\?(.*)?)?";
 
     public DocumentPathCodec() {
     }
@@ -93,7 +93,7 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
                 path = path.substring(1);
             }
             if (path.length() > 0) {
-                items.add(path);
+                items.add(URIUtils.quoteURIPathComponent(path, false));
             }
             String uri = StringUtils.join(items, "/");
             String viewId = docView.getViewId();
@@ -130,7 +130,7 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
      * server/path_or_docId/view_id/tab_id .
      */
     public DocumentView getDocumentViewFromUrl(String url) {
-        final Pattern pattern = Pattern.compile(getPrefix() + URLPattern);
+        final Pattern pattern = Pattern.compile(getPrefix() + URL_PATTERN);
         Matcher m = pattern.matcher(url);
         if (m.matches()) {
 
@@ -138,7 +138,7 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
             String path = m.group(3);
             if (path != null) {
                 // add leading slash to make it absolute if it's not the root
-                path = "/" + path;
+                path = "/" + URIUtils.unquoteURIPathComponent(path);
             } else {
                 path = "/";
             }
