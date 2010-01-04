@@ -3,6 +3,7 @@ package org.nuxeo.opensocial.gadgets;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -28,7 +29,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
 @WebObject(type = "GadgetDocument")
-@Produces( { "text/html; charset=UTF-8" })
+@Produces( { "application/octet-stream" })
 public class GadgetDocument extends ModuleRoot {
 
   private static final Log log = LogFactory.getLog(GadgetDocument.class);
@@ -43,7 +44,9 @@ public class GadgetDocument extends ModuleRoot {
   public Response getFile(@PathParam("gadgetid") String id) {
     CoreSession session = ctx.getCoreSession();
     try {
-      IdRef ref = new IdRef(id);
+      StringTokenizer st = new StringTokenizer(id, ".");
+      IdRef ref = new IdRef(st.nextToken());
+      log.info("produces image/jpeg,image/gif");
       if (session.exists(ref)) {
         DocumentModel doc = session.getDocument(ref);
         FormData form = ctx.getForm();
@@ -59,6 +62,7 @@ public class GadgetDocument extends ModuleRoot {
         try {
           Property p = doc.getProperty(xpath);
           Blob blob = (Blob) p.getValue();
+
           if (blob == null) {
             throw new WebResourceNotFoundException("No attached file at "
                 + xpath);
@@ -75,6 +79,7 @@ public class GadgetDocument extends ModuleRoot {
               }
             }
           }
+          log.info("mime type " + blob.getMimeType());
           return Response.ok(blob)
               .header("Content-Disposition", "attachment;filename=" + fileName)
               .type(blob.getMimeType())

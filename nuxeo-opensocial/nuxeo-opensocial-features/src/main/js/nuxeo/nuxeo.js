@@ -44,3 +44,11 @@ gadgets.nuxeo.setHtmlContent = function(htmlContent, callback) {
 gadgets.nuxeo.getGadgetId = function(callback) {
   gadgets.rpc.call(null, "get_nuxeo_gadget_id", callback, null);
 };
+
+gadgets.nuxeo.maximizeGadget = function(view, callback) {
+  gadgets.rpc.call(null, "maximize", callback, view);
+};
+
+gadgets.nuxeo.minimizeGadget = function(callback) {
+  gadgets.rpc.call(null, "minimize", callback, null);
+};

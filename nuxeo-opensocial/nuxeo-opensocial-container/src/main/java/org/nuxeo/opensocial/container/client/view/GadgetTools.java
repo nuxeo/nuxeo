@@ -40,31 +40,35 @@ public class GadgetTools {
   private Tool[] getCanvasButtons() {
     final Tool min = new Tool(Tool.MINIMIZE, new Function() {
       public void execute() {
-        ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
-        PortalColumn maximizedCol = portal.getMaximizedCol();
-        maximizedCol.remove(portlet.getId(), true);
-        showManager();
-        for (PortalColumn col : portal.getPortalColumns()) {
-          col.show();
-        }
-        ;
-        maximizedCol.hide();
-        updateLayoutSizeForMin(ContainerEntryPoint.PANEL_WIDTH + "px");
+        minimize();
 
       }
-
-      private native void updateLayoutSizeForMin(String width)
-      /*-{
-      $wnd.jQuery("#containerPortal").width(width);
-      $wnd.jQuery(".containerPortal").width(width);
-      $wnd.jQuery(".x-column-inner").width(width);
-      $wnd.jQuery("#containerPanel").width(width);
-      }-*/;
 
     });
     return new Tool[] { min };
 
   }
+
+  public void minimize() {
+    ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
+    PortalColumn maximizedCol = portal.getMaximizedCol();
+    maximizedCol.remove(portlet.getId(), true);
+    showManager();
+    for (PortalColumn col : portal.getPortalColumns()) {
+      col.show();
+    }
+    ;
+    maximizedCol.hide();
+    updateLayoutSizeForMin(ContainerEntryPoint.PANEL_WIDTH + "px");
+  }
+
+  private native void updateLayoutSizeForMin(String width)
+  /*-{
+  $wnd.jQuery("#containerPortal").width(width);
+  $wnd.jQuery(".containerPortal").width(width);
+  $wnd.jQuery(".x-column-inner").width(width);
+  $wnd.jQuery("#containerPanel").width(width);
+  }-*/;
 
   private Tool[] getDefaultButtons() {
     final GadgetBean gadget = portlet.getGadgetBean();
@@ -100,37 +104,8 @@ public class GadgetTools {
         Tool max = new Tool(Tool.MAXIMIZE, new Function() {
 
           public void execute() {
-            ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
-            final GadgetBean gadget = portlet.getGadgetBean();
-            PortalColumn maximizedCol = portal.getMaximizedCol();
-            GadgetPortlet canvas = new GadgetPortlet(gadget,
-                GadgetPortlet.CANVAS_VIEW);
-            ContainerPortal.setMaximizedPortlet(canvas);
-            maximizedCol.add(canvas);
-            hideManager();
-            for (PortalColumn col : portal.getPortalColumns()) {
-              col.hide();
-            }
-            ;
-            maximizedCol.show();
-            canvas.show();
-            canvas.updateGadgetPortlet();
-            canvas.doLayout();
-            maximizedCol.doLayout();
-            updateLayoutSizeForMax(canvas.getId());
-            if (gadget.isCollapse())
-              canvas.unCollapseGadget();
+            maximize(GadgetPortlet.CANVAS_VIEW);
           }
-
-          private native void updateLayoutSizeForMax(String id)
-          /*-{
-          $wnd.jQuery("#containerPortal").width("100%");
-          $wnd.jQuery(".containerPortal").width("100%");
-          $wnd.jQuery("#containerPanel").width("100%");
-          $wnd.jQuery(".x-column-inner").width("100%");
-          $wnd.jQuery("#maximizedCol").attr("style","width:100%;padding:0;margin:0;");
-          $wnd.jQuery("#"+id).attr("style","width:100%;paddinf:0;");
-          }-*/;
 
         });
         return new Tool[] { max, gear, close };
@@ -141,6 +116,38 @@ public class GadgetTools {
     return new Tool[] {};
 
   }
+
+  public void maximize(String view) {
+    GadgetBean gadget = portlet.getGadgetBean();
+    ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
+    PortalColumn maximizedCol = portal.getMaximizedCol();
+    GadgetPortlet canvas = new GadgetPortlet(gadget, view);
+    ContainerPortal.setMaximizedPortlet(canvas);
+    maximizedCol.add(canvas);
+    hideManager();
+    for (PortalColumn col : portal.getPortalColumns()) {
+      col.hide();
+    }
+    ;
+    maximizedCol.show();
+    canvas.show();
+    canvas.updateGadgetPortlet();
+    canvas.doLayout();
+    maximizedCol.doLayout();
+    updateLayoutSizeForMax(canvas.getId());
+    if (gadget.isCollapse())
+      canvas.unCollapseGadget();
+  }
+
+  private native void updateLayoutSizeForMax(String id)
+  /*-{
+  $wnd.jQuery("#containerPortal").width("100%");
+  $wnd.jQuery(".containerPortal").width("100%");
+  $wnd.jQuery("#containerPanel").width("100%");
+  $wnd.jQuery(".x-column-inner").width("100%");
+  $wnd.jQuery("#maximizedCol").attr("style","width:100%;padding:0;margin:0;");
+  $wnd.jQuery("#"+id).attr("style","width:100%;paddinf:0;");
+  }-*/;
 
   public void setGadgetForm(GadgetForm form) {
     this.form = form;

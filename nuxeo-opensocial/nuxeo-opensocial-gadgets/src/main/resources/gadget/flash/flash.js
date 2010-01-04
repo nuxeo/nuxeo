@@ -82,7 +82,7 @@ function loadFlash(id){
 		    showFlash();
 		},
 		success : function(data, textStatus) {
-		    gadgets.flash.embedFlash(flashUrl+".swf", "flash", {
+		    gadgets.flash.embedFlash("http://swf.flibus.com/files/mario-racing-tournament.swf", "flash", {
       			swf_version: 6,
       			id: "flashid",
      			width: 300,

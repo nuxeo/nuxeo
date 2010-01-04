@@ -47,6 +47,8 @@ public class GadgetService {
     rpc.register('show_image', @org.nuxeo.opensocial.container.client.GadgetService::showImage(Lcom/google/gwt/core/client/JsArray;I));
     rpc.register('get_nuxeo_gadget_id', @org.nuxeo.opensocial.container.client.GadgetService::getGadgetId());
     rpc.register('get_nuxeo_space_id', @org.nuxeo.opensocial.container.client.GadgetService::getSpaceId());
+    rpc.register('minimize', @org.nuxeo.opensocial.container.client.GadgetService::minimize());
+    rpc.register('maximize', @org.nuxeo.opensocial.container.client.GadgetService::maximize(Ljava/lang/String;));
   }-*/;
 
   /**
@@ -141,6 +143,30 @@ public class GadgetService {
           .saveGadget(b, ContainerEntryPoint.getGwtParams(),
               new SaveGadgetAsyncCallback());
     }
+  };
+
+  public static native void maximize(String view)
+  /*-{
+    @org.nuxeo.opensocial.container.client.GadgetService::maximizeGadget(Ljava/lang/String;Ljava/lang/String;)(this.f,view);
+  }-*/;
+
+  public static void maximizeGadget(String frameId, String view) {
+    ContainerEntryPoint.getContainerPortal()
+        .getGadgetPortletByFrameId(frameId)
+        .getTools()
+        .maximize(view);
+  };
+
+  public static native void minimize()
+  /*-{
+    @org.nuxeo.opensocial.container.client.GadgetService::minimizeGadget(Ljava/lang/String;)(this.f);
+  }-*/;
+
+  public static void minimizeGadget(String frameId) {
+    ContainerPortal p = ContainerEntryPoint.getContainerPortal();
+    p.getGadgetPortletByFrameId(frameId)
+        .getTools()
+        .minimize();
   };
 
   public static native String getHtmlContent()

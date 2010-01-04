@@ -57,5 +57,12 @@
       <icon>bookmarks_icon.png</icon>
     </internalGadget>
     
+    <internalGadget name="richtext">
+      <mountPoint>/richtext</mountPoint>
+      <entryPoint>richtext.xml</entryPoint>
+      <category>Multimedia</category>
+      <icon>richtext_icon.png</icon>
+    </internalGadget>
+    
   </extension>
 </component>

@@ -48,7 +48,7 @@ public class GadgetPortlet extends Portlet {
   private void buildPortlet() {
     this.setLayout(new FitLayout());
     this.setTitle(this.gadget.getTitle());
-    if (this.view.equals(CANVAS_VIEW)) {
+    if (!this.view.equals(DEFAULT_VIEW)) {
       this.setDraggable(false);
       this.setHideCollapseTool(true);
     } else {
@@ -150,12 +150,15 @@ public class GadgetPortlet extends Portlet {
     if (url == null) {
       JsLibrary.error("Render url of " + gadget.getName() + " is null");
       return;
-    } else if (view.equals(CANVAS_VIEW))
-      url = url.replaceAll(VIEW_KEY + DEFAULT_VIEW, VIEW_KEY + CANVAS_VIEW);
-    else
-      url = url.replaceAll(VIEW_KEY + CANVAS_VIEW, VIEW_KEY + DEFAULT_VIEW);
-    gadget.setRenderUrl(url);
+    }
+    gadget.setRenderUrl(buildUrl(url, view));
   }
+
+  private static native String buildUrl(String url, String view)
+  /*-{
+     var reg = new RegExp("view=[a-zA-Z]*&?");
+     return url.replace(reg,"view="+view+"&");
+  }-*/;
 
   private String getIframeId() {
     return PREFIX_FRAME_ID + view + "-" + this.gadget.getRef();
