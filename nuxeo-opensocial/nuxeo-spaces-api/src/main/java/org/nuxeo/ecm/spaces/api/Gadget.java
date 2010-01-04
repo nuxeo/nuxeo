@@ -113,6 +113,12 @@ public interface Gadget {
 
   void setHeight(int height) throws ClientException;
 
+  void copyFrom(Gadget gadget) throws ClientException;
+
+  String getHtmlContent() throws ClientException;
+
+  void setHtmlContent(String htmlContent) throws ClientException;
+
 
 
 

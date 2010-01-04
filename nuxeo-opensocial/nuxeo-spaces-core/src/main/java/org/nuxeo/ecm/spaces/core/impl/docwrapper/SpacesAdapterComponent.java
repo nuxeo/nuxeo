@@ -74,6 +74,7 @@ public class SpacesAdapterComponent extends DefaultComponent implements
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private Object getSpaceFactory(DocumentModel doc, Class itf) {
         if (factories.containsKey(doc.getType())) {
             Class<? extends DocumentAdapterFactory> factoryKlass = factories

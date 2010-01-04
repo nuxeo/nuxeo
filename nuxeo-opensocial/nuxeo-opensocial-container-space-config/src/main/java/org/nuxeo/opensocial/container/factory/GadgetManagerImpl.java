@@ -55,6 +55,7 @@ public class GadgetManagerImpl implements GadgetManager {
                     gwtParams, true, null);
             Space space = spaceManager().getSpaceFromId(spaceId, getCoreSession(gwtParams));
             space.remove(new GadgetMapper(gadget));
+            space.save();
         } catch (Exception e) {
             log.error(e);
             throw new ClientException(e);
@@ -78,6 +79,7 @@ public class GadgetManagerImpl implements GadgetManager {
 
             GadgetMapper gadgetMapper = new GadgetMapper(gadget);
             space.save(gadgetMapper);
+            space.save();
         } catch (Exception e) {
             log.error(e);
         }
@@ -102,6 +104,7 @@ public class GadgetManagerImpl implements GadgetManager {
             }
             gadgetMapper.setName(gadget.getSpaceName());
             space.save(gadgetMapper);
+            space.save();
 
         } catch (Exception e) {
             log.error("GadgetManagerUImlp - savePreferences : "

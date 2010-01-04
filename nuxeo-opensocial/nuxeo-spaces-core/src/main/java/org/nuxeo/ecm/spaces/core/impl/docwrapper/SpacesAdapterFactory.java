@@ -6,6 +6,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class SpacesAdapterFactory implements DocumentAdapterFactory {
 
+    @SuppressWarnings("unchecked")
     public Object getAdapter(DocumentModel doc, Class itf) {
         SpacesAdapterComponent comp = (SpacesAdapterComponent) Framework
                 .getRuntime().getComponent(SpacesAdapterComponent.NAME);

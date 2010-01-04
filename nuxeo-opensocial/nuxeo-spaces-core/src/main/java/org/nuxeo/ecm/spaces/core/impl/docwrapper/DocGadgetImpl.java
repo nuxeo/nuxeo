@@ -1,7 +1,9 @@
 package org.nuxeo.ecm.spaces.core.impl.docwrapper;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +13,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.spaces.api.AbstractGadget;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
@@ -23,19 +24,21 @@ public class DocGadgetImpl extends AbstractGadget {
     private static final String GADGET_CATEGORY = "gadget:category";
 
     private static final String GADGET_PLACEID = "gadget:placeID";// html
-                                                                    // division
-                                                                    // id
+    // division
+    // id
     private static final String GADGET_POSITION = "gadget:position";// position
-                                                                    // in the
-                                                                    // div
+    // in the
+    // div
     private static final String GADGET_COLLAPSED = "gadget:collapsed";// is the
-                                                                        // gadget
-                                                                        // collapsed
+    // gadget
+    // collapsed
 
     private static final String GADGET_HEIGHT = "gadget:height";
     private static final String GADGET_PREFERENCES = "gadget:props";
     private static final String GADGET_NAME = "gadget:name";
     private static final String GADGET_URL = "gadget:url";
+    private static final String GADGET_HTML = "gadget:htmlContent";
+
     public static final String TYPE = "Gadget";
 
     private final DocumentModel doc;
@@ -99,7 +102,7 @@ public class DocGadgetImpl extends AbstractGadget {
 
     public String getPlaceID() throws ClientException {
         String result = (String) doc.getPropertyValue(GADGET_PLACEID);
-        if(result == null) {
+        if (result == null) {
             return "";
         } else {
             return result;
@@ -107,11 +110,11 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public int getPosition() throws ClientException {
-        Integer result = (Integer) doc.getPropertyValue(GADGET_POSITION);
-        if(result == null) {
+        Long result = (Long) doc.getPropertyValue(GADGET_POSITION);
+        if (result == null) {
             return 0;
         } else {
-            return result;
+            return result.intValue();
         }
     }
 
@@ -138,7 +141,7 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public boolean isCollapsed() throws ClientException {
-        Boolean result =  (Boolean) doc.getPropertyValue(GADGET_COLLAPSED);
+        Boolean result = (Boolean) doc.getPropertyValue(GADGET_COLLAPSED);
         if (result == null) {
             return false;
         } else {
@@ -204,18 +207,59 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public int getHeight() throws ClientException {
-        Integer result = (Integer) doc.getPropertyValue(GADGET_HEIGHT);
-        if(result == null) {
+        Long result = (Long) doc.getPropertyValue(GADGET_HEIGHT);
+        if (result == null) {
             return 0;
 
         } else {
-            return result;
+            return result.intValue();
         }
     }
 
     public void setHeight(int height) throws ClientException {
         doc.setPropertyValue(GADGET_HEIGHT, height);
 
+    }
+
+    public void copyFrom(Gadget gadget) throws ClientException {
+        this.setTitle(gadget.getTitle());
+        this.setCategory(gadget.getCategory());
+        this.setPlaceId(gadget.getPlaceID());
+        this.setPosition(gadget.getPosition());
+        this.setHeight(gadget.getHeight());
+        this.setCollapsed(gadget.isCollapsed());
+        this.setHtmlContent(gadget.getHtmlContent());
+
+        //Preferences must be URL decoded....
+        //TODO: should be changed
+        Map<String,String> preferences = gadget.getPreferences();
+        for(String key : preferences.keySet()) {
+            String value = preferences.get(key);
+            if(value != null) {
+                try {
+                    value = URLDecoder.decode(value,"UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    LOGGER.error("Unable to decode pref value : " + value);
+                }
+            }
+        }
+
+
+        this.setPreferences(preferences);
+
+    }
+
+    public String getHtmlContent() throws ClientException {
+        String result = (String) doc.getPropertyValue(GADGET_HTML);
+        if (result == null) {
+            return "";
+        } else {
+            return result;
+        }
+    }
+
+    public void setHtmlContent(String htmlContent) throws ClientException {
+        doc.setPropertyValue(GADGET_HTML, htmlContent);
     }
 
 }

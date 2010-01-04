@@ -38,6 +38,8 @@ import org.nuxeo.opensocial.container.factory.GadgetManagerImpl;
 import org.nuxeo.opensocial.container.factory.PreferenceManager;
 import org.nuxeo.opensocial.container.factory.utils.GadgetsUtils;
 import org.nuxeo.opensocial.container.factory.utils.UrlBuilder;
+import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This is the mapper between GadgetBean and Gadget interface
@@ -71,6 +73,8 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     private String spaceName;
 
     private URL definitionURL;
+    private int height;
+    private String htmlContent;
 
 
 
@@ -127,13 +131,11 @@ public class GadgetMapper extends GadgetBean implements Gadget {
         this.shindigId = shindigId;
         this.permission = permission;
         this.definitionURL = gadget.getDefinitionUrl();
+        this.height = gadget.getHeight();
+        this.htmlContent = ""; //TODO add the gadget.getHtmlContent.... or not.
 
         createGadgetBean();
-        bean.setRenderUrl(renderUrl);
-        bean.setPosition(this.position);
-        bean.setHeight(gadget.getHeight());
-        this.setHeight(gadget.getHeight());
-        this.renderUrl = updateRenderUrl();
+
 
     }
 
@@ -269,10 +271,12 @@ public class GadgetMapper extends GadgetBean implements Gadget {
         this.userPrefs = PreferenceManager.getPreferences(this);
         this.defaultPrefs = PreferenceManager.getDefaultPreferences(this);
         updateTitleInPreference();
-        bean = new GadgetBean(shindigId, ref, title, viewer, defaultPrefs,
-                userPrefs, permission, collapsed, name, spaceName,
-                createGadgetViews(), "", 300);
-
+        this.bean = new GadgetBean(shindigId, ref, title, viewer, defaultPrefs,
+            userPrefs, permission, collapsed, name, spaceName, createGadgetViews(),
+            htmlContent, height);
+        this.renderUrl = updateRenderUrl();
+        this.bean.setRenderUrl(renderUrl);
+        this.bean.setPosition(this.position);
     }
 
     private Map<String, GadgetView> createGadgetViews() {
@@ -331,7 +335,27 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     }
 
     public URL getDefinitionUrl() {
-        return definitionURL;
+        if(definitionURL != null) {
+            return definitionURL;
+        } else {
+            GadgetService gs;
+            try {
+                gs = Framework.getService(GadgetService.class);
+            } catch (Exception e) {
+                return null;
+            }
+            return gs.getGadgetDefinition(name);
+        }
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
+    }
+
+    @Override
+    public String getHtmlContent() {
+        return htmlContent;
     }
 
     public String getPref(String prefKey) throws ClientException {
@@ -346,6 +370,7 @@ public class GadgetMapper extends GadgetBean implements Gadget {
     }
 
     public void setCollapsed(boolean collapsed) throws ClientException {
+        super.setCollapse(collapsed);
         this.bean.setCollapse(collapsed);
 
     }
@@ -365,9 +390,11 @@ public class GadgetMapper extends GadgetBean implements Gadget {
         } else {
             position = new GadgetPosition(placeId, getPosition());
             this.bean.setPosition(position);
+            super.setPosition(position);
         }
 
     }
+
 
     public void setPosition(int position) throws ClientException {
         GadgetPosition pos = this.bean.getGadgetPosition();
@@ -376,11 +403,20 @@ public class GadgetMapper extends GadgetBean implements Gadget {
         } else {
             pos = new GadgetPosition(getPlaceID(), position);
             this.bean.setPosition(pos);
+            super.setPosition(pos);
         }
     }
 
     public void setHeight(int height) throws ClientException {
+        super.setHeight(height);
         this.bean.setHeight(height);
     }
+
+    public void copyFrom(Gadget gadget) throws ClientException {
+        // TODO Auto-generated method stub
+
+    }
+
+
 
 }

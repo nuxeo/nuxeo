@@ -47,11 +47,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-webengine-gadgets</artifactId>
       <scope>test</scope>

@@ -129,6 +129,7 @@ public class ContainerManagerImpl implements ContainerManager {
             throw new ClientException("Space not found");
         }
         Gadget createGadget = space.createGadget(gadgetName);
+        space.save();
         return new GadgetMapper(createGadget, space.getViewer(), shindigId++,
                 space.hasPermission("Write")).getGadgetBean();
 
@@ -167,6 +168,7 @@ public class ContainerManagerImpl implements ContainerManager {
             throw new ClientException("Space not found");
         }
         space.setLayout(layout);
+        space.save();
         return createContainer(space);
     }
 

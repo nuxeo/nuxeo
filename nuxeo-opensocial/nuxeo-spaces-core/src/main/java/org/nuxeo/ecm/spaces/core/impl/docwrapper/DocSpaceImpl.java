@@ -94,7 +94,7 @@ public class DocSpaceImpl implements Space {
 
     public String getDescription() {
         try {
-            return doc.getProperty("dc:title").toString();
+            return (String) doc.getPropertyValue("dc:description");
         } catch (ClientException e) {
             return "";
         }
@@ -155,10 +155,20 @@ public class DocSpaceImpl implements Space {
     }
 
     public void save(Gadget gadget) throws ClientException {
-        if(DocGadgetImpl.class.isAssignableFrom(gadget.getClass())) {
-            DocumentModel docGadget = ((DocGadgetImpl) gadget).getDocument();
+        DocumentModel docGadget = null;
+
+        DocumentRef gadgetRef = new IdRef(gadget.getId());
+        if(session().exists(gadgetRef)) {
+            docGadget = session().getDocument(gadgetRef);
+            Gadget sessionGadget = docGadget.getAdapter(Gadget.class);
+            sessionGadget.copyFrom(gadget);
+        }
+
+        if(docGadget != null) {
             session().saveDocument(docGadget);
             session().save();
+        } else {
+            throw new ClientException("Unable to save gadget: did not find the gadget in DB");
         }
 
     }

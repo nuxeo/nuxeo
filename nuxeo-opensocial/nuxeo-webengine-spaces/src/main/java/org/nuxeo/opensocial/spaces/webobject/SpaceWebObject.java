@@ -18,13 +18,16 @@
 package org.nuxeo.opensocial.spaces.webobject;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.Univers;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 /**
@@ -53,12 +56,33 @@ public class SpaceWebObject extends DefaultObject {
       return getView("index");
   }
 
+  @POST
+  public Object doUpdate() {
+      FormData form = getContext().getForm();
+      String title = form.getString("dc:title");
+      String description = form.getString("dc:description");
+      String theme = form.getString("space:theme");
+
+      try {
+          if(title != null) this.space.setTitle(title);
+          if(description != null) this.space.setDescription(description);
+          if(theme != null) this.space.setTheme(theme);
+          this.space.save();
+      } catch (ClientException e) {
+          throw WebException.wrap(e);
+      }
+
+      return getView("index");
+
+
+  }
+
   public Univers getUnivers() {
     return (Univers) getContext().getRequest().getAttribute("currentUnivers");
   }
 
   /**
-   * Calculates space data objects
+   * Computes space data objects
    */
   @Override
   public void initialize(Object... args) {
