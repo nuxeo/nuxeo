@@ -21,7 +21,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,28 +34,40 @@ public final class ResourceManager implements Registrable {
     private static final Log log = LogFactory.getLog(ResourceManager.class);
 
     private final HashMap<URI, List<String>> globalCache = new HashMap<URI, List<String>>();
-        
-    private final ThreadLocal<HashMap<URI, List<String>>> localCache = new ThreadLocal<HashMap<URI, List<String>>>() {
+
+    private final ThreadLocal<List<String>> localCache = new ThreadLocal<List<String>>() {
         @Override
-        protected HashMap<URI, List<String>> initialValue() {
-            return new HashMap<URI, List<String>>();
+        protected List<String> initialValue() {
+            return new ArrayList<String>();
         }
     };
 
     private final TypeRegistry typeRegistry = Manager.getTypeRegistry();
 
     public void addResource(String name, URL themeUrl) {
-        log.debug("Theme resource: " + themeUrl + " -> " + name);
+        addResource(name, themeUrl, false);
+    }
+
+    public void addResource(String name, URL themeUrl, boolean local) {
+        if (local) {
+            log.debug("Added local resource: " + name);
+        } else {
+            log.debug("Added theme resource: " + name);
+        }
         ResourceType resourceType = (ResourceType) typeRegistry.lookup(
                 TypeFamily.RESOURCE, name);
         if (resourceType != null) {
             for (String dependency : resourceType.getDependencies()) {
                 log.debug("  Subresource dependency: " + name + " -> "
                         + dependency);
-                addResource(dependency, themeUrl);
+                addResource(dependency, themeUrl, local);
             }
-
-            List<String> scripts = getResourcesFor(themeUrl);
+            List<String> scripts;
+            if (local) {
+                scripts = getLocalResources();
+            } else {
+                scripts = getGlobalResourcesFor(themeUrl);
+            }
             if (!scripts.contains(name)) {
                 scripts.add(name);
             }
@@ -66,23 +77,34 @@ public final class ResourceManager implements Registrable {
     }
 
     public void flush() {
-       // getResourceCache().clear();
+        getLocalResources().clear();
     }
 
-    private Map<URI, List<String>> getResourceCache() {
-        return globalCache;
+    private List<String> getLocalResources() {
+        return localCache.get();
     }
 
     public List<String> getResourcesFor(String themeUrl) {
+        List<String> resources = new ArrayList<String>();
+        resources.addAll(getGlobalResourcesFor(themeUrl));
+        for (String localResource : getLocalResources()) {
+            if (!resources.contains(localResource)) {
+                resources.add(localResource);
+            }
+        }
+        return resources;
+    }
+
+    public List<String> getGlobalResourcesFor(String themeUrl) {
         try {
-            return getResourcesFor(new URL(themeUrl));
+            return getGlobalResourcesFor(new URL(themeUrl));
         } catch (MalformedURLException e) {
             log.warn(e);
             return null;
         }
     }
 
-    public List<String> getResourcesFor(URL themeUrl) {
+    public List<String> getGlobalResourcesFor(URL themeUrl) {
         URI uri;
         try {
             uri = themeUrl.toURI();
@@ -90,11 +112,10 @@ public final class ResourceManager implements Registrable {
             log.warn(e);
             return null;
         }
-        Map<URI, List<String>> resourceCache = getResourceCache();
-        if (!resourceCache.containsKey(uri)) {
-            resourceCache.put(uri, new ArrayList<String>());
+        if (!globalCache.containsKey(uri)) {
+            globalCache.put(uri, new ArrayList<String>());
         }
-        return resourceCache.get(uri);
+        return globalCache.get(uri);
     }
 
     public void clear() {
