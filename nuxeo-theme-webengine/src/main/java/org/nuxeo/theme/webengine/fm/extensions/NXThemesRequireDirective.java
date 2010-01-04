@@ -71,6 +71,8 @@ public class NXThemesRequireDirective implements TemplateDirectiveModel {
         body.render(sw);
         String resourceName = sw.getBuffer().toString();
         
-        Manager.getResourceManager().addResource(resourceName, themeUrl);
+        // Register as a local resource
+        final boolean local = true;
+        Manager.getResourceManager().addResource(resourceName, themeUrl, local);
     }
 }
