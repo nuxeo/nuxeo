@@ -34,7 +34,9 @@ public final class ResourceManager implements Registrable {
 
     private static final Log log = LogFactory.getLog(ResourceManager.class);
 
-    private final ThreadLocal<HashMap<URI, List<String>>> cache = new ThreadLocal<HashMap<URI, List<String>>>() {
+    private final HashMap<URI, List<String>> globalCache = new HashMap<URI, List<String>>();
+        
+    private final ThreadLocal<HashMap<URI, List<String>>> localCache = new ThreadLocal<HashMap<URI, List<String>>>() {
         @Override
         protected HashMap<URI, List<String>> initialValue() {
             return new HashMap<URI, List<String>>();
@@ -64,11 +66,11 @@ public final class ResourceManager implements Registrable {
     }
 
     public void flush() {
-        getResourceCache().clear();
+       // getResourceCache().clear();
     }
-    
+
     private Map<URI, List<String>> getResourceCache() {
-        return cache.get();
+        return globalCache;
     }
 
     public List<String> getResourcesFor(String themeUrl) {
