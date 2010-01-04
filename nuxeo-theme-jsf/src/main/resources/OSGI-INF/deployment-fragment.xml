@@ -85,6 +85,13 @@
         org.nuxeo.theme.jsf.component.UIThemeStyles
       </component-class>
     </component>
+
+    <component>
+      <component-type>nxthemes.require</component-type>
+      <component-class>
+        org.nuxeo.theme.jsf.component.UIRequire
+      </component-class>
+    </component>
   </extension>
 
 

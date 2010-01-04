@@ -98,5 +98,13 @@
       <component-type>nxthemes.themestyles</component-type>
     </component>
   </tag>
+  
+  <tag>
+    <tag-name>require</tag-name>
+    <component>
+      <component-type>nxthemes.require</component-type>
+    </component>
+  </tag>
+  
 
 </facelet-taglib>
