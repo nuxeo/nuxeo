@@ -355,7 +355,9 @@ public class NuxeoProperty extends NuxeoPropertyBase {
             } catch (ClientException e) {
                 throw new CMISRuntimeException(e.toString(), e);
             }
-            blob.setFilename((String) value);
+            if (blob != null) {
+                blob.setFilename((String) value);
+            }
         }
     }
 
