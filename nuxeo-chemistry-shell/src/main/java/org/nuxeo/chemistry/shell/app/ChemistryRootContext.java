@@ -17,6 +17,8 @@
 package org.nuxeo.chemistry.shell.app;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Repository;
@@ -35,6 +37,7 @@ import org.nuxeo.chemistry.shell.console.ColorHelper;
  */
 public class ChemistryRootContext extends AbstractContext {
 
+    protected Map<String, Repository> repos;
     protected String[] keys;
     protected String[] ls;
 
@@ -65,7 +68,8 @@ public class ChemistryRootContext extends AbstractContext {
                 e.printStackTrace();
             }
         }
-        Repository repo = cm.getRepository(name);
+        Repository r = repos.get(name); // TODO  atompub client is using IDs to get repositories ... 
+        Repository repo = cm.getRepository(r.getId());
         if (repo != null) {            
             APPConnection conn = (APPConnection)repo.getConnection(null);
             CMISObject entry = conn.getRootFolder();
@@ -100,10 +104,12 @@ public class ChemistryRootContext extends AbstractContext {
                 }
             }
             Repository[] repos = cm.getRepositories();
+            this.repos = new HashMap<String, Repository>();
             keys = new String[repos.length];
             ls = new String[repos.length];
             for (int i=0; i<repos.length; i++) {
                 keys[i] = repos[i].getName();
+                this.repos.put(repos[i].getName(), repos[i]);
                 ls[i] = ColorHelper.decorateNameByType(repos[i].getName(), "Repository");
             }
         }
