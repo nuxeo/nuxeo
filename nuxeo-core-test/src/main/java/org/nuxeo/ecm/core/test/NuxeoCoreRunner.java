@@ -94,7 +94,11 @@ public class NuxeoCoreRunner extends NuxeoRunner implements
                     repoNames.add(session.getRepositoryName());
                 }
 
-                CoreInstance.getInstance().close(session);
+                try {
+                    CoreInstance.getInstance().close(session);
+                } catch (Exception e) {
+                    log.error("Unable to close session");
+                }
             }
         }
 
@@ -150,7 +154,7 @@ public class NuxeoCoreRunner extends NuxeoRunner implements
         }
     }
 
-    //Waiting for Guice 2.0 type listeners
+    // Waiting for Guice 2.0 type listeners
     public static void onSessionInjected(CoreSession session) {
         if (!injectedSessions.contains(session)) {
             injectedSessions.push(session);
