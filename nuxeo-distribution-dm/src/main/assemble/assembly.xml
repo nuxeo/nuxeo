@@ -188,6 +188,7 @@
       <artifact:file groupId="net.sf.json-lib" artifactId="json-lib" />
       <artifact:file groupId="org.apache.lucene" artifactId="lucene-core" version="2.3.2" />
       <artifact:file groupId="net.sf.opencsv" artifactId="opencsv" />
+      <artifact:file groupId="org.codehaus.plexus" artifactId="plexus-utils" version="1.5.6" />
       <artifact:file groupId="org.slf4j" artifactId="slf4j-api" version="1.5.6" />
       <artifact:file groupId="org.slf4j" artifactId="slf4j-log4j12" version="1.5.6" />
       <artifact:file groupId="org.richfaces.framework" artifactId="richfaces-api" version="3.3.1.GA" />
