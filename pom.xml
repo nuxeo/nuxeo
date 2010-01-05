@@ -22,6 +22,7 @@
     <module>nuxeo-chemistry-impl</module>
     <module>nuxeo-chemistry-jaxrs</module>
     <module>nuxeo-chemistry-ws</module>
+    <module>nuxeo-chemistry-shell</module>
     <module>nuxeo-chemistry-tests</module>
   </modules>
 
@@ -72,6 +73,11 @@
       <dependency>
 	<groupId>org.apache.chemistry</groupId>
 	<artifactId>chemistry-atompub-server</artifactId>
+	<version>${chemistry.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>org.apache.chemistry</groupId>
+	<artifactId>chemistry-atompub-client</artifactId>
 	<version>${chemistry.version}</version>
       </dependency>
       <dependency>

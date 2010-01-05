@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<service xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200908/"
+	xmlns:cmisra="http://docs.oasis-open.org/ns/cmis/restatom/200908/"
+	xmlns="http://www.w3.org/2007/app">
+	<workspace>
+		<title type="text">default</title>
+		<cmisra:repositoryInfo>
+			<cmis:repositoryId>default</cmis:repositoryId>
+			<cmis:repositoryName>default</cmis:repositoryName>
+			<cmis:repositoryDescription>Repository default
+			</cmis:repositoryDescription>
+			<cmis:vendorName>Nuxeo</cmis:vendorName>
+			<cmis:productName>Nuxeo Repository</cmis:productName>
+			<cmis:productVersion>5.2-SNAPSHOT</cmis:productVersion>
+			<cmis:rootFolderId>c7cf6201-0000-4639-a091-fdb7519a9ddb
+			</cmis:rootFolderId>
+			<cmis:latestChangeLogToken></cmis:latestChangeLogToken>
+			<cmis:capabilities>
+				<cmis:capabilityACL>none</cmis:capabilityACL>
+				<cmis:capabilityAllVersionsSearchable>true
+				</cmis:capabilityAllVersionsSearchable>
+				<cmis:capabilityChanges>innerandouter</cmis:capabilityChanges>
+				<cmis:capabilityContentStreamUpdatability>anytime
+				</cmis:capabilityContentStreamUpdatability>
+				<cmis:capabilityGetDescendants>false</cmis:capabilityGetDescendants>
+				<cmis:capabilityGetFolderTree>false</cmis:capabilityGetFolderTree>
+				<cmis:capabilityMultifiling>false</cmis:capabilityMultifiling>
+				<cmis:capabilityPWCSearchable>true</cmis:capabilityPWCSearchable>
+				<cmis:capabilityPWCUpdatable>true</cmis:capabilityPWCUpdatable>
+				<cmis:capabilityQuery>bothcombined</cmis:capabilityQuery>
+				<cmis:capabilityRenditions>none</cmis:capabilityRenditions>
+				<cmis:capabilityUnfiling>false</cmis:capabilityUnfiling>
+				<cmis:capabilityVersionSpecificFiling>false
+				</cmis:capabilityVersionSpecificFiling>
+				<cmis:capabilityJoin>innerandouter</cmis:capabilityJoin>
+			</cmis:capabilities>
+			<cmis:cmisVersionSupported>1.0</cmis:cmisVersionSupported>
+			<cmis:changesIncomplete>false</cmis:changesIncomplete>
+			<cmis:changesOnType>cmis:folder</cmis:changesOnType>
+			<cmis:changesOnType>cmis:policy</cmis:changesOnType>
+			<cmis:changesOnType>cmis:document</cmis:changesOnType>
+			<cmis:changesOnType>cmis:relationship</cmis:changesOnType>
+		</cmisra:repositoryInfo>
+		<collection href="http://localhost:8088/cmis/query">
+			<title type="text">query collection</title>
+			<cmisra:collectionType>query</cmisra:collectionType>
+		</collection>
+		<collection href="http://localhost:8088/cmis/checkedout">
+			<title type="text">the checkedout</title>
+			<cmisra:collectionType>checkedout</cmisra:collectionType>
+		</collection>
+		<collection href="http://localhost:8088/cmis/types">
+			<title type="text">Types</title>
+			<cmisra:collectionType>types</cmisra:collectionType>
+		</collection>
+		<collection href="http://localhost:8088/cmis/unfiled">
+			<title type="text">the unfiled</title>
+			<cmisra:collectionType>unfiled</cmisra:collectionType>
+		</collection>
+		<collection
+			href="http://localhost:8088/cmis/children/c7cf6201-0000-4639-a091-fdb7519a9ddb">
+			<title type="text">children collection</title>
+			<cmisra:collectionType>root</cmisra:collectionType>
+		</collection>
+		<cmisra:uritemplate>
+			<cmisra:type>objectbyid</cmisra:type>
+			<cmisra:mediatype>application/atom+xml;type=entry</cmisra:mediatype>
+			<cmisra:template>http://localhost:8088/cmis/object/{id}
+			</cmisra:template>
+		</cmisra:uritemplate>
+		<cmisra:uritemplate>
+			<cmisra:type>objectbypath</cmisra:type>
+			<cmisra:mediatype>application/atom+xml;type=entry</cmisra:mediatype>
+			<cmisra:template>http://localhost:8088/cmis/path/{path}
+			</cmisra:template>
+		</cmisra:uritemplate>
+		<cmisra:uritemplate>
+			<cmisra:type>typebyid</cmisra:type>
+			<cmisra:mediatype>application/atom+xml;type=feed</cmisra:mediatype>
+			<cmisra:template>http://localhost:8088/cmis/type/{id}
+			</cmisra:template>
+		</cmisra:uritemplate>
+	</workspace>
+</service>

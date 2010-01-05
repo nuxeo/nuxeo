@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo WebEngine Client
+Bundle-SymbolicName: org.nuxeo.chemistry.shell;singleton:=true
+Main-Class: org.nuxeo.chemistry.shell.Main
