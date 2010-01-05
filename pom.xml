@@ -837,6 +837,7 @@
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
 	<version>1.5.6</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
