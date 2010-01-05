@@ -174,7 +174,7 @@
         version="2.2.1" />
       <artifact group="org.apache.lucene" name="lucene-core" />
       <artifact group="net.sf.opencsv" name="opencsv" />
-      <artifact group="org.codehaus.plexus" name="plexus-utils" version="1.5.6" />
+      <artifact group="org.codehaus.plexus" name="plexus-utils" />
       <artifact group="org.slf4j" name="slf4j-api" />
       <artifact group="org.slf4j" name="slf4j-log4j12" />
       <artifact group="org.richfaces.framework" name="richfaces-api" />
