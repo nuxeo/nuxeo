@@ -604,16 +604,6 @@ public class H2Functions extends EmbeddedFunctions {
         PreparedStatement ps = null;
         int rowCount = 0;
         try {
-            ps = conn.prepareStatement("TRUNCATE TABLE read_acls;");
-            ps.executeUpdate();
-            // TODO: use md5 of the acl as key
-            ps = conn.prepareStatement("INSERT INTO read_acls" //
-                    + " SELECT acl, acl" //
-                    + " FROM (SELECT DISTINCT(nx_get_read_acl(id)) AS acl" //
-                    + "       FROM  (SELECT DISTINCT(id) AS id" //
-                    + "              FROM acls) AS uids) AS read_acls_input;");
-            ps.executeUpdate();
-
             // New hierarchy_read_acl entry
             ps = conn.prepareStatement("INSERT INTO hierarchy_read_acl" //
                     + " SELECT id, nx_get_read_acl(id)" //
@@ -631,6 +621,17 @@ public class H2Functions extends EmbeddedFunctions {
             rowCount = ps.executeUpdate();
             ps = conn.prepareStatement("DELETE FROM hierarchy_modified_acl WHERE NOT is_new;");
             ps.executeUpdate();
+            if (rowCount > 0) {
+                ps = conn.prepareStatement("TRUNCATE TABLE read_acls;");
+                ps.executeUpdate();
+                // TODO: use md5 of the acl as key
+                ps = conn.prepareStatement("INSERT INTO read_acls" //
+                        + " SELECT acl, acl" //
+                        + " FROM (SELECT DISTINCT(nx_get_read_acl(id)) AS acl" //
+                        + "       FROM  (SELECT DISTINCT(id) AS id" //
+                        + "              FROM acls) AS uids) AS read_acls_input;");
+                ps.executeUpdate();
+            }
             ps = conn.prepareStatement("UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (" //
                     + " SELECT h.id" //
                     + " FROM hierarchy AS h" //
