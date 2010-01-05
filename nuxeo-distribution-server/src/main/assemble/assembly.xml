@@ -144,6 +144,7 @@
       <artifact group="cup" name="java-cup" />
       <artifact group="net.sf.ezmorph" name="ezmorph" />
       <artifact group="net.sf.opencsv" name="opencsv" version="1.7" />
+      <artifact group="org.codehaus.plexus" name="plexus-utils" version="1.5.6" />
       <artifact group="org.apache.derby" name="derby" />
       <!--
         <artifact group="hibernate" name="hibernate3"
