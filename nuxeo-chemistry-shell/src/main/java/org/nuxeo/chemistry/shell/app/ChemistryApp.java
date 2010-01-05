@@ -49,10 +49,13 @@ public class ChemistryApp extends AbstractApplication {
         registry.registerCommand(new CreateFile());
         registry.registerCommand(new CreateFolder());
     }
-    
+        
     @Override
     protected void doConnect() throws IOException {
         cm = new APPContentManager(serverUrl.toExternalForm());
+        if (username != null) {
+            cm.login(username, new String(password));
+        }
     }
     
     public void disconnect() {
