@@ -1083,14 +1083,6 @@ public class DialectPostgreSQL extends Dialect {
                         + "DECLARE\n" //
                         + "  update_count integer;\n" //
                         + "BEGIN\n" //
-                        + "  -- Rebuild read_acls\n" //
-                        + "  RAISE INFO 'nx_update_read_acls REBUILD read_acls';\n" //
-                        + "  TRUNCATE TABLE read_acls;\n" //
-                        + "  INSERT INTO read_acls\n" //
-                        + "    SELECT md5(acl), acl\n" //
-                        + "    FROM (SELECT DISTINCT(nx_get_read_acl(id)) AS acl\n" //
-                        + "        FROM (SELECT DISTINCT(id) AS id FROM acls) AS uids) AS read_acls_input;\n" //
-                        + "\n" //
                         + "  -- New hierarchy_read_acl entry\n" //
                         + "  RAISE INFO 'nx_update_read_acls ADD NEW hierarchy_read_acl entry';\n" //
                         + "  INSERT INTO hierarchy_read_acl\n" //
@@ -1111,6 +1103,16 @@ public class DialectPostgreSQL extends Dialect {
                         + "  GET DIAGNOSTICS update_count = ROW_COUNT;\n" //
                         + "  RAISE INFO 'nx_update_read_acls % hierarchy_read_acl MARKED', update_count;\n" //
                         + "  DELETE FROM hierarchy_modified_acl WHERE NOT is_new;\n" //
+                        + "  IF (update_count > 0) THEN\n" // list of read_acls have changed
+                        + "    -- Rebuild read_acls\n" //
+                        + "    RAISE INFO 'nx_update_read_acls REBUILD read_acls';\n" //
+                        + "    TRUNCATE TABLE read_acls;\n" //
+                        + "    INSERT INTO read_acls\n" //
+                        + "      SELECT md5(acl), acl\n" //
+                        + "      FROM (SELECT DISTINCT(nx_get_read_acl(id)) AS acl\n" //
+                        + "          FROM (SELECT DISTINCT(id) AS id FROM acls) AS uids) AS read_acls_input;\n" //
+                        + "  END IF;\n" //
+                        + "\n" //
                         + "  -- Mark all childrens\n" //
                         + "  LOOP\n" //
                         + "    UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (\n" //
