@@ -75,4 +75,24 @@ public final class ResourceType implements Type {
         return url;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setShrinkable(boolean shrinkable) {
+        this.shrinkable = shrinkable;
+    }
+
+    public void setDependencies(String[] dependencies) {
+        this.dependencies = dependencies;
+    }
+
 }

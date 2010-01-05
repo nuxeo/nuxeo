@@ -104,7 +104,7 @@ public final class ResourceManager implements Registrable {
         }
     }
 
-    public List<String> getGlobalResourcesFor(URL themeUrl) {
+    public synchronized List<String> getGlobalResourcesFor(URL themeUrl) {
         URI uri;
         try {
             uri = themeUrl.toURI();

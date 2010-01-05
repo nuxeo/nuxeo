@@ -41,6 +41,7 @@ import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.presets.PaletteType;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
+import org.nuxeo.theme.resources.ResourceType;
 import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeIOException;
@@ -113,9 +114,9 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             registerRegistryExtension(extension);
         } else if (xp.equals("elements") || xp.equals("fragments")
                 || xp.equals("formats") || xp.equals("format-filters")
-                || xp.equals("standalone-filters") || xp.equals("resources")
-                || xp.equals("negotiations") || xp.equals("shortcuts")
-                || xp.equals("vocabularies") || xp.equals("previews")) {
+                || xp.equals("standalone-filters") || xp.equals("negotiations")
+                || xp.equals("shortcuts") || xp.equals("vocabularies")
+                || xp.equals("previews")) {
             registerTypeExtension(extension);
         } else if (xp.equals("applications")) {
             registerApplicationExtension(extension);
@@ -135,6 +136,8 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             registerViewExtension(extension);
         } else if (xp.equals("models")) {
             registerModelExtension(extension);
+        } else if (xp.equals("resources")) {
+            registerResourceExtension(extension);
         } else {
             log.warn(String.format("Unknown extension point: %s", xp));
         }
@@ -147,14 +150,16 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             unregisterRegistryExtension(extension);
         } else if (xp.equals("elements") || xp.equals("fragments")
                 || xp.equals("formats") || xp.equals("format-filters")
-                || xp.equals("standalone-filters") || xp.equals("resources")
-                || xp.equals("engines") || xp.equals("template-engines")
-                || xp.equals("negotiations") || xp.equals("perspectives")
-                || xp.equals("applications") || xp.equals("shortcuts")
-                || xp.equals("vocabularies") || (xp.equals("presets"))
-                || xp.equals("views") || xp.equals("themes")
-                || xp.equals("themesets") || xp.equals("previews")) {
+                || xp.equals("standalone-filters") || xp.equals("engines")
+                || xp.equals("template-engines") || xp.equals("negotiations")
+                || xp.equals("perspectives") || xp.equals("applications")
+                || xp.equals("shortcuts") || xp.equals("vocabularies")
+                || (xp.equals("presets")) || xp.equals("views")
+                || xp.equals("themes") || xp.equals("themesets")
+                || xp.equals("previews")) {
             unregisterTypeExtension(extension);
+        } else if (xp.equals("resources")) {
+            unregisterResourceExtension(extension);
         } else if (xp.equals("views")) {
             unregisterViewExtension(extension);
         } else if (xp.equals("models")) {
@@ -542,4 +547,25 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
         }
     }
 
+    private void registerResourceExtension(Extension extension) {
+        Object[] contribs = extension.getContributions();
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+        ThemeManager themeManager = (ThemeManager) getRegistry("themes");
+        for (Object contrib : contribs) {
+            ResourceType resourceType = (ResourceType) contrib;
+            typeRegistry.register(resourceType);
+        }
+        themeManager.updateResourceOrdering();
+    }
+
+    private void unregisterResourceExtension(Extension extension) {
+        Object[] contribs = extension.getContributions();
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+        ThemeManager themeManager = (ThemeManager) getRegistry("themes");
+        for (Object contrib : contribs) {
+            ResourceType resourceType = (ResourceType) contrib;
+            typeRegistry.unregister(resourceType);
+            themeManager.unregisterResourceOrdering(resourceType);
+        }
+    }
 }

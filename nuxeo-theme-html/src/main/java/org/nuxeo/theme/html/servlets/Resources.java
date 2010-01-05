@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
@@ -70,7 +72,7 @@ public final class Resources extends HttpServlet implements Serializable {
         final ThemeManager themeManager = Manager.getThemeManager();
 
         String contentType = null;
-        final String[] resourceNames = m.group(1).split(",");
+        final List<String> resourceNames = Arrays.asList(m.group(1).split(","));
         for (String resourceName : resourceNames) {
             String previousContentType = contentType;
             if (resourceName.endsWith(".js")) {
@@ -94,7 +96,6 @@ public final class Resources extends HttpServlet implements Serializable {
                 return;
             }
         }
-
         response.addHeader("content-type", contentType);
 
         // cache control
@@ -111,7 +112,10 @@ public final class Resources extends HttpServlet implements Serializable {
         StringBuilder text = new StringBuilder();
         String basePath = request.getParameter("basepath");
 
-        for (String resourceName : resourceNames) {
+        for (String resourceName : themeManager.getResourceOrdering()) {
+            if (!resourceNames.contains(resourceName)) {
+                continue;
+            }
             final OutputStream out = new ByteArrayOutputStream();
             String source = themeManager.getResource(resourceName);
             if (source == null) {
@@ -133,6 +137,9 @@ public final class Resources extends HttpServlet implements Serializable {
                 themeManager.setResource(resourceName, source);
             }
             text.append(source);
+            if (out != null) {
+                out.close();
+            }
         }
 
         boolean supportsGzip = Utils.supportsGzip(request);

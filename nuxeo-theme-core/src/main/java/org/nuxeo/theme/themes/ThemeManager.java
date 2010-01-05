@@ -37,6 +37,9 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.plexus.util.dag.CycleDetectedException;
+import org.codehaus.plexus.util.dag.DAG;
+import org.codehaus.plexus.util.dag.TopologicalSorter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.CustomThemeNameFilter;
@@ -73,6 +76,7 @@ import org.nuxeo.theme.relations.DyadicRelation;
 import org.nuxeo.theme.relations.Predicate;
 import org.nuxeo.theme.relations.Relation;
 import org.nuxeo.theme.relations.RelationStorage;
+import org.nuxeo.theme.resources.ResourceType;
 import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
@@ -108,6 +112,8 @@ public final class ThemeManager implements Registrable {
 
     private final Map<String, String> cachedResources = new HashMap<String, String>();
 
+    private List<String> resourceOrdering = new ArrayList<String>();
+
     private static final File CUSTOM_THEME_DIR;
 
     private static final FilenameFilter CUSTOM_THEME_FILENAME_FILTER = new CustomThemeNameFilter();
@@ -125,6 +131,10 @@ public final class ThemeManager implements Registrable {
         formatsByTypeName.clear();
         namedObjectsByTheme.clear();
         themeOfNamedObjects.clear();
+        infoMap.clear();
+        cachedStyles.clear();
+        cachedResources.clear();
+        resourceOrdering.clear();
     }
 
     public Map<String, Info> getGlobalInfoMap() {
@@ -177,7 +187,7 @@ public final class ThemeManager implements Registrable {
         return getDefaultTheme(applicationPath, null);
     }
 
-    public static String getDefaultTheme(final String ... paths) {
+    public static String getDefaultTheme(final String... paths) {
         String defaultTheme = "";
         ApplicationType application = null;
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
@@ -226,7 +236,7 @@ public final class ThemeManager implements Registrable {
         }
         return null;
     }
-    
+
     public static ThemeDescriptor getThemeDescriptorByThemeName(
             final String themeName) {
         return getThemeDescriptorByThemeName(null, themeName);
@@ -255,8 +265,8 @@ public final class ThemeManager implements Registrable {
         }
         return themePages;
     }
-    
-    public  List<PageElement> getPagesOf(final String themeName) {
+
+    public List<PageElement> getPagesOf(final String themeName) {
         final ThemeElement theme = getThemeByName(themeName);
         if (theme == null) {
             return null;
@@ -387,7 +397,7 @@ public final class ThemeManager implements Registrable {
         }
         return null;
     }
-    
+
     public ThemeElement getThemeByName(final String name) {
         return themes.get(name);
     }
@@ -808,7 +818,8 @@ public final class ThemeManager implements Registrable {
     }
 
     // Theme management
-    public void loadTheme(String src, String xmlSource) throws ThemeIOException, ThemeException {
+    public void loadTheme(String src, String xmlSource)
+            throws ThemeIOException, ThemeException {
         ThemeDescriptor themeDescriptor = getThemeDescriptor(src);
         if (themeDescriptor == null) {
             throw new ThemeIOException("Theme not found: " + src);
@@ -837,7 +848,7 @@ public final class ThemeManager implements Registrable {
         }
         log.debug("Loaded theme: " + src);
     }
-    
+
     public void loadTheme(String src) throws ThemeIOException, ThemeException {
         loadTheme(src, null);
     }
@@ -1162,7 +1173,8 @@ public final class ThemeManager implements Registrable {
         return cachedStyles.get(key);
     }
 
-    public synchronized void setCachedStyles(String themeName, String basePath, String css) {
+    public synchronized void setCachedStyles(String themeName, String basePath,
+            String css) {
         String key = themeName;
         if (basePath != null) {
             key = String.format("%s|%s", key, basePath);
@@ -1171,19 +1183,52 @@ public final class ThemeManager implements Registrable {
     }
 
     private synchronized void resetCachedStyles(String themeName) {
-        for(String key : cachedStyles.keySet()) {
-            if(key.startsWith(themeName)) {
+        for (String key : cachedStyles.keySet()) {
+            if (key.startsWith(themeName)) {
                 cachedStyles.put(key, null);
             }
         }
     }
 
+    // Resources
     public String getResource(String name) {
         return cachedResources.get(name);
     }
 
     public synchronized void setResource(String name, String content) {
         cachedResources.put(name, content);
+    }
+
+    public synchronized void updateResourceOrdering() {
+        DAG graph = new DAG();
+        for (Type type : Manager.getTypeRegistry().getTypes(TypeFamily.RESOURCE)) {
+            ResourceType resourceType = (ResourceType) type;
+            String resourceName = resourceType.getName();
+            graph.addVertex(resourceName);
+            for (String dependency : resourceType.getDependencies()) {
+                try {
+                    graph.addEdge(resourceName, dependency);
+                } catch (CycleDetectedException e) {
+                    log.error("Cycle detected in resource dependencies: ", e);
+                    return;
+                }
+            }
+        }
+        resourceOrdering.clear();
+        for (Object r : TopologicalSorter.sort(graph)) {
+            resourceOrdering.add((String) r);
+        }
+    }
+
+    public List<String> getResourceOrdering() {
+        return resourceOrdering;
+    }
+
+    public void unregisterResourceOrdering(ResourceType resourceType) {
+        String resourceName = resourceType.getName();
+        if (resourceOrdering.contains(resourceName)) {
+            resourceOrdering.remove(resourceName);
+        }
     }
 
     public static List<ViewType> getViewTypesForFragmentType(
