@@ -97,7 +97,7 @@ public class NuxeoCoreRunner extends NuxeoRunner implements
                 try {
                     CoreInstance.getInstance().close(session);
                 } catch (Exception e) {
-                    log.error("Unable to close session");
+                    log.error("Unable to close session: " + e.getMessage(), e);
                 }
             }
         }
@@ -109,7 +109,7 @@ public class NuxeoCoreRunner extends NuxeoRunner implements
                 log.info("Shutdown repository : " + repoName);
                 repository.shutdown();
             } catch (Exception e) {
-                log.error("Unable to get repository : " + repoName);
+                log.error("Unable to get repository : " + repoName,e);
             }
         }
 
