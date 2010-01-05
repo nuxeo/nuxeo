@@ -68,7 +68,6 @@
       <scope>runtime</scope>
     </dependency>
 
-
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate</artifactId>
@@ -98,13 +97,13 @@
       <artifactId>nuxeo-runtime-test</artifactId>
       <scope>compile</scope>
     </dependency>
-        
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-test</artifactId>
       <scope>compile</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

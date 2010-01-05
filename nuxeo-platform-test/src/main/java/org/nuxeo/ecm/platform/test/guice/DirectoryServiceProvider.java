@@ -27,6 +27,7 @@ import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
@@ -56,17 +57,14 @@ public class DirectoryServiceProvider implements Provider<DirectoryService> {
         dataSource = createDataSource();
         initialCtx = new InitialContext();
 
+        String prefix = DataSourceHelper.getDataSourceJNDIPrefix();
         try {
-            initialCtx.lookup("jdbc/nxsqldirectory");
+            initialCtx.lookup(prefix + "/nxsqldirectory");
         } catch (NameNotFoundException e) {
-            initialCtx.bind("jdbc/nxsqldirectory", dataSource);
+            initialCtx.bind(prefix + "/nxsqldirectory", dataSource);
         }
 
-        try {
-            initialCtx.lookup("java:/nxsqldirectory");
-        } catch (NameNotFoundException e) {
-            initialCtx.bind("java:/nxsqldirectory", dataSource);
-        }
+
     }
 
     private static DataSource createDataSource() {
