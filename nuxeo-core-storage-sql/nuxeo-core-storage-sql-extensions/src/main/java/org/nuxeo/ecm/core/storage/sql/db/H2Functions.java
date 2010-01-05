@@ -504,6 +504,10 @@ public class H2Functions extends EmbeddedFunctions {
 
         private int parentIdIndex;
 
+        private String isPropertyName = "ISPROPERTY";
+
+        private int isPropertyIndex;
+
         /**
          * Trigger interface: initialization.
          */
@@ -514,18 +518,22 @@ public class H2Functions extends EmbeddedFunctions {
                 DatabaseMetaData meta = conn.getMetaData();
                 rs = meta.getColumns(null, schema, table, idName);
                 if (!rs.next()) {
-                    throw new SQLException("No id key for: " + schema + '.'
-                            + table);
+                    throw new SQLException("No id key for: " + schema + '.' + table);
                 }
                 idType = rs.getInt("DATA_TYPE");
                 idIndex = rs.getInt("ORDINAL_POSITION") - 1;
                 rs.close();
                 rs = meta.getColumns(null, schema, table, parentIdName);
                 if (!rs.next()) {
-                    throw new SQLException("No parentid for in " + schema + '.'
-                            + table);
+                    throw new SQLException("No parentid in " + schema + '.' + table);
                 }
                 parentIdIndex = rs.getInt("ORDINAL_POSITION") - 1;
+                rs.close();
+                rs = meta.getColumns(null, schema, table, isPropertyName);
+                if (!rs.next()) {
+                    throw new SQLException("No isproperty in " + schema + '.' + table);
+                }
+                isPropertyIndex = rs.getInt("ORDINAL_POSITION") - 1;
             } finally {
                 if (rs != null) {
                     rs.close();
@@ -539,7 +547,7 @@ public class H2Functions extends EmbeddedFunctions {
          */
         public void fire(Connection conn, Object[] oldRow, Object[] newRow)
                 throws SQLException {
-            if (newRow != null) {
+            if (newRow != null && ! ((Boolean) newRow[isPropertyIndex])) {
                 PreparedStatement ps = null;
                 try {
                     ps = conn.prepareStatement("INSERT INTO hierarchy_modified_acl VALUES(?, ?);");
@@ -578,7 +586,7 @@ public class H2Functions extends EmbeddedFunctions {
             ps.executeUpdate();
             ps = conn.prepareStatement("INSERT INTO hierarchy_read_acl" //
                     + "  SELECT id, nx_get_read_acl(id)"
-                    + "  FROM (SELECT DISTINCT(id) AS id FROM hierarchy) AS uids;");
+                    + "  FROM (SELECT id FROM hierarchy WHERE NOT isproperty) AS uids;");
             ps.executeUpdate();
             ps = conn.prepareStatement("TRUNCATE TABLE read_acls;");
             ps.executeUpdate();
@@ -635,7 +643,7 @@ public class H2Functions extends EmbeddedFunctions {
             ps = conn.prepareStatement("UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (" //
                     + " SELECT h.id" //
                     + " FROM hierarchy AS h" //
-                    + " LEFT JOIN hierarchy_read_acl AS r ON h.id = r.id" //
+                    + " JOIN hierarchy_read_acl AS r ON h.id = r.id" //
                     + " WHERE r.acl_id IS NOT NULL" //
                     + " AND h.parentid IN (SELECT id FROM hierarchy_read_acl WHERE acl_id IS NULL));");
             // Mark all childrens
