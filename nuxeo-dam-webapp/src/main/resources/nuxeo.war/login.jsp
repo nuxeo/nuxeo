@@ -25,14 +25,18 @@
   }
 
 .topBar {
-  background:#212325 url(/nuxeo/img/banner_bground.png) repeat-x scroll left top;
+  background:#4D4D4D url(/nuxeo/img/banner_bground.png) repeat-x scroll left top;
   width:100%;
   height:30px;
   border:0;
   }
 
+.loginLogo div{
+  font-size:1%; /*for IE*/
+ }
+
 .topBar img {
-  margin-left:62px;
+  margin-left:50px;
   }
 
 table.loginForm {
@@ -208,7 +212,7 @@ nxthemes css is not used in login.jsp */
   height="100%">
   <tbody>
     <tr class="topBar">
-      <td colspan="2" style="height:30px;">
+      <td colspan="2" class="loginLogo">
         <div>
           <img width="125" height="30" alt="Nuxeo DAM" src="/nuxeo/img/dam_logo.png"/>
         </div>
@@ -303,7 +307,7 @@ nxthemes css is not used in login.jsp */
         </td>
       </tr>
       <tr class="footer">
-        <td valign="bottom" style="padding-left:70px;">
+        <td valign="bottom" style="padding-left:42px;">
           <div class="loginLegal">
             Photography: &#169; <a href="mailto:l.viatour@mm.be">Luc Viatour</a> GFDL/CC / <a href="www.lucnix.be/">www.lucnix.be</a> | Colors: &#169; Michael Yucha / <a href="http://www.flickr.com/photos/greenwenvy/">flickR</a> 
           </div>

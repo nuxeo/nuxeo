@@ -27,7 +27,7 @@
           onclick="if (!event.ctrlKey &amp;&amp; !event.metaKey) {return false;};"
           action="#{bulkSelectActions.toggleDocumentSelection(row.data, 'CURRENT_SELECTION')}" />
 
-        <h:panelGrid>
+        <h:panelGrid rowClasses="thumbViewPic, thumbViewInfos,  thumbViewInfos,  thumbViewInfos,  thumbViewInfos">
           <a4j:commandLink id="imageLink" styleClass="thumbViewPictureLink"
             action="#{documentActions.setCurrentSelection(row.data)}"
             onclick="if (event.ctrlKey || event.metaKey) {return false;} try {event.stopPropagation();} catch (err) {event.cancelBubble = true;}"

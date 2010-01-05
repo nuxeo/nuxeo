@@ -109,7 +109,7 @@
       <height>100%</height>
     </layout>
     <layout element="page[1]/section[2]/cell[3]">
-      <width>470px</width>
+      <width>410px</width>
     </layout>
     <layout element="page[1]/section[3]">
       <width>100%</width>
@@ -273,6 +273,7 @@
       </selector>
       <selector path=".fieldColumn">
         <padding-left>5px</padding-left>
+        <white-space>normal</white-space>
         <color preset="black (DAM colors)"/>
       </selector>
       <selector path=".iconColumn">
@@ -335,7 +336,7 @@
       <selector path=".togglePanelTitleBox"/>
       <selector path=".togglePanel">
         <margin>0</margin>
-        <background>transparent url(/nuxeo/img/data_title_bg.png) repeat-x top left</background>
+        <background>#fff url(/nuxeo/img/data_title_bg.png) repeat-x top left</background>
       </selector>
       <selector path=".togglePanel h3">
         <padding>4px 0</padding>
@@ -378,6 +379,7 @@
       </selector>
       <selector path=".logopic">
         <padding>0px 5px</padding>
+        <font-size>1%</font-size><!-- for IE -->
       </selector>
       <selector path=".searchFilter"/>
       <selector path=".filterContent">
@@ -452,25 +454,31 @@
         <text-align>center</text-align>
         <border-bottom preset="grayneutral (DAM borders)"/>
       </selector>
-      <selector path=".infoTabContent .viewObject">
-        <text-align>center</text-align>
+      <selector path=".infoTabContent">
         <background-color>#6F6F6F</background-color>
-        <min-height>200px</min-height>
+        <width>410px</width>
       </selector>
-      <selector path=".infoTabContent .viewObject a">
+      <selector path=".infoTabContent .assetContainer">
         <text-align>center</text-align>
         <vertical-align>middle</vertical-align>
-        <height>350px</height>
-        <width>470px</width>
-        <display>table-cell</display>
+        <height>388px</height>
+        <width>410px</width>
+        <margin>auto</margin>
+      </selector>
+      <selector path=".infoTabContent .assetContainer a">
+        <width>410px</width>
+        <text-align>center</text-align>
+        <vertical-align>middle</vertical-align>
+        <margin>auto</margin>
       </selector>
       <selector path=".actionPanelViews">
         <background-color>#D0D1D8</background-color>
-        <padding>2px 5px</padding>
-        <height>18px</height>
+        <padding>1px 5px</padding>
+        <height>19px</height>
       </selector>
       <selector path=".resultViewMode">
         <float>left</float>
+        <height>18px</height>
       </selector>
       <selector path=".clipboard">
         <float>right</float>
@@ -498,11 +506,18 @@
       <selector path=".thumbViewElement table">
         <font-size>10px</font-size>
       </selector>
-      <selector path=".thumbViewPictureLink">
-        <display>table-cell</display>
+      <selector path=".thumbViewElement .thumbViewPic td">
+        <width>125px</width>
+        <height>85px</height>
         <text-align>center</text-align>
         <vertical-align>middle</vertical-align>
-        <padding-bottom>7px</padding-bottom>
+      </selector>
+      <selector path=".thumbViewElement .thumbViewInfos td">
+        <text-align>left</text-align>
+      </selector>
+      <selector path=".thumbViewPictureLink">
+        <text-align>center</text-align>
+        <vertical-align>middle</vertical-align>
         <width>125px</width>
         <height>80px</height>
       </selector>
@@ -516,7 +531,7 @@
         <background-color>#c7d3e0</background-color>
       </selector>
       <selector path=".selectedCtrlClick">
-        <border>2px solid #004868</border>
+        <border>1px solid #6F6F6F</border>
       </selector>
       <selector path=".deliveryBlock .dataInput">
         <margin>10px 0px</margin>
@@ -580,6 +595,9 @@
         <width>0</width>
       </selector>
       <!-- rich faces tree ident (should be part of the richfaces skin) -->
+      <selector path=".dr-tree, .rich-tree ">
+        <margin>0 0 5px</margin>
+      </selector>
       <selector path=".dr-tree-h-ic-div">
         <margin-left>8px</margin-left>
         <padding-left>10px</padding-left>
@@ -719,8 +737,8 @@
       </selector>
       <selector path=".actionBar">
         <background-color>#a0a8b4</background-color>
-        <border-bottom>1px solid #7e848c</border-bottom>
         <padding>1px 5px</padding>
+        <height>19px</height>
       </selector>
       <selector path=".actionBar .button">
         <margin>1px 3px</margin>
@@ -752,6 +770,7 @@
       <selector path="td.fieldColumn" view="cell frame">
         <vertical-align>top</vertical-align>
         <padding>2px 5px 1px 10px</padding>
+        <white-space>normal</white-space>
       </selector>
       <selector path="td.fieldColumn input">
         <width>285px</width>
