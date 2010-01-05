@@ -90,6 +90,11 @@
       <artifactId>xml-apis</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <reporting>
