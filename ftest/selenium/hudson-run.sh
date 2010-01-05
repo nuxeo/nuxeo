@@ -1,17 +1,9 @@
 # shell script to run selenium tests on hudson
 
 HERE=$(cd $(dirname $0); pwd -P)
-NXDIR="$HERE/nuxeo"
-NXDIST="$NXDIR/nuxeo-distribution"
+NXDIST="$HERE/nuxeo-distribution"
 NXVERSION=${NXVERSION:-5.3}
-JBOSS_HOME="$NXDIST/nuxeo-distribution-jboss/target/jboss"
-
-echo "get nuxeo"
-if [ ! -d $NXDIR ]; then
-  hg clone -r $NXVERSION http://hg.nuxeo.org/nuxeo $NXDIR 2>/dev/null || exit 1
-else
-  (cd $NXDIR && hg pull && hg up $NXVERSION) || exit 1
-fi
+JBOSS_HOME="$NXDIST/nuxeo-distribution-jboss/target/nuxeo-ep-jboss"
 
 echo "get nuxeo distribution"
 if [ ! -d $NXDIST ]; then
@@ -22,9 +14,6 @@ fi
 
 echo "deploy nuxeo distribution"
 mvn clean install -Pnuxeo-ep-jboss -f $NXDIST/pom.xml || exit 1
-
-(cd "$NXDIR" && ant patch -Djboss.dir="$JBOSS_HOME") || exit 1
-(cd "$NXDIR" && ant copy-lib package copy -Djboss.dir="$JBOSS_HOME") || exit 1
 
 echo  "deploy plugin"
 ant deploy -Djboss.dir=$JBOSS_HOME || exit 1
