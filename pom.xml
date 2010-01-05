@@ -834,6 +834,11 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-utils</artifactId>
+	<version>1.5.6</version>
+      </dependency>
+      <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>osgi-core</artifactId>
         <version>4.1</version>
