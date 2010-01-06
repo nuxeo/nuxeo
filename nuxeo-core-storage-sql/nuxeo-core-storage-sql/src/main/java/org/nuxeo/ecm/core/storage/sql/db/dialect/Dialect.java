@@ -67,6 +67,8 @@ public abstract class Dialect {
 
     protected final boolean fulltextDisabled;
 
+    protected final boolean aclOptimizationsEnabled;
+
     /**
      * Creates a {@code Dialect} by connecting to the datasource to check what
      * database is used.
@@ -112,6 +114,7 @@ public abstract class Dialect {
             throw new StorageException("An error has occured.", e);
         }
         fulltextDisabled = repositoryDescriptor.fulltextDisabled;
+        aclOptimizationsEnabled = repositoryDescriptor.aclOptimizationsEnabled;
     }
 
     /**

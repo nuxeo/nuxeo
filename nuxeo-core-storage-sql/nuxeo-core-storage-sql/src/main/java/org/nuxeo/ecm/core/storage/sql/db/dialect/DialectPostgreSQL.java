@@ -317,7 +317,7 @@ public class DialectPostgreSQL extends Dialect {
 
     @Override
     public boolean supportsReadAcl() {
-        return true;
+        return aclOptimizationsEnabled;
     }
 
     @Override
@@ -1015,6 +1015,13 @@ public class DialectPostgreSQL extends Dialect {
                 "CREATE TRIGGER nx_trig_acls_modified\n" //
                         + "  AFTER INSERT OR UPDATE OR DELETE ON acls\n" //
                         + "  FOR EACH ROW EXECUTE PROCEDURE nx_log_acls_modified();"));
+        if (!aclOptimizationsEnabled) {
+            statements.add(new ConditionalStatement(false, // late
+                    Boolean.FALSE, // do a drop
+                    null, //
+                    null, //
+                    "ALTER TABLE acls DISABLE TRIGGER nx_trig_acls_modified;"));
+        }
         statements.add(new ConditionalStatement(
                 false, // late
                 Boolean.FALSE, // do a drop
@@ -1047,6 +1054,13 @@ public class DialectPostgreSQL extends Dialect {
                 "CREATE TRIGGER nx_trig_hierarchy_modified\n" //
                         + "  AFTER INSERT OR UPDATE OR DELETE ON hierarchy\n" //
                         + "  FOR EACH ROW EXECUTE PROCEDURE nx_log_hierarchy_modified();"));
+        if (!aclOptimizationsEnabled) {
+            statements.add(new ConditionalStatement(false, // late
+                    Boolean.FALSE, // do a drop
+                    null, //
+                    null, //
+                    "ALTER TABLE hierarchy DISABLE TRIGGER nx_trig_hierarchy_modified;"));
+        }
         statements.add(new ConditionalStatement(
                 false, // late
                 Boolean.FALSE, // do a drop
@@ -1135,14 +1149,15 @@ public class DialectPostgreSQL extends Dialect {
                         + "  RETURN;\n" //
                         + "END $$\n" //
                         + "LANGUAGE plpgsql VOLATILE;"));
-        // build the read acls if empty, this takes care of the upgrade
-        statements.add(new ConditionalStatement(
-                false, // late
-                null, // perform a check
-                "SELECT 1 WHERE NOT EXISTS(SELECT 1 FROM read_acls LIMIT 1);",
-                "SELECT * FROM nx_rebuild_read_acls();", //
-                "SELECT 1;"));
-
+        if (aclOptimizationsEnabled) {
+            // build the read acls if empty, this takes care of the upgrade
+            statements.add(new ConditionalStatement(
+                    false, // late
+                    null, // perform a check
+                    "SELECT 1 WHERE NOT EXISTS(SELECT 1 FROM read_acls LIMIT 1);",
+                    "SELECT * FROM nx_rebuild_read_acls();", //
+                    "SELECT 1;"));
+        }
         return statements;
     }
 

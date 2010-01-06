@@ -274,7 +274,7 @@ public class DialectH2 extends Dialect {
 
     @Override
     public boolean supportsReadAcl() {
-        return true;
+        return aclOptimizationsEnabled;
     }
 
     @Override
