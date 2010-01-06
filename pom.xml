@@ -1673,7 +1673,7 @@
         <plugin>
           <groupId>org.nuxeo.build</groupId>
           <artifactId>nuxeo-distribution-tools</artifactId>
-          <version>0.4</version>
+          <version>0.5-SNAPSHOT</version>
         </plugin>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
