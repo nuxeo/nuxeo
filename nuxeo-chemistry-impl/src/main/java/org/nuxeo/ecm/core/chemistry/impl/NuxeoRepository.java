@@ -173,9 +173,9 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
     }
 
     public Collection<Type> getTypes(String typeId, int depth,
-            boolean returnPropertyDefinitions) {
+            boolean includePropertyDefinitions) {
         initializeTypes();
-        return typeManager.getTypes(typeId, depth, returnPropertyDefinitions);
+        return typeManager.getTypes(typeId, depth, includePropertyDefinitions);
     }
 
     /*
