@@ -313,6 +313,9 @@
 
   <profiles>
     <profile>
+      <id>vcs</id>
+    </profile>
+    <profile>
       <id>derby</id>
     </profile>
     <profile>

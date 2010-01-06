@@ -1,7 +1,10 @@
-<project name="nuxeo-assembly-2parts" default="build" xmlns:nx="urn:nuxeo-build"
-  xmlns:artifact="urn:nuxeo-artifact">
+<project name="nuxeo-assembly-2parts"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
-  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
   <artifact:expand depth="3" />
 
   <property name="outdir" value="${maven.project.build.directory}" />
@@ -23,6 +26,10 @@
       <fileset dir="${nuxeo.ear}" />
     </copy>
 
+    <nx:profile name="vcs">
+      <property name="no-alternate" value="true" />
+    </nx:profile>
+
     <antcall target="build-distribution-stateful">
       <param name="distribution" value="derby" />
     </antcall>
@@ -42,35 +49,38 @@
     <!--    <antcall target="clean" />-->
   </target>
 
-  <target name="build-distribution-stateful" description="Build stateful distributions on various backends">
-    <delete failonerror="false" dir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear" />
-    <copy todir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear" overwrite="true">
+  <target name="build-distribution-stateful"
+          description="Build stateful distributions on various backends"
+          unless="no-alternate">
+    <delete failonerror="false"
+            dir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear" />
+    <copy todir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear"
+          overwrite="true">
       <fileset dir="${nuxeo.ear}" />
     </copy>
     <unzip dest="${stagedir}/nuxeo-platform-stateful-${distribution}.ear">
-      <artifact:resolveFile
-        key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
-        classifier="resources-${distribution}" />
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
+                            classifier="resources-${distribution}" />
     </unzip>
-    <copy todir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear" overwrite="true">
+    <copy todir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear"
+          overwrite="true">
       <fileset dir="src/main/resources" />
     </copy>
-    <zip
-      destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful-${distribution}.zip"
-      basedir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear" />
-    <artifact:attach
-      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful-${distribution}.zip"
-      classifier="platform-stateful-${distribution}" type="zip"
-      target="${maven.project.groupId}:${maven.project.artifactId}" />
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful-${distribution}.zip"
+         basedir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful-${distribution}.zip"
+                     classifier="platform-stateful-${distribution}"
+                     type="zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}" />
   </target>
 
-  <target name="build-stateful" description="Build platform stateful distribution">
+  <target name="build-stateful"
+          description="Build platform stateful distribution">
     <!-- Nuxeo resources and modules -->
     <delete failonerror="false" dir="${nuxeo.ear}" />
     <unzip dest="${nuxeo.ear}">
-      <artifact:resolveFile
-        key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
-        classifier="resources-platform-stateful" />
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
+                            classifier="resources-platform-stateful" />
     </unzip>
     <copy todir="${nuxeo.ear}" overwrite="true">
       <!-- Nuxeo DM specific properties -->
@@ -79,8 +89,9 @@
     <copy todir="${nuxeo.ear}/system" overwrite="true">
       <artifact:set>
         <includes>
-          <artifact groupId="org.nuxeo*" category="runtime,jboss4"
-            dependsOnCategory="false" />
+          <artifact groupId="org.nuxeo*"
+                    category="runtime,jboss4"
+                    dependsOnCategory="false" />
           <artifact groupId="org.nuxeo*" category="core,stateful" />
         </includes>
         <excludes>
@@ -96,12 +107,10 @@
         </excludes>
       </artifact:set>
     </copy>
-    <unzip
-      dest="${nuxeo.ear}/system/nuxeo-platform-audit-facade-${nuxeo.features.version}.jar">
+    <unzip dest="${nuxeo.ear}/system/nuxeo-platform-audit-facade-${nuxeo.features.version}.jar">
       <artifact:file artifactId="nuxeo-platform-audit-facade" />
     </unzip>
-    <unzip
-      dest="${nuxeo.ear}/system/nuxeo-platform-placeful-facade-${nuxeo.services.version}.jar">
+    <unzip dest="${nuxeo.ear}/system/nuxeo-platform-placeful-facade-${nuxeo.services.version}.jar">
       <artifact:file artifactId="nuxeo-platform-placeful-facade" />
     </unzip>
 
@@ -110,32 +119,31 @@
     <copy todir="${nuxeo.ear}/lib" overwrite="true">
       <!-- Remote publication lib -->
       <artifact:file groupId="org.apache.httpcomponents"
-        artifactId="httpclient" />
+                     artifactId="httpclient" />
       <artifact:file groupId="org.apache.httpcomponents"
-        artifactId="httpcore" />
+                     artifactId="httpcore" />
 
       <!-- Needed on platform-stateful ? -->
       <artifact:file groupId="net.sf.ehcache" artifactId="ehcache" />
-      <artifact:file groupId="com.google.collections" artifactId="google-collections" />
+      <artifact:file groupId="com.google.collections"
+                     artifactId="google-collections" />
       <artifact:file groupId="backport-util-concurrent"
-        artifactId="backport-util-concurrent" />
+                     artifactId="backport-util-concurrent" />
     </copy>
 
-    <zip
-      destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful.zip"
-      basedir="${nuxeo.ear}" />
-    <artifact:attach
-      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful.zip"
-      target="${maven.project.groupId}:${maven.project.artifactId}" classifier="platform-stateful" />
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful.zip"
+         basedir="${nuxeo.ear}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="platform-stateful" />
   </target>
 
   <target name="build-stateless" description="Build web stateless distribution">
     <!-- Nuxeo resources and modules -->
     <delete failonerror="false" dir="${nuxeo.ear}" />
     <unzip dest="${nuxeo.ear}">
-      <artifact:resolveFile
-        key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
-        classifier="resources-web-stateless" />
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
+                            classifier="resources-web-stateless" />
     </unzip>
     <copy todir="${nuxeo.ear}" overwrite="true">
       <!-- Nuxeo DM specific properties -->
@@ -146,8 +154,9 @@
     <copy todir="${nuxeo.ear}/system" overwrite="true">
       <artifact:set>
         <includes>
-          <artifact groupId="org.nuxeo*" category="runtime,jboss4"
-            dependsOnCategory="false" />
+          <artifact groupId="org.nuxeo*"
+                    category="runtime,jboss4"
+                    dependsOnCategory="false" />
           <artifact groupId="org.nuxeo*" category="stateless" />
         </includes>
         <excludes>
@@ -168,37 +177,45 @@
     <antcall target="common-third-party-libraries" />
     <copy todir="${nuxeo.ear}/lib" overwrite="true">
       <!-- Needed on web-stateless ? -->
-      <artifact:file groupId="com.google.collections" artifactId="google-collections" />
+      <artifact:file groupId="com.google.collections"
+                     artifactId="google-collections" />
       <artifact:file groupId="backport-util-concurrent"
-        artifactId="backport-util-concurrent" />
+                     artifactId="backport-util-concurrent" />
     </copy>
 
-    <zip
-      destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-web-stateless.zip"
-      basedir="${nuxeo.ear}" />
-    <artifact:attach
-      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-web-stateless.zip"
-      target="${maven.project.groupId}:${maven.project.artifactId}" classifier="web-stateless" />
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-web-stateless.zip"
+         basedir="${nuxeo.ear}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-web-stateless.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="web-stateless" />
   </target>
 
   <target name="common-third-party-libraries">
     <!-- Common Third-party libraries -->
     <copy todir="${nuxeo.ear}/lib" overwrite="true">
       <artifact:file groupId="org.osgi" artifactId="osgi-core" />
-      <artifact:file groupId="commons-collections" artifactId="commons-collections" version="3.1" />
-      <artifact:file groupId="commons-io" artifactId="commons-io" version="1.4" />
-      <artifact:file groupId="commons-fileupload" artifactId="commons-fileupload" />
-      <artifact:file groupId="commons-beanutils" artifactId="commons-beanutils" />
+      <artifact:file groupId="commons-collections"
+                     artifactId="commons-collections"
+                     version="3.1" />
+      <artifact:file groupId="commons-io"
+                     artifactId="commons-io"
+                     version="1.4" />
+      <artifact:file groupId="commons-fileupload"
+                     artifactId="commons-fileupload" />
+      <artifact:file groupId="commons-beanutils"
+                     artifactId="commons-beanutils" />
       <artifact:file groupId="net.sourceforge.cssparser"
-        artifactId="cssparser" />
-      <artifact:file groupId="net.sourceforge.nekohtml"
-        artifactId="nekohtml" />
+                     artifactId="cssparser" />
+      <artifact:file groupId="net.sourceforge.nekohtml" artifactId="nekohtml" />
       <artifact:file groupId="org.w3c" artifactId="sac" />
-      <artifact:file groupId="net.sf.ehcache" artifactId="ehcache" version="1.5.0" />
+      <artifact:file groupId="net.sf.ehcache"
+                     artifactId="ehcache"
+                     version="1.5.0" />
       <artifact:file groupId="net.sf.ezmorph" artifactId="ezmorph" />
       <artifact:file groupId="jboss" artifactId="jboss-cache-jdk50" />
       <artifact:file groupId="org.jboss.seam" artifactId="jboss-seam" />
-      <artifact:file groupId="org.jboss.seam" artifactId="jboss-seam-remoting" />
+      <artifact:file groupId="org.jboss.seam"
+                     artifactId="jboss-seam-remoting" />
       <artifact:file groupId="org.jboss.seam" artifactId="jboss-seam-ui" />
       <artifact:file groupId="org.jboss.seam" artifactId="jboss-seam-mail" />
       <artifact:file groupId="org.jboss.seam" artifactId="jboss-seam-debug" />
@@ -209,21 +226,34 @@
       <artifact:file groupId="bouncycastle" artifactId="bcmail-jdk14" />
       <artifact:file groupId="bouncycastle" artifactId="bcprov-jdk14" />
       <artifact:file groupId="net.sf.json-lib" artifactId="json-lib" />
-      <artifact:file groupId="org.apache.lucene" artifactId="lucene-core" version="2.3.2" />
+      <artifact:file groupId="org.apache.lucene"
+                     artifactId="lucene-core"
+                     version="2.3.2" />
       <artifact:file groupId="net.sf.opencsv" artifactId="opencsv" />
       <artifact:file groupId="org.codehaus.plexus" artifactId="plexus-utils" />
-      <artifact:file groupId="org.slf4j" artifactId="slf4j-api" version="1.5.6" />
-      <artifact:file groupId="org.slf4j" artifactId="slf4j-log4j12" version="1.5.6" />
-      <artifact:file groupId="org.richfaces.framework" artifactId="richfaces-api" version="3.3.1.GA" />
-      <artifact:file groupId="org.richfaces.framework" artifactId="richfaces-impl" />
-      <artifact:file groupId="org.richfaces.ui" artifactId="richfaces-ui" version="3.3.1.GA-NX" />
+      <artifact:file groupId="org.slf4j"
+                     artifactId="slf4j-api"
+                     version="1.5.6" />
+      <artifact:file groupId="org.slf4j"
+                     artifactId="slf4j-log4j12"
+                     version="1.5.6" />
+      <artifact:file groupId="org.richfaces.framework"
+                     artifactId="richfaces-api"
+                     version="3.3.1.GA" />
+      <artifact:file groupId="org.richfaces.framework"
+                     artifactId="richfaces-impl" />
+      <artifact:file groupId="org.richfaces.ui"
+                     artifactId="richfaces-ui"
+                     version="3.3.1.GA-NX" />
       <artifact:file groupId="org.apache.directory.server"
-        artifactId="apacheds-protocol-shared" />
+                     artifactId="apacheds-protocol-shared" />
       <artifact:file groupId="org.apache.directory.shared"
-        artifactId="shared-ldap" />
+                     artifactId="shared-ldap" />
       <artifact:file groupId="com.sun.facelets" artifactId="jsf-facelets" />
       <!-- Nuxeo-WebEngine fixed libs -->
-      <artifact:file groupId="org.codehaus.groovy" artifactId="groovy-all" version="1.5.7" />
+      <artifact:file groupId="org.codehaus.groovy"
+                     artifactId="groovy-all"
+                     version="1.5.7" />
       <artifact:file groupId="org.jboss.resteasy" artifactId="resteasy-jaxrs" />
       <artifact:file groupId="org.jboss.resteasy" artifactId="jaxrs-api" />
       <artifact:file groupId="javax.script" artifactId="script-api" />
@@ -234,7 +264,8 @@
       <artifact:file groupId="org.openoffice" artifactId="unoil" />
       <artifact:file groupId="org.openoffice" artifactId="jurt" />
       <artifact:file groupId="com.thoughtworks.xstream"
-        artifactId="xstream" version="1.3.1" />
+                     artifactId="xstream"
+                     version="1.3.1" />
       <artifact:file groupId="pdfbox" artifactId="pdfbox" />
       <artifact:file groupId="org.fontbox" artifactId="fontbox" />
       <artifact:file groupId="org.jempbox" artifactId="jempbox" />
@@ -244,15 +275,18 @@
       <artifact:file groupId="rome" artifactId="rome" />
       <artifact:file groupId="commons-jexl" artifactId="commons-jexl" />
       <artifact:file groupId="com.hp.hpl.jena" artifactId="arq" />
-      <artifact:file groupId="com.noelios.restlet" artifactId="com.noelios.restlet" />
-      <artifact:file groupId="com.noelios.restlet" artifactId="com.noelios.restlet.ext.servlet" />
+      <artifact:file groupId="com.noelios.restlet"
+                     artifactId="com.noelios.restlet" />
+      <artifact:file groupId="com.noelios.restlet"
+                     artifactId="com.noelios.restlet.ext.servlet" />
       <artifact:file groupId="com.ibm.icu" artifactId="icu4j" />
       <artifact:file groupId="com.hp.hpl.jena" artifactId="iri" />
       <artifact:file groupId="cup" artifactId="java-cup" />
       <artifact:file groupId="jdom" artifactId="jdom" />
       <artifact:file groupId="com.hp.hpl.jena" artifactId="jena" />
       <artifact:file groupId="joda-time" artifactId="joda-time" />
-      <artifact:file groupId="org.restlet" artifactId="org.restlet.ext.fileupload" />
+      <artifact:file groupId="org.restlet"
+                     artifactId="org.restlet.ext.fileupload" />
       <artifact:file groupId="oro" artifactId="oro" />
       <artifact:file groupId="org.apache.poi" artifactId="ooxml-schemas" />
       <artifact:file groupId="org.apache.poi" artifactId="poi" />
