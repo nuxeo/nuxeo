@@ -502,38 +502,4 @@ public class Path implements Serializable {
         return buf.toString();
     }
 
-    public static void main(String[] args) {
-//
-//        System.out.println(new Path("abc/asdf/file.ext"));
-//        System.out.println(new org.nuxeo.common.utils.Path("abc/asdf/file.ext"));
-//
-//        System.out.println(new Path("/abc/asdf/file.ext"));
-//        System.out.println(new org.nuxeo.common.utils.Path("/abc/asdf/file.ext"));
-//
-//        System.out.println(new Path("/./abc//asdf/../file.ext"));
-//        System.out.println(new org.nuxeo.common.utils.Path("/./abc//asdf/../file.ext"));
-//
-//        System.out.println("----------------------");
-//
-//        double s = System.currentTimeMillis();
-//        for (int i=0; i<100000; i++) {
-//            new Path("/./abc//asdf/../file.ext");
-//        }
-//        System.out.println("new path: >>>> "+(System.currentTimeMillis()-s)/1000);
-//
-//        s = System.currentTimeMillis();
-//        for (int i=0; i<100000; i++) {
-//            new org.nuxeo.common.utils.Path("/./abc//asdf/../file.ext");
-//        }
-//        System.out.println("old path: >>>> "+(System.currentTimeMillis()-s)/1000);
-
-        Path p = new Path("/commands");
-        System.out.println(p);
-        System.out.println(p=p.append("test"));
-        System.out.println(p=p.append("../../../test2"));
-        System.out.println(p=p.makeAbsolute());
-        //System.out.println(p=p.append(".."));
-        //System.out.println(p=p.append(".."));
-    }
-
 }
