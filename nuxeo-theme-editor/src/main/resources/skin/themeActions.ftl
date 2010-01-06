@@ -4,12 +4,12 @@
 
 <#if theme.saveable>
   <@nxthemes_button identifier="refresh_theme"
-    icon="${skinPath}/img/refresh-14.png"
+    icon="${basePath}/skin/nxthemes-editor/img/refresh-14.png"
     link="javascript:NXThemesEditor.loadTheme('${theme.src?js_string}')"
     label="Refresh theme" />
 <#else>
   <@nxthemes_button identifier="download_theme"
-    icon="${skinPath}/img/download-14.png"
+    icon="${basePath}/skin/nxthemes-editor/img/download-14.png"
     link="${basePath}/nxthemes-editor/xml_export?src=${theme.src?url}&amp;download=1&amp;indent=2"
     label="Download theme" />
 </#if>

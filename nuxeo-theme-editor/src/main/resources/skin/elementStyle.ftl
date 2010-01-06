@@ -44,7 +44,7 @@
       <div class="nxthemesButtonSelector"
         style="text-align: left; padding: 4px 15px;">
         <span>
-          <img style="vertical-align: middle" src="${skinPath}/img/layers-16.png" width="16" height="16" />
+          <img style="vertical-align: middle" src="${basePath}/skin/nxthemes-editor/img/layers-16.png" width="16" height="16" />
           Layers: </span>
         <#list style_layers_of_selected_element as layer>
           <span>${layer.rendered}</span>
@@ -61,7 +61,7 @@
 
               <div id="stylePreviewArea"
                 element="#{selected_element.uid}">
-                <img src="${skinPath}/img/progressbar.gif" alt=""
+                <img src="${basePath}/skin/nxthemes-editor/img/progressbar.gif" alt=""
                   width="220" height="19"
                   style="padding: 5px; border: 1px solid #ccc; background-color: #fff" />
                 <@nxthemes_view resource="style-preview.json" />

@@ -16,7 +16,7 @@
 
 <div style="float: right">
   <a class="nxthemesActionButton" href="javascript:NXThemesStyleEditor.createNamedStyle(null, '${theme.name}', 'style manager')">
-  <img src="${skinPath}/img/add-14.png" /> Create new style</a>
+  <img src="${basePath}/skin/nxthemes-editor/img/add-14.png" /> Create new style</a>
 </div>
 
   <p class="nxthemesExplanation">List styles by name.<p>
@@ -33,7 +33,7 @@
 <#list named_styles as style>
   <li <#if style.name = selected_named_style_name>class="selected"</#if>>
     <a href="javascript:NXThemesStyleManager.selectNamedStyle('#{style.uid}')">
-    <img src="${skinPath}/img/style-16.png" width="16" height="16"/> ${style.name}</a></li>
+    <img src="${basePath}/skin/nxthemes-editor/img/style-16.png" width="16" height="16"/> ${style.name}</a></li>
 </#list>
 </ul>
 
@@ -90,7 +90,7 @@
   <pre style="margin: 4px 0 6px 0; font-size: 10px; background-color: #ffc; border: 1px solid #fc0">${This.renderStyleView(style, view)}</pre>
 
   <button type="submit">
-    <img src="${skinPath}/img/cleanup-16.png" width="16" height="16" />
+    <img src="${basePath}/skin/nxthemes-editor/img/cleanup-16.png" width="16" height="16" />
     Clean up
   </button>
 

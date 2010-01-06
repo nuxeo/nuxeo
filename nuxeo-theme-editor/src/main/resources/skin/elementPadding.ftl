@@ -3,7 +3,7 @@
 
 <div class="title">
 <img class="close" onclick="javascript:NXThemes.getControllerById('editor perspectives').switchTo('edit canvas')"
-     src="${skinPath}/img/close-button.png" width="14" height="14" alt="" />
+     src="${basePath}/skin/nxthemes-editor/img/close-button.png" width="14" height="14" alt="" />
      Padding editor</div>
 
 <#if selected_element>
