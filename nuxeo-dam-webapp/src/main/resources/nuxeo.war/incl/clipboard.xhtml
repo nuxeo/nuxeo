@@ -10,14 +10,14 @@
   xmlns:s="http://jboss.com/products/seam/taglib"
   class="clipboard">
 
-<script type="text/javascript">
-function confirmDeleteAssets() {
-    return confirm("#{messages['label.assets.confirmDeleteAssets']}");
-}
-</script>
+  <script type="text/javascript">
+    function confirmDeleteAssets() {
+      return confirm("#{messages['label.assets.confirmDeleteAssets']}");
+    }
+  </script>
 
   <div>
-    <a4j:form id="selection_buttons">
+    <a4j:outputPanel id="selection_buttons">
       <nxu:dataList var="sel_action" value="#{clipboardActions.actionsForSelection}">
         <span id="#{sel_action.id}">
           <nxa4j:commandButton
@@ -26,11 +26,10 @@ function confirmDeleteAssets() {
             value="#{messages[sel_action.label]}"
             onclick="#{sel_action.confirm}"
             reRender="filterResultTable, selectionView"
-            disabled="#{!sel_action.available}"
-            />
-         </span>
+            disabled="#{!sel_action.available}" />
+        </span>
       </nxu:dataList>
-    </a4j:form>
+    </a4j:outputPanel>
   </div>
 
 </div>
