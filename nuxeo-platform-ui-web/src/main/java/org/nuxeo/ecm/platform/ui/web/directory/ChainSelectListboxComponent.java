@@ -98,7 +98,7 @@ public class ChainSelectListboxComponent extends UIInput {
         }
 
         return getIndex() == chain.getSize() - 1
-                && chain.getBooleanProperty("multiSelect", false);
+        && chain.getBooleanProperty("multiSelect", false);
     }
 
     public String getDisplayIdAndLabelSeparator() {
@@ -327,7 +327,6 @@ public class ChainSelectListboxComponent extends UIInput {
                     filter.put("parent", null);
                 }
             } else {
-                log.warn("directoryName is null for index 0. try to retrieve from parent ");
                 // NestedChainSelectComponentInfo compInfo =
                 // getChain().compInfos.get(index);
                 // directoryName = compInfo.directoryName;
@@ -457,7 +456,7 @@ public class ChainSelectListboxComponent extends UIInput {
         String[] lastValues = requestValueMap.get(name);
 
         boolean lastValueIsOk = lastValues != null && lastValues.length != 0
-                && !StringUtils.isEmpty(lastValues[0]);
+        && !StringUtils.isEmpty(lastValues[0]);
 
         Selection[] selections;
 
