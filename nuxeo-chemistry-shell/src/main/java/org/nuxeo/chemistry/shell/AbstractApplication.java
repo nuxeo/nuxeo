@@ -118,7 +118,7 @@ public abstract class AbstractApplication implements Application {
     }
     
     public Context resolveContext(Path path) {
-        Context c = null;
+        Context c;
         if (path.isRelative()) {
             if (path.segmentCount() == 0) {
                 return getContext();
@@ -144,10 +144,14 @@ public abstract class AbstractApplication implements Application {
         } else {
             c = getRootContext();
         }
-        if (c == null) return null;        
+        if (c == null) {
+            return null;
+        }
         for (int i=0,cnt=path.segmentCount(); i<cnt; i++) {            
             c = c.getContext(path.segment(i));
-            if (c == null) return null;
+            if (c == null) {
+                return null;
+            }
         }
         return c;
     }
@@ -166,11 +170,12 @@ public abstract class AbstractApplication implements Application {
     }
 
     public void setWorkingDirectory(File file) {
-        this.wd = file;
+        wd = file;
     }
         
     //TODO
     public String getHelp(String cmdName) {
         return "TODO";
     }
+
 }

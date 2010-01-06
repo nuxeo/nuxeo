@@ -23,7 +23,7 @@ import java.net.URL;
 import org.nuxeo.chemistry.shell.command.CommandRegistry;
 
 /**
- * An application represent the global context of the shell.
+ * An application represents the global context of the shell.
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -31,121 +31,140 @@ import org.nuxeo.chemistry.shell.command.CommandRegistry;
 public interface Application {
 
     /**
-     * Login using the given account
+     * Login using the given account.
+     *
      * @param username
      * @param password
      */
     void login(String username, char[] password);
     
     /**
-     * Get the connection URL
+     * Gets the connection URL.
+     *
      * @return
      */
     URL getServerUrl();
     
     /**
-     * Get he username used for the connection 
+     * Gets he username used for the connection.
+     *
      * @return
      */
     String getUsername();
     
     /**
-     * Get the host where the application is connected
+     * Gets the host where the application is connected.
+     *
      * @return
      */
     String getHost();
     
     /**
-     * Get the working directory
+     * Gets the working directory.
+     *
      * @return
      */
     File getWorkingDirectory();
     
     /**
-     * Set the working directory (will be used to resolve relative file paths)
+     * Sets the working directory (will be used to resolve relative file paths).
+     *
      * @param file
      */
     void setWorkingDirectory(File file);
     
     /**
-     * Get a file given its path. If the path is absolute (starts with '/') it will be resolved as an absolute path
-     * otherwise it will be resolved against the current working directory
+     * Gets a file given its path.
+     * If the path is absolute (starts with '/') it will be resolved as an absolute path
+     * otherwise it will be resolved against the current working directory.
+     *
      * @param path
      * @return
      */
     File resolveFile(String path);
 
     /**
-     * Get the current context
+     * Gets the current context.
+     *
      * @return
      */
     Context getContext();
     
     /**
-     * Set the current context to the given one
+     * Sets the current context to the given one.
+     *
      * @param ctx
      */
     void setContext(Context ctx);
     
     /**
-     * Resolve the given path to a context
+     * Resolves the given path to a context.
+     *
      * @param path
      * @return
      */
     Context resolveContext(Path path);
     
     /**
-     * Get the root context
+     * Gets the root context.
+     *
      * @return
      */
     Context getRootContext();
     
     /**
-     * Get the command registry
+     * Gets the command registry.
+     *
      * @return
      */
     CommandRegistry getCommandRegistry();
         
     /**
-     * Set a global variable. Can be used by commands to preserve their state.
+     * Sets a global variable. Can be used by commands to preserve their state.
+     *
      * @param key
      * @param data
      */
     void setData(String key, Object data);
     
     /**
-     * Get a global variable given its key
+     * Gets a global variable given its key.
+     *
      * @param key
      * @return
      */
     Object getData(String key);
     
     /**
-     * Connect to the given url. The current context will be reset.
+     * Connects to the given url. The current context will be reset.
+     *
      * @param uri
      * @throws IOException
      */
     void connect(String uri) throws IOException;
     
     /**
-     * Connect to the given url. The current context will be reset.
+     * Connects to the given url. The current context will be reset.
+     *
      * @param uri
      * @throws IOException
      */
     void connect(URL uri) throws IOException;
     
     /**
-     * Disconnect if already connected. The current context will be reset
+     * Disconnects if already connected. The current context will be reset.
+     *
      */
     void disconnect();
     
     /**
-     * Tests if connected
+     * Tests if connected.
+     *
      * @return
      */
     boolean isConnected();
     
     //TODO
-    public String getHelp(String cmdName);
+    String getHelp(String cmdName);
     
 }

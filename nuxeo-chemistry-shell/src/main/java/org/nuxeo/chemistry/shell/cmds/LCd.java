@@ -35,8 +35,7 @@ import org.nuxeo.chemistry.shell.command.CommandParameter;
  */
 @Cmd(syntax="lcd target:dir", synopsis="Change local working directory")
 public class LCd extends AnnotatedCommand {
-    
-    
+
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
         CommandParameter param = cmdLine.getLastParameter();

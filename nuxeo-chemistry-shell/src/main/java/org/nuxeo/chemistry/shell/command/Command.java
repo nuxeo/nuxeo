@@ -39,7 +39,6 @@ public abstract class Command {
 
 
     protected Command() {
-
     }
 
     public String getName() {

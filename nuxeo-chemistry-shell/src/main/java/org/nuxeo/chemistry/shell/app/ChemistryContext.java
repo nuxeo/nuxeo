@@ -128,9 +128,7 @@ public class ChemistryContext extends AbstractContext {
         }
         return null;
     }
-    
 
-    
     public CMISObject getObjectByAbsolutePath(String path) {
         ObjectEntry entry = conn.getObjectByPath(path, null);
         if (entry!=null) {

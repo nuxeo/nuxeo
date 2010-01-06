@@ -21,16 +21,14 @@ package org.nuxeo.chemistry.shell.command;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class AnnotatedCommand extends Command {
 
     public AnnotatedCommand() {
         Cmd anno = getClass().getAnnotation(Cmd.class);
-        this.synopsis = anno.synopsis();
-        this.syntax = CommandSyntax.parse(anno.syntax());
-        this.aliases = this.syntax.getCommandToken().getNames();
+        synopsis = anno.synopsis();
+        syntax = CommandSyntax.parse(anno.syntax());
+        aliases = syntax.getCommandToken().getNames();
     }
-
 
 }

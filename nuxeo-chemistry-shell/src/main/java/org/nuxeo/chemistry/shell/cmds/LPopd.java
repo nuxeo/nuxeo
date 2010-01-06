@@ -37,7 +37,8 @@ import org.nuxeo.chemistry.shell.command.CommandLine;
 @SuppressWarnings("unchecked")
 public class LPopd extends AnnotatedCommand {
 
-    public final static String WDIR_STACK_KEY = "wdir.stack";
+    public static final String WDIR_STACK_KEY = "wdir.stack";
+
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
         Stack<File> stack = (Stack<File>)app.getData(WDIR_STACK_KEY);

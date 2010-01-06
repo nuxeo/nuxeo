@@ -27,13 +27,11 @@ import org.nuxeo.chemistry.shell.console.CompositeCompletor;
 import org.nuxeo.chemistry.shell.util.StringUtils;
 
 /**
- *
  * cmd [-opt|-o:type?defValue] [name:type]
  * 
  * Supported types: file, dir, command, item. See {@link CompositeCompletor}
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class CommandSyntax {
 
@@ -137,7 +135,5 @@ public class CommandSyntax {
         }
         return syntax;
     }
-
-
 
 }

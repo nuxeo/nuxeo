@@ -27,7 +27,6 @@ public class SimplePropertyManager {
         }
         Serializable val = p.getValue();
         return val != null ? val.toString() : "[null]";
-
     }
 
     public void setProperty(String name, Serializable value) throws Exception{
@@ -46,13 +45,10 @@ public class SimplePropertyManager {
     }
 
     public ContentStream getStream() throws IOException {
-
         return  item.getContentStream(null);
-
     }
 
     public void setStream(InputStream in, String name) throws Exception {
-
         if (item instanceof Document) {
             Document doc = (Document) item;
 
@@ -60,7 +56,6 @@ public class SimplePropertyManager {
             ContentStream stream = new SimpleContentStream(in,mt,name);
             doc.setContentStream(stream);
             doc.save();
-
         } else {
             Console.getDefault().error("Target object is not a Document, can not set stream");
         }

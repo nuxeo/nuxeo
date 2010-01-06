@@ -28,7 +28,7 @@ public class NoSuchCommandException extends CommandException {
     private static final long serialVersionUID = 1L;
 
     public NoSuchCommandException(String cmdName) {
-        super ("Command Not Found: "+cmdName);
+        super("Command Not Found: "+cmdName);
     }
 
 }

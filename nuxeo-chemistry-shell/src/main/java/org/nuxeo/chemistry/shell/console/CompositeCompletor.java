@@ -150,5 +150,4 @@ public class CompositeCompletor implements Completor {
         }
     }
 
-
 }

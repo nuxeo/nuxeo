@@ -173,5 +173,4 @@ public class CommandRegistry {
         builtinCommands.unregisterCommand(cmd.getName());
     }
 
-
 }

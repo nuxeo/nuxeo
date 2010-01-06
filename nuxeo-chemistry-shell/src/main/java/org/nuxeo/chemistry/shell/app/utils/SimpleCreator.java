@@ -9,25 +9,21 @@ public class SimpleCreator {
 
 
     public SimpleCreator(Folder folder) {
-        this.folder=folder;
+        this.folder = folder;
     }
 
     public void createFolder(String name) throws Exception {
-
         Folder newFolder = folder.newFolder("Workspace");
         newFolder.setName(name);
         newFolder.setValue("dc:title", name);
         newFolder.save();
-
     }
 
     public void createFile(String name) throws Exception {
-
         Document newDoc = folder.newDocument("File");
         newDoc.setName(name);
         newDoc.setValue("dc:title", name);
         newDoc.save();
-
     }
 
 }

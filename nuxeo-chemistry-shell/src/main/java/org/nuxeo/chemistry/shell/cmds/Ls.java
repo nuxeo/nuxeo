@@ -31,16 +31,15 @@ import org.nuxeo.chemistry.shell.command.CommandParameter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Cmd(syntax="ls [target:item]", synopsis="List entries in working directory")
+@Cmd(syntax = "ls [target:item]", synopsis = "List entries in working directory")
 public class Ls extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
         Console console = Console.getDefault();
         CommandParameter param = cmdLine.getLastParameter();
-        Context ctx = null;
+        Context ctx;
         if (param == null || param.getValue() == null) {
             ctx = app.getContext();
         } else {
@@ -52,7 +51,5 @@ public class Ls extends AnnotatedCommand {
             }
         }
     }
-
-
 
 }

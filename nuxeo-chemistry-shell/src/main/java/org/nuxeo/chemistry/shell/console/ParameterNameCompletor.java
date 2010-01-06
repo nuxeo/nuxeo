@@ -30,7 +30,7 @@ import org.nuxeo.chemistry.shell.command.Command;
 public class ParameterNameCompletor extends SimpleCompletor {
 
     public ParameterNameCompletor(Command cmd) {
-        super (cmd.getSyntax().getParameterKeys());
+        super(cmd.getSyntax().getParameterKeys());
     }
 
 }

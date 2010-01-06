@@ -44,63 +44,71 @@ package org.nuxeo.chemistry.shell;
 public interface Context {
 
     /**
-     * Get the current application
+     * Gets the current application.
+     *
      * @return
      */
-    public Application getApplication();
+    Application getApplication();
     
     /**
-     * Get the context path
+     * Gets the context path.
+     *
      * @return
      */
-    public Path getPath();
+    Path getPath();
 
     /**
-     * Get the context absolute path as a string
+     * Gets the context absolute path as a string.
+     *
      * @return
      */
-    public String pwd();
+    String pwd();
     
     /**
-     * This method is listing the keys of the available sub contexts. 
+     * Lists the keys of the available sub contexts.
      * This is used by the command line completor.
+     *
      * @return an empty array if no sub contexts are available, otherwise return the array of sub context names
      */
-    public String[] entries();
+    String[] entries();
     
     /**
-     * List sub contexts names. The returned names are colored (may contain color code characters)
+     * Lists sub contexts names. The returned names are colored (may contain color code characters).
+     *
      * @return
      */
-    public String[] ls(); //colored entries
+    String[] ls(); //colored entries
 
     /**
-     * Get a child context given its name
+     * Gets a child context given its name.
+     *
      * @param name
-     * @return null if no such sub context exists, othrwise return the sub context
+     * @return null if no such sub context exists, otherwise returns the sub context
      */
-    public Context getContext(String name);
+    Context getContext(String name);
     
-    public Path resolvePath(String path);
+    Path resolvePath(String path);
 
-    
     /**
-     * Clear any cache associated with the context 
+     * Clears any cache associated with the context.
      */
-    public void reset();    
+    void reset();
     
     /**
-     * Adapt the context to the given type.
+     * Adapts the context to the given type.
+     *
      * @param <T>
      * @param type
      * @return null if the context cannot be adapted, otherwise an instance of the given type 
      */
-    public <T> T as(Class<T> type);
+    <T> T as(Class<T> type);
     
     /**
-     * Get a string identifying this context. (can be the object title and path or other useful information). 
+     * Gets a string identifying this context.
+     * (Can be the object title and path or other useful information).
+     *
      * @return
      */
-    public String id();
+    String id();
 
 }

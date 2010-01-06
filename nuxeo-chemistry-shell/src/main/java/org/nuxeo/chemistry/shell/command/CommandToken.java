@@ -25,10 +25,10 @@ package org.nuxeo.chemistry.shell.command;
  */
 public class CommandToken {
 
-    public final static String COMMAND = "command";
-    public final static String ANY = "*";
-    public final static String FILE = "file";
-    public final static String DOCUMENT = "document";
+    public static final String COMMAND = "command";
+    public static final String ANY = "*";
+    public static final String FILE = "file";
+    public static final String DOCUMENT = "document";
 
     public String[] names;
     public String valueType; // null | string | command | file | doc

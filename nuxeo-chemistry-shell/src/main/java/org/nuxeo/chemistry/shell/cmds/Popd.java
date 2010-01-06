@@ -36,7 +36,7 @@ import org.nuxeo.chemistry.shell.command.CommandLine;
 @Cmd(syntax="popd", synopsis="Pop directory stack")
 public class Popd extends AnnotatedCommand {
 
-    public final static String CTX_STACK_KEY = "ctx.stack";
+    public static final String CTX_STACK_KEY = "ctx.stack";
     
     @Override
     @SuppressWarnings("unchecked")

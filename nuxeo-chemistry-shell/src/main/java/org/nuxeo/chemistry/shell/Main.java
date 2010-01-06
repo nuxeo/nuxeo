@@ -29,14 +29,11 @@ import org.nuxeo.chemistry.shell.util.FileUtils;
 import org.nuxeo.chemistry.shell.util.PwdReader;
 
 
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class Main {
-
 
     public static void main(String[] args) throws Exception {
         String username = null;
@@ -146,4 +143,5 @@ public class Main {
         System.err.println(msg);
         System.exit(1);
     }
+
 }

@@ -22,6 +22,7 @@ package org.nuxeo.chemistry.shell.cmds;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.nuxeo.chemistry.shell.Application;
 import org.nuxeo.chemistry.shell.Console;
@@ -46,11 +47,13 @@ public class Commands extends AnnotatedCommand implements Comparator<Command>{
     public void run(Application app, CommandLine cmdLine) throws Exception {
         Command[] cmds = app.getCommandRegistry().getCommands();
         Arrays.sort(cmds, this);
-        HashSet<String> seen = new HashSet<String>();
+        Set<String> seen = new HashSet<String>();
         StringBuilder buf = new StringBuilder();
         for (Command cmd : cmds) {
             String name = cmd.getName();
-            if (seen.contains(name)) continue;
+            if (seen.contains(name)) {
+                continue;
+            }
             seen.add(name);
             buf.setLength(0);
             buf.append(name);

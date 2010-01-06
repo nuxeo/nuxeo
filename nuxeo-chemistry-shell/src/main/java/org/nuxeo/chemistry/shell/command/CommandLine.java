@@ -41,15 +41,15 @@ public class CommandLine {
     protected Command cmd;
 
     public CommandLine(CommandRegistry registry, String cmd) throws CommandException {
-        this (registry, StringUtils.tokenize(cmd));
+        this(registry, StringUtils.tokenize(cmd));
     }
 
     public CommandLine(CommandRegistry registry, String[] args) throws CommandException {
         if (args.length == 0) {
             throw new IllegalArgumentException("CommandLine cannot be empty");
         }
-        this.map = new HashMap<String, CommandParameter>();
-        this.params = new ArrayList<CommandParameter>();
+        map = new HashMap<String, CommandParameter>();
+        params = new ArrayList<CommandParameter>();
         cmd = registry.getCommand(args[0]);
         if (cmd == null) {
             throw new NoSuchCommandException(args[0]);
@@ -90,7 +90,8 @@ public class CommandLine {
             CommandToken token = cmd.syntax.tokens.get(i);
             if (!token.isOptional()) {
                 if (!map.containsKey(token.getName())) {
-                    throw new CommandSyntaxException(cmd, "Syntax Error: Missing required parameter: "+token.getName());
+                    throw new CommandSyntaxException(
+                            cmd, "Syntax Error: Missing required parameter: "+token.getName());
                 }
             }
         }
@@ -108,7 +109,7 @@ public class CommandLine {
     }
 
     public List<CommandParameter> getArguments() {
-        ArrayList<CommandParameter> result = new ArrayList<CommandParameter>();
+        List<CommandParameter> result = new ArrayList<CommandParameter>();
         for (CommandParameter arg : params) {
             if (arg.token.isArgument) {
                 result.add(arg);
@@ -118,7 +119,7 @@ public class CommandLine {
     }
 
     public CommandParameter getParameter(String key) {
-        return this.map.get(key);
+        return map.get(key);
     }
 
     public Command getCommand() throws Exception {
@@ -137,7 +138,9 @@ public class CommandLine {
             buf.append(param.key).append(" ");
             if (param.token.isValueRequired()) {
                 String value = param.getValue();
-                if (value != null) buf.append(value).append(" ");
+                if (value != null) {
+                    buf.append(value).append(" ");
+                }
             }
         }
         buf.setLength(buf.length()-1);

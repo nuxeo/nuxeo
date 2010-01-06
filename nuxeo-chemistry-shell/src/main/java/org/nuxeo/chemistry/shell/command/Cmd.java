@@ -34,4 +34,5 @@ public @interface Cmd {
 
     String syntax();
     String synopsis();
+
 }

@@ -32,33 +32,27 @@ public class SimpleBrowser {
         if (BaseType.FOLDER.equals(root.getBaseType())) {
             Folder folder = (Folder) root;
             List<CMISObject> children = folder.getChildren();
-            for(CMISObject child : children) {
+            for (CMISObject child : children) {
                 dump(child);
             }
-        }
-        else {
+        } else {
             Console.getDefault().println("CMISObject " + root.getId() + " in not a folder");
         }
-
-
     }
 
     protected void doBrowse(Folder currentNode) throws IOException {
         doBrowse("+", currentNode);
     }
-    
-    protected void doBrowse(String tabs, Folder currentNode) throws IOException {
 
+    protected void doBrowse(String tabs, Folder currentNode) throws IOException {
         dumpWithPath(tabs, currentNode);
         List<CMISObject> children = currentNode.getChildren();
         for (CMISObject child : children) {
-
             if (BaseType.FOLDER.equals(child.getBaseType())) {
                 Folder folder = (Folder) child;
-                doBrowse(tabs+"--+", folder);
-            }
-            else {
-                dumpWithPath(tabs+"---", child);
+                doBrowse(tabs + "--+", folder);
+            } else {
+                dumpWithPath(tabs + "---", child);
             }
         }
     }

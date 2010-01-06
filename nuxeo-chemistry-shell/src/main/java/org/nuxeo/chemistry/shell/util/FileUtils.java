@@ -36,7 +36,6 @@ public class FileUtils {
     private static final int MAX_BUFFER_SIZE = 1024 * 1024; // 64K
     private static final int MIN_BUFFER_SIZE = 1024 * 8; // 64K
 
-
     public static String readFile(File file) throws IOException {
         FileInputStream in = null;
         try {
@@ -86,7 +85,6 @@ public class FileUtils {
         }
         return lines;
     }
-
 
     public static void copy(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = createBuffer(in.available());

@@ -34,16 +34,15 @@ public class DirectoryCompletor extends FileNameCompletor {
             return -1;
         }
 
-        for (int i = 0; i < entries.length; i++) {
-            if (entries[i].getAbsolutePath().startsWith(translated) && entries[i].isDirectory()) {
-                candidates.add(entries[i].getName());
+        for (File entry : entries) {
+            if (entry.getAbsolutePath().startsWith(translated) && entry.isDirectory()) {
+                candidates.add(entry.getName());
             }
         }
 
-        final int index = buffer.lastIndexOf(File.separator);
+        int index = buffer.lastIndexOf(File.separator);
 
         return index + File.separator.length();
     }
-
 
 }

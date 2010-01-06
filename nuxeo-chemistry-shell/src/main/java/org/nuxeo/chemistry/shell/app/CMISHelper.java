@@ -22,13 +22,12 @@ import org.apache.chemistry.atompub.client.APPConnection;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class CMISHelper {
 
     public CMISObject getObjectByAbsolutePath(APPConnection conn, String path) {
         ObjectEntry entry = conn.getObjectByPath(path, null);
-        if (entry!=null) {
+        if (entry != null) {
             return conn.getObject(entry);
         } else {
             return null;

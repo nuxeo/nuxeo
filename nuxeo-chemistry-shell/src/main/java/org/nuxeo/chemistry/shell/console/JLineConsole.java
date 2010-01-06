@@ -37,9 +37,7 @@ import org.nuxeo.chemistry.shell.command.ExitException;
  */
 public class JLineConsole extends Console {
 
-
     protected ConsoleReader console;
-
 
     public JLineConsole() throws IOException {
         if (JLineConsole.instance != null) {
@@ -57,7 +55,6 @@ public class JLineConsole extends Console {
         return console;
     }
 
-
     protected boolean execute(String line) throws Exception {
         try {
             runCommand(app, line);
@@ -68,7 +65,6 @@ public class JLineConsole extends Console {
         }
         return true;
     }
-
 
     @Override
     public void start(Application app) throws IOException {
@@ -92,7 +88,6 @@ public class JLineConsole extends Console {
         console.printNewline();
     }
 
-
     @Override
     public String promptPassword() throws IOException {
         return console.readLine(new Character('*'));
@@ -110,7 +105,6 @@ public class JLineConsole extends Console {
             console.setDefaultPrompt("|> ");
         }
     }
-
 
     @Override
     public void println() throws IOException {
