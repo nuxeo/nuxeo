@@ -154,6 +154,10 @@
       <artifact group="rome" name="rome" />
       <artifact group="jdom" name="jdom" />
 
+      <artifact group="net.sf.opencsv" name="opencsv" />
+      <artifact group="org.codehaus.plexus" name="plexus-utils" />
+
+
       <artifact group="jmimemagic" name="jmimemagic" />
       <artifact group="org.apache.poi" name="ooxml-schemas" />
       <artifact group="org.apache.poi" name="poi" />
