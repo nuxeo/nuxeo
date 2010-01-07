@@ -68,7 +68,8 @@ public class CommandLine {
                 if (token == null) {
                     token = cmd.syntax.getArgument(k++);
                     if (token == null) {
-                        throw new CommandSyntaxException(cmd, "Syntax Error: Extra argument found on position "+i);
+                        throw new CommandSyntaxException(
+                                cmd, "Syntax Error: Extra argument found on position "+i);
                     }
                 }
                 if (token.isArgument()) {
@@ -83,7 +84,8 @@ public class CommandLine {
         }
         // check if the last parameter has a value if it requires it
         if (param != null && param.getValue() == null && param.token.isValueRequired()) {
-            throw new CommandSyntaxException(cmd, "Syntax Error: Value for parameter "+param.key+" is required");
+            throw new CommandSyntaxException(
+                    cmd, "Syntax Error: Value for parameter "+param.key+" is required");
         }
         // check if all required options are present - ignore first token which is the command token
         for (int i=1, len=cmd.syntax.tokens.size(); i<len; i++) {

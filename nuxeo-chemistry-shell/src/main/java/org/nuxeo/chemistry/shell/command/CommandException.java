@@ -21,26 +21,24 @@ package org.nuxeo.chemistry.shell.command;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class CommandException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
     public CommandException() {
-
     }
 
     public CommandException(String message) {
-        super (message);
+        super(message);
     }
 
     public CommandException(String message, Throwable cause) {
-        super (message, cause);
+        super(message, cause);
     }
 
     public CommandException(Throwable cause) {
-        super (cause);
+        super(cause);
     }
 
 }

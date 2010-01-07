@@ -70,7 +70,6 @@ public class ColorHelper {
         ansiCodes.put("reverse", REVERSE);
         ansiCodes.put("concealed", CONCEALED);
         
-        
         Properties props = new Properties();
         try {
             String mapStr = System.getProperty("chemistry.shell.colorMap");

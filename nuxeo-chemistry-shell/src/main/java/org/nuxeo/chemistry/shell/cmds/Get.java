@@ -29,7 +29,7 @@ import org.nuxeo.chemistry.shell.command.CommandLine;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="get", synopsis="Get the content from remote of the specifed entry")
+@Cmd(syntax="get", synopsis="Get the content from remote of the specified entry")
 public class Get extends AnnotatedCommand {
 
     @Override

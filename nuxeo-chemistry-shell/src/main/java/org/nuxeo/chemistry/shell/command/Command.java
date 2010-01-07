@@ -45,31 +45,18 @@ public abstract class Command {
         return aliases[0];
     }
 
-    /**
-     * @return the aliases.
-     */
     public String[] getAliases() {
         return aliases;
     }
 
-    /**
-     * @return the synopsis.
-     */
     public String getSynopsis() {
         return synopsis;
     }
 
-    /**
-     * @return the syntax.
-     */
     public CommandSyntax getSyntax() {
         return syntax;
     }
 
-
-    /**
-     * @return the help.
-     */
     public String getHelp(Application app) {
         URL url = getClass().getResource("/META-INF/help/"+getName()+".help");
         if (url == null) {
@@ -87,7 +74,6 @@ public abstract class Command {
         return "N/A";
     }
 
-
     public void print(String str) {
         System.out.print(str);
     }
@@ -101,6 +87,5 @@ public abstract class Command {
     }
 
     public abstract void run(Application app, CommandLine cmdLine) throws Exception;
-
 
 }

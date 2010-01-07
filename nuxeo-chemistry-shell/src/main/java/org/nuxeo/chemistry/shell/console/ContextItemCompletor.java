@@ -33,10 +33,6 @@ import org.nuxeo.chemistry.shell.Path;
  */
 public class ContextItemCompletor implements Completor {
 
-
-    public ContextItemCompletor() {
-    }
-
     protected void collectNames(String[] keys, String prefix, List candidates) {
         for (String key : keys) {
             if (key.startsWith(prefix)) {

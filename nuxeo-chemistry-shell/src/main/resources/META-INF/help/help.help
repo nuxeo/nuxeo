@@ -1,5 +1,5 @@
-help [command]
+Usage: help [command]
 
-Help
+To get the list of available commands, type 'commands'.
 
-This is the Main Help Page
+To get help of a specific command, type 'help name_of_command'.

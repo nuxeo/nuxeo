@@ -27,8 +27,4 @@ public class ExitException extends CommandException {
 
     private static final long serialVersionUID = 1L;
 
-    public ExitException() {
-
-    }
-
 }

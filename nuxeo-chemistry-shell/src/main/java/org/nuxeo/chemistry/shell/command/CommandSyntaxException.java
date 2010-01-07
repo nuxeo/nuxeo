@@ -21,7 +21,6 @@ package org.nuxeo.chemistry.shell.command;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class CommandSyntaxException extends CommandException {
 
@@ -30,11 +29,11 @@ public class CommandSyntaxException extends CommandException {
     protected Command cmd;
 
     public CommandSyntaxException(Command cmd) {
-        this (cmd, "Syntax Error");
+        this(cmd, "Syntax Error");
     }
 
     public CommandSyntaxException(Command cmd, String message) {
-        super (message);
+        super(message);
         this.cmd = cmd;
     }
 

@@ -34,14 +34,14 @@ import org.nuxeo.chemistry.shell.command.CommandLine;
  *
  */
 @Cmd(syntax="lpopd", synopsis="Pop local directory stack")
-@SuppressWarnings("unchecked")
 public class LPopd extends AnnotatedCommand {
 
     public static final String WDIR_STACK_KEY = "wdir.stack";
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        Stack<File> stack = (Stack<File>)app.getData(WDIR_STACK_KEY);
+        Stack<File> stack = (Stack<File>) app.getData(WDIR_STACK_KEY);
         if (stack == null) {
             Console.getDefault().warn("No more directories on the stack");
             return;

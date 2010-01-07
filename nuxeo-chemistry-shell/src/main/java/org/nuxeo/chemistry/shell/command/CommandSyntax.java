@@ -68,8 +68,7 @@ public class CommandSyntax {
     }
 
     /**
-     * Get all parameter keys
-     * @return
+     * Gets all parameter keys.
      */
     public String[] getParameterKeys() {
         ArrayList<String> keys = new ArrayList<String>();

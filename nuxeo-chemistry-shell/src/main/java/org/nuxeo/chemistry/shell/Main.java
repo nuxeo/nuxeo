@@ -35,6 +35,9 @@ import org.nuxeo.chemistry.shell.util.PwdReader;
  */
 public class Main {
 
+    private Main() {
+    }
+
     public static void main(String[] args) throws Exception {
         String username = null;
         String password = null;
@@ -42,17 +45,18 @@ public class Main {
         boolean batchMode = false;
         boolean execMode = false;
         String command = null;
+
         if (args.length > 0) {
             for (int i=0; i<args.length; i++) {
                 String arg = args[i];
                 if ("-u".equals(arg)) {
                     if (++i == args.length) { // username
-                        error("Invalid option -u without value. Username requried.");
+                        error("Invalid option -u without value. Username required.");
                     }
                     username = args[i];
                 } else if ("-p".equals(arg)) { // password
                     if (++i == args.length) { // username
-                        error("Invalid option -p without value. Password requried.");
+                        error("Invalid option -p without value. Password required.");
                     }
                     password = args[i];
                 } else if ("-e".equals(arg)) { // execute mode
@@ -85,7 +89,7 @@ public class Main {
             if (username != null && password == null) {
                 password = PwdReader.read();
             }
-            if (url != null && url.indexOf("://") == -1) {
+            if (url != null && !url.contains("://")) {
                 url = "http://"+url;
             }
         }
@@ -98,7 +102,6 @@ public class Main {
             app.connect(url);
         }
 
-
         if (execMode) {
             Console.setDefault(new Console());
             Console.getDefault().start(app);
@@ -108,7 +111,7 @@ public class Main {
         if (batchMode) {
             Console.setDefault(new Console());
             Console.getDefault().start(app);
-            List<String> cmds = null;
+            List<String> cmds;
             if (command == null) {
                 cmds = FileUtils.readLines(System.in);
             } else {
