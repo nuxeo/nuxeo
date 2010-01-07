@@ -40,12 +40,13 @@ public class SetStream extends ChemistryCommand {
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
-        Context ctx = app.getContext();
-        CMISObject obj = ctx.as(CMISObject.class);
         List<CommandParameter> args = cmdLine.getArguments();
         if (args.size() != 1) {
             Console.getDefault().error("Missing required arguments: key value");
         }
+
+        Context ctx = app.getContext();
+        CMISObject obj = ctx.as(CMISObject.class);
         if (obj != null) {
             String path = args.get(0).getValue();
             File file = app.resolveFile(path);

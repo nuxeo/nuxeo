@@ -21,21 +21,37 @@ package org.nuxeo.chemistry.shell.cmds;
 
 import org.nuxeo.chemistry.shell.Application;
 import org.nuxeo.chemistry.shell.Console;
+import org.nuxeo.chemistry.shell.Context;
+import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.CommandLine;
+import org.nuxeo.chemistry.shell.command.CommandParameter;
 
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="id", synopsis="Identity of the specified entry")
+@Cmd(syntax="id [item:item]", synopsis="Identity of the specified entry")
 public class Id extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        Console.getDefault().print(app.getContext().id());
+        CommandParameter param = cmdLine.getLastParameter();
+
+        Context ctx;
+        if (param != null && param.getValue() != null) {
+            ctx = app.resolveContext(new Path(param.getValue()));
+            if (ctx == null) {
+                Console.getDefault().warn("Cannot resolve "+param.getValue());
+                return;
+            }
+        } else {
+            ctx = app.getContext();
+        }
+
+        Console.getDefault().println(ctx.id());
     }
 
 }

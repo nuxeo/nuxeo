@@ -17,27 +17,44 @@
 package org.nuxeo.chemistry.shell.app.cmds;
 
 import org.apache.chemistry.Folder;
+import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
+import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;
 import org.nuxeo.chemistry.shell.app.utils.SimpleBrowser;
 import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.CommandLine;
+import org.nuxeo.chemistry.shell.command.CommandParameter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="dump|tree", synopsis="Dump a subtree")
+@Cmd(syntax="dump|tree [item:item]", synopsis="Dump a subtree")
 public class DumpTree extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
-        Context ctx = app.getContext();
+        CommandParameter param = cmdLine.getLastParameter();
+
+        Context ctx;
+        if (param != null && param.getValue() != null) {
+            ctx = app.resolveContext(new Path(param.getValue()));
+            if (ctx == null) {
+                Console.getDefault().warn("Cannot resolve "+param.getValue());
+                return;
+            }
+        } else {
+            ctx = app.getContext();
+        }
+
         Folder folder = ctx.as(Folder.class);
         if (folder != null) {
             new SimpleBrowser(folder).browse();
+        } else {
+            Console.getDefault().warn("Target is not a folder");            
         }
     }
 

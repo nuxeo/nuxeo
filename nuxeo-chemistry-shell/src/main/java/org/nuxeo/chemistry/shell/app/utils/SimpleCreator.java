@@ -7,7 +7,6 @@ public class SimpleCreator {
 
     protected Folder folder;
 
-
     public SimpleCreator(Folder folder) {
         this.folder = folder;
     }

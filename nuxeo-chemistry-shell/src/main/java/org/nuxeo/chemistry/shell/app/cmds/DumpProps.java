@@ -19,23 +19,38 @@ package org.nuxeo.chemistry.shell.app.cmds;
 import org.apache.chemistry.CMISObject;
 import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
+import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;
 import org.nuxeo.chemistry.shell.app.utils.SimplePropertyManager;
 import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.CommandLine;
+import org.nuxeo.chemistry.shell.command.CommandParameter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="props", synopsis="Print the value of all the properties of the current context object")
+@Cmd(syntax="props [item:item]", synopsis="Print the value of all the properties of the current context object")
 public class DumpProps extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
-        Context ctx = app.getContext();
+
+        CommandParameter param = cmdLine.getLastParameter();
+
+        Context ctx;
+        if (param != null && param.getValue() != null) {
+            ctx = app.resolveContext(new Path(param.getValue()));
+            if (ctx == null) {
+                Console.getDefault().warn("Cannot resolve "+param.getValue());
+                return;
+            }
+        } else {
+            ctx = app.getContext();
+        }
+
         CMISObject obj = ctx.as(CMISObject.class);
         if (obj != null) {            
             new SimplePropertyManager(obj).dumpProperties();

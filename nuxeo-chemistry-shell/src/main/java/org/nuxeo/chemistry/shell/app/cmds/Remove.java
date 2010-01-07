@@ -16,39 +16,43 @@
  */
 package org.nuxeo.chemistry.shell.app.cmds;
 
-import java.util.List;
-
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.Folder;
 import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;
-import org.nuxeo.chemistry.shell.app.utils.SimplePropertyManager;
+import org.nuxeo.chemistry.shell.app.utils.SimpleCreator;
 import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
 
+import java.util.List;
+
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:sf@nuxeo.com">Stefane Fermigier</a>
  *
  */
-@Cmd(syntax="getp|getProperty key", synopsis="Print the value of the given property on the current context object")
-public class GetProp extends ChemistryCommand {
+@Cmd(syntax="rm name:item", synopsis="Removes an object of the given name")
+public class Remove extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
-        
         List<CommandParameter> args = cmdLine.getArguments();
         if (args.size() != 1) {
-            Console.getDefault().error("Missing required argument: key");
+            Console.getDefault().error("Missing required arguments: name");
         }
 
+        String name = args.get(0).getValue();
         Context ctx = app.getContext();
-        CMISObject obj = ctx.as(CMISObject.class);
-        if (obj != null) {
-            Console.getDefault().println(
-                    new SimplePropertyManager(obj).getPropertyAsString(args.get(0).getValue()));
+        Folder folder = ctx.as(Folder.class);
+        if (folder != null) {
+            for (CMISObject child : folder.getChildren()) {
+                if (child.getName().equals(name)) {
+                    child.delete();
+                }
+            }
         }
     }
 

@@ -38,12 +38,13 @@ public class CreateFile extends ChemistryCommand {
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
-        Context ctx = app.getContext();
-        Folder folder = ctx.as(Folder.class);
         List<CommandParameter> args = cmdLine.getArguments();
         if (args.size() != 1) {
             Console.getDefault().error("Missing required arguments: name");
         }
+
+        Context ctx = app.getContext();
+        Folder folder = ctx.as(Folder.class);
         if (folder != null) {
             new SimpleCreator(folder).createFile(args.get(0).getValue());
         }

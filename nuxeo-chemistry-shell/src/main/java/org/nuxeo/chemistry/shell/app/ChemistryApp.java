@@ -21,14 +21,7 @@ import java.io.IOException;
 import org.apache.chemistry.atompub.client.connector.APPContentManager;
 import org.nuxeo.chemistry.shell.AbstractApplication;
 import org.nuxeo.chemistry.shell.Context;
-import org.nuxeo.chemistry.shell.app.cmds.CreateFile;
-import org.nuxeo.chemistry.shell.app.cmds.CreateFolder;
-import org.nuxeo.chemistry.shell.app.cmds.DumpProps;
-import org.nuxeo.chemistry.shell.app.cmds.DumpTree;
-import org.nuxeo.chemistry.shell.app.cmds.GetProp;
-import org.nuxeo.chemistry.shell.app.cmds.GetStream;
-import org.nuxeo.chemistry.shell.app.cmds.SetProp;
-import org.nuxeo.chemistry.shell.app.cmds.SetStream;
+import org.nuxeo.chemistry.shell.app.cmds.*;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -37,7 +30,6 @@ import org.nuxeo.chemistry.shell.app.cmds.SetStream;
 public class ChemistryApp extends AbstractApplication {
 
     protected APPContentManager cm;
-
 
     public ChemistryApp() {
         registry.registerCommand(new DumpTree());
@@ -48,6 +40,7 @@ public class ChemistryApp extends AbstractApplication {
         registry.registerCommand(new SetStream());
         registry.registerCommand(new CreateFile());
         registry.registerCommand(new CreateFolder());
+        registry.registerCommand(new Remove());
     }
         
     @Override

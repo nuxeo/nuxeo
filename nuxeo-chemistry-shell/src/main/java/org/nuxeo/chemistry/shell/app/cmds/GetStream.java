@@ -23,8 +23,10 @@ import java.util.List;
 
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.ContentStream;
+import org.apache.chemistry.Document;
 import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
+import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;
 import org.nuxeo.chemistry.shell.app.utils.SimplePropertyManager;
@@ -37,27 +39,48 @@ import org.nuxeo.chemistry.shell.util.FileUtils;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="getStream", synopsis="Export the stream of the current context object")
+@Cmd(syntax="getStream target:item", synopsis="Export the stream of the target document")
 public class GetStream extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
-        Context ctx = app.getContext();
-        CMISObject obj = ctx.as(CMISObject.class);
-        if (obj != null) {
-            ContentStream cs = new SimplePropertyManager(obj).getStream();
-            String name = cs.getFileName();
-            InputStream in = cs.getStream();
-            File file = app.resolveFile(name);
-            FileOutputStream out = new FileOutputStream(file);
-            try {
-                FileUtils.copy(in, out);
-                Console.getDefault().println("Object stream saved to file: " + file);
-            } finally {
-                out.close();
-                in.close();
-            }
+
+        CommandParameter param = cmdLine.getLastParameter();
+
+        if (param == null || param.getValue() == null) {
+            Console.getDefault().warn("You must supply a name");
+            return;
+        }
+
+        Context ctx = app.resolveContext(new Path(param.getValue()));
+        if (ctx == null) {
+            Console.getDefault().warn("Cannot resolve " + param.getValue());
+            return;
+        }
+
+        Document obj = ctx.as(Document.class);
+        if (obj == null) {
+            Console.getDefault().warn("Your target must be a document");
+            return;
+        }
+
+        ContentStream cs = new SimplePropertyManager(obj).getStream();
+        if (cs == null) {
+            Console.getDefault().warn("Your target doesn't have a stream");
+            return;
+        }
+
+        String name = cs.getFileName();
+        InputStream in = cs.getStream();
+        File file = app.resolveFile(name);
+        FileOutputStream out = new FileOutputStream(file);
+        try {
+            FileUtils.copy(in, out);
+            Console.getDefault().println("Object stream saved to file: " + file);
+        } finally {
+            out.close();
+            in.close();
         }
     }
 

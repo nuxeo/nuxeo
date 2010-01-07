@@ -119,6 +119,11 @@ public class Main {
             }
             try {
                 for (String cmd : cmds) {
+                    // Ignore empty lines / comments
+                    if (cmd.length() == 0 || cmd.startsWith(";")) {
+                        continue;
+                    }
+
                     System.out.println("Running: "+cmd);
                     Console.runCommand(app, cmd);
                 }

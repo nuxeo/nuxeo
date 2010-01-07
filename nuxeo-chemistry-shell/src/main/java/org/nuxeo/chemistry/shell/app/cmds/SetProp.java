@@ -38,13 +38,14 @@ public class SetProp extends ChemistryCommand {
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
-        Context ctx = app.getContext();
-        CMISObject obj = ctx.as(CMISObject.class);
         List<CommandParameter> args = cmdLine.getArguments();
         if (args.size() != 2) {
             Console.getDefault().error("Missing required arguments: key value");
         }
-        if (obj != null) {            
+
+        Context ctx = app.getContext();
+        CMISObject obj = ctx.as(CMISObject.class);
+        if (obj != null) {
             new SimplePropertyManager(obj).setProperty(args.get(0).getValue(), args.get(1).getValue());
         }
     }
