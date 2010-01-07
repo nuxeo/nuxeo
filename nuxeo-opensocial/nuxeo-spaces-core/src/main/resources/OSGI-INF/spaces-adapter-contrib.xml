@@ -6,10 +6,10 @@
     point="adapters">
 
     <adapter class="org.nuxeo.ecm.spaces.api.Univers"
-      factory="org.nuxeo.ecm.spaces.core.impl.docwrapper.BeansDocumentAdapterFactory" />
+      factory="org.nuxeo.ecm.spaces.core.impl.docwrapper.SpacesAdapterFactory" />
     <adapter class="org.nuxeo.ecm.spaces.api.Space"
-      factory="org.nuxeo.ecm.spaces.core.impl.docwrapper.BeansDocumentAdapterFactory" />
+      factory="org.nuxeo.ecm.spaces.core.impl.docwrapper.SpacesAdapterFactory" />
       <adapter class="org.nuxeo.ecm.spaces.api.Gadget"
-      factory="org.nuxeo.ecm.spaces.core.impl.docwrapper.BeansDocumentAdapterFactory" />
+      factory="org.nuxeo.ecm.spaces.core.impl.docwrapper.SpacesAdapterFactory" />
   </extension>
 </component>

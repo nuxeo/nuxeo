@@ -20,7 +20,6 @@ package org.nuxeo.opensocial.spaces.webobject;
 import java.util.List;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -32,8 +31,10 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
 import org.nuxeo.ecm.spaces.api.Univers;
+import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
@@ -54,12 +55,11 @@ public class SpacesModuleRoot extends ModuleRoot {
    */
   private static final Log log = LogFactory.getLog(SpacesModuleRoot.class);
 
-  /**
-   * Univers list
-   */
-  private List<Univers> universList = null;
 
-  public List<Univers> getUniversList() {
+  public List<Univers> getUniversList() throws SpaceException, Exception {
+      CoreSession session = getSession();
+      List<Univers>  universList = Framework.getService(SpaceManager.class)
+      .getUniversList(session);
 
     return universList;
   }
@@ -83,13 +83,12 @@ public class SpacesModuleRoot extends ModuleRoot {
     try {
       CoreSession session = getSession();
       SpaceManager spaceManager = Framework.getService(SpaceManager.class);
-
       Univers universe = spaceManager.getUnivers(universeName, session);
 
       return newObject("Univers", universe);
 
     } catch (Exception e) {
-      throw ExceptionManager.wrap(e);
+      throw WebException.wrap(e);
     }
   }
 
@@ -98,49 +97,6 @@ public class SpacesModuleRoot extends ModuleRoot {
         .getCoreSession();
   }
 
-  /**
-   * Universe creation with spaces API
-   */
-  @POST
-  @Path("@createUnivers")
-  public Response createUnivers() {
-    try {
-
-      Univers univers = Mapper.createUnivers(ctx.getForm(), null);
-      CoreSession session = getSession();
-      SpaceManager spaceManager = Framework.getService(SpaceManager.class);
-
-      univers = spaceManager.createUnivers(univers, session);
-
-      return redirect(getPath() + "/" + univers.getName());
-
-    } catch (Exception e) {
-      throw ExceptionManager.wrap(e);
-    }
-
-  }
-
-  /**
-   * ModuleRoot initialization - calls loadUnivers().
-   */
-  @Override
-  public void initialize(Object... args) {
-    try {
-      super.initialize(args);
-      loadUnivers();
-    } catch (Exception e) {
-      throw ExceptionManager.wrap(e);
-    }
-  }
-
-  /**
-   * Load universes list
-   */
-  private void loadUnivers() throws Exception {
-    CoreSession session = getSession();
-    universList = Framework.getService(SpaceManager.class)
-        .getUniversList(session);
-  }
 
   /**
    * Exception handler

@@ -3,6 +3,8 @@
   name="org.nuxeo.opensocial.dashboard.providersOverride"
   version="1.0">
   <require>org.nuxeo.ecm.spaces.core.spacemanager.service.default.contrib</require>
+
+
   <extension target="org.nuxeo.ecm.spaces.core.spacemanager.service"
     point="universContrib">
     <universContrib name="dashboardUnivers">
@@ -12,23 +14,17 @@
       </className>
     </universContrib>
   </extension>
+
+
   <extension target="org.nuxeo.ecm.spaces.core.spacemanager.service"
     point="spaceContrib">
     <spaceContrib name="dashboardSpaces">
-      <restrictToUniverse>*</restrictToUniverse>
+      <restrictToUniverse>dashboardUnivers</restrictToUniverse>
       <order>0</order>
       <className>org.nuxeo.opensocial.dashboard.DashboardSpaceProvider
       </className>
     </spaceContrib>
   </extension>
-  <extension target="org.nuxeo.ecm.spaces.core.spacemanager.service"
-    point="gadgetContrib">
-    <!-- gadgetContrib name="defaultGadgets" remove="true"></gadgetContrib -->
-  <gadgetContrib name="dashboardGadgets">
-      <order>0</order>
-      <className>
-        org.nuxeo.opensocial.dashboard.DashboardGadgetProvider
-      </className>
-    </gadgetContrib>
-  </extension>
+
+
 </component>

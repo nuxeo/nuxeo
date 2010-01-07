@@ -15,9 +15,7 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
-import org.nuxeo.ecm.spaces.api.Univers;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
-import org.nuxeo.ecm.spaces.api.exceptions.UniversNotFoundException;
 import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -73,23 +71,8 @@ public class OpensocialDashboardNavigationHelper implements
 
     @Factory(value = "personalDashboardContainerIdRef", scope = ScopeType.SESSION)
     public String getPersonalDashboardContainerIdRef() {
-        SpaceManager spaceManager;
         try {
-            spaceManager = Framework.getService(SpaceManager.class);
-            if (spaceManager == null) {
-                log.warn("unable to find space manager!");
-            } else {
-
-                Univers universe;
-                universe = spaceManager.getUnivers(
-                        DashboardUniverseProvider.DASHBOARD_UNIVERSE_NAME,
-                        documentManager);
-                return spaceManager.getSpace(
-                        DashboardSpaceProvider.DASHBOARD_SPACE_NAME, universe,
-                        documentManager).getId();
-            }
-        } catch (UniversNotFoundException e) {
-            log.error("Unable to find the default universe for our space!", e);
+            return DashboardSpaceProvider.getSpaceId(documentManager);
         } catch (SpaceException e) {
             log.error("Unable to access space correctly for our dashboard!", e);
         } catch (Exception e) {
