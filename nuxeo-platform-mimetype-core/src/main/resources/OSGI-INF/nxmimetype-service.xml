@@ -872,6 +872,28 @@
       </extensions>
     </mimetype>
 
+    <mimetype normalized="audio/aac" binary="true" iconPath="audio.png">
+      <mimetypes>
+        <mimetype>audio/aac</mimetype>
+        <mimetype>audio/aacp</mimetype>
+        <mimetype>audio/3gpp</mimetype>
+        <mimetype>audio/3gpp2</mimetype>
+        <mimetype>audio/mp4</mimetype>
+        <mimetype>audio/MP4A-LATM</mimetype>
+        <mimetype>audio/mpeg4-generic</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>aac</extension>
+        <extension>m4a</extension>
+        <extension>m4b</extension>
+        <extension>m4p</extension>
+        <extension>m4v</extension>
+        <extension>m4r</extension>
+        <extension>3gp</extension>
+        <extension>mp4</extension>
+      </extensions>
+    </mimetype>
+    
     <mimetype normalized="audio/x-ms-wax" binary="true" iconPath="audio.png">
       <mimetypes>
         <mimetype>audio/x-ms-wax</mimetype>
