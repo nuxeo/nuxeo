@@ -37,7 +37,7 @@ public class SingleDocSpaceProvider extends AbstractSpaceProvider {
         return 1;
     }
 
-    public boolean isReadOnly() {
+    public boolean isReadOnly(CoreSession session) {
         return true;
     }
 

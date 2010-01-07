@@ -138,10 +138,9 @@ public class RootDocSpaceProvider extends AbstractSpaceProvider {
     }
 
 
-    public boolean isReadOnly() {
+    public boolean isReadOnly(CoreSession session) {
         return false;
     }
-
 
 
 }

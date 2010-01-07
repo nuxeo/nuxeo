@@ -27,5 +27,5 @@ public interface SpaceProvider {
 
     long size(CoreSession session) throws SpaceException;
 
-    boolean isReadOnly();
+    boolean isReadOnly(CoreSession session);
 }
