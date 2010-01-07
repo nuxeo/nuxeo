@@ -30,7 +30,7 @@ import org.nuxeo.chemistry.shell.command.CommandParameter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="connect|open", synopsis="Open a new session")
+@Cmd(syntax="connect url:url", synopsis="Open a new session")
 public class Connect extends AnnotatedCommand {
 
     @Override
