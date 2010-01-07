@@ -17,8 +17,22 @@
 
 package org.nuxeo.ecm.platform.publisher.jbpm;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.jbpm.taskmgmt.exe.TaskInstance;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.event.Event;
@@ -27,15 +41,17 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
-import org.nuxeo.ecm.platform.publisher.api.*;
+import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
+import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
+import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
+import org.nuxeo.ecm.platform.publisher.api.PublishingEvent;
+import org.nuxeo.ecm.platform.publisher.api.PublishingException;
 import org.nuxeo.ecm.platform.publisher.impl.core.CoreFolderPublicationNode;
 import org.nuxeo.ecm.platform.publisher.impl.core.CoreProxyFactory;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.Serializable;
-import java.util.*;
 
 /**
  *
@@ -53,6 +69,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
     public static final String ACL_NAME = "org.nuxeo.ecm.platform.publisher.jbpm.CoreProxyWithWorkflowFactory";
 
     protected JbpmService jbpmService;
+
+    protected UserManager userManager;
 
     protected EventProducer eventProducer;
 
@@ -142,7 +160,15 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             if (s.contains(":")) {
                 prefixedActorIds.add(s);
             } else {
-                prefixedActorIds.add(NuxeoPrincipal.PREFIX + s);
+                UserManager userManager = getUserManager();
+                String prefix = null;
+                try {
+                    prefix = userManager.getPrincipal(s) == null ? NuxeoGroup.PREFIX
+                            : NuxeoPrincipal.PREFIX;
+                } catch (ClientException e) {
+                    throw new ClientRuntimeException(e);
+                }
+                prefixedActorIds.add(prefix + s);
             }
         }
         ti.setPooledActors(prefixedActorIds.toArray(new String[prefixedActorIds.size()]));
@@ -167,6 +193,17 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             throw new PublishingException(e);
         }
 
+    }
+
+    private UserManager getUserManager() {
+        if (userManager == null) {
+            try {
+                userManager = Framework.getService(UserManager.class);
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return userManager;
     }
 
     protected JbpmService getJbpmService() {
@@ -366,6 +403,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         return false;
     }
 
+    @Override
     public boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException {
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         NuxeoPrincipal currentUser = (NuxeoPrincipal) coreSession.getPrincipal();

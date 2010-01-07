@@ -23,7 +23,7 @@
   <#list fragments as fragment>
     <li <#if fragment.getTypeName() = selected_fragment_type>class="selected"</#if>><a href="javascript:void(0)" 
   onclick="NXThemesFragmentFactory.selectFragmentType('${fragment.getTypeName()}', 'fragment factory')">
-    <img src="${skinPath}/img/fragment-16.png" width="16" height="16" /> ${fragment.getTypeName()}</a></li>
+    <img src="${basePath}/skin/nxthemes-editor/img/fragment-16.png" width="16" height="16" /> ${fragment.getTypeName()}</a></li>
   </#list>
   </ul>
   </td>
@@ -32,7 +32,7 @@
   <#list views as view>
     <li <#if view.getViewName() = selected_fragment_view>class="selected"</#if>><a href="javascript:void(0)" 
   onclick="NXThemesFragmentFactory.selectView('${view.getViewName()}', 'fragment factory')">
-    <img src="${skinPath}/img/view-16.png" width="16" height="16" /> ${view.getViewName()}</a></li>
+    <img src="${basePath}/skin/nxthemes-editor/img/view-16.png" width="16" height="16" /> ${view.getViewName()}</a></li>
   </#list>
   </ul>
   </td>

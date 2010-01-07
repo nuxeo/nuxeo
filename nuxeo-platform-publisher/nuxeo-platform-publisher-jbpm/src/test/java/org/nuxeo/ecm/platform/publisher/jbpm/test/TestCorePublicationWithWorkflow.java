@@ -17,6 +17,11 @@
 
 package org.nuxeo.ecm.platform.publisher.jbpm.test;
 
+import java.util.List;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+
 import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -39,10 +44,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.runtime.api.Framework;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import java.util.List;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -82,6 +83,7 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.versioning");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
+        deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployContrib("org.nuxeo.ecm.platform.publisher.jbpm.test",
                 "OSGI-INF/relations-default-jena-contrib.xml");
         deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");

@@ -14,7 +14,7 @@
 <#if selected_preset_category>
 <div style="float: right">
   <a class="nxthemesActionButton" href="javascript:NXThemesEditor.addPreset('${current_theme_name?js_string}', '${selected_preset_category?js_string}', 'preset manager')">
-  <img src="${skinPath}/img/add-14.png" /> Create new preset</a>
+  <img src="${basePath}/skin/nxthemes-editor/img/add-14.png" /> Create new preset</a>
 </div>
 </#if>
 
@@ -30,22 +30,22 @@
        <ul class="nxthemesSelector">
          <li <#if selected_preset_category = 'color'>class="selected"</#if>>
               <a href="javascript:NXThemesPresetManager.selectPresetCategory('color')">
-              <img src="${skinPath}/img/category-16.png" width="16" height="16"/> Color</a></li>
+              <img src="${basePath}/skin/nxthemes-editor/img/category-16.png" width="16" height="16"/> Color</a></li>
          <li <#if selected_preset_category = 'background'>class="selected"</#if>>
              <a  href="javascript:NXThemesPresetManager.selectPresetCategory('background')">
-             <img src="${skinPath}/img/category-16.png" width="16" height="16"/> Background</a></li>
+             <img src="${basePath}/skin/nxthemes-editor/img/category-16.png" width="16" height="16"/> Background</a></li>
          <li <#if selected_preset_category = 'font'>class="selected"</#if>>
              <a  href="javascript:NXThemesPresetManager.selectPresetCategory('font')">
-             <img src="${skinPath}/img/category-16.png" width="16" height="16"/> Font</a></li>
+             <img src="${basePath}/skin/nxthemes-editor/img/category-16.png" width="16" height="16"/> Font</a></li>
          <li <#if selected_preset_category = 'image'>class="selected"</#if>>
              <a  href="javascript:NXThemesPresetManager.selectPresetCategory('image')">
-             <img src="${skinPath}/img/category-16.png" width="16" height="16"/> Image</a></li>
+             <img src="${basePath}/skin/nxthemes-editor/img/category-16.png" width="16" height="16"/> Image</a></li>
          <li <#if selected_preset_category = 'border'>class="selected"</#if>>
              <a  href="javascript:NXThemesPresetManager.selectPresetCategory('border')">
-             <img src="${skinPath}/img/category-16.png" width="16" height="16"/> Border</a></li>
+             <img src="${basePath}/skin/nxthemes-editor/img/category-16.png" width="16" height="16"/> Border</a></li>
          <li <#if selected_preset_category = ''>class="selected"</#if>>
              <a  href="javascript:NXThemesPresetManager.selectPresetCategory('')">
-             <img src="${skinPath}/img/category-16.png" width="16" height="16"/> All categories</a></li>             
+             <img src="${basePath}/skin/nxthemes-editor/img/category-16.png" width="16" height="16"/> All categories</a></li>             
        </ul>
      </td>
     <td style="vertical-align: top">
@@ -285,7 +285,7 @@ ${preset_info.preview}
 <ul class="nxthemesSelector">
 <#list preset_groups as group>
 <li <#if group = selected_preset_group>class="selected"</#if>><a href="javascript:NXThemesPresetManager.selectPresetGroup('${group}')">
-  <img src="${skinPath}/img/palette-16.png" width="16" height="16" />
+  <img src="${basePath}/skin/nxthemes-editor/img/palette-16.png" width="16" height="16" />
   ${group}</a></li>
 </#list>
 </ul>
