@@ -195,11 +195,8 @@
     <copy todir="${nuxeo.ear}/lib" overwrite="true">
       <artifact:file groupId="org.osgi" artifactId="osgi-core" />
       <artifact:file groupId="commons-collections"
-                     artifactId="commons-collections"
-                     version="3.1" />
-      <artifact:file groupId="commons-io"
-                     artifactId="commons-io"
-                     version="1.4" />
+                     artifactId="commons-collections" />
+      <artifact:file groupId="commons-io" artifactId="commons-io" />
       <artifact:file groupId="commons-fileupload"
                      artifactId="commons-fileupload" />
       <artifact:file groupId="commons-beanutils"
@@ -208,9 +205,7 @@
                      artifactId="cssparser" />
       <artifact:file groupId="net.sourceforge.nekohtml" artifactId="nekohtml" />
       <artifact:file groupId="org.w3c" artifactId="sac" />
-      <artifact:file groupId="net.sf.ehcache"
-                     artifactId="ehcache"
-                     version="1.5.0" />
+      <artifact:file groupId="net.sf.ehcache" artifactId="ehcache" />
       <artifact:file groupId="net.sf.ezmorph" artifactId="ezmorph" />
       <artifact:file groupId="jboss" artifactId="jboss-cache-jdk50" />
       <artifact:file groupId="org.jboss.seam" artifactId="jboss-seam" />
@@ -226,34 +221,23 @@
       <artifact:file groupId="bouncycastle" artifactId="bcmail-jdk14" />
       <artifact:file groupId="bouncycastle" artifactId="bcprov-jdk14" />
       <artifact:file groupId="net.sf.json-lib" artifactId="json-lib" />
-      <artifact:file groupId="org.apache.lucene"
-                     artifactId="lucene-core"
-                     version="2.3.2" />
+      <artifact:file groupId="org.apache.lucene" artifactId="lucene-core" />
       <artifact:file groupId="net.sf.opencsv" artifactId="opencsv" />
       <artifact:file groupId="org.codehaus.plexus" artifactId="plexus-utils" />
-      <artifact:file groupId="org.slf4j"
-                     artifactId="slf4j-api"
-                     version="1.5.6" />
-      <artifact:file groupId="org.slf4j"
-                     artifactId="slf4j-log4j12"
-                     version="1.5.6" />
+      <artifact:file groupId="org.slf4j" artifactId="slf4j-api" />
+      <artifact:file groupId="org.slf4j" artifactId="slf4j-log4j12" />
       <artifact:file groupId="org.richfaces.framework"
-                     artifactId="richfaces-api"
-                     version="3.3.1.GA" />
+                     artifactId="richfaces-api" />
       <artifact:file groupId="org.richfaces.framework"
                      artifactId="richfaces-impl" />
-      <artifact:file groupId="org.richfaces.ui"
-                     artifactId="richfaces-ui"
-                     version="3.3.1.GA-NX" />
+      <artifact:file groupId="org.richfaces.ui" artifactId="richfaces-ui" />
       <artifact:file groupId="org.apache.directory.server"
                      artifactId="apacheds-protocol-shared" />
       <artifact:file groupId="org.apache.directory.shared"
                      artifactId="shared-ldap" />
       <artifact:file groupId="com.sun.facelets" artifactId="jsf-facelets" />
       <!-- Nuxeo-WebEngine fixed libs -->
-      <artifact:file groupId="org.codehaus.groovy"
-                     artifactId="groovy-all"
-                     version="1.5.7" />
+      <artifact:file groupId="org.codehaus.groovy" artifactId="groovy-all" />
       <artifact:file groupId="org.jboss.resteasy" artifactId="resteasy-jaxrs" />
       <artifact:file groupId="org.jboss.resteasy" artifactId="jaxrs-api" />
       <artifact:file groupId="javax.script" artifactId="script-api" />
@@ -263,9 +247,7 @@
       <artifact:file groupId="org.openoffice" artifactId="juh" />
       <artifact:file groupId="org.openoffice" artifactId="unoil" />
       <artifact:file groupId="org.openoffice" artifactId="jurt" />
-      <artifact:file groupId="com.thoughtworks.xstream"
-                     artifactId="xstream"
-                     version="1.3.1" />
+      <artifact:file groupId="com.thoughtworks.xstream" artifactId="xstream" />
       <artifact:file groupId="pdfbox" artifactId="pdfbox" />
       <artifact:file groupId="org.fontbox" artifactId="fontbox" />
       <artifact:file groupId="org.jempbox" artifactId="jempbox" />
