@@ -217,7 +217,8 @@
                      artifactId="richfaces-api"
                      version="3.3.1.GA" />
       <artifact:file groupId="org.richfaces.framework"
-                     artifactId="richfaces-impl" />
+                     artifactId="richfaces-impl"
+                     version="3.3.1.GA-NX" />
       <artifact:file groupId="org.richfaces.ui"
                      artifactId="richfaces-ui"
                      version="3.3.1.GA-NX" />
