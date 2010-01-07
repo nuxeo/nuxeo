@@ -3,6 +3,9 @@ package org.nuxeo.chemistry.shell.app.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.chemistry.CMISObject;
@@ -35,12 +38,15 @@ public class SimplePropertyManager {
     }
 
     public void dumpProperties() throws IOException {
-
         Map<String, Property> props = item.getProperties();
 
-        for (Map.Entry<String,Property> entry : props.entrySet()) {
-            Object value = entry.getValue().getValue(); 
-            Console.getDefault().println(entry.getKey() + " = " + (value != null ? value : "[null]"));
+        List<String> keys = new LinkedList<String>(props.keySet());
+        Collections.sort(keys);
+
+        for (String key : keys) {
+            Property prop = props.get(key);
+            Object value = prop.getValue();
+            Console.getDefault().println(key + " = " + (value != null ? value : "[null]"));
         }
     }
 
