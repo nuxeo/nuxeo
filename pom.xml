@@ -1585,6 +1585,16 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>gwt-maven-plugin</artifactId>
           <version>1.1</version>
+          <executions>
+            <execution>
+              <configuration>
+                <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+              </configuration>
+              <goals>
+                <goal>compile</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
