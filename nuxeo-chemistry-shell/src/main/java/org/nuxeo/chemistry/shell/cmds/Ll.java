@@ -38,7 +38,7 @@ public class Ll extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        File file = null;
+        File file;
         CommandParameter param = cmdLine.getLastParameter();
         if (param != null) {
             String path = param.getValue();
@@ -51,7 +51,5 @@ public class Ll extends AnnotatedCommand {
             console.println(f);
         }
     }
-
-
 
 }

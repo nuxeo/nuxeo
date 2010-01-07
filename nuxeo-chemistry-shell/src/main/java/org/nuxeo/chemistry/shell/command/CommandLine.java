@@ -103,6 +103,9 @@ public class CommandLine {
         if (params.isEmpty()) {
             return null;
         }
+        if (params.size() == 1) {
+            return null;
+        }
         return params.get(params.size()-1);
     }
 

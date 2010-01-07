@@ -53,8 +53,6 @@ public class Console {
         parseCommandLine(app.getCommandRegistry(), line).run(app);
     }
 
-
-
     /**
      * Update the current context of the console.
      * On text console this will be a command line prompt.
@@ -64,19 +62,17 @@ public class Console {
     }
 
     /**
-     * Read the stream an print the result on the screen.
-     *
-     * @param in
+     * Reads the stream an print the result on the screen.
      */
     public void print(InputStream in) throws IOException {
         FileUtils.copy(in, System.out);
     }
 
     /**
-     * Read the stream an print the result on the screen.
+     * Reads the stream an print the result on the screen.
+     * <p>
      * On text console put a new line after printing the result.
      * On non text console it is same as {@link #print(InputStream)}
-     * @param in
      */
     public void println(InputStream in) throws IOException {
         FileUtils.copy(in, System.out);
@@ -107,7 +103,6 @@ public class Console {
 
     /**
      * Get the current client
-     * @return
      */
     public Application getApplication() {
         return app;
@@ -130,8 +125,7 @@ public class Console {
     }
 
     /**
-     *  Start the console
-     * @throws IOException
+     * Starts the console.
      */
     public void start(Application app) throws IOException {
         if (this.app != null) {

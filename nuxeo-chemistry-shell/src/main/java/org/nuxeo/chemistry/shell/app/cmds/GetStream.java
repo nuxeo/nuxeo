@@ -37,7 +37,7 @@ import org.nuxeo.chemistry.shell.util.FileUtils;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="getStream file:file", synopsis="Export the stream of the current context object to the given file")
+@Cmd(syntax="getStream", synopsis="Export the stream of the current context object")
 public class GetStream extends ChemistryCommand {
 
     @Override
@@ -45,19 +45,15 @@ public class GetStream extends ChemistryCommand {
             throws Exception {
         Context ctx = app.getContext();
         CMISObject obj = ctx.as(CMISObject.class);
-        List<CommandParameter> args = cmdLine.getArguments();
-        if (args.size() != 1) {
-            Console.getDefault().error("Missing required argument: key");
-        }
-        if (obj != null) {            
+        if (obj != null) {
             ContentStream cs = new SimplePropertyManager(obj).getStream();
             String name = cs.getFileName();
             InputStream in = cs.getStream();
-            File file = app.resolveFile(args.get(0).getValue());
-            file = new File(file, name);
+            File file = app.resolveFile(name);
             FileOutputStream out = new FileOutputStream(file);
             try {
                 FileUtils.copy(in, out);
+                Console.getDefault().println("Object stream saved to file: " + file);
             } finally {
                 out.close();
                 in.close();
