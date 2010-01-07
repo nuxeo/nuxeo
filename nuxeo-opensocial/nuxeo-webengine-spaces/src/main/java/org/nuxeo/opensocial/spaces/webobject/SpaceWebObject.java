@@ -30,6 +30,7 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+
 /**
  * Space ( Nuxeo-spaces-api concept ) web engine object
  **/
@@ -53,32 +54,35 @@ public class SpaceWebObject extends DefaultObject {
 
   @GET
   public Object doGet() {
-      return getView("index");
+    return getView("index");
   }
 
   @POST
   public Object doUpdate() {
-      FormData form = getContext().getForm();
-      String title = form.getString("dc:title");
-      String description = form.getString("dc:description");
-      String theme = form.getString("space:theme");
+    FormData form = getContext().getForm();
+    String title = form.getString("dc:title");
+    String description = form.getString("dc:description");
+    String theme = form.getString("space:theme");
 
-      try {
-          if(title != null) this.space.setTitle(title);
-          if(description != null) this.space.setDescription(description);
-          if(theme != null) this.space.setTheme(theme);
-          this.space.save();
-      } catch (ClientException e) {
-          throw WebException.wrap(e);
-      }
+    try {
+      if (title != null)
+        this.space.setTitle(title);
+      if (description != null)
+        this.space.setDescription(description);
+      if (theme != null)
+        this.space.setTheme(theme);
+      this.space.save();
+    } catch (ClientException e) {
+      throw WebException.wrap(e);
+    }
 
-      return getView("index");
-
+    return getView("index");
 
   }
 
   public Univers getUnivers() {
-    return (Univers) getContext().getRequest().getAttribute("currentUnivers");
+    return (Univers) getContext().getRequest()
+        .getAttribute("currentUnivers");
   }
 
   /**
@@ -109,10 +113,5 @@ public class SpaceWebObject extends DefaultObject {
     }
     LOGGER.debug("Space has been set");
   }
-
-
-
-
-
 
 }

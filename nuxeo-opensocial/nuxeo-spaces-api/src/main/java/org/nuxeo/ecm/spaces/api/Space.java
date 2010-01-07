@@ -23,101 +23,103 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 
+public interface Space extends Comparable<Space> {
 
+  /**
+   * Unique identifier of a space instance
+   * 
+   * @return
+   */
+  String getId();
 
-public interface Space extends Comparable<Space>{
+  /**
+   * Name of the space
+   * 
+   * @return
+   */
+  String getName();
 
-    /**
-     * Unique identifier of a space instance
-     *
-     * @return
-     */
-    String getId();
+  /**
+   * Space theme
+   * 
+   * @return
+   */
+  String getTheme() throws ClientException;
 
-    /**
-     * Name of the space
-     *
-     * @return
-     */
-    String getName();
+  void setTheme(String theme) throws ClientException;
 
-    /**
-     * Space theme
-     *
-     * @return
-     */
-    String getTheme() throws ClientException;
+  /**
+   * Title of the space
+   * 
+   * @return
+   */
+  String getTitle() throws ClientException;
 
-    void setTheme(String theme) throws ClientException;
+  void setTitle(String title) throws ClientException;
 
-    /**
-     * Title of the space
-     *
-     * @return
-     */
-    String getTitle() throws ClientException;
+  /**
+   * description of the space
+   * 
+   * @return
+   */
+  String getDescription() throws ClientException;
 
-    void setTitle(String title) throws ClientException;
+  void setDescription(String description) throws ClientException;
 
-    /**
-     * description of the space
-     *
-     * @return
-     */
-    String getDescription() throws ClientException;
+  /**
+   * A key for displaying elements in this space
+   * 
+   * @return
+   */
+  String getLayout() throws ClientException;
 
-    void setDescription(String description) throws ClientException;
+  void setLayout(String name) throws ClientException;
 
-    /**
-     * A key for displaying elements in this space
-     *
-     * @return
-     */
-    String getLayout() throws ClientException;
+  /**
+   * Family/category of this space
+   * 
+   * @return
+   */
+  String getCategory() throws ClientException;
 
-    void setLayout(String name) throws ClientException;
+  void setCategory(String category) throws ClientException;
 
-    /**
-     * Family/category of this space
-     *
-     * @return
-     */
-    String getCategory() throws ClientException;
+  /**
+   * Name of the creator of this space
+   * 
+   * @return
+   */
+  String getOwner() throws ClientException;
 
-    void setCategory(String category) throws ClientException;
+  /**
+   * Name of the viewer of this space
+   * 
+   * @return
+   */
+  String getViewer() throws ClientException;
 
-    /**
-     * Name of the creator of this space
-     *
-     * @return
-     */
-    String getOwner() throws ClientException;
+  boolean isReadOnly() throws ClientException;
 
-    /**
-     * Name of the viewer of this space
-     *
-     * @return
-     */
-    String getViewer() throws ClientException;
+  Gadget createGadget(String gadgetName) throws ClientException;
 
-    boolean isReadOnly() throws ClientException;
+  Gadget createGadget(URL gadgetDefUrl) throws ClientException;
 
-    Gadget createGadget(String gadgetName) throws ClientException;
+  void save(Gadget gadget) throws ClientException;
 
-    Gadget createGadget(URL gadgetDefUrl) throws ClientException;
+  void remove(Gadget gadget) throws ClientException;
 
-    void save(Gadget gadget) throws ClientException;
+  List<Gadget> getGadgets() throws ClientException;
 
-    void remove(Gadget gadget) throws ClientException;
+  boolean hasPermission(String permissionName) throws ClientException;
 
-    List<Gadget> getGadgets() throws ClientException;
+  void save() throws ClientException;
 
-    boolean hasPermission(String permissionName) throws ClientException;
+  void remove() throws ClientException;
 
-    void save() throws ClientException;
+  Space copyFrom(Space space) throws ClientException;
 
-    Space copyFrom(Space space) throws ClientException;
+  Calendar getPublicationDate() throws ClientException;
 
-    Calendar getPublicationDate() throws ClientException;
+  void setPublicationDate(Calendar datePublication) throws ClientException;
 
 }
