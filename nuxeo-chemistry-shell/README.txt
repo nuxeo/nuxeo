@@ -27,7 +27,10 @@ Usage
 -----
 
 After building (with "mvn install"), it you can launch it using the run.sh
-command (by giving the URL where to connect).
+command (by giving the URL where to connect), e.g.:
+
+> ./run.sh -u Administrator -p Administrator \
+  http://localhost:8080/nuxeo/site/cmis/repository
 
 Some of the registered commands are not yet implemented. Commands use
 annotations and optional *.help files to provide help content (the *.help files
@@ -36,7 +39,7 @@ must have the name of the command and be put in the same package. Ex: Ls.help)
 Available commands for now are:
 
 help
-id - display info about the current object
+id    - display info about the current object
 mkdir
 mkfile
 setp
