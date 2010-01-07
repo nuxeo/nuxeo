@@ -1,0 +1,7 @@
+Usage: connect <url>
+
+Connect to a service URL.
+
+If credentials need to be passed, embed them in the URL, e.g. use
+
+http://<login>:<password>@<host>/...
