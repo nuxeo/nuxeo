@@ -233,7 +233,6 @@
         <include name="mlib_jai*" />
         <include name="persistence*" />
         <include name="persistence-api*" />
-        <include name="plexus-utils*" />
         <include name="postgresql*" />
         <include name="quartz-all*" />
         <include name="servlet-api*" />
