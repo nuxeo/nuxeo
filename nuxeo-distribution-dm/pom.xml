@@ -226,68 +226,6 @@
       <version>${nuxeo.features.version}</version>
     </dependency>
 
-    <!--
-      Required dependencies ? Imported from old packaging but they were not
-      present in dependency graph. TODO : find where are those libraries needed
-      from and add them to the module's dependencies
-    -->
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-cache-jdk50</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.seam</groupId>
-      <artifactId>jboss-seam-remoting</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.seam</groupId>
-      <artifactId>jboss-seam-mail</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.seam</groupId>
-      <artifactId>jboss-seam-debug</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jgroups</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>bouncycastle</groupId>
-      <artifactId>bcmail-jdk14</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>bouncycastle</groupId>
-      <artifactId>bcprov-jdk14</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.openoffice</groupId>
-      <artifactId>jurt</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.fontbox</groupId>
-      <artifactId>fontbox</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jempbox</groupId>
-      <artifactId>jempbox</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>ooxml-schemas</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-    </dependency>
-
     <!-- Visible Storage Content -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -370,7 +308,7 @@
             <configuration>
               <buildFiles>
                 <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
-                <buildFile>${basedir}/src/main/assemble/assembly-stateful-stateless.xml</buildFile>
+<!--                <buildFile>${basedir}/src/main/assemble/assembly-stateful-stateless.xml</buildFile>-->
               </buildFiles>
             </configuration>
             <goals>

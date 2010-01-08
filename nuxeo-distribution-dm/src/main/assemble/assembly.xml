@@ -5,13 +5,16 @@
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
            uri="urn:nuxeo-artifact" />
-  <artifact:expand depth="all">
-  </artifact:expand>
 
-  <property name="outdir" value="${maven.project.build.directory}" />
-  <property name="stagedir" value="${outdir}/stage" />
+  <target name="init">
+    <artifact:nuxeo-expand />
+    <artifact:print output="dependency-tree.log" />
 
-  <target name="build">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="stagedir" value="${outdir}/stage" />
+  </target>
+
+  <target name="build" depends="init">
     <echo>Building default Nuxeo DM EAR</echo>
     <property name="nuxeo.ear" value="${stagedir}/nuxeo.ear" />
     <mkdir dir="${nuxeo.ear}" />
@@ -54,6 +57,7 @@
   </target>
 
   <target name="build-distribution"
+          depends="init"
           description="Build distributions on various backends"
           unless="no-alternate">
     <delete failonerror="false" dir="${stagedir}/nuxeo-${distribution}.ear" />
@@ -97,7 +101,9 @@
     </copy>
   </target>
 
-  <target name="build-standard" description="Build default distribution">
+  <target name="build-standard"
+          description="Build default distribution"
+          depends="init">
     <!-- Nuxeo resources and modules -->
     <unzip dest="${nuxeo.ear}">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
@@ -142,29 +148,26 @@
 
     <!-- Third-party libraries -->
     <antcall target="third-party-libraries" />
-
-    <!--
-      Ideal way of retrieving third-party libraries; not usable for now,
-      requires NXBT-72
-    -->
-    <!--
-      <copy todir="${nuxeo.ear}/lib" overwrite="true"> <artifact:set> <includes>
-      <artifact groupId="!org.nuxeo*" /> </includes> <excludes> <artifact
-      artifactId="jackrabbit-jcr-commons" /> <artifact artifactId="stax-api" />
-      <artifact artifactId="xercesImpl" /> <artifact artifactId="xmlParserAPIs"
-      /> <artifact artifactId="hibernate" /> <artifact artifactId="log4j" />
-      <artifact artifactId="servlet-api" /> <artifact artifactId="xml-apis" />
-      <artifact artifactId="jta" /> <artifact artifactId="derby" /> <artifact
-      artifactId="jackrabbit-core" /> <artifact artifactId="persistence-api" />
-      <artifact artifactId="dom4j" /> <artifact groupId="org.freemarker"
-      artifactId="freemarker" /> <artifact groupId="commons-lang"
-      artifactId="commons-lang" /> </excludes> </artifact:set> </copy>
-    -->
+    <antcall target="jboss-third-party-libraries" />
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
          basedir="${nuxeo.ear}" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
+  </target>
+
+  <target name="jboss-third-party-libraries">
+    <!--
+      Ideal way of retrieving third-party libraries; not usable for now,
+      requires NXBT-72
+    -->
+    <copy todir="${nuxeo.ear}/lib2" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="!org.nuxeo*" />
+        </includes>
+      </artifact:set>
+    </copy>
   </target>
 
   <target name="third-party-libraries">
@@ -183,32 +186,19 @@
       <artifact:file groupId="org.w3c" artifactId="sac" />
       <artifact:file groupId="net.sf.ehcache" artifactId="ehcache" />
       <artifact:file groupId="net.sf.ezmorph" artifactId="ezmorph" />
-      <artifact:file groupId="jboss" artifactId="jboss-cache-jdk50" />
       <artifact:file groupId="org.jboss.seam" artifactId="jboss-seam" />
-      <artifact:file groupId="org.jboss.seam"
-                     artifactId="jboss-seam-remoting" />
       <artifact:file groupId="org.jboss.seam" artifactId="jboss-seam-ui" />
-      <artifact:file groupId="org.jboss.seam" artifactId="jboss-seam-mail" />
-      <artifact:file groupId="org.jboss.seam" artifactId="jboss-seam-debug" />
       <artifact:file groupId="javax.el" artifactId="el-ri" />
-      <artifact:file groupId="org.jboss.el" artifactId="jboss-el" />
       <artifact:file groupId="org.jbpm.jbpm3" artifactId="jbpm-jpdl" />
-      <artifact:file groupId="jboss" artifactId="jgroups" />
-      <artifact:file groupId="bouncycastle" artifactId="bcmail-jdk14" />
-      <artifact:file groupId="bouncycastle" artifactId="bcprov-jdk14" />
       <artifact:file groupId="net.sf.json-lib" artifactId="json-lib" />
       <artifact:file groupId="org.apache.lucene" artifactId="lucene-core" />
       <artifact:file groupId="net.sf.opencsv" artifactId="opencsv" />
       <artifact:file groupId="org.codehaus.plexus" artifactId="plexus-utils" />
-      <artifact:file groupId="org.slf4j" artifactId="slf4j-api" />
-      <artifact:file groupId="org.slf4j" artifactId="slf4j-log4j12" />
       <artifact:file groupId="org.richfaces.framework"
                      artifactId="richfaces-api" />
       <artifact:file groupId="org.richfaces.framework"
                      artifactId="richfaces-impl" />
       <artifact:file groupId="org.richfaces.ui" artifactId="richfaces-ui" />
-      <artifact:file groupId="org.apache.directory.server"
-                     artifactId="apacheds-protocol-shared" />
       <artifact:file groupId="org.apache.directory.shared"
                      artifactId="shared-ldap" />
       <artifact:file groupId="com.sun.facelets" artifactId="jsf-facelets" />
@@ -222,11 +212,8 @@
       <artifact:file groupId="org.openoffice" artifactId="ridl" />
       <artifact:file groupId="org.openoffice" artifactId="juh" />
       <artifact:file groupId="org.openoffice" artifactId="unoil" />
-      <artifact:file groupId="org.openoffice" artifactId="jurt" />
       <artifact:file groupId="com.thoughtworks.xstream" artifactId="xstream" />
       <artifact:file groupId="pdfbox" artifactId="pdfbox" />
-      <artifact:file groupId="org.fontbox" artifactId="fontbox" />
-      <artifact:file groupId="org.jempbox" artifactId="jempbox" />
       <artifact:file groupId="org.restlet" artifactId="org.restlet" />
       <artifact:file groupId="org.wikimodel" artifactId="wem" />
       <artifact:file groupId="jmimemagic" artifactId="jmimemagic" />
@@ -246,7 +233,6 @@
       <artifact:file groupId="org.restlet"
                      artifactId="org.restlet.ext.fileupload" />
       <artifact:file groupId="oro" artifactId="oro" />
-      <artifact:file groupId="org.apache.poi" artifactId="ooxml-schemas" />
       <artifact:file groupId="org.apache.poi" artifactId="poi" />
       <artifact:file groupId="org.apache.poi" artifactId="poi-ooxml" />
       <artifact:file groupId="org.apache.poi" artifactId="poi-scratchpad" />
@@ -257,11 +243,7 @@
       <!-- Remote publication lib -->
       <artifact:file groupId="org.apache.httpcomponents"
                      artifactId="httpclient" />
-      <artifact:file groupId="org.apache.httpcomponents"
-                     artifactId="httpcore" />
 
-      <artifact:file groupId="com.google.collections"
-                     artifactId="google-collections" />
       <artifact:file groupId="com.google.gwt" artifactId="gwt-servlet" />
       <artifact:file groupId="backport-util-concurrent"
                      artifactId="backport-util-concurrent" />

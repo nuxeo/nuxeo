@@ -14,37 +14,6 @@
   <name>Nuxeo JBoss Distribution</name>
   <description>Package Nuxeo EP or DM EAR with JBoss</description>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-ear</artifactId>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-dm</artifactId>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss</groupId>
-      <artifactId>jboss-as</artifactId>
-      <classifier>light</classifier>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.services</groupId>
-      <artifactId>logging-monitor</artifactId>
-    </dependency>
-  </dependencies>
-
   <build>
     <plugins>
       <plugin>
