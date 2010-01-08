@@ -554,7 +554,7 @@ public class NuxeoConnection implements Connection, SPI {
     public void deleteObject(ObjectId object, boolean allVersions) {
         if (repository.getInfo().getRootFolderId().getId().equals(
                 object.getId())) {
-            throw new ConstraintViolationException("Cannot delete root");
+            throw new IllegalArgumentException("Cannot delete root");
         }
         try {
             DocumentRef docRef = new IdRef(object.getId());
@@ -579,8 +579,28 @@ public class NuxeoConnection implements Connection, SPI {
 
     public Collection<ObjectId> deleteTree(ObjectId folder, Unfiling unfiling,
             boolean continueOnFailure) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (unfiling == Unfiling.UNFILE) {
+            throw new ConstraintViolationException("Unfiling not supported");
+        }
+        if (repository.getInfo().getRootFolderId().getId().equals(
+                folder.getId())) {
+            throw new IllegalArgumentException("Cannot delete root");
+        }
+        try {
+            DocumentRef docRef = new IdRef(folder.getId());
+            if (!session.exists(docRef)) {
+                throw new ObjectNotFoundException(folder.getId());
+            }
+            NuxeoObjectEntry entry = getObjectEntry(folder);
+            if (entry.getBaseType() != BaseType.FOLDER) {
+                throw new IllegalArgumentException("Not a folder: "
+                        + folder.getId());
+            }
+            session.removeDocument(docRef);
+            return Collections.emptyList();
+        } catch (ClientException e) {
+            throw new CMISRuntimeException(e.toString(), e);
+        }
     }
 
     public void addObjectToFolder(ObjectId object, ObjectId folder) {
