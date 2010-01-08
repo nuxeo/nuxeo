@@ -32,6 +32,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-opensocial-gadgets-core</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>persistence</artifactId>
     </dependency>
@@ -56,6 +61,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-test</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derbyclient</artifactId>
       <scope>test</scope>
@@ -65,6 +75,13 @@
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+        <groupId>javax.transaction</groupId>
+        <artifactId>jta</artifactId>
+        <scope>test</scope>
+      </dependency>
+
   </dependencies>
 
   <build>

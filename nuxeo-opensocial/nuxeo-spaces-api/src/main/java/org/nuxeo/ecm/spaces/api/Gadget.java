@@ -17,102 +17,109 @@
 
 package org.nuxeo.ecm.spaces.api;
 
+import java.net.URL;
 import java.util.Map;
+
+import org.nuxeo.ecm.core.api.ClientException;
 
 public interface Gadget {
 
   /**
    * Unique identifier of a gadget
-   * 
    * @return
    */
   String getId();
-
   /**
    * name
-   * 
    * @return
    */
-  String getName();
+  String getName() throws ClientException;
 
-  /**
-   * description
-   * 
-   * @return
-   */
-  String getDescription();
+  void setName(String name) throws ClientException;
 
+  URL getDefinitionUrl()  throws ClientException;
+
+  void setDefinitionUrl(URL url) throws ClientException;
+/**
+ * description
+ * @return
+ */
+  String getDescription() throws ClientException;
+
+  void setDescription(String description) throws ClientException;
   /**
    * title
-   * 
    * @return
    */
-  String getTitle();
+  String getTitle() throws ClientException;
+
+  void setTitle(String title) throws ClientException;
 
   /**
    * creator name
-   * 
    * @return
    */
-  String getOwner();
-
-  /**
-   * use category
-   * 
-   * @return
-   */
-  // @Deprecated
-  // String getType();
+  String getOwner() throws ClientException;
 
   /**
    * category of a gadget
-   * 
    * @return
    */
-  String getCategory();
+  String getCategory() throws ClientException;
+
+  void setCategory(String category) throws ClientException;
 
   /**
    * preferences values
-   * 
    * @return
    */
-  public Map<String, String> getPreferences();
+  Map<String, String> getPreferences() throws ClientException;
+
+  void setPreferences(Map<String,String> prefs) throws ClientException;
+
+  String getPref(String prefKey) throws ClientException;
 
   /**
-   * Key corresponding to the place where the gadget will be positionned in the
-   * view
-   * 
+   * Key corresponding to the place where the gadget will be positionned in the view
    * @return
    */
-  String getPlaceID();
+  String getPlaceID() throws ClientException;
+
+
+  void setPlaceId(String placeId) throws ClientException;
 
   /**
-   * Relative position in the parent container at the place id "getPlaceID()"
-   * 
+   * Relative position in the parent container at the place id  "getPlaceID()"
    * @return
    */
-  int getPosition();
+  int getPosition() throws ClientException;
 
-  /**
-   * Relative height of gadget
-   * 
-   * @return
-   */
-  int getHeight();
-
-  /**
-   * Html Content of gadget
-   * 
-   * @return
-   */
-  String getHtmlContent();
+  public void setPosition(int position) throws ClientException;
 
   /**
    * Determines if the display state of the gadget
-   * 
    * @return
    */
-  boolean isCollapsed();
+  boolean isCollapsed() throws ClientException;
 
-  public boolean isEqualTo(Gadget gadget);
+  void setCollapsed(boolean collapsed) throws ClientException;
+
+
+  boolean isEqualTo(Gadget gadget) throws ClientException;
+
+  Space getParent() throws ClientException;
+
+  int getHeight() throws ClientException;
+
+  void setHeight(int height) throws ClientException;
+
+  void copyFrom(Gadget gadget) throws ClientException;
+
+  String getHtmlContent() throws ClientException;
+
+  void setHtmlContent(String htmlContent) throws ClientException;
+
+
+
+
 }
