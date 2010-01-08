@@ -7,3 +7,4 @@ Bundle-Vendor: Nuxeo
 Bundle-Category: runtime
 Nuxeo-Component: OSGI-INF/commandline-framework.xml,
  OSGI-INF/commandline-default-contrib.xml
+Require-Bundle: org.nuxeo.ecm.core.api;bundle-version="1.6.1"
