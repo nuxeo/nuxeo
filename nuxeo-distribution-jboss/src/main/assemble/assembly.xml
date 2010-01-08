@@ -56,11 +56,10 @@
     </unzip>
     <antcall target="jboss-third-party-libraries" />
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
-         basedir="${outdir}/nuxeo-ep-jboss" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
-                     classifier="nuxeo-ep"
-                     type="zip" />
+            basedir="${outdir}" includes="nuxeo-ep-jboss/**" />
+    <artifact:attach
+            file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
+      target="${maven.project.groupId}:${maven.project.artifactId}" classifier="nuxeo-ep" />
   </target>
 
   <target name="build-nuxeo-dm-jboss"
@@ -76,11 +75,10 @@
     </unzip>
     <antcall target="jboss-third-party-libraries" />
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
-         basedir="${outdir}/nuxeo-dm-jboss" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
-                     classifier="nuxeo-dm"
-                     type="zip" />
+            basedir="${outdir}" includes="nuxeo-dm-jboss/**" />
+    <artifact:attach
+      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
+      target="${maven.project.groupId}:${maven.project.artifactId}" classifier="nuxeo-dm" />
   </target>
 
   <target name="jboss-third-party-libraries">
