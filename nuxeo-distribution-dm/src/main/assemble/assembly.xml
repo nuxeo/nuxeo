@@ -148,7 +148,7 @@
 
     <!-- Third-party libraries -->
     <antcall target="third-party-libraries" />
-    <antcall target="jboss-third-party-libraries" />
+    <!-- <antcall target="old-third-party-libraries" /> -->
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
          basedir="${nuxeo.ear}" />
@@ -156,12 +156,8 @@
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
   </target>
 
-  <target name="jboss-third-party-libraries">
-    <!--
-      Ideal way of retrieving third-party libraries; not usable for now,
-      requires NXBT-72
-    -->
-    <copy todir="${nuxeo.ear}/lib2" overwrite="true">
+  <target name="third-party-libraries">
+    <copy todir="${nuxeo.ear}/lib" overwrite="true">
       <artifact:set>
         <includes>
           <artifact groupId="!org.nuxeo*" />
@@ -170,8 +166,8 @@
     </copy>
   </target>
 
-  <target name="third-party-libraries">
-    <copy todir="${nuxeo.ear}/lib" overwrite="true">
+  <target name="old-third-party-libraries">
+    <copy todir="${nuxeo.ear}/lib.old" overwrite="true">
       <artifact:file groupId="org.osgi" artifactId="osgi-core" />
       <artifact:file groupId="commons-collections"
                      artifactId="commons-collections" />
