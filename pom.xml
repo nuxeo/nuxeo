@@ -27,6 +27,7 @@
         <module>nuxeo-dam-facade</module>
         <module>nuxeo-dam-webapp-core</module>
         <module>nuxeo-dam-webapp</module>
+        <module>nuxeo-dam-webapp-override</module>
         <module>nuxeo-dam-lang</module>
         <module>nuxeo-dam-test</module>
       </modules>
@@ -42,6 +43,7 @@
         <module>nuxeo-dam-facade</module>
         <module>nuxeo-dam-webapp-core</module>
         <module>nuxeo-dam-webapp</module>
+        <module>nuxeo-dam-webapp-override</module>
         <module>nuxeo-dam-lang</module>
         <module>nuxeo-dam-test</module>
         <module>nuxeo-dam-distribution</module>
@@ -84,6 +86,11 @@
       <dependency>
         <groupId>org.nuxeo.dam</groupId>
         <artifactId>nuxeo-dam-webapp</artifactId>
+        <version>${nuxeo.dam.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-webapp-override</artifactId>
         <version>${nuxeo.dam.version}</version>
       </dependency>
       <dependency>

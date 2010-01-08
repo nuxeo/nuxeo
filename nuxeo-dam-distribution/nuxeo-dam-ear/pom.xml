@@ -59,6 +59,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.dam</groupId>
+      <artifactId>nuxeo-dam-webapp-override</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.dam</groupId>
       <artifactId>nuxeo-dam-lang</artifactId>
     </dependency>
     <dependency>

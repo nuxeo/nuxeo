@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo DAM WebApp Override
+Bundle-SymbolicName: org.nuxeo.dam.webapp.override;singleton=true
+Bundle-Localization: plugin
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Bundle-Category: web
+Nuxeo-RequiredBy: org.nuxeo.ecm.war
