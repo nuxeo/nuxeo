@@ -20,7 +20,10 @@
 <!--
  body {
   font: normal 11px "Lucida Grande", sans-serif;
-  background: url(/nuxeo/img/login2_bg.jpg) 0 0 no-repeat #fff;
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-color: white;
+  background-image: url(/nuxeo/img/dam_login_1300.jpg);
   color: #343434;
   }
 
@@ -138,7 +141,7 @@ nxthemes css is not used in login.jsp */
 .loginLegal a, .loginLegal a:visited{
   color:#c3c3c3;
   }
- 
+
 .loginLegal a:hover{
   color:#d9d9d9;
   }
@@ -204,9 +207,26 @@ nxthemes css is not used in login.jsp */
 -->
 
 </style>
+
 </head>
 
 <body style="margin: 0; text-align: center;">
+
+  <!-- Change the background image according to the screen size -->
+  <script type="text/javascript">
+    var width = window.screen.width;
+    if (width >= 1280 && width < 1440) {
+        document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_1440.jpg)';
+    } else if (width >= 1440 && width < 1500) {
+        document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_1500.jpg)';
+    } else if (width >= 1500 && width < 2000) {
+        document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_2000.jpg)';
+    } else if (width >= 2000) {
+        document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_3000.jpg)';
+    } else {
+        document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_1300.jpg)';
+    }
+  </script>
 
 <table cellspacing="0" cellpadding="0" border="0" width="100%"
   height="100%">
@@ -266,7 +286,7 @@ nxthemes css is not used in login.jsp */
 				        <tr>
 				          <td class="login_label">
 				            <label for="language">
-				              <fmt:message bundle="${messages}" key="label.login.language" /> 
+				              <fmt:message bundle="${messages}" key="label.login.language" />
 				            </label>
 				          </td>
 				          <td>
@@ -309,7 +329,7 @@ nxthemes css is not used in login.jsp */
       <tr class="footer">
         <td valign="bottom" style="padding-left:42px;">
           <div class="loginLegal">
-            Photography: &#169; <a href="mailto:l.viatour@mm.be">Luc Viatour</a> GFDL/CC / <a href="www.lucnix.be/">www.lucnix.be</a> | Colors: &#169; Michael Yucha / <a href="http://www.flickr.com/photos/greenwenvy/">flickR</a> 
+            Photography: &#169; <a href="mailto:l.viatour@mm.be">Luc Viatour</a> GFDL/CC / <a href="www.lucnix.be/">www.lucnix.be</a> | Colors: &#169; Michael Yucha / <a href="http://www.flickr.com/photos/greenwenvy/">flickR</a>
           </div>
         </td>
 	      <td align="center" valign="bottom">
