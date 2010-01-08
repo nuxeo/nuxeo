@@ -1203,7 +1203,7 @@ public class Main extends ModuleRoot {
       def layers = []
       layers.add(new StyleLayer("This style", style.getUid(), style == selectedStyleLayer || selectedStyleLayer == null))
       for (Format ancestor : ThemeManager.listAncestorFormatsOf(style)) {
-          layers.add(1, new StyleLayer(ancestor.getName(), ancestor.getUid(), ancestor == selectedStyleLayer))
+          layers.add(new StyleLayer(ancestor.getName(), ancestor.getUid(), ancestor == selectedStyleLayer))
       }
       return layers
   }
