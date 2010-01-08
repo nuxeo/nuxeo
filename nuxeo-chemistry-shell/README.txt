@@ -106,43 +106,63 @@ public class DumpTree extends ChemistryCommand {
 
 
 Command Syntax
----------------
+--------------
 
-When defining new commands we need to add the anntation @Cmd on the command class.
-This annotation is providing 2 command properties: 
-- syntax and synopsis
-The synopsis is a short description that is listed on the right side of the command when you print the commands list using 'cmds'
-The syntax is important and define the command line structure and how auto-completion will be done.
+When defining new commands we need to add the anntation @Cmd on the command
+class.
+
+This annotation provides 2 command properties: syntax and synopsis
+
+- The synopsis is a short description that is listed on the right side of the
+  command when you print the commands list using 'cmds'
+
+- The syntax is important and define the command line structure and how
+  auto-completion will be done.
+
 Here is the syntax format:
 
 cmd_name param_spec param_spec  ...
 cmd_name: name1 | name 2 | ...  - You can have multiple names associated to a command (the first one is the command name the others are aliases)
 param_spec is a parameter specification. 
+
 A parameter has a key (and 0 or more aliases), a default value, an optional flag and a type.
+
 The type is important if you need auto-completion. There are several recognized types for now:
+
 1. command  - a command (to complete with available command names)
 2. file     - a file (to complete with a file path)
 3. dir      - a directory (to complete with directory paths) 
 4. item     - a remote object (to complete with remote object paths)
 
-Also a parameter can be an argument, a flag or a key/value pair. Flags are not yet supported (i.e. -param without a value).
+Also a parameter can be an argument, a flag or a key/value pair. Flags are not
+yet supported (i.e. -param without a value).
+
 An optional parameter must be enclosed in brackets '[' ']'.
-Optional parameters can have default values that can be specifed by appending ?the_default_value after the command spec.
+
+Optional parameters can have default values that can be specifed by appending
+?the_default_value after the command spec.
+
 Example: [-d|--depth?1]
-The type is optional and is specified after the command name list separated by a ':'
+
+The type is optional and is specified after the command name list separated by
+a ':'
+
 Example: [targetFile:file?/tmp/some_file] 
 
-Types parameters will be auto-completed with possible values when hiting tab key in shell. 
+Types parameters will be auto-completed with possible values when hiting tab
+key in shell. 
 
 A complete example: 
-print|pr [-p|--pretty?true] [-v|--verbose?false] document:item [targetFile:file?out.txt]
+
+> print|pr [-p|--pretty?true] [-v|--verbose?false] document:item [targetFile:file?out.txt]
 
 An instance of that command will be types on the command line like this:
 
-print --verbose true MyDocuments/Doc1 /tmp/doc1.out
+> print --verbose true MyDocuments/Doc1 /tmp/doc1.out
 
-Invalid characters like spaces must be escaped using \.
+Invalid characters like spaces must be escaped using backslashes ('\').
+
 Example:
 
-print --verbose true My\ Documents/Doc1 /tmp/doc1.out
+> print --verbose true My\ Documents/Doc1 /tmp/doc1.out
 

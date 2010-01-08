@@ -36,13 +36,15 @@ public class ChemistryApp extends AbstractApplication {
         registry.registerCommand(new SetProp());
         registry.registerCommand(new GetProp());
         registry.registerCommand(new DumpProps());
-        registry.registerCommand(new GetStream());
+        registry.registerCommand(new Get());
         registry.registerCommand(new SetStream());
         registry.registerCommand(new CreateFile());
         registry.registerCommand(new CreateFolder());
         registry.registerCommand(new Remove());
+        registry.registerCommand(new Cat());
+        registry.registerCommand(new Put());
     }
-        
+
     @Override
     protected void doConnect() throws IOException {
         cm = new APPContentManager(serverUrl.toExternalForm());
@@ -50,21 +52,21 @@ public class ChemistryApp extends AbstractApplication {
             cm.login(username, new String(password));
         }
     }
-    
+
     public void disconnect() {
         cm = null;
     }
-    
+
     public boolean isConnected() {
         return cm != null;
     }
-    
+
     public Context getRootContext() {
         return new ChemistryRootContext(this);
     }
-    
+
     public APPContentManager getContentManager() {
         return cm;
     }
-    
+
 }

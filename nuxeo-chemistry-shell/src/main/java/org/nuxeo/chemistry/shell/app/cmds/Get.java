@@ -39,8 +39,8 @@ import org.nuxeo.chemistry.shell.util.FileUtils;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="getStream target:item", synopsis="Export the stream of the target document")
-public class GetStream extends ChemistryCommand {
+@Cmd(syntax="get|getStream target:item", synopsis="Downloads the stream of the target document")
+public class Get extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)

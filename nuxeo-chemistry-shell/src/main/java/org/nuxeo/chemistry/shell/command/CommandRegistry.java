@@ -27,7 +27,6 @@ import org.nuxeo.chemistry.shell.cmds.Commands;
 import org.nuxeo.chemistry.shell.cmds.Connect;
 import org.nuxeo.chemistry.shell.cmds.Disconnect;
 import org.nuxeo.chemistry.shell.cmds.Exit;
-import org.nuxeo.chemistry.shell.cmds.Get;
 import org.nuxeo.chemistry.shell.cmds.Help;
 import org.nuxeo.chemistry.shell.cmds.Id;
 import org.nuxeo.chemistry.shell.cmds.LCd;
@@ -62,7 +61,6 @@ public class CommandRegistry {
         builtinCommands.registerCommand(new Ls());
         builtinCommands.registerCommand(new Pwd());
         builtinCommands.registerCommand(new Id());
-        builtinCommands.registerCommand(new Get());
         builtinCommands.registerCommand(new Commands());
         builtinCommands.registerCommand(new LCd());
         builtinCommands.registerCommand(new LPushd());

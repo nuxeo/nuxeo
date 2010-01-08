@@ -33,7 +33,7 @@ import org.nuxeo.chemistry.shell.command.CommandParameter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="ll [target:file]", synopsis="List local directory content")
+@Cmd(syntax="lls|ll [target:file]", synopsis="List local directory content")
 public class Ll extends AnnotatedCommand {
 
     @Override
@@ -46,7 +46,7 @@ public class Ll extends AnnotatedCommand {
         } else {
             file = app.getWorkingDirectory();
         }
-        Console console = Console.getDefault(); 
+        Console console = Console.getDefault();
         for (String f : file.list()) {
             console.println(f);
         }

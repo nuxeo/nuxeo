@@ -16,39 +16,67 @@
  */
 package org.nuxeo.chemistry.shell.app.cmds;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.List;
 
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.ContentStream;
+import org.apache.chemistry.Document;
 import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
+import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;
 import org.nuxeo.chemistry.shell.app.utils.SimplePropertyManager;
 import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
+import org.nuxeo.chemistry.shell.util.FileUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="propget|getp|getProperty key", synopsis="Print the value of the given property on the current context object")
-public class GetProp extends ChemistryCommand {
+@Cmd(syntax="cat target:item", synopsis="Read the stream of the target document to the console")
+public class Cat extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
 
-        List<CommandParameter> args = cmdLine.getArguments();
-        if (args.size() != 1) {
-            Console.getDefault().error("Missing required argument: key");
+        CommandParameter param = cmdLine.getParameter("target");
+
+        if (param == null || param.getValue() == null) {
+            Console.getDefault().warn("You must supply a name");
+            return;
         }
 
-        Context ctx = app.getContext();
-        CMISObject obj = ctx.as(CMISObject.class);
-        if (obj != null) {
-            Console.getDefault().println(
-                    new SimplePropertyManager(obj).getPropertyAsString(args.get(0).getValue()));
+        Context ctx = app.resolveContext(new Path(param.getValue()));
+        if (ctx == null) {
+            Console.getDefault().warn("Cannot resolve " + param.getValue());
+            return;
+        }
+
+        Document obj = ctx.as(Document.class);
+        if (obj == null) {
+            Console.getDefault().warn("Your target must be a document");
+            return;
+        }
+
+        ContentStream cs = new SimplePropertyManager(obj).getStream();
+        if (cs == null) {
+            Console.getDefault().warn("Your target doesn't have a stream");
+            return;
+        }
+
+        InputStream in = cs.getStream();
+        try {
+            FileUtils.copy(in, System.out);
+        } finally {
+            in.close();
+            System.out.flush();
         }
     }
 
