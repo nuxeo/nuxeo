@@ -118,7 +118,7 @@
       <artifact group="org.mortbay.jetty" name="jsp-api-2.1" />
       <artifact group="org.mortbay.jetty" name="jsp-2.1" />
 
-      <artifact group="jboss" name="javassist" />
+      <artifact group="javassist" name="javassist" />
 
       <artifact group="com.h2database" name="h2" />
 

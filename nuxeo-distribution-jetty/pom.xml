@@ -18,7 +18,7 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>jboss</groupId>
+        <groupId>javassist</groupId>
         <artifactId>javassist</artifactId>
         <version>4.2.3.GA</version>
       </dependency>
