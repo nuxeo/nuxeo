@@ -5,12 +5,19 @@
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
            uri="urn:nuxeo-artifact" />
-  <artifact:expand depth="all" />
 
-  <property name="outdir" value="${maven.project.build.directory}" />
-  <property name="stagedir" value="${outdir}/stage" />
+  <target name="init">
+    <artifact:nuxeo-expand />
 
-  <target name="build">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="stagedir" value="${outdir}/stage" />
+
+    <nx:profile name="vcs">
+      <property name="no-alternate" value="true" />
+    </nx:profile>
+  </target>
+
+  <target name="build" depends="init" unless="no-alternate">
     <echo>Building default Nuxeo DM EAR</echo>
     <property name="nuxeo.ear" value="${stagedir}/nuxeo.ear" />
     <mkdir dir="${nuxeo.ear}" />
@@ -25,10 +32,6 @@
     <copy todir="${outdir}/nuxeo-platform-stateful.ear">
       <fileset dir="${nuxeo.ear}" />
     </copy>
-
-    <nx:profile name="vcs">
-      <property name="no-alternate" value="true" />
-    </nx:profile>
 
     <antcall target="build-distribution-stateful">
       <param name="distribution" value="derby" />
@@ -50,6 +53,7 @@
   </target>
 
   <target name="build-distribution-stateful"
+          depends="init"
           description="Build stateful distributions on various backends"
           unless="no-alternate">
     <delete failonerror="false"
@@ -75,6 +79,7 @@
   </target>
 
   <target name="build-stateful"
+          depends="init"
           description="Build platform stateful distribution">
     <!-- Nuxeo resources and modules -->
     <delete failonerror="false" dir="${nuxeo.ear}" />
@@ -122,13 +127,7 @@
                      artifactId="httpclient" />
       <artifact:file groupId="org.apache.httpcomponents"
                      artifactId="httpcore" />
-
-      <!-- Needed on platform-stateful ? -->
       <artifact:file groupId="net.sf.ehcache" artifactId="ehcache" />
-      <artifact:file groupId="com.google.collections"
-                     artifactId="google-collections" />
-      <artifact:file groupId="backport-util-concurrent"
-                     artifactId="backport-util-concurrent" />
     </copy>
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful.zip"
@@ -138,7 +137,9 @@
                      classifier="platform-stateful" />
   </target>
 
-  <target name="build-stateless" description="Build web stateless distribution">
+  <target name="build-stateless"
+          description="Build web stateless distribution"
+          depends="init">
     <!-- Nuxeo resources and modules -->
     <delete failonerror="false" dir="${nuxeo.ear}" />
     <unzip dest="${nuxeo.ear}">
@@ -175,13 +176,6 @@
 
     <!-- Third-party libraries -->
     <antcall target="common-third-party-libraries" />
-    <copy todir="${nuxeo.ear}/lib" overwrite="true">
-      <!-- Needed on web-stateless ? -->
-      <artifact:file groupId="com.google.collections"
-                     artifactId="google-collections" />
-      <artifact:file groupId="backport-util-concurrent"
-                     artifactId="backport-util-concurrent" />
-    </copy>
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-web-stateless.zip"
          basedir="${nuxeo.ear}" />
@@ -190,8 +184,18 @@
                      classifier="web-stateless" />
   </target>
 
-  <target name="common-third-party-libraries">
-    <!-- Common Third-party libraries -->
+  <target name="common-third-party-libraries"
+          description="Common Third-party libraries">
+    <copy todir="${nuxeo.ear}/lib" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="!org.nuxeo*" />
+        </includes>
+      </artifact:set>
+    </copy>
+  </target>
+
+  <target name="old-common-third-party-libraries">
     <copy todir="${nuxeo.ear}/lib" overwrite="true">
       <artifact:file groupId="org.osgi" artifactId="osgi-core" />
       <artifact:file groupId="commons-collections"
@@ -277,6 +281,10 @@
       <artifact:file groupId="org.apache" artifactId="xmlbeans" />
       <artifact:file groupId="com.sun.xml" artifactId="relaxngDatatype" />
       <artifact:file groupId="com.sun.xml" artifactId="xsom" />
+      <artifact:file groupId="com.google.collections"
+                     artifactId="google-collections" />
+      <artifact:file groupId="backport-util-concurrent"
+                     artifactId="backport-util-concurrent" />
     </copy>
   </target>
 

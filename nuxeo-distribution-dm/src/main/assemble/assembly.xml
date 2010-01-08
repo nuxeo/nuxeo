@@ -12,6 +12,10 @@
 
     <property name="outdir" value="${maven.project.build.directory}" />
     <property name="stagedir" value="${outdir}/stage" />
+
+    <nx:profile name="vcs">
+      <property name="no-alternate" value="true" />
+    </nx:profile>
   </target>
 
   <target name="build" depends="init">
@@ -24,10 +28,6 @@
     <copy todir="${outdir}/nuxeo.ear">
       <fileset dir="${nuxeo.ear}" />
     </copy>
-
-    <nx:profile name="vcs">
-      <property name="no-alternate" value="true" />
-    </nx:profile>
 
     <antcall target="build-distribution">
       <param name="distribution" value="derby" />
