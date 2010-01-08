@@ -18,6 +18,7 @@
 package org.nuxeo.opensocial.container.client.service.api;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.opensocial.container.client.bean.Container;
@@ -29,7 +30,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
  * ContainerService
- *
+ * 
  * @author Guillaume Cusnieux
  */
 @RemoteServiceRelativePath("gwtcontainer")
@@ -37,7 +38,7 @@ public interface ContainerService extends RemoteService {
 
   /**
    * Retrieve a specific container
-   *
+   * 
    * @param gwtParams
    * @return Container
    * @throws ContainerServiceException
@@ -47,7 +48,7 @@ public interface ContainerService extends RemoteService {
 
   /**
    * Save layout of container
-   *
+   * 
    * @param gwtParams
    * @param layoutName
    * @return
@@ -58,7 +59,7 @@ public interface ContainerService extends RemoteService {
 
   /**
    * Save preferences of gadget with form parameter
-   *
+   * 
    * @param gadget
    * @param form
    *          : new preferences
@@ -71,7 +72,7 @@ public interface ContainerService extends RemoteService {
 
   /**
    * Remove gadget
-   *
+   * 
    * @param gadget
    * @param gwtParams
    * @return GadgetBean removed
@@ -82,7 +83,7 @@ public interface ContainerService extends RemoteService {
 
   /**
    * Add gadget
-   *
+   * 
    * @param gadgetName
    * @param gwtParams
    * @return GadgetBean added
@@ -92,38 +93,34 @@ public interface ContainerService extends RemoteService {
       throws ContainerServiceException;
 
   /**
-   * Save gadget position
-   *
+   * Save collection of gadget
+   * 
    * @param beans
    * @param gwtParams
    * @throws ContainerServiceException
    */
-  GadgetBean saveGadgetPosition(ArrayList<GadgetBean> beans,
-      Map<String, String> gwtParams) throws ContainerServiceException;
-
-  /**
-   * Save collapsed
-   *
-   * @param gadget
-   * @param gwtParams
-   * @return Gadget bean saved
-   * @throws ContainerServiceException
-   */
-  GadgetBean saveGadgetCollapsed(GadgetBean gadget,
+  GadgetBean saveGadgetsCollection(List<GadgetBean> beans,
       Map<String, String> gwtParams) throws ContainerServiceException;
 
   /**
    * Get collection of gadget name sorted by category
-   *
+   * 
    * @param gwtParams
    * @return key is category - value is list of gadget name
    * @throws ContainerServiceException
    */
   Map<String, ArrayList<String>> getGadgetList(Map<String, String> gwtParams)
       throws ContainerServiceException;
-  
+
   /**
-   * Get the first
+   * Save Gadget
+   * 
+   * @param gadget
+   * @param gwtParams
+   * @return Gadget bean saved
+   * @throws ContainerServiceException
    */
+  GadgetBean saveGadget(GadgetBean gadget, Map<String, String> gwtParams)
+      throws ContainerServiceException;
 
 }

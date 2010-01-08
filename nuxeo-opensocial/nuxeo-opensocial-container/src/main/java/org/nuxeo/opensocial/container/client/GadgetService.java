@@ -20,6 +20,7 @@ package org.nuxeo.opensocial.container.client;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 import org.nuxeo.opensocial.container.client.view.ContainerPortal;
 import org.nuxeo.opensocial.container.client.view.GadgetPortlet;
+import org.nuxeo.opensocial.container.client.view.SaveGadgetAsyncCallback;
 import org.nuxeo.opensocial.container.client.view.SavePreferenceAsyncCallback;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -41,10 +42,13 @@ public class GadgetService {
     rpc.register('resize_iframe', @org.nuxeo.opensocial.container.client.GadgetService::resizeIframe(I));
     rpc.register('set_pref', @org.nuxeo.opensocial.container.client.GadgetService::setPref(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
     rpc.register('set_title', @org.nuxeo.opensocial.container.client.GadgetService::setTitle(Ljava/lang/String;));
+    rpc.register('set_htmlcontent', @org.nuxeo.opensocial.container.client.GadgetService::setHtmlContent(Ljava/lang/String;));
+    rpc.register('get_htmlcontent', @org.nuxeo.opensocial.container.client.GadgetService::getHtmlContent());
     rpc.register('show_image', @org.nuxeo.opensocial.container.client.GadgetService::showImage(Lcom/google/gwt/core/client/JsArray;I));
-
-    //Nuxeo specific bindings
+    rpc.register('get_nuxeo_gadget_id', @org.nuxeo.opensocial.container.client.GadgetService::getGadgetId());
     rpc.register('get_nuxeo_space_id', @org.nuxeo.opensocial.container.client.GadgetService::getSpaceId());
+    rpc.register('minimize', @org.nuxeo.opensocial.container.client.GadgetService::minimize());
+    rpc.register('maximize', @org.nuxeo.opensocial.container.client.GadgetService::maximize(Ljava/lang/String;));
   }-*/;
 
   /**
@@ -59,9 +63,17 @@ public class GadgetService {
 
   public static void setHeight(String frameId, int height) {
     ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
-    portal.getGadgetPortletByFrameId(frameId)
-        .setHeight(height + 20);
+    GadgetPortlet p = portal.getGadgetPortletByFrameId(frameId);
+    GadgetBean bean = p.getGadgetBean();
+    int h = height + 20;
+    if (bean.getHeight() != h) {
+      p.setHeight(h);
+      bean.setHeight(h);
+      ContainerEntryPoint.getService()
+          .saveGadget(bean, ContainerEntryPoint.getGwtParams(), null);
+    }
     portal.incrementLoading();
+
   };
 
   /**
@@ -112,6 +124,78 @@ public class GadgetService {
           .getGadgetPortletByFrameId(frameId);
       p.setTitle(title);
     }
+  };
+
+  public static native void setHtmlContent(String content)
+  /*-{
+    @org.nuxeo.opensocial.container.client.GadgetService::setHtmlContentToGadget(Ljava/lang/String;Ljava/lang/String;)(this.f,content);
+  }-*/;
+
+  public static void setHtmlContentToGadget(String frameId, String content) {
+    JsLibrary.log("html content " + content);
+    if (content != null) {
+      JsLibrary.log("save html content");
+      GadgetBean b = ContainerEntryPoint.getContainerPortal()
+          .getGadgetPortletByFrameId(frameId)
+          .getGadgetBean();
+      b.setHtmlContent(content);
+      ContainerEntryPoint.getService()
+          .saveGadget(b, ContainerEntryPoint.getGwtParams(),
+              new SaveGadgetAsyncCallback());
+    }
+  };
+
+  public static native void maximize(String view)
+  /*-{
+    @org.nuxeo.opensocial.container.client.GadgetService::maximizeGadget(Ljava/lang/String;Ljava/lang/String;)(this.f,view);
+  }-*/;
+
+  public static void maximizeGadget(String frameId, String view) {
+    ContainerEntryPoint.getContainerPortal()
+        .getGadgetPortletByFrameId(frameId)
+        .getTools()
+        .maximize(view);
+  };
+
+  public static native void minimize()
+  /*-{
+    @org.nuxeo.opensocial.container.client.GadgetService::minimizeGadget(Ljava/lang/String;)(this.f);
+  }-*/;
+
+  public static void minimizeGadget(String frameId) {
+    ContainerPortal p = ContainerEntryPoint.getContainerPortal();
+    p.getGadgetPortletByFrameId(frameId)
+        .getTools()
+        .minimize();
+  };
+
+  public static native String getHtmlContent()
+  /*-{
+    var ee = @org.nuxeo.opensocial.container.client.GadgetService::getHtmlContentOfGadget(Ljava/lang/String;)(this.f);
+    return ee;
+  }-*/;
+
+  public static String getHtmlContentOfGadget(String frameId) {
+    String htmlContent = ContainerEntryPoint.getContainerPortal()
+        .getGadgetPortletByFrameId(frameId)
+        .getGadgetBean()
+        .getHtmlContent();
+    if (htmlContent == null)
+      return "";
+    return htmlContent;
+  };
+
+  public static native String getGadgetId()
+  /*-{
+    var id = @org.nuxeo.opensocial.container.client.GadgetService::getGadgetIdRef(Ljava/lang/String;)(this.f);
+    return id;
+  }-*/;
+
+  public static String getGadgetIdRef(String frameId) {
+    return ContainerEntryPoint.getContainerPortal()
+        .getGadgetPortletByFrameId(frameId)
+        .getGadgetBean()
+        .getRef();
   };
 
   /**

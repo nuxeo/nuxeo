@@ -17,8 +17,6 @@
 
 package org.nuxeo.opensocial.gadgets.service.api;
 
-import java.net.URL;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
@@ -31,11 +29,17 @@ public class GadgetDeclaration {
   @XNode("@name")
   private String name;
 
+  // File Name of the gadget's XML
   @XNode("entryPoint")
-  private String entryPoint;
+  private String entryPoint = "";
 
+  // URL's mount point /gadgets/{mountPoint}/{entryPoint}
   @XNode("mountPoint")
-  private String mountPoint;
+  private String mountPoint = "";
+
+  // Directory where the gadgets files are stored in the JAR
+  @XNode("directory")
+  private String directory = "";
 
   @XNode("category")
   private String category;
@@ -56,6 +60,9 @@ public class GadgetDeclaration {
   }
 
   public final String getMountPoint() {
+    if ("".equals(mountPoint)) {
+      return getName();
+    }
     return mountPoint;
   }
 
@@ -85,7 +92,7 @@ public class GadgetDeclaration {
   }
 
   public final String getEntryPoint() {
-    if (entryPoint == null) {
+    if ("".equals(entryPoint)) {
       return getName() + ".xml";
     } else {
       return entryPoint;
@@ -101,6 +108,14 @@ public class GadgetDeclaration {
     }
     return null;
 
+  }
+
+  public String getDirectory() {
+    if ("".equals(directory)) {
+      return getName();
+    } else {
+      return directory;
+    }
   }
 
 }

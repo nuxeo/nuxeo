@@ -38,6 +38,7 @@ public class GadgetPortlet extends Portlet {
     buildPortlet();
     this.form = new GadgetForm(this);
     this.tools.setGadgetForm(form);
+    this.setVisible(false);
   }
 
   public GadgetPortlet(GadgetBean bean) {
@@ -47,20 +48,20 @@ public class GadgetPortlet extends Portlet {
   private void buildPortlet() {
     this.setLayout(new FitLayout());
     this.setTitle(this.gadget.getTitle());
-    if (this.view.equals(CANVAS_VIEW)) {
+    if (!this.view.equals(DEFAULT_VIEW)) {
       this.setDraggable(false);
       this.setHideCollapseTool(true);
     } else {
       this.setDraggable(gadget.getPermission());
       this.setHideCollapseTool(!this.gadget.getPermission());
     }
+    this.setHeight(this.gadget.getHeight());
     this.addListener(new PortletListener(this));
     this.frame = buildFrame();
     this.add(frame);
     this.setId(getIdWithRefAndView(gadget.getRef(), view));
     this.tools = new GadgetTools(this);
     this.setTools(tools.getButtons());
-
     GadgetService.setAuthToken(getIframeId(), this.gadget.getRef());
     GadgetService.setRelayRpc(getIframeId(), this.gadget.getRef());
   }
@@ -149,12 +150,15 @@ public class GadgetPortlet extends Portlet {
     if (url == null) {
       JsLibrary.error("Render url of " + gadget.getName() + " is null");
       return;
-    } else if (view.equals(CANVAS_VIEW))
-      url = url.replaceAll(VIEW_KEY + DEFAULT_VIEW, VIEW_KEY + CANVAS_VIEW);
-    else
-      url = url.replaceAll(VIEW_KEY + CANVAS_VIEW, VIEW_KEY + DEFAULT_VIEW);
-    gadget.setRenderUrl(url);
+    }
+    gadget.setRenderUrl(buildUrl(url, view));
   }
+
+  private static native String buildUrl(String url, String view)
+  /*-{
+     var reg = new RegExp("view=[a-zA-Z]*&?");
+     return url.replace(reg,"view="+view+"&");
+  }-*/;
 
   private String getIframeId() {
     return PREFIX_FRAME_ID + view + "-" + this.gadget.getRef();
@@ -184,7 +188,6 @@ public class GadgetPortlet extends Portlet {
     if (this.gadget.isCollapse())
       collapse(getIdWithRefAndView(gadget.getRef(), view));
     super.afterRender();
-    JsLibrary.updateFrameWidth();
     renderDefaultPreferences();
     updateFrameHeightIfContentTypeIsUrl();
   }
@@ -258,7 +261,6 @@ public class GadgetPortlet extends Portlet {
     $wnd.jQuery("#"+id).find("div.x-panel-tl").css("border-bottom","1px solid #"+color);
     $wnd.jQuery("#"+id).attr("style","border:1px solid #"+color);
   }-*/;
-
 
   static native void removeBorderColor(String id)
   /*-{

@@ -79,8 +79,7 @@ public class JsLibrary {
   /*-{
     $wnd.jQuery(".x-portlet").attr("style","width:100%");
     $wnd.jQuery(".x-panel-body").attr("style","width:100%");
-    $wnd.jQuery(".gwt-Frame").attr("style","width:100%");
-     $wnd.jQuery(".gwt-Frame").width("100%");
+    $wnd.jQuery(".gwt-Frame").width("100%");  
   }-*/;
 
   public static native void updateColumnStyle()

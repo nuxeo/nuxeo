@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-  <ModulePrefs title="My documents" height="95" scrolling="ture"
-    scaling="true" directory_title="My Documents" title_url="http://www.wofrance.fr/"
+  <ModulePrefs title="My documents" height="95" scrolling="true"
+    scaling="true" directory_title="My Documents"
     description="File browser in the ECM system" author="Damien METZLER"
     author_email="damien.metzler@leroymerlin.fr" author_affiliation="Leroy Merlin"
     author_location="Lezennes, France">
@@ -10,6 +10,8 @@
     <Require feature="settitle" />
     <Require feature="opensocial-0.8" />
     <Require feature="nuxeo" />
+    <Require feature="jquery" />
+    <Require feature="form" />
   </ModulePrefs>
 
   <Content type="html" view="default">
@@ -24,13 +26,9 @@
           spaceId = id;
           getDocumentLists()
         }
-
         gadgets.nuxeo.getSpaceId(cb);
-
       });
     </script>
-
-
 
     <link rel="stylesheet" type="text/css" href="documentlists.css"/>
     <div id="nxDocumentList">
@@ -43,11 +41,14 @@
             <span class="currentPageStatus" id="nxDocumentListPage"></span>
             <input type="image" src="/nuxeo/icons/action_page_next.gif" onclick="nextPage()"/>
             <input type="image" src="/nuxeo/icons/action_page_fastforward.gif"onclick="lastPage()"/>
-            </div>
-        </div>
+         </div>
+         <div id="addfile">
+         <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="">
+            <input type="file" name="file" id="uploadFile" size="20" /> <input  id="uploadBtn" type="submit" value="Ajouter" />
+        </form>
 
+         </div>
     </div>
-
 
   ]]>
   </Content>

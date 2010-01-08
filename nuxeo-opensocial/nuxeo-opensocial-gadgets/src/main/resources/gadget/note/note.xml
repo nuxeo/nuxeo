@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="Postit" description="Write your note here!" author="sergiosicari" author_email="sergiosicari+coolgadget@gmail.com" screenshot="http://www.fileden.com/files/2006/12/4/465575/Others/screenshot.png" author_location="Augusta(SR), Italy" author_affiliation="Google Inc." category="tools" height="263" scaling="false">
+  <Require feature="setprefs"/>
+  <Require feature="settitle" />
+  <Require feature="dynamic-height" />
+  </ModulePrefs>
+  <UserPref name="title" datatype="string" default_value="Note" display_name="Titre"/>
+  <UserPref name="textFont" display_name="Police du texte" default_value="courier" datatype="enum">
+    <EnumValue value="courier" display_value="courier" />
+    <EnumValue value="arial" display_value="arial" />
+    <EnumValue value="verdana" display_value="verdana" />
+    <EnumValue value="Times New Roman" display_value="Times New Roman" />
+  </UserPref>
+   <UserPref name="textSize" display_name="Taille du texte" default_value="12px" datatype="enum">
+    <EnumValue value="10px" display_value="10" />
+    <EnumValue value="12px" display_value="12" />
+    <EnumValue value="14px" display_value="14" />
+    <EnumValue value="16px" display_value="16" />
+    <EnumValue value="18px" display_value="18" />
+  </UserPref>
+  <UserPref name="pickr-txtColor" display_name="Couleur du texte" default_value="#000000" datatype="hidden">
+  </UserPref>
+  <UserPref name="txtNote" default_value="" datatype="hidden">
+  </UserPref>
+  <Content type="html">
+
+  <![CDATA[
+  <style type='text/css'>
+  #txtareapostit {
+    width: 90%;
+    height:220px;
+    color: red;
+    border: 0px solid white;
+    /*padding-top: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;*/
+    background-color:#fef8bc;
+    line-height:14px;
+    margin:auto;
+    display:block;
+    overflow: hidden;
+  }
+
+  #frmpostit{
+   margin:5px 0 5px 0;
+  }
+
+  #cacheText{
+  line-height:14px;
+  font-family:courier;
+  font-size:12px;
+  padding-left:10px;
+  padding-right:10px;
+  letter-spacing:0;
+  }
+
+  #txtCenter {
+    background-image: url(note_center.png);
+    background-repeat: repeat-y ;
+    width:294px;
+    margin:auto;
+  }
+
+  #txtTop{
+   width:294px;
+   height:5px;
+   font-size:0px;
+   background-image: url(note_top.png);
+   background-repeat: no-repeat ;
+   margin:auto;
+  }
+
+  #txtBottom{
+   width:294px;
+   height:14px;
+   background-image: url(note_bottom.png);
+   background-repeat: no-repeat ;
+   margin:auto;
+  }
+
+  </style>
+  <script type="text/javascript">
+
+    _IG_RegisterOnloadHandler(
+    function loadNode__MODULE_ID__() {
+      prefs__MODULE_ID__ = new _IG_Prefs(__MODULE_ID__);
+      _IG_SetTitle(prefs__MODULE_ID__.getString("title"));
+      var tcolor = prefs__MODULE_ID__.getString("pickr-txtColor");
+      var tsize = prefs__MODULE_ID__.getString("textSize");
+      var text = prefs__MODULE_ID__.getString("txtNote");
+      var tfont = prefs__MODULE_ID__.getString("textFont");
+
+
+      _gel("txtareapostit").style.color = tcolor;
+      _gel("txtareapostit").style.fontSize = tsize;
+      _gel("txtareapostit").style.fontFamily = tfont;
+      _gel("txtareapostit").value = gadgets.util.unescapeString(text);
+      _IG_AdjustIFrameHeight();
+
+    setRows();
+    gadgets.window.adjustHeight();
+
+    var perm = gadgets.util.getUrlParameters().permission;
+
+    if(perm=='false'){
+     var elt2 = _gel("txtareapostit");
+
+   _gel("cacheText").style.top = _gel("txtareapostit").style.top;
+   _gel("cacheText").style.left = _gel("txtareapostit").style.left;
+   _gel("cacheText").style.width = _gel("txtareapostit").style.width;
+   _gel("cacheText").style.height = _gel("txtareapostit").style.height;
+   _gel("cacheText").style.color = tcolor;
+   _gel("cacheText").style.fontSize = tsize;
+   _gel("cacheText").style.fontFamily = tfont;
+
+   temp_chaine = gadgets.util.unescapeString(text);
+     while(temp_chaine.indexOf("\n") > 0){
+    temp_chaine = temp_chaine.replace("\n","<br>");
+    };
+
+   _gel("cacheText").innerHTML = temp_chaine;
+
+   _gel("txtareapostit").style.display='none';
+   _gel("cacheText").style.display='block';
+
+   elt2.setAttribute("disabled","disabled");
+     elt2.disabled="disabled";
+
+
+    setCols();
+    //_IG_AddDOMEventHandler(window,"resize",setCols);
+
+    }
+
+
+
+        }
+    )
+
+    var note = new _IG_Prefs(__MODULE_ID__);
+    var timeoutID = null;
+
+    function setCols(){
+    var a=_gel("txtareapostit");
+    a.setAttribute("cols",Math.floor(a.clientWidth/7));
+    setRows();
+  }
+
+    function save(){
+    note.set("txtNote", _gel("txtareapostit").value, "refresh", false);
+    }
+
+    function save_note(){
+
+      clearTimeout(timeoutID);
+        timeoutID = setTimeout("save();", 1000);
+
+    return true;
+    }
+
+
+  function setRows()
+  {
+    if (_gel("txtareapostit").value.length > 1100)
+    _gel("txtareapostit").value = _gel("txtareapostit").value.substring(0,1100);
+    var zoneText=_gel("txtareapostit"),colonnes=zoneText.cols,contenu=zoneText.value;
+    contenu=contenu.replace(/\r\n?/,"\n");
+    var e=2,c=0,d=0;
+
+    for(;d<contenu.length;d++)
+    {
+      var g=contenu.charAt(d);
+      c++;
+      if(g=="\n"||c==colonnes)
+      {
+        e++;c=0
+      }
+    }
+    zoneText.setAttribute("rows",e);
+  if ( (e*14) > 220)
+      zoneText.style.height=e*14+"px";
+    else
+       zoneText.style.height="220px";
+       
+    setTimeout(function(){
+    	gadgets.window.adjustHeight();
+    },200);
+
+    return true;
+
+
+
+  }
+
+  </script>
+   <form name="frmpostit" id="frmpostit">
+
+   <div id="txtTop"></div>
+   <div id="txtCenter">
+   <div id="cacheText" style="display:none;" ></div>
+  <textarea id="txtareapostit" style="display:block;" name="txtareapostit" cols="30" wrap="hard" onkeyup="save_note();setRows();">
+  </textarea>
+   </div>
+   <div id="txtBottom"></div>
+  </form>
+
+  <div style="clear:both"></div>
+    ]]>
+  </Content>
+</Module>

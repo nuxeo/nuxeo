@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
 import org.nuxeo.runtime.api.Framework;
@@ -40,16 +42,20 @@ public class GadgetServiceImpl extends DefaultComponent implements
   private static final String HTTP_SEPARATOR = ":";
 
   private static final String GADGETS_PORT = "gadgets.port";
-
   private static final String GADGETS_HOST = "gadgets.host";
-
   private static final String GADGETS_PATH = "gadgets.path";
+
+  private static final String GWTGADGETS_PORT = "gwtgadgets.port";
+  private static final String GWTGADGETS_HOST = "gwtgadgets.host";
+  private static final String GWTGADGETS_PATH = "gwtgadgets.path";
 
   private static final String HTTP = "http://";
 
   private static final String GADGET_XP = "gadget";
 
   private Map<String, GadgetDeclaration> gadgets = new HashMap<String, GadgetDeclaration>();
+
+  private static final Log log = LogFactory.getLog(GadgetServiceImpl.class);
 
   @Override
   public void registerContribution(Object contribution, String extensionPoint,
@@ -96,12 +102,12 @@ public class GadgetServiceImpl extends DefaultComponent implements
   public InputStream getGadgetResource(String gadgetName, String resourcePath)
       throws IOException {
     GadgetDeclaration gadget = getGadget(gadgetName);
+    URL gadgetURL;
     ComponentInstance component = Framework.getRuntime()
         .getComponentInstance(gadget.getComponentName());
-
-    URL gadgetURL = component.getRuntimeContext()
+    gadgetURL = component.getRuntimeContext()
         .getBundle()
-        .getEntry("gadget/" +gadgetName + "/" + resourcePath);
+        .getEntry("gadget/" + gadget.getDirectory() + "/" + resourcePath);
     if (gadgetURL != null) {
       return gadgetURL.openStream();
     } else {
@@ -140,8 +146,10 @@ public class GadgetServiceImpl extends DefaultComponent implements
 
   public URL getGadgetDefinition(String gadgetName) {
     // TODO: FIX since it won't work on JBoss
-    StringBuilder sb = getUrlPrefix();
+
     GadgetDeclaration gadget = getGadget(gadgetName);
+    StringBuilder sb = getUrlPrefix();
+
     if (gadget != null) {
       sb.append(gadget.getMountPoint());
       sb.append(URL_SEPARATOR);
@@ -152,6 +160,7 @@ public class GadgetServiceImpl extends DefaultComponent implements
         e.printStackTrace();
       }
     }
+
     return null;
   }
 
