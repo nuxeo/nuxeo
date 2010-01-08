@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -85,6 +86,10 @@ public class DocumentActions implements Serializable {
      * list
      */
     protected String currentSelectionLink;
+
+    protected boolean showExifArea;
+
+    protected boolean showIptcArea;
 
     protected String displayMode = BuiltinModes.VIEW;
 
@@ -151,11 +156,11 @@ public class DocumentActions implements Serializable {
      * maximum of maxLength characters. If the Title is more than maxLength
      * characters it will return the Beginning of the title, followed by 3
      * ellipses (...) followed by the End of the title.
-     * 
+     *
      * A minimum of 6 characters is needed before cropping takes effect. If you
      * specify a maxLength of less than 5, it is ignored - in this case
      * maxLength will be set to begin at 5.
-     * 
+     *
      * @param DocumentModel document to extract the title from
      * @param int maxLength the maximum length of the title before cropping will
      *        occur
@@ -324,4 +329,29 @@ public class DocumentActions implements Serializable {
         Events eventManager = Events.instance();
         eventManager.raiseEvent(EventNames.DOCUMENT_SELECTION_CHANGED, document);
     }
+
+    public boolean isShowExifArea() {
+        return showExifArea;
+    }
+
+    public void setShowExifArea(boolean showExifArea) {
+        this.showExifArea = showExifArea;
+    }
+
+    public void toggleExifArea(ActionEvent event) {
+        showExifArea = !showExifArea;
+    }
+
+    public boolean isShowIptcArea() {
+        return showIptcArea;
+    }
+
+    public void setShowIptcArea(boolean showIptcArea) {
+        this.showIptcArea = showIptcArea;
+    }
+
+    public void toggleIptcArea(ActionEvent event) {
+        showIptcArea = !showIptcArea;
+    }
+
 }

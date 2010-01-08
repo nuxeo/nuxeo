@@ -216,7 +216,6 @@ public class CommentActions implements Serializable {
     @BypassInterceptors
     public void cleanContextVariable() {
         showCreateForm = false;
-        showCommentsArea = false;
         newContent = null;
         comments = null;
     }

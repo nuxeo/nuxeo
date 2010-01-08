@@ -264,35 +264,43 @@
       </div>
 
       <f:subview rendered="#{documentActions.currentSelection.hasSchema('picture')}">
-        <div class="togglePanel">
-          <div class="togglePanelTitleBox">
-            <h3>
-              <a href="#" class="folded" onclick="return togglePanel(this)">
-                <h:outputText value="#{messages['label.header.info.exif']}"/>
-              </a>
-            </h3>
-            <div style="clear:both;"></div>
+        <a4j:outputPanel id="exifPanel">
+          <div class="togglePanel">
+            <div class="togglePanelTitleBox">
+              <h3>
+                <a4j:commandLink id="exifTitlePanel" 
+                  styleClass="#{documentActions.showExifArea ? 'unfolded' : 'folded'}"
+                  value="#{messages['label.header.info.exif']}"
+                  actionListener="#{documentActions.toggleExifArea}"
+                  reRender="exifPanel" />
+              </h3>
+              <div style="clear:both;"></div>
+            </div>
+            <f:subview id="exifContent" rendered="#{documentActions.showExifArea}">
+              <nxl:layout name="exif_info" mode="view" value="#{documentActions.currentSelection}"/>
+            </f:subview>
           </div>
-          <div class="togglePanelBody" style="display: none">
-            <nxl:layout name="exif_info" mode="view" value="#{documentActions.currentSelection}"/>
-          </div>
-        </div>
+        </a4j:outputPanel>
       </f:subview>
 
       <f:subview rendered="#{documentActions.currentSelection.hasSchema('picture')}">
-        <div class="togglePanel">
-          <div class="togglePanelTitleBox">
-            <h3>
-              <a href="#" class="folded" onclick="return togglePanel(this)">
-                <h:outputText value="#{messages['label.header.info.iptc']}"/>
-              </a>
-            </h3>
-            <div style="clear:both;"></div>
+        <a4j:outputPanel id="iptcPanel">
+          <div class="togglePanel">
+            <div class="togglePanelTitleBox">
+              <h3>
+                <a4j:commandLink id="iptcTitlePanel" 
+                  styleClass="#{documentActions.showIptcArea ? 'unfolded' : 'folded'}"
+                  value="#{messages['label.header.info.iptc']}"
+                  actionListener="#{documentActions.toggleIptcArea}"
+                  reRender="iptcPanel" />
+              </h3>
+              <div style="clear:both;"></div>
+            </div>
+            <f:subview id="iptcContent" rendered="#{documentActions.showIptcArea}">
+              <nxl:layout name="iptc_info" mode="view" value="#{documentActions.currentSelection}"/>
+            </f:subview>
           </div>
-          <div class="togglePanelBody" style="display:none">
-            <nxl:layout name="iptc_info" mode="view" value="#{documentActions.currentSelection}"/>
-          </div>
-        </div>
+        </a4j:outputPanel>
       </f:subview>
 
     </a4j:form>
