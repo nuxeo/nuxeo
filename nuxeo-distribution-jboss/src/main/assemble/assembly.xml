@@ -21,8 +21,7 @@
   <target name="prepare-jboss">
     <unzip dest="${jboss}">
       <artifact:resolveFile key="org.jboss:jboss-as:4.2.3.GA:zip"
-                     classifier="light"
-                     />
+                            classifier="light" />
     </unzip>
     <ant antfile="build.xml" target="patch">
       <property name="jboss.dir" value="${jboss}" />
@@ -40,7 +39,7 @@
       <artifact:resolveFile key="postgresql:postgresql:8.3-604.jdbc3" />
       <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
       <!-- copy logging monitor -->
-      <artifact:resolveFile key="org.jboss.services:logging-monitor:4.2.3.GA" />
+      <artifact:resolveFile key="org.jboss.services:logging-monitor" />
     </copy>
   </target>
 
@@ -94,23 +93,23 @@
     <!-- Add libraries required under JBoss (not present in the dependency tree) -->
     <copy todir="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear/lib"
           overwrite="true">
-      <artifact:resolveFile key="org.jboss.el:jboss-el:2.0.1.GA" />
-      <artifact:resolveFile key="jboss:jboss-cache-jdk50:1.4.0.SP1" />
-      <artifact:resolveFile key="org.jboss.seam:jboss-seam-remoting:2.0.3.CR1" />
-      <artifact:resolveFile key="org.jboss.seam:jboss-seam-mail:2.0.3.CR1" />
-      <artifact:resolveFile key="org.jboss.seam:jboss-seam-debug:2.0.3.CR1" />
-      <artifact:resolveFile key="jboss:jgroups:2.2.9" />
-      <artifact:resolveFile key="bouncycastle:bcmail-jdk14:136" />
-      <artifact:resolveFile key="bouncycastle:bcprov-jdk14:136" />
-      <artifact:resolveFile key="org.slf4j:slf4j-api:1.5.6" />
-      <artifact:resolveFile key="org.slf4j:slf4j-log4j12:1.5.6" />
-      <artifact:resolveFile key="org.apache.directory.server:apacheds-protocol-shared:${apacheds.version}" />
-      <artifact:resolveFile key="org.openoffice:jurt:3.0.1" />
-      <artifact:resolveFile key="org.fontbox:fontbox:0.1.0" />
-      <artifact:resolveFile key="org.jempbox:jempbox:0.2.0" />
-      <artifact:resolveFile key="org.apache.poi:ooxml-schemas:1.0" />
-      <artifact:resolveFile key="org.apache.httpcomponents:httpcore:4.0.1" />
-      <artifact:resolveFile key="com.google.collections:google-collections:0.8" />
+      <artifact:resolveFile key="org.jboss.el:jboss-el" />
+      <artifact:resolveFile key="jboss:jboss-cache-jdk50" />
+      <artifact:resolveFile key="org.jboss.seam:jboss-seam-remoting" />
+      <artifact:resolveFile key="org.jboss.seam:jboss-seam-mail" />
+      <artifact:resolveFile key="org.jboss.seam:jboss-seam-debug" />
+      <artifact:resolveFile key="jboss:jgroups" />
+      <artifact:resolveFile key="bouncycastle:bcmail-jdk14" />
+      <artifact:resolveFile key="bouncycastle:bcprov-jdk14" />
+      <artifact:resolveFile key="org.slf4j:slf4j-api" />
+      <artifact:resolveFile key="org.slf4j:slf4j-log4j12" />
+      <artifact:resolveFile key="org.apache.directory.server:apacheds-protocol-shared" />
+      <artifact:resolveFile key="org.openoffice:jurt" />
+      <artifact:resolveFile key="org.fontbox:fontbox" />
+      <artifact:resolveFile key="org.jempbox:jempbox" />
+      <artifact:resolveFile key="org.apache.poi:ooxml-schemas" />
+      <artifact:resolveFile key="org.apache.httpcomponents:httpcore" />
+      <artifact:resolveFile key="com.google.collections:google-collections" />
     </copy>
   </target>
 

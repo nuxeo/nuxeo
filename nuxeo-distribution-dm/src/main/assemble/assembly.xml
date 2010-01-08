@@ -153,7 +153,8 @@
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
          basedir="${nuxeo.ear}" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}" />
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
   </target>
 
   <target name="third-party-libraries">
@@ -163,86 +164,6 @@
           <artifact groupId="!org.nuxeo*" />
         </includes>
       </artifact:set>
-    </copy>
-  </target>
-
-  <target name="old-third-party-libraries">
-    <copy todir="${nuxeo.ear}/lib.old" overwrite="true">
-      <artifact:file groupId="org.osgi" artifactId="osgi-core" />
-      <artifact:file groupId="commons-collections"
-                     artifactId="commons-collections" />
-      <artifact:file groupId="commons-io" artifactId="commons-io" />
-      <artifact:file groupId="commons-fileupload"
-                     artifactId="commons-fileupload" />
-      <artifact:file groupId="commons-beanutils"
-                     artifactId="commons-beanutils" />
-      <artifact:file groupId="net.sourceforge.cssparser"
-                     artifactId="cssparser" />
-      <artifact:file groupId="net.sourceforge.nekohtml" artifactId="nekohtml" />
-      <artifact:file groupId="org.w3c" artifactId="sac" />
-      <artifact:file groupId="net.sf.ehcache" artifactId="ehcache" />
-      <artifact:file groupId="net.sf.ezmorph" artifactId="ezmorph" />
-      <artifact:file groupId="org.jboss.seam" artifactId="jboss-seam" />
-      <artifact:file groupId="org.jboss.seam" artifactId="jboss-seam-ui" />
-      <artifact:file groupId="javax.el" artifactId="el-ri" />
-      <artifact:file groupId="org.jbpm.jbpm3" artifactId="jbpm-jpdl" />
-      <artifact:file groupId="net.sf.json-lib" artifactId="json-lib" />
-      <artifact:file groupId="org.apache.lucene" artifactId="lucene-core" />
-      <artifact:file groupId="net.sf.opencsv" artifactId="opencsv" />
-      <artifact:file groupId="org.codehaus.plexus" artifactId="plexus-utils" />
-      <artifact:file groupId="org.richfaces.framework"
-                     artifactId="richfaces-api" />
-      <artifact:file groupId="org.richfaces.framework"
-                     artifactId="richfaces-impl" />
-      <artifact:file groupId="org.richfaces.ui" artifactId="richfaces-ui" />
-      <artifact:file groupId="org.apache.directory.shared"
-                     artifactId="shared-ldap" />
-      <artifact:file groupId="com.sun.facelets" artifactId="jsf-facelets" />
-      <!-- Nuxeo-WebEngine fixed libs -->
-      <artifact:file groupId="org.codehaus.groovy" artifactId="groovy-all" />
-      <artifact:file groupId="org.jboss.resteasy" artifactId="resteasy-jaxrs" />
-      <artifact:file groupId="org.jboss.resteasy" artifactId="jaxrs-api" />
-      <artifact:file groupId="javax.script" artifactId="script-api" />
-      <!-- JOD / OOo libs and other converters deps-->
-      <artifact:file groupId="com.artofsolving" artifactId="jodconverter" />
-      <artifact:file groupId="org.openoffice" artifactId="ridl" />
-      <artifact:file groupId="org.openoffice" artifactId="juh" />
-      <artifact:file groupId="org.openoffice" artifactId="unoil" />
-      <artifact:file groupId="com.thoughtworks.xstream" artifactId="xstream" />
-      <artifact:file groupId="pdfbox" artifactId="pdfbox" />
-      <artifact:file groupId="org.restlet" artifactId="org.restlet" />
-      <artifact:file groupId="org.wikimodel" artifactId="wem" />
-      <artifact:file groupId="jmimemagic" artifactId="jmimemagic" />
-      <artifact:file groupId="rome" artifactId="rome" />
-      <artifact:file groupId="commons-jexl" artifactId="commons-jexl" />
-      <artifact:file groupId="com.hp.hpl.jena" artifactId="arq" />
-      <artifact:file groupId="com.noelios.restlet"
-                     artifactId="com.noelios.restlet" />
-      <artifact:file groupId="com.noelios.restlet"
-                     artifactId="com.noelios.restlet.ext.servlet" />
-      <artifact:file groupId="com.ibm.icu" artifactId="icu4j" />
-      <artifact:file groupId="com.hp.hpl.jena" artifactId="iri" />
-      <artifact:file groupId="cup" artifactId="java-cup" />
-      <artifact:file groupId="jdom" artifactId="jdom" />
-      <artifact:file groupId="com.hp.hpl.jena" artifactId="jena" />
-      <artifact:file groupId="joda-time" artifactId="joda-time" />
-      <artifact:file groupId="org.restlet"
-                     artifactId="org.restlet.ext.fileupload" />
-      <artifact:file groupId="oro" artifactId="oro" />
-      <artifact:file groupId="org.apache.poi" artifactId="poi" />
-      <artifact:file groupId="org.apache.poi" artifactId="poi-ooxml" />
-      <artifact:file groupId="org.apache.poi" artifactId="poi-scratchpad" />
-      <artifact:file groupId="org.apache" artifactId="xmlbeans" />
-      <artifact:file groupId="com.sun.xml" artifactId="relaxngDatatype" />
-      <artifact:file groupId="com.sun.xml" artifactId="xsom" />
-
-      <!-- Remote publication lib -->
-      <artifact:file groupId="org.apache.httpcomponents"
-                     artifactId="httpclient" />
-
-      <artifact:file groupId="com.google.gwt" artifactId="gwt-servlet" />
-      <artifact:file groupId="backport-util-concurrent"
-                     artifactId="backport-util-concurrent" />
     </copy>
   </target>
 
