@@ -50,9 +50,9 @@
       <artifact:file groupId="org.nuxeo.ecm.platform" artifactId="nuxeo-platform-ear" type="zip" />
     </unzip>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
-      basedir="${outdir}/nuxeo-ep-jboss" />
+            basedir="${outdir}" includes="nuxeo-ep-jboss/**" />
     <artifact:attach
-      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
+            file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
       target="${maven.project.groupId}:${maven.project.artifactId}" classifier="nuxeo-ep" />
   </target>
   
@@ -67,7 +67,7 @@
       <artifact:file groupId="org.nuxeo.ecm.distribution" artifactId="nuxeo-distribution-dm" type="zip" />
     </unzip>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
-      basedir="${outdir}/nuxeo-dm-jboss" />
+            basedir="${outdir}" includes="nuxeo-dm-jboss/**" />
     <artifact:attach
       file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
       target="${maven.project.groupId}:${maven.project.artifactId}" classifier="nuxeo-dm" />
