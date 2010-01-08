@@ -46,6 +46,10 @@ public class JaxrsNuxeoComponent extends DefaultComponent {
         // TODO should be done differently, not using a static field
         AbderaResource.repository = new NuxeoRepository("default");
         AbderaResource.pathMunger = new WebEnginePathMunger();
+
+        // We have to set this so that a %2F is allowed in a URL. This is needed
+        // to interpret the CMIS URI template "objectbypath".
+        System.setProperty("org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true");
     }
 
     /**
