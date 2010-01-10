@@ -29,6 +29,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.JbpmConfiguration;
+import org.jbpm.job.executor.JobExecutor;
 import org.jbpm.persistence.db.DbPersistenceServiceFactory;
 import org.jbpm.svc.Services;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
@@ -47,6 +48,8 @@ import org.osgi.framework.FrameworkListener;
  */
 public class JbpmComponent extends DefaultComponent implements
         FrameworkListener {
+
+    private static final String START_JOB_EXECUTOR = "org.nuxeo.ecm.platform.jbpm.startJobExecutor";
 
     public enum ConfigurationName {
         jboss, jetty, glassfish, tomcat, tomcatTransactionnal, tomcatNontransactionnal
@@ -72,6 +75,7 @@ public class JbpmComponent extends DefaultComponent implements
     private boolean lazyInitialized;
 
     private final RuntimeConfigurationSelector selector = new RuntimeConfigurationSelector();
+
     private final JbpmServiceImpl service = new JbpmServiceImpl();
 
     private static final Log log = LogFactory.getLog(JbpmComponent.class);
@@ -144,6 +148,10 @@ public class JbpmComponent extends DefaultComponent implements
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
+        JobExecutor jobExecutor = getConfiguration().getJobExecutor();
+        if (jobExecutor != null && jobExecutor.isStarted()) {
+            jobExecutor.stop();
+        }
         context.getRuntimeContext().getBundle().getBundleContext().removeFrameworkListener(
                 this);
     }
@@ -206,6 +214,14 @@ public class JbpmComponent extends DefaultComponent implements
                 }
             }
             service.setTypeFilters(typeFiltersContrib);
+            boolean startJobExecutor = Boolean.parseBoolean(Framework.getProperty(
+                    START_JOB_EXECUTOR, "false"));
+            if (startJobExecutor) {
+                JobExecutor jobExecutor = getConfiguration().getJobExecutor();
+                if (jobExecutor != null) {
+                    jobExecutor.start();
+                }
+            }
         }
     }
 
