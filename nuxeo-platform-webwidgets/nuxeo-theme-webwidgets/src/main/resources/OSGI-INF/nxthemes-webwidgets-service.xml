@@ -2,6 +2,7 @@
 <component name="org.nuxeo.theme.webwidgets.Service">
 
   <require>org.nuxeo.theme.services.ThemeService</require>
+  <require>org.nuxeo.ecm.core.persistence.PersistenceComponent</require>
   
   <documentation>
     Service providing an extension mechanism for Web widgets.

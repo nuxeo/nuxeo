@@ -34,6 +34,7 @@ public class TestManager extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.ecm.core.persistence", "OSGI-INF/persistence-service.xml");
         deployContrib("org.nuxeo.theme.webwidgets", "OSGI-INF/nxthemes-webwidgets-service.xml");
         deployContrib("org.nuxeo.theme.test.webwidgets.ui", "webwidgets-contrib.xml");
     }
