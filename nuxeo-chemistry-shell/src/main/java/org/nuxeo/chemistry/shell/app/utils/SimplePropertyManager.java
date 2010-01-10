@@ -57,9 +57,8 @@ public class SimplePropertyManager {
     public void setStream(InputStream in, String name) throws Exception {
         if (item instanceof Document) {
             Document doc = (Document) item;
-
-            String mt=MimeTypeHelper.getMimeType(name);
-            ContentStream stream = new SimpleContentStream(in,mt,name);
+            String mimeType = MimeTypeHelper.getMimeType(name);
+            ContentStream stream = new SimpleContentStream(in, mimeType, name);
             doc.setContentStream(stream);
             doc.save();
         } else {

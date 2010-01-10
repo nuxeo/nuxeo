@@ -23,6 +23,16 @@
 					</archive>
 				</configuration>
 			</plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <!-- This needs a running (Nuxeo) server to pass.
+                 Run it manually with ./run.sh -b testscipt -->
+            <exclude>**/TestWithTestScript.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -124,7 +134,7 @@
             <groupId>org.apache.chemistry</groupId>
             <artifactId>chemistry-atompub-client</artifactId>
         </dependency>
-		
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

@@ -48,7 +48,10 @@ public class PwdReader {
     }
 
     static class ConsoleEraser extends Thread {
+
         private boolean running = true;
+
+        @Override
         public void run() {
             while (running) {
                 System.out.print("\b ");

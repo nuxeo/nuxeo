@@ -49,6 +49,7 @@ public class ChemistryRootContext extends AbstractContext {
         return ((ChemistryApp) app).getContentManager();
     }
 
+    @Override
     public ChemistryApp getApplication() {
         return (ChemistryApp) app;
     }
@@ -68,28 +69,28 @@ public class ChemistryRootContext extends AbstractContext {
                 e.printStackTrace();
             }
         }
-        Repository r = repos.get(name); // TODO  atompub client is using IDs to get repositories ... 
+        Repository r = repos.get(name); // TODO  atompub client is using IDs to get repositories ...
         Repository repo = cm.getRepository(r.getId());
-        if (repo != null) {            
+        if (repo != null) {
             APPConnection conn = (APPConnection)repo.getConnection(null);
             CMISObject entry = conn.getRootFolder();
             return new ChemistryContext((ChemistryApp)app, path.append(name), conn, entry);
         }
         return null;
     }
-    
+
     public String[] ls() {
         if (load()) {
             return ls;
         }
-        return new String[0]; 
+        return new String[0];
     }
-    
+
     public String[] entries() {
         if (load()) {
             return keys;
         }
-        return new String[0]; 
+        return new String[0];
     }
 
     protected boolean load() {
@@ -101,7 +102,7 @@ public class ChemistryRootContext extends AbstractContext {
                     return false;
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return false;                    
+                    return false;
                 }
             }
             Repository[] repos = cm.getRepositories();
@@ -116,7 +117,7 @@ public class ChemistryRootContext extends AbstractContext {
         }
         return true;
     }
-    
+
     public void reset() {
         keys = null;
         ls = null;

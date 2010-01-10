@@ -93,7 +93,7 @@ public class Main {
                 url = "http://"+url;
             }
         }
-        
+
         ChemistryApp app = new ChemistryApp();
         if (username != null){
             app.login(username, password == null ? new char[0] : password.toCharArray());
@@ -120,7 +120,7 @@ public class Main {
             try {
                 for (String cmd : cmds) {
                     // Ignore empty lines / comments
-                    if (cmd.length() == 0 || cmd.startsWith(";")) {
+                    if (cmd.length() == 0 || cmd.startsWith("#")) {
                         continue;
                     }
 

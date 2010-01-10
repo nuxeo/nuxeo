@@ -85,9 +85,6 @@ public class Path implements Serializable {
 
     private void init(String path) {
         List<String> segments = new ArrayList<String>();
-        int slash = 0;
-        int off = 0;
-        int cnt = 0;
         int len = path.length();
         if (len == 0) {
             flags = 0;
@@ -115,6 +112,10 @@ public class Path implements Serializable {
         if (chars[len-1] == '/') {
             flags |= HAS_TRAILING;
         }
+
+        int slash = 0;
+        int off = 0;
+        int cnt = 0;
         for (int i = 0; i < len; i++) {
             char c = chars[i];
             switch (c) {

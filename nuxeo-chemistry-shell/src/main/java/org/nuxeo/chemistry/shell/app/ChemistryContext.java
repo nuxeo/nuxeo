@@ -38,7 +38,7 @@ import org.nuxeo.chemistry.shell.console.ColorHelper;
 public class ChemistryContext extends AbstractContext {
 
     //public static final String CONN_KEY = "chemistry.connection";
-    
+
     protected final APPContentManager cm;
     protected final APPConnection conn;
     protected final CMISObject entry;
@@ -46,34 +46,39 @@ public class ChemistryContext extends AbstractContext {
     protected String[] keys;
     protected String[] ls;
     protected Map<String,CMISObject> children;
-    
+
     public ChemistryContext(ChemistryApp app, Path path, APPConnection conn, CMISObject entry) {
         super(app, path);
         this.cm = app.getContentManager();
         this.conn = conn;
         this.entry = entry;
     }
-    
+
+    @Override
     public ChemistryApp getApplication() {
         return (ChemistryApp)app;
     }
 
+    // Not used
     public APPConnection getConnection() {
         return conn;
     }
-    
+
+    // Not used
     public CMISObject getEntry() {
         return entry;
     }
 
+    // Not used
     public APPContentManager getContentManager() {
         return cm;
     }
-    
+
+    // Not used
     public Repository getRepository() {
         return conn.getRepository();
     }
-    
+
     public Context getContext(String name) {
         load();
         CMISObject e = children.get(name);
@@ -92,7 +97,7 @@ public class ChemistryContext extends AbstractContext {
         load();
         return keys;
     }
-    
+
     public void reset() {
         children = null;
         keys = null;
@@ -102,13 +107,13 @@ public class ChemistryContext extends AbstractContext {
     public boolean isFolder() {
         return entry instanceof Folder;
     }
-    
+
     protected void load() {
         if (children == null) {
             if (!isFolder()) {
                 return;
             }
-            Folder folder = (Folder)entry; 
+            Folder folder = (Folder)entry;
             List<CMISObject> feed =  folder.getChildren();
             children = new LinkedHashMap<String, CMISObject>();
             keys = new String[feed.size()];
@@ -121,7 +126,7 @@ public class ChemistryContext extends AbstractContext {
             }
         }
     }
-    
+
     public <T> T as(Class<T> type) {
         if (type.isAssignableFrom(entry.getClass())) {
             return type.cast(entry);
@@ -129,6 +134,7 @@ public class ChemistryContext extends AbstractContext {
         return null;
     }
 
+    // Not used
     public CMISObject getObjectByAbsolutePath(String path) {
         ObjectEntry entry = conn.getObjectByPath(path, null);
         if (entry!=null) {
@@ -138,6 +144,7 @@ public class ChemistryContext extends AbstractContext {
         }
     }
 
+    // Not used
     public CMISObject resolveObject(String path) {
         Path p = resolvePath(path);
         ObjectEntry entry = conn.getObjectByPath(p.toString(), null);
@@ -151,5 +158,5 @@ public class ChemistryContext extends AbstractContext {
     public String id() {
         return "Object "+entry.getId()+" of type "+entry.getTypeId();
     }
-    
+
 }
