@@ -19,9 +19,7 @@ package org.nuxeo.chemistry.shell.app.cmds;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.List;
 
-import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.nuxeo.chemistry.shell.Console;
@@ -46,10 +44,10 @@ public class Get extends ChemistryCommand {
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
 
-        CommandParameter param = cmdLine.getLastParameter();
+        CommandParameter param = cmdLine.getParameter("target");
 
         if (param == null || param.getValue() == null) {
-            Console.getDefault().warn("You must supply a name");
+            Console.getDefault().warn("You must supply a target");
             return;
         }
 

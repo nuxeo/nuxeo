@@ -26,7 +26,7 @@ public class CommandSyntaxException extends CommandException {
 
     private static final long serialVersionUID = 1L;
 
-    protected Command cmd;
+    protected final Command cmd;
 
     public CommandSyntaxException(Command cmd) {
         this(cmd, "Syntax Error");

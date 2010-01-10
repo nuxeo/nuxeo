@@ -47,8 +47,8 @@ import org.nuxeo.chemistry.shell.util.StringUtils;
  */
 public class CommandRegistry {
 
-    protected static CommandRegistry  builtinCommands = new CommandRegistry(null);
-    protected Map<String, Command> commands;
+    protected static final CommandRegistry builtinCommands = new CommandRegistry(null);
+    protected final Map<String, Command> commands;
 
     static {
         builtinCommands.registerCommand(new Help());

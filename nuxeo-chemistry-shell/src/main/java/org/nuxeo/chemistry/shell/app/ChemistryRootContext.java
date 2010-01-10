@@ -42,15 +42,15 @@ public class ChemistryRootContext extends AbstractContext {
     protected String[] ls;
 
     public ChemistryRootContext(ChemistryApp app) {
-        super (app, Path.ROOT);
+        super(app, Path.ROOT);
     }
-    
+
     public APPContentManager getContentManager() {
-        return ((ChemistryApp)app).getContentManager();
+        return ((ChemistryApp) app).getContentManager();
     }
-    
+
     public ChemistryApp getApplication() {
-        return (ChemistryApp)app;
+        return (ChemistryApp) app;
     }
 
     public <T> T as(Class<T> type) {
@@ -101,6 +101,7 @@ public class ChemistryRootContext extends AbstractContext {
                     return false;
                 } catch (IOException e) {
                     e.printStackTrace();
+                    return false;                    
                 }
             }
             Repository[] repos = cm.getRepositories();

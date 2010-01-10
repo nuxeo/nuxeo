@@ -17,22 +17,20 @@
 package org.nuxeo.chemistry.shell.app.cmds;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.FileInputStream;
 
-import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
+import org.apache.chemistry.Folder;
 import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
 import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;
 import org.nuxeo.chemistry.shell.app.utils.SimplePropertyManager;
+import org.nuxeo.chemistry.shell.app.utils.SimpleCreator;
 import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
-import org.nuxeo.chemistry.shell.util.FileUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -57,14 +55,23 @@ public class Put extends ChemistryCommand {
             return;
         }
 
-        // Currently document must exist
-        Context ctx = app.resolveContext(new Path(targetParam.getValue()));
-        if (ctx == null) {
-            Console.getDefault().warn("Cannot resolve " + targetParam.getValue());
+        Context targetCtx = app.resolveContext(new Path(targetParam.getValue()));
+
+        // Create document if it doesn't exist
+        if (targetCtx == null) {
+            Context ctx = app.getContext();
+            Folder folder = ctx.as(Folder.class);
+            if (folder != null) {
+                new SimpleCreator(folder).createFile(targetParam.getValue());
+                targetCtx = app.resolveContext(new Path(targetParam.getValue()));
+            }
+        }
+        if (targetCtx == null) {
+            Console.getDefault().warn("Cannot create target document");
             return;
         }
 
-        Document obj = ctx.as(Document.class);
+        Document obj = targetCtx.as(Document.class);
         if (obj == null) {
             Console.getDefault().warn("Your target must be a document");
             return;

@@ -20,6 +20,7 @@
 package org.nuxeo.chemistry.shell.command;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -35,10 +36,32 @@ import org.nuxeo.chemistry.shell.util.StringUtils;
  */
 public class CommandSyntax {
 
-    protected List<CommandToken> tokens = new ArrayList<CommandToken>();
-    protected List<CommandToken> args = new ArrayList<CommandToken>();
-    protected HashMap<String, CommandToken> map = new HashMap<String, CommandToken>();
+    protected final List<CommandToken> tokens = new ArrayList<CommandToken>();
+    protected final List<CommandToken> args = new ArrayList<CommandToken>();
+    protected final HashMap<String, CommandToken> map = new HashMap<String, CommandToken>();
 
+    /**
+     * Static factory.
+     */
+    public static CommandSyntax parse(String text) {
+        String[] toks = StringUtils.tokenize(text);
+        if (toks.length == 0) {
+            throw new IllegalArgumentException("cannot parse empty command lines");
+        }
+        CommandSyntax syntax = new CommandSyntax();
+        if (toks.length == 0) {
+            return syntax;
+        }
+        CommandToken tok = new CommandToken();
+        tok.names = StringUtils.split(toks[0], '|', false);
+        tok.valueType = CommandToken.COMMAND;
+        syntax.addToken(tok);
+        for (int i=1; i<toks.length; i++) {
+            tok = parseToken(toks[i]);
+            syntax.addToken(tok);
+        }
+        return syntax;
+    }
 
     public CommandToken getCommandToken() {
         return tokens.get(0);
@@ -49,7 +72,7 @@ public class CommandSyntax {
     }
 
     public CommandToken getArgument(int index) {
-        if (index >=args.size()) {
+        if (index >= args.size()) {
             return null;
         }
         return args.get(index);
@@ -75,9 +98,7 @@ public class CommandSyntax {
         for (int i=1,len=tokens.size(); i<len; i++) { // skip first token
             CommandToken token = tokens.get(i);
             if (!token.isArgument()) {
-                for (String key : token.getNames()) {
-                    keys.add(key);
-                }
+                keys.addAll(Arrays.asList(token.getNames()));
             }
         }
         return keys.toArray(new String[keys.size()]);
@@ -113,26 +134,6 @@ public class CommandSyntax {
         tok.names = StringUtils.split(text, '|', true);
         tok.isArgument = !tok.names[0].startsWith("-");
         return tok;
-    }
-
-    public static CommandSyntax parse(String text) {
-        String[] toks = StringUtils.tokenize(text);
-        if (toks.length == 0) {
-            throw new IllegalArgumentException("cannot parse empty command lines");
-        }
-        CommandSyntax syntax = new CommandSyntax();
-        if (toks.length == 0) {
-            return syntax;
-        }
-        CommandToken tok = new CommandToken();
-        tok.names = StringUtils.split(toks[0], '|', false);
-        tok.valueType = CommandToken.COMMAND;
-        syntax.addToken(tok);
-        for (int i=1; i<toks.length; i++) {
-            tok = parseToken(toks[i]);
-            syntax.addToken(tok);
-        }
-        return syntax;
     }
 
 }

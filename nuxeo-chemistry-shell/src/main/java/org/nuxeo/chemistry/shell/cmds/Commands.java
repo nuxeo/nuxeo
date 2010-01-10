@@ -58,7 +58,7 @@ public class Commands extends AnnotatedCommand implements Comparator<Command>{
             buf.setLength(0);
             buf.append(name);
             String[] aliases = cmd.getAliases();
-            if (aliases.length>1) {
+            if (aliases.length > 1) {
                 buf.append(" [");
                 for (int i=1; i<aliases.length; i++) {
                     buf.append(aliases[i]).append("|");

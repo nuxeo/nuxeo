@@ -26,7 +26,6 @@ import org.nuxeo.chemistry.shell.command.CommandRegistry;
  * An application represents the global context of the shell.
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface Application {
 

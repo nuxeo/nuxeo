@@ -32,7 +32,7 @@ import org.nuxeo.chemistry.shell.util.PwdReader;
  */
 public class Console {
 
-    protected static Console instance = null;
+    protected static Console instance;
 
     protected Application app;
 

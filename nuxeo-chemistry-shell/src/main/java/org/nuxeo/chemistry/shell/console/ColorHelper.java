@@ -51,11 +51,10 @@ public class ColorHelper {
     public static final char ESC = 27;
     
     
-    protected static Map<String,Integer> ansiCodes = new HashMap<String, Integer>();
-    protected static Map<String,Integer> colorMap = new HashMap<String, Integer>();
+    protected static final Map<String,Integer> ansiCodes = new HashMap<String, Integer>();
+    protected static final Map<String,Integer> colorMap = new HashMap<String, Integer>();
     
-    static {
-        
+    static {        
         ansiCodes.put("white", FG_WHITE);
         ansiCodes.put("black", FG_BLACK);
         ansiCodes.put("blue", FG_BLUE);

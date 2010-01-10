@@ -127,7 +127,7 @@ public class CommandLine {
         return map.get(key);
     }
 
-    public Command getCommand() throws Exception {
+    public Command getCommand() {
         return cmd;
     }
 

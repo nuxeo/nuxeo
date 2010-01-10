@@ -23,8 +23,8 @@ package org.nuxeo.chemistry.shell;
  */
 public abstract class AbstractContext implements Context {
 
-    protected Application app;
-    protected Path path;
+    protected final Application app;
+    protected final Path path;
     
     public AbstractContext(Application app, Path path) {
         this.app = app;

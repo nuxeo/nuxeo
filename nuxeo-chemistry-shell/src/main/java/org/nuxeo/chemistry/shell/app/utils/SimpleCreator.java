@@ -5,7 +5,7 @@ import org.apache.chemistry.Folder;
 
 public class SimpleCreator {
 
-    protected Folder folder;
+    protected final Folder folder;
 
     public SimpleCreator(Folder folder) {
         this.folder = folder;

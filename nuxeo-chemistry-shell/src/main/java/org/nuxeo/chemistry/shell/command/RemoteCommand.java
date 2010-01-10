@@ -29,7 +29,7 @@ import org.nuxeo.chemistry.shell.Path;
  */
 public abstract class RemoteCommand extends Command {
 
-    protected Path path;
+    protected final Path path;
 
     public static RemoteCommand parse(String line) throws CommandException {
         // GET \t PATH \t syntax \t synopsis

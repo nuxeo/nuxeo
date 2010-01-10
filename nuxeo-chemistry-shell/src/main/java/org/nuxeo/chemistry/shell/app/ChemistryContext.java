@@ -39,15 +39,16 @@ public class ChemistryContext extends AbstractContext {
 
     //public static final String CONN_KEY = "chemistry.connection";
     
-    protected APPContentManager cm;
-    protected APPConnection conn;
-    protected CMISObject entry;
+    protected final APPContentManager cm;
+    protected final APPConnection conn;
+    protected final CMISObject entry;
+
     protected String[] keys;
     protected String[] ls;
     protected Map<String,CMISObject> children;
     
     public ChemistryContext(ChemistryApp app, Path path, APPConnection conn, CMISObject entry) {
-        super (app, path);
+        super(app, path);
         this.cm = app.getContentManager();
         this.conn = conn;
         this.entry = entry;
@@ -81,7 +82,6 @@ public class ChemistryContext extends AbstractContext {
         }
         return null;
     }
-    
 
     public String[] ls() {
         load();

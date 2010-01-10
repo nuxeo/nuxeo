@@ -17,7 +17,7 @@ import org.nuxeo.chemistry.shell.Console;
 
 public class SimplePropertyManager {
 
-    protected CMISObject item;
+    protected final CMISObject item;
 
     public SimplePropertyManager(CMISObject item) {
         this.item = item;

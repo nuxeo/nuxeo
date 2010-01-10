@@ -39,7 +39,7 @@ public class Ls extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        CommandParameter param = cmdLine.getLastParameter();
+        CommandParameter param = cmdLine.getParameter("target");
 
         Context ctx;
         if (param == null || param.getValue() == null) {

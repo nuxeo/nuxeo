@@ -278,8 +278,8 @@ public class Path implements Serializable {
             return this;
         }
         int k = 0;
-        for (int i=0; i<segments.length; i++) {
-            if ("..".equals(segments[i])) {
+        for (String segment : segments) {
+            if ("..".equals(segment)) {
                 k++;
             } else {
                 break;

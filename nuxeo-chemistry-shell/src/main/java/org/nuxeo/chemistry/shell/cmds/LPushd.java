@@ -40,7 +40,7 @@ public class LPushd extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        CommandParameter param = cmdLine.getLastParameter();
+        CommandParameter param = cmdLine.getParameter("dir");
         if (param != null) {
             String path = param.getValue();
             File file = app.resolveFile(path);

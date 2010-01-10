@@ -16,12 +16,8 @@
  */
 package org.nuxeo.chemistry.shell.app.cmds;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.List;
 
-import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.nuxeo.chemistry.shell.Console;

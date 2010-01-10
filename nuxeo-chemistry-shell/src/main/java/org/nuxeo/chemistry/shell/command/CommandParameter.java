@@ -26,9 +26,10 @@ package org.nuxeo.chemistry.shell.command;
  */
 public class CommandParameter {
 
-    protected String key;
+    protected final String key;
+    protected final CommandToken token;
+
     protected String value;
-    protected CommandToken token;
 
     public CommandParameter(String key, CommandToken token) {
         this.key = key;

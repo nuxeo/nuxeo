@@ -67,27 +67,26 @@ public class StringUtils {
         ArrayList<String> tokens = new ArrayList<String>();
         StringBuilder buf = new StringBuilder();
         char[]  chars = text.toCharArray();
-        for (int i=0; i<chars.length; i++) {
-            char c = chars[i];
+        for (char c : chars) {
             if (esc == 1) {
                 buf.append(c);
                 esc = 0;
                 continue;
             }
             switch (c) {
-            case ' ':
-            case '\t':
-                if (buf.length() > 0) {
-                    tokens.add(buf.toString());
-                    buf.setLength(0);
-                }
-                break;
-            case '\\':
-                esc = 1;
-                break;
-            default:
-                buf.append(c);
-                break;
+                case ' ':
+                case '\t':
+                    if (buf.length() > 0) {
+                        tokens.add(buf.toString());
+                        buf.setLength(0);
+                    }
+                    break;
+                case '\\':
+                    esc = 1;
+                    break;
+                default:
+                    buf.append(c);
+                    break;
             }
         }
         if (buf.length() > 0) {

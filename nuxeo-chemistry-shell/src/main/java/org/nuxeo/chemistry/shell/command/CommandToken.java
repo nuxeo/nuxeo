@@ -53,23 +53,14 @@ public class CommandToken {
         return valueType == null;
     }
 
-    /**
-     * @return the isArgument.
-     */
     public boolean isArgument() {
         return isArgument;
     }
 
-    /**
-     * @return the defaultValue.
-     */
     public String getDefaultValue() {
         return defaultValue;
     }
 
-    /**
-     * @return the valueType.
-     */
     public String getValueType() {
         return valueType;
     }
@@ -78,9 +69,6 @@ public class CommandToken {
         return names[0];
     }
 
-    /**
-     * @return the names.
-     */
     public String[] getNames() {
         return names;
     }

@@ -30,9 +30,10 @@ import org.nuxeo.chemistry.shell.command.CommandRegistry;
  */
 public abstract class AbstractApplication implements Application {
 
-    protected CommandRegistry registry;
+    protected final CommandRegistry registry;
+    protected final Map<String, Object> dataMap;
+
     protected Context ctx;
-    protected Map<String,Object> dataMap;
     protected URL serverUrl;
     protected File wd;
     protected String username;

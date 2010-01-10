@@ -39,7 +39,7 @@ public class Ll extends AnnotatedCommand {
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
         File file;
-        CommandParameter param = cmdLine.getLastParameter();
+        CommandParameter param = cmdLine.getParameter("target");
         if (param != null) {
             String path = param.getValue();
             file = app.resolveFile(path);

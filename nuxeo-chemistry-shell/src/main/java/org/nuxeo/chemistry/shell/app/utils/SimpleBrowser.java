@@ -10,7 +10,7 @@ import org.nuxeo.chemistry.shell.Console;
 
 public class SimpleBrowser {
 
-    protected Folder root;
+    protected final Folder root;
 
     public SimpleBrowser(Folder root) {
         this.root = root;
@@ -30,7 +30,7 @@ public class SimpleBrowser {
 
     public void listChildren() throws IOException {
         if (BaseType.FOLDER.equals(root.getBaseType())) {
-            Folder folder = (Folder) root;
+            Folder folder = root;
             List<CMISObject> children = folder.getChildren();
             for (CMISObject child : children) {
                 dump(child);
