@@ -579,9 +579,11 @@ public class SecurityActionsBean extends InputController implements
                 securityData.addModifiablePrivilege(currentUser.getName(),
                         SecurityConstants.EVERYTHING, true);
                 // add administrators to avoid LockUp
-                securityData.addModifiablePrivilege(
-                        SecurityConstants.ADMINISTRATORS,
-                        SecurityConstants.EVERYTHING, true);
+                List<String> adminGroups = userManager.getAdministratorGroups();
+                for (String adminGroup : adminGroups) {
+                    securityData.addModifiablePrivilege(adminGroup,
+                            SecurityConstants.EVERYTHING, true);
+                }
             }
         } else {
             securityData.removeModifiablePrivilege(SecurityConstants.EVERYONE,

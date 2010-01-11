@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.el.ContextStringWrapper;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documenttemplates.DocumentTemplatesActions;
 import org.nuxeo.ecm.webapp.security.PrincipalListManager;
@@ -85,6 +86,9 @@ public class WorkspaceActionsBean extends InputController implements
 
     @In(create = true)
     private transient PrincipalListManager principalListManager;
+
+    @In(create = true)
+    protected transient UserManager userManager;
 
     @In(create = true)
     private transient SecurityActions securityActions;
@@ -267,8 +271,8 @@ public class WorkspaceActionsBean extends InputController implements
                 principalsName = principalListManager.getSelectedUsers();
             }
 
-            // Force addition of administrators group
-            principalsName.add(SecurityConstants.ADMINISTRATORS);
+            // Force addition of administrators groups
+            principalsName.addAll(userManager.getAdministratorGroups());
 
             // Grant to principalList
             for (String principalName : principalsName) {
@@ -349,9 +353,8 @@ public class WorkspaceActionsBean extends InputController implements
                         SecurityConstants.EVERYTHING, true);
             }
 
-            // Add Admin group
-            securityActions.addPermission(SecurityConstants.ADMINISTRATORS,
-                    SecurityConstants.EVERYTHING, true);
+            // Force addition of administrators groups
+            principalsName.addAll(userManager.getAdministratorGroups());
 
             // DENY at root
             securityActions.addPermission(SecurityConstants.EVERYONE,

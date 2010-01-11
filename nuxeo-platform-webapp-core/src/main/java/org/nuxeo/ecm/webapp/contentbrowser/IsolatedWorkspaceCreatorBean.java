@@ -31,8 +31,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.documenttemplates.DocumentTemplatesActions;
-import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 import org.nuxeo.ecm.webapp.security.SecurityActions;
 
 @Name("isolatedWorkspaceCreator")
@@ -41,24 +41,24 @@ import org.nuxeo.ecm.webapp.security.SecurityActions;
 public class IsolatedWorkspaceCreatorBean {
 
     @In(create = true)
-    private Principal currentUser;
+    protected transient Principal currentUser;
 
     @In(create = true)
-    DocumentTemplatesActions documentTemplatesActions;
+    protected transient DocumentTemplatesActions documentTemplatesActions;
 
     @In(create = true)
-    PrincipalListManager principalListManager;
+    protected transient UserManager userManager;
 
     @In(create = true)
-    SecurityActions securityActions;
+    protected transient SecurityActions securityActions;
 
     public String createIsolatedWorkspace() throws ClientException {
 
         String result = documentTemplatesActions.createDocumentFromTemplate();
-        //String result = documentActions.saveDocument();
+        // String result = documentActions.saveDocument();
         List<String> principalsName = new ArrayList<String>();
         principalsName.add(currentUser.getName());
-        principalsName.add(SecurityConstants.ADMINISTRATORS);
+        principalsName.addAll(userManager.getAdministratorGroups());
 
         // Grant to principalList
         for (String principalName : principalsName) {
