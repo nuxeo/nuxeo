@@ -1588,7 +1588,7 @@
           <executions>
             <execution>
               <configuration>
-                <extraJvmArgs>-Xmx512M -Xms1024k</extraJvmArgs>
+                <extraJvmArgs>-Xmx512M -Xms128M</extraJvmArgs>
               </configuration>
               <goals>
                 <goal>compile</goal>
