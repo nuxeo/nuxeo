@@ -6,4 +6,5 @@ test:
 
 clean:
 	mvn clean
+	rm *~
 
