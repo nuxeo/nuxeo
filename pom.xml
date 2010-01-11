@@ -411,7 +411,7 @@
         <scope>provided</scope>
         <version>2.9.1</version>
         <exclusions>
-          <!-- exclude bad versions 1.O.b2/1.0.b2 -->
+          <!-- exclude bad versions 1.O.b2 -->
           <exclusion>
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
@@ -419,12 +419,12 @@
         </exclusions>
       </dependency>
       <!-- xercesImpl 2.9.1 uses xml-apis 1.3.04 -->
-      <!-- Other libraries use xml-apis 2.0.2 -->
+      <!-- Other libraries use xml-apis 2.0.2 relocated to 1.0.b2 -->
       <dependency>
         <groupId>xml-apis</groupId>
         <artifactId>xml-apis</artifactId>
         <scope>provided</scope>
-        <version>2.0.2</version>
+        <version>1.0.b2</version>
       </dependency>
       <dependency>
         <groupId>jmimemagic</groupId>
@@ -436,7 +436,7 @@
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
           </exclusion>
-          <!-- exclude bad versions 1.O.b2/1.0.b2 -->
+          <!-- exclude bad versions 1.O.b2 -->
           <exclusion>
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
@@ -511,9 +511,9 @@
       </dependency>
       <!-- Jetty package use 4.2.3.GA -->
       <dependency>
-        <groupId>jboss</groupId>
+        <groupId>javassist</groupId>
         <artifactId>javassist</artifactId>
-        <version>${jboss.version}</version>
+        <version>3.3.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -869,7 +869,7 @@
         <version>1.6.1</version>
         <scope>provided</scope>
         <exclusions>
-          <!-- exclude bad versions 1.O.b2/1.0.b2 -->
+          <!-- exclude bad versions 1.O.b2 -->
           <exclusion>
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
@@ -1268,7 +1268,7 @@
         <artifactId>shindig-gadgets</artifactId>
         <version>${shindig.version}</version>
         <exclusions>
-          <!-- exclude bad versions 1.O.b2/1.0.b2 -->
+          <!-- exclude bad versions 1.O.b2 -->
           <exclusion>
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
@@ -1285,7 +1285,7 @@
         <artifactId>shindig-social-api</artifactId>
         <version>${shindig.version}</version>
         <exclusions>
-          <!-- exclude bad versions 1.O.b2/1.0.b2 -->
+          <!-- exclude bad versions 1.O.b2 -->
           <exclusion>
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
@@ -1693,6 +1693,10 @@
         </plugin>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-help-plugin</artifactId>
           <version>2.1</version>
         </plugin>
       </plugins>
