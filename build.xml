@@ -72,27 +72,24 @@
   </target>
 
   <target name="package-2parts" description="Package Nuxeo-EP in two parts">
+    <echo>DEPRECATED - please update your scripts to not call this target anymore</echo>
     <antcall target="package">
       <param name="jboss.home" value="${jboss1.dir}" />
-      <param name="assembly.name" value="nuxeo-platform-stateful" />
     </antcall>
     <antcall target="package">
       <param name="jboss.home" value="${jboss2.dir}" />
-      <param name="assembly.name" value="nuxeo-web-stateless" />
     </antcall>
   </target>
   <target name="package-3parts" description="Package Nuxeo-EP in three parts">
+    <echo>DEPRECATED - please update your scripts to not call this target anymore</echo>
     <antcall target="package">
       <param name="jboss.home" value="${jboss1.dir}" />
-      <param name="assembly.name" value="nuxeo-core" />
     </antcall>
     <antcall target="package">
       <param name="jboss.home" value="${jboss2.dir}" />
-      <param name="assembly.name" value="nuxeo-indexing" />
     </antcall>
     <antcall target="package">
       <param name="jboss.home" value="${jboss3.dir}" />
-      <param name="assembly.name" value="nuxeo-webplatform" />
     </antcall>
   </target>
   <target name="package" depends="setproperties,package-unix,package-windows" description="Package Nuxeo-EP" />
