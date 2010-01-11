@@ -6,17 +6,22 @@
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
            uri="urn:nuxeo-artifact" />
 
-  <target name="init">
-    <artifact:expand depth="3" />
-
+  <target name="init" unless="init.done">
     <property name="outdir" value="${maven.project.build.directory}" />
     <property name="stagedir" value="${outdir}/stage" />
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
   </target>
 
-  <target name="build" depends="init">
+  <target name="expand" unless="no.build">
+    <artifact:expand depth="3" />
+  </target>
+
+  <target name="build" depends="init" unless="no.build">
     <echo>Building JBoss distributions...</echo>
     <property name="jboss" value="${stagedir}/jboss" />
 
+    <antcall target="prepare-jboss" />
     <antcall target="build-nuxeo-ep-jboss" />
     <antcall target="build-nuxeo-dm-jboss" />
   </target>
@@ -47,7 +52,7 @@
   </target>
 
   <target name="build-nuxeo-ep-jboss"
-          depends="prepare-jboss" unless="maven.profile.nuxeo-dm"
+          unless="maven.profile.nuxeo-dm"
           description="Build JBoss distribution with Nuxeo EP">
 
     <delete failonerror="false" dir="${outdir}/nuxeo-ep-jboss" />
@@ -59,14 +64,16 @@
     </unzip>
     <antcall target="jboss-third-party-libraries" />
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
-            basedir="${outdir}" includes="nuxeo-ep-jboss/**" />
-    <artifact:attach
-            file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
-      target="${maven.project.groupId}:${maven.project.artifactId}" classifier="nuxeo-ep" />
+         basedir="${outdir}"
+         includes="nuxeo-ep-jboss/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="nuxeo-ep"
+                     type="zip" />
   </target>
 
   <target name="build-nuxeo-dm-jboss"
-          depends="prepare-jboss" unless="maven.profile.nuxeo-ep"
+          unless="maven.profile.nuxeo-ep"
           description="Build JBoss distribution with Nuxeo DM">
 
     <delete failonerror="false" dir="${outdir}/nuxeo-dm-jboss" />
@@ -78,10 +85,12 @@
     </unzip>
     <antcall target="jboss-third-party-libraries" />
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
-            basedir="${outdir}" includes="nuxeo-dm-jboss/**" />
-    <artifact:attach
-      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
-      target="${maven.project.groupId}:${maven.project.artifactId}" classifier="nuxeo-dm" />
+         basedir="${outdir}"
+         includes="nuxeo-dm-jboss/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="nuxeo-dm"
+                     type="zip" />
   </target>
 
   <target name="jboss-third-party-libraries">

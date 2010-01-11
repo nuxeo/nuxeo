@@ -9,7 +9,7 @@
 
   <artifactId>nuxeo-platform-ear</artifactId>
   <packaging>pom</packaging>
-  <name>Nuxeo EP EAR</name>
+  <name>Nuxeo EP</name>
   <description>
     Nuxeo Enterprise Platform: The Nuxeo EAR application.
   </description>

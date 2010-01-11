@@ -17,12 +17,19 @@
   <profiles>
     <profile>
       <id>all-distributions</id>
+      <!-- profile for building all classifiers -->
+    </profile>
+    <profile>
+      <id>all</id>
+      <!-- profile for building all classifiers -->
     </profile>
     <profile>
       <id>nuxeo-ep</id>
+      <!-- profile for building only JBoss with Nuxeo EP -->
     </profile>
     <profile>
       <id>nuxeo-dm</id>
+      <!-- default profile for building only JBoss with Nuxeo DM -->
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>

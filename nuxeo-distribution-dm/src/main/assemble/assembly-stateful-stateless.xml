@@ -6,19 +6,36 @@
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
            uri="urn:nuxeo-artifact" />
 
-  <target name="init">
-    <artifact:nuxeo-expand />
+
+  <target name="init" unless="init.done">
+    <condition property="no.build">
+      <and>
+        <or>
+          <isset property="maven.profile.vcs" />
+          <isset property="maven.profile.nuxeo-ep" />
+        </or>
+        <not>
+          <or>
+            <isset property="maven.profile.all" />
+            <isset property="maven.profile.all-distributions" />
+          </or>
+        </not>
+      </and>
+    </condition>
 
     <property name="outdir" value="${maven.project.build.directory}" />
     <property name="stagedir" value="${outdir}/stage" />
 
-    <nx:profile name="vcs">
-      <property name="no-alternate" value="true" />
-    </nx:profile>
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
   </target>
 
-  <target name="build" depends="init" unless="no-alternate">
-    <echo>Building default Nuxeo DM EAR</echo>
+  <target name="expand" unless="no.build">
+    <artifact:nuxeo-expand />
+  </target>
+
+  <target name="build" depends="init" unless="no.build">
+    <echo>Building two parts Nuxeo DM EARs</echo>
     <property name="nuxeo.ear" value="${stagedir}/nuxeo.ear" />
     <mkdir dir="${nuxeo.ear}" />
 
@@ -54,8 +71,7 @@
 
   <target name="build-distribution-stateful"
           depends="init"
-          description="Build stateful distributions on various backends"
-          unless="no-alternate">
+          description="Build stateful distributions on various backends">
     <delete failonerror="false"
             dir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear" />
     <copy todir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear"

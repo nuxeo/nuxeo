@@ -11,7 +11,7 @@
 
   <artifactId>nuxeo-distribution-dm</artifactId>
   <packaging>pom</packaging>
-  <name>Nuxeo EP Document Management</name>
+  <name>Nuxeo DM</name>
   <description>
     Nuxeo Enterprise Platform: The Nuxeo Document Management application.
   </description>
@@ -252,9 +252,19 @@
   <profiles>
     <profile>
       <id>all-distributions</id>
+      <!-- profile for building all classifiers -->
+    </profile>
+    <profile>
+      <id>all</id>
+      <!-- profile for building all classifiers -->
+    </profile>
+    <profile>
+      <id>nuxeo-ep</id>
+      <!-- profile for disabling build of all classifiers -->
     </profile>
     <profile>
       <id>vcs</id>
+      <!-- default profile for building only with VCS -->
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>

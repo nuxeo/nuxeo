@@ -6,19 +6,29 @@
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
            uri="urn:nuxeo-artifact" />
 
-  <target name="init">
-    <artifact:nuxeo-expand />
+
+  <target name="init" unless="init.done">
+    <condition property="no.build">
+      <isset property="maven.profile.nuxeo-ep" />
+    </condition>
+    <condition property="no.alternate.build">
+      <isset property="maven.profile.vcs" />
+    </condition>
+
     <!-- <artifact:print output="dependency-tree.log" /> -->
 
     <property name="outdir" value="${maven.project.build.directory}" />
     <property name="stagedir" value="${outdir}/stage" />
 
-    <nx:profile name="vcs">
-      <property name="no-alternate" value="true" />
-    </nx:profile>
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
   </target>
 
-  <target name="build" depends="init">
+  <target name="expand" unless="no.build">
+    <artifact:nuxeo-expand />
+  </target>
+
+  <target name="build" depends="init" unless="maven.profile.nuxeo-ep">
     <echo>Building default Nuxeo DM EAR</echo>
     <property name="nuxeo.ear" value="${stagedir}/nuxeo.ear" />
     <mkdir dir="${nuxeo.ear}" />
@@ -59,7 +69,7 @@
   <target name="build-distribution"
           depends="init"
           description="Build distributions on various backends"
-          unless="no-alternate">
+          unless="no.alternate.build">
     <delete failonerror="false" dir="${stagedir}/nuxeo-${distribution}.ear" />
     <copy todir="${stagedir}/nuxeo-${distribution}.ear" overwrite="true">
       <fileset dir="${nuxeo.ear}" />
