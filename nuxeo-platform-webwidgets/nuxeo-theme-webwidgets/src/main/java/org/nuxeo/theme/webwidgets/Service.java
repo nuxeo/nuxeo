@@ -29,8 +29,11 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.theme.themes.ThemeManager;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
-public class Service extends DefaultComponent {
+public class Service extends DefaultComponent implements FrameworkListener {
 
     public static final ComponentName ID = new ComponentName(
             "org.nuxeo.theme.webwidgets.Service");
@@ -51,6 +54,8 @@ public class Service extends DefaultComponent {
         widgetCategories = new HashSet<String>();
         providerTypes = new LinkedHashMap<String, ProviderType>();
         decorationTypes = new LinkedHashMap<String, DecorationType>();
+        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
+                this);
         log.debug("Web widgets service activated");
     }
 
@@ -60,7 +65,23 @@ public class Service extends DefaultComponent {
         widgetCategories = null;
         providerTypes = null;
         decorationTypes = null;
+        context.getRuntimeContext().getBundle().getBundleContext().removeFrameworkListener(
+                this);
         log.debug("Web widgets service deactivated");
+    }
+
+    public void frameworkEvent(FrameworkEvent event) {
+        if (event.getType() == FrameworkEvent.STARTED) {
+            for (String name : getProviderNames()) {
+                try {
+                    getProvider(name).activate();
+                } catch (WidgetException e) {
+                    log.error("Web widgets provider: '" + name
+                            + "' activativation failed.", e);
+                }
+                log.info("Web widgets provider '" + name + "' activated.");
+            }
+        }
     }
 
     @Override
@@ -176,7 +197,6 @@ public class Service extends DefaultComponent {
                     + " for provider: " + name + " not found.");
         }
         providers.put(name, provider);
-        provider.activate();
         return provider;
 
     }
