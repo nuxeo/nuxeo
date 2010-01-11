@@ -174,6 +174,7 @@ public class CoreSearchBackend extends AbstractSearchEngineBackend {
             return originalPrincipal;
         }
         return new UserPrincipal(searchPrincipal.getName(),
-                Arrays.asList(searchPrincipal.getGroups()));
+                Arrays.asList(searchPrincipal.getGroups()), false,
+                searchPrincipal.isAdministrator());
     }
 }

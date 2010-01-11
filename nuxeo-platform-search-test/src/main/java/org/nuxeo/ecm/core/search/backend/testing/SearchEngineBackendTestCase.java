@@ -106,7 +106,7 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
             String... groups) {
         SQLQuery nxqlQuery = SQLQueryParser.parse(query);
         return new ComposedNXQueryImpl(nxqlQuery, new SearchPrincipalImpl(name,
-                groups, false));
+                groups, false, false));
     }
 
     /**

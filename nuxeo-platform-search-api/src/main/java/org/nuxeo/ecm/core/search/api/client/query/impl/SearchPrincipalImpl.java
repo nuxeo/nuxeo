@@ -44,24 +44,49 @@ public class SearchPrincipalImpl implements SearchPrincipal {
 
     protected boolean systemUser = false;
 
+    protected boolean isAdministrator = false;
+
     protected Serializable originalPrincipal;
 
     public SearchPrincipalImpl() {
     }
 
     public SearchPrincipalImpl(String name) {
-        this.name = name;
+        this(name, null, false, false);
     }
 
-    public SearchPrincipalImpl(String name, String[] groups, boolean systemUser) {
-        this.name = name;
-        this.groups = groups;
-        this.systemUser = systemUser;
+    /**
+     * @deprecated: use
+     *              {@link #SearchPrincipalImpl(String, String[], boolean, boolean)}
+     */
+    @Deprecated
+    public SearchPrincipalImpl(String name, String[] groups,
+            boolean isSystemUser) {
+        this(name, groups, isSystemUser, false);
     }
 
     public SearchPrincipalImpl(String name, String[] groups,
-            boolean systemUser, Principal originalPrincipal) {
-        this(name, groups, systemUser);
+            boolean isSystemUser, boolean isAdministrator) {
+        this.name = name;
+        this.groups = groups;
+        this.systemUser = isSystemUser;
+        this.isAdministrator = isAdministrator;
+    }
+
+    /**
+     * @deprecated: use
+     *              {@link #SearchPrincipalImpl(String, String[], boolean, boolean, Principal)}
+     */
+    @Deprecated
+    public SearchPrincipalImpl(String name, String[] groups,
+            boolean isSystemUser, Principal originalPrincipal) {
+        this(name, groups, isSystemUser, false, null);
+    }
+
+    public SearchPrincipalImpl(String name, String[] groups,
+            boolean isSystemUser, boolean isAdministrator,
+            Principal originalPrincipal) {
+        this(name, groups, isSystemUser, isAdministrator);
         if (originalPrincipal != null) {
             if (originalPrincipal instanceof Serializable) {
                 this.originalPrincipal = (Serializable) originalPrincipal;
@@ -90,6 +115,10 @@ public class SearchPrincipalImpl implements SearchPrincipal {
 
     public Serializable getOriginalPrincipal() {
         return originalPrincipal;
+    }
+
+    public boolean isAdministrator() {
+        return isAdministrator;
     }
 
 }

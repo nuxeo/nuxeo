@@ -38,6 +38,15 @@ public interface SearchPrincipal extends Principal, Serializable {
     String[] getGroups();
 
     /**
+     * Returns tru if user is an administrator
+     * <p>
+     * Security will still apply to this user
+     *
+     * @since 5.3 GA
+     */
+    boolean isAdministrator();
+
+    /**
      * Is the search principal a system user.
      * <p>
      * A system user is a user which doesn't have security restriction at

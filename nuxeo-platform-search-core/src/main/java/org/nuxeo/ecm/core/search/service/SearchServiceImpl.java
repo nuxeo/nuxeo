@@ -777,9 +777,10 @@ public class SearchServiceImpl extends DefaultComponent implements
         String name = principal.getName();
         // :FIXME: find a better way to find this out. For now this is the
         // only available way of doing it.
-        boolean systemUser = SecurityConstants.SYSTEM_USERNAME.equals(name);
+        boolean isSystemUser = SecurityConstants.SYSTEM_USERNAME.equals(name);
 
         String[] groups;
+        boolean isAdministrator = false;
         if (principal instanceof NuxeoPrincipal) {
             NuxeoPrincipal nuxeoPrincipal = (NuxeoPrincipal) principal;
             // security checks are done on the transitive closure of group
@@ -787,12 +788,14 @@ public class SearchServiceImpl extends DefaultComponent implements
             groups = nuxeoPrincipal.getAllGroups().toArray(
                     new String[nuxeoPrincipal.getAllGroups().size() + 1]);
             groups[groups.length - 1] = SecurityConstants.EVERYONE;
+            isAdministrator = nuxeoPrincipal.isAdministrator();
         } else {
             // decided not to add EVERYONE because that's a Nuxeo concept
             // TODO adapt when we have real use cases of this
             groups = new String[0];
         }
-        return new SearchPrincipalImpl(name, groups, systemUser, principal);
+        return new SearchPrincipalImpl(name, groups, isSystemUser,
+                isAdministrator, principal);
     }
 
     public final boolean isEnabled() {
