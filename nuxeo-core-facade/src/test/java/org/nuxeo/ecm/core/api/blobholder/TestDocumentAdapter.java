@@ -45,6 +45,7 @@ public class TestDocumentAdapter extends RepositoryOSGITestCase {
         blob.setMimeType("text/plain");
         file.setProperty("dublincore", "title", "TestFile");
         file.setProperty("file", "content", blob);
+        file.setProperty("file", "filename", "TestFile-fn.txt");
         file = session.createDocument(file);
         session.save();
 
@@ -73,6 +74,8 @@ public class TestDocumentAdapter extends RepositoryOSGITestCase {
         assertEquals("other.txt", b.getFilename());
         assertEquals("text/html", b.getMimeType());
         assertEquals("OtherContent", b.getString());
+        // check filename property updated as well
+        assertEquals("other.txt", file.getPropertyValue("file:filename"));
 
         // test set null blob
         bh.setBlob(null);
@@ -80,6 +83,7 @@ public class TestDocumentAdapter extends RepositoryOSGITestCase {
         session.save();
         b = bh.getBlob();
         assertNull(b);
+        assertNull(file.getPropertyValue("file:filename"));
     }
 
     public void testNoteAdapters() throws Exception {

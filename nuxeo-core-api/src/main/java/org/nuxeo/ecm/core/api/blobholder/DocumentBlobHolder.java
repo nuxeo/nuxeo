@@ -78,8 +78,11 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
 
     @Override
     public void setBlob(Blob blob) throws ClientException {
-        xPathFilename = null;
         doc.getProperty(xPath).setValue(blob);
+        if (xPathFilename != null) {
+            String filename = blob == null ? null : blob.getFilename();
+            doc.setPropertyValue(xPathFilename, filename);
+        }
     }
 
     @Override
