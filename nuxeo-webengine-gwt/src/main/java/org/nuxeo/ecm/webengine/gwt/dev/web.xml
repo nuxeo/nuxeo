@@ -9,7 +9,8 @@
   
   You can add more init-param tags to correctly configure the nuxeo launcher.
   These are the optional init-param tags:
-  - home    : the home directory for nuxeo server ( defaults to {user.dir}/.nxserver-gwt )
+  - home    : the home directory for nuxeo server ( defaults to {user.home}/.nxserver-gwt )
+              You can use system properties variable in path expression like: "${user.dir}/.nxserver"
   - host    : the HTTP server address (defaults to localhost:8081)
   - profile : the server profile to build. Default: "core".
   - config  : a custom profile configuration file to use. It's specified either as a file path, as an URL or as a Java resource by prepending the resource name using the prefix java:

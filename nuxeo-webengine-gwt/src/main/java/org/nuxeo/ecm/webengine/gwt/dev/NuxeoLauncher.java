@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.dev.NuxeoApp;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 
@@ -44,10 +45,11 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         if (v == null) v = "5.3.1-SNAPSHOT";        
         ArrayList<String> args = new ArrayList<String>();
         if (home == null) {
-            String userDir = System.getProperty("user.dir");
+            String userDir = System.getProperty("user.home");
             String sep = userDir.endsWith("/") ? "" : "/";
             args.add(userDir+sep+".nxserver-gwt");
         } else {
+            home = StringUtils.expandVars(home, System.getProperties());
             args.add(home);
         }
         args.add("-h");
