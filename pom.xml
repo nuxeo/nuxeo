@@ -81,7 +81,6 @@
     <module>nuxeo-webengine</module>
     <module>nuxeo-dm</module>
     <module>nuxeo-gwt</module>
-    <module>nuxeo-distribution</module>
   </modules>
 
   <properties>
@@ -1705,9 +1704,13 @@
 
   <profiles>
     <profile>
+      <id>all-distributions</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <activeByDefault>false</activeByDefault>
       </activation>
+      <modules>
+        <module>nuxeo-distribution</module>
+      </modules>
     </profile>
     <profile>
       <id>customer-release</id>
