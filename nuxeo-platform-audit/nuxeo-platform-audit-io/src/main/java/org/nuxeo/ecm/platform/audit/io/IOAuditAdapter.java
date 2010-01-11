@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
@@ -82,7 +83,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
             RepositoryManager manager = Framework.getService(RepositoryManager.class);
             Map<String, Serializable> context = new HashMap<String, Serializable>();
             // FIXME: should use constants?
-            context.put("username", "system");
+            context.put("username", SecurityConstants.SYSTEM_USERNAME);
             coreSession = manager.getRepository(repo).open(context);
         } catch (Exception e) {
             throw new ClientException(

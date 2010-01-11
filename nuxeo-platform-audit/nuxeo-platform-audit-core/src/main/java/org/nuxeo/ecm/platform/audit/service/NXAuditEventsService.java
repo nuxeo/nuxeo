@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -282,8 +283,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         entry.setDocPath(doc.getPathAsString());
         entry.setDocType(doc.getType());
         entry.setDocUUID(doc.getId());
-        // FIXME: why hard-code it if we may have a principal?
-        entry.setPrincipalName("system");
+        entry.setPrincipalName(SecurityConstants.SYSTEM_USERNAME);
         entry.setCategory("eventDocumentCategory");
         entry.setEventId(DocumentEventTypes.DOCUMENT_CREATED);
         // why hard-code it if we have the document life cycle?

@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.platform.io.api.AbstractIOResourceAdapter;
 import org.nuxeo.ecm.platform.io.api.IOResources;
@@ -60,7 +61,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Adapter for import/export of relations
- *
+ * 
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class IORelationAdapter extends AbstractIOResourceAdapter {
@@ -127,7 +128,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             RepositoryManager manager = Framework.getService(RepositoryManager.class);
             Map<String, Serializable> context = new HashMap<String, Serializable>();
             // FIXME: should use constants?
-            context.put("username", "system");
+            context.put("username", SecurityConstants.SYSTEM_USERNAME);
             coreSession = manager.getRepository(repo).open(context);
         } catch (Exception e) {
             throw new ClientException(
@@ -302,7 +303,8 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
                     Map<String, Serializable> context = new HashMap<String, Serializable>();
                     context.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY,
                             session.getSessionId());
-                    Set<Resource> resources = relManager.getAllResources(doc, context);
+                    Set<Resource> resources = relManager.getAllResources(doc,
+                            context);
                     docResources.put(docRef, resources);
                     allResources.addAll(resources);
                     for (Resource resource : resources) {

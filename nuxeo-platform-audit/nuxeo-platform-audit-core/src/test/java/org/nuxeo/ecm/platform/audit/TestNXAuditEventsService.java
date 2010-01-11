@@ -29,6 +29,7 @@ import javax.management.ObjectName;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
@@ -187,7 +188,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         assertEquals("/", entry.getDocPath());
         assertEquals("Root", entry.getDocType());
         assertEquals("documentCreated", entry.getEventId());
-        assertEquals("system", entry.getPrincipalName());
+        assertEquals(SecurityConstants.SYSTEM_USERNAME, entry.getPrincipalName());
     }
 
     protected Set<ObjectName> doQuery(String name) {

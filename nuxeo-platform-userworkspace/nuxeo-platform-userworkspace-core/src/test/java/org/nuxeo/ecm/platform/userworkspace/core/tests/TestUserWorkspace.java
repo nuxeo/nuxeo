@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -63,7 +64,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
 
         // check creator
         String creator = (String) uw.getProperty("dublincore", "creator");
-        assertEquals("system", creator);
+        assertEquals(SecurityConstants.SYSTEM_USERNAME, creator);
 
         // check write access
         uw.setProperty("dublibore", "description", "Toto's workspace");
