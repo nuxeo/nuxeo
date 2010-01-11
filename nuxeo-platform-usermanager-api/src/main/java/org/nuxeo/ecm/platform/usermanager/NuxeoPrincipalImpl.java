@@ -363,7 +363,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         // set isAdministrator boolean according to groups declared on user
         // manager
         if (!isAdministrator() && userManager != null) {
-            List<String> adminGroups = userManager.getAdministratorGroups();
+            List<String> adminGroups = userManager.getAdministratorsGroups();
             for (String adminGroup : adminGroups) {
                 if (allGroups.contains(adminGroup)) {
                     isAdministrator = true;

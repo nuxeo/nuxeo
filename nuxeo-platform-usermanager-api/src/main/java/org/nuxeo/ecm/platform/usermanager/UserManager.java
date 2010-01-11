@@ -413,7 +413,7 @@ public interface UserManager extends Serializable {
      *
      * @since 5.3 GA
      */
-    List<String> getAdministratorGroups();
+    List<String> getAdministratorsGroups();
 
     // DEPRECATED API
 

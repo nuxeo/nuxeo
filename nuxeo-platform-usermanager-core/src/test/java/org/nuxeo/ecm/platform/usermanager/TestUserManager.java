@@ -187,7 +187,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     }
 
     public void testGetAdministratorGroups() throws Exception {
-        List<String> adminGroups = userManager.getAdministratorGroups();
+        List<String> adminGroups = userManager.getAdministratorsGroups();
         assertEquals(Arrays.asList("administrators"), adminGroups);
     }
 
@@ -197,7 +197,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         // user manager is recomputed after deployment => refetch it
         userManager = userService.getUserManager();
 
-        List<String> adminGroups = userManager.getAdministratorGroups();
+        List<String> adminGroups = userManager.getAdministratorsGroups();
         assertEquals(Arrays.asList("myAdministrators"), adminGroups);
     }
 

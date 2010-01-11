@@ -421,7 +421,7 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public List<String> getAdministratorGroups() {
+    public List<String> getAdministratorsGroups() {
         throw new UnsupportedOperationException();
     }
 

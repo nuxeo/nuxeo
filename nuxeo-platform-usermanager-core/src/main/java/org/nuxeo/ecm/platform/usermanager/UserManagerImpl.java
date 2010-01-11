@@ -1063,7 +1063,7 @@ public class UserManagerImpl implements UserManager {
         updateUser(principal.getModel());
     }
 
-    public List<String> getAdministratorGroups() {
+    public List<String> getAdministratorsGroups() {
         return administratorGroups;
     }
 
