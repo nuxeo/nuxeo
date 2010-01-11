@@ -410,6 +410,8 @@ public interface UserManager extends Serializable {
 
     /**
      * Returns the list of administrators groups
+     *
+     * @since 5.3 GA
      */
     List<String> getAdministratorGroups();
 
