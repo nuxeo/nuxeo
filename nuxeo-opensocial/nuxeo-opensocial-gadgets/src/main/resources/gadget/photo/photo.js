@@ -84,9 +84,9 @@ function _isSet(val){
 };
 
 function savePrefs(){
-  prefs.set("picTitle",gadgets.util.escapeString(jQuery("#title-field").val()));
-  prefs.set("link",gadgets.util.escapeString(jQuery("#link-field").val()));
-  prefs.set("legend",gadgets.util.escapeString(jQuery("#legend-field").val()));
+  prefs.set("picTitle",gadgets.util.escapeString(jQuery("#title-field").val()),
+  "link",gadgets.util.escapeString(jQuery("#link-field").val()),
+  "legend",gadgets.util.escapeString(jQuery("#legend-field").val()));
 };
 
 function loadImage(id){
