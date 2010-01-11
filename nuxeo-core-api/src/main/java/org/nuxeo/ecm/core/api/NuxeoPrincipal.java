@@ -126,7 +126,10 @@ public interface NuxeoPrincipal extends Principal, Serializable {
     void setModel(DocumentModel model) throws ClientException;
 
     /**
-     * Checks if the principal is an administrator (superuser).
+     * Returns true if the principal is an administrator.
+     * <p>
+     * Security checks still apply on the repository for administrator user. If
+     * user is a system user, this method will return true.
      *
      * @return true if the principal is an administrator.
      */

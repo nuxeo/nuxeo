@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.api.impl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -36,29 +37,51 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
 
     private static final long serialVersionUID = 2013321088068583749L;
 
-    private String userName;
+    protected boolean anonymous;
 
-    private List<String> groups;
+    protected boolean administrator;
 
-    private List<String> roles;
+    protected String userName;
 
-    private String firstName;
+    protected List<String> groups;
 
-    private String lastName;
+    protected List<String> roles;
 
-    private String company;
+    protected String firstName;
 
-    private String password;
+    protected String lastName;
 
-    private DocumentModel model;
+    protected String company;
 
+    protected String password;
+
+    protected DocumentModel model;
+
+    /**
+     * @deprecated use {{@link #UserPrincipal(String, List, boolean, boolean)}}
+     */
+    @Deprecated
     public UserPrincipal(String username) {
-        this(username, new ArrayList<String>());
+        this(username, new ArrayList<String>(), false, false);
     }
 
+    /**
+     * @deprecated use {{@link #UserPrincipal(String, List, boolean, boolean)}}
+     */
+    @Deprecated
     public UserPrincipal(String username, List<String> groups) {
+        // BBB: members of group 'administrators' are considered administrators
+        this(username, groups, false, groups != null
+                && groups.contains(SecurityConstants.ADMINISTRATORS));
+    }
+
+    public UserPrincipal(String username, List<String> groups,
+            boolean anonymous, boolean administrator) {
         userName = username;
-        this.groups = groups;
+        List<String> emptyGroups = Collections.emptyList();
+        this.groups = groups == null ? emptyGroups : groups;
+        this.anonymous = anonymous;
+        this.administrator = administrator;
     }
 
     public String getCompany() {
@@ -199,12 +222,11 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
     }
 
     public boolean isAdministrator() {
-        return isMemberOf(SecurityConstants.ADMINISTRATORS);
+        return administrator;
     }
 
     public boolean isAnonymous() {
-        // no anonymous user in the stub implementation
-        return false;
+        return anonymous;
     }
 
     public String getOriginatingUser() {

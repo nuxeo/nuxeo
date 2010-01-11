@@ -201,7 +201,7 @@ public abstract class AbstractSession implements CoreSession,
                         // -> we must synchronize this with SecurityService
                         // check
                         sessionContext.put("principal", new SimplePrincipal(
-                                "system"));
+                                SecurityConstants.SYSTEM_USERNAME));
                         try {
                             handler.initializeRepository(this);
                             session.save();
@@ -240,8 +240,8 @@ public abstract class AbstractSession implements CoreSession,
      * be unique in the system)
      *
      * <ul>
-     * <li>A is the repository name (which uniquely identifies the repository in
-     * the system)
+     * <li>A is the repository name (which uniquely identifies the repository
+     * in the system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>
      */
@@ -1361,7 +1361,7 @@ public abstract class AbstractSession implements CoreSession,
                         && !(filter instanceof FacetFilter);
                 postFilter = postFilterPolicies || postFilterFilter;
                 String[] principals;
-                if (principal.getName().equals("system")) {
+                if (SecurityConstants.SYSTEM_USERNAME.equals(principal.getName())) {
                     principals = null; // means: no security check needed
                 } else {
                     principals = SecurityService.getPrincipalsToCheck(principal);
@@ -1438,7 +1438,7 @@ public abstract class AbstractSession implements CoreSession,
             Principal principal = getPrincipal();
             String permission = BROWSE;
             String[] principals;
-            if (principal.getName().equals("system")) {
+            if (SecurityConstants.SYSTEM_USERNAME.equals(principal.getName())) {
                 principals = null; // means: no security check needed
             } else {
                 principals = SecurityService.getPrincipalsToCheck(principal);
@@ -2613,10 +2613,12 @@ public abstract class AbstractSession implements CoreSession,
 
     protected boolean isAdministrator() {
         Principal principal = getPrincipal();
+        // FIXME: this is inconsistent with NuxeoPrincipal#isAdministrator
+        // method because it allows hardcoded Administrator user
         if (SecurityConstants.ADMINISTRATOR.equals(principal.getName())) {
             return true;
         }
-        if ("system".equals(principal.getName())) {
+        if (SecurityConstants.SYSTEM_USERNAME.equals(principal.getName())) {
             return true;
         }
         if (principal instanceof NuxeoPrincipal) {

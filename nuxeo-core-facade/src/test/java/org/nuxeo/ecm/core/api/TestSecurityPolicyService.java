@@ -19,6 +19,16 @@
 
 package org.nuxeo.ecm.core.api;
 
+import static org.nuxeo.ecm.core.api.Constants.CORE_BUNDLE;
+import static org.nuxeo.ecm.core.api.Constants.CORE_FACADE_TESTS_BUNDLE;
+import static org.nuxeo.ecm.core.api.Constants.SCHEMA_BUNDLE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ANONYMOUS;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,11 +41,6 @@ import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-
-import static org.nuxeo.ecm.core.api.Constants.CORE_BUNDLE;
-import static org.nuxeo.ecm.core.api.Constants.CORE_FACADE_TESTS_BUNDLE;
-import static org.nuxeo.ecm.core.api.Constants.SCHEMA_BUNDLE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.*;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -79,7 +84,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
     private static void setTestPermissions(String user, String... perms)
             throws ClientException {
-        CoreSession session = openSession("system");
+        CoreSession session = openSession(SecurityConstants.SYSTEM_USERNAME);
         DocumentModel doc = session.getRootDocument();
         ACP acp = doc.getACP();
         if (acp == null) {

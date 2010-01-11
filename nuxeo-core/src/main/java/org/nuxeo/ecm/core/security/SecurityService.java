@@ -127,7 +127,8 @@ public class SecurityService extends DefaultComponent {
 
     // Never used. Remove ?
     public static void invalidateCache(Session session, String username) {
-        session.getRepository().getNuxeoSecurityManager().invalidateCache(session);
+        session.getRepository().getNuxeoSecurityManager().invalidateCache(
+                session);
     }
 
     public boolean arePoliciesRestrictingPermission(String permission) {
@@ -148,7 +149,7 @@ public class SecurityService extends DefaultComponent {
 
         // system bypass
         // :FIXME: tmp hack
-        if (username.equals("system")) {
+        if (SecurityConstants.SYSTEM_USERNAME.equals(username)) {
             return true;
         }
 
@@ -182,7 +183,8 @@ public class SecurityService extends DefaultComponent {
      * Provides the full list of all permissions or groups of permissions that
      * contain the given one (inclusive).
      * <p>
-     * It is exposed remotely through {@link CoreSession#getPermissionsToCheck()}.
+     * It is exposed remotely through
+     * {@link CoreSession#getPermissionsToCheck()}.
      *
      * @param permission
      * @return the list, as an array of strings.

@@ -22,6 +22,7 @@ import javax.security.auth.login.LoginException;
 
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -71,7 +72,7 @@ public abstract class UnrestrictedSessionRunner {
     }
 
     protected boolean isUnrestricted(CoreSession session) {
-        return "system".equals(session.getPrincipal().getName());
+        return SecurityConstants.SYSTEM_USERNAME.equals(session.getPrincipal().getName());
     }
 
     /**
@@ -101,8 +102,8 @@ public abstract class UnrestrictedSessionRunner {
                     repository = Framework.getService(RepositoryManager.class).getRepository(
                             repositoryName);
                     if (repository == null) {
-                        throw new ClientException("Cannot get repository: " +
-                                repositoryName);
+                        throw new ClientException("Cannot get repository: "
+                                + repositoryName);
                     }
                     session = repository.open();
                 } catch (ClientException e) {
@@ -129,7 +130,7 @@ public abstract class UnrestrictedSessionRunner {
             } finally {
                 try {
                     // loginContext may be null in tests
-                    if (loginContext!=null) {
+                    if (loginContext != null) {
                         loginContext.logout();
                     }
                 } catch (LoginException e) {
