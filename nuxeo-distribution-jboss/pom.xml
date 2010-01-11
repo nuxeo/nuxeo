@@ -14,6 +14,21 @@
   <name>Nuxeo JBoss Distribution</name>
   <description>Package Nuxeo EP or DM EAR with JBoss</description>
 
+  <profiles>
+    <profile>
+      <id>all-distributions</id>
+    </profile>
+    <profile>
+      <id>nuxeo-ep</id>
+    </profile>
+    <profile>
+      <id>nuxeo-dm</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+  </profiles>
+
   <build>
     <plugins>
       <plugin>

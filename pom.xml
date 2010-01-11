@@ -45,20 +45,9 @@
     </profile>
     <profile>
       <id>nuxeo-dm</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
       <modules>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
-      </modules>
-    </profile>
-    <profile>
-      <!-- deprecated (NXP-4472) -->
-      <id>nuxeo-ep-jboss</id>
-      <modules>
-        <module>nuxeo-platform-ear</module>
-        <module>nuxeo-distribution-jboss</module>
       </modules>
     </profile>
     <profile>
@@ -97,6 +86,9 @@
     <profile>
       <!-- Build all JBoss distributions -->
       <id>jboss</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
       <modules>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>

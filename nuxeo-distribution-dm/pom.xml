@@ -251,7 +251,13 @@
 
   <profiles>
     <profile>
+      <id>all-distributions</id>
+    </profile>
+    <profile>
       <id>vcs</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
     </profile>
     <profile>
       <id>derby</id>

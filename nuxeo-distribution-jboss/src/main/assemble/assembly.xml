@@ -5,12 +5,15 @@
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
            uri="urn:nuxeo-artifact" />
-  <artifact:expand depth="3" />
 
-  <property name="outdir" value="${maven.project.build.directory}" />
-  <property name="stagedir" value="${outdir}/stage" />
+  <target name="init">
+    <artifact:expand depth="3" />
 
-  <target name="build">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="stagedir" value="${outdir}/stage" />
+  </target>
+
+  <target name="build" depends="init">
     <echo>Building JBoss distributions...</echo>
     <property name="jboss" value="${stagedir}/jboss" />
 
@@ -44,7 +47,7 @@
   </target>
 
   <target name="build-nuxeo-ep-jboss"
-          depends="prepare-jboss"
+          depends="prepare-jboss" unless="maven.profile.nuxeo-dm"
           description="Build JBoss distribution with Nuxeo EP">
 
     <delete failonerror="false" dir="${outdir}/nuxeo-ep-jboss" />
@@ -63,7 +66,7 @@
   </target>
 
   <target name="build-nuxeo-dm-jboss"
-          depends="prepare-jboss"
+          depends="prepare-jboss" unless="maven.profile.nuxeo-ep"
           description="Build JBoss distribution with Nuxeo DM">
 
     <delete failonerror="false" dir="${outdir}/nuxeo-dm-jboss" />

@@ -8,7 +8,7 @@
 
   <target name="init">
     <artifact:nuxeo-expand />
-    <artifact:print output="dependency-tree.log" />
+    <!-- <artifact:print output="dependency-tree.log" /> -->
 
     <property name="outdir" value="${maven.project.build.directory}" />
     <property name="stagedir" value="${outdir}/stage" />
