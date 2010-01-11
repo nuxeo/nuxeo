@@ -215,11 +215,13 @@
   <target name="list-available-distributions">
     <echo message="Available distributions are:" />
     <echo message="nuxeo-ep             - build Nuxeo EP EAR" />
-    <echo message="nuxeo-ep-jboss       - package a JBoss containing nuxeo-ep EAR" />
-    <echo message="nuxeo-ep-jetty       - package a Jetty containing nuxeo-ep" />
+    <echo message="nuxeo-ep-jboss       - DEPRECATED - package a JBoss containing nuxeo-ep EAR" />
+    <echo message="nuxeo-ep-jetty       - DEPRECATED - package a Jetty containing nuxeo-ep" />
     <echo message="nuxeo-dm             - build Nuxeo DM EAR" />
-    <echo message="nuxeo-dm-jboss       - package a JBoss containing nuxeo-dm EAR" />
-    <echo message="nuxeo-dm-jetty       - package a Jetty containing nuxeo-dm" />
+    <echo message="nuxeo-jboss          - package JBoss distributions with nuxeo-ep and nuxeo-dm EARs" />
+    <echo message="nuxeo-jetty          - package Jetty distributions containing nuxeo-ep and nuxeo-dm" />
+    <echo message="nuxeo-dm-jboss       - DEPRECATED - package a JBoss containing nuxeo-dm EAR" />
+    <echo message="nuxeo-dm-jetty       - DEPRECATED - package a Jetty containing nuxeo-dm" />
     <echo message="shell                - build Nuxeo Shell" />
     <echo message="jetty                - build Jetty distribution" />
     <echo message="gf3                  - build GlassFish distribution" />
