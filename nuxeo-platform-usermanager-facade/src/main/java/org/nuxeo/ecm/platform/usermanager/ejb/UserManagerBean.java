@@ -532,4 +532,8 @@ public class UserManagerBean implements UserManager {
         }
     }
 
+    public List<String> getAdministratorGroups() {
+        return getUserManager().getAdministratorGroups();
+    }
+
 }

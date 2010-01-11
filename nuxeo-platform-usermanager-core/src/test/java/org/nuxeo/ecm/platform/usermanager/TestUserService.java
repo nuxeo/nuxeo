@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.usermanager;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -54,7 +55,8 @@ public class TestUserService extends NXRuntimeTestCase {
         FakeUserManagerImpl fum = (FakeUserManagerImpl) userManager;
         assertEquals("search_only", userManager.getUserListingMode());
         assertEquals("search_oh_yeah", userManager.getGroupListingMode());
-        assertEquals("tehroot", fum.rootLogin);
+        assertEquals(Arrays.asList("tehroot"), fum.defaultAdministratorIds);
+        assertEquals(Collections.emptyList(), fum.administratorsGroups);
         assertEquals("defgr", userManager.getDefaultGroup());
         assertEquals("name", userManager.getUserSortField());
         assertEquals("sn", fum.groupSortField);
@@ -62,7 +64,8 @@ public class TestUserService extends NXRuntimeTestCase {
         assertEquals("mail", fum.userEmailField);
         // append mode:
         assertEquals(new HashSet<String>(Arrays.asList("first", "last",
-                "username", "firstName", "lastName", "email")), fum.getUserSearchFields());
+                "username", "firstName", "lastName", "email")),
+                fum.getUserSearchFields());
         assertEquals(MatchType.SUBSTRING, fum.userSearchFields.get("username"));
         assertEquals(MatchType.SUBSTRING, fum.userSearchFields.get("firstName"));
         assertEquals(MatchType.SUBSTRING, fum.userSearchFields.get("lastName"));
@@ -114,7 +117,9 @@ public class TestUserService extends NXRuntimeTestCase {
                 "test-userservice-override-config.xml");
         userManager = Framework.getService(UserManager.class);
         FakeUserManagerImpl fum = (FakeUserManagerImpl) userManager;
-        assertEquals("bob", fum.rootLogin);
+        assertEquals(Arrays.asList("tehroot", "bob", "bobette"),
+                fum.defaultAdministratorIds);
+        assertEquals(Arrays.asList("myAdministrators"), fum.administratorsGroups);
         assertEquals("id", userManager.getUserSortField());
         // the rest should be unchanged
         assertEquals("search_only", userManager.getUserListingMode());

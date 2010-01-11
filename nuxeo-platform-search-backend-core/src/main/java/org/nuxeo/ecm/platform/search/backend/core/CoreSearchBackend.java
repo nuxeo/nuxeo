@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.search.api.backend.impl.AbstractSearchEngineBackend;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
@@ -165,8 +166,8 @@ public class CoreSearchBackend extends AbstractSearchEngineBackend {
 
     protected static Serializable getPrincipal(SearchPrincipal searchPrincipal) {
         if (searchPrincipal == null) {
-            // TODO better way to build a system user
-            return new UserPrincipal("system");
+            return new UserPrincipal(SecurityConstants.SYSTEM_USERNAME, null,
+                    false, true);
         }
         Serializable originalPrincipal = searchPrincipal.getOriginalPrincipal();
         if (originalPrincipal != null) {
@@ -175,5 +176,4 @@ public class CoreSearchBackend extends AbstractSearchEngineBackend {
         return new UserPrincipal(searchPrincipal.getName(),
                 Arrays.asList(searchPrincipal.getGroups()));
     }
-
 }

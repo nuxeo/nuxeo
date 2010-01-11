@@ -93,36 +93,47 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     @Deprecated
     public static final String GROUPS_COLUMN = "groups";
 
+    /**
+     * @deprecated: harcoded
+     */
+    @Deprecated
     private static final String SCHEMA_NAME = "user";
 
     private static final long serialVersionUID = 1791676740406045594L;
 
     private static final Log log = LogFactory.getLog(NuxeoPrincipalImpl.class);
 
-    private final List<String> roles = new LinkedList<String>();
+    protected final List<String> roles = new LinkedList<String>();
 
     // group not stored in the backend and added at login time
-    private List<String> virtualGroups = new LinkedList<String>();
+    protected List<String> virtualGroups = new LinkedList<String>();
 
     // transitive closure of the "member of group" relation
-    private List<String> allGroups;
+    protected List<String> allGroups;
 
-    private final boolean anonymous;
+    protected final boolean isAnonymous;
 
-    private String principalId;
+    protected boolean isAdministrator;
 
-    private DocumentModel model;
+    protected String principalId;
 
-    private DataModel dataModel;
+    protected DocumentModel model;
 
-    private String origUserName;
+    protected DataModel dataModel;
+
+    protected String origUserName;
 
     public NuxeoPrincipalImpl(String name) throws ClientException {
-        this(name, false);
+        this(name, false, false);
     }
 
-    public NuxeoPrincipalImpl(String name, boolean anonymous)
+    public NuxeoPrincipalImpl(String name, boolean isAnonymous)
             throws ClientException {
+        this(name, isAnonymous, false);
+    }
+
+    public NuxeoPrincipalImpl(String name, boolean isAnonymous,
+            boolean isAdministrator) throws ClientException {
         DocumentModelImpl documentModelImpl = new DocumentModelImpl(SCHEMA_NAME);
         // schema name hardcoded default when setModel is never called
         // which happens when a principal is created just to encapsulate
@@ -131,7 +142,8 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
                 new HashMap<String, Object>()));
         setModel(documentModelImpl);
         dataModel.setData(USERNAME_COLUMN, name);
-        this.anonymous = anonymous;
+        this.isAnonymous = isAnonymous;
+        this.isAdministrator = isAdministrator;
     }
 
     public String getCompany() {
@@ -331,7 +343,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
                 checkedGroups.add(groupName);
                 if (virtualGroups.contains(groupName)) {
                     resultingGroups.add(groupName);
-                } else {
+                } else if (userManager != null) {
                     NuxeoGroup nxGroup = userManager.getGroup(groupName);
                     if (nxGroup == null) {
                         // XXX this should only happens in case of inconsistency
@@ -347,6 +359,18 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         }
 
         allGroups = new ArrayList<String>(resultingGroups);
+
+        // set isAdministrator boolean according to groups declared on user
+        // manager
+        if (!isAdministrator() && userManager != null) {
+            List<String> adminGroups = userManager.getAdministratorGroups();
+            for (String adminGroup : adminGroups) {
+                if (allGroups.contains(adminGroup)) {
+                    isAdministrator = true;
+                    break;
+                }
+            }
+        }
     }
 
     public List<String> getVirtualGroups() {
@@ -360,11 +384,12 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     public boolean isAdministrator() {
-        return isMemberOf(SecurityConstants.ADMINISTRATORS);
+        return isAdministrator
+                || SecurityConstants.SYSTEM_USERNAME.equals(getName());
     }
 
     public boolean isAnonymous() {
-        return anonymous;
+        return isAnonymous;
     }
 
     @Override

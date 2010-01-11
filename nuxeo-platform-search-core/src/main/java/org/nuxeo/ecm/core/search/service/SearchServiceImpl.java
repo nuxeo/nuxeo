@@ -788,7 +788,7 @@ public class SearchServiceImpl extends DefaultComponent implements
         String name = principal.getName();
         // :FIXME: find a better way to find this out. For now this is the
         // only available way of doing it.
-        boolean systemUser = name.equals("system");
+        boolean systemUser = SecurityConstants.SYSTEM_USERNAME.equals(name);
 
         String[] groups;
         if (principal instanceof NuxeoPrincipal) {

@@ -283,7 +283,7 @@ public interface UserManager extends Serializable {
 
     /**
      * Get users from a group and its subgroups
-     * 
+     *
      * @param groupId ID of the group
      * @return
      */
@@ -407,6 +407,11 @@ public interface UserManager extends Serializable {
      */
     void setConfiguration(UserManagerDescriptor descriptor)
             throws ClientException;
+
+    /**
+     * Returns the list of administrators groups
+     */
+    List<String> getAdministratorGroups();
 
     // DEPRECATED API
 

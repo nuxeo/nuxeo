@@ -20,8 +20,10 @@
 package org.nuxeo.ecm.platform.usermanager;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -42,8 +44,14 @@ public class UserManagerDescriptor implements Serializable {
     @XNode("defaultGroup")
     protected String defaultGroup;
 
-    @XNode("defaultAdministratorId")
-    protected String rootLogin;
+    @XNodeList(value = "defaultAdministratorId", type = ArrayList.class, componentType = String.class)
+    protected List<String> defaultAdministratorIds;
+
+    @XNodeList(value = "administratorsGroup", type = ArrayList.class, componentType = String.class)
+    protected List<String> administratorsGroups;
+
+    @XNode("disableDefaultAdministratorsGroup")
+    Boolean disableDefaultAdministratorsGroup;
 
     @XNode("userSortField")
     protected String userSortField;
@@ -69,7 +77,8 @@ public class UserManagerDescriptor implements Serializable {
     protected boolean userSearchFieldsPresent = false;
 
     @XNode("users/searchFields")
-    protected void setUserSearchFieldsPresent(@SuppressWarnings("unused") String text) {
+    protected void setUserSearchFieldsPresent(@SuppressWarnings("unused")
+    String text) {
         userSearchFieldsPresent = true;
     }
 
@@ -80,14 +89,14 @@ public class UserManagerDescriptor implements Serializable {
 
     @XNodeList(value = "users/searchFields/exactMatchSearchField", componentType = String.class, type = String[].class)
     protected void setExactMatchUserSearchFields(String[] fields) {
-        for (String field: fields) {
+        for (String field : fields) {
             userSearchFields.put(field, MatchType.EXACT);
         }
     }
 
     @XNodeList(value = "users/searchFields/substringMatchSearchField", componentType = String.class, type = String[].class)
     protected void setSubstringMatchUserSearchFields(String[] fields) {
-        for (String field: fields) {
+        for (String field : fields) {
             userSearchFields.put(field, MatchType.SUBSTRING);
         }
     }
@@ -145,9 +154,29 @@ public class UserManagerDescriptor implements Serializable {
         if (other.defaultGroup != null) {
             defaultGroup = other.defaultGroup;
         }
-        if (other.rootLogin != null) {
-            rootLogin = other.rootLogin;
+        if (other.defaultAdministratorIds != null) {
+            if (defaultAdministratorIds == null) {
+                defaultAdministratorIds = new ArrayList<String>();
+            }
+            defaultAdministratorIds.addAll(other.defaultAdministratorIds);
         }
+        if (other.administratorsGroups != null) {
+            if (administratorsGroups == null) {
+                administratorsGroups = new ArrayList<String>();
+            }
+            administratorsGroups.addAll(other.administratorsGroups);
+        }
+        if (other.disableDefaultAdministratorsGroup != null) {
+            disableDefaultAdministratorsGroup = other.disableDefaultAdministratorsGroup;
+        }
+        if (other.userSearchFieldsPresent) {
+            if (other.userSearchFieldsAppend) {
+                userSearchFields.putAll(other.userSearchFields);
+            } else {
+                userSearchFields = other.userSearchFields;
+            }
+        }
+
         if (other.userSortField != null) {
             userSortField = other.userSortField;
         }

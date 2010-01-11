@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.repository.LocalRepositoryInstanceHandler;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryInstance;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.client.DefaultLoginHandler;
 import org.nuxeo.ecm.core.client.NuxeoClient;
 import org.nuxeo.runtime.api.Framework;
@@ -205,13 +206,13 @@ public class CommandContext extends HashMap<String, Object> {
 
     protected void initalizeConnection() throws Exception {
         NuxeoClient client = NuxeoClient.getInstance();
-        if (username != null && !"system".equals(username)) {
+        if (username != null && !SecurityConstants.SYSTEM_USERNAME.equals(username)) {
             client.setLoginHandler(new DefaultLoginHandler(username, password));
         }
         // try connecting to all candidate hosts
         Exception exc = null;
         for (String h : getCandidateHosts()) {
-            if (username != null && !"system".equals(username)) {
+            if (username != null && !SecurityConstants.SYSTEM_USERNAME.equals(username)) {
                 client.setLoginHandler(new DefaultLoginHandler(username,
                         password));
             }

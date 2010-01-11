@@ -39,15 +39,19 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
  * @author Florent Guillaume
- * 
+ *
  */
 public class FakeUserManagerImpl implements UserManager {
+
+    private static final long serialVersionUID = 1L;
 
     String userListingMode;
 
     String groupListingMode;
 
-    String rootLogin;
+    List<String> defaultAdministratorIds;
+
+    List<String> administratorsGroups;
 
     String defaultGroup;
 
@@ -93,10 +97,6 @@ public class FakeUserManagerImpl implements UserManager {
 
     public void setGroupListingMode(String groupListingMode) {
         this.groupListingMode = groupListingMode;
-    }
-
-    public void setRootLogin(String defaultRootLogin) {
-        this.rootLogin = defaultRootLogin;
     }
 
     public String getDefaultGroup() {
@@ -211,7 +211,7 @@ public class FakeUserManagerImpl implements UserManager {
 
     public NuxeoPrincipal getPrincipal(String username) throws ClientException {
         NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(
-                SecurityConstants.ADMINISTRATOR);
+                SecurityConstants.ADMINISTRATOR, false, true);
         principal.setGroups(Arrays.asList(new String[] { SecurityConstants.ADMINISTRATORS }));
         principal.setEmail("admin@example.com");
         return principal;
@@ -267,7 +267,8 @@ public class FakeUserManagerImpl implements UserManager {
 
     public void setConfiguration(UserManagerDescriptor descriptor) {
         setDefaultGroup(descriptor.defaultGroup);
-        setRootLogin(descriptor.rootLogin);
+        defaultAdministratorIds = descriptor.defaultAdministratorIds;
+        administratorsGroups = descriptor.administratorsGroups;
         setUserSortField(descriptor.userSortField);
         setGroupSortField(descriptor.groupSortField);
         setUserListingMode(descriptor.userListingMode);
@@ -417,6 +418,10 @@ public class FakeUserManagerImpl implements UserManager {
 
     public void updatePrincipal(NuxeoPrincipal principal)
             throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<String> getAdministratorGroups() {
         throw new UnsupportedOperationException();
     }
 

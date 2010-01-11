@@ -46,6 +46,8 @@ public class TestUserManager extends NXRuntimeTestCase {
 
     protected UserManager userManager;
 
+    protected UserService userService;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -65,10 +67,10 @@ public class TestUserManager extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl/userservice-config.xml");
 
-        UserService service = (UserService) Framework.getRuntime().getComponent(
+        userService = (UserService) Framework.getRuntime().getComponent(
                 UserService.NAME);
 
-        userManager = service.getUserManager();
+        userManager = userService.getUserManager();
     }
 
     public void testConnect() {
@@ -104,13 +106,68 @@ public class TestUserManager extends NXRuntimeTestCase {
     }
 
     public void testGetVirtualUsers() throws Exception {
-        NuxeoPrincipal principal = userManager.getPrincipal("MyCustomAdministrator");
+        NuxeoPrincipal principal = userManager.getPrincipal("ClassicAdministrator");
+        assertNotNull(principal);
+        assertEquals("ClassicAdministrator", principal.getName());
+        assertEquals("Classic", principal.getFirstName());
+        assertEquals("Administrator", principal.getLastName());
+        assertNull(principal.getCompany());
+        assertTrue(principal.isMemberOf("administrators"));
+        assertFalse(principal.isMemberOf("myAdministrators"));
+        assertTrue(principal.isAdministrator());
+
+        principal = userManager.getPrincipal("MyCustomAdministrator");
         assertNotNull(principal);
         assertEquals("MyCustomAdministrator", principal.getName());
         assertEquals("My Custom", principal.getFirstName());
         assertEquals("Administrator", principal.getLastName());
         assertNull(principal.getCompany());
+        // test additional admin group
+        assertFalse(principal.isMemberOf("administrators"));
+        assertTrue(principal.isMemberOf("myAdministrators"));
+        assertFalse(principal.isAdministrator());
+
+        principal = userManager.getPrincipal("MyCustomMember");
+        assertNotNull(principal);
+        assertEquals("MyCustomMember", principal.getName());
+        assertEquals("My Custom", principal.getFirstName());
+        assertEquals("Member", principal.getLastName());
+        assertNull(principal.getCompany());
+        // assertEquals(4, principal.getAllGroups().size());
+        assertFalse(principal.isAdministrator());
+        assertTrue(principal.isMemberOf("othergroup"));
+        assertTrue(principal.isMemberOf("defgr"));
+        // this one is taken from props
+        assertTrue(principal.isMemberOf("members"));
+        // group1 does not exist => not here
+        assertFalse(principal.isMemberOf("group1"));
+    }
+
+    public void testGetVirtualUsersOverride() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                "test-usermanagerimpl/userservice-override-config.xml");
+        // user manager is recomputed after deployment => refetch it
+        userManager = userService.getUserManager();
+
+        NuxeoPrincipal principal = userManager.getPrincipal("ClassicAdministrator");
+        assertNotNull(principal);
+        assertEquals("ClassicAdministrator", principal.getName());
+        assertEquals("Classic", principal.getFirstName());
+        assertEquals("Administrator", principal.getLastName());
+        assertNull(principal.getCompany());
         assertTrue(principal.isMemberOf("administrators"));
+        assertFalse(principal.isMemberOf("myAdministrators"));
+        assertFalse(principal.isAdministrator());
+
+        principal = userManager.getPrincipal("MyCustomAdministrator");
+        assertNotNull(principal);
+        assertEquals("MyCustomAdministrator", principal.getName());
+        assertEquals("My Custom", principal.getFirstName());
+        assertEquals("Administrator", principal.getLastName());
+        assertNull(principal.getCompany());
+        // test additional admin group
+        assertFalse(principal.isMemberOf("administrators"));
+        assertTrue(principal.isMemberOf("myAdministrators"));
         assertTrue(principal.isAdministrator());
 
         principal = userManager.getPrincipal("MyCustomMember");
@@ -127,6 +184,21 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertTrue(principal.isMemberOf("members"));
         // group1 does not exist => not here
         assertFalse(principal.isMemberOf("group1"));
+    }
+
+    public void testGetAdministratorGroups() throws Exception {
+        List<String> adminGroups = userManager.getAdministratorGroups();
+        assertEquals(Arrays.asList("administrators"), adminGroups);
+    }
+
+    public void testGetAdministratorGroupsOverride() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                "test-usermanagerimpl/userservice-override-config.xml");
+        // user manager is recomputed after deployment => refetch it
+        userManager = userService.getUserManager();
+
+        List<String> adminGroups = userManager.getAdministratorGroups();
+        assertEquals(Arrays.asList("myAdministrators"), adminGroups);
     }
 
     public void testSearchAnonymous() throws Exception {
@@ -349,7 +421,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     /**
      * Test the method getUsersInGroup, making sure it does return only the
      * users of the group (and not the subgroups ones)
-     * 
+     *
      * @throws Exception
      */
     public void testGetUsersInGroup() throws Exception {
@@ -390,7 +462,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     /**
      * Test the method getUsersInGroupAndSubgroups, making sure it does return
      * all the users from a group and its subgroups.
-     * 
+     *
      * @throws Exception
      */
     public void testGetUsersInGroupAndSubgroups() throws Exception {
@@ -435,7 +507,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     /**
      * Test the method getUsersInGroupAndSubgroups making sure it's not going
      * into an infinite loop when a subgroup is also parent of a group.
-     * 
+     *
      * @throws Exception
      */
     public void testGetUsersInGroupAndSubgroupsWithoutInfiniteLoop()

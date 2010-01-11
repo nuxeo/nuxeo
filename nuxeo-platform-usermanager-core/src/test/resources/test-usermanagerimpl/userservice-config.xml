@@ -10,11 +10,17 @@
           <property name="firstName">Anonymous</property>
           <property name="lastName">Coward</property>
         </anonymousUser>
+        <virtualUser id="ClassicAdministrator" searchable="false">
+          <password>secret</password>
+          <property name="firstName">Classic</property>
+          <property name="lastName">Administrator</property>
+          <group>administrators</group>
+        </virtualUser>
         <virtualUser id="MyCustomAdministrator" searchable="false">
           <password>secret</password>
           <property name="firstName">My Custom</property>
           <property name="lastName">Administrator</property>
-          <group>administrators</group>
+          <group>myAdministrators</group>
         </virtualUser>
         <virtualUser id="MyCustomMember" searchable="false">
           <password>secret</password>

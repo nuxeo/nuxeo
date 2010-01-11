@@ -63,6 +63,8 @@ public class UserManagerImpl implements UserManager {
 
     private static final long serialVersionUID = 1L;
 
+    private static final Log log = LogFactory.getLog(UserManagerImpl.class);
+
     public static final String USERMANAGER_TOPIC = "usermanager";
 
     public static final String USERCHANGED_EVENT_ID = "user_changed";
@@ -70,8 +72,6 @@ public class UserManagerImpl implements UserManager {
     public static final String GROUPCHANGED_EVENT_ID = "group_changed";
 
     public static final String DEFAULT_ANONYMOUS_USER_ID = "Anonymous";
-
-    private static final Log log = LogFactory.getLog(UserManagerImpl.class);
 
     protected final DirectoryService dirService;
 
@@ -101,7 +101,11 @@ public class UserManagerImpl implements UserManager {
 
     protected String defaultGroup;
 
-    protected String defaultRootLogin;
+    protected List<String> administratorIds;
+
+    protected List<String> administratorGroups;
+
+    protected Boolean disableDefaultAdministratorsGroup;
 
     protected String userSortField;
 
@@ -122,7 +126,22 @@ public class UserManagerImpl implements UserManager {
 
     public void setConfiguration(UserManagerDescriptor descriptor) {
         defaultGroup = descriptor.defaultGroup;
-        defaultRootLogin = descriptor.rootLogin;
+        administratorIds = descriptor.defaultAdministratorIds;
+        disableDefaultAdministratorsGroup = false;
+        if (descriptor.disableDefaultAdministratorsGroup != null) {
+            disableDefaultAdministratorsGroup = descriptor.disableDefaultAdministratorsGroup;
+        }
+        administratorGroups = new ArrayList<String>();
+        if (!disableDefaultAdministratorsGroup) {
+            administratorGroups.add(SecurityConstants.ADMINISTRATORS);
+        }
+        if (descriptor.administratorsGroups != null) {
+            administratorGroups.addAll(descriptor.administratorsGroups);
+        }
+        if (administratorGroups.isEmpty()) {
+            log.warn("No administrators group has been defined: at least one should be set"
+                    + " to avoid lockups when blocking rights for instance");
+        }
         userSortField = descriptor.userSortField;
         groupSortField = descriptor.groupSortField;
         userListingMode = descriptor.userListingMode;
@@ -342,14 +361,12 @@ public class UserManagerImpl implements UserManager {
 
     protected NuxeoPrincipal makePrincipal(DocumentModel userEntry,
             boolean anonymous, List<String> groups) throws ClientException {
-        NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(
-                userEntry.getId(), anonymous);
-
-        principal.setModel(userEntry);
+        boolean admin = false;
+        String username = userEntry.getId();
 
         // XXX why not set groups to anonymous user?
+        List<String> virtualGroups = new LinkedList<String>();
         if (!anonymous) {
-            List<String> virtualGroups = new LinkedList<String>();
             // Add preconfigured groups: useful for LDAP
             if (defaultGroup != null) {
                 virtualGroups.add(defaultGroup);
@@ -359,12 +376,16 @@ public class UserManagerImpl implements UserManager {
                 virtualGroups.addAll(groups);
             }
             // Create a default admin if needed
-            if (defaultRootLogin != null
-                    && defaultRootLogin.equals(principal.getName())) {
-                virtualGroups.add(SecurityConstants.ADMINISTRATORS);
+            if (administratorIds != null && administratorIds.contains(username)) {
+                admin = true;
             }
-            principal.setVirtualGroups(virtualGroups);
         }
+
+        NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(username,
+                anonymous, admin);
+
+        principal.setModel(userEntry);
+        principal.setVirtualGroups(virtualGroups);
 
         // TODO: reenable roles initialization once we have a use case for
         // a role directory. In the mean time we only set the JBOSS role
@@ -1040,6 +1061,10 @@ public class UserManagerImpl implements UserManager {
     public void updatePrincipal(NuxeoPrincipal principal)
             throws ClientException {
         updateUser(principal.getModel());
+    }
+
+    public List<String> getAdministratorGroups() {
+        return administratorGroups;
     }
 
 }

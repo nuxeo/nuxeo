@@ -5,17 +5,17 @@
     A service to interact with the list of users and groups of the platform.
   </documentation>
 
-  <implementation class="org.nuxeo.ecm.platform.usermanager.UserService"/>
+  <implementation class="org.nuxeo.ecm.platform.usermanager.UserService" />
 
   <service>
-    <provide interface="org.nuxeo.ecm.platform.usermanager.UserManager"/>
+    <provide interface="org.nuxeo.ecm.platform.usermanager.UserManager" />
   </service>
 
   <extension-point name="userManager">
 
     <documentation>
       Configure the userManager.
-      <p/>
+      <p />
       The extension should use the format:
       <code>
         <userManager>
@@ -48,9 +48,13 @@
                 <value>item2</value>
               </propertyList>
             </virtualUser>
-            <virtualUser id="ExistingVirtualUser" remove="true"/>
+            <virtualUser id="ExistingVirtualUser" remove="true" />
           </users>
           <defaultAdministratorId>admin</defaultAdministratorId>
+          <administratorsGroup>myAdministrators</administratorsGroup>
+          <disableDefaultAdministratorsGroup>
+            false
+          </disableDefaultAdministratorsGroup>
           <userSortField>sn</userSortField>
           <userPasswordPattern>^[a-zA-Z0-9]{5,}$</userPasswordPattern>
           <groups>
@@ -64,32 +68,41 @@
           <groupSortField>groupname</groupSortField>
         </userManager>
       </code>
-      <p/>
+      <p />
       If the element anonymousUser has the attribute remove="true", then the
       anonymous user will be disabled. The anonymous user is searchable by
       default.
-      <p/>
+      <p />
       If a virtual user has the attribute remove="true", it is removed from the
       list of virtual users. Virtual users are searchable by default, but it is
       not implemented yet... so you should keep the attribute searchable="false"
       to keep the same behaviour when it will be.
-      <p/>
+      <p />
       Virtual users with the "administrators" group will have the same rights
       than the default administrator.
-      <p/>
+      <p />
+      New administrators groups can be added using the "administratorsGroup"
+      tag. Several groups can be defined, adding as many tags as needed. The
+      default group named "administrators" can be disabled by setting the
+      "disableDefaultAdministratorsGroup" to "true" (defaults to false): only
+      new defined administrators groups will then be taken into account. Note
+      that disabling this default group should be done after setting up custom
+      rights in the repository, as this group is usually defined as the group of
+      users who have all permissions at the root of the repository.
+      <p />
       Anonymous and virtual users properties have to match the users directory
       schema fields to be taken into account.
-      <p/>
+      <p />
       The userPasswordPattern format is specified by java.util.regex.Pattern.
-      <p/>
+      <p />
       The values for users listingMode are: "all", "tabbed", "search_only".
       (These values are defined in
       org.nuxeo.ecm.webapp.security.UserManagerActionsBean.)
-      <p/>
+      <p />
       The values for groups listingMode are: "all" and "search_only".
     </documentation>
 
-    <object class="org.nuxeo.ecm.platform.usermanager.UserManagerDescriptor"/>
+    <object class="org.nuxeo.ecm.platform.usermanager.UserManagerDescriptor" />
 
   </extension-point>
 

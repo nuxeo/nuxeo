@@ -64,7 +64,7 @@ public class SearchPrincipalImpl implements SearchPrincipal {
         this(name, groups, systemUser);
         if (originalPrincipal != null) {
             if (originalPrincipal instanceof Serializable) {
-                this.originalPrincipal = (Serializable)originalPrincipal;
+                this.originalPrincipal = (Serializable) originalPrincipal;
             } else {
                 log.warn("Principal with name= "
                         + originalPrincipal.getName()
