@@ -30,12 +30,12 @@ public abstract class ChemistryCommand extends AnnotatedCommand {
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
         if (app instanceof ChemistryApp) {
-            execute((ChemistryApp)app, cmdLine);
+            execute((ChemistryApp) app, cmdLine);
         } else {
             Console.getDefault().error("Chemistry commands cannot be run outside chemistry context");
         }
     }
 
     protected abstract void execute(ChemistryApp app, CommandLine cmdLine) throws Exception;
-    
+
 }

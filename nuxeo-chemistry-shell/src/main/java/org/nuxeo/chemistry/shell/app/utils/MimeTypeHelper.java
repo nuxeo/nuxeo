@@ -2,6 +2,9 @@ package org.nuxeo.chemistry.shell.app.utils;
 
 public class MimeTypeHelper {
 
+    private MimeTypeHelper() {
+    }
+
     public static String getMimeType(String fileName) {
 
         if (fileName == null) {

@@ -36,6 +36,9 @@ public class FileUtils {
     private static final int MAX_BUFFER_SIZE = 1024 * 1024; // 64K
     private static final int MIN_BUFFER_SIZE = 1024 * 8; // 64K
 
+    private FileUtils() {
+    }
+
     public static String readFile(File file) throws IOException {
         FileInputStream in = null;
         try {

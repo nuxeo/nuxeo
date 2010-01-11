@@ -395,12 +395,16 @@ public class Path implements Serializable {
             if ("..".equals(seg)) {
                 j++;
             } else if (".".equals(seg)) {
-                if (j == 0) s++;
+                if (j == 0) {
+                    s++;
+                }
             } else {
                 break;
             }
         }
-        if (j > 0) s = j;
+        if (j > 0) {
+            s = j;
+        }
 
         int k = myLen - j;
         if (k < 0) {

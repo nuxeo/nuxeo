@@ -49,9 +49,9 @@ public class ChemistryContext extends AbstractContext {
 
     public ChemistryContext(ChemistryApp app, Path path, APPConnection conn, CMISObject entry) {
         super(app, path);
-        this.cm = app.getContentManager();
         this.conn = conn;
         this.entry = entry;
+        cm = app.getContentManager();
     }
 
     @Override

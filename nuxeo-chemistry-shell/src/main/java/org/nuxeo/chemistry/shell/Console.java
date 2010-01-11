@@ -78,11 +78,11 @@ public class Console {
         FileUtils.copy(in, System.out);
     }
 
-    public void print(String str) throws IOException {
+    public void print(String str) {
         System.out.print(str);
     }
 
-    public void println(String str) throws IOException {
+    public void println(String str) {
         System.out.println(str);
     }
 
@@ -108,15 +108,15 @@ public class Console {
         return app;
     }
 
-    public void error(String message) throws IOException {
+    public void error(String message) {
         System.err.println(message);
     }
 
-    public void info(String message) throws IOException {
+    public void info(String message) {
         System.out.println(message);
     }
 
-    public void warn(String message) throws IOException {
+    public void warn(String message) {
         System.out.println(message);
     }
 
@@ -134,6 +134,7 @@ public class Console {
         this.app = app;
     }
 
+    // Not used
     public CommandLine parseCommandLine(String line) throws CommandException {
         if (app != null) {
             return parseCommandLine(app.getCommandRegistry(), line);
@@ -141,6 +142,7 @@ public class Console {
         throw new IllegalStateException("Console not started");
     }
 
+    // Not used
     public CommandRegistry getCommandRegistry() {
         if (app != null) {
             return app.getCommandRegistry();

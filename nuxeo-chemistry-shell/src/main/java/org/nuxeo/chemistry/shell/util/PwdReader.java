@@ -35,6 +35,9 @@ import java.io.InputStreamReader;
  */
 public class PwdReader {
 
+    private PwdReader() {
+    }
+
     public static String read() throws IOException {
         ConsoleEraser consoleEraser = new ConsoleEraser();
         System.out.print("Password:  ");

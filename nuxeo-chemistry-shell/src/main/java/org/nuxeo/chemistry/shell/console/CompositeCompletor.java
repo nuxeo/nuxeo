@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jline.ArgumentCompletor;
 import jline.Completor;
 import jline.CursorBuffer;
 import jline.FileNameCompletor;
@@ -70,7 +71,7 @@ public class CompositeCompletor implements Completor {
 
     public int complete(String buffer, int cursor, List candidates) {
         CursorBuffer buf = console.getReader().getCursorBuffer();
-        jline.ArgumentCompletor.ArgumentList list = new WhitespaceArgumentDelimiter().delimit(
+        ArgumentCompletor.ArgumentList list = new WhitespaceArgumentDelimiter().delimit(
                 buffer, cursor);
         String[] args = list.getArguments();
         String argText = list.getCursorArgument();

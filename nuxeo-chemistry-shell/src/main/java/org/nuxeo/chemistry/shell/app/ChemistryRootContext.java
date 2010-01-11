@@ -62,12 +62,8 @@ public class ChemistryRootContext extends AbstractContext {
         load();
         ContentManager cm = getContentManager();
         if (cm == null) {
-            try {
-                Console.getDefault().error("Not connected: cannot browse repository");
-                return null;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Console.getDefault().error("Not connected: cannot browse repository");
+            return null;
         }
         Repository r = repos.get(name); // TODO  atompub client is using IDs to get repositories ...
         Repository repo = cm.getRepository(r.getId());
@@ -97,13 +93,8 @@ public class ChemistryRootContext extends AbstractContext {
         if (keys == null) {
             ContentManager cm = getContentManager();
             if (cm == null) {
-                try {
-                    Console.getDefault().error("Not connected: cannot browse repository");
-                    return false;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return false;
-                }
+                Console.getDefault().error("Not connected: cannot browse repository");
+                return false;
             }
             Repository[] repos = cm.getRepositories();
             this.repos = new HashMap<String, Repository>();

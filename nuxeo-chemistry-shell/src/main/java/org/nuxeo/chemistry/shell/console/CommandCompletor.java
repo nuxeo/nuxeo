@@ -21,13 +21,14 @@ package org.nuxeo.chemistry.shell.console;
 
 import java.util.List;
 
+import jline.SimpleCompletor;
 import org.nuxeo.chemistry.shell.command.CommandRegistry;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class CommandCompletor extends jline.SimpleCompletor {
+public class CommandCompletor extends SimpleCompletor {
 
     protected final CommandRegistry registry;
 

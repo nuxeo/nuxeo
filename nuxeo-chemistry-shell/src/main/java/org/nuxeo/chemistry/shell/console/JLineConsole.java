@@ -76,7 +76,9 @@ public class JLineConsole extends Console {
         while (true) {
             try {
                 if (line.trim().length() > 0) {
-                    if (!execute(line)) break;
+                    if (!execute(line)) {
+                        break;
+                    }
                     println();
                 }
             } catch (Exception e) {

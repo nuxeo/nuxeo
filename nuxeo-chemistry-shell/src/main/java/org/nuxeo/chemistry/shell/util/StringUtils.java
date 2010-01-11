@@ -28,6 +28,9 @@ import java.util.List;
  */
 public class StringUtils {
 
+    private StringUtils() {
+    }
+
     public static String[] split(String str, char delimiter, boolean trim) {
         int s = 0;
         int e = str.indexOf(delimiter, s);

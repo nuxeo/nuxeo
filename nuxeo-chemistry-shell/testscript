@@ -58,7 +58,7 @@ props testfile
 rm testfile
 
 # Put a file
-#put run.sh run.sh
+put run.sh run.sh
 #ls
 #id run.sh
 #cat run.sh
