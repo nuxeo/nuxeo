@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.usermanager.test.override">
+
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
+    point="userManager">
+    <userManager class="org.nuxeo.ecm.platform.usermanager.UserManagerImpl">
+      <disableDefaultAdministratorsGroup>
+        true
+      </disableDefaultAdministratorsGroup>
+      <administratorsGroup>myAdministrators</administratorsGroup>
+    </userManager>
+  </extension>
+
+</component>
