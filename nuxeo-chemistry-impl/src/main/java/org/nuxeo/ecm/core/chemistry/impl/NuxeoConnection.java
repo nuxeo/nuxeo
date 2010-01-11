@@ -572,6 +572,7 @@ public class NuxeoConnection implements Connection, SPI {
                 }
             }
             session.removeDocument(docRef);
+            session.save();
         } catch (ClientException e) {
             throw new CMISRuntimeException(e.toString(), e);
         }
@@ -597,6 +598,7 @@ public class NuxeoConnection implements Connection, SPI {
                         + folder.getId());
             }
             session.removeDocument(docRef);
+            session.save();
             return Collections.emptyList();
         } catch (ClientException e) {
             throw new CMISRuntimeException(e.toString(), e);
