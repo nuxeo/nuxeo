@@ -83,7 +83,7 @@ public class ChemistryContext extends AbstractContext {
         load();
         CMISObject e = children.get(name);
         if (e != null) {
-            return new ChemistryContext((ChemistryApp)app, path.append(name), conn, e);
+            return new ChemistryContext((ChemistryApp) app, path.append(name), conn, e);
         }
         return null;
     }

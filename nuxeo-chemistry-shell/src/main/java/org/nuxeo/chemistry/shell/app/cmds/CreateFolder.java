@@ -43,6 +43,7 @@ public class CreateFolder extends ChemistryCommand {
         Folder folder = ctx.as(Folder.class);
         if (folder != null) {
             new SimpleCreator(folder).createFolder(param.getValue());
+            ctx.reset();            
         }
     }
 

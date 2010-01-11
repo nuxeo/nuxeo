@@ -37,9 +37,6 @@ public class CommandSyntaxException extends CommandException {
         this.cmd = cmd;
     }
 
-    /**
-     * @return the cmdLine.
-     */
     public Command getCommand() {
         return cmd;
     }

@@ -132,7 +132,7 @@ public class CommandLine {
     }
 
     public void run(Application app) throws Exception {
-        getCommand().run(app, this);
+        cmd.run(app, this);
     }
 
 

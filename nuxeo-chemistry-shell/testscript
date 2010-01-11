@@ -55,9 +55,14 @@ id testfile
 ls testfile
 tree testfile
 props testfile
-#put test.sh testfile
-#cat testfile
 rm testfile
+
+# Put a file
+#put run.sh run.sh
+#ls
+#id run.sh
+#cat run.sh
+#rm run.sh
 
 # Clean up
 cd ..

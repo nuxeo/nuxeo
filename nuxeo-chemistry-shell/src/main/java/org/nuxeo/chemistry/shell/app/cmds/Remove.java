@@ -51,6 +51,7 @@ public class Remove extends ChemistryCommand {
                 }
             }
         }
+        ctx.reset();
     }
 
 }

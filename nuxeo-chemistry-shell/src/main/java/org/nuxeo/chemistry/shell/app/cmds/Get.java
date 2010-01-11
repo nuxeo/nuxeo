@@ -37,6 +37,7 @@ import org.nuxeo.chemistry.shell.util.FileUtils;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// TODO: add an optional local name for the file
 @Cmd(syntax="get|getStream target:item", synopsis="Downloads the stream of the target document")
 public class Get extends ChemistryCommand {
 

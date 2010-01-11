@@ -105,7 +105,9 @@ public class Main {
         if (execMode) {
             Console.setDefault(new Console());
             Console.getDefault().start(app);
-            JLineConsole.runCommand(app, command);
+            Console.getDefault().println(
+                    "CMIS Shell by Nuxeo (www.nuxeo.com). Type 'help' for help.");
+            Console.runCommand(app, command);
             return;
         }
         if (batchMode) {

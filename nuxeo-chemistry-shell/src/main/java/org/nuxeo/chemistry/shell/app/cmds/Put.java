@@ -36,6 +36,7 @@ import org.nuxeo.chemistry.shell.command.CommandParameter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// TODO: make target optional
 @Cmd(syntax="put source:file target:item", synopsis="Uploads the stream of the target document")
 public class Put extends ChemistryCommand {
 
@@ -50,10 +51,11 @@ public class Put extends ChemistryCommand {
 
         // Create document if it doesn't exist
         if (targetCtx == null) {
-            Context ctx = app.getContext();
-            Folder folder = ctx.as(Folder.class);
+            Context currentCtx = app.getContext();
+            Folder folder =  currentCtx.as(Folder.class);
             if (folder != null) {
                 new SimpleCreator(folder).createFile(targetParam.getValue());
+                currentCtx.reset();
                 targetCtx = app.resolveContext(new Path(targetParam.getValue()));
             }
         }

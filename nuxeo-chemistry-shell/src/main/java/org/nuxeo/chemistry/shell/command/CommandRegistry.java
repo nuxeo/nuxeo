@@ -66,16 +66,15 @@ public class CommandRegistry {
         builtinCommands.registerCommand(new Ll());
     }
 
-
-    public CommandRegistry() {
-        this (builtinCommands.commands);
-    }
-
     public CommandRegistry(Map<String, Command> cmds) {
         commands = new HashMap<String, Command>();
         if (cmds != null) {
             commands.putAll(cmds);
         }
+    }
+
+    public CommandRegistry() {
+        this(builtinCommands.commands);
     }
 
     public void registerCommand(Command cmd) {
