@@ -1,4 +1,5 @@
-connect http://Administrator:Administrator@localhost:8080/nuxeo/site/cmis/repository  
+#connect http://Administrator:Administrator@localhost:8080/nuxeo/site/cmis/repository
+connect http://Administrator:Administrator@cmis.demo.nuxeo.org/nuxeo/site/cmis/repository
 
 # Test main commands on root
 id
@@ -9,6 +10,8 @@ id
 #props
 
 # Local command
+help
+help ls
 lpwd
 lls
 lpushd src
@@ -21,6 +24,7 @@ id
 ls
 tree
 props
+propget . cmis:objectTypeId
 
 # navigate around
 cd default-domain
@@ -32,6 +36,8 @@ ls
 cd ..
 pwd
 cd /default/default-domain/workspaces
+pushd ..
+popd
 
 # Create an object (a folder), test commands on it
 mkdir testdir
@@ -50,9 +56,12 @@ ls testfile
 tree testfile
 props testfile
 #put test.sh testfile
-cat testfile
+#cat testfile
 rm testfile
 
 # Clean up
 cd ..
 rm testdir
+
+disconnect
+exit

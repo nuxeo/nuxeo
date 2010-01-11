@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.chemistry.CMISObject;
 import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
+import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;
 import org.nuxeo.chemistry.shell.app.utils.SimplePropertyManager;
@@ -34,28 +35,30 @@ import org.nuxeo.chemistry.shell.command.CommandParameter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="setStream file:file", synopsis="Set the given file content as a stream on the current context object")
+@Cmd(syntax="setStream target file:file", synopsis="Set the given file content as a stream on the current context object")
 public class SetStream extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
-        List<CommandParameter> args = cmdLine.getArguments();
-        if (args.size() != 1) {
-            Console.getDefault().error("Missing required arguments: key value");
+
+        CommandParameter targetParam = cmdLine.getParameter("target");
+        CommandParameter fileParam = cmdLine.getParameter("file");
+
+        Context ctx = app.resolveContext(new Path(targetParam.getValue()));
+        CMISObject obj = ctx.as(CMISObject.class);
+
+        if (obj == null) {
+            Console.getDefault().warn("Target doesn't exist");
+            return;
         }
 
-        Context ctx = app.getContext();
-        CMISObject obj = ctx.as(CMISObject.class);
-        if (obj != null) {
-            String path = args.get(0).getValue();
-            File file = app.resolveFile(path);
-            FileInputStream in = new FileInputStream(file);
-            try {
-                new SimplePropertyManager(obj).setStream(in, file.getName());
-            } finally {
-                in.close();
-            }
+        File file = app.resolveFile(fileParam.getValue());
+        FileInputStream in = new FileInputStream(file);
+        try {
+            new SimplePropertyManager(obj).setStream(in, file.getName());
+        } finally {
+            in.close();
         }
     }
 

@@ -38,13 +38,14 @@ public class Id extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        CommandParameter param = cmdLine.getLastParameter();
+
+        CommandParameter param = cmdLine.getParameter("item");
 
         Context ctx;
         if (param != null && param.getValue() != null) {
             ctx = app.resolveContext(new Path(param.getValue()));
             if (ctx == null) {
-                Console.getDefault().warn("Cannot resolve "+param.getValue());
+                Console.getDefault().warn("Cannot resolve target: "+param.getValue());
                 return;
             }
         } else {

@@ -38,16 +38,12 @@ public class Cd extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        CommandParameter param = cmdLine.getParameter("target");
 
-        if (param == null || param.getValue() == null) {
-            Console.getDefault().warn("You must supply a name");
-            return;
-        }
+        CommandParameter param = cmdLine.getParameter("target");
 
         Context ctx = app.resolveContext(new Path(param.getValue()));
         if (ctx == null) {
-            Console.getDefault().warn("Cannot resolve " + param.getValue());
+            Console.getDefault().warn("Cannot resolve target: " + param.getValue());
             return;
         }
         Folder folder = ctx.as(Folder.class);

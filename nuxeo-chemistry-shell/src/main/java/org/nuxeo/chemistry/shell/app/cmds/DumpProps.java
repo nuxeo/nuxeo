@@ -38,7 +38,7 @@ public class DumpProps extends ChemistryCommand {
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
 
-        CommandParameter param = cmdLine.getLastParameter();
+        CommandParameter param = cmdLine.getParameter("item");
 
         Context ctx;
         if (param != null && param.getValue() != null) {
@@ -52,7 +52,7 @@ public class DumpProps extends ChemistryCommand {
         }
 
         CMISObject obj = ctx.as(CMISObject.class);
-        if (obj != null) {            
+        if (obj != null) {
             new SimplePropertyManager(obj).dumpProperties();
         } else {
             // print server props

@@ -46,14 +46,9 @@ public class Get extends ChemistryCommand {
 
         CommandParameter param = cmdLine.getParameter("target");
 
-        if (param == null || param.getValue() == null) {
-            Console.getDefault().warn("You must supply a target");
-            return;
-        }
-
         Context ctx = app.resolveContext(new Path(param.getValue()));
         if (ctx == null) {
-            Console.getDefault().warn("Cannot resolve " + param.getValue());
+            Console.getDefault().warn("Cannot resolve target: " + param.getValue());
             return;
         }
 

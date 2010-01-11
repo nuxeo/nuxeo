@@ -46,15 +46,6 @@ public class Put extends ChemistryCommand {
         CommandParameter sourceParam = cmdLine.getParameter("source");
         CommandParameter targetParam = cmdLine.getParameter("target");
 
-        if (sourceParam == null || sourceParam.getValue() == null) {
-            Console.getDefault().warn("You must supply a source");
-            return;
-        }
-        if (targetParam == null || targetParam.getValue() == null) {
-            Console.getDefault().warn("You must supply a target");
-            return;
-        }
-
         Context targetCtx = app.resolveContext(new Path(targetParam.getValue()));
 
         // Create document if it doesn't exist

@@ -37,11 +37,11 @@ import org.nuxeo.chemistry.shell.command.CommandLine;
 public class Popd extends AnnotatedCommand {
 
     public static final String CTX_STACK_KEY = "ctx.stack";
-    
+
     @Override
     @SuppressWarnings("unchecked")
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        Stack<Context> stack = (Stack<Context>)app.getData(CTX_STACK_KEY);
+        Stack<Context> stack = (Stack<Context>) app.getData(CTX_STACK_KEY);
         if (stack != null && !stack.isEmpty()) {
             Context ctx = stack.pop();
             app.setContext(ctx);

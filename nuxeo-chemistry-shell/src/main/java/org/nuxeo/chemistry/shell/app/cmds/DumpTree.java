@@ -31,19 +31,19 @@ import org.nuxeo.chemistry.shell.command.CommandParameter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="dump|tree [item:item]", synopsis="Dump a subtree")
+@Cmd(syntax="dump|tree [target:item]", synopsis="Dump a subtree")
 public class DumpTree extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
-        CommandParameter param = cmdLine.getLastParameter();
+        CommandParameter param = cmdLine.getParameter("target");
 
         Context ctx;
         if (param != null && param.getValue() != null) {
             ctx = app.resolveContext(new Path(param.getValue()));
             if (ctx == null) {
-                Console.getDefault().warn("Cannot resolve "+param.getValue());
+                Console.getDefault().warn("Cannot resolve target: "+param.getValue());
                 return;
             }
         } else {
@@ -54,7 +54,7 @@ public class DumpTree extends ChemistryCommand {
         if (folder != null) {
             new SimpleBrowser(folder).browse();
         } else {
-            Console.getDefault().warn("Target is not a folder");            
+            Console.getDefault().warn("Target is not a folder");
         }
     }
 

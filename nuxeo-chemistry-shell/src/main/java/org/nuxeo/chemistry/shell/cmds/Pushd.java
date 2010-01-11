@@ -35,28 +35,27 @@ import org.nuxeo.chemistry.shell.command.CommandParameter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="pushd", synopsis="Push directory stack")
+@Cmd(syntax="pushd [target:item]", synopsis="Push directory stack")
 public class Pushd extends AnnotatedCommand {
 
     @Override
     @SuppressWarnings("unchecked")
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        CommandParameter param = cmdLine.getLastParameter();
-        if (param != null) {
-            String path = param.getValue();
-            Context ctx = app.resolveContext(new Path(path));
-            if (ctx != null) {
-                Stack<Context> stack = (Stack<Context>)app.getData(Popd.CTX_STACK_KEY);
-                if (stack == null) {
-                    stack = new Stack<Context>();
-                    app.setData(Popd.CTX_STACK_KEY, stack);
-                }
-                stack.push(ctx);
-            } else {
-                Console.getDefault().warn("No such object: "+path);
+        CommandParameter param = cmdLine.getParameter("target");
+
+        String path = param.getValue();
+        Context ctx = app.resolveContext(new Path(path));
+        if (ctx != null) {
+            Stack<Context> stack = (Stack<Context>) app.getData(Popd.CTX_STACK_KEY);
+            if (stack == null) {
+                stack = new Stack<Context>();
+                app.setData(Popd.CTX_STACK_KEY, stack);
             }
-            Console.getDefault().updatePrompt();
+            stack.push(ctx);
+        } else {
+            Console.getDefault().warn("No such object: "+path);
         }
+        Console.getDefault().updatePrompt();
     }
 
 }

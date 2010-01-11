@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.chemistry.shell.cmds.Cd;
-import org.nuxeo.chemistry.shell.cmds.Commands;
 import org.nuxeo.chemistry.shell.cmds.Connect;
 import org.nuxeo.chemistry.shell.cmds.Disconnect;
 import org.nuxeo.chemistry.shell.cmds.Exit;
@@ -38,7 +37,6 @@ import org.nuxeo.chemistry.shell.cmds.Ls;
 import org.nuxeo.chemistry.shell.cmds.Popd;
 import org.nuxeo.chemistry.shell.cmds.Pushd;
 import org.nuxeo.chemistry.shell.cmds.Pwd;
-import org.nuxeo.chemistry.shell.cmds.Test;
 import org.nuxeo.chemistry.shell.util.StringUtils;
 
 /**
@@ -61,13 +59,11 @@ public class CommandRegistry {
         builtinCommands.registerCommand(new Ls());
         builtinCommands.registerCommand(new Pwd());
         builtinCommands.registerCommand(new Id());
-        builtinCommands.registerCommand(new Commands());
         builtinCommands.registerCommand(new LCd());
         builtinCommands.registerCommand(new LPushd());
         builtinCommands.registerCommand(new LPopd());
         builtinCommands.registerCommand(new LPwd());
         builtinCommands.registerCommand(new Ll());
-        builtinCommands.registerCommand(new Test());
     }
 
 

@@ -32,18 +32,16 @@ import java.util.List;
  * @author <a href="mailto:sf@nuxeo.com">Stefane Fermigier</a>
  *
  */
-@Cmd(syntax="rm name:item", synopsis="Removes an object of the given name")
+@Cmd(syntax="rm target:item", synopsis="Removes an object of the given name")
 public class Remove extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
-        List<CommandParameter> args = cmdLine.getArguments();
-        if (args.size() != 1) {
-            Console.getDefault().error("Missing required arguments: name");
-        }
+        CommandParameter param = cmdLine.getParameter("target");
 
-        String name = args.get(0).getValue();
+        // FIXME: won't work if target is not just an object name
+        String name = param.getValue();
         Context ctx = app.getContext();
         Folder folder = ctx.as(Folder.class);
         if (folder != null) {

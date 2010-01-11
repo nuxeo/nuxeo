@@ -1,5 +1,5 @@
 Usage: help [command]
 
-To get the list of available commands, type 'commands'.
-
 To get help of a specific command, type 'help name_of_command'.
+
+List of available commands:

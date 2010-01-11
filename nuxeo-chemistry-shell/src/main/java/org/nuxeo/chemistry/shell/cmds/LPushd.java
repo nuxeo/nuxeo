@@ -41,22 +41,21 @@ public class LPushd extends AnnotatedCommand {
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
         CommandParameter param = cmdLine.getParameter("dir");
-        if (param != null) {
-            String path = param.getValue();
-            File file = app.resolveFile(path);
-            if (!file.isDirectory()) {
-                Console.getDefault().error("Not a directory: "+file);
-                return;
-            }
-            Stack<File> stack = (Stack<File>)app.getData(LPopd.WDIR_STACK_KEY);
-            if (stack == null) {
-                stack = new Stack<File>();
-                app.setData(LPopd.WDIR_STACK_KEY, stack);
-            }
-            stack.push(app.getWorkingDirectory());
-            app.setWorkingDirectory(file);
-            Console.getDefault().updatePrompt();
+
+        String path = param.getValue();
+        File file = app.resolveFile(path);
+        if (!file.isDirectory()) {
+            Console.getDefault().error("Not a directory: "+file);
+            return;
         }
+        Stack<File> stack = (Stack<File>)app.getData(LPopd.WDIR_STACK_KEY);
+        if (stack == null) {
+            stack = new Stack<File>();
+            app.setData(LPopd.WDIR_STACK_KEY, stack);
+        }
+        stack.push(app.getWorkingDirectory());
+        app.setWorkingDirectory(file);
+        Console.getDefault().updatePrompt();
     }
 
 }

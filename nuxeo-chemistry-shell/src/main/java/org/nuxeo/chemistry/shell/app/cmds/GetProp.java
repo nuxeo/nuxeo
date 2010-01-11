@@ -16,11 +16,10 @@
  */
 package org.nuxeo.chemistry.shell.app.cmds;
 
-import java.util.List;
-
 import org.apache.chemistry.CMISObject;
 import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
+import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;
 import org.nuxeo.chemistry.shell.app.utils.SimplePropertyManager;
@@ -32,24 +31,25 @@ import org.nuxeo.chemistry.shell.command.CommandParameter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="propget|getp|getProperty key", synopsis="Print the value of the given property on the current context object")
+@Cmd(syntax="propget|getp|getProperty target:item [key]", synopsis="Print the value of the given property on the current context object")
 public class GetProp extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
 
-        List<CommandParameter> args = cmdLine.getArguments();
-        if (args.size() != 1) {
-            Console.getDefault().error("Missing required argument: key");
+        CommandParameter targetParam = cmdLine.getParameter("target");
+        CommandParameter keyParam = cmdLine.getParameter("key");
+
+        Context ctx = app.resolveContext(new Path(targetParam.getValue()));
+        CMISObject obj = ctx.as(CMISObject.class);
+        if (obj == null) {
+            Console.getDefault().warn("Target doesn't exist");
+            return;
         }
 
-        Context ctx = app.getContext();
-        CMISObject obj = ctx.as(CMISObject.class);
-        if (obj != null) {
-            Console.getDefault().println(
-                    new SimplePropertyManager(obj).getPropertyAsString(args.get(0).getValue()));
-        }
+        Console.getDefault().println(
+                new SimplePropertyManager(obj).getPropertyAsString(keyParam.getValue()));
     }
 
 }

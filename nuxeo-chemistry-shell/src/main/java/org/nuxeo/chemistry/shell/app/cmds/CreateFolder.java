@@ -16,10 +16,7 @@
  */
 package org.nuxeo.chemistry.shell.app.cmds;
 
-import java.util.List;
-
 import org.apache.chemistry.Folder;
-import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;
@@ -38,15 +35,14 @@ public class CreateFolder extends ChemistryCommand {
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
-        List<CommandParameter> args = cmdLine.getArguments();
-        if (args.size() != 1) {
-            Console.getDefault().error("Missing required arguments: name");
-        }
+        CommandParameter param = cmdLine.getParameter("name");
+
+        // FIXME: won't work if we do 'mkdir ../toto/titi'.
 
         Context ctx = app.getContext();
         Folder folder = ctx.as(Folder.class);
         if (folder != null) {
-            new SimpleCreator(folder).createFolder(args.get(0).getValue());
+            new SimpleCreator(folder).createFolder(param.getValue());
         }
     }
 

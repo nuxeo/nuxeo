@@ -27,6 +27,11 @@ import org.nuxeo.chemistry.shell.command.Command;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -47,6 +52,37 @@ public class Help extends AnnotatedCommand {
             }
         } else {
             println(getHelp(app));
+
+            Command[] cmds = app.getCommandRegistry().getCommands();
+            Arrays.sort(cmds, new CommandComparator());
+            Set<String> seen = new HashSet<String>();
+            StringBuilder buf = new StringBuilder();
+            for (Command cmd : cmds) {
+                String name = cmd.getName();
+                if (seen.contains(name)) {
+                    continue;
+                }
+                seen.add(name);
+                buf.setLength(0);
+                buf.append(name);
+                String[] aliases = cmd.getAliases();
+                if (aliases.length > 1) {
+                    buf.append(" [");
+                    for (int i=1; i<aliases.length; i++) {
+                        buf.append(aliases[i]).append("|");
+                    }
+                    buf.setLength(buf.length()-1);
+                    buf.append("]");
+                }
+                buf.append(" - ").append(cmd.getSynopsis());
+                Console.getDefault().println(buf.toString());
+            }
+        }
+    }
+
+    private static class CommandComparator implements Comparator<Command> {
+        public int compare(Command o1, Command o2) {
+            return o1.getName().compareTo(o2.getName());
         }
     }
 
