@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
@@ -129,6 +130,7 @@ public class ContainerManagerImpl implements ContainerManager {
             throw new ClientException("Space not found");
         }
         Gadget createGadget = space.createGadget(gadgetName);
+
         space.save();
         return new GadgetMapper(createGadget, space.getViewer(), shindigId++,
                 space.hasPermission("Write")).getGadgetBean();
@@ -176,7 +178,7 @@ public class ContainerManagerImpl implements ContainerManager {
         try {
             if (space != null) {
                 ArrayList<GadgetBean> gadgets = new ArrayList<GadgetBean>();
-                Boolean perm = space.hasPermission("Write");
+                Boolean perm = space.hasPermission(SecurityConstants.WRITE);
                 for (Gadget g : space.getGadgets()) {
                     gadgets.add(new GadgetMapper(g, space.getViewer(),
                             shindigId++, perm).getGadgetBean());
