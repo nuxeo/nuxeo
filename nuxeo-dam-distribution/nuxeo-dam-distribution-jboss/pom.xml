@@ -15,7 +15,7 @@
   <description>Packages Nuxeo DAM EAR with JBoss</description>
 
   <properties>
-    <nuxeo.ep.jboss>nuxeo-distribution-jboss-${nuxeo.distribution.version}</nuxeo.ep.jboss>
+    <nuxeo.ep.jboss>nuxeo-ep-jboss</nuxeo.ep.jboss>
   </properties>
 
   <profiles>
