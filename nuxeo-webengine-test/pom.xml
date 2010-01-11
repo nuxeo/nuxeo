@@ -106,14 +106,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
-      <artifactId>nuxeo-webengine-base</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.webengine</groupId>
-      <artifactId>nuxeo-webengine-admin</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-ui</artifactId>
     </dependency>
 
@@ -224,7 +216,5 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
-
-
   </dependencies>
 </project>
