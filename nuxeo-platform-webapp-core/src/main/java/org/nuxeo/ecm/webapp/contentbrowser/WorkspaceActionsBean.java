@@ -272,7 +272,7 @@ public class WorkspaceActionsBean extends InputController implements
             }
 
             // Force addition of administrators groups
-            principalsName.addAll(userManager.getAdministratorGroups());
+            principalsName.addAll(userManager.getAdministratorsGroups());
 
             // Grant to principalList
             for (String principalName : principalsName) {
@@ -354,7 +354,7 @@ public class WorkspaceActionsBean extends InputController implements
             }
 
             // Force addition of administrators groups
-            principalsName.addAll(userManager.getAdministratorGroups());
+            principalsName.addAll(userManager.getAdministratorsGroups());
 
             // DENY at root
             securityActions.addPermission(SecurityConstants.EVERYONE,

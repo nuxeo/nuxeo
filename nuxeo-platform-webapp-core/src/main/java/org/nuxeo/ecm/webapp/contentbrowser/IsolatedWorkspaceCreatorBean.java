@@ -58,7 +58,7 @@ public class IsolatedWorkspaceCreatorBean {
         // String result = documentActions.saveDocument();
         List<String> principalsName = new ArrayList<String>();
         principalsName.add(currentUser.getName());
-        principalsName.addAll(userManager.getAdministratorGroups());
+        principalsName.addAll(userManager.getAdministratorsGroups());
 
         // Grant to principalList
         for (String principalName : principalsName) {
