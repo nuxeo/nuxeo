@@ -144,60 +144,49 @@ public class SearchServiceImpl extends DefaultComponent implements
     private int docBatchSize = DEFAULT_DOC_BATCH_SIZE;
 
     /** Map from backend id to backend instance. */
-    private final Map<String, SearchEngineBackend> backends
-            = new HashMap<String, SearchEngineBackend>();
+    private final Map<String, SearchEngineBackend> backends = new HashMap<String, SearchEngineBackend>();
 
     /** Map from backend id to backend descriptors. */
-    private final Map<String, SearchEngineBackendDescriptor> backendDescriptors
-            = new HashMap<String, SearchEngineBackendDescriptor>();
+    private final Map<String, SearchEngineBackendDescriptor> backendDescriptors = new HashMap<String, SearchEngineBackendDescriptor>();
 
     /**
      * Map from indexable resource conf name to indexable resource conf
      * instance. Key here is the name. See the next one with prefix as a key.
      */
-    private final Map<String, IndexableResourceConf> namedResources
-            = new HashMap<String, IndexableResourceConf>();
+    private final Map<String, IndexableResourceConf> namedResources = new HashMap<String, IndexableResourceConf>();
 
     /**
      * Map from indexable resource conf prefix to indexable resource conf
      * instance. Here to perform faster lookups.
      */
-    private final Map<String, IndexableResourceConf> prefixedResources
-            = new HashMap<String, IndexableResourceConf>();
+    private final Map<String, IndexableResourceConf> prefixedResources = new HashMap<String, IndexableResourceConf>();
 
     /**
      * Map from computed indexable resource conf name to indexable resource conf
      * instance.
      */
-    private Map<String, IndexableResourceConf> cNamedResources
-            = new HashMap<String, IndexableResourceConf>();
+    private Map<String, IndexableResourceConf> cNamedResources = new HashMap<String, IndexableResourceConf>();
 
     /**
      * Map from computed indexable resource conf prefix to indexable resource
      * conf instance.
      */
-    private final Map<String, IndexableResourceConf> cPrefixedResources
-            = new HashMap<String, IndexableResourceConf>();
+    private final Map<String, IndexableResourceConf> cPrefixedResources = new HashMap<String, IndexableResourceConf>();
 
     /** Map from doctype name to indexable resources names. */
-    private final Map<String, IndexableDocType> docType2IndexableResourceTypes
-            = new HashMap<String, IndexableDocType>();
+    private final Map<String, IndexableDocType> docType2IndexableResourceTypes = new HashMap<String, IndexableDocType>();
 
     /** Full text descriptor. */
-    private final Map<String, FulltextFieldDescriptor> fullTextDescriptors
-            = new HashMap<String, FulltextFieldDescriptor>();
+    private final Map<String, FulltextFieldDescriptor> fullTextDescriptors = new HashMap<String, FulltextFieldDescriptor>();
 
     /** Registry of indexing events */
-    private final Map<String, IndexingEventConf> indexingEvents
-            = new HashMap<String, IndexingEventConf>();
+    private final Map<String, IndexingEventConf> indexingEvents = new HashMap<String, IndexingEventConf>();
 
     /** Registry of blob extractors * */
-    private final Map<String, BlobExtractor> blobExtractors
-            = new HashMap<String, BlobExtractor>();
+    private final Map<String, BlobExtractor> blobExtractors = new HashMap<String, BlobExtractor>();
 
     /** Registry of resource types * */
-    private final Map<String, ResourceTypeDescriptor> resourceTypes
-            = new HashMap<String, ResourceTypeDescriptor>();
+    private final Map<String, ResourceTypeDescriptor> resourceTypes = new HashMap<String, ResourceTypeDescriptor>();
 
     private Map<String, SearchPolicyDescriptor> policyDescriptors;
 
@@ -454,7 +443,7 @@ public class SearchServiceImpl extends DefaultComponent implements
                     log.debug("Registered search engine descriptor: " + name);
                     defaultBackendName = name;
                     // log.debug(name + " registered as DEFAULT backend");
-                // FIXME: wrong exception to catch
+                    // FIXME: wrong exception to catch
                 } catch (NullPointerException ne) {
                     log.error(ne);
                     // FIXME: then what?
@@ -1030,8 +1019,8 @@ public class SearchServiceImpl extends DefaultComponent implements
     }
 
     public void setNumberOfIndexingThreads(int numberOfIndexingThreads) {
-        log.info("Setting indexing thread pool size: " +
-                Integer.toString(numberOfIndexingThreads));
+        log.info("Setting indexing thread pool size: "
+                + Integer.toString(numberOfIndexingThreads));
         threadPoolSizeMax = numberOfIndexingThreads;
     }
 

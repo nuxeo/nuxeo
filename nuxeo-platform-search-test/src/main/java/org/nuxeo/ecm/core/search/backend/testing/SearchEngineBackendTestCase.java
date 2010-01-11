@@ -715,11 +715,11 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
         assertEquals("0018", results.get(0).get("bk:barcode"));
 
         // NOT STARTSWITH
-        results = backend.searchQuery(composeQuery(
-                "SELECT * FROM Document where NOT bk:category STARTSWITH 'auto'"),
+        results = backend.searchQuery(
+                composeQuery("SELECT * FROM Document where NOT bk:category STARTSWITH 'auto'"),
                 0, 100);
         assertEquals(3, results.getTotalHits()); // About life doesn't match
-        for (int i=0; i<3; i++) {
+        for (int i = 0; i < 3; i++) {
             assertFalse(((String) results.get(i).get("bk:category")).startsWith("auto"));
         }
 
@@ -810,24 +810,27 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
 
         // Now a text field that's sortable in a case-insensitive way
         results = backend.searchQuery(
-                composeQuery("SELECT * FROM Document ORDER BY bk:frenchtitle"), 0,
-                100);
+                composeQuery("SELECT * FROM Document ORDER BY bk:frenchtitle"),
+                0, 100);
         assertEquals(2, results.getTotalHits());
-        assertEquals("War and Peace", results.get(0).get("dc:title")); // La Guerre
-        assertEquals("About Life", results.get(1).get("dc:title")); // La mechante
+        assertEquals("War and Peace", results.get(0).get("dc:title")); // La
+                                                                        // Guerre
+        assertEquals("About Life", results.get(1).get("dc:title")); // La
+                                                                    // mechante
         results = backend.searchQuery(
-                composeQuery("SELECT * FROM Document ORDER BY bk:frenchtitle DESC"), 0,
-                100);
-        assertEquals("About Life", results.get(0).get("dc:title")); // La mechante
-        assertEquals("War and Peace", results.get(1).get("dc:title")); // La Guerre
-
+                composeQuery("SELECT * FROM Document ORDER BY bk:frenchtitle DESC"),
+                0, 100);
+        assertEquals("About Life", results.get(0).get("dc:title")); // La
+                                                                    // mechante
+        assertEquals("War and Peace", results.get(1).get("dc:title")); // La
+                                                                        // Guerre
 
         // Now a text field that's not declared as sortable. We can get a
         // QueryException and nothing else
 
         results = backend.searchQuery(
-                composeQuery("SELECT * FROM Document ORDER BY bk:abstract"),
-                0, 100);
+                composeQuery("SELECT * FROM Document ORDER BY bk:abstract"), 0,
+                100);
         // don't catch other exceptions, to get the stack trace
     }
 
