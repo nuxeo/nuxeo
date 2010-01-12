@@ -18,7 +18,7 @@ nuxeo-distribution-dm/ftest/selenium/run.conf
 nuxeo-distribution-dm/ftest/selenium/user-extensions.js
 nuxeo-distribution-dm/ftest/selenium/ffprofile/prefs.js
 nuxeo-distribution-dm/ftest/selenium/selenium-server.jar
-*/.DS_Store
+.DS_Store
 
 # we are trying not to ignore: nuxeo-distribution-jboss/src/main/resources/jboss/bin/
 syntax: regexp
