@@ -26,6 +26,7 @@ import org.nuxeo.chemistry.shell.Application;
 import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
 
@@ -45,9 +46,9 @@ public class LPushd extends AnnotatedCommand {
         String path = param.getValue();
         File file = app.resolveFile(path);
         if (!file.isDirectory()) {
-            Console.getDefault().error("Not a directory: "+file);
-            return;
+            throw new CommandException("Not a directory: " + file);
         }
+
         Stack<File> stack = (Stack<File>)app.getData(LPopd.WDIR_STACK_KEY);
         if (stack == null) {
             stack = new Stack<File>();

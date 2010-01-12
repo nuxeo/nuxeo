@@ -25,6 +25,7 @@ import org.nuxeo.chemistry.shell.Context;
 import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
 
@@ -38,7 +39,7 @@ public class Id extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        ensureConnected(app);        
+        ensureConnected(app);
 
         CommandParameter param = cmdLine.getParameter("item");
 
@@ -46,8 +47,7 @@ public class Id extends AnnotatedCommand {
         if (param != null && param.getValue() != null) {
             ctx = app.resolveContext(new Path(param.getValue()));
             if (ctx == null) {
-                Console.getDefault().warn("Cannot resolve target: "+param.getValue());
-                return;
+                throw new CommandException("Cannot resolve target: " + param.getValue());
             }
         } else {
             ctx = app.getContext();

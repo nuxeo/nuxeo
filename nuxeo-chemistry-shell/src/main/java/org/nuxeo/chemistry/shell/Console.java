@@ -45,12 +45,12 @@ public class Console {
         instance = console;
     }
 
-    public static CommandLine parseCommandLine(CommandRegistry reg, String line) throws CommandException {
-        return new CommandLine(reg, line);
-    }
-
     public static void runCommand(Application app, String line) throws Exception {
         parseCommandLine(app.getCommandRegistry(), line).run(app);
+    }
+
+    public static CommandLine parseCommandLine(CommandRegistry reg, String line) throws CommandException {
+        return new CommandLine(reg, line);
     }
 
     /**

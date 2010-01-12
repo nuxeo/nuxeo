@@ -24,6 +24,7 @@ import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.Command;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
 
@@ -48,7 +49,7 @@ public class Help extends AnnotatedCommand {
             if (cmd != null) {
                 println(cmd.getHelp(app));
             } else {
-                Console.getDefault().println("Unknown command: "+param.getValue());
+                throw new CommandException("Unknown command: " + param.getValue());
             }
         } else {
             println(getHelp(app));

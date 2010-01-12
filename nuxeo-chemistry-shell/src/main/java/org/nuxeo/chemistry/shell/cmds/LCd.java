@@ -25,6 +25,7 @@ import org.nuxeo.chemistry.shell.Application;
 import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
 
@@ -45,7 +46,7 @@ public class LCd extends AnnotatedCommand {
         if (file.isDirectory()) {
             app.setWorkingDirectory(file);
         } else {
-            Console.getDefault().error("Target "+file+" is not a directory");   
+            throw new CommandException("Target is not a directory: " + file);
         }
         Console.getDefault().updatePrompt();
     }

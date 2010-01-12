@@ -41,7 +41,7 @@ public class Ls extends AnnotatedCommand {
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
         ensureConnected(app);
-        
+
         CommandParameter param = cmdLine.getParameter("target");
 
         Context ctx;
@@ -50,7 +50,7 @@ public class Ls extends AnnotatedCommand {
         } else {
             ctx = app.resolveContext(new Path(param.getValue()));
             if (ctx == null) {
-                throw new CommandException("Cannot resolve "+param.getValue());
+                throw new CommandException("Cannot resolve target: " + param.getValue());
             }
         }
         Folder folder = ctx.as(Folder.class);

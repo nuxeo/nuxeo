@@ -26,6 +26,7 @@ import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 
 
@@ -50,7 +51,7 @@ public class Popd extends AnnotatedCommand {
             }
             Console.getDefault().updatePrompt();
         } else {
-            Console.getDefault().warn("Context Stack is empty");
+            throw new CommandException("Context stack is empty");
         }
     }
 

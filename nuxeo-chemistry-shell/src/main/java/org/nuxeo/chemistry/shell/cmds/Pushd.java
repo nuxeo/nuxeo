@@ -27,6 +27,7 @@ import org.nuxeo.chemistry.shell.Context;
 import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
 
@@ -45,16 +46,16 @@ public class Pushd extends AnnotatedCommand {
 
         String path = param.getValue();
         Context ctx = app.resolveContext(new Path(path));
-        if (ctx != null) {
-            Stack<Context> stack = (Stack<Context>) app.getData(Popd.CTX_STACK_KEY);
-            if (stack == null) {
-                stack = new Stack<Context>();
-                app.setData(Popd.CTX_STACK_KEY, stack);
-            }
-            stack.push(ctx);
-        } else {
-            Console.getDefault().warn("No such object: "+path);
+        if (ctx == null) {
+            throw new CommandException("Cannot resolve target: " + param.getValue());
         }
+
+        Stack<Context> stack = (Stack<Context>) app.getData(Popd.CTX_STACK_KEY);
+        if (stack == null) {
+            stack = new Stack<Context>();
+            app.setData(Popd.CTX_STACK_KEY, stack);
+        }
+        stack.push(ctx);
         Console.getDefault().updatePrompt();
     }
 

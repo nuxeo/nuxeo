@@ -26,6 +26,7 @@ import org.nuxeo.chemistry.shell.Application;
 import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 
 
@@ -43,8 +44,7 @@ public class LPopd extends AnnotatedCommand {
     public void run(Application app, CommandLine cmdLine) throws Exception {
         Stack<File> stack = (Stack<File>) app.getData(WDIR_STACK_KEY);
         if (stack == null) {
-            Console.getDefault().warn("No more directories on the stack");
-            return;
+            throw new CommandException("No more directories on the stack");
         }
         File file = stack.pop();
         if (stack.isEmpty()) {
