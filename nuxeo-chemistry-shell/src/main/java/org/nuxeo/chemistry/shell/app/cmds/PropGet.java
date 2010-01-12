@@ -51,8 +51,12 @@ public class PropGet extends ChemistryCommand {
             throw new CommandException("Cannot resolve "+targetParam.getValue());
         }
 
-        String propValue = new SimplePropertyManager(obj).getPropertyAsString(keyParam.getValue());
-        println(propValue);
+        if (keyParam != null) {
+            String propValue = new SimplePropertyManager(obj).getPropertyAsString(keyParam.getValue());
+            println(propValue);
+        } else {
+            new SimplePropertyManager(obj).dumpProperties();
+        }
     }
 
 }
