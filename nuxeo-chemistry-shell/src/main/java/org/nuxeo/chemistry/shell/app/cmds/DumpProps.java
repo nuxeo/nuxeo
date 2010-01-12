@@ -17,7 +17,6 @@
 package org.nuxeo.chemistry.shell.app.cmds;
 
 import org.apache.chemistry.CMISObject;
-import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
 import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
@@ -56,10 +55,10 @@ public class DumpProps extends ChemistryCommand {
             new SimplePropertyManager(obj).dumpProperties();
         } else {
             // print server props
-            Console.getDefault().println("Server URL = "+app.getServerUrl());
-            Console.getDefault().println("Host = "+app.getHost());
-            Console.getDefault().println("Username = "+app.getUsername());
-            Console.getDefault().println("Working directory = "+app.getWorkingDirectory());
+            println("Server URL = "+app.getServerUrl());
+            println("Host = "+app.getHost());
+            println("Username = "+app.getUsername());
+            println("Working directory = "+app.getWorkingDirectory());
         }
     }
 

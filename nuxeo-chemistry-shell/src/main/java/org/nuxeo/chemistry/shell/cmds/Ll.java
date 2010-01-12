@@ -22,7 +22,6 @@ package org.nuxeo.chemistry.shell.cmds;
 import java.io.File;
 
 import org.nuxeo.chemistry.shell.Application;
-import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.CommandLine;
@@ -39,7 +38,7 @@ public class Ll extends AnnotatedCommand {
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
         ensureConnected(app);
-        
+
         File file;
         CommandParameter param = cmdLine.getParameter("target");
         if (param != null) {
@@ -48,9 +47,8 @@ public class Ll extends AnnotatedCommand {
         } else {
             file = app.getWorkingDirectory();
         }
-        Console console = Console.getDefault();
         for (String f : file.list()) {
-            console.println(f);
+            println(f);
         }
     }
 

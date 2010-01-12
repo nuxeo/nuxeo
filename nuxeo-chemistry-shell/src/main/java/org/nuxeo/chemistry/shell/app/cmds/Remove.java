@@ -18,7 +18,6 @@ package org.nuxeo.chemistry.shell.app.cmds;
 
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Folder;
-import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;

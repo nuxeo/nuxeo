@@ -22,7 +22,6 @@ package org.nuxeo.chemistry.shell.cmds;
 import java.io.File;
 
 import org.nuxeo.chemistry.shell.Application;
-import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.CommandException;

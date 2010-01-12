@@ -22,7 +22,6 @@ package org.nuxeo.chemistry.shell.cmds;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Folder;
 import org.nuxeo.chemistry.shell.Application;
-import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
 import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
@@ -56,10 +55,10 @@ public class Ls extends AnnotatedCommand {
         Folder folder = ctx.as(Folder.class);
         if (folder != null) {
             for (String line : ctx.ls()) {
-                Console.getDefault().println(line);
+                println(line);
             }
         } else {
-            Console.getDefault().println(ctx.as(CMISObject.class).getName());
+            println(ctx.as(CMISObject.class).getName());
         }
     }
 

@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.nuxeo.chemistry.shell.Application;
+import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.util.FileUtils;
 
 
@@ -81,11 +82,15 @@ public abstract class Command {
     }
 
     public void print(String str) {
-        System.out.print(str);
+        Console.getDefault().print(str);
+    }
+
+    public void print(InputStream in) throws IOException {
+        Console.getDefault().print(in);
     }
 
     public void println(String str) {
-        System.out.println(str);
+        Console.getDefault().println(str);
     }
 
     public boolean isLocal() {

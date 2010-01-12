@@ -20,7 +20,6 @@ import java.io.InputStream;
 
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
-import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
 import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
@@ -30,7 +29,6 @@ import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
-import org.nuxeo.chemistry.shell.util.FileUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -62,7 +60,7 @@ public class Cat extends ChemistryCommand {
 
         InputStream in = cs.getStream();
         try {
-            FileUtils.copy(in, System.out);
+            print(in);
         } finally {
             in.close();
             System.out.flush();

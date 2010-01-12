@@ -20,7 +20,6 @@
 package org.nuxeo.chemistry.shell.cmds;
 
 import org.nuxeo.chemistry.shell.Application;
-import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
 import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
@@ -53,7 +52,7 @@ public class Id extends AnnotatedCommand {
             ctx = app.getContext();
         }
 
-        Console.getDefault().println(ctx.id());
+        println(ctx.id());
     }
 
 }

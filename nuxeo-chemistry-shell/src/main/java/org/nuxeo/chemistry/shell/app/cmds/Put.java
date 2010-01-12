@@ -21,7 +21,6 @@ import java.io.FileInputStream;
 
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
-import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
 import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
@@ -29,6 +28,7 @@ import org.nuxeo.chemistry.shell.app.ChemistryCommand;
 import org.nuxeo.chemistry.shell.app.utils.SimplePropertyManager;
 import org.nuxeo.chemistry.shell.app.utils.SimpleCreator;
 import org.nuxeo.chemistry.shell.command.Cmd;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
 
@@ -60,14 +60,12 @@ public class Put extends ChemistryCommand {
             }
         }
         if (targetCtx == null) {
-            Console.getDefault().warn("Cannot create target document");
-            return;
+            throw new CommandException("Cannot create target document");
         }
 
         Document obj = targetCtx.as(Document.class);
         if (obj == null) {
-            Console.getDefault().warn("Your target must be a document");
-            return;
+            throw new CommandException("Your target must be a document");
         }
 
         File file = app.resolveFile(sourceParam.getValue());
@@ -76,7 +74,7 @@ public class Put extends ChemistryCommand {
             new SimplePropertyManager(obj).setStream(in, file.getName());
         } finally {
             in.close();
-        }        
+        }
     }
 
 }

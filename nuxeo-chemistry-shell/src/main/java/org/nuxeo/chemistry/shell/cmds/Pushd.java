@@ -23,7 +23,6 @@ import java.util.Stack;
 
 import org.apache.chemistry.Folder;
 import org.nuxeo.chemistry.shell.Application;
-import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
 import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;

@@ -20,7 +20,6 @@
 package org.nuxeo.chemistry.shell.cmds;
 
 import org.nuxeo.chemistry.shell.Application;
-import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.Command;
@@ -76,7 +75,7 @@ public class Help extends AnnotatedCommand {
                     buf.append("]");
                 }
                 buf.append(" - ").append(cmd.getSynopsis());
-                Console.getDefault().println(buf.toString());
+                println(buf.toString());
             }
         }
     }

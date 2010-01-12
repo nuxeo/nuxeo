@@ -22,7 +22,6 @@ import java.io.InputStream;
 
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
-import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
 import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
@@ -55,14 +54,12 @@ public class Get extends ChemistryCommand {
 
         Document obj = ctx.as(Document.class);
         if (obj == null) {
-            Console.getDefault().warn("Your target must be a document");
-            return;
+            throw new CommandException("Your target must be a document");
         }
 
         ContentStream cs = new SimplePropertyManager(obj).getStream();
         if (cs == null) {
-            Console.getDefault().warn("Your target doesn't have a stream");
-            return;
+            throw new CommandException("Your target doesn't have a stream");
         }
 
         String name = cs.getFileName();
@@ -71,7 +68,7 @@ public class Get extends ChemistryCommand {
         FileOutputStream out = new FileOutputStream(file);
         try {
             FileUtils.copy(in, out);
-            Console.getDefault().println("Object stream saved to file: " + file);
+            println("Object stream saved to local file: " + file);
         } finally {
             out.close();
             in.close();

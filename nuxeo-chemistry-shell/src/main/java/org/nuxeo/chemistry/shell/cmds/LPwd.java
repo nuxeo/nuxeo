@@ -20,7 +20,6 @@
 package org.nuxeo.chemistry.shell.cmds;
 
 import org.nuxeo.chemistry.shell.Application;
-import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.CommandLine;
@@ -35,7 +34,7 @@ public class LPwd extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        Console.getDefault().println(app.getWorkingDirectory().getAbsolutePath());
+        println(app.getWorkingDirectory().getAbsolutePath());
     }
 
 }
