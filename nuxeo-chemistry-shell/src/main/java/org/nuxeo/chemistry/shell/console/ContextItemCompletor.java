@@ -36,6 +36,7 @@ public class ContextItemCompletor implements Completor {
     protected void collectNames(String[] keys, String prefix, List candidates) {
         for (String key : keys) {
             if (key.startsWith(prefix)) {
+                key = key.replace(" ", "\\ ");
                 candidates.add(key);
             }
         }
@@ -56,7 +57,7 @@ public class ContextItemCompletor implements Completor {
             ctx = Console.getDefault().getApplication().getContext();
         } else {
             path = path.removeLastSegments(1);
-            ctx = Console.getDefault().getApplication().resolveContext(path);            
+            ctx = Console.getDefault().getApplication().resolveContext(path);
         }
         if (ctx != null) {
             collectNames(ctx.entries(), prefix, candidates);
