@@ -13,7 +13,7 @@ else
 fi
 
 echo "deploy nuxeo distribution"
-mvn clean install -Pnuxeo-ep-jboss -f $NXDIST/pom.xml || exit 1
+mvn clean package -Pjboss,nuxeo-ep -f $NXDIST/pom.xml || exit 1
 
 echo  "deploy plugin"
 ant deploy -Djboss.dir=$JBOSS_HOME || exit 1
