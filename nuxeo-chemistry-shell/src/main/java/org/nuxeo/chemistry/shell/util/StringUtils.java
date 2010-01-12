@@ -66,14 +66,28 @@ public class StringUtils {
     }
 
     public static String[] tokenize(String text) {
-        int esc = 0;
+        boolean esc = false;
+        boolean inString = false;
         ArrayList<String> tokens = new ArrayList<String>();
         StringBuilder buf = new StringBuilder();
-        char[]  chars = text.toCharArray();
+        char[] chars = text.toCharArray();
         for (char c : chars) {
-            if (esc == 1) {
+            if (esc) {
+                switch (c) {
+                    case 'n':
+                        buf.append('\n');
+                        break;
+                    case 't':
+                        buf.append('\t');
+                        break;
+                    default:
+                        buf.append(c);
+                }
+                esc = false;
+                continue;
+            }
+            if (inString && c != '"') {
                 buf.append(c);
-                esc = 0;
                 continue;
             }
             switch (c) {
@@ -85,7 +99,10 @@ public class StringUtils {
                     }
                     break;
                 case '\\':
-                    esc = 1;
+                    esc = true;
+                    break;
+                case '"':
+                    inString = !inString;
                     break;
                 default:
                     buf.append(c);
