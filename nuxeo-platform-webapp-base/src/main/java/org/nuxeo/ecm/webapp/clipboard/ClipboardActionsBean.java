@@ -562,8 +562,21 @@ public class ClipboardActionsBean extends InputController implements
         return exportWorklistAsZip(documentsListsManager.getWorkingList(getCurrentSelectedListName()));
     }
 
+    public String exportAllBlobsFromWorkingListAsZip() throws ClientException {
+        return exportWorklistAsZip();
+    }
+
+    public String exportMainBlobFromWorkingListAsZip() throws ClientException {
+        return exportWorklistAsZip();
+    }
+
     public String exportWorklistAsZip(List<DocumentModel> documents)
             throws ClientException {
+        return exportWorklistAsZip(documents, true);
+    }
+
+    public String exportWorklistAsZip(List<DocumentModel> documents,
+            boolean exportAllBlobs) throws ClientException {
         try {
             SummaryImpl summary = new SummaryImpl();
 
@@ -607,10 +620,12 @@ public class ClipboardActionsBean extends InputController implements
                     summary.put(summaryLeaf.getPath(), summaryLeaf);
 
                     addFolderToZip("", out, doc, data, documentManager,
-                            summary.get(summaryLeaf.getPath()), summary);
+                            summary.get(summaryLeaf.getPath()), summary,
+                            exportAllBlobs);
                 } else if (bh != null) {
                     addBlobHolderToZip("", out, doc, data,
-                            summary.getSummaryRoot(), summary, bh);
+                            summary.getSummaryRoot(), summary, bh,
+                            exportAllBlobs);
                 }
             }
             if (summary.size() > 1) {
@@ -639,7 +654,8 @@ public class ClipboardActionsBean extends InputController implements
      * Document.
      * <p>
      * Conditions:
-     * <p> - the list of selected documents is not empty
+     * <p>
+     * - the list of selected documents is not empty
      *
      */
     public boolean getCanCopy() {
@@ -799,8 +815,8 @@ public class ClipboardActionsBean extends InputController implements
     // Misc internal function for Ziping Clipboard
     private void addFolderToZip(String path, ZipOutputStream out,
             DocumentModel doc, byte[] data, CoreSession documentManager,
-            SummaryEntry parent, SummaryImpl summary) throws ClientException,
-            IOException {
+            SummaryEntry parent, SummaryImpl summary, boolean exportAllBlobs)
+            throws ClientException, IOException {
 
         String title = (String) doc.getProperty("dublincore", "title");
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
@@ -825,10 +841,11 @@ public class ClipboardActionsBean extends InputController implements
 
                 addFolderToZip(path + title + "/", out, docChild, data,
                         documentManager, summary.get(summaryLeaf.getPath()),
-                        summary);
+                        summary, exportAllBlobs);
             } else if (bh != null) {
                 addBlobHolderToZip(path + title + "/", out, docChild, data,
-                        summary.get(parent.getPath()), summary, bh);
+                        summary.get(parent.getPath()), summary, bh,
+                        exportAllBlobs);
             }
         }
     }
@@ -875,9 +892,19 @@ public class ClipboardActionsBean extends InputController implements
 
     private void addBlobHolderToZip(String path, ZipOutputStream out,
             DocumentModel doc, byte[] data, SummaryEntry parent,
-            SummaryImpl summary, BlobHolder bh) throws IOException,
-            ClientException {
-        List<Blob> blobs = bh.getBlobs();
+            SummaryImpl summary, BlobHolder bh, boolean exportAllBlobs)
+            throws IOException, ClientException {
+        List<Blob> blobs = new ArrayList<Blob>();
+
+        if (exportAllBlobs) {
+            blobs = bh.getBlobs();
+        } else {
+            Blob mainBlob = bh.getBlob();
+            if (mainBlob != null) {
+                blobs.add(mainBlob);
+            }
+        }
+
         for (Blob content : blobs) {
 
             String fileName = content.getFilename();

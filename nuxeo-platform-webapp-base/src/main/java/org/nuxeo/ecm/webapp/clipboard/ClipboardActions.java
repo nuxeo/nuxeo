@@ -112,7 +112,13 @@ public interface ClipboardActions {
 
     String exportWorklistAsZip() throws ClientException;
 
+    String exportAllBlobsFromWorkingListAsZip() throws ClientException;
+
+    String exportMainBlobFromWorkingListAsZip() throws ClientException;
+
     String exportWorklistAsZip(List<DocumentModel> documents) throws ClientException;
+
+    String exportWorklistAsZip(List<DocumentModel> documents, boolean exportAllBlobs) throws ClientException;
 
     void releaseClipboardableDocuments();
 
