@@ -31,9 +31,12 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelRow;
 import org.nuxeo.ecm.platform.ui.web.util.DocumentsListsUtils;
+import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -41,6 +44,7 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 
 /**
  * @author <a href="mailto:pdilorenzo@nuxeo.com">Peter Di Lorenzo</a>
+ * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
  */
 @Scope(CONVERSATION)
 @Name("bulkSelectActions")
@@ -65,7 +69,13 @@ public class BulkSelectActions implements Serializable {
     protected ResourcesAccessor resourcesAccessor;
 
     @In(create = true)
+    protected transient WebActions webActions;
+
+    @In(create = true)
     protected DocumentActions documentActions;
+
+    @In(create = true)
+    protected ClipboardActions clipboardActions;
 
     @In(create = true)
     protected transient ResultsProvidersCache resultsProvidersCache;
@@ -206,7 +216,7 @@ public class BulkSelectActions implements Serializable {
 
     /**
      * Tests if a document is in the working list of selected documents.
-     * 
+     *
      * @param String docId The DocumentRef of the document
      * @param String listName The name of the working list of selected
      *            documents. If null, the default list will be used.
@@ -272,7 +282,7 @@ public class BulkSelectActions implements Serializable {
 
     /**
      * Clears the working list of selected documents.
-     * 
+     *
      * @param String lName The name of the working list of selected documents.
      *            If null, the default list will be used.
      */
@@ -288,9 +298,9 @@ public class BulkSelectActions implements Serializable {
     // TODO: move this API to documentsListsManager directly
     /**
      * Tests whether the current working list of selected documents is empty.
-     * 
-     * @param String listName The name of the working list of selected documents.
-     *            If null, the default list will be used.
+     *
+     * @param String listName The name of the working list of selected
+     *            documents. If null, the default list will be used.
      * @return boolean true if empty, false otherwise
      */
     public boolean getIsCurrentWorkingListEmpty(String listName) {
@@ -319,7 +329,8 @@ public class BulkSelectActions implements Serializable {
         }
     }
 
-    public void togglePageSelection(String providerName, String listName, SelectDataModel selectDataModel) {
+    public void togglePageSelection(String providerName, String listName,
+            SelectDataModel selectDataModel) {
         PagedDocumentsProvider provider;
         try {
             provider = resultsProvidersCache.get(providerName);
@@ -374,6 +385,36 @@ public class BulkSelectActions implements Serializable {
             }
         }
         return false;
+    }
+
+    public boolean getCanExport() {
+        List<DocumentModel> docsToExport = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+
+        if (docsToExport == null || docsToExport.isEmpty()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public void exportSelection() throws ClientException {
+        if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
+            exportSelection(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION));
+        }
+    }
+
+    public String exportSelection(List<DocumentModel> docsToExport)
+            throws ClientException {
+        if (docsToExport != null && !docsToExport.isEmpty()) {
+            return clipboardActions.exportWorklistAsZip(docsToExport, false);
+        }
+
+        return null;
+    }
+
+    public List<Action> getActionsForSelectionNoAjax() {
+        return webActions.getUnfiltredActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
+                + "_NOA4J_LIST");
     }
 
 }

@@ -14,6 +14,10 @@
     function confirmDeleteAssets() {
       return confirm("#{messages['label.assets.confirmDeleteAssets']}");
     }
+
+    function confirmExportAssets() {
+      return confirm("#{messages['label.assets.confirmExportAssets']}");
+    }
   </script>
 
   <div>
@@ -21,6 +25,18 @@
       <nxu:dataList var="sel_action" value="#{clipboardActions.actionsForSelection}">
         <span id="#{sel_action.id}">
           <nxa4j:commandButton
+            styleClass="button" type="submit"
+            action="#{sel_action.getLink()}"
+            value="#{messages[sel_action.label]}"
+            onclick="#{sel_action.confirm}"
+            reRender="filterResultTable, selectionView"
+            disabled="#{!sel_action.available}" />
+        </span>
+      </nxu:dataList>
+
+      <nxu:dataList var="sel_action" value="#{bulkSelectActions.actionsForSelectionNoAjax}">
+        <span id="#{sel_action.id}">
+          <nxh:commandButton
             styleClass="button" type="submit"
             action="#{sel_action.getLink()}"
             value="#{messages[sel_action.label]}"

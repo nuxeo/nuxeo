@@ -35,6 +35,17 @@
       </filter>
     </action>
 
+    <action id="CURRENT_SELECTION_EXPORT" link="#{bulkSelectActions.exportSelection}"
+      label="command.export" icon="" help="command.export.help"
+      confirm="if( !confirmExportAssets() ) return false;">
+      <category>CURRENT_SELECTION_NOA4J_LIST</category>
+      <filter id="canExport">
+        <rule grant="true">
+          <condition>#{bulkSelectActions.canExport}</condition>
+        </rule>
+      </filter>
+    </action>
+
   </extension>
 
 </component>
