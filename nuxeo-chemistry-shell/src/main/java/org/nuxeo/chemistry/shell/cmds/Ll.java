@@ -38,6 +38,8 @@ public class Ll extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
+        ensureConnected(app);
+        
         File file;
         CommandParameter param = cmdLine.getParameter("target");
         if (param != null) {

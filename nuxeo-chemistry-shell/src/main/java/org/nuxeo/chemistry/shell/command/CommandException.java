@@ -20,6 +20,8 @@
 package org.nuxeo.chemistry.shell.command;
 
 /**
+ * Exception thrown by commands.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class CommandException extends Exception {

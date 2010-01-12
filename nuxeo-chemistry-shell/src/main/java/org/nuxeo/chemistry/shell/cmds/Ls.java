@@ -27,6 +27,7 @@ import org.nuxeo.chemistry.shell.Context;
 import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
 
@@ -39,6 +40,8 @@ public class Ls extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
+        ensureConnected(app);
+        
         CommandParameter param = cmdLine.getParameter("target");
 
         Context ctx;
@@ -47,8 +50,7 @@ public class Ls extends AnnotatedCommand {
         } else {
             ctx = app.resolveContext(new Path(param.getValue()));
             if (ctx == null) {
-                Console.getDefault().warn("Cannot resolve "+param.getValue());
-                return;
+                throw new CommandException("Cannot resolve "+param.getValue());
             }
         }
         Folder folder = ctx.as(Folder.class);

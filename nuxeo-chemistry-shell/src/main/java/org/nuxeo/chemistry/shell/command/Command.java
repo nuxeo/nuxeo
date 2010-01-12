@@ -57,6 +57,12 @@ public abstract class Command {
         return syntax;
     }
 
+    public void ensureConnected(Application app) throws CommandException {
+        if (!app.isConnected()) {
+            throw new CommandException("Not connected");
+        }
+    }
+
     public String getHelp(Application app) {
         URL url = getClass().getResource("/META-INF/help/"+getName()+".help");
         if (url == null) {

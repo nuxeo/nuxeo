@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.List;
 
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.ExitException;
 import org.nuxeo.chemistry.shell.console.JLineConsole;
 import org.nuxeo.chemistry.shell.util.FileUtils;
@@ -105,12 +106,10 @@ public class Main {
         if (execMode) {
             Console.setDefault(new Console());
             Console.getDefault().start(app);
-            Console.getDefault().println(
-                    "CMIS Shell by Nuxeo (www.nuxeo.com). Type 'help' for help.");
             Console.runCommand(app, command);
-            return;
         }
-        if (batchMode) {
+
+        else if (batchMode) {
             Console.setDefault(new Console());
             Console.getDefault().start(app);
             List<String> cmds;
@@ -119,34 +118,38 @@ public class Main {
             } else {
                 cmds = FileUtils.readLines(new File(command));
             }
-            try {
-                for (String cmd : cmds) {
-                    // Ignore empty lines / comments
-                    if (cmd.length() == 0 || cmd.startsWith("#")) {
-                        continue;
-                    }
-
-                    System.out.println("Running: "+cmd);
-                    Console.runCommand(app, cmd);
+            for (String cmd : cmds) {
+                // Ignore empty lines / comments
+                if (cmd.length() == 0 || cmd.startsWith("#")) {
+                    continue;
                 }
-                System.out.println("Done.");
-            } catch (ExitException e) {
-                System.out.println("Bye.");
-            } catch (Throwable t) {
-                t.printStackTrace();
+                Console.getDefault().println("Running: " + cmd);
+                try {
+                    Console.runCommand(app, cmd);
+                } catch (ExitException e) {
+                    Console.getDefault().println("Bye.");
+                    return;
+                } catch (CommandException e) {
+                    Console.getDefault().error(e.getMessage());
+                } catch (Exception e) {
+                    Console.getDefault().error(e.getMessage());
+                }
             }
-            return;
+            Console.getDefault().println("Done.");
         }
 
-        // run in interactive mode
-        try {
-            //TODO use user profiles to setup console  like prompt and default service to cd in
-            Console.setDefault(new JLineConsole());
-            Console.getDefault().start(app);
-        } catch (Exception e) {
-            e.printStackTrace();
+        else {
+            // run in interactive mode
+            try {
+                //TODO use user profiles to setup console  like prompt and default service to cd in
+                Console.setDefault(new JLineConsole());
+                Console.getDefault().println(
+                        "CMIS Shell by Nuxeo (www.nuxeo.com). Type 'help' for help.");
+                Console.getDefault().start(app);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-
     }
 
     static void error(String msg) {

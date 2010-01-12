@@ -24,6 +24,7 @@ import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;
 import org.nuxeo.chemistry.shell.app.utils.SimpleBrowser;
 import org.nuxeo.chemistry.shell.command.Cmd;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
 
@@ -43,8 +44,7 @@ public class DumpTree extends ChemistryCommand {
         if (param != null && param.getValue() != null) {
             ctx = app.resolveContext(new Path(param.getValue()));
             if (ctx == null) {
-                Console.getDefault().warn("Cannot resolve target: "+param.getValue());
-                return;
+                throw new CommandException("Cannot resolve "+param.getValue());
             }
         } else {
             ctx = app.getContext();
@@ -54,7 +54,7 @@ public class DumpTree extends ChemistryCommand {
         if (folder != null) {
             new SimpleBrowser(folder).browse();
         } else {
-            Console.getDefault().warn("Target is not a folder");
+            throw new CommandException("Target "+param.getValue()+" is not a folder");
         }
     }
 

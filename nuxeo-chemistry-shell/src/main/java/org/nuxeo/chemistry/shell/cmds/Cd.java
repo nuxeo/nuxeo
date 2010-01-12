@@ -38,6 +38,7 @@ public class Cd extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
+        ensureConnected(app);        
 
         CommandParameter param = cmdLine.getParameter("target");
 

@@ -70,15 +70,13 @@ public class Put extends ChemistryCommand {
             return;
         }
 
-        String source = sourceParam.getValue();
-        File file = app.resolveFile(source);
+        File file = app.resolveFile(sourceParam.getValue());
         FileInputStream in = new FileInputStream(file);
-
         try {
             new SimplePropertyManager(obj).setStream(in, file.getName());
         } finally {
             in.close();
-        }
+        }        
     }
 
 }

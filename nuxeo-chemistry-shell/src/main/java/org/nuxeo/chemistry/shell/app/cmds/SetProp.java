@@ -26,6 +26,7 @@ import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;
 import org.nuxeo.chemistry.shell.app.utils.SimplePropertyManager;
 import org.nuxeo.chemistry.shell.command.Cmd;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
 
@@ -41,14 +42,13 @@ public class SetProp extends ChemistryCommand {
             throws Exception {
 
         CommandParameter targetParam = cmdLine.getParameter("target");
-        CommandParameter keyParam = cmdLine.getParameter("propname");
+        CommandParameter keyParam = cmdLine.getParameter("key");
         CommandParameter valueParam = cmdLine.getParameter("value");
 
         Context ctx = app.resolveContext(new Path(targetParam.getValue()));
         CMISObject obj = ctx.as(CMISObject.class);
         if (obj == null) {
-            Console.getDefault().warn("Target doesn't exist");
-            return;
+            throw new CommandException("Cannot resolve "+targetParam.getValue());
         }
 
         new SimplePropertyManager(obj).setProperty(keyParam.getValue(), valueParam.getValue());

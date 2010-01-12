@@ -29,6 +29,7 @@ import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;
 import org.nuxeo.chemistry.shell.app.utils.SimplePropertyManager;
 import org.nuxeo.chemistry.shell.command.Cmd;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
 import org.nuxeo.chemistry.shell.util.FileUtils;
@@ -49,8 +50,7 @@ public class Get extends ChemistryCommand {
 
         Context ctx = app.resolveContext(new Path(param.getValue()));
         if (ctx == null) {
-            Console.getDefault().warn("Cannot resolve target: " + param.getValue());
-            return;
+            throw new CommandException("Cannot resolve "+param.getValue());
         }
 
         Document obj = ctx.as(Document.class);

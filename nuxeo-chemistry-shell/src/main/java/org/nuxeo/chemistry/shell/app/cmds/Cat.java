@@ -27,6 +27,7 @@ import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;
 import org.nuxeo.chemistry.shell.app.utils.SimplePropertyManager;
 import org.nuxeo.chemistry.shell.command.Cmd;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
 import org.nuxeo.chemistry.shell.util.FileUtils;
@@ -46,20 +47,17 @@ public class Cat extends ChemistryCommand {
 
         Context ctx = app.resolveContext(new Path(param.getValue()));
         if (ctx == null) {
-            Console.getDefault().warn("Cannot resolve target: " + param.getValue());
-            return;
+            throw new CommandException("Cannot resolve target: " + param.getValue());
         }
 
         Document obj = ctx.as(Document.class);
         if (obj == null) {
-            Console.getDefault().warn("Your target must be a document");
-            return;
+            throw new CommandException("Your target must be a document");
         }
 
         ContentStream cs = new SimplePropertyManager(obj).getStream();
         if (cs == null) {
-            Console.getDefault().warn("Your target doesn't have a stream");
-            return;
+            throw new CommandException("Your target doesn't have a stream");
         }
 
         InputStream in = cs.getStream();
