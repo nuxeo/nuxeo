@@ -44,19 +44,19 @@ public class Put extends ChemistryCommand {
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
 
-        CommandParameter sourceParam = cmdLine.getParameter("source");
-        CommandParameter targetParam = cmdLine.getParameter("target");
+        String source = cmdLine.getParameterValue("source");
+        String target = cmdLine.getParameterValue("target");
 
-        Context targetCtx = app.resolveContext(new Path(targetParam.getValue()));
+        Context targetCtx = app.resolveContext(new Path(target));
 
         // Create document if it doesn't exist
         if (targetCtx == null) {
             Context currentCtx = app.getContext();
             Folder folder =  currentCtx.as(Folder.class);
             if (folder != null) {
-                new SimpleCreator(folder).createFile(targetParam.getValue());
+                new SimpleCreator(folder).createFile(target);
                 currentCtx.reset();
-                targetCtx = app.resolveContext(new Path(targetParam.getValue()));
+                targetCtx = app.resolveContext(new Path(target));
             }
         }
         if (targetCtx == null) {
@@ -68,7 +68,7 @@ public class Put extends ChemistryCommand {
             throw new CommandException("Your target must be a document");
         }
 
-        File file = app.resolveFile(sourceParam.getValue());
+        File file = app.resolveFile(source);
         FileInputStream in = new FileInputStream(file);
         try {
             new SimplePropertyManager(obj).setStream(in, file.getName());

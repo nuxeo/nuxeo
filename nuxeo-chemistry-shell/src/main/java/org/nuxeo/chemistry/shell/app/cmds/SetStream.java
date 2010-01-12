@@ -34,24 +34,24 @@ import org.nuxeo.chemistry.shell.command.CommandParameter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="setStream target file:file", synopsis="Set the given file content as a stream on the current context object")
+@Cmd(syntax="setStream target filename:file", synopsis="Set the given file content as a stream on the current context object")
 public class SetStream extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
 
-        CommandParameter targetParam = cmdLine.getParameter("target");
-        CommandParameter fileParam = cmdLine.getParameter("file");
+        String target = cmdLine.getParameterValue("target");
+        String filename = cmdLine.getParameterValue("filename");
 
-        Context ctx = app.resolveContext(new Path(targetParam.getValue()));
+        Context ctx = app.resolveContext(new Path(target));
         CMISObject obj = ctx.as(CMISObject.class);
 
         if (obj == null) {
-            throw new CommandException("Cannot resolve "+targetParam.getValue());
+            throw new CommandException("Cannot resolve "+target);
         }
 
-        File file = app.resolveFile(fileParam.getValue());
+        File file = app.resolveFile(filename);
         FileInputStream in = new FileInputStream(file);
         try {
             new SimplePropertyManager(obj).setStream(in, file.getName());

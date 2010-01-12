@@ -40,13 +40,13 @@ public class Id extends AnnotatedCommand {
     public void run(Application app, CommandLine cmdLine) throws Exception {
         ensureConnected(app);
 
-        CommandParameter param = cmdLine.getParameter("item");
+        String param = cmdLine.getParameterValue("item");
 
         Context ctx;
-        if (param != null && param.getValue() != null) {
-            ctx = app.resolveContext(new Path(param.getValue()));
+        if (param != null) {
+            ctx = app.resolveContext(new Path(param));
             if (ctx == null) {
-                throw new CommandException("Cannot resolve target: " + param.getValue());
+                throw new CommandException("Cannot resolve target: " + param);
             }
         } else {
             ctx = app.getContext();

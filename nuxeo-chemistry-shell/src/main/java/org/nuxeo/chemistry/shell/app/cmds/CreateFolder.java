@@ -29,21 +29,21 @@ import org.nuxeo.chemistry.shell.command.CommandParameter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="mkdir name", synopsis="Create a folder given its name")
+@Cmd(syntax="mkdir target:item", synopsis="Create a folder given its name")
 public class CreateFolder extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
-        CommandParameter param = cmdLine.getParameter("name");
+        String param = cmdLine.getParameterValue("target");
 
         // FIXME: won't work if we do 'mkdir ../toto/titi'.
 
         Context ctx = app.getContext();
         Folder folder = ctx.as(Folder.class);
         if (folder != null) {
-            new SimpleCreator(folder).createFolder(param.getValue());
-            ctx.reset();            
+            new SimpleCreator(folder).createFolder(param);
+            ctx.reset();
         }
     }
 

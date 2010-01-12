@@ -29,20 +29,20 @@ import org.nuxeo.chemistry.shell.command.CommandParameter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="mkfile name", synopsis="Create a file of the given name")
+@Cmd(syntax="mkfile target:item", synopsis="Create a file of the given name")
 public class CreateFile extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
-        CommandParameter param = cmdLine.getParameter("name");
+        String param = cmdLine.getParameterValue("target");
 
         // FIXME: won't work if we do 'mkfile ../toto/titi'.
 
         Context ctx = app.getContext();
         Folder folder = ctx.as(Folder.class);
         if (folder != null) {
-            new SimpleCreator(folder).createFile(param.getValue());
+            new SimpleCreator(folder).createFile(param);
             ctx.reset();
         }
     }

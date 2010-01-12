@@ -40,9 +40,9 @@ public class Ll extends AnnotatedCommand {
         ensureConnected(app);
 
         File file;
-        CommandParameter param = cmdLine.getParameter("target");
+        String param = cmdLine.getParameterValue("target");
         if (param != null) {
-            String path = param.getValue();
+            String path = param;
             file = app.resolveFile(path);
         } else {
             file = app.getWorkingDirectory();

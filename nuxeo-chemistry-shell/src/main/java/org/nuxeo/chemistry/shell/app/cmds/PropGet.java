@@ -38,21 +38,21 @@ public class PropGet extends ChemistryCommand {
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
 
-        CommandParameter targetParam = cmdLine.getParameter("target");
-        CommandParameter keyParam = cmdLine.getParameter("key");
+        String target = cmdLine.getParameterValue("target");
+        String key = cmdLine.getParameterValue("key");
 
-        Context ctx = app.resolveContext(new Path(targetParam.getValue()));
+        Context ctx = app.resolveContext(new Path(target));
         if (ctx == null) {
-            throw new CommandException("Cannot resolve "+targetParam.getValue());
+            throw new CommandException("Cannot resolve "+target);
         }
 
         CMISObject obj = ctx.as(CMISObject.class);
         if (obj == null) {
-            throw new CommandException("Cannot resolve "+targetParam.getValue());
+            throw new CommandException("Cannot resolve "+target);
         }
 
-        if (keyParam != null) {
-            String propValue = new SimplePropertyManager(obj).getPropertyAsString(keyParam.getValue());
+        if (key != null) {
+            String propValue = new SimplePropertyManager(obj).getPropertyAsString(key);
             println(propValue);
         } else {
             new SimplePropertyManager(obj).dumpProperties();

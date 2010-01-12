@@ -40,9 +40,8 @@ public class LPushd extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        CommandParameter param = cmdLine.getParameter("dir");
+        String path = cmdLine.getParameterValue("dir");
 
-        String path = param.getValue();
         File file = app.resolveFile(path);
         if (!file.isDirectory()) {
             throw new CommandException("Not a directory: " + file);

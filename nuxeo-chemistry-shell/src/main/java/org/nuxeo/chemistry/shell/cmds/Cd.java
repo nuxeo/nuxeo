@@ -40,11 +40,11 @@ public class Cd extends AnnotatedCommand {
     public void run(Application app, CommandLine cmdLine) throws Exception {
         ensureConnected(app);
 
-        CommandParameter param = cmdLine.getParameter("target");
+        String param = cmdLine.getParameterValue("target");
 
-        Context ctx = app.resolveContext(new Path(param.getValue()));
+        Context ctx = app.resolveContext(new Path(param));
         if (ctx == null) {
-            throw new CommandException("Cannot resolve target: " + param.getValue());
+            throw new CommandException("Cannot resolve target: " + param);
         }
         Folder folder = ctx.as(Folder.class);
         if (folder != null) {

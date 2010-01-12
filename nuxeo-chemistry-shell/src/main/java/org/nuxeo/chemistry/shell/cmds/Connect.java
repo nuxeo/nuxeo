@@ -35,9 +35,8 @@ public class Connect extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        CommandParameter param = cmdLine.getParameter("url");
-        if (param != null) {
-            String url = param.getValue();
+        String url = cmdLine.getParameterValue("url");
+        if (url != null) {
             app.connect(url);
         }
     }

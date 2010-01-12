@@ -42,13 +42,13 @@ public class Help extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        CommandParameter param = cmdLine.getParameter("command");
+        String param = cmdLine.getParameterValue("command");
         if (param != null) {
-            Command cmd = app.getCommandRegistry().getCommand(param.getValue());
+            Command cmd = app.getCommandRegistry().getCommand(param);
             if (cmd != null) {
                 println(cmd.getHelp(app));
             } else {
-                throw new CommandException("Unknown command: " + param.getValue());
+                throw new CommandException("Unknown command: " + param);
             }
         } else {
             println(getHelp(app));

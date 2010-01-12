@@ -42,14 +42,15 @@ public class Pushd extends AnnotatedCommand {
     @Override
     @SuppressWarnings("unchecked")
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        CommandParameter param = cmdLine.getParameter("target");
+
+        String param = cmdLine.getParameterValue("target");
 
         Context oldContext = app.getContext();
 
-        String path = param.getValue();
+        String path = param;
         Context ctx = app.resolveContext(new Path(path));
         if (ctx == null) {
-            throw new CommandException("Cannot resolve target: " + param.getValue());
+            throw new CommandException("Cannot resolve target: " + param);
         }
 
         Folder folder = ctx.as(Folder.class);

@@ -38,15 +38,14 @@ public class LCd extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        CommandParameter param = cmdLine.getParameter("target");
+        String target = cmdLine.getParameterValue("target");
 
-        String path = param.getValue();
-        File file = app.resolveFile(path);
-        if (file.isDirectory()) {
-            app.setWorkingDirectory(file);
-        } else {
+        File file = app.resolveFile(target);
+        if (!file.isDirectory()) {
             throw new CommandException("Target is not a directory: " + file);
         }
+
+        app.setWorkingDirectory(file);
     }
 
 }

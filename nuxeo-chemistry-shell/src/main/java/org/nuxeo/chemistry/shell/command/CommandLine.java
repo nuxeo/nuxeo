@@ -103,6 +103,11 @@ public class CommandLine {
         return map.get(key);
     }
 
+    public String getParameterValue(String key) {
+        CommandParameter param = map.get(key);
+        return param == null ? null : param.getValue();
+    }
+
     public void run(Application app) throws Exception {
         cmd.run(app, this);
     }

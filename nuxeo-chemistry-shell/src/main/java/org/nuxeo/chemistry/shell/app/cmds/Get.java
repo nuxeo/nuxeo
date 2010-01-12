@@ -45,11 +45,11 @@ public class Get extends ChemistryCommand {
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
 
-        CommandParameter param = cmdLine.getParameter("target");
+        String target = cmdLine.getParameterValue("target");
 
-        Context ctx = app.resolveContext(new Path(param.getValue()));
+        Context ctx = app.resolveContext(new Path(target));
         if (ctx == null) {
-            throw new CommandException("Cannot resolve "+param.getValue());
+            throw new CommandException("Cannot resolve "+target);
         }
 
         Document obj = ctx.as(Document.class);

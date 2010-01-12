@@ -37,10 +37,10 @@ public class Remove extends ChemistryCommand {
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
-        CommandParameter param = cmdLine.getParameter("target");
+        String target = cmdLine.getParameterValue("target");
 
         // FIXME: won't work if target is not just an object name
-        String name = param.getValue();
+        String name = target;
         Context ctx = app.getContext();
         Folder folder = ctx.as(Folder.class);
         if (folder != null) {

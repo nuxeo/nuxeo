@@ -39,13 +39,13 @@ public class DumpProps extends ChemistryCommand {
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
 
-        CommandParameter param = cmdLine.getParameter("item");
+        String param = cmdLine.getParameterValue("item");
 
         Context ctx;
-        if (param != null && param.getValue() != null) {
-            ctx = app.resolveContext(new Path(param.getValue()));
+        if (param != null) {
+            ctx = app.resolveContext(new Path(param));
             if (ctx == null) {
-                throw new CommandException("Cannot resolve "+param.getValue());
+                throw new CommandException("Cannot resolve "+param);
             }
         } else {
             ctx = app.getContext();

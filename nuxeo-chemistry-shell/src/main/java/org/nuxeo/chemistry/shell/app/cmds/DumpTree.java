@@ -37,13 +37,13 @@ public class DumpTree extends ChemistryCommand {
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
-        CommandParameter param = cmdLine.getParameter("target");
+        String target = cmdLine.getParameterValue("target");
 
         Context ctx;
-        if (param != null && param.getValue() != null) {
-            ctx = app.resolveContext(new Path(param.getValue()));
+        if (target != null) {
+            ctx = app.resolveContext(new Path(target));
             if (ctx == null) {
-                throw new CommandException("Cannot resolve "+param.getValue());
+                throw new CommandException("Cannot resolve "+target);
             }
         } else {
             ctx = app.getContext();
@@ -53,7 +53,7 @@ public class DumpTree extends ChemistryCommand {
         if (folder != null) {
             new SimpleBrowser(folder).browse();
         } else {
-            throw new CommandException("Target "+param.getValue()+" is not a folder");
+            throw new CommandException("Target "+target+" is not a folder");
         }
     }
 

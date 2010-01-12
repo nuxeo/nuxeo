@@ -38,17 +38,17 @@ public class SetProp extends ChemistryCommand {
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
 
-        CommandParameter targetParam = cmdLine.getParameter("target");
-        CommandParameter keyParam = cmdLine.getParameter("key");
-        CommandParameter valueParam = cmdLine.getParameter("value");
+        String target = cmdLine.getParameterValue("target");
+        String key = cmdLine.getParameterValue("key");
+        String value = cmdLine.getParameterValue("value");
 
-        Context ctx = app.resolveContext(new Path(targetParam.getValue()));
+        Context ctx = app.resolveContext(new Path(target));
         CMISObject obj = ctx.as(CMISObject.class);
         if (obj == null) {
-            throw new CommandException("Cannot resolve "+targetParam.getValue());
+            throw new CommandException("Cannot resolve "+target);
         }
 
-        new SimplePropertyManager(obj).setProperty(keyParam.getValue(), valueParam.getValue());
+        new SimplePropertyManager(obj).setProperty(key, value);
     }
 
 }
