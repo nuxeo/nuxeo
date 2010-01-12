@@ -1192,6 +1192,10 @@
         <color preset="red (Galaxy colors)" />
         <font-weight>bold</font-weight>
       </selector>
+      <selector path=".summary_unlocked">
+        <color preset="green (Galaxy colors)" />
+        <font-weight>bold</font-weight>
+      </selector>
       <selector path=".lockDetail, .DetailList">
         <padding-top>5px</padding-top>
       </selector>

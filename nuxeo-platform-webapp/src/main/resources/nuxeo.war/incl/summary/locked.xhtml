@@ -4,7 +4,7 @@
 
   <c:if test="#{!empty currentDocumentLockDetails}">
     <h:outputText value="#{messages['label.summary.locked.intro']}"/> 
-    <h:outputText class="summary_locked" value="#{messages['label.summary.locked']} "/>
+    <h:outputText class="summary_locked" value="#{messages['label.summary.locked']}"/>
     <c:if test="#{currentDocumentCanBeUnlocked}">
       <h:outputText value=" | " />
       <h:commandLink value="#{messages['command.unlock']}"
@@ -18,7 +18,7 @@
 
   <c:if test="#{empty currentDocumentLockDetails}">
     <h:outputText value="#{messages['label.summary.locked.intro']}"/> 
-    <h:outputText value="#{messages['label.summary.unlocked']} "/>
+    <h:outputText class="summary_unlocked" value="#{messages['label.summary.unlocked']} "/>
     <c:if test="#{currentDocumentCanBeLocked}" >
       <h:outputText value=" | " />
       <h:commandLink value="#{messages['command.lock']}"
