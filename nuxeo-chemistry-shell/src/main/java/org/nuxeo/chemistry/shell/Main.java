@@ -20,6 +20,7 @@
 package org.nuxeo.chemistry.shell;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
@@ -36,17 +37,24 @@ import org.nuxeo.chemistry.shell.util.PwdReader;
  */
 public class Main {
 
+    String username;
+    String password;
+    String url;
+    boolean batchMode;
+    boolean execMode;
+    String command;
+    private ChemistryApp app;
+
     private Main() {
     }
 
     public static void main(String[] args) throws Exception {
-        String username = null;
-        String password = null;
-        String url = null;
-        boolean batchMode = false;
-        boolean execMode = false;
-        String command = null;
+        Main main = new Main();
+        main.parseArgs(args);
+        main.run();
+    }
 
+    public void parseArgs(String[] args) throws IOException {
         if (args.length > 0) {
             for (int i=0; i<args.length; i++) {
                 String arg = args[i];
@@ -94,8 +102,10 @@ public class Main {
                 url = "http://"+url;
             }
         }
+    }
 
-        ChemistryApp app = new ChemistryApp();
+    public void run() throws Exception {
+        app = new ChemistryApp();
         if (username != null){
             app.login(username, password == null ? new char[0] : password.toCharArray());
         }
@@ -104,51 +114,58 @@ public class Main {
         }
 
         if (execMode) {
-            Console.setDefault(new Console());
-            Console.getDefault().start(app);
-            Console.runCommand(app, command);
+            runExecMode();
+        } else if (batchMode) {
+            runBatchMode();
+        } else {
+            runInteractiveMode();
         }
+    }
 
-        else if (batchMode) {
-            Console.setDefault(new Console());
-            Console.getDefault().start(app);
-            List<String> cmds;
-            if (command == null) {
-                cmds = FileUtils.readLines(System.in);
-            } else {
-                cmds = FileUtils.readLines(new File(command));
-            }
-            for (String cmd : cmds) {
-                // Ignore empty lines / comments
-                if (cmd.length() == 0 || cmd.startsWith("#")) {
-                    continue;
-                }
-                Console.getDefault().println("Running: " + cmd);
-                try {
-                    Console.runCommand(app, cmd);
-                } catch (ExitException e) {
-                    Console.getDefault().println("Bye.");
-                    return;
-                } catch (CommandException e) {
-                    Console.getDefault().error(e.getMessage());
-                } catch (Exception e) {
-                    Console.getDefault().error(e.getMessage());
-                }
-            }
-            Console.getDefault().println("Done.");
+    private void runExecMode() throws Exception {
+        Console.setDefault(new Console());
+        Console.getDefault().start(app);
+        Console.runCommand(app, command);
+    }
+
+    private void runBatchMode() throws IOException {
+        Console.setDefault(new Console());
+        Console.getDefault().start(app);
+        List<String> cmds;
+        if (command == null) {
+            cmds = FileUtils.readLines(System.in);
+        } else {
+            cmds = FileUtils.readLines(new File(command));
         }
-
-        else {
-            // run in interactive mode
+        for (String cmd : cmds) {
+            // Ignore empty lines / comments
+            if (cmd.length() == 0 || cmd.startsWith("#")) {
+                continue;
+            }
+            Console.getDefault().println("Running: " + cmd);
             try {
-                //TODO use user profiles to setup console  like prompt and default service to cd in
-                Console.setDefault(new JLineConsole());
-                Console.getDefault().println(
-                        "CMIS Shell by Nuxeo (www.nuxeo.com). Type 'help' for help.");
-                Console.getDefault().start(app);
+                Console.runCommand(app, cmd);
+            } catch (ExitException e) {
+                Console.getDefault().println("Bye.");
+                return;
+            } catch (CommandException e) {
+                Console.getDefault().error(e.getMessage());
             } catch (Exception e) {
-                e.printStackTrace();
+                Console.getDefault().error(e.getMessage());
             }
+        }
+        Console.getDefault().println("Done.");
+    }
+
+    private void runInteractiveMode() {
+        try {
+            //TODO use user profiles to setup console like prompt and default service to cd in
+            Console.setDefault(new JLineConsole());
+            Console.getDefault().println(
+                    "CMIS Shell by Nuxeo (www.nuxeo.com). Type 'help' for help.");
+            Console.getDefault().start(app);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
