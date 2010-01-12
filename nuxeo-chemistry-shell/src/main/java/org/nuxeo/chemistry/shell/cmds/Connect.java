@@ -40,7 +40,6 @@ public class Connect extends AnnotatedCommand {
             String url = param.getValue();
             app.connect(url);
         }
-
     }
 
 }

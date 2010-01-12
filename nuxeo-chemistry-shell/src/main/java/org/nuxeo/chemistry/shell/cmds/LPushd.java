@@ -56,7 +56,6 @@ public class LPushd extends AnnotatedCommand {
         }
         stack.push(app.getWorkingDirectory());
         app.setWorkingDirectory(file);
-        Console.getDefault().updatePrompt();
     }
 
 }

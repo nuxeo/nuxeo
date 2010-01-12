@@ -48,7 +48,6 @@ public class LCd extends AnnotatedCommand {
         } else {
             throw new CommandException("Target is not a directory: " + file);
         }
-        Console.getDefault().updatePrompt();
     }
 
 }

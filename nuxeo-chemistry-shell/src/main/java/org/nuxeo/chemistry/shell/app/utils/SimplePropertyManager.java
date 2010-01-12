@@ -14,6 +14,7 @@ import org.apache.chemistry.Document;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.impl.simple.SimpleContentStream;
 import org.nuxeo.chemistry.shell.Console;
+import org.nuxeo.chemistry.shell.command.CommandException;
 
 public class SimplePropertyManager {
 
@@ -62,7 +63,7 @@ public class SimplePropertyManager {
             doc.setContentStream(stream);
             doc.save();
         } else {
-            Console.getDefault().error("Target object is not a Document, can not set stream");
+            throw new CommandException("Target object is not a Document, can not set stream");
         }
     }
 

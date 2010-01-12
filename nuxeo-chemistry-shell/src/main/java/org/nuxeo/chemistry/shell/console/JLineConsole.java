@@ -47,7 +47,7 @@ public class JLineConsole extends Console {
         console = new ConsoleReader();
         CompletionHandler ch = console.getCompletionHandler();
         if (ch instanceof CandidateListCompletionHandler) {
-            ((CandidateListCompletionHandler)ch).setAlwaysIncludeNewline(false);
+            ((CandidateListCompletionHandler) ch).setAlwaysIncludeNewline(false);
         }
     }
 

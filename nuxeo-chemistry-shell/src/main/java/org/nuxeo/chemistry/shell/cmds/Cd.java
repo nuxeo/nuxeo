@@ -51,7 +51,7 @@ public class Cd extends AnnotatedCommand {
         if (folder != null) {
             app.setContext(ctx);
         } else {
-            Console.getDefault().warn("Cannot cd to something that is not a folder");
+            throw new CommandException("Cannot cd to something that is not a folder");
         }
     }
 

@@ -134,20 +134,4 @@ public class Console {
         this.app = app;
     }
 
-    // Not used
-    public CommandLine parseCommandLine(String line) throws CommandException {
-        if (app != null) {
-            return parseCommandLine(app.getCommandRegistry(), line);
-        }
-        throw new IllegalStateException("Console not started");
-    }
-
-    // Not used
-    public CommandRegistry getCommandRegistry() {
-        if (app != null) {
-            return app.getCommandRegistry();
-        }
-        throw new IllegalStateException("Console not started");
-    }
-
 }

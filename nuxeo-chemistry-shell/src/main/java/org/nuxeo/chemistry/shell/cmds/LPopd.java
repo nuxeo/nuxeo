@@ -51,7 +51,6 @@ public class LPopd extends AnnotatedCommand {
             app.setData(WDIR_STACK_KEY, null);
         }
         app.setWorkingDirectory(file);
-        Console.getDefault().updatePrompt();
     }
 
 }

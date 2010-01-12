@@ -39,7 +39,7 @@ public abstract class AbstractApplication implements Application {
     protected String username;
     protected char[] password;
 
-    
+
     public AbstractApplication() {
         registry = new CommandRegistry();
         dataMap = new HashMap<String, Object>();
@@ -63,24 +63,24 @@ public abstract class AbstractApplication implements Application {
             this.serverUrl = new URL(serverUrl.getProtocol(), serverUrl.getHost(), serverUrl.getPort(), serverUrl.getPath());
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }        
+        }
     }
-    
+
     public String getHost() {
         return serverUrl.getHost();
     }
-    
+
     public void connect(String uri) throws IOException {
         connect(new URL(uri));
     }
-    
+
     public void connect(URL uri) throws IOException {
         initServerURL(uri);
-        doConnect();        
+        doConnect();
     }
-    
+
     protected abstract void doConnect() throws IOException;
-    
+
     public CommandRegistry getCommandRegistry() {
         return registry;
     }
@@ -92,7 +92,7 @@ public abstract class AbstractApplication implements Application {
             return new File(wd, path);
         }
     }
-    
+
     public Context getContext() {
         return ctx;
     }
@@ -117,7 +117,7 @@ public abstract class AbstractApplication implements Application {
         this.username = username;
         this.password = password;
     }
-    
+
     public Context resolveContext(Path path) {
         Context c;
         if (path.isRelative()) {
@@ -148,7 +148,7 @@ public abstract class AbstractApplication implements Application {
         if (c == null) {
             return null;
         }
-        for (int i=0,cnt=path.segmentCount(); i<cnt; i++) {            
+        for (int i=0,cnt=path.segmentCount(); i<cnt; i++) {
             c = c.getContext(path.segment(i));
             if (c == null) {
                 return null;
@@ -157,7 +157,7 @@ public abstract class AbstractApplication implements Application {
         return c;
     }
 
-    public void setContext(Context ctx) {        
+    public void setContext(Context ctx) {
         this.ctx = ctx;
         Console.getDefault().updatePrompt();
     }
@@ -172,8 +172,9 @@ public abstract class AbstractApplication implements Application {
 
     public void setWorkingDirectory(File file) {
         wd = file;
+        Console.getDefault().updatePrompt();
     }
-        
+
     //TODO
     public String getHelp(String cmdName) {
         return "TODO";
