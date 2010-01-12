@@ -2,7 +2,7 @@
 
 test:
 	mvn package
-	./run.sh -b testscript
+	./run.sh -t -b testscript
 
 clean:
 	mvn clean

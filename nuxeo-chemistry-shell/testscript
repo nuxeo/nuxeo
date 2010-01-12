@@ -46,6 +46,7 @@ id testdir
 ls testdir
 tree testdir
 props testdir
+propget testdir dc:title
 
 # Now a file
 cd testdir
@@ -53,19 +54,18 @@ mkfile testfile
 ls
 id testfile
 ls testfile
-tree testfile
 props testfile
 propget testfile dc:title
 propset testfile dc:title some_other_title
 propget testfile dc:title
-#setStream testfile run.sh
-#setStream testfile dummy.txt
+setStream testfile run.sh
+setStream testfile dummy.txt
 cat testfile
 rm testfile
 
 # Put a file
-put run.sh dummy.txt
-#put run.sh run.sh
+put run.sh run.sh
+put dummy.txt dummy.txt
 #ls
 #id run.sh
 #cat run.sh

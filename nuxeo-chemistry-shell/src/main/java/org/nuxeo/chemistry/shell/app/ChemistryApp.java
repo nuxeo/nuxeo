@@ -34,7 +34,7 @@ public class ChemistryApp extends AbstractApplication {
     public ChemistryApp() {
         registry.registerCommand(new DumpTree());
         registry.registerCommand(new SetProp());
-        registry.registerCommand(new GetProp());
+        registry.registerCommand(new PropGet());
         registry.registerCommand(new DumpProps());
         registry.registerCommand(new Get());
         registry.registerCommand(new SetStream());

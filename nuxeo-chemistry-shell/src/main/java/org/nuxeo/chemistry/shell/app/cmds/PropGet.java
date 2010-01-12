@@ -32,8 +32,8 @@ import org.nuxeo.chemistry.shell.command.CommandParameter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="propget|getp|getProperty target:item [key]", synopsis="Print the value of the given property on the current context object")
-public class GetProp extends ChemistryCommand {
+@Cmd(syntax="propget target:item [key]", synopsis="Print the value of the given property on the current context object")
+public class PropGet extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
@@ -43,13 +43,17 @@ public class GetProp extends ChemistryCommand {
         CommandParameter keyParam = cmdLine.getParameter("key");
 
         Context ctx = app.resolveContext(new Path(targetParam.getValue()));
+        if (ctx == null) {
+            throw new CommandException("Cannot resolve "+targetParam.getValue());
+        }
+
         CMISObject obj = ctx.as(CMISObject.class);
         if (obj == null) {
             throw new CommandException("Cannot resolve "+targetParam.getValue());
         }
 
-        Console.getDefault().println(
-                new SimplePropertyManager(obj).getPropertyAsString(keyParam.getValue()));
+        String propValue = new SimplePropertyManager(obj).getPropertyAsString(keyParam.getValue());
+        Console.getDefault().println(propValue);
     }
 
 }

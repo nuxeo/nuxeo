@@ -42,6 +42,7 @@ public class Main {
     String url;
     boolean batchMode;
     boolean execMode;
+    boolean testMode;
     String command;
     private ChemistryApp app;
 
@@ -68,6 +69,8 @@ public class Main {
                         error("Invalid option -p without value. Password required.");
                     }
                     password = args[i];
+                } else if ("-t".equals(arg)) { // test mode
+                    testMode = true;
                 } else if ("-e".equals(arg)) { // execute mode
                     // execute one command
                     execMode = true;
@@ -114,21 +117,21 @@ public class Main {
         }
 
         if (execMode) {
-            runExecMode();
+            runInExecMode();
         } else if (batchMode) {
-            runBatchMode();
+            runInBatchMode();
         } else {
-            runInteractiveMode();
+            runInInteractiveMode();
         }
     }
 
-    private void runExecMode() throws Exception {
+    private void runInExecMode() throws Exception {
         Console.setDefault(new Console());
         Console.getDefault().start(app);
         Console.runCommand(app, command);
     }
 
-    private void runBatchMode() throws IOException {
+    private void runInBatchMode() throws IOException {
         Console.setDefault(new Console());
         Console.getDefault().start(app);
         List<String> cmds;
@@ -148,16 +151,20 @@ public class Main {
             } catch (ExitException e) {
                 Console.getDefault().println("Bye.");
                 return;
-            } catch (CommandException e) {
-                Console.getDefault().error(e.getMessage());
             } catch (Exception e) {
                 Console.getDefault().error(e.getMessage());
+                if (testMode) {
+                    e.printStackTrace();
+                    Console.getDefault().println("Exiting on error.");
+                    System.exit(1);
+                    return;
+                }
             }
         }
         Console.getDefault().println("Done.");
     }
 
-    private void runInteractiveMode() {
+    private void runInInteractiveMode() {
         try {
             //TODO use user profiles to setup console like prompt and default service to cd in
             Console.setDefault(new JLineConsole());
