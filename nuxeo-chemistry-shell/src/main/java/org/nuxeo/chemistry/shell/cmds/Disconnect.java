@@ -34,7 +34,7 @@ public class Disconnect extends AnnotatedCommand {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        ensureConnected(app);        
+        ensureConnected(app);
         app.disconnect();
     }
 

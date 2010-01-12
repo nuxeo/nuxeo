@@ -18,26 +18,26 @@ package org.nuxeo.chemistry.shell;
 
 
 /**
- * A context represents the current state of the shell application and is usually wrapping 
- * the current selected remote object. 
- * 
- * The context can be adapted to the wrapped object by calling {@link Context#as(Class)} 
+ * A context represents the current state of the shell application and is usually wrapping
+ * the current selected remote object.
+ *
+ * The context can be adapted to the wrapped object by calling {@link Context#as(Class)}
  * and providing the desired type.
  * If the context cannot be represented as the given type it will return null,
  * otherwise will return the instance of the desired object.
- * 
+ *
  * A context may wrap a "folder" object (thus may contain sub contexts) or it may be a leaf context.
  * To change a context to another remote object the Context#cd
- * 
+ *
  * A context is providing several basic operations like:
  * <ul>
  * <li> ls  - list available sub contexts
  * <li> pwd - get the context absolute path
  * <li> id  - show more information about the current context
- * <li> cd  - change the context to another context given a context path. 
- * If the path starts with a '/' it will be assumed to be an absolute path otherwise it will be resolved relative to the current context  
+ * <li> cd  - change the context to another context given a context path.
+ * If the path starts with a '/' it will be assumed to be an absolute path otherwise it will be resolved relative to the current context
  * </ul>
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -49,7 +49,7 @@ public interface Context {
      * @return
      */
     Application getApplication();
-    
+
     /**
      * Gets the context path.
      *
@@ -63,7 +63,7 @@ public interface Context {
      * @return
      */
     String pwd();
-    
+
     /**
      * Lists the keys of the available sub contexts.
      * This is used by the command line completor.
@@ -71,7 +71,7 @@ public interface Context {
      * @return an empty array if no sub contexts are available, otherwise return the array of sub context names
      */
     String[] entries();
-    
+
     /**
      * Lists sub contexts names. The returned names are colored (may contain color code characters).
      *
@@ -86,23 +86,23 @@ public interface Context {
      * @return null if no such sub context exists, otherwise returns the sub context
      */
     Context getContext(String name);
-    
+
     Path resolvePath(String path);
 
     /**
      * Clears any cache associated with the context.
      */
     void reset();
-    
+
     /**
      * Adapts the context to the given type.
      *
      * @param <T>
      * @param type
-     * @return null if the context cannot be adapted, otherwise an instance of the given type 
+     * @return null if the context cannot be adapted, otherwise an instance of the given type
      */
     <T> T as(Class<T> type);
-    
+
     /**
      * Gets a string identifying this context.
      * (Can be the object title and path or other useful information).

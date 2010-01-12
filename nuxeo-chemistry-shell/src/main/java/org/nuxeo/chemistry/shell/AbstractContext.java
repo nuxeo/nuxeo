@@ -25,20 +25,20 @@ public abstract class AbstractContext implements Context {
 
     protected final Application app;
     protected final Path path;
-    
+
     public AbstractContext(Application app, Path path) {
         this.app = app;
         this.path = path;
     }
-    
+
     public String pwd() {
         return path.toString();
     }
-    
+
     public Path getPath() {
         return path;
     }
-    
+
     public Application getApplication() {
         return app;
     }
@@ -48,7 +48,7 @@ public abstract class AbstractContext implements Context {
             return new Path(path);
         } else {
             return this.path.append(path);
-        }        
+        }
     }
 
 }
