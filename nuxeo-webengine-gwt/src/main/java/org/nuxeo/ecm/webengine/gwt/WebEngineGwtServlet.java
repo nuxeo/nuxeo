@@ -93,7 +93,7 @@ public class WebEngineGwtServlet extends RemoteServiceServlet {
             moduleId = "root";
         }
 
-        File dir = InstallGwtAppComponent.getRoot();
+        File dir = GwtBundleActivator.GWT_ROOT;
         dir = new File(dir, moduleId);
         if (!dir.isDirectory()) { // use default
             log.warn("Could not find gwt resources in web/root.war/gwt for module "+moduleId);

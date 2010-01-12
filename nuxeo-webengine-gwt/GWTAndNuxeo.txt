@@ -1,0 +1,115 @@
+
+GWT Integration In Nuxeo
+-------------------------
+
+
+Overview
+---------
+
+This documents assumes you are familiar with GWT have the basic knowledge on how to build GWT applications. You can find here a complete introduction to GWT: http://code.google.com/webtoolkit/gettingstarted.html
+
+GWT is a web toolkit to build web rich clients in Java programming language. The Java code is transcoded in JavaScript at build time so the build process will generate a fully HTML+JavaScript application ready to be deployed on an HTTP server.
+GWT applications may contain both server side code (which is Java byte code) and client side code (which is Java in development mode but will be transcoded in JavaScript at build time). 
+When using the GWT RPC mechanism you usually need to share the client code that makes up your application model. (the data objects). This code is both compiled to javascript and to java byte code. 
+Note that only a small subset of JRE classes can be transcoded by GWT to JavaScript (e.g. most of the classes in java.lang and java.utils)
+
+This document is structured in 2 parts:
+1.How to develop Nuxeo GWT based applications in Eclipse.
+2.How to deploy the generated code on a Nuxeo Server.
+
+
+
+Developing a GWT Application
+-----------------------------
+
+Requirements
+-------------
+To develop a GWT based application for Nuxeo you need first to install the GWT Eclipse  plugin. Here is the list of update sites for each supported Eclipse distribution:
+Eclipse 3.5 (Galileo)
+http://dl.google.com/eclipse/plugin/3.5
+Eclipse 3.4 (Ganymede)
+http://dl.google.com/eclipse/plugin/3.4
+Eclipse 3.3 (Europa)
+http://dl.google.com/eclipse/plugin/3.3
+
+
+Creating a Hello World Application
+-----------------------------------
+
+Create a new “Web Application Project”. Uncheck “Use Google App Engine” in the wizard page. The GWT wizard will create a project structure like:
+
+src
+    org/my/app/client
+    org/my/app/server
+    your_module.gwt.xml
+war
+   WEB-INF/web.xml
+   your_module.css
+   your_module.html
+
+The client package will contain the Java code that must be transcoded into JavaScript. The data objects defined here can be shared on the server side too. The server package will contain code that will be used on the server side (as java byte code). 
+As you noticed a “war” directory was generated in the module root.  Here you need to define any servlet or filter used in development mode (in web.xml file). Also this directory contains your HTML home page of your application.
+When working with a Nuxeo Server what you need is to be able to start a Nuxeo Server when GWT starts the application in development mode. If you don't have a running Nuxeo inside the same Java process as the debugged application you cannot use Nuxeo APIs or access the repository to be able to tests your GWT servlets.
+To achieve this you need to follow these steps:
+  
+  1. Add the JARs of nuxeo-webengine-gwt and nuxeo-distribution-tools v. 0.5 classifier “all” to your project class path
+When using maven this can be done by the following pom fragment:
+
+------------------------------------------------------
+<dependency>
+  <groupId>org.nuxeo.ecm.webengine</groupId>
+  <artifactId>nuxeo-webengine-gwt</artifactId>
+</dependency>
+<dependency>
+  <groupId>org.nuxeo.build</groupId>
+  <artifactId>nuxeo-distribution-tools</artifactId>
+  <classifier>all</classifier>
+  <version>0.5</version>
+  <scope>test</scope>
+</dependency>
+-------------------------------------------------------
+
+  2.Add to war/WEB-INF/web.xml a filter as following:
+  
+-------------------------------------------------------  
+<filter>
+  <display-name>WebEngine Authentication Filter</display-name>
+  <filter-name>NuxeoAuthenticationFilter</filter-name>
+  <filter-class>
+  org.nuxeo.ecm.webengine.gwt.dev.NuxeoLauncher
+  </filter-class>
+  <init-param>
+    <param-name>byPassAuthenticationLog</param-name>
+    <param-value>true</param-value>
+  </init-param>
+  <init-param>
+    <param-name>securityDomain</param-name>
+    <param-value>nuxeo-webengine</param-value>
+  </init-param>
+</filter>
+<filter-mapping>
+  <filter-name>NuxeoAuthenticationFilter</filter-name>
+  <url-pattern>/*</url-pattern>
+</filter-mapping>
+-------------------------------------------------------
+
+This filter will be used to start an Embedded Nuxeo Server when the GWT application is started in development mode. You can find more details on how to control what version of Nuxeo is started, where the home directory will be created etc. in nuxeo-webengine-gwt sources in “org/nuxeo/ecm/webengine/gwt/web.xml”.
+This filter will load any JAR or Project found in your classpath as a Nuxeo Bundle if the JAR contains a valid OSGi Manifest. So if your current project is a Nuxeo Plugin it will be correctly deployed on the embedded Nuxeo.
+If you want to deploy additional Nuxeo XML components on the embedded server you need to extend the NuxeoLauncher and implement the method frameworkStarted() where you can deploy additional test components using the default mechanism in Nuxeo. (e.g. Framework.getRuntime().getContext().deploy(url)). 
+Note that this filter is only usable in development mode and it must not be deployed on a real server. 
+
+Now you can start a debugging session by right clicking the project and then clicking on “Debug As > Web Application”. 
+The Embedded Nuxeo will be started before the GWT application is started. By default the web server in the embedded Nuxeo will listen on localhost:8081. So you can connect to the address for the WebEngine UI if you want to introspect the repository.
+The Nuxeo Server Embedded home directory used  by default is “{user.home}/.nxserver-gwt”.
+Now in your GWT servlets you can use calls to Nuxeo API, create and browse documents etc. Of course you need to add the required dependencies on you project class path. 
+
+Deploying the GWT Application on a real Nuxeo Server.
+To be able to run the GWT application in a real Nuxeo you must first make a modification on your GWT RPC servlets and extends the “org.nuxeo.ecm.webengine.gwt.WebEngineGwtServlet” instead of “RemoteServiceServlet”. This is required since the default GWT serialization is assuming a specific structure of the resulting WAR application which is not possible to follow in a Nuxeo GWT module.
+Your project must generate two JARs: a nuxeo plugin JAR and a GWT WAR jar. Both of these must be packaged as Nuxeo (OSGi) bundles. 
+The GWT WAR jar will contain only the GWT compiler output (which contains the file you have in the “war” directory of your project) plus a valid nuxeo MANIFEST and an extension to . Plus  The nuxeo plugin JAR contains the java code and other nuxeo XML component files.
+The GWT WAR jar must be a nuxeo bundle too
+
+
+
+
+

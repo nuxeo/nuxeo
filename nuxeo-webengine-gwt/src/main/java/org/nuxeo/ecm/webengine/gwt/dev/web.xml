@@ -21,7 +21,7 @@
 		<display-name>WebEngine Authentication Filter</display-name>
 		<filter-name>NuxeoAuthenticationFilter</filter-name>
 		<filter-class>
-			org.nuxeo.ecm.webengine.rest.dev.MyNuxeoLauncher
+			org.nuxeo.ecm.webengine.gwt.dev.NuxeoLauncher
     </filter-class>
 		<init-param>
 			<param-name>byPassAuthenticationLog</param-name>

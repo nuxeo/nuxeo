@@ -24,6 +24,7 @@ import javax.servlet.ServletException;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.dev.NuxeoApp;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
+import org.nuxeo.ecm.webengine.gwt.GwtBundleActivator;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -36,6 +37,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
 
     @Override
     public void init(FilterConfig config) throws ServletException {
+        System.setProperty(GwtBundleActivator.GWT_DEV_MODE_PROP, "true");
         String home = config.getInitParameter("home");
         String h = config.getInitParameter("host");
         String p = config.getInitParameter("profile");
