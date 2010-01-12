@@ -124,6 +124,7 @@
       <artifactId>nuxeo-core-query-test</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <!-- needed by nuxeo-core-convert-plugins -->
       <groupId>javax.mail</groupId>
@@ -135,21 +136,6 @@
       <artifactId>jta</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <!-- excluded until tests pass -->
-            <exclude>**/TestNuxeoChemistryAtomPub.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>
