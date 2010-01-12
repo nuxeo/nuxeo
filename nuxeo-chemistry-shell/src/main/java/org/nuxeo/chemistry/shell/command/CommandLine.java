@@ -61,7 +61,7 @@ public class CommandLine {
         for (int i=1; i<args.length; i++) {
             String key = args[i];
             if (param != null && param.token.isValueRequired()) {
-                param.value = key;
+                param.setValue(key);
                 param = null;
             } else {
                 CommandToken token = cmd.syntax.getToken(key);
@@ -74,7 +74,7 @@ public class CommandLine {
                 }
                 if (token.isArgument()) {
                     param = new CommandParameter(token.getName(), token);
-                    param.value = key;
+                    param.setValue(key);
                 } else {
                     param = new CommandParameter(key, token);
                 }
@@ -161,7 +161,7 @@ public class CommandLine {
     public List<CommandParameter> getArguments() {
         List<CommandParameter> result = new ArrayList<CommandParameter>();
         for (CommandParameter arg : params) {
-            if (arg.token.isArgument) {
+            if (arg.token.isArgument()) {
                 result.add(arg);
             }
         }
@@ -182,7 +182,7 @@ public class CommandLine {
             if (key == null) {
                 key = "_"+(k++);
             }
-            if (CommandToken.FILE.equals(param.token.valueType)) {
+            if (CommandToken.FILE.equals(param.token.getValueType())) {
                 val = Console.getDefault().getApplication().resolveFile(value);
             }
             args.put(key, val);

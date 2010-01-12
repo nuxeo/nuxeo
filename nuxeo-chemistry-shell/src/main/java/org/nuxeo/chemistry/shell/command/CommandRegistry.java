@@ -151,7 +151,7 @@ public class CommandRegistry {
         if (token == null) {
             return null;
         }
-        return new String[] {token.valueType, word} ;
+        return new String[] {token.getValueType(), word} ;
     }
 
     /**

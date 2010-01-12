@@ -107,8 +107,8 @@ public class CompositeCompletor implements Completor {
                 CommandToken token = cmd.getSyntax().getToken(args[argIndex-1]);
                 if (token != null) {
                     if (token.isValueRequired()) {
-                        if (token.valueType != null) {
-                            comp = completors.get(token.valueType);
+                        if (token.getValueType() != null) {
+                            comp = completors.get(token.getValueType());
                         } else {
                             return -1; // no completion available
                         }

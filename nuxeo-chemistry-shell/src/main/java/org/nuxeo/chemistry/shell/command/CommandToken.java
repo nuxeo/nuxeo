@@ -19,6 +19,8 @@
 
 package org.nuxeo.chemistry.shell.command;
 
+import org.nuxeo.chemistry.shell.util.StringUtils;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -30,12 +32,40 @@ public class CommandToken {
     public static final String FILE = "file";
     public static final String DOCUMENT = "document";
 
-    public String[] names;
-    public String valueType; // null | string | command | file | doc
-    public String defaultValue;
-    public boolean isArgument;
-    public boolean isOptional;
+    private String[] names;
+    private String valueType; // null | string | command | file | doc
+    private String defaultValue;
+    private boolean isArgument;
+    private boolean isOptional;
 
+    public static CommandToken parseCommand(String text) {
+        CommandToken tok = new CommandToken();
+        tok.names = StringUtils.split(text, '|', false);
+        tok.valueType = COMMAND;
+        return tok;
+    }
+
+    public static CommandToken parseArg(String text) {
+        CommandToken tok = new CommandToken();
+        if (text.startsWith("[")) {
+            tok.isOptional = true;
+            text = text.substring(1, text.length()-1);
+        }
+        int p = text.indexOf(':');
+        if (p > -1) {
+            tok.valueType = text.substring(p+1);
+            text = text.substring(0, p);
+            p = tok.valueType.indexOf('?');
+            if (p > -1) {
+                tok.defaultValue = tok.valueType.substring(p+1);
+                tok.valueType = tok.valueType.substring(0, p);
+            }
+        }
+        // parse names in text
+        tok.names = StringUtils.split(text, '|', true);
+        tok.isArgument = !tok.names[0].startsWith("-");
+        return tok;
+    }
 
     public boolean isValueRequired() {
         return valueType != COMMAND && valueType != null && !isArgument;
@@ -50,7 +80,7 @@ public class CommandToken {
     }
 
     public boolean isFlag() {
-        return valueType == null;
+        return names[0].startsWith("-");
     }
 
     public boolean isArgument() {

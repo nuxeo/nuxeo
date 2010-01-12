@@ -44,20 +44,18 @@ public class CommandSyntax {
      * Static factory.
      */
     public static CommandSyntax parse(String text) {
-        String[] toks = StringUtils.tokenize(text);
-        if (toks.length == 0) {
+        String[] tokens = StringUtils.tokenize(text);
+        if (tokens.length == 0) {
             throw new IllegalArgumentException("cannot parse empty command lines");
         }
         CommandSyntax syntax = new CommandSyntax();
-        if (toks.length == 0) {
+        if (tokens.length == 0) {
             return syntax;
         }
-        CommandToken tok = new CommandToken();
-        tok.names = StringUtils.split(toks[0], '|', false);
-        tok.valueType = CommandToken.COMMAND;
+        CommandToken tok = CommandToken.parseCommand(tokens[0]);
         syntax.addToken(tok);
-        for (int i=1; i<toks.length; i++) {
-            tok = parseToken(toks[i]);
+        for (int i=1; i<tokens.length; i++) {
+            tok = CommandToken.parseArg(tokens[i]);
             syntax.addToken(tok);
         }
         return syntax;
@@ -106,34 +104,12 @@ public class CommandSyntax {
 
     public void addToken(CommandToken tok) {
         tokens.add(tok);
-        for (int i=0; i<tok.names.length; i++) {
-            map.put(tok.names[i], tok);
+        for (int i=0; i<tok.getNames().length; i++) {
+            map.put(tok.getNames()[i], tok);
         }
-        if (tok.isArgument) {
+        if (tok.isArgument()) {
             args.add(tok);
         }
-    }
-
-    public static CommandToken parseToken(String text) {
-        CommandToken tok = new CommandToken();
-        if (text.startsWith("[")) {
-            tok.isOptional = true;
-            text = text.substring(1, text.length()-1);
-        }
-        int p = text.indexOf(':');
-        if (p > -1) {
-            tok.valueType = text.substring(p+1);
-            text = text.substring(0, p);
-            p = tok.valueType.indexOf('?');
-            if (p > -1) {
-                tok.defaultValue = tok.valueType.substring(p+1);
-                tok.valueType = tok.valueType.substring(0, p);
-            }
-        }
-        // parse names in text
-        tok.names = StringUtils.split(text, '|', true);
-        tok.isArgument = !tok.names[0].startsWith("-");
-        return tok;
     }
 
 }

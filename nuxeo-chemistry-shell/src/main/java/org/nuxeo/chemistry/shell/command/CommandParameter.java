@@ -46,7 +46,7 @@ public class CommandParameter {
 
     @Override
     public String toString() {
-        return key+" = "+value;
+        return key+" = "+ value;
     }
 
     /**
@@ -60,7 +60,10 @@ public class CommandParameter {
      * Not used. Will probably be removed.
      */
     public String getValueOrDefault() {
-        return value == null ? token.defaultValue : value;
+        return value == null ? token.getDefaultValue() : value;
     }
 
+    public void setValue(String value) {
+        this.value = value;
+    }
 }
