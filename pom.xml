@@ -32,7 +32,6 @@
     <profile>
       <id>shell</id>
       <modules>
-        <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-shell</module>
       </modules>
@@ -48,39 +47,6 @@
       <modules>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
-      </modules>
-    </profile>
-    <profile>
-      <!-- deprecated (NXP-4472) -->
-      <id>nuxeo-dm-jboss</id>
-      <modules>
-        <module>nuxeo-platform-ear</module>
-        <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-distribution-jboss</module>
-      </modules>
-    </profile>
-    <profile>
-      <!-- deprecated (NXP-4472) -->
-      <id>nuxeo-ep-jetty</id>
-      <modules>
-        <module>nuxeo-platform-ear</module>
-        <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-embedded-launcher</module>
-        <module>nuxeo-distribution-base</module>
-        <module>nuxeo-distribution-server</module>
-        <module>nuxeo-distribution-jetty</module>
-      </modules>
-    </profile>
-    <profile>
-      <!-- deprecated (NXP-4472) -->
-      <id>nuxeo-dm-jetty</id>
-      <modules>
-        <module>nuxeo-platform-ear</module>
-        <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-embedded-launcher</module>
-        <module>nuxeo-distribution-base</module>
-        <module>nuxeo-distribution-server</module>
-        <module>nuxeo-distribution-jetty</module>
       </modules>
     </profile>
     <profile>
@@ -101,7 +67,6 @@
       <modules>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-jetty</module>
@@ -110,7 +75,6 @@
     <profile>
       <id>gf3</id>
       <modules>
-        <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-gf3</module>
@@ -121,26 +85,16 @@
       <modules>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-jetty</module>
         <module>nuxeo-distribution-tomcat</module>
       </modules>
     </profile>
-    <profile>
-      <id>core</id>
-      <modules>
-        <module>nuxeo-embedded-launcher</module>
-        <module>nuxeo-distribution-base</module>
-        <module>nuxeo-distribution-server</module>
-      </modules>
-    </profile>
     <!-- for deployment purpose -->
     <profile>
       <id>all-distributions</id>
       <modules>
-        <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-shell</module>
         <module>nuxeo-platform-ear</module>
@@ -156,7 +110,6 @@
     <profile>
       <id>installer-windows-nuxeo-dm</id>
       <modules>
-        <module>nuxeo-embedded-launcher</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-shell</module>
         <module>nuxeo-platform-ear</module>
