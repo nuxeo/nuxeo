@@ -18,7 +18,7 @@
         <#assign index=0 />
           tagCloud.setValues([
           <#list nxthemesInfo.model.items as item>
-              {val:${item.weight},tag:'${item.label}',href:'${This.path}/@tag/${item.href}'}
+              {val:${item.weight},tag:'${item.label?xml}',href:'${This.path}/@tag/${item.href}'}
               <#if index < tagsNumber>,</#if>
               <#assign index=index+1 />
         </#list>]);
