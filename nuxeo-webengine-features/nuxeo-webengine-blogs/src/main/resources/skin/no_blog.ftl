@@ -1,1 +1,1 @@
-There is no site with url : ${url}
+There is no site with URL: ${url?xml}
