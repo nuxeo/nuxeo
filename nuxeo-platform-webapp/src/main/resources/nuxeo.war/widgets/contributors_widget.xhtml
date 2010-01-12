@@ -6,11 +6,9 @@
   xmlns:c="http://java.sun.com/jstl/core"
   id="#{widget.id}">
 
-  <div class="contributor_block">
-    <div class="contributors_table">  
-      <c:set var="andLabel" value=" #{messages['label.and']} " scope="page" />
-      <h:outputText value="#{nxu:joinArrayWithFinalDelimiter(field_0, ', ', andLabel)}"/>
-    </div>
+  <div>  
+    <c:set var="andLabel" value=" #{messages['label.and']} " scope="page" />
+    <h:outputText value="#{nxu:joinArrayWithFinalDelimiter(field_0, ', ', andLabel)}"/>
   </div>
 
 </f:subview>

@@ -1161,7 +1161,7 @@
       <selector path=".boldLabel">
         <font-weight>bold</font-weight>
       </selector>
-      <selector path=".rank_block, .publication_block, .contributor_block, .attachments">
+      <selector path=".rank_block, .publication_block, .attachments">
         <margin-top>15px</margin-top>
       </selector>
       <selector path=".content_block">
@@ -1192,7 +1192,7 @@
         <color preset="red (Galaxy colors)" />
         <font-weight>bold</font-weight>
       </selector>
-      <selector path=".lockDetail, .DetailList, .contributors_table">
+      <selector path=".lockDetail, .DetailList">
         <padding-top>5px</padding-top>
       </selector>
       <selector path=".comments_block .commentBlock">
