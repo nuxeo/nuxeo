@@ -49,6 +49,20 @@ tree testdir
 propget testdir
 propget testdir dc:title
 
+# Test mkdir more in depth
+cd /default/default-domain
+mkdir ./testdir1
+ls testdir1
+mkdir testdir1/../testdir2
+ls testdir1/../testdir2
+cd testdir1
+mkdir ../testdir3
+ls ../testdir3
+rm ../testdir3
+cd ..
+rm testdir?
+ls
+
 # Now a file
 cd testdir
 mkfile testfile
@@ -59,14 +73,16 @@ propget testfile
 propget testfile dc:title
 propset testfile dc:title some_other_title
 propget testfile dc:title
-setStream testfile run.sh
-setStream testfile dummy.txt
-cat testfile
+# TODO
+#setStream testfile run.sh
+#setStream testfile dummy.txt
+#cat testfile
 rm testfile
 
 # Put a file
-put run.sh run.sh
-put dummy.txt dummy.txt
+# TODO
+#put run.sh run.sh
+#put dummy.txt dummy.txt
 #ls
 #id run.sh
 #cat run.sh

@@ -1,0 +1,11 @@
+P1:
+
+- [DONE] welcome banner
+- [DONE] refresh cache
+- Clean up warnings
+
+P2: 
+
+- Simple wildcards
+- multiple arguments (rm toto1 toto2 toto3...)
+

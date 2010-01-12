@@ -45,6 +45,7 @@ public class LPopd extends AnnotatedCommand {
         if (stack == null) {
             throw new CommandException("No more directories on the stack");
         }
+
         File file = stack.pop();
         if (stack.isEmpty()) {
             app.setData(WDIR_STACK_KEY, null);

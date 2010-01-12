@@ -19,11 +19,14 @@ package org.nuxeo.chemistry.shell.app.cmds;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Folder;
 import org.nuxeo.chemistry.shell.Context;
+import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
+import org.nuxeo.chemistry.shell.util.StringUtils;
 
 import java.util.List;
 
@@ -31,24 +34,35 @@ import java.util.List;
  * @author <a href="mailto:sf@nuxeo.com">Stefane Fermigier</a>
  *
  */
-@Cmd(syntax="rm target:item", synopsis="Removes an object of the given name")
+@Cmd(syntax="rm|del target:item", synopsis="Removes an object of the given name")
 public class Remove extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
-        String target = cmdLine.getParameterValue("target");
+        String param = cmdLine.getParameterValue("target");
 
-        // FIXME: won't work if target is not just an object name
-        String name = target;
-        Context ctx = app.getContext();
+        Path path = new Path(param);
+        String name = path.getFileName();
+        Path parent = path.getParent();
+
+        Context ctx = app.resolveContext(parent);
         Folder folder = ctx.as(Folder.class);
-        if (folder != null) {
-            for (CMISObject child : folder.getChildren()) {
-                if (child.getName().equals(name)) {
-                    child.delete();
-                }
+        if (folder == null) {
+            throw new CommandException(parent+" doesn't exist or is not a folder");
+        }
+
+        boolean success = false;
+        for (CMISObject child : folder.getChildren()) {
+            // TODO: use wildcard but make sure it's safe
+            // if (StringUtils.matches(name, child.getName())) {
+            if (name.equals(child.getName())) {
+                child.delete();
+                success = true;
             }
+        }
+        if (!success) {
+            throw new CommandException("No match");
         }
         ctx.reset();
     }

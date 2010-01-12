@@ -18,10 +18,12 @@ package org.nuxeo.chemistry.shell.app.cmds;
 
 import org.apache.chemistry.Folder;
 import org.nuxeo.chemistry.shell.Context;
+import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;
 import org.nuxeo.chemistry.shell.app.utils.SimpleCreator;
 import org.nuxeo.chemistry.shell.command.Cmd;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandParameter;
 
@@ -37,14 +39,18 @@ public class CreateFile extends ChemistryCommand {
             throws Exception {
         String param = cmdLine.getParameterValue("target");
 
-        // FIXME: won't work if we do 'mkfile ../toto/titi'.
+        Path path = new Path(param);
+        String name = path.getFileName();
+        Path parent = path.getParent();
 
-        Context ctx = app.getContext();
+        Context ctx = app.resolveContext(parent);
         Folder folder = ctx.as(Folder.class);
-        if (folder != null) {
-            new SimpleCreator(folder).createFile(param);
-            ctx.reset();
+        if (folder == null) {
+            throw new CommandException(parent+" doesn't exist or is not a folder");
         }
+
+        new SimpleCreator(folder).createFile(name);
+        ctx.reset();
     }
 
 }

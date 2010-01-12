@@ -82,6 +82,7 @@ public class Console {
      */
     public void print(InputStream in) throws IOException {
         FileUtils.copy(in, System.out);
+        System.out.flush();
     }
 
     public void println(String str) {

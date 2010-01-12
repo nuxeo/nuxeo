@@ -63,7 +63,6 @@ public class Cat extends ChemistryCommand {
             print(in);
         } finally {
             in.close();
-            System.out.flush();
         }
     }
 
