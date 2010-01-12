@@ -40,6 +40,7 @@ pushd ..
 popd
 
 # Create an object (a folder), test commands on it
+cd /default/default-domain
 mkdir testdir
 ls
 id testdir

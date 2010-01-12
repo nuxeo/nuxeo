@@ -43,15 +43,14 @@ public class Popd extends AnnotatedCommand {
     @SuppressWarnings("unchecked")
     public void run(Application app, CommandLine cmdLine) throws Exception {
         Stack<Context> stack = (Stack<Context>) app.getData(CTX_STACK_KEY);
-        if (stack != null && !stack.isEmpty()) {
-            Context ctx = stack.pop();
-            app.setContext(ctx);
-            if (stack.isEmpty()) {
-                app.setData(CTX_STACK_KEY, null);
-            }
-            Console.getDefault().updatePrompt();
-        } else {
+        if (stack == null || stack.isEmpty()) {
             throw new CommandException("Context stack is empty");
+        }
+
+        Context ctx = stack.pop();
+        app.setContext(ctx);
+        if (stack.isEmpty()) {
+            app.setData(CTX_STACK_KEY, null);
         }
     }
 

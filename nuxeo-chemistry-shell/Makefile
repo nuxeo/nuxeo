@@ -1,7 +1,11 @@
-.PHONY: test clean
+.PHONY: all clean build
+
+all:	build test
+
+build:
+	mvn package
 
 test:
-	mvn package
 	./run.sh -t -b testscript
 
 clean:

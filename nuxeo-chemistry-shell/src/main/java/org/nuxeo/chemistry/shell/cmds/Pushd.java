@@ -21,6 +21,7 @@ package org.nuxeo.chemistry.shell.cmds;
 
 import java.util.Stack;
 
+import org.apache.chemistry.Folder;
 import org.nuxeo.chemistry.shell.Application;
 import org.nuxeo.chemistry.shell.Console;
 import org.nuxeo.chemistry.shell.Context;
@@ -44,10 +45,19 @@ public class Pushd extends AnnotatedCommand {
     public void run(Application app, CommandLine cmdLine) throws Exception {
         CommandParameter param = cmdLine.getParameter("target");
 
+        Context oldContext = app.getContext();
+
         String path = param.getValue();
         Context ctx = app.resolveContext(new Path(path));
         if (ctx == null) {
             throw new CommandException("Cannot resolve target: " + param.getValue());
+        }
+
+        Folder folder = ctx.as(Folder.class);
+        if (folder != null) {
+            app.setContext(ctx);
+        } else {
+            throw new CommandException("Cannot cd to something that is not a folder");
         }
 
         Stack<Context> stack = (Stack<Context>) app.getData(Popd.CTX_STACK_KEY);
@@ -55,8 +65,7 @@ public class Pushd extends AnnotatedCommand {
             stack = new Stack<Context>();
             app.setData(Popd.CTX_STACK_KEY, stack);
         }
-        stack.push(ctx);
-        Console.getDefault().updatePrompt();
+        stack.push(oldContext);
     }
 
 }
