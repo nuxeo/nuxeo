@@ -110,6 +110,8 @@ public interface Space extends Comparable<Space> {
 
   List<Gadget> getGadgets() throws ClientException;
 
+  Gadget getGadget(String gadgetName) throws ClientException;
+
   boolean hasPermission(String permissionName) throws ClientException;
 
   void save() throws ClientException;

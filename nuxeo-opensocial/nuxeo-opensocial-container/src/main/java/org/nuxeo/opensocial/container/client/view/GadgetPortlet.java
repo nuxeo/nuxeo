@@ -23,8 +23,6 @@ public class GadgetPortlet extends Portlet {
   public static final String CANVAS_VIEW = "canvas";
   public static final String DEFAULT_VIEW = "default";
 
-  private static final String VIEW_KEY = "&view=";
-
   private GadgetBean gadget;
   private GadgetTools tools;
   private Frame frame;
@@ -52,8 +50,8 @@ public class GadgetPortlet extends Portlet {
       this.setDraggable(false);
       this.setHideCollapseTool(true);
     } else {
-      this.setDraggable(gadget.getPermission());
-      this.setHideCollapseTool(!this.gadget.getPermission());
+      this.setDraggable(gadget.isPermission());
+      this.setHideCollapseTool(!this.gadget.isPermission());
     }
     this.setHeight(this.gadget.getHeight());
     this.addListener(new PortletListener(this));
@@ -185,7 +183,7 @@ public class GadgetPortlet extends Portlet {
 
   @Override
   protected void afterRender() {
-    if (this.gadget.isCollapse())
+    if (this.gadget.isCollapsed())
       collapse(getIdWithRefAndView(gadget.getRef(), view));
     super.afterRender();
     renderDefaultPreferences();
@@ -226,12 +224,12 @@ public class GadgetPortlet extends Portlet {
 
   public void unCollapseGadget() {
     unCollapse(this.getId(), this.getIframeId(), this.gadget.getRenderUrl());
-    this.gadget.setCollapse(false);
+    this.gadget.setCollapsed(false);
   }
 
   public void collapseGadget() {
     collapse(this.getId());
-    this.gadget.setCollapse(true);
+    this.gadget.setCollapsed(true);
   }
 
   public String getView() {

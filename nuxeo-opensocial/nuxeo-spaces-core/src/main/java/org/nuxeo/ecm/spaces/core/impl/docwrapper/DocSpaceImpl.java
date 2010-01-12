@@ -39,6 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 public class DocSpaceImpl implements Space {
 
   protected final DocumentModel doc;
+  private boolean readOnly = false;
 
   public static final String TYPE = "Space";
   protected static final String SPACE_THEME = "space:theme";
@@ -115,7 +116,19 @@ public class DocSpaceImpl implements Space {
       }
     }
     return result;
+  }
 
+  public Gadget getGadget(String gadgetName) throws ClientException {
+    DocumentModelList gadgets = doc.getCoreSession()
+        .getChildren(doc.getRef(), DocGadgetImpl.TYPE);
+    for (DocumentModel doc : gadgets) {
+      Gadget g = doc.getAdapter(Gadget.class);
+      if (g != null && g.getName()
+          .equals(gadgetName)) {
+        return g;
+      }
+    }
+    return null;
   }
 
   public String getId() {
@@ -150,7 +163,7 @@ public class DocSpaceImpl implements Space {
   }
 
   public boolean isReadOnly() throws ClientException {
-    return hasPermission("Write");
+    return readOnly;
   }
 
   public void setLayout(String name) throws ClientException {
