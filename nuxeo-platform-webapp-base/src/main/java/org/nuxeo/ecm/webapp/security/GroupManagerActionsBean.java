@@ -110,14 +110,14 @@ public class GroupManagerActionsBean implements GroupManagerActions {
             searchOverflow = false;
             try {
                 String groupListingMode = getGroupListingMode();
-                if (ALL.equals(groupListingMode) || "*".equals(searchString)) {
+                if (ALL.equals(groupListingMode) || "*".equals(getTrimmedSearchString())) {
                     groups = userManager.searchGroups(
                             Collections.<String, Serializable> emptyMap(), null);
-                } else if (!StringUtils.isEmpty(searchString)) {
+                } else if (!StringUtils.isEmpty(getTrimmedSearchString())) {
                     Map<String, Serializable> filter = new HashMap<String, Serializable>();
                     // XXX: search only on id, better conf should be set in user
                     // manager interface
-                    filter.put(userManager.getGroupIdField(), searchString);
+                    filter.put(userManager.getGroupIdField(), getTrimmedSearchString());
                     // parameters must be serializable so copy keySet to HashSet
                     groups = userManager.searchGroups(filter,
                             new HashSet<String>(filter.keySet()));
@@ -264,6 +264,13 @@ public class GroupManagerActionsBean implements GroupManagerActions {
 
     public String getSearchString() {
         return searchString;
+    }
+
+    protected String getTrimmedSearchString() {
+        if (searchString == null) {
+            return null;
+        }
+        return searchString.trim();
     }
 
     public void setSearchString(String searchString) {

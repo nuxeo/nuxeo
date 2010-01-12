@@ -136,11 +136,11 @@ public class UserManagerActionsBean implements UserManagerActions {
             try {
                 String userListingMode = getUserListingMode();
                 if (SEARCH_ONLY.equals(userListingMode)
-                        || !StringUtils.isEmpty(searchString)) {
-                    if ("*".equals(searchString)) {
+                        || !StringUtils.isEmpty(getTrimmedSearchString())) {
+                    if ("*".equals(getTrimmedSearchString())) {
                         users = userManager.searchUsers(null);
-                    } else if (!StringUtils.isEmpty(searchString)) {
-                        users = userManager.searchUsers(searchString);
+                    } else if (!StringUtils.isEmpty(getTrimmedSearchString())) {
+                        users = userManager.searchUsers(getTrimmedSearchString());
                     }
                 } else if (TABBED.equals(userListingMode)) {
                     if (userCatalog == null) {
@@ -350,6 +350,13 @@ public class UserManagerActionsBean implements UserManagerActions {
 
     public String getSearchString() {
         return searchString;
+    }
+
+    protected String getTrimmedSearchString() {
+        if (searchString == null) {
+            return null;
+        }
+        return searchString.trim();
     }
 
     public void setSearchString(String searchString) {
