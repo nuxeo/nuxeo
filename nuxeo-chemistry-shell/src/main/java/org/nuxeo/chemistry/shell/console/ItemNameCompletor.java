@@ -44,7 +44,7 @@ public class ItemNameCompletor implements Completor {
             buf = "";
         }
         Path path = new Path(buf);
-        String prefix = path.lastSegment();
+        String prefix = path.getLastSegment();
         if (path.hasTrailingSeparator()) {
             prefix = "";
         } else {

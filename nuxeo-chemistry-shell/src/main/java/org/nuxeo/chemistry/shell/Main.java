@@ -128,7 +128,7 @@ public class Main {
     private void runInExecMode() throws Exception {
         Console.setDefault(new Console());
         Console.getDefault().start(app);
-        Console.runCommand(app, command);
+        Console.getDefault().runCommand(command);
     }
 
     private void runInBatchMode() throws IOException {
@@ -147,7 +147,7 @@ public class Main {
             }
             Console.getDefault().println("Running: " + cmd);
             try {
-                Console.runCommand(app, cmd);
+                Console.getDefault().runCommand(cmd);
             } catch (ExitException e) {
                 Console.getDefault().println("Bye.");
                 return;

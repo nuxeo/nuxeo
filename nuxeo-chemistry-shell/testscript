@@ -14,6 +14,7 @@ help
 help ls
 lpwd
 lls
+match "pom\.xml"
 lpushd src
 lpopd
 lcd .
@@ -22,6 +23,7 @@ lcd .
 cd default
 id
 ls
+match "^default-domain$"
 tree
 propget .
 propget . cmis:objectTypeId
@@ -29,7 +31,9 @@ propget . cmis:objectTypeId
 # navigate around
 cd default-domain
 pwd
+match "/default/default-domain$"
 ls
+match "workspaces"
 cd workspaces
 pwd
 ls
@@ -47,6 +51,8 @@ id testdir
 ls testdir
 tree testdir
 propget testdir
+match "^dc:title = testdir$"
+match "^cmis:baseTypeId = cmis:folder$"
 propget testdir dc:title
 
 # Test mkdir more in depth
@@ -60,7 +66,9 @@ mkdir ../testdir3
 ls ../testdir3
 rm ../testdir3
 cd ..
-rm testdir?
+#rm testdir?
+rm testdir1
+rm testdir2
 ls
 
 # Now a file
@@ -70,9 +78,13 @@ ls
 id testfile
 ls testfile
 propget testfile
+match "^dc:title = testfile$"
+match "^cmis:baseTypeId = cmis:document$"
 propget testfile dc:title
+match "^testfile$"
 propset testfile dc:title some_other_title
 propget testfile dc:title
+match "^some_other_title$"
 # TODO
 #setStream testfile run.sh
 #setStream testfile dummy.txt

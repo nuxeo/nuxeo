@@ -34,6 +34,7 @@ import org.nuxeo.chemistry.shell.cmds.LPushd;
 import org.nuxeo.chemistry.shell.cmds.LPwd;
 import org.nuxeo.chemistry.shell.cmds.Ll;
 import org.nuxeo.chemistry.shell.cmds.Ls;
+import org.nuxeo.chemistry.shell.cmds.Match;
 import org.nuxeo.chemistry.shell.cmds.Popd;
 import org.nuxeo.chemistry.shell.cmds.Pushd;
 import org.nuxeo.chemistry.shell.cmds.Pwd;
@@ -64,6 +65,7 @@ public class CommandRegistry {
         builtinCommands.registerCommand(new LPopd());
         builtinCommands.registerCommand(new LPwd());
         builtinCommands.registerCommand(new Ll());
+        builtinCommands.registerCommand(new Match());
     }
 
     public CommandRegistry(Map<String, Command> cmds) {

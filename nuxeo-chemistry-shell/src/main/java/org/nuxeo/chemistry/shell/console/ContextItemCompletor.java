@@ -49,7 +49,7 @@ public class ContextItemCompletor implements Completor {
 
         Context ctx;
         Path path = new Path(buf);
-        String prefix = path.lastSegment();
+        String prefix = path.getLastSegment();
         if (prefix == null) {
             ctx = Console.getDefault().getApplication().getContext();
             prefix = "";

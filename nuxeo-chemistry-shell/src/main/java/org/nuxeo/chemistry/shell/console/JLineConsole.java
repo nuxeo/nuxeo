@@ -49,6 +49,7 @@ public class JLineConsole extends Console {
         if (ch instanceof CandidateListCompletionHandler) {
             ((CandidateListCompletionHandler) ch).setAlwaysIncludeNewline(false);
         }
+        ColorHelper.enable();
     }
 
     public ConsoleReader getReader() {
@@ -57,7 +58,7 @@ public class JLineConsole extends Console {
 
     protected boolean execute(String line) throws Exception {
         try {
-            runCommand(app, line);
+            runCommand(line);
         } catch (ExitException e) {
             return false;
         } catch (CommandException e) {
@@ -98,7 +99,7 @@ public class JLineConsole extends Console {
     @Override
     public void updatePrompt() {
         if (app.isConnected()) {
-            String path = app.getContext().getPath().lastSegment();
+            String path = app.getContext().getPath().getLastSegment();
             if (path == null) {
                 path = "/";
             }

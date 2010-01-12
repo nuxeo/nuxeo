@@ -13,13 +13,17 @@ public class TestPath extends Assert {
         assertEquals("file", p.getFileName());
         assertEquals("abc", p.segment(0));
         assertEquals("asdf", p.segment(1));
-        assertEquals("file.ext", p.lastSegment());
+        assertEquals("file.ext", p.getLastSegment());
+
+        p = p.makeAbsolute();
+        assertEquals("/abc/asdf/file.ext", p.toString());
 
         p = p.makeAbsolute();
         assertEquals("/abc/asdf/file.ext", p.toString());
 
         Path p1 = p.getParent();
         assertEquals("/abc/asdf", p1.toString());
+
         p1 = p.up();
         assertEquals("/abc/asdf", p1.toString());
     }
@@ -28,6 +32,9 @@ public class TestPath extends Assert {
     public void testAbsolute() {
         Path p = new Path("/abc/asdf/file.ext");
         assertEquals("/abc/asdf/file.ext", p.toString());
+
+        p = p.makeRelative();
+        assertEquals("abc/asdf/file.ext", p.toString());
 
         p = p.makeRelative();
         assertEquals("abc/asdf/file.ext", p.toString());
@@ -115,7 +122,7 @@ public class TestPath extends Assert {
         assertEquals("b", path.segment(1));
         assertEquals("c", path.segment(2));
         assertEquals("d", path.segment(3));
-        assertEquals("d", path.lastSegment());
+        assertEquals("d", path.getLastSegment());
 
         assertEquals(new Path("b/c/d"), path.removeFirstSegments(1));
         assertEquals(new Path("/a/b/c"), path.removeLastSegments(1));
@@ -192,7 +199,19 @@ public class TestPath extends Assert {
     @Test
     public void testEquality() {
         assertEquals(new Path("/a/b/c"), new Path("/a/b/c"));
+        assertEquals(new Path("/a/b/c/"), new Path("/a/b/c/"));
+
         assert !new Path("/a/b/c").equals(new Path("/a/b"));
+        assert !new Path("/a/b").equals(new Path("/a/b/c"));
+        assert !new Path("/a/b/c/").equals(new Path("/a/b/c"));
+        assert !new Path("/a/b/c").equals(new Path("/a/b/c/"));
+
+        assert !new Path("/a/b/d").equals(new Path("/a/b/c"));
+        assert !new Path("/a/d/c").equals(new Path("/a/b/c"));
+        assert !new Path("/d/b/c").equals(new Path("/a/b/c"));
+        assert !new Path("/a/b/c").equals(new Path("/a/b/d"));
+        assert !new Path("/a/b/c").equals(new Path("/a/d/c"));
+        assert !new Path("/a/b/c").equals(new Path("/d/b/c"));
     }
 
     @Test
@@ -200,7 +219,13 @@ public class TestPath extends Assert {
         Path path1 = new Path("/a/b/c");
         Path path2 = new Path("/d/e/f");
         Path path3 = new Path("/a/b/c/d/e/f");
-        assertEquals(path1.append(path2), path3);
+        assertEquals(path3, path1.append(path2));
+
+        assertEquals("/a/b/c", path1.append(".").toString());
+        assertEquals("/a/b", path1.append("..").toString());
+
+        assertEquals("/a/b/c", path1.append(new Path(".")).toString());
+        assertEquals("/a/b", path1.append(new Path("..")).toString());
     }
 
 }

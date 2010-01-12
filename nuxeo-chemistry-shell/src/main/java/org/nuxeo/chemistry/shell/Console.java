@@ -36,6 +36,9 @@ public class Console {
 
     protected Application app;
 
+    protected StringBuffer buffer = new StringBuffer();
+    protected String lastResult;
+
     public static Console getDefault() {
         return instance;
     }
@@ -55,14 +58,28 @@ public class Console {
     }
 
     /**
-     * Get the current client
+     * Gets the current client
      */
     public Application getApplication() {
         return app;
     }
 
-    public static void runCommand(Application app, String line) throws Exception {
-        parseCommandLine(app.getCommandRegistry(), line).run(app);
+    /**
+     * Gets the result of the last command.
+     */
+    public String getLastResult() {
+        return lastResult;
+    }
+
+    public void runCommand(String line) throws Exception {
+        CommandLine commandLine = parseCommandLine(app.getCommandRegistry(), line);
+        lastResult = buffer.toString();
+        buffer = new StringBuffer();
+        commandLine.run(app);
+        if ("match".equals(commandLine.getCommand().getName())) {
+            // Keep previous result in case we have several 'match' commands
+            buffer = new StringBuffer(lastResult);
+        }
     }
 
     public static CommandLine parseCommandLine(CommandRegistry reg, String line) throws CommandException {
@@ -86,6 +103,7 @@ public class Console {
     }
 
     public void println(String str) {
+        buffer.append(str + "\n");
         System.out.println(str);
     }
 

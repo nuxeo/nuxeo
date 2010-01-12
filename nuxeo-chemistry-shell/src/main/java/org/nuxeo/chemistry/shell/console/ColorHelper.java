@@ -20,6 +20,7 @@
 package org.nuxeo.chemistry.shell.console;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
@@ -29,8 +30,11 @@ import java.util.Properties;
 import jline.ANSIBuffer;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * An utility class to add ANSI colors to objects in folder listings.
+ * <p>
+ * Disabled by default. Enabled only when used in interactive mode.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ColorHelper {
 
@@ -49,12 +53,13 @@ public class ColorHelper {
     public static final int FG_CYAN = 36;
     public static final int FG_WHITE = 37;
     public static final char ESC = 27;
-    
-    
+
     protected static final Map<String,Integer> ansiCodes = new HashMap<String, Integer>();
     protected static final Map<String,Integer> colorMap = new HashMap<String, Integer>();
-    
-    static {        
+
+    protected static boolean enabled = false;
+
+    static {
         ansiCodes.put("white", FG_WHITE);
         ansiCodes.put("black", FG_BLACK);
         ansiCodes.put("blue", FG_BLUE);
@@ -68,7 +73,7 @@ public class ColorHelper {
         ansiCodes.put("underscore", UNDERSCORE);
         ansiCodes.put("reverse", REVERSE);
         ansiCodes.put("concealed", CONCEALED);
-        
+
         Properties props = new Properties();
         try {
             String mapStr = System.getProperty("chemistry.shell.colorMap");
@@ -83,29 +88,31 @@ public class ColorHelper {
                 }
             }
             for (Map.Entry<Object,Object> entry : props.entrySet()) {
-                String val = (String)entry.getValue();
+                String val = (String) entry.getValue();
                 Integer code = ansiCodes.get(val);
                 if (code == null) {
-                    System.err.println("Skiping unknown color code: "+val);
+                    System.err.println("Skipping unknown color code: "+val);
                 } else {
-                    colorMap.put((String)entry.getKey(), code);
+                    colorMap.put((String) entry.getKey(), code);
                 }
             }
-        } catch (Throwable e) {
+        } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Failed to load color map");
-        }        
-
+        }
     }
-    
-    
+
     // Utility class.
     private ColorHelper() {
     }
 
+    public static void enable() {
+        enabled = true;
+    }
+
     private static boolean supportsColor() {
         String osName = System.getProperty("os.name");
-        return !osName.toLowerCase().contains("windows");
+        return enabled && !osName.toLowerCase().contains("windows");
     }
 
     public static String decorateName(String name, String color) {
@@ -129,7 +136,7 @@ public class ColorHelper {
         ANSIBuffer buf = new ANSIBuffer();
         return buf.attrib(name, color).toString();
     }
-    
+
     public static String blue(String name) {
         return decorateName(name, FG_BLUE);
     }
@@ -145,19 +152,19 @@ public class ColorHelper {
     public static String red(String name) {
         return decorateName(name, FG_RED);
     }
-    
+
     public static String cyan(String name) {
         return decorateName(name, FG_CYAN);
     }
-    
+
     public static String black(String name) {
         return decorateName(name, FG_BLACK);
     }
-    
+
     public static String magenta(String name) {
         return decorateName(name, FG_MAGENTA);
     }
-    
+
     public static String white(String name) {
         return decorateName(name, FG_WHITE);
     }
@@ -165,15 +172,15 @@ public class ColorHelper {
     public static String blink(String name) {
         return decorateName(name, BLINK);
     }
-    
+
     public static String bold(String name) {
         return decorateName(name, BOLD);
     }
 
-    public static String undersocre(String name) {
+    public static String underscore(String name) {
         return decorateName(name, UNDERSCORE);
     }
-    
+
     public static String reverse(String name) {
         return decorateName(name, REVERSE);
     }

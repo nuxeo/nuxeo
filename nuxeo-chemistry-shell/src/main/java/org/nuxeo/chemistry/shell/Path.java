@@ -230,7 +230,7 @@ public class Path implements Serializable {
         return segments[index];
     }
 
-    public String lastSegment() {
+    public String getLastSegment() {
         int len = segments.length;
         return len == 0 ? null : segments[len - 1];
     }
@@ -351,7 +351,7 @@ public class Path implements Serializable {
         if (extension == null || extension.equals("")) { //$NON-NLS-1$
             return this;
         }
-        String lastSegment = lastSegment();
+        String lastSegment = getLastSegment();
         int index = lastSegment.lastIndexOf(extension) - 1;
         return removeLastSegments(1).append(lastSegment.substring(0, index));
     }

@@ -40,7 +40,7 @@ public class CreateFile extends ChemistryCommand {
         String param = cmdLine.getParameterValue("target");
 
         Path path = new Path(param);
-        String name = path.getFileName();
+        String name = path.getLastSegment();
         Path parent = path.getParent();
 
         Context ctx = app.resolveContext(parent);
