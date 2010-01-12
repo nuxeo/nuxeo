@@ -99,17 +99,251 @@ If you want to deploy additional Nuxeo XML components on the embedded server you
 Note that this filter is only usable in development mode and it must not be deployed on a real server. 
 
 Now you can start a debugging session by right clicking the project and then clicking on “Debug As > Web Application”. 
-The Embedded Nuxeo will be started before the GWT application is started. By default the web server in the embedded Nuxeo will listen on localhost:8081. So you can connect to the address for the WebEngine UI if you want to introspect the repository.
+The Embedded Nuxeo will be started before the GWT application is initialized. By default the web server in the embedded Nuxeo will listen on localhost:8081. So you can connect to the address for the WebEngine UI if you want to introspect the repository.
 The Nuxeo Server Embedded home directory used  by default is “{user.home}/.nxserver-gwt”.
-Now in your GWT servlets you can use calls to Nuxeo API, create and browse documents etc. Of course you need to add the required dependencies on you project class path. 
+Now in your GWT servlets you can use calls to Nuxeo API, create and browse documents etc. Of course you need to add the required dependencies on your project class path. 
+
+
 
 Deploying the GWT Application on a real Nuxeo Server.
-To be able to run the GWT application in a real Nuxeo you must first make a modification on your GWT RPC servlets and extends the “org.nuxeo.ecm.webengine.gwt.WebEngineGwtServlet” instead of “RemoteServiceServlet”. This is required since the default GWT serialization is assuming a specific structure of the resulting WAR application which is not possible to follow in a Nuxeo GWT module.
-Your project must generate two JARs: a nuxeo plugin JAR and a GWT WAR jar. Both of these must be packaged as Nuxeo (OSGi) bundles. 
-The GWT WAR jar will contain only the GWT compiler output (which contains the file you have in the “war” directory of your project) plus a valid nuxeo MANIFEST and an extension to . Plus  The nuxeo plugin JAR contains the java code and other nuxeo XML component files.
-The GWT WAR jar must be a nuxeo bundle too
+------------------------------------------------------
+
+To be able to deploy your GWT in a real Nuxeo Server you need to package it as a Nuxeo bundle that:
+
+1. defines an OSGi Bundle-Activator that points to org.nuxeo.ecm.webengine.gwt.GwtBundleActivator.
+Note that if you need a custom activator you can override the gwtBundleActivator and add you own login in the start() method after calling super.start(),
+or you can directly implement BundleActivator and call in start() method the following code:
+GwtBundleActivator.install(context)
+ 
+2. contains the generated GWT application files into a directory named "war" at the root of the JAR.
+
+So the JAR will have a content similar to the following one:
+your-gwt-module.jar
+  META-INF/MANIFEST.MF
+  OSGI-INF/deployment-fragment.xml
+  ...
+  org/
+  war/
+    your_gwt_module.html
+    ...
+
+
+Then simply put your JAR into a Nuxeo Server. (Make sure the server contains nuxeo-webengine-gwt.jar in bundles directory)
+At first startup the "war" directory from your JAR will be copied into {web}/root.war/gwt/ where {web} is the webengine root directory.
+At each startup the GWT activator you added to your bundle will check if it needs to unzip again the "war" directory content.
+This is true if the timestamp of the bundle JAR will be greater than the timestamp of the file {web}/root.war/gwt/.metadata/{your_bundle_symbolic_name} 
+This way if you upgrade the JAR the GWT application files will be updated too.
+  
+At the end of this document you will find a fragment of a pom.xml that can be used to correctly build a nuxeo gwt module and that can also generate the GWT project in eclipse by running mvn eclipse:eclipse 
+
+  
+
+Accessing your GWT module from the client
+-----------------------------------------
+
+But how to access the GWT application? 
+For this you need to create a simple WebEngine module that expose the GWT application through a JAX-RS resource.
+(You can either use webengine objects or raw JAX-RS resources - or even a custom servlet your registered in web.xml)
+
+If your are using a WebEngine Module you only need to override the abstract class:
+org.nuxeo.ecm.webengine.gwt.GwtResource
+and implement a @GET method to server the GWT application home page like:
+
+@WebObject(type="myGwtApp")
+public class MyGwtApp extends GwtResource {
+    @GET @Produces("text/html")
+    public Object getIndex() {
+        return getTemplate("studio.ftl");
+    }
+}
+
+You can do the same from a raw JAX-RS resource by integrating the method from GwtResource into your resource:
+
+    @GET
+    @Path("{path:.*}")
+    public Response getResource(@PathParam("path") String path) {
+        //System.out.println(">>> "+GWT_ROOT.getAbsolutePath());
+        // avoid putting automatic no cache headers
+        ctx.getRequest().setAttribute("org.nuxeo.webengine.DisableAutoHeaders", "true");
+        File file = new File(GwtBundleActivator.GWT_ROOT, path);
+        if (file.isFile()) {
+            ResponseBuilder resp = Response.ok(file);
+            String fpath = file.getPath();
+            int p = fpath.lastIndexOf('.');
+            String ext = "";
+            if (p > -1) {
+                ext = fpath.substring(p+1);
+            }
+            String mimeType = ctx.getEngine().getMimeType(ext);
+            if (mimeType == null) {
+                mimeType = "text/plain";
+            }
+            resp.type(mimeType);
+            return resp.build();
+        }
+        return Response.status(404).build();
+    }
+    
+This method is simply locating the file requested by the GWT client (in {web}/root.war/gwt) to send it to the client.  
+
+You can apply the same logic if you prefer to write a servlet as an entry point for your GWT module. 
+
+  
+  
+Using GWT RPC mechanism in a Nuxeo GWT module.
+-----------------------------------------------
+
+If you want to use GWT RPC inside Nuxeo GWT modules you must be sure your RPC servlet classes extends 
+“org.nuxeo.ecm.webengine.gwt.WebEngineGwtServlet”
+instead of 
+“RemoteServiceServlet”
+This is required since the default RemoteServiceServlet is assuming a WAR structure that is not present in a Nuxeo Server.
+The WebEngineGwtServlet is locating correctly the resources needed by the GWT Serializer and then it is dispatching the request back to RemoteServiceServlet.   
+
+And also don't forget to define your RPC servlets in the web.xml! You can use for this the regular approach in nuxeo (through deployment-fragment.xml files)
+
+Note: Your GWT RPC servlets are executed in an authenticated context since the Nuxeo Authentication filter is in place.
 
 
 
+============================================================
 
+Example of a pom.xml
+ ....
+  <dependencies> 
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-gwt</artifactId>      
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.build</groupId>
+      <artifactId>nuxeo-distribution-tools</artifactId>
+      <classifier>all</classifier>
+      <version>0.5</version>
+      <scope>test</scope>
+    </dependency>
 
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-servlet</artifactId>
+      <version>${gwtVersion}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>${gwtVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-dev</artifactId>
+      <version>${gwtVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    ...
+   </dependencies> 
+
+   ...
+   <build>
+    <!-- gwt compiler needs the java sources to correctly work -->
+    <resources>
+      <resource>
+        <directory>src/main/java</directory>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+
+    <plugins>
+      <!-- correctly generate eclipse files with GWT nature -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <downloadSources>false</downloadSources>
+          <additionalProjectnatures>
+            <projectnature>com.google.gwt.eclipse.core.gwtNature</projectnature>
+            <projectnature>com.google.gdt.eclipse.core.webAppNature</projectnature>
+          </additionalProjectnatures>
+          <additionalBuildcommands>
+            <buildCommand>
+              <name>com.google.gwt.eclipse.core.gwtProjectValidator</name>
+              <arguments>
+              </arguments>
+              <name>com.google.gdt.eclipse.core.webAppProjectValidator</name>
+              <arguments>
+              </arguments>
+            </buildCommand>
+          </additionalBuildcommands>
+          <classpathContainers>
+            <classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER</classpathContainer>
+            <classpathContainer>com.google.gwt.eclipse.core.GWT_CONTAINER</classpathContainer>
+          </classpathContainers>
+          <buildOutputDirectory>war/WEB-INF/classes</buildOutputDirectory>
+        </configuration>
+      </plugin>
+      <!--
+        After compiling java sources compile java to JS using GWT compiler. This
+        must be done process-classes after compile step finished to be sure we
+        have all the needed files in classes directory. I am using ant for this
+        since the maven exec plugin is not able to run correctly this
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>compile-js</id>
+            <phase>process-classes</phase>
+            <configuration>
+              <tasks>
+                <property name="compile_classpath" refid="maven.compile.classpath" />
+                <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+                  <classpath>
+                    <pathelement location="${project.build.outputDirectory}" />
+                    <pathelement path="${compile_classpath}" />
+                  </classpath>
+                  <jvmarg value="-Xmx256M" />
+                  <jvmarg value="${gwt.arg}" />
+                  <!--arg value="-style" />
+                  <arg value="DETAILED" /-->
+                  <!-- to speed up compiler
+                  <arg value="-draftCompile" /-->
+                  <arg value="-war" />
+                  <arg value="${project.build.outputDirectory}/war" />
+                  <arg value="${gwt.module}" />
+                </java>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+ 
+ ....
+ 
+ ===========================================================
