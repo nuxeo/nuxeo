@@ -1,88 +1,68 @@
+-----
 About
 -----
 
 See http://doc.nuxeo.org/ for full documentation.
 
-This module builds the Nuxeo products: Nuxeo EP, Nuxeo WebEngine, Nuxeo DM,
-Nuxeo Shell...
+This module builds the Nuxeo products: Nuxeo EP, Nuxeo DM, Nuxeo Shell, ...
 
-There are various build ways. Easiest is from root with Ant but you can also
-build from any sub-module with Maven. Ant build will call a Maven build with
-default values.
 
-Modules listing:
+1. Required tools
 
-- nuxeo-platform-ear to build Nuxeo Enterprise Platform EAR
-- nuxeo-distribution-dm to build a Nuxeo Document Management EAR
-- nuxeo-distribution-jboss to package a JBoss containing Nuxeo EP or DM EAR
-- nuxeo-distribution-shell to build Nuxeo Shell
-- nuxeo-distribution-gf3 to build GlassFish distribution
-- nuxeo-distribution-jetty to package Jetty containing Nuxeo EP or DM
-- nuxeo-distribution-jetty-ep to build Jetty distribution (DEPRECATED)
-- nuxeo-distribution-tomcat to build Tomcat distribution
+Building Nuxeo products requires the following tools:
+  * Java Sun 5 or 6
+  * Apache Maven 2.2.1
+  * Apache Ant 1.7.1+
+  * IS Tools for building Windows installers
+  * Wine for calling IS Tools from Mac/Linux OS
+  * Open Source tools that will be downloaded by Maven when needed.
 
-- nuxeo-distribution-base, nuxeo-distribution-server are used by other modules.
-- nuxeo-distribution-jetty-base is for use by other modules.
-- nuxeo-distribution-izpack is obsolete. Was used to build an IzPack installer
-  from a Nuxeo EP zip archive.
-- nuxeo-distribution-tools is a prototype. Future distribution tools.
 
+2. Build ways
+
+There are various build ways.
+
+Java and Maven are at the lowest level, all configuration about building a module
+is given in the Maven POM file. So, everything can be built using Maven but it 
+requires some knowledge about Nuxeo and its packagings.
+
+Ant is available at the top level: Ant targets have been defined to provide 
+user-friendly commands for building most used products.
+
+
+3. Modules listing
+
+  * nuxeo-platform-ear : Nuxeo Enterprise Platform EAR
+  * nuxeo-distribution-dm : Nuxeo Document Management EAR
+  * nuxeo-distribution-shell : Nuxeo Shell
+  * nuxeo-distribution-jboss : JBoss containing Nuxeo EP or DM
+  * nuxeo-distribution-gf3 : GlassFish distribution
+  * nuxeo-distribution-jetty : Jetty containing Nuxeo EP or DM
+  * nuxeo-distribution-tomcat : Tomcat distribution
+  * nuxeo-distribution-windows : Windows installers
+  * nuxeo-distribution-base : template package for use by other modules.
+  * nuxeo-distribution-server : template package for use by other modules.
+  * nuxeo-distribution-jetty-base : template package for use by other modules.
+  * nuxeo-distribution-izpack : DEPRECATED, was used to build IzPack installers.
+
+--------------------------------
 Building predefined applications
 --------------------------------
 
-With Ant and user input:
+1. Predefined applications
 
-- from nuxeo-distribution root, run "ant distrib" and choose the distribution
-  you want to build.
-
-With Ant, no user input:
-
-- run "ant distrib -Ddistrib=<PROFILE>"
-- run "ant distrib -Ddistrib=<PROFILE>,<BACKEND>"
-
-With Maven, no user input: 
-
-- run "mvn clean install package -P<PROFILE> -Dmaven.test.skip=true"
-
-Available values for <PROFILE> are:
-
-  nuxeo-ep, nuxeo-ep-jboss, nuxeo-dm, nuxeo-dm-jboss, shell, jetty, gf3,
-  tomcat, core, all-distributions
-
-It can be followed by ",<BACKEND>"; available values depend on <PROFILE> used.
-
-Nuxeo EP and DM have those backend configurations available: derby, mysql,
-postgresql, oracle and h2.
-
-For example:
-
-- "ant distrib -Ddistrib=nuxeo-dm,postgresql"
-- "ant distrib -Ddistrib=nuxeo-ep,mysql"
-  
-Default repository is VCS but it is also possible to set JCR+Derby or
-JCR+PostgreSQL, for example:
-
-- "ant distrib -Ddistrib=nuxeo-dm,postgresql -Dmvn.opts=-Djcr"
-
-Note that this configuration requires some manual changes into
-$JBOSS/server/default/conf/login-config.xml
-
-Glassfish has those available configurations (vcs, vcs+ra, jcr+ra):
-
-- "ant distrib -Ddistrib=gf3,vcs"
-- "ant distrib -Ddistrib=gf3,vcs,ra"
-- "ant distrib -Ddistrib=gf3,jcr,ra"
-
-1. Nuxeo EP
+1.1. Nuxeo EP
 
   Built EAR is in nuxeo-platform-ear/target/ and its name depends on chosen
   package: default is nuxeo.ear
 
-2. Nuxeo Document Management
+
+1.2. Nuxeo Document Management
 
   Built EAR is in nuxeo-distribution-dm/target/
 
-3. Nuxeo Shell 
+
+1.3. Nuxeo Shell 
 
   A command-line client application suitable to connect to remote nuxeo servers.
   This application can be used to connect to remote nuxeo servers for debugging,
@@ -90,7 +70,8 @@ Glassfish has those available configurations (vcs, vcs+ra, jcr+ra):
 
   Built application is in nuxeo-distribution-shell/target/
     
-4. Nuxeo Core Server 
+    
+1.4. Nuxeo Core Server 
 
   A minimal server application. An embedded repository will be started. No other
   platform services are available.
@@ -101,16 +82,18 @@ Glassfish has those available configurations (vcs, vcs+ra, jcr+ra):
   Remoting will be also available in the future via Nuxeo Runtime.
   
   Built application is in nuxeo-distribution-server/target/
-    
-5. Nuxeo Jetty Server Base
+
+
+1.5. Nuxeo Jetty Server Base
 
   A Nuxeo server application embedding a Jetty server. 
   This application can be used to browse repository content via WEB.
   This is also known as Nuxeo WebEngine (based on Jetty).
 
   Built application is in nuxeo-distribution-jetty-base/target/
-   
-6. Nuxeo GF3 Server
+
+
+1.6. Nuxeo GF3 Server
 
   A Nuxeo server application embedding a GlassFish v3 server.
   This application can be used to browse a repository content via the web.
@@ -130,8 +113,9 @@ Glassfish has those available configurations (vcs, vcs+ra, jcr+ra):
       support
     - "mvn install -Pgf3,jcr,ra" - a server using JCR based repository backend
       + RA support
-    
-6. Nuxeo Tomcat WebApp
+
+
+1.7. Nuxeo Tomcat WebApp
 
   A Nuxeo Server packaged as an exploded WAR for Tomcat v6.
   This build will generate a zip containing a 'tomcat' directory. You need to
@@ -143,52 +127,224 @@ Glassfish has those available configurations (vcs, vcs+ra, jcr+ra):
   Built application is in nuxeo-distribution-tomcat/target/
 
 
-Extending
----------
+2. Build with Maven
 
-This project manages the build of standalone Nuxeo applications such as nxshell
-and WebEngine.
+Building from nuxeo root won't run nuxeo-distribution.
+Building from nuxeo-distribution with no specific profile will package Nuxeo EP, 
+Nuxeo DM on VCS, JBoss with Nuxeo DM on VCS.
+Meaning "mvn clean package" produces:
+  * Nuxeo EP EAR
+    nuxeo-platform-ear/target/nuxeo.ear.zip
+  * Nuxeo EP resource files (for various backends or deployments) for EAR
+    nuxeo-platform-ear/target/nuxeo-platform-ear-5.3.1-SNAPSHOT-*.zip
+  * Nuxeo DM EAR with default VCS backend 
+    nuxeo-distribution-dm/target/nuxeo-distribution-dm-5.3.1-SNAPSHOT.zip
+  * JBoss 4.2.3.GA containing Nuxeo DM with default VCS backend
+    nuxeo-distribution-jboss/target/nuxeo-distribution-jboss-5.3.1-SNAPSHOT-nuxeo-dm.zip
 
-The build logic is slightly different from the nuxeo.ear build and is more
-adapted for light packagings composed of well defined nuxeo artifact subsets.
+Building other alternatives for a product is done with Maven profiles:
+  * mvn clean package -P<PRODUCT>,<BACKEND>
 
-The main difference is the way the final ZIPs are assembled. Instead of using
-assembly descriptor inheritance, the final ZIP is assembled from several
-prebuilt ZIPs by using an assembly descriptor.
 
-Let's see for example how webengine based on jetty is built: as webengine is
-using nxshell infrastructure, it need to share with this project the basic
-infrastructure. On this skeleton it should add server specific artifacts and
-configuration. Then it should add jetty specific config and JARs.
+3. Understanding Maven profiles and classifiers
 
-All these intermediate builds should be reusable to build other applications
-like webengine based on GlassFish v3 or even nxshell itself.
+Profiles are mainly used to manage the list of classifiers being generated.
+Maven plugins rely by default on a such mechanism for creating tests, sources and 
+javadoc jars. It is usable also for any other specific builds (OS, JDK, env, packaging, ...). 
+It's widely used by a lot of third-parties (google gwt, json, shindings, ...). 
+Think about "classifiers" as "qualifiers" (sources, javadoc, tests, linux, windows, 
+mac, jta, all, ...). For example, the following are two alternatives ("classifiers") 
+for the package ("artifact") named "nuxeo-distribution-tomcat":
+  * nuxeo-distribution-tomcat-5.3.1-SNAPSHOT-nuxeo-dm-jtajca.zip
+  * nuxeo-distribution-tomcat-5.3.1-SNAPSHOT-nuxeo-dm.zip
 
-To do this, 5 projects were created:
+Some profiles are used to choose the product to build. Other profiles are used to
+choose which alternatives (classifiers) of the product will be built. Multiple 
+profiles can be used simultaneously. 
+Here are some common profiles and their impact on build result:
+  * all-distributions: build everything except the Windows installer
+  * all: build all classifiers for the called module(s) 
+  * nuxeo-ep: build only Nuxeo EP classifier (if JBoss module, so build only
+    JBoss with Nuxeo EP)
+  * nuxeo-dm: same as nuxeo-ep but with Nuxeo DM
+  * shell: package a Nuxeo Shell
+  * jboss: package a Nuxeo within JBoss
 
-- A: nuxeo-distribution-base - contains basic skeleton of a standalone
-  application)
+Here are some usage examples (ran from nuxeo-distribution):
+  * (default) Building Nuxeo EP, nuxeo DM with VCS, JBoss with Nuxeo DM on VCS
+    o mvn clean package
+    o mvn clean package -Pjboss,nuxeo-dm,vcs
+  * Building all Nuxeo DM alternatives
+    o mvn clean package -Pnuxeo-dm,all
+  * Building all JBoss packagings
+    o mvn clean package -Pjboss,all
+  * Building a JBoss packaging and a Nuxeo EP EAR based on MySQL
+    o mvn clean package -Pjboss,nuxeo-ep,mysql
+  * Building all Nuxeo products and their alternatives
+    o mvn clean package -Pall-distributions
 
-- B: nuxeo-distribution-shell - modifies the ZIP generated by A (by
-  adding/overriding or removing entries)
+Note: because of a Maven bug making things crazy when two classifiers of an
+artifact are not deployed at the same time (i.e. if you deploy only nuxeo-ep 
+classifier of nuxeo-distribution-jboss, then nuxeo-dm classifier becomes 
+unreachable from local and remote Maven repositories).
+That means when you want to "deploy" (Maven remote deployment) or "install" (Maven
+local deployment) a module, you must use "all" profile.
 
-- C: nuxeo-distribution-server - modifies the ZIP generated by A by adding
-  server related artifacts and configuration
+When you need only one classifier, for any other purpose than
+install/deploy to m2 repository, then you can use the dedicated profiles.
 
-- D: nuxeo-distribution-jetty-base - modifies the ZIP generated by C by adding
-  jetty specific JARs and configuration
 
-- E: nuxeo-distribution-gf3 - modifies the ZIP generated by C by adding GF3
-  specific JARs and configuration
+4. Main products and available profiles:
 
-This way, the build is reused more easily than by using assembly inheritance,
-since any modification on an intermediate artifact (ZIP) is automatically
-visible in the projects that are overriding the artifact.
+Modules with an asterisk need refactoring and may be unusable for now: foo*
+Infrastructure profiles are within parenthesis: (foo)
+Default profiles are within asterisks: *foo*
 
-NB: we are not using for now categories on Nuxeo-Shell and Nuxeo-WebEngine
-since the projects are not so complex to manage by using explicit dependencies
-in assembly files. Also, existing categories may not fit well with the kind of
-build done for nxshell or webengine. 
+  * Module nuxeo-platform-ear
+    o Produced artifacts
+      nuxeo-platform-ear-5.3.1-SNAPSHOT.pom
+      nuxeo-platform-ear-5.3.1-SNAPSHOT.zip
+      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-common.zip
+      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-derby.zip
+      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-h2.zip
+      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-jcr-postgresql.zip
+      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-jcr.zip
+      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-mono.zip
+      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-mysql.zip
+      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-oracle.zip
+      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-platform-stateful.zip
+      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-postgresql.zip
+      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-web-stateless.zip
+    o Available profiles
+      derby
+      mysql
+      postgresql
+      oracle
+      h2
+      jcr-profile
+      jcr-postgresql
+      *vcs-profile*
+      
+  * Module nuxeo-distribution-dm
+    o Produced artifacts
+      nuxeo-distribution-dm-5.3.1-SNAPSHOT.pom
+      nuxeo-distribution-dm-5.3.1-SNAPSHOT-derby.zip
+      nuxeo-distribution-dm-5.3.1-SNAPSHOT-h2.zip
+      nuxeo-distribution-dm-5.3.1-SNAPSHOT-jcr-postgresql.zip
+      nuxeo-distribution-dm-5.3.1-SNAPSHOT-jcr.zip
+      nuxeo-distribution-dm-5.3.1-SNAPSHOT-mysql.zip
+      nuxeo-distribution-dm-5.3.1-SNAPSHOT-oracle.zip
+      nuxeo-distribution-dm-5.3.1-SNAPSHOT-platform-stateful-derby.zip
+      nuxeo-distribution-dm-5.3.1-SNAPSHOT-platform-stateful-h2.zip
+      nuxeo-distribution-dm-5.3.1-SNAPSHOT-platform-stateful-mysql.zip
+      nuxeo-distribution-dm-5.3.1-SNAPSHOT-platform-stateful-oracle.zip
+      nuxeo-distribution-dm-5.3.1-SNAPSHOT-platform-stateful-postgresql.zip
+      nuxeo-distribution-dm-5.3.1-SNAPSHOT-platform-stateful.zip
+      nuxeo-distribution-dm-5.3.1-SNAPSHOT-postgresql.zip
+      nuxeo-distribution-dm-5.3.1-SNAPSHOT-web-stateless.zip
+      nuxeo-distribution-dm-5.3.1-SNAPSHOT.zip
+    o Available profiles
+      all-distributions
+      all
+      (nuxeo-ep)
+      *vcs*
+      derby
+      mysql
+      postgresql
+      oracle
+      h2
+      jcr
+      jcr-postgresql
+      
+  * Module nuxeo-distribution-jboss
+    o Produced artifacts
+      nuxeo-distribution-jboss-5.3.1-SNAPSHOT-nuxeo-dm.zip
+      nuxeo-distribution-jboss-5.3.1-SNAPSHOT-nuxeo-ep.zip
+    o Available profiles
+      all-distributions
+      all
+      nuxeo-ep
+      *nuxeo-dm*
 
-Maybe in the future we will use categories too, if projects become too complex.
+  * Module nuxeo-distribution-shell
+    o Produced artifacts
+      nuxeo-distribution-shell-5.3.1-SNAPSHOT.zip
+    o No available profile
+    
+  * Module nuxeo-distribution-jetty*
+    o Produced artifacts
+      nuxeo-distribution-jetty-5.3.1-SNAPSHOT-nuxeo-dm.zip
+      nuxeo-distribution-jetty-5.3.1-SNAPSHOT-nuxeo-ep.zip
+    o Available profiles
+      *nuxeo-dm*
+      nuxeo-ep
+      
+  * Module nuxeo-distribution-gf3*
+    o Produced artifacts
+      nxserver.zip
+    o Available profiles
+      ra
+      jcr
+      *vcs*
 
+  * Module nuxeo-distribution-tomcat*
+    o Produced artifacts
+      nuxeo-distribution-tomcat-5.3.1-SNAPSHOT-nuxeo-dm-jtajca.zip
+      nuxeo-distribution-tomcat-5.3.1-SNAPSHOT-nuxeo-dm.zip
+    o No available profile
+
+  * Module nuxeo-distribution-windows*
+    o Produced artifacts
+      nuxeo-dm-5.3.0-GA-nuxeo-ep-setup.exe
+      nuxeo-dm-5.3.0-GA_64-nuxeo-ep-setup.exe
+      nuxeo-dm-5.3.0-GA-nuxeo-dm-setup.exe
+      nuxeo-dm-5.3.0-GA_64-nuxeo-dm-setup.exe
+    o Available profiles
+      *nuxeo-dm*
+      nuxeo-ep
+
+
+5. Easy build with Ant
+
+With Ant and user input:
+  * from nuxeo-distribution root, run "ant distrib" and choose the distribution
+  you want to build.
+
+With Ant, no user input:
+  * run "ant distrib -Ddistrib=<PRODUCT>"
+  * run "ant distrib -Ddistrib=<PRODUCT>,<BACKEND>"
+
+For example:
+  * "ant distrib -Ddistrib=nuxeo-dm,postgresql"
+  * "ant distrib -Ddistrib=nuxeo-ep,mysql"
+  
+Default repository is VCS but it is possible to set JCR+Derby or JCR+PostgreSQL, 
+see nuxeo-distribution-dm-5.3.1-SNAPSHOT-jcr-postgresql.zip
+Note that this configuration requires some manual changes into
+$JBOSS/server/default/conf/login-config.xml
+
+
+------------
+Custom build
+------------
+
+It is of course possible to create custom builds.
+For history reasons, there are multiple technologies used for packaging in this 
+project (maven-assembly-plugin, maven-nuxeo-plugin, maven-antrun-extended-plugin,
+nuxeo-distribution-tools). 
+
+They are all based on Maven principles with the objectives to avoid duplication, 
+ease maintenance and upgrade, rely on Maven artifacts, be OS independant.
+
+We recommmend to use our newest tool "nuxeo-distribution-tools".
+Execution of the assembly may be done from Maven execution as a Maven plugin, 
+from command line or from Ant.
+Based on Ant syntax, it provides access to major Maven concepts.
+Principles of an assembly are generally to: 
+* retrieve a Maven dependency tree
+* use this dependency tree to dispatch artifacts into directories
+* download complementary artifacts (default packaging, resources, ...)
+* download empty server (JBoss, Jetty, Tomcat, ...)
+* assemble all those parts into a runnable product.
+
+Please see the chosen tool documentation for more details.

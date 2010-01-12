@@ -32,7 +32,7 @@
 
   <profiles>
     <profile>
-      <id>nuxeo-dm-jetty</id>
+      <id>nuxeo-dm</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
@@ -48,7 +48,7 @@
       </dependencies>
     </profile>
     <profile>
-      <id>nuxeo-ep-jetty</id>
+      <id>nuxeo-ep</id>
       <properties>
         <distribution>nuxeo-ep</distribution>
       </properties>
