@@ -36,13 +36,29 @@ public class Console {
 
     protected Application app;
 
-
     public static Console getDefault() {
         return instance;
     }
 
     public static void setDefault(Console console) {
         instance = console;
+    }
+
+    /**
+     * Starts the console.
+     */
+    public void start(Application app) throws IOException {
+        if (this.app != null) {
+            throw new IllegalStateException("Console already started");
+        }
+        this.app = app;
+    }
+
+    /**
+     * Get the current client
+     */
+    public Application getApplication() {
+        return app;
     }
 
     public static void runCommand(Application app, String line) throws Exception {
@@ -55,31 +71,17 @@ public class Console {
 
     /**
      * Update the current context of the console.
-     * On text console this will be a command line prompt.
+     * Overridden in the JLine console.
      */
     public void updatePrompt() {
         // do nothing
     }
 
     /**
-     * Reads the stream an print the result on the screen.
+     * Reads the stream an prints the result on the screen.
      */
     public void print(InputStream in) throws IOException {
         FileUtils.copy(in, System.out);
-    }
-
-    /**
-     * Reads the stream an print the result on the screen.
-     * <p>
-     * On text console put a new line after printing the result.
-     * On non text console it is same as {@link #print(InputStream)}
-     */
-    public void println(InputStream in) throws IOException {
-        FileUtils.copy(in, System.out);
-    }
-
-    public void print(String str) {
-        System.out.print(str);
     }
 
     public void println(String str) {
@@ -94,44 +96,12 @@ public class Console {
         System.out.println();
     }
 
-    /**
-     * Flush pending printing if any.
-     */
-    public void flush() throws IOException {
-        System.out.flush();
-    }
-
-    /**
-     * Get the current client
-     */
-    public Application getApplication() {
-        return app;
-    }
-
     public void error(String message) {
         System.err.println(message);
     }
 
-    public void info(String message) {
-        System.out.println(message);
-    }
-
-    public void warn(String message) {
-        System.out.println(message);
-    }
-
     public String promptPassword() throws IOException {
         return PwdReader.read();
-    }
-
-    /**
-     * Starts the console.
-     */
-    public void start(Application app) throws IOException {
-        if (this.app != null) {
-            throw new IllegalStateException("Console already started");
-        }
-        this.app = app;
     }
 
 }

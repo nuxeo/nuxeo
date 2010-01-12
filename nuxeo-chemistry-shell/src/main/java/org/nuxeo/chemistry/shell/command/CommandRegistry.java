@@ -104,6 +104,9 @@ public class CommandRegistry {
         return commands.get(name);
     }
 
+    /**
+     * Not used. Will probably be removed.
+     */
     public String[] getCompletionInfo(String line, int offset) {
         if (offset == -1) {
             offset = line.length();
@@ -149,19 +152,30 @@ public class CommandRegistry {
         return new String[] {token.valueType, word} ;
     }
 
-
+    /**
+     * Not used. Will probably be removed.
+     */
     public static CommandRegistry getBuiltinCommands() {
         return builtinCommands;
     }
 
+    /**
+     * Not used. Will probably be removed.
+     */
     public static Command getBuiltinCommand(String name) {
         return builtinCommands.getCommand(name);
     }
 
+    /**
+     * Not used. Will probably be removed.
+     */
     public static void registerBuiltinCommand(Command cmd) {
         builtinCommands.registerCommand(cmd);
     }
 
+    /**
+     * Not used. Will probably be removed.
+     */
     public static void unregisterBuiltinCommand(Command cmd) {
         builtinCommands.unregisterCommand(cmd.getName());
     }

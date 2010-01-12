@@ -114,9 +114,4 @@ public class JLineConsole extends Console {
         console.printNewline();
     }
 
-    @Override
-    public void flush() throws IOException {
-        console.flushConsole();
-    }
-
 }

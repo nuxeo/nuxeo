@@ -40,20 +40,27 @@ public class CommandParameter {
         return key;
     }
 
-    public CommandToken getToken() {
-        return token;
-    }
-
     public String getValue() {
         return value;
-    }
-
-    public String getValueOrDefault() {
-        return value == null ? token.defaultValue : value;
     }
 
     @Override
     public String toString() {
         return key+" = "+value;
     }
+
+    /**
+     * Not used. Will probably be removed.
+     */
+    public CommandToken getToken() {
+        return token;
+    }
+
+    /**
+     * Not used. Will probably be removed.
+     */
+    public String getValueOrDefault() {
+        return value == null ? token.defaultValue : value;
+    }
+
 }

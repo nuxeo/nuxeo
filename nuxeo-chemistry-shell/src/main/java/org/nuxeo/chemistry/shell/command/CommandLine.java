@@ -99,36 +99,8 @@ public class CommandLine {
         }
     }
 
-    public CommandParameter getLastParameter() {
-        if (params.isEmpty()) {
-            return null;
-        }
-        if (params.size() == 1) {
-            return null;
-        }
-        return params.get(params.size()-1);
-    }
-
-    public List<CommandParameter> getParameters() {
-        return params;
-    }
-
-    public List<CommandParameter> getArguments() {
-        List<CommandParameter> result = new ArrayList<CommandParameter>();
-        for (CommandParameter arg : params) {
-            if (arg.token.isArgument) {
-                result.add(arg);
-            }
-        }
-        return result;
-    }
-
     public CommandParameter getParameter(String key) {
         return map.get(key);
-    }
-
-    public Command getCommand() {
-        return cmd;
     }
 
     public void run(Application app) throws Exception {
@@ -151,7 +123,49 @@ public class CommandLine {
         return buf.toString();
     }
 
+    /**
+     * Not used. Will probably be removed.
+     */
+    public Command getCommand() {
+        return cmd;
+    }
 
+    /**
+     * Not used. Will probably be removed.
+     */
+    public CommandParameter getLastParameter() {
+        if (params.isEmpty()) {
+            return null;
+        }
+        if (params.size() == 1) {
+            return null;
+        }
+        return params.get(params.size()-1);
+    }
+
+    /**
+     * Not used. Will probably be removed.
+     */
+    public List<CommandParameter> getParameters() {
+        return params;
+    }
+
+    /**
+     * Not used. Will probably be removed.
+     */
+    public List<CommandParameter> getArguments() {
+        List<CommandParameter> result = new ArrayList<CommandParameter>();
+        for (CommandParameter arg : params) {
+            if (arg.token.isArgument) {
+                result.add(arg);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Not used. Will probably be removed.
+     */
     public Map<String, Object> toMap() {
         // preserve params order
         LinkedHashMap<String, Object> args = new LinkedHashMap<String, Object>();

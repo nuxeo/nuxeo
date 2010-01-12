@@ -81,10 +81,6 @@ public abstract class Command {
         return "N/A";
     }
 
-    public void print(String str) {
-        Console.getDefault().print(str);
-    }
-
     public void print(InputStream in) throws IOException {
         Console.getDefault().print(in);
     }

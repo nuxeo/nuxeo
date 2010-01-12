@@ -31,7 +31,8 @@ import org.nuxeo.chemistry.shell.command.CommandParameter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="props [item:item]", synopsis="Print the value of all the properties of the current context object")
+// TODO: remove
+@Cmd(syntax="props [item:item]", synopsis="(Obsolete) Print the value of all the properties of the current context object")
 public class DumpProps extends ChemistryCommand {
 
     @Override

@@ -23,7 +23,7 @@ cd default
 id
 ls
 tree
-props
+propget .
 propget . cmis:objectTypeId
 
 # navigate around
@@ -46,7 +46,7 @@ ls
 id testdir
 ls testdir
 tree testdir
-props testdir
+propget testdir
 propget testdir dc:title
 
 # Now a file
@@ -55,7 +55,7 @@ mkfile testfile
 ls
 id testfile
 ls testfile
-props testfile
+propget testfile
 propget testfile dc:title
 propset testfile dc:title some_other_title
 propget testfile dc:title
