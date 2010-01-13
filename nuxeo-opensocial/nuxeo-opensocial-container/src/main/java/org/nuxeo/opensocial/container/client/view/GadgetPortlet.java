@@ -146,7 +146,6 @@ public class GadgetPortlet extends Portlet {
   public void reloadRenderUrl() {
     String url = gadget.getRenderUrl();
     if (url == null) {
-      JsLibrary.error("Render url of " + gadget.getName() + " is null");
       return;
     }
     gadget.setRenderUrl(buildUrl(url, view));

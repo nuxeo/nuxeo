@@ -50,7 +50,6 @@ public class SavePreferenceAsyncCallback<T> implements
     ContainerPortal c = ContainerEntryPoint.getContainerPortal();
     GadgetPortlet gp = c.getGadgetPortletByRef(gadget.getRef());
     gp.setTitle(bean.getTitle());
-    JsLibrary.log("save succes !!! title is " + bean.getTitle());
     gp.setGadgetBean(bean);
     gp.updateGadgetPortlet();
     gp.doLayoutFrame();

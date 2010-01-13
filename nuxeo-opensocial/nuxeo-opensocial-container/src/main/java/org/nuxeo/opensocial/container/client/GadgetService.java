@@ -20,7 +20,6 @@ package org.nuxeo.opensocial.container.client;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 import org.nuxeo.opensocial.container.client.view.ContainerPortal;
 import org.nuxeo.opensocial.container.client.view.GadgetPortlet;
-import org.nuxeo.opensocial.container.client.view.SaveGadgetAsyncCallback;
 import org.nuxeo.opensocial.container.client.view.SavePreferenceAsyncCallback;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -41,6 +40,7 @@ public class GadgetService {
     var rpc = $wnd.gadgets.rpc;
     rpc.register('resize_iframe', @org.nuxeo.opensocial.container.client.GadgetService::resizeIframe(I));
     rpc.register('set_pref', @org.nuxeo.opensocial.container.client.GadgetService::setPref(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
+    rpc.register('set_ajax_pref', @org.nuxeo.opensocial.container.client.GadgetService::setAjaxPref(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
     rpc.register('set_title', @org.nuxeo.opensocial.container.client.GadgetService::setTitle(Ljava/lang/String;));
     rpc.register('set_htmlcontent', @org.nuxeo.opensocial.container.client.GadgetService::setHtmlContent(Ljava/lang/String;));
     rpc.register('get_htmlcontent', @org.nuxeo.opensocial.container.client.GadgetService::getHtmlContent());
@@ -65,7 +65,7 @@ public class GadgetService {
     ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
     GadgetPortlet p = portal.getGadgetPortletByFrameId(frameId);
     GadgetBean bean = p.getGadgetBean();
-    int h = height + 20;
+    int h = height + 30;
     if (bean.getHeight() != h) {
       p.setHeight(h);
       bean.setHeight(h);
@@ -101,6 +101,25 @@ public class GadgetService {
             new SavePreferenceAsyncCallback<GadgetBean>(bean));
   };
 
+  public static native void setAjaxPref(String editToken, String name,
+      String value)
+  /*-{
+    for ( var i = 1, j = arguments.length; i < j; i += 2) {
+      if(arguments[i]!="refresh")
+        @org.nuxeo.opensocial.container.client.GadgetService::setUserPref(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)(this.f,arguments[i],arguments[i+1]);
+    }
+    @org.nuxeo.opensocial.container.client.GadgetService::saveAjaxUserPref(Ljava/lang/String;)(this.f);
+  }-*/;
+
+  public static void saveAjaxUserPref(String frameId) {
+    GadgetBean bean = ContainerEntryPoint.getContainerPortal()
+        .getGadgetPortletByFrameId(frameId)
+        .getGadgetBean();
+    ContainerEntryPoint.getService()
+        .saveGadgetPreferences(bean, null, ContainerEntryPoint.getGwtParams(),
+            null);
+  };
+
   public static void setUserPref(String frameId, String key, String value) {
     ContainerEntryPoint.getContainerPortal()
         .getGadgetPortletByFrameId(frameId)
@@ -126,22 +145,20 @@ public class GadgetService {
     }
   };
 
-  public static native void setHtmlContent(String content)
+  public static native String setHtmlContent(String content)
   /*-{
     @org.nuxeo.opensocial.container.client.GadgetService::setHtmlContentToGadget(Ljava/lang/String;Ljava/lang/String;)(this.f,content);
+    return content;
   }-*/;
 
   public static void setHtmlContentToGadget(String frameId, String content) {
-    JsLibrary.log("html content " + content);
     if (content != null) {
-      JsLibrary.log("save html content");
       GadgetBean b = ContainerEntryPoint.getContainerPortal()
           .getGadgetPortletByFrameId(frameId)
           .getGadgetBean();
       b.setHtmlContent(content);
       ContainerEntryPoint.getService()
-          .saveGadget(b, ContainerEntryPoint.getGwtParams(),
-              new SaveGadgetAsyncCallback());
+          .saveGadget(b, ContainerEntryPoint.getGwtParams(), null);
     }
   };
 
