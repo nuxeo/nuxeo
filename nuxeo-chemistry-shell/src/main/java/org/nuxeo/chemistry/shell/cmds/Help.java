@@ -25,7 +25,6 @@ import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.Command;
 import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
-import org.nuxeo.chemistry.shell.command.CommandParameter;
 
 import java.util.Arrays;
 import java.util.Comparator;

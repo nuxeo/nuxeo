@@ -25,10 +25,6 @@ import org.nuxeo.chemistry.shell.app.ChemistryCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
-import org.nuxeo.chemistry.shell.command.CommandParameter;
-import org.nuxeo.chemistry.shell.util.StringUtils;
-
-import java.util.List;
 
 /**
  * @author <a href="mailto:sf@nuxeo.com">Stefane Fermigier</a>

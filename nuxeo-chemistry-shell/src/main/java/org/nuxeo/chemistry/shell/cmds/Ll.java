@@ -25,7 +25,6 @@ import org.nuxeo.chemistry.shell.Application;
 import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.CommandLine;
-import org.nuxeo.chemistry.shell.command.CommandParameter;
 
 
 /**
@@ -42,8 +41,7 @@ public class Ll extends AnnotatedCommand {
         File file;
         String param = cmdLine.getParameterValue("target");
         if (param != null) {
-            String path = param;
-            file = app.resolveFile(path);
+            file = app.resolveFile(param);
         } else {
             file = app.getWorkingDirectory();
         }

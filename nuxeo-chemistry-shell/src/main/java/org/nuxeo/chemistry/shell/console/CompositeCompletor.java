@@ -46,7 +46,7 @@ public class CompositeCompletor implements Completor {
     private final Map<String, Completor> completors = new HashMap<String, Completor>();
     private final Map<String,Completor> paramCompletors = new HashMap<String, Completor>();
 
-    public CompositeCompletor(JLineConsole console, CommandRegistry registry) throws IOException {
+    public CompositeCompletor(JLineConsole console, CommandRegistry registry) {
         this.registry = registry;
         this.console = console;
         completor = new CommandCompletor(registry);

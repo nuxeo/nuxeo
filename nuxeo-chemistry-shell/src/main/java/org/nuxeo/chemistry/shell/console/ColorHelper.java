@@ -57,7 +57,7 @@ public class ColorHelper {
     protected static final Map<String,Integer> ansiCodes = new HashMap<String, Integer>();
     protected static final Map<String,Integer> colorMap = new HashMap<String, Integer>();
 
-    protected static boolean enabled = false;
+    protected static boolean enabled;
 
     static {
         ansiCodes.put("white", FG_WHITE);

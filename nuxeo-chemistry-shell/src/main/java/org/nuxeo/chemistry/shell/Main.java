@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
-import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.ExitException;
 import org.nuxeo.chemistry.shell.console.JLineConsole;
 import org.nuxeo.chemistry.shell.util.FileUtils;

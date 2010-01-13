@@ -55,7 +55,7 @@ public class SimplePropertyManager {
         item.save();
     }
 
-    public void dumpProperties() throws IOException {
+    public void dumpProperties() {
         Map<String, Property> props = item.getProperties();
 
         List<String> keys = new LinkedList<String>(props.keySet());

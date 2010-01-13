@@ -29,7 +29,6 @@ import org.nuxeo.chemistry.shell.command.AnnotatedCommand;
 import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
-import org.nuxeo.chemistry.shell.command.CommandParameter;
 
 
 /**
@@ -47,8 +46,7 @@ public class Pushd extends AnnotatedCommand {
 
         Context oldContext = app.getContext();
 
-        String path = param;
-        Context ctx = app.resolveContext(new Path(path));
+        Context ctx = app.resolveContext(new Path(param));
         if (ctx == null) {
             throw new CommandException("Cannot resolve target: " + param);
         }

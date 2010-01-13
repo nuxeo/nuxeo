@@ -19,6 +19,8 @@
 
 package org.nuxeo.chemistry.shell.util;
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,43 +122,7 @@ public class StringUtils {
      * Wildcard matches.
      */
     public static boolean matches(String pattern, String text) {
-        // add sentinel so don't need to worry about *'s at end of pattern
-        text += '\0';
-        pattern += '\0';
-
-        int N = pattern.length();
-
-        boolean[] states = new boolean[N + 1];
-        boolean[] old = new boolean[N + 1];
-        old[0] = true;
-
-        for (int i = 0; i < text.length(); i++) {
-            char c = text.charAt(i);
-            states = new boolean[N + 1];       // initialized to false
-            for (int j = 0; j < N; j++) {
-                char p = pattern.charAt(j);
-
-                // hack to handle *'s that match 0 characters
-                if (old[j] && (p == '*')) {
-                    old[j + 1] = true;
-                }
-
-                if (old[j] && (p == c)) {
-                    states[j + 1] = true;
-                }
-                if (old[j] && (p == '?')) {
-                    states[j + 1] = true;
-                }
-                if (old[j] && (p == '*')) {
-                    states[j] = true;
-                }
-                if (old[j] && (p == '*')) {
-                    states[j + 1] = true;
-                }
-            }
-            old = states;
-        }
-        return states[N];
+        return FilenameUtils.wildcardMatch(text, pattern);
     }
 
 }

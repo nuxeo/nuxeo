@@ -46,7 +46,7 @@ public class ChemistryApp extends AbstractApplication {
     }
 
     @Override
-    protected void doConnect() throws IOException {
+    protected void doConnect() {
         cm = new APPContentManager(serverUrl.toExternalForm());
         if (username != null) {
             cm.login(username, new String(password));

@@ -37,11 +37,11 @@ public class SimpleBrowser {
         doBrowse(root);
     }
 
-    protected void dumpWithPath(String tabs, CMISObject item) throws IOException {
+    protected void dumpWithPath(String tabs, CMISObject item) {
         Console.getDefault().println(tabs+ " "+ item.getName()+" ["+item.getType().getId()+"]");
     }
 
-    protected void dump(CMISObject item) throws IOException {
+    protected void dump(CMISObject item) {
         Console.getDefault().println(item.getName() + " (" + item.getType().getDisplayName() + ")");
     }
 

@@ -79,7 +79,7 @@ public abstract class AbstractApplication implements Application {
         doConnect();
     }
 
-    protected abstract void doConnect() throws IOException;
+    protected abstract void doConnect();
 
     public CommandRegistry getCommandRegistry() {
         return registry;
