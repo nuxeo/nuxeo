@@ -22,6 +22,8 @@ package org.nuxeo.runtime.deployment.preprocessor.template;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.TextTemplate;
 
 /**
@@ -29,6 +31,8 @@ import org.nuxeo.common.utils.TextTemplate;
  *
  */
 public class Template {
+
+    private static final Log log = LogFactory.getLog(Template.class);
 
     public static final String BEGIN = "BEGIN";
     public static final String END = "END";
@@ -61,8 +65,7 @@ public class Template {
         if (part != null) {
             part.append(text);
         } else {
-            //TODO
-            System.out.println("TODO >>>>>>>>>>>>> could not finnd marker " + marker);
+            log.debug("Could not find marker: " + marker);
         }
     }
 
@@ -71,8 +74,7 @@ public class Template {
         if (part != null) {
             part.prepend(text);
         } else {
-            //TODO
-            System.out.println("TODO >>>>>>>>>>>>> could not find marker " + marker);
+            log.debug("Could not find marker: " + marker);
         }
     }
 
@@ -81,8 +83,7 @@ public class Template {
         if (part != null) {
             part.replace(text);
         } else {
-            //TODO
-            System.out.println("TODO >>>>>>>>>>>>> could not find marker " + marker);
+            log.debug("Could not find marker: " + marker);
         }
     }
 
