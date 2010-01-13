@@ -10,8 +10,15 @@ jQuery(document).ready(function(){
 		gadgets.nuxeo.maximizeGadget("edit",callback);
 	});
 	
-	new nicEditor({iconsPath : '/nuxeo/site/gadgets/richtext/nicEditorIcons.gif'}).panelInstance('richtext');
 	
+});
+};
+
+
+function launchEditGadget(){
+jQuery(document).ready(function(){
+	
+	new nicEditor({iconsPath : '/nuxeo/site/gadgets/richtext/nicEditorIcons.gif', width : '500px'}).panelInstance('richtext');
 	
 	jQuery('#hide').click(function(){
 		var callback = function(){
