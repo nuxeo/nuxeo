@@ -39,11 +39,11 @@ public class ItemNameCompletor implements Completor {
         this.console = console;
     }
 
-    public int complete(String buf, int off, List candidates) {
-        if (buf == null) {
-            buf = "";
+    public int complete(String buffer, int cursor, List candidates) {
+        if (buffer == null) {
+            buffer = "";
         }
-        Path path = new Path(buf);
+        Path path = new Path(buffer);
         String prefix = path.getLastSegment();
         if (path.hasTrailingSeparator()) {
             prefix = "";
@@ -56,12 +56,12 @@ public class ItemNameCompletor implements Completor {
         }
 
         try {
-            String[] names = console.getApplication().getContext().ls();
+            String[] names = console.getApplication().getContext().entries();
             if (names == null || names.length == 0) {
                 return -1;
             }
 
-            if (buf.length() == 0) {
+            if (buffer.length() == 0) {
                 for (String name : names) {
                     candidates.add(name);
                 }
@@ -73,7 +73,7 @@ public class ItemNameCompletor implements Completor {
                 }
             }
 
-            return buf.length()-prefix.length();
+            return buffer.length()-prefix.length();
 
         } catch (Exception e) {
             return -1;

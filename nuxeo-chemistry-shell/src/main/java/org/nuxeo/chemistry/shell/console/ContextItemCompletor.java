@@ -42,13 +42,13 @@ public class ContextItemCompletor implements Completor {
         }
     }
 
-    public int complete(String buf, int off, List candidates) {
-        if (buf == null) {
-            buf = "";
+    public int complete(String buffer, int cursor, List candidates) {
+        if (buffer == null) {
+            buffer = "";
         }
 
         Context ctx;
-        Path path = new Path(buf);
+        Path path = new Path(buffer);
         String prefix = path.getLastSegment();
         if (prefix == null) {
             ctx = Console.getDefault().getApplication().getContext();
@@ -61,7 +61,7 @@ public class ContextItemCompletor implements Completor {
         }
         if (ctx != null) {
             collectNames(ctx.entries(), prefix, candidates);
-            return buf.length()-prefix.length();
+            return buffer.length()-prefix.length();
         } else {
             return -1;
         }

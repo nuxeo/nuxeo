@@ -72,6 +72,7 @@ public class StringUtils {
         boolean inString = false;
         ArrayList<String> tokens = new ArrayList<String>();
         StringBuilder buf = new StringBuilder();
+
         char[] chars = text.toCharArray();
         for (char c : chars) {
             if (esc) {
@@ -111,6 +112,7 @@ public class StringUtils {
                     break;
             }
         }
+
         if (buf.length() > 0) {
             tokens.add(buf.toString());
             buf.setLength(0);

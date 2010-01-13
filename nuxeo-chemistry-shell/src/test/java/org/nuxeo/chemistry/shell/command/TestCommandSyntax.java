@@ -95,14 +95,17 @@ public class TestCommandSyntax extends Assert {
 
     @Test
     public void testOneOptionalFlag() {
-        CommandSyntax cs = CommandSyntax.parse("cmd [-s]");
-        assertEquals(0, cs.getArguments().size());
-        assertEquals(2, cs.getTokens().size());
+        CommandSyntax cs = CommandSyntax.parse("cmd [-s] arg1");
+        assertEquals(1, cs.getArguments().size());
+        assertEquals(3, cs.getTokens().size());
 
         CommandToken cmd = cs.getCommandToken();
         assertEquals("cmd", cmd.getName());
         assertTrue(cmd.isCommand());
         assertFalse(cmd.isArgument());
+
+        CommandToken arg1 = cs.getToken("arg1");
+        assertEquals("arg1", arg1.getName());
 
         CommandToken flag = cs.getToken("-s");
 

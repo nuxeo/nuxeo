@@ -113,7 +113,7 @@ public class ChemistryContext extends AbstractContext {
             if (!isFolder()) {
                 return;
             }
-            Folder folder = (Folder)entry;
+            Folder folder = (Folder) entry;
             List<CMISObject> feed =  folder.getChildren();
             children = new LinkedHashMap<String, CMISObject>();
             keys = new String[feed.size()];
