@@ -89,7 +89,7 @@ match "^testfile$"
 propset testfile dc:title some_other_title
 propget testfile dc:title
 match "^some_other_title$"
-setStream testfile run.sh
+setstream testfile run.sh
 cat testfile
 rm testfile
 match -r "testfile"

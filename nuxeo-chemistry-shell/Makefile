@@ -22,7 +22,7 @@ clean:
 	find . -name "*~" | xargs rm -f
 	rm -rf release
 
-release: #clean build test
+release: clean build
 	mkdir -p target/$(RELEASE_DIR)
 	cp scripts/* target/$(RELEASE_DIR)
 	cp README.txt target/$(RELEASE_DIR)
