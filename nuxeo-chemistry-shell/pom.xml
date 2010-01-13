@@ -57,7 +57,7 @@
         <configuration>
           <excludes>
             <!-- This needs a running (Nuxeo) server to pass.
-                 Run it manually with ./run.sh -b testscipt -->
+                 Run it manually with ./run.sh -b testscript -->
             <exclude>**/TestWithTestScript.java</exclude>
           </excludes>
         </configuration>
@@ -101,6 +101,11 @@
                   <artifactId>commons-logging-api</artifactId>
                   <version>1.1</version>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>log4j</groupId>
+                  <artifactId>log4j</artifactId>
+                  <version>1.2.15</version>
+                </artifactItem>
 
                 <artifactItem>
                   <groupId>commons-httpclient</groupId>
@@ -139,6 +144,7 @@
                   <artifactId>jline</artifactId>
                 </artifactItem>
               </artifactItems>
+
               <outputDirectory>target/classes</outputDirectory>
             </configuration>
           </execution>
