@@ -193,15 +193,16 @@
 
   <target name="choose-distrib" unless="distrib">
     <antcall target="list-available-distributions" />
-    <input message="Which distribution do you want to build?" validargs="nuxeo-ep,nuxeo-ep-jboss,nuxeo-ep-jetty,nuxeo-dm,nuxeo-dm-jboss,nuxeo-dm-jetty,shell,jetty,gf3,tomcat,core,all-distributions" addproperty="profile" />
+    <input message="Which distribution do you want to build?" validargs="nuxeo-ep,nuxeo-dm,jboss,jetty,shell,gf3,tomcat,all-distributions" addproperty="profile" />
     <condition property="backend-choosable">
       <or>
         <equals arg1="${profile}" arg2="nuxeo-ep" />
-        <equals arg1="${profile}" arg2="nuxeo-ep-jboss" />
-        <equals arg1="${profile}" arg2="nuxeo-ep-jetty" />
         <equals arg1="${profile}" arg2="nuxeo-dm" />
-        <equals arg1="${profile}" arg2="nuxeo-dm-jboss" />
-        <equals arg1="${profile}" arg2="nuxeo-dm-jetty" />
+        <equals arg1="${profile}" arg2="jboss" />
+        <equals arg1="${profile}" arg2="jetty" />
+        <equals arg1="${profile}" arg2="shell" />
+        <equals arg1="${profile}" arg2="gf3" />
+        <equals arg1="${profile}" arg2="tomcat" />
         <equals arg1="${profile}" arg2="all-distributions" />
       </or>
     </condition>
@@ -215,18 +216,12 @@
   <target name="list-available-distributions">
     <echo message="Available distributions are:" />
     <echo message="nuxeo-ep             - build Nuxeo EP EAR" />
-    <echo message="nuxeo-ep-jboss       - DEPRECATED - package a JBoss containing nuxeo-ep EAR" />
-    <echo message="nuxeo-ep-jetty       - DEPRECATED - package a Jetty containing nuxeo-ep" />
     <echo message="nuxeo-dm             - build Nuxeo DM EAR" />
-    <echo message="nuxeo-jboss          - package JBoss distributions with nuxeo-ep and nuxeo-dm EARs" />
-    <echo message="nuxeo-jetty          - package Jetty distributions containing nuxeo-ep and nuxeo-dm" />
-    <echo message="nuxeo-dm-jboss       - DEPRECATED - package a JBoss containing nuxeo-dm EAR" />
-    <echo message="nuxeo-dm-jetty       - DEPRECATED - package a Jetty containing nuxeo-dm" />
-    <echo message="shell                - build Nuxeo Shell" />
-    <echo message="jetty                - build Jetty distribution" />
+    <echo message="jboss                - build JBoss distributions with Nuxeo EP and DM" />
+    <echo message="jetty                - build Jetty distributions with Nuxeo EP and DM" />
     <echo message="gf3                  - build GlassFish distribution" />
     <echo message="tomcat               - build Tomcat distribution" />
-    <echo message="core                 - build Nuxeo core server" />
+    <echo message="shell                - build Nuxeo Shell" />
     <echo message="all-distributions    - build all available distributions" />
   </target>
   <target name="distrib" depends="choose-distrib,distrib-unix,distrib-windows" description="Build a distribution" />
