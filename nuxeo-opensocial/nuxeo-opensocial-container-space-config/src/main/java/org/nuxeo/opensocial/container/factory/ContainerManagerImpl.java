@@ -128,7 +128,7 @@ public class ContainerManagerImpl implements ContainerManager {
     Gadget createGadget = space.createGadget(gadgetName);
     space.save();
 
-    return GadgetFactory.getGadgetBean(createGadget, space.isReadOnly());
+    return GadgetFactory.getGadgetBean(createGadget, !space.isReadOnly());
 
   }
 
