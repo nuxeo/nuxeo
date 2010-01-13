@@ -30,3 +30,7 @@ release: clean build
 		target/$(RELEASE_DIR)/nuxeo-chemistry-shell.jar
 	cd target ; zip -r $(RELEASE_DIR).zip $(RELEASE_DIR)
 
+push:
+	rsync -e ssh target/$(RELEASE_DIR).zip \
+		zope@gironde.nuxeo.com:static/nuxeo.org/cmis/
+

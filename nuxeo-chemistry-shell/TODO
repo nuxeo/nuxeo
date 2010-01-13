@@ -2,10 +2,13 @@ P1:
 
 - [DONE] welcome banner
 - [DONE] refresh cache
-- Clean up warnings
+- [DONE] Clean up warnings
+- [DONE] fix NPE when quitting w/ ^D
+- Make a first release + mini-announcement
 
 P2: 
 
+- Move to Apache Chemistry
 - Simple wildcards
-- multiple arguments (rm toto1 toto2 toto3...)
+- multiple arguments (ex: rm toto1 toto2 toto3...)
 

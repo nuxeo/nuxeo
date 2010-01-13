@@ -73,8 +73,9 @@ public class JLineConsole extends Console {
         console.setDefaultPrompt("|> ");
         // register completors
         console.addCompletor(new CompositeCompletor(this, app.getCommandRegistry()));
-        String line = console.readLine().trim();
-        while (true) {
+        String line = console.readLine();
+        while (line != null) {
+            line = line.trim();
             try {
                 if (line.trim().length() > 0) {
                     if (!execute(line)) {
@@ -85,7 +86,10 @@ public class JLineConsole extends Console {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            line = console.readLine().trim();
+            line = console.readLine();
+            if (line == null) {
+                break;
+            }
         }
         console.printString("Bye");
         console.printNewline();
