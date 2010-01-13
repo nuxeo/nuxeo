@@ -285,6 +285,11 @@ Nuxeo Authentication filter is in place.
 ============================================================
 
 Example of a pom.xml
+
+  <properties>
+    <gwtVersion>2.0</gwtVersion>
+    <gwt.module>org.your_gwt_module</gwt.module>
+  </properties>
  ....
   <dependencies> 
     <dependency>
