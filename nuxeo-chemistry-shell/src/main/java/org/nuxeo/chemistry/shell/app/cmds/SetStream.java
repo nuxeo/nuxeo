@@ -33,7 +33,7 @@ import org.nuxeo.chemistry.shell.command.CommandLine;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="setStream target filename:file", synopsis="Set the given file content as a stream on the current context object")
+@Cmd(syntax="setstream target filename:file", synopsis="Set the given file content as a stream on the current context object")
 public class SetStream extends ChemistryCommand {
 
     @Override

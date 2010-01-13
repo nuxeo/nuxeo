@@ -37,7 +37,7 @@ import org.nuxeo.chemistry.shell.util.FileUtils;
  *
  */
 // TODO: add an optional local name for the file
-@Cmd(syntax="get|getStream target:item", synopsis="Downloads the stream of the target document")
+@Cmd(syntax="get|getstream target:item", synopsis="Downloads the stream of the target document")
 public class Get extends ChemistryCommand {
 
     @Override

@@ -30,7 +30,7 @@ import org.nuxeo.chemistry.shell.command.CommandLine;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="propset|setp|setProperty target:item key value", synopsis="Set the value of a property on the current context object")
+@Cmd(syntax="propset target:item key value", synopsis="Set the value of a property on the current context object")
 public class SetProp extends ChemistryCommand {
 
     @Override

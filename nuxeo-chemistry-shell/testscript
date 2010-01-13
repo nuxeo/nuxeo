@@ -1,7 +1,7 @@
 #!./run.sh -t -b
 
-connect http://Administrator:Administrator@localhost:8080/nuxeo/site/cmis/repository
-#connect http://Administrator:Administrator@cmis.demo.nuxeo.org/nuxeo/site/cmis/repository
+#connect http://Administrator:Administrator@localhost:8080/nuxeo/site/cmis/repository
+connect http://Administrator:Administrator@cmis.demo.nuxeo.org/nuxeo/site/cmis/repository
 
 # Test main commands on root
 id

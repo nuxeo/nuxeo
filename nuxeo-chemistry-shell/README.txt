@@ -5,11 +5,21 @@ This is a shell (command-line tool for you Windows people) that let you browse
 and manage content on a CMIS repository (a bit like Cadaver for WebDAV, if you
 know it).
 
+Building
+--------
+
+To build this project, just run "mvn install". You probably want to install
+first Apache Chemistry, by checking out the sources and running "mvn install"
+there, since it is not yet released.
+
+If you have make on you system, you can also use the following make targets:
+clean, build, test and release. 
+
 Dependencies
 ------------
 
-The project is not dependent on the Nuxeo EP code (so it could be pushed into
-the Apache Chemistry codebase if wanted).
+The project doesn't depend on the Nuxeo EP code (so it could be pushed into the
+Apache Chemistry codebase if wanted).
 
 Here are the direct dependencies:
  
@@ -87,11 +97,14 @@ How to extend it
 
 To add new commands, simply extend ChemistryCommand class and look how the
 other commands works.
+
 To register a new command you need to update the constructor of ChemistryApp:
+
 public ChemistryApp() {
     registry.registerCommand(new DumpTree());
     ...
 }
+
 Command registration will be automized in future.
 
 The most important interfaces you need to know about are Application and

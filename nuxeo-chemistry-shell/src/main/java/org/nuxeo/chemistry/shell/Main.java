@@ -21,6 +21,8 @@ package org.nuxeo.chemistry.shell;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
@@ -89,8 +91,8 @@ public class Main {
                     break;
                 } else if ("-h".equals(arg)) { // help
                     // execute help command
-                    execMode = true;
-                    command = "help";
+                    usage();
+                    System.exit(0);
                 } else if (!arg.startsWith("-")) {
                     url = arg;
                 } else {
@@ -178,6 +180,12 @@ public class Main {
     static void error(String msg) {
         System.err.println(msg);
         System.exit(1);
+    }
+
+    static void usage() throws IOException {
+        URL url = Main.class.getResource("/META-INF/help/usage.help");
+        String help = FileUtils.read(url.openStream());
+        System.out.print(help);
     }
 
 }
