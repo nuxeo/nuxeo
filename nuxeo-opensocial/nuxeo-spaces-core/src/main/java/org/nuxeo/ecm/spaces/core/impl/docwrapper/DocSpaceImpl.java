@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
@@ -54,14 +55,6 @@ public class DocSpaceImpl implements Space {
     this.doc = doc;
   }
 
-  private String getInternalStringProperty(String xpath) {
-    try {
-      return doc.getProperty(xpath)
-          .toString();
-    } catch (ClientException e) {
-      return null;
-    }
-  }
 
   public String getLayout() throws ClientException {
     return (String) doc.getPropertyValue(SPACE_LAYOUT);
@@ -77,8 +70,8 @@ public class DocSpaceImpl implements Space {
         .equals(getId());
   }
 
-  public String getTheme() {
-    return getInternalStringProperty(SPACE_THEME);
+  public String getTheme() throws  ClientException {
+    return (String) doc.getPropertyValue(SPACE_THEME);
   }
 
   protected boolean getBooleanProperty(String xpath) {
