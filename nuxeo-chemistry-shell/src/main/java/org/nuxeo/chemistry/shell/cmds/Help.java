@@ -45,12 +45,12 @@ public class Help extends AnnotatedCommand {
         if (param != null) {
             Command cmd = app.getCommandRegistry().getCommand(param);
             if (cmd != null) {
-                println(cmd.getHelp(app));
+                println(cmd.getHelp());
             } else {
                 throw new CommandException("Unknown command: " + param);
             }
         } else {
-            println(getHelp(app));
+            println(getHelp());
 
             Command[] cmds = app.getCommandRegistry().getCommands();
             Arrays.sort(cmds, new CommandComparator());

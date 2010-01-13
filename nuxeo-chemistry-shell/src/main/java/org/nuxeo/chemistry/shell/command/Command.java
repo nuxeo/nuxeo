@@ -64,7 +64,7 @@ public abstract class Command {
         }
     }
 
-    public String getHelp(Application app) {
+    public String getHelp() {
         URL url = getClass().getResource("/META-INF/help/"+getName()+".help");
         if (url == null) {
             return "N/A";

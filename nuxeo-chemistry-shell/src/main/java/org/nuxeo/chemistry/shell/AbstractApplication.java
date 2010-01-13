@@ -175,9 +175,4 @@ public abstract class AbstractApplication implements Application {
         Console.getDefault().updatePrompt();
     }
 
-    //TODO
-    public String getHelp(String cmdName) {
-        return "TODO";
-    }
-
 }

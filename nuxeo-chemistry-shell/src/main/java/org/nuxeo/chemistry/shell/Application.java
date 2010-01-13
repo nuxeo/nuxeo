@@ -122,7 +122,4 @@ public interface Application {
      */
     boolean isConnected();
 
-    //TODO
-    String getHelp(String cmdName);
-
 }

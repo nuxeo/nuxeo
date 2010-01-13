@@ -30,7 +30,7 @@ import org.nuxeo.chemistry.shell.command.CommandLine;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="mkfile target:item", synopsis="Create a file of the given name")
+@Cmd(syntax="mkfile|mkdoc target:item", synopsis="Create a document of the given name")
 public class CreateFile extends ChemistryCommand {
 
     @Override
