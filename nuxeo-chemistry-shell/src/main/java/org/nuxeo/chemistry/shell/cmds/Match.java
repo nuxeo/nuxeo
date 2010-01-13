@@ -26,7 +26,7 @@ import org.nuxeo.chemistry.shell.command.CommandLine;
 /**
  * @author Stefane Fermigier
  */
-@Cmd(syntax = "match pattern", synopsis = "Fails if last command result doesn't match the pattern")
+@Cmd(syntax = "match [-r] pattern", synopsis = "Fails if last command result doesn't match the pattern")
 public class Match extends AnnotatedCommand {
 
     @Override
@@ -34,6 +34,7 @@ public class Match extends AnnotatedCommand {
         ensureConnected(app);
 
         String pattern = cmdLine.getParameterValue("pattern");
+        boolean reverse = cmdLine.getParameter("-r") != null;
 
         String[] lines = Console.getDefault().getLastResult().split("\n");
         boolean success = false;
@@ -42,9 +43,13 @@ public class Match extends AnnotatedCommand {
                 success = true;
             }
         }
-        if (!success) {
+        if (!reverse && !success) {
             throw new CommandException("Match failed: pattern \""
                     + pattern + "\" doesn't match last result");
+        }
+        if (reverse && success) {
+            throw new CommandException("Reverse match failed: pattern \""
+                    + pattern + "\" matches last result");
         }
     }
 
