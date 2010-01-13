@@ -35,9 +35,11 @@ import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CapabilityChange;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.CapabilityJoin;
+import org.apache.chemistry.ListPage;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.CapabilityQuery;
 import org.apache.chemistry.CapabilityRendition;
+import org.apache.chemistry.Paging;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryEntry;
@@ -167,15 +169,28 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
         return typeManager.getType(typeId);
     }
 
-    public Collection<Type> getTypes(String typeId) {
+    public Collection<Type> getTypes() {
         initializeTypes();
-        return typeManager.getTypes(typeId);
+        return typeManager.getTypes();
     }
 
-    public Collection<Type> getTypes(String typeId, int depth,
+    public Collection<Type> getTypeDescendants(String typeId) {
+        initializeTypes();
+        return typeManager.getTypeDescendants(typeId);
+    }
+
+    public ListPage<Type> getTypeChildren(String typeId,
+            boolean includePropertyDefinitions, Paging paging) {
+        initializeTypes();
+        return typeManager.getTypeChildren(typeId, includePropertyDefinitions,
+                paging);
+    }
+
+    public Collection<Type> getTypeDescendants(String typeId, int depth,
             boolean includePropertyDefinitions) {
         initializeTypes();
-        return typeManager.getTypes(typeId, depth, includePropertyDefinitions);
+        return typeManager.getTypeDescendants(typeId, depth,
+                includePropertyDefinitions);
     }
 
     /*

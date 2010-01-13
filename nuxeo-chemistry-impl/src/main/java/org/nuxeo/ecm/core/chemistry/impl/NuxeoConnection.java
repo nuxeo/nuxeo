@@ -131,7 +131,7 @@ public class NuxeoConnection implements Connection, SPI {
         // preprocess type names for queries
         queryTypeNames = new HashMap<String, String>();
         queryPropNames = new HashMap<String, String>();
-        for (Type type : repository.getTypes(null)) {
+        for (Type type : repository.getTypeDescendants(null)) {
             String tname = type.getQueryName();
             String nxname;
             if (tname.equals(BaseType.FOLDER.getId().toLowerCase())) {
