@@ -43,39 +43,47 @@ public class Help extends AnnotatedCommand {
     public void run(Application app, CommandLine cmdLine) throws Exception {
         String param = cmdLine.getParameterValue("command");
         if (param != null) {
-            Command cmd = app.getCommandRegistry().getCommand(param);
-            if (cmd != null) {
-                println(cmd.getHelp());
-            } else {
-                throw new CommandException("Unknown command: " + param);
-            }
+            printHelpForCommand(app, param);
         } else {
-            println(getHelp());
+            printHelpForAllCommands(app);
+        }
+    }
 
-            Command[] cmds = app.getCommandRegistry().getCommands();
-            Arrays.sort(cmds, new CommandComparator());
-            Set<String> seen = new HashSet<String>();
-            StringBuilder buf = new StringBuilder();
-            for (Command cmd : cmds) {
-                String name = cmd.getName();
-                if (seen.contains(name)) {
-                    continue;
-                }
-                seen.add(name);
-                buf.setLength(0);
-                buf.append(name);
-                String[] aliases = cmd.getAliases();
-                if (aliases.length > 1) {
-                    buf.append(" [");
-                    for (int i=1; i<aliases.length; i++) {
-                        buf.append(aliases[i]).append("|");
-                    }
-                    buf.setLength(buf.length()-1);
-                    buf.append("]");
-                }
-                buf.append(" - ").append(cmd.getSynopsis());
-                println(buf.toString());
+    private void printHelpForCommand(Application app, String cmdName) throws CommandException {
+        Command cmd = app.getCommandRegistry().getCommand(cmdName);
+        if (cmd != null) {
+            println(cmd.getHelp());
+        } else {
+            throw new CommandException("Unknown command: " + cmdName);
+        }
+    }
+
+    private void printHelpForAllCommands(Application app) {
+        println(getHelp());
+
+        Command[] cmds = app.getCommandRegistry().getCommands();
+        Arrays.sort(cmds, new CommandComparator());
+        Set<String> seen = new HashSet<String>();
+        StringBuilder buf = new StringBuilder();
+        for (Command cmd : cmds) {
+            String name = cmd.getName();
+            if (seen.contains(name)) {
+                continue;
             }
+            seen.add(name);
+            buf.setLength(0);
+            buf.append(name);
+            String[] aliases = cmd.getAliases();
+            if (aliases.length > 1) {
+                buf.append(" [");
+                for (int i=1; i<aliases.length; i++) {
+                    buf.append(aliases[i]).append("|");
+                }
+                buf.setLength(buf.length()-1);
+                buf.append("]");
+            }
+            buf.append(" - ").append(cmd.getSynopsis());
+            println(buf.toString());
         }
     }
 
