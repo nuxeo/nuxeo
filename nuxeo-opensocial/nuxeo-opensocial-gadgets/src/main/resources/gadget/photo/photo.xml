@@ -39,7 +39,7 @@
     #show a{
       text-decoration:none;
       padding-left:20px;
-      background:url(edit.png) no-repeat 0 0;
+      background:url(/nuxeo/img/edit.png) no-repeat 0 0;
       color:#000000;
       font-weight:bold;
     }
@@ -82,7 +82,7 @@
 
   #upload{
     padding-left:14px;
-    background:url(accept.png) no-repeat 0 0;
+    background:url(/nuxeo/img/accept.png) no-repeat 0 0;
     color:#FFFFFF;
     display:block;
     float:right;
@@ -116,7 +116,7 @@
     <div id="show"><a href="#">Modifier</a></div>
 
   <div style="display:none;margin:auto" id="form">
-  <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="x.png"></a></div>
+  <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a></div>
   <table style="width:100%" id="formPhoto">
   <tr>
     <td style="width:30%"><label for="photo">Photo :</label> </td>

@@ -77,7 +77,7 @@
         #show a{
      	 	text-decoration:none;
       		padding-left:20px;
-      		background:url(edit.png) no-repeat 0 0;
+      		background:url(/nuxeo/img/edit.png) no-repeat 0 0;
       		color:#000000;
       		font-weight:bold;
     	}
@@ -88,7 +88,7 @@
 
         #valid{
           padding-left:14px;
-          background:url(accept.png) no-repeat 0 0;
+          background:url(/nuxeo/img/accept.png) no-repeat 0 0;
           color:#FFFFFF;
           display:block;
           float:right;
@@ -121,7 +121,7 @@
       </div>
       
       <div id="form" style="display:none;margin:auto">
-        <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="x.png"></a></div>
+        <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a></div>
         <table style="width:100%" id="formVideo">
           <tr>
             <td style="width:30%">
