@@ -19,6 +19,8 @@ import javax.faces.webapp.UIComponentELTag;
 
 public class ResourcesTag extends UIComponentELTag {
 
+    private String ignoreLocal;
+    
     @Override
     public String getComponentType() {
         return "nxthemes.resources";
@@ -32,6 +34,14 @@ public class ResourcesTag extends UIComponentELTag {
     @Override
     protected void setProperties(UIComponent component) {
         super.setProperties(component);
+    }
+
+    public String getIgnoreLocal() {
+        return ignoreLocal;
+    }
+
+    public void setIgnoreLocal(String ignoreLocal) {
+        this.ignoreLocal = ignoreLocal;
     }
 
     @Override

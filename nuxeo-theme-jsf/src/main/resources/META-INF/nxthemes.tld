@@ -289,6 +289,14 @@
     <tag-class>org.nuxeo.theme.jsf.taglib.ResourcesTag</tag-class>
     <body-content>empty</body-content>
     <description />
+    <attribute>
+      <name>ignoreLocal</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        If set to true, local resources added from <nxthemes:require /> will be ignored.
+      </description>
+    </attribute>    
   </tag>
 
   <tag>

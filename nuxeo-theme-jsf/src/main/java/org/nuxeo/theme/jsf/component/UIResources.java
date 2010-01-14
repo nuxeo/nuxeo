@@ -39,12 +39,15 @@ public class UIResources extends UIOutput {
 
         Map<String, Object> requestMap = externalContext.getRequestMap();
         URL themeUrl = (URL) requestMap.get("org.nuxeo.theme.url");
+        final Map<String, Object> attributes = getAttributes();
 
         params.put("themeUrl", themeUrl.toString());
         params.put("path", externalContext.getRequestContextPath());
+        params.put("ignoreLocal", (String) attributes.get("ignoreLocal"));
+
         // XXX
         params.put("basepath", "/nuxeo/site");
-        
+
         Boolean virtualHosting = Utils.isVirtualHosting((HttpServletRequest) externalContext.getRequest());
         writer.write(Resources.render(params, virtualHosting));
     }
