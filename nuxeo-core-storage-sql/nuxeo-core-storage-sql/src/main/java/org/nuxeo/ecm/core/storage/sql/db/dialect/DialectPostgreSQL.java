@@ -907,7 +907,7 @@ public class DialectPostgreSQL extends Dialect {
                         + "  read_acl varchar(4096) := NULL;\n" //
                         + "  r record;\n" //
                         + "BEGIN\n" //
-                        + "  -- RAISE INFO 'call %', curid;\n" //
+                        + "  -- RAISE DEBUG 'call %', curid;\n" //
                         + "  FOR r in SELECT CASE\n" //
                         + "         WHEN (acls.grant AND\n" //
                         + "             acls.permission IN ('Read', 'ReadWrite', 'Everything', 'Browse')) THEN\n" //
@@ -944,9 +944,9 @@ public class DialectPostgreSQL extends Dialect {
                         + "  read_acl varchar(4096);\n" //
                         + "  ret varchar(4096);\n" //
                         + "BEGIN\n" //
-                        + "  -- RAISE INFO 'call %', curid;\n" //
+                        + "  -- RAISE DEBUG 'call %', curid;\n" //
                         + "  WHILE curid IS NOT NULL LOOP\n" //
-                        + "    -- RAISE INFO '  curid %', curid;\n" //
+                        + "    -- RAISE DEBUG '  curid %', curid;\n" //
                         + "    SELECT nx_get_local_read_acl(curid) INTO read_acl;\n" //
                         + "    IF (read_acl IS NOT NULL) THEN\n" //
                         + "      IF (ret is NULL) THEN\n" //
@@ -1003,23 +1003,22 @@ public class DialectPostgreSQL extends Dialect {
                         + "  rr record;\n" //
                         + "  users_blacklist character varying[];\n" //
                         + "BEGIN\n" //
-                        + "  RAISE INFO 'nx_get_read_acls_for called';\n" //
                         + "  -- Build a black list with negative users\n" //
                         + "  SELECT regexp_split_to_array('-' || array_to_string(users, ',-'), ',')\n" //
                         + "    INTO users_blacklist;\n" //
                         + "  <<acl_loop>>\n" //
                         + "  FOR r IN SELECT read_acls.id, read_acls.acl FROM read_acls LOOP\n" //
-                        + "    -- RAISE INFO 'ACL %', r.id;\n" //
+                        + "    -- RAISE DEBUG 'ACL %', r.id;\n" //
                         + "    -- split the acl into aces\n" //
                         + "    FOR rr IN SELECT ace FROM regexp_split_to_table(r.acl, ',') AS ace LOOP\n" //
-                        + "       -- RAISE INFO '  ACE %', rr.ace;\n" //
+                        + "       -- RAISE DEBUG '  ACE %', rr.ace;\n" //
                         + "       IF (rr.ace = ANY(users)) THEN\n" //
-                        + "         -- RAISE INFO '  GRANT %', users;\n" //
+                        + "         -- RAISE DEBUG '  GRANT %', users;\n" //
                         + "         RETURN NEXT r.id;\n" //
                         + "         CONTINUE acl_loop;\n" //
                         + "         -- ok\n" //
                         + "       ELSEIF (rr.ace = ANY(users_blacklist)) THEN\n" //
-                        + "         -- RAISE INFO '  DENY';\n" //
+                        + "         -- RAISE DEBUG '  DENY';\n" //
                         + "         CONTINUE acl_loop;\n" //
                         + "       END IF;\n" //
                         + "    END LOOP;\n" //
@@ -1108,12 +1107,12 @@ public class DialectPostgreSQL extends Dialect {
                 "CREATE OR REPLACE FUNCTION nx_rebuild_read_acls() RETURNS void AS $$\n" //
                         + "-- Rebuild the read acls tables\n" //
                         + "BEGIN\n" //
-                        + "  RAISE INFO 'nx_rebuild_read_acls truncating read_acls tables ...';\n" //
+                        + "  RAISE DEBUG 'nx_rebuild_read_acls truncating read_acls tables ...';\n" //
                         + "  TRUNCATE TABLE read_acls;\n" //
                         + "  TRUNCATE TABLE read_acls_cache;\n" //
                         + "  TRUNCATE TABLE hierarchy_read_acl;\n" //
                         + "  TRUNCATE TABLE hierarchy_modified_acl;\n" //
-                        + "  RAISE INFO 'nx_rebuild_read_acls rebuilding hierarchy_read_acl ...';\n" //
+                        + "  RAISE DEBUG 'nx_rebuild_read_acls rebuilding hierarchy_read_acl ...';\n" //
                         + "  INSERT INTO hierarchy_read_acl\n" //
                         + "    SELECT id, md5(nx_get_read_acl(id))\n" //
                         + "    FROM (SELECT id FROM hierarchy WHERE NOT isproperty) AS uids;\n" //
@@ -1132,7 +1131,7 @@ public class DialectPostgreSQL extends Dialect {
                         + "  update_count integer;\n" //
                         + "BEGIN\n" //
                         + "  -- New hierarchy_read_acl entry\n" //
-                        + "  RAISE INFO 'nx_update_read_acls inserting new hierarchy_read_acl ...';\n" //
+                        + "  RAISE DEBUG 'nx_update_read_acls inserting new hierarchy_read_acl ...';\n" //
                         + "  INSERT INTO hierarchy_read_acl\n" //
                         + "    SELECT id, md5(nx_get_read_acl(id))\n" //
                         + "    FROM (SELECT DISTINCT(id) AS id\n" //
@@ -1140,19 +1139,19 @@ public class DialectPostgreSQL extends Dialect {
                         + "        WHERE is_new AND\n" //
                         + "            EXISTS (SELECT 1 FROM hierarchy WHERE hierarchy_modified_acl.id=hierarchy.id)) AS uids;\n" //
                         + "  GET DIAGNOSTICS update_count = ROW_COUNT;\n" //
-                        + "  RAISE INFO 'nx_update_read_acls % entries added.', update_count;\n" //
+                        + "  RAISE DEBUG 'nx_update_read_acls % entries added.', update_count;\n" //
                         + "  DELETE FROM hierarchy_modified_acl WHERE is_new;\n" //
                         + "\n" //
                         + "  -- Update hierarchy_read_acl entry\n" //
-                        + "  RAISE INFO 'nx_update_read_acls updating hierarchy_read_acl ...';\n" //
+                        + "  RAISE DEBUG 'nx_update_read_acls updating hierarchy_read_acl ...';\n" //
                         + "  -- Mark acl that need to be updated (set to NULL)\n" //
                         + "  UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (\n" //
                         + "    SELECT DISTINCT(id) AS id FROM hierarchy_modified_acl WHERE NOT is_new);\n" //
                         + "  GET DIAGNOSTICS update_count = ROW_COUNT;\n" //
-                        + "  RAISE INFO 'nx_update_read_acls mark % lines to update', update_count;\n" //
+                        + "  RAISE DEBUG 'nx_update_read_acls mark % lines to update', update_count;\n" //
                         + "  DELETE FROM hierarchy_modified_acl WHERE NOT is_new;\n" //
                         + "  IF (update_count > 0) THEN\n" // list of read_acls have changed
-                        + "    RAISE INFO 'nx_update_read_acls reset read_acls cache';\n" //
+                        + "    RAISE DEBUG 'nx_update_read_acls reset read_acls cache';\n" //
                         + "    TRUNCATE TABLE read_acls_cache;\n" //
                         + "  END IF;\n" //
                         + "\n" //
@@ -1165,13 +1164,13 @@ public class DialectPostgreSQL extends Dialect {
                         + "      WHERE r.acl_id IS NOT NULL\n" //
                         + "        AND h.parentid IN (SELECT id FROM hierarchy_read_acl WHERE acl_id IS NULL));\n" //
                         + "    GET DIAGNOSTICS update_count = ROW_COUNT;\n" //
-                        + "    RAISE INFO 'nx_update_read_acls mark % lines to udpate', update_count;\n" //
+                        + "    RAISE DEBUG 'nx_update_read_acls mark % lines to udpate', update_count;\n" //
                         + "    IF (update_count = 0) THEN\n" //
                         + "      EXIT;\n" //
                         + "    END IF;\n" //
                         + "  END LOOP;\n" //
                         + "  -- Update hierarchy_read_acl acl_ids\n" //
-                        + "  RAISE INFO 'nx_update_read_acls computing read acls ...';\n" //
+                        + "  RAISE DEBUG 'nx_update_read_acls computing read acls ...';\n" //
                         + "  UPDATE hierarchy_read_acl SET acl_id = md5(nx_get_read_acl(id)) WHERE acl_id IS NULL;\n" //
                         + "  GET DIAGNOSTICS update_count = ROW_COUNT;\n" //
                         + "  RAISE INFO 'nx_update_read_acls % updated.', update_count;\n" //
