@@ -763,6 +763,7 @@ public final class ThemeManager implements Registrable {
 
     public void themeModified(String themeName) {
         setLastModified(themeName, new Date().getTime());
+        Manager.getResourceManager().clearGlobalCache(themeName);
     }
 
     public void stylesModified(String themeName) {

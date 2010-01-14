@@ -15,8 +15,6 @@
 package org.nuxeo.theme.resources;
 
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Registrable;
+import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 
@@ -33,7 +32,7 @@ public final class ResourceManager implements Registrable {
 
     private static final Log log = LogFactory.getLog(ResourceManager.class);
 
-    private final HashMap<URI, List<String>> globalCache = new HashMap<URI, List<String>>();
+    private final HashMap<URL, List<String>> globalCache = new HashMap<URL, List<String>>();
 
     private final ThreadLocal<List<String>> localCache = new ThreadLocal<List<String>>() {
         @Override
@@ -105,17 +104,24 @@ public final class ResourceManager implements Registrable {
     }
 
     public synchronized List<String> getGlobalResourcesFor(URL themeUrl) {
-        URI uri;
-        try {
-            uri = themeUrl.toURI();
-        } catch (URISyntaxException e) {
-            log.warn(e);
-            return null;
+        if (!globalCache.containsKey(themeUrl)) {
+            globalCache.put(themeUrl, new ArrayList<String>());
         }
-        if (!globalCache.containsKey(uri)) {
-            globalCache.put(uri, new ArrayList<String>());
+        return globalCache.get(themeUrl);
+    }
+
+    public void clearGlobalCache(String themeName) {
+        List<URL> toRemove = new ArrayList<URL>();
+        for (URL themeUrl : globalCache.keySet()) {
+            String name = ThemeManager.getThemeNameByUrl(themeUrl);
+            if (themeName.equals(name)) {
+                toRemove.add(themeUrl);
+
+            }
         }
-        return globalCache.get(uri);
+        for (URL themeUrl : toRemove) {
+            globalCache.remove(themeUrl);
+        }
     }
 
     public void clear() {
