@@ -17,8 +17,6 @@
   <UserPref name="picTitle" datatype="hidden"/>
   <UserPref name="link" datatype="hidden"/>
   <UserPref name="legend" datatype="hidden"/>
-  <UserPref name="id" datatype="hidden"/>
-
   <Content type="html" view="default">
 <![CDATA[
  <style type='text/css'>
