@@ -21,6 +21,9 @@
       <category>Collaborative</category>
       <layouts mode="any">
         <layout>heading</layout>
+        <!--
+        <layout>space</layout>
+        -->
       </layouts>
     </type>
 
