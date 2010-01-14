@@ -24,24 +24,22 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * GadgetBean
- *
+ * 
  * @author Guillaume Cusnieux
  */
 public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
 
   private static final long serialVersionUID = 1L;
-  private Integer shindigId;
   private String ref;
   private String title;
   private String renderUrl;
   private String viewer;
   private List<PreferencesBean> defaultPrefs;
   private List<PreferencesBean> userPrefs;
-  private Boolean permission;
+  private boolean permission;
   private GadgetPosition position;
-  private Boolean collapsed;
+  private boolean collapsed;
   private String name;
-  private String spaceName;
   private Map<String, GadgetView> gadgetViews;
   private String htmlContent;
   private Integer height;
@@ -52,15 +50,10 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
   public GadgetBean() {
   }
 
-  public Integer getShindigId() {
-    return this.shindigId;
-  }
-
-  public GadgetBean(Integer shindigId, String ref, String title, String viewer,
+  public GadgetBean(String ref, String title, String viewer,
       List<PreferencesBean> defaultPrefs, List<PreferencesBean> userPrefs,
-      Boolean permission, Boolean collapsed, String name, String spaceName,
+      boolean permission, boolean collapsed, String name,
       Map<String, GadgetView> gadgetViews, String htmlContent, Integer height) {
-    this.shindigId = shindigId;
     this.ref = ref;
     this.title = title;
     this.defaultPrefs = defaultPrefs;
@@ -69,7 +62,6 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
     this.permission = permission;
     this.collapsed = collapsed;
     this.name = name;
-    this.spaceName = spaceName;
     this.gadgetViews = gadgetViews;
     this.htmlContent = htmlContent;
     this.height = height;
@@ -83,8 +75,36 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
     return title;
   }
 
-  public String getSpaceName() {
-    return spaceName;
+  public Map<String, GadgetView> getGadgetViews() {
+    return gadgetViews;
+  }
+
+  public void setGadgetViews(Map<String, GadgetView> gadgetViews) {
+    this.gadgetViews = gadgetViews;
+  }
+
+  public static long getSerialversionuid() {
+    return serialVersionUID;
+  }
+
+  public GadgetPosition getPosition() {
+    return position;
+  }
+
+  public void setRef(String ref) {
+    this.ref = ref;
+  }
+
+  public void setViewer(String viewer) {
+    this.viewer = viewer;
+  }
+
+  public void setDefaultPrefs(List<PreferencesBean> defaultPrefs) {
+    this.defaultPrefs = defaultPrefs;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   public String getName() {
@@ -115,15 +135,19 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
     return viewer;
   }
 
-  public Boolean getPermission() {
+  public boolean isPermission() {
     return permission;
   }
 
-  public Boolean isCollapse() {
+  public void setPermission(boolean permission) {
+    this.permission = permission;
+  }
+
+  public boolean isCollapsed() {
     return collapsed;
   }
 
-  public void setCollapse(Boolean collapsed) {
+  public void setCollapsed(boolean collapsed) {
     this.collapsed = collapsed;
   }
 
@@ -166,7 +190,7 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
     Integer pos2 = this.getGadgetPosition()
         .getPosition();
 
-    return pos2 - pos1 ;
+    return pos2 - pos1;
 
   }
 

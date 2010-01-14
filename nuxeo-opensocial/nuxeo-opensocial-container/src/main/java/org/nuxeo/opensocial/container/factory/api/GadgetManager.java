@@ -30,10 +30,11 @@ public interface GadgetManager {
   void removeGadget(GadgetBean gadget, Map<String, String> gwtParams)
       throws ClientException;
 
-  void savePreferences(GadgetBean gadget, Map<String, String> updatePrefs,
-      Map<String, String> gwtParams) throws Exception;
+  GadgetBean savePreferences(GadgetBean gadget,
+      Map<String, String> updatePrefs, Map<String, String> gwtParams)
+      throws Exception;
 
-  void saveGadget(GadgetBean gadget, Map<String, String> gwtParams)
+  GadgetBean saveGadget(GadgetBean gadget, Map<String, String> gwtParams)
       throws ClientException;
 
 }

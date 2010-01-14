@@ -46,7 +46,6 @@ public class GadgetDocument extends ModuleRoot {
     try {
       StringTokenizer st = new StringTokenizer(id, ".");
       IdRef ref = new IdRef(st.nextToken());
-      log.info("produces image/jpeg,image/gif");
       if (session.exists(ref)) {
         DocumentModel doc = session.getDocument(ref);
         FormData form = ctx.getForm();
@@ -79,7 +78,6 @@ public class GadgetDocument extends ModuleRoot {
               }
             }
           }
-          log.info("mime type " + blob.getMimeType());
           return Response.ok(blob)
               .header("Content-Disposition", "attachment;filename=" + fileName)
               .type(blob.getMimeType())

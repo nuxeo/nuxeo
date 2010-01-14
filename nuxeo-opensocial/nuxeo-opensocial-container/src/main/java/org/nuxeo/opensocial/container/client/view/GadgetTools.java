@@ -72,7 +72,7 @@ public class GadgetTools {
 
   private Tool[] getDefaultButtons() {
     final GadgetBean gadget = portlet.getGadgetBean();
-    if (gadget.getPermission()) {
+    if (gadget.isPermission()) {
       Tool gear = new Tool(Tool.GEAR, new Function() {
         public void execute() {
           launchGear();
@@ -135,7 +135,7 @@ public class GadgetTools {
     canvas.doLayout();
     maximizedCol.doLayout();
     updateLayoutSizeForMax(canvas.getId());
-    if (gadget.isCollapse())
+    if (gadget.isCollapsed())
       canvas.unCollapseGadget();
   }
 

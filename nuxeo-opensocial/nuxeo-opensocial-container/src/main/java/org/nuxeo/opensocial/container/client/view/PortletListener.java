@@ -39,18 +39,18 @@ public class PortletListener extends PanelListenerAdapter {
   @Override
   public boolean doBeforeCollapse(Panel panel, boolean animate) {
     GadgetBean gadget = portlet.getGadgetBean();
-    if (gadget.isCollapse()) {
+    if (gadget.isCollapsed()) {
       portlet.unCollapseGadget();
     } else {
       portlet.collapseGadget();
     }
-    saveCollapsed(gadget.isCollapse());
+    saveCollapsed(gadget.isCollapsed());
     return false;
   }
 
   private void saveCollapsed(boolean collapsed) {
     GadgetBean gadget = portlet.getGadgetBean();
-    gadget.setCollapse(collapsed);
+    gadget.setCollapsed(collapsed);
     ContainerEntryPoint.getService()
         .saveGadget(gadget, ContainerEntryPoint.getGwtParams(),
             new SaveGadgetAsyncCallback());

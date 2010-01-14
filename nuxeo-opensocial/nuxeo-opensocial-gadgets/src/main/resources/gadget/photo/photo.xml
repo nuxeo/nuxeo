@@ -109,11 +109,9 @@
   });
    </script>
    <div id="title"></div>
-     <div style="text-align:center;margin:auto;">
+     <div style="text-align:center;margin:auto;" id="pictureContainer">
        <img id="loader" src="/nuxeo/img/standart_waiter.gif"/>
-    <a id="link" href="#" target="_tab" style="display:none;">
-        <img style="border:0;" id="photo" src="">
-      </a>
+
       <div id="legend"></div>
     </div>
     <div id="perm">
