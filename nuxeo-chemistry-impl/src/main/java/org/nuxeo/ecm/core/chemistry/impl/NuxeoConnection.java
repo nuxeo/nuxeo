@@ -61,7 +61,6 @@ import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.Updatability;
 import org.apache.chemistry.VersioningState;
 import org.apache.chemistry.impl.base.BaseRepository;
-import org.apache.chemistry.impl.simple.SimpleConnection;
 import org.apache.chemistry.impl.simple.SimpleData;
 import org.apache.chemistry.impl.simple.SimpleListPage;
 import org.apache.chemistry.impl.simple.SimpleObjectEntry;
@@ -237,16 +236,37 @@ public class NuxeoConnection implements Connection, SPI {
      * ----- Navigation Services -----
      */
 
+    /**
+     * Accumulates descendants into a list recursively.
+     */
+    // TODO optimized paging
+    protected void accumulate(ObjectId folder, int depth, Inclusion inclusion,
+            String orderBy, BaseType baseType, List<ObjectEntry> list) {
+        List<ObjectEntry> children = getChildren(folder, inclusion, orderBy,
+                null);
+        for (ObjectEntry child : children) {
+            BaseType childBaseType = child.getBaseType();
+            if (baseType == null || baseType == childBaseType) {
+                list.add(child);
+            }
+            if (childBaseType == BaseType.FOLDER && depth != 1) {
+                accumulate(child, depth - 1, inclusion, orderBy, baseType, list);
+            }
+        }
+    }
+
     public List<ObjectEntry> getFolderTree(ObjectId folder, int depth,
             Inclusion inclusion) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        List<ObjectEntry> list = new ArrayList<ObjectEntry>();
+        accumulate(folder, depth, inclusion, null, BaseType.FOLDER, list);
+        return list;
     }
 
     public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
             String orderBy, Inclusion inclusion) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        List<ObjectEntry> list = new ArrayList<ObjectEntry>();
+        accumulate(folder, depth, inclusion, orderBy, null, list);
+        return list;
     }
 
     public ListPage<ObjectEntry> getChildren(ObjectId folder,
@@ -254,9 +274,14 @@ public class NuxeoConnection implements Connection, SPI {
         // TODO orderBy
         DocumentModelList docs;
         try {
-            DocumentRef docRef = new IdRef(folder.getId());
+            String id = folder.getId();
+            DocumentRef docRef = new IdRef(id);
             if (!session.exists(docRef)) {
-                throw new ObjectNotFoundException(folder.getId());
+                throw new ObjectNotFoundException(id);
+            }
+            DocumentModel doc = session.getDocument(docRef);
+            if (!doc.isFolder()) {
+                throw new IllegalArgumentException("Not a folder: " + id);
             }
             docs = session.getChildren(docRef, null, getChildrenFilter(), null);
         } catch (ClientException e) {
@@ -266,7 +291,7 @@ public class NuxeoConnection implements Connection, SPI {
         for (DocumentModel child : docs) {
             all.add(new NuxeoObjectEntry(child, this));
         }
-        return SimpleConnection.getListPage(all, paging);
+        return SimpleListPage.fromPaging(all, paging);
     }
 
     // hide HiddenInNavigation and deleted objects from children listing

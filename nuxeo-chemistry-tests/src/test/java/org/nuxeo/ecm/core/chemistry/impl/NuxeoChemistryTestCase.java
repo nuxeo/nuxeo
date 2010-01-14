@@ -250,6 +250,30 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         file.save();
     }
 
+    public void testTrees() throws Exception {
+        List<ObjectEntry> list;
+        Folder root = conn.getRootFolder();
+        ObjectEntry fold2 = spi.getObjectByPath("/testfolder2", null);
+        list = spi.getDescendants(root, -1, null, null);
+        assertEquals(7, list.size());
+        list = spi.getDescendants(root, 1, null, null);
+        assertEquals(2, list.size());
+        list = spi.getDescendants(root, 2, null, null);
+        assertEquals(6, list.size());
+        list = spi.getDescendants(root, 3, null, null);
+        assertEquals(7, list.size());
+        list = spi.getDescendants(root, 4, null, null);
+        assertEquals(7, list.size());
+        list = spi.getDescendants(fold2, -1, null, null);
+        assertEquals(2, list.size());
+        list = spi.getDescendants(fold2, 1, null, null);
+        assertEquals(1, list.size());
+        list = spi.getDescendants(fold2, 2, null, null);
+        assertEquals(2, list.size());
+        list = spi.getDescendants(fold2, 3, null, null);
+        assertEquals(2, list.size());
+    }
+
     public void testDefaultProperties() throws Exception {
         Folder root = conn.getRootFolder();
         CMISObject child = root.getChildren().get(0);
