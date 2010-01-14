@@ -1,6 +1,6 @@
 // Absolute path to current folder this path is set at runtime by run.sh
 Selenium.prototype.doRetrieveTestFolderPath = function() {
-  storedVars['testfolderpath'] = "/path/to/project-ear/ftest/selenium";
+  storedVars['testfolderpath'] = "/path/to/project-ear/ftest/selenium/data/";
 };
 
 // helper method to store current year/month/day
