@@ -56,6 +56,11 @@ public class JLineConsole extends Console {
         return console;
     }
 
+    /**
+     * Executes line.
+     *
+     * @return false if the users has issued an "exit" command, true otherwise
+     */
     protected boolean execute(String line) throws Exception {
         try {
             runCommand(line);
@@ -77,7 +82,7 @@ public class JLineConsole extends Console {
         while (line != null) {
             line = line.trim();
             try {
-                if (line.trim().length() > 0) {
+                if (line.length() > 0) {
                     if (!execute(line)) {
                         break;
                     }
@@ -87,9 +92,6 @@ public class JLineConsole extends Console {
                 e.printStackTrace();
             }
             line = console.readLine();
-            if (line == null) {
-                break;
-            }
         }
         console.printString("Bye");
         console.printNewline();

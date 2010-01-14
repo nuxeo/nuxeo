@@ -88,17 +88,17 @@ match "^testfile$"
 propset testfile dc:title some_other_title
 propget testfile dc:title
 match "^some_other_title$"
-setstream testfile run.sh
+setstream testfile testscript
 cat testfile
 rm testfile
 match -r "testfile"
 
 # Put a file
-put run.sh run.sh
+put testscript testscript
 ls
-id run.sh
-cat run.sh
-rm run.sh
+id testscript
+cat testscript
+rm testscript
 
 # Clean up
 cd ..
