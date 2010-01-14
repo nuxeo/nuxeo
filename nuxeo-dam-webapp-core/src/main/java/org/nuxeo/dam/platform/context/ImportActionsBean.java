@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.UploadEvent;
@@ -61,8 +62,6 @@ public class ImportActionsBean implements Serializable {
     public static final String IMPORTSET_CREATED = "importSetCreated";
 
     protected DocumentModel newImportSet;
-
-    protected boolean titleChanged;
 
     @In(create = true)
     private transient NuxeoPrincipal currentNuxeoPrincipal;
@@ -100,30 +99,22 @@ public class ImportActionsBean implements Serializable {
                     context);
         }
 
-        if (!titleChanged) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddMMyyHHmmss");
-            Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+                "yyyyMMdd HH:mm");
+        Calendar calendar = Calendar.getInstance();
 
-            String username;
-            if (currentNuxeoPrincipal != null) {
-                username = currentNuxeoPrincipal.getName();
-            } else {
-                username = documentManager.getPrincipal().getName();
-            }
-            String defaultTitle = username
-                    + simpleDateFormat.format(calendar.getTime());
-            newImportSet.setPropertyValue("dc:title", defaultTitle);
+        String fullName;
+        if (currentNuxeoPrincipal != null) {
+            fullName = Functions.principalFullName(currentNuxeoPrincipal);
+        } else {
+            fullName = Functions.principalFullName((NuxeoPrincipal) documentManager.getPrincipal());
         }
+
+        String defaultTitle = fullName + " - "
+                + simpleDateFormat.format(calendar.getTime());
+        newImportSet.setPropertyValue("dc:title", defaultTitle);
 
         return newImportSet;
-    }
-
-    public void resetImportSetTitle() throws ClientException {
-        if (newImportSet != null && !titleChanged) {
-            newImportSet.setPropertyValue("dc:title", null);
-        }
-
-        titleChanged = true;
     }
 
     public String createImportSet() throws Exception {
@@ -175,7 +166,6 @@ public class ImportActionsBean implements Serializable {
 
     public void invalidateImportContext() {
         newImportSet = null;
-        titleChanged = false;
     }
 
     /**

@@ -17,7 +17,7 @@
 
   	<a4j:outputPanel id="importset_title">
       <h:inputText value="#{field_0}" id="#{widget.id}_title">
-        <a4j:support event="onclick" focus="#{widget.id}_title" action="#{importActions.resetImportSetTitle}" reRender="importset_title" />
+        <a4j:support event="onfocus" focus="#{widget.id}_title" />
       </h:inputText>
     </a4j:outputPanel>
 
