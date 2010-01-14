@@ -14,14 +14,15 @@
   <name>Nuxeo Jetty Distribution</name>
   <description>Package Nuxeo EP or DM into Jetty</description>
 
-  <!-- This should be done on Nuxeo ECM Parent POM -->
   <dependencyManagement>
     <dependencies>
+      <!-- Nuxeo parent POM defines version 3.3.GA -->
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>javassist</artifactId>
         <version>4.2.3.GA</version>
       </dependency>
+      <!-- Nuxeo parent POM defines version 2.4 -->
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
@@ -32,88 +33,44 @@
 
   <profiles>
     <profile>
-      <id>nuxeo-dm</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <distribution>nuxeo-dm</distribution>
-      </properties>
-      <dependencies>
-        <dependency>
-          <groupId>org.nuxeo.ecm.distribution</groupId>
-          <artifactId>nuxeo-distribution-dm</artifactId>
-          <type>pom</type>
-        </dependency>
-      </dependencies>
+      <id>all-distributions</id>
+      <!-- profile for building all classifiers -->
+    </profile>
+    <profile>
+      <id>all</id>
+      <!-- profile for building all classifiers -->
     </profile>
     <profile>
       <id>nuxeo-ep</id>
-      <properties>
-        <distribution>nuxeo-ep</distribution>
-      </properties>
-      <dependencies>
-        <dependency>
-          <groupId>org.nuxeo.ecm.platform</groupId>
-          <artifactId>nuxeo-platform-ear</artifactId>
-          <type>pom</type>
-        </dependency>
-      </dependencies>
+      <!-- profile for building only JBoss with Nuxeo EP -->
+    </profile>
+    <profile>
+      <id>nuxeo-dm</id>
+      <!-- default profile for building only JBoss with Nuxeo DM -->
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
     </profile>
   </profiles>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-jetty-adapter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-deploy</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-storage-sql</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
-    </dependency>
-  </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-nuxeo-plugin</artifactId>
-        <extensions>false</extensions>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <version>0.6-SNAPSHOT</version>
         <executions>
           <execution>
-            <id>assemble-app</id>
+            <id>antbuild</id>
             <phase>package</phase>
-            <goals>
-              <goal>assembly</goal>
-            </goals>
             <configuration>
-              <runPreprocessor>false</runPreprocessor>
-              <format>zip</format>
-              <zipRoot>${artifactId}-${version}</zipRoot>
-              <outputDirectory>target</outputDirectory>
-              <targetFile>${artifactId}-${version}</targetFile>
-              <descriptor>${basedir}/src/main/assemble/assembly.xml</descriptor>
+              <buildFiles>
+                <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+              </buildFiles>
             </configuration>
-          </execution>
-          <execution>
-            <id>attach-app</id>
-            <phase>package</phase>
             <goals>
-              <goal>attach</goal>
+              <goal>build</goal>
             </goals>
-            <configuration>
-              <file>${project.build.directory}/${artifactId}-${version}.zip</file>
-              <type>zip</type>
-              <classifier>${distribution}</classifier>
-            </configuration>
           </execution>
         </executions>
       </plugin>
