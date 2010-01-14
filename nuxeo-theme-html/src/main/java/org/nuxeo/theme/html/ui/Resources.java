@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.html.ui;
 
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.theme.Manager;
@@ -21,7 +22,8 @@ import org.nuxeo.theme.resources.ResourceManager;
 
 public class Resources {
 
-    public static String render(Map<String, String> params, boolean virtualHosting) {
+    public static String render(Map<String, String> params,
+            boolean virtualHosting) {
         StringBuilder sb = new StringBuilder();
 
         String resourcePath = "/nuxeo/nxthemes-lib/";
@@ -29,7 +31,7 @@ public class Resources {
         final String path = params.get("path");
         final String basepath = params.get("basepath");
         String nxthemeBasePath = basepath;
-        
+
         if (virtualHosting) {
             resourcePath = path + "/nxthemes-lib/";
             nxthemeBasePath = path;
@@ -45,7 +47,19 @@ public class Resources {
         boolean hasScripts = false;
         boolean hasStyles = false;
 
-        for (String resourceName : resourceManager.getResourcesFor(themeUrl)) {
+        boolean ignoreLocal = false;
+        if (params.containsKey("ignoreLocal")) {
+            ignoreLocal = Boolean.parseBoolean(params.get("ignoreLocal"));
+        }
+
+        List<String> resourceNames;
+        if (ignoreLocal) {
+            resourceNames = resourceManager.getGlobalResourcesFor(themeUrl);
+        } else {
+            resourceNames = resourceManager.getResourcesFor(themeUrl);
+        }
+
+        for (String resourceName : resourceNames) {
             if (resourceName.endsWith(".css")) {
                 combinedStyles.append(resourceName).append(",");
                 hasStyles = true;
