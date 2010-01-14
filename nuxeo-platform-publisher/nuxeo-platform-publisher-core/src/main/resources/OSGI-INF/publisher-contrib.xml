@@ -91,29 +91,6 @@
     <documentation>
       Contribute the default PublicationTree instance to be able to publish
       documents in local sections.
-
-      You can contribute other kinds of PublicationTree: here is a contribution
-      for a new tree that will be used to publish on the file system, on
-      '/opt/publishing-folder'.
-      <code>
-        <extension
-          target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
-          point="treeInstance">
-
-          <publicationTreeConfig name="FSTree" tree="LocalFSTree"
-                               factory="LocalFile" localSectionTree="false"
-                               title="label.publication.tree.fileSystem">
-            <parameters>
-              <parameter name="RootPath">/opt/publishing-folder</parameter>
-              <parameter name="enableSnapshot">true</parameter>
-              <parameter name="iconExpanded">/icons/folder_open.gif</parameter>
-              <parameter name="iconCollapsed">/icons/folder.gif</parameter>
-            </parameters>
-          </publicationTreeConfig>
-
-        </extension>
-      </code>
-
     </documentation>
 
     <publicationTreeConfig name="DefaultSectionsTree" tree="RootSectionsCoreTree"
