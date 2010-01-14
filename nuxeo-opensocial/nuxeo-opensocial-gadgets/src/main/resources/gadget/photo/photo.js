@@ -60,10 +60,7 @@ function setTitle(title){
 };
 
 function setLink(link){
-  if(_isSet(link)){
-    jQuery("#link-field").val(link);
-    jQuery("#link").attr("href",link);
-  }
+  jQuery("#link-field").val(link);
 };
 
 function setLegend(legend){
@@ -90,6 +87,7 @@ function savePrefs(){
 };
 
 function loadImage(id){
+
   var actionUrl = [action,id].join("");
   var photoUrl = [url,id,'?junk=',Math.random()].join("");
   jQuery("#formUpload").attr("action", actionUrl);
@@ -102,6 +100,21 @@ function loadImage(id){
         showImage();
     },
     success : function(data, textStatus) {
+
+      /*<a id="link" href="#" target="_tab" style="display:none;">
+        <img style="border:0;" id="photo" src="">
+      </a>
+      */
+        if (_isSet(prefs.getString("link"))){
+          var imgContainer = jQuery("<a id=\"link\" href=\""+prefs.getString("link")+"\" target=\"_tab\" ><img style=\"border:0;\" id=\"photo\" src=\"\"></a>");
+        }
+        else
+        {
+          var imgContainer = jQuery("<img style=\"border:0;\" id=\"photo\" src=\"\">");
+        }
+
+        jQuery("#pictureContainer").append(imgContainer);
+
         jQuery("#photo").attr("src", photoUrl);
         jQuery("#photo").width("100%");
         showImage();
