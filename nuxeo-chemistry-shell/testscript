@@ -70,10 +70,17 @@ mkdir ../testdir3
 ls ../testdir3
 rm ../testdir3
 cd ..
-#rm testdir?
 rm testdir1
 rm testdir2
 ls
+
+mkdir -t Workspace testdir1
+rm testdir1
+
+# Disabled while deleteTree not implemented
+#mkdir testdir1
+#mkdir testdir1/testdir2
+#rm -r testdir1
 
 # Now a file
 cd testdir
@@ -94,11 +101,23 @@ cat testfile
 rm testfile
 match -r "testfile"
 
+mkfile -t File testfile
+rm testfile
+
+mkfile --type File testfile
+rm testfile
+
+mkfile -t cmis:document testfile
+rm testfile
+
 # Put a file
 put run.sh run.sh
 ls
-id run.sh
 cat run.sh
+rm run.sh
+put run.sh
+id run.sh
+put run.sh
 rm run.sh
 
 # Clean up

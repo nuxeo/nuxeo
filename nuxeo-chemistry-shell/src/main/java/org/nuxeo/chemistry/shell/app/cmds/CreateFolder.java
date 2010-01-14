@@ -30,13 +30,17 @@ import org.nuxeo.chemistry.shell.command.CommandLine;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="mkdir target:item", synopsis="Create a folder given its name")
+@Cmd(syntax="mkdir [-t|--type:*] target:item", synopsis="Create a folder given its name")
 public class CreateFolder extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
         String param = cmdLine.getParameterValue("target");
+        String typeName = cmdLine.getParameterValue("-t");
+        if (typeName == null) {
+            typeName = "cmis:folder";
+        }
 
         Path path = new Path(param);
         String name = path.getLastSegment();
@@ -48,7 +52,7 @@ public class CreateFolder extends ChemistryCommand {
             throw new CommandException(parent+" doesn't exist or is not a folder");
         }
 
-        new SimpleCreator(folder).createFolder("Workspace", name);
+        new SimpleCreator(folder).createFolder(typeName, name);
         ctx.reset();
     }
 

@@ -36,7 +36,7 @@ import org.nuxeo.chemistry.shell.command.CommandLine;
  *
  */
 // TODO: make target optional
-@Cmd(syntax="put source:file target:item", synopsis="Uploads the stream of the target document")
+@Cmd(syntax="put [-t|--type:*] source:file [target:item]", synopsis="Uploads the stream of the target document")
 public class Put extends ChemistryCommand {
 
     @Override
@@ -45,6 +45,13 @@ public class Put extends ChemistryCommand {
 
         String source = cmdLine.getParameterValue("source");
         String target = cmdLine.getParameterValue("target");
+        if (target == null) {
+            target = new Path(source).getLastSegment();
+        }
+        String typeName = cmdLine.getParameterValue("-t");
+        if (typeName == null) {
+            typeName = "cmis:document";
+        }
 
         Context targetCtx = app.resolveContext(new Path(target));
 
@@ -53,7 +60,7 @@ public class Put extends ChemistryCommand {
             Context currentCtx = app.getContext();
             Folder folder =  currentCtx.as(Folder.class);
             if (folder != null) {
-                new SimpleCreator(folder).createFile("File", target);
+                new SimpleCreator(folder).createFile(typeName, target);
                 currentCtx.reset();
                 targetCtx = app.resolveContext(new Path(target));
             }

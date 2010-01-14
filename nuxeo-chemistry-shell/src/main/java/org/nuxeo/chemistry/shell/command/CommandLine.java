@@ -54,9 +54,11 @@ public class CommandLine {
         if (cmd == null) {
             throw new NoSuchCommandException(args[0]);
         }
+
         // build params
         CommandParameter param = new CommandParameter(args[0], cmd.syntax.tokens.get(0));
         params.add(param);
+
         int k = 0;
         for (int i=1; i<args.length; i++) {
             String key = args[i];

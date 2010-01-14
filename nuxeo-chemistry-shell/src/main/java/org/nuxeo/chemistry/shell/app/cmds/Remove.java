@@ -18,6 +18,7 @@ package org.nuxeo.chemistry.shell.app.cmds;
 
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.Unfiling;
 import org.nuxeo.chemistry.shell.Context;
 import org.nuxeo.chemistry.shell.Path;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
@@ -30,13 +31,14 @@ import org.nuxeo.chemistry.shell.command.CommandLine;
  * @author <a href="mailto:sf@nuxeo.com">Stefane Fermigier</a>
  *
  */
-@Cmd(syntax="rm|del target:item", synopsis="Removes an object of the given name")
+@Cmd(syntax="rm|del [-r] target:item", synopsis="Removes an object of the given name")
 public class Remove extends ChemistryCommand {
 
     @Override
     protected void execute(ChemistryApp app, CommandLine cmdLine)
             throws Exception {
         String param = cmdLine.getParameterValue("target");
+        boolean recurse = cmdLine.getParameter("-r") != null;
 
         Path path = new Path(param);
         String name = path.getLastSegment();
@@ -53,7 +55,11 @@ public class Remove extends ChemistryCommand {
             // TODO: use wildcard but make sure it's safe
             // if (StringUtils.matches(name, child.getName())) {
             if (name.equals(child.getName())) {
-                child.delete();
+                if (recurse && child instanceof Folder) {
+                    ((Folder) child).deleteTree(Unfiling.UNFILE);
+                } else {
+                    child.delete();
+                }
                 success = true;
             }
         }

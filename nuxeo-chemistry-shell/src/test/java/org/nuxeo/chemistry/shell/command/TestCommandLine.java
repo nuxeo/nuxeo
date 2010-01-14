@@ -22,28 +22,30 @@ public class TestCommandLine extends Assert {
 
     @Test
     public void testWithoutOption() throws CommandException {
-        String line = "cmd tata";
+        String line = "cmd value";
         CommandLine commandLine = new CommandLine(reg, line);
 
         assertEquals("cmd", commandLine.getCommand().getName());
-        assertEquals("tata", commandLine.getParameterValue("toto"));
+        assertEquals("value", commandLine.getParameterValue("arg1"));
         assertNull(commandLine.getParameter("-r"));
+        assertNull(commandLine.getParameter("-o"));
         //assertEquals("tutu", commandLine.getParameterValue("titi"));
     }
 
     @Test
     public void testWithOption() throws CommandException {
-        String line = "cmd -r tata";
+        String line = "cmd -r -o option value";
         CommandLine commandLine = new CommandLine(reg, line);
 
         assertEquals("cmd", commandLine.getCommand().getName());
-        assertEquals("tata", commandLine.getParameterValue("toto"));
+        assertEquals("value", commandLine.getParameterValue("arg1"));
+        assertEquals("option", commandLine.getParameterValue("-o"));
         assertNotNull(commandLine.getParameter("-r"));
         //assertEquals("tutu", commandLine.getParameterValue("titi"));
     }
 
     @Ignore // this is not a test, you dummy Maven!
-    @Cmd(syntax="cmd [-r] toto [titi:file?tutu]", synopsis="")
+    @Cmd(syntax="cmd [-r] [-o:*] arg1 [titi:file?tutu]", synopsis="")
     class DummyCommand extends AnnotatedCommand {
         public void run(Application app, CommandLine cmdLine) throws Exception {}
     }

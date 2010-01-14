@@ -13,7 +13,7 @@ first Apache Chemistry, by checking out the sources and running "mvn install"
 there, since it is not yet released.
 
 If you have make on you system, you can also use the following make targets:
-clean, build, test and release. 
+clean, build, test and release.
 
 Dependencies
 ------------
@@ -22,7 +22,7 @@ The project doesn't depend on the Nuxeo EP code (so it could be pushed into the
 Apache Chemistry codebase if wanted).
 
 Here are the direct dependencies:
- 
+
 jline
 chemistry-api
 chemistry-commons
@@ -44,7 +44,7 @@ command (by giving the URL where to connect), e.g.:
 
 Some of the registered commands are not yet implemented. Commands use
 annotations and optional *.help files to provide help content (the *.help files
-must have the name of the command and be put in the same package. Ex: Ls.help) 
+must have the name of the command and be put in the same package. Ex: Ls.help)
 
 Available commands for now are:
 
@@ -90,7 +90,7 @@ One important note is that the initial context is not a repository but the APP
 service. So if you do a "ls" in the initial context you will have the list of
 repositories. To enter a repository, do a "cd repo_name". After entering a
 repository you are in a chemistry object context so all commands should be
-available. 
+available.
 
 How to extend it
 ----------------
@@ -121,7 +121,7 @@ public class DumpTree extends ChemistryCommand {
 Command Syntax
 --------------
 
-When defining new commands we need to add the anntation @Cmd on the command
+When defining new commands we need to add the @Cmd annotation on the command
 class.
 
 This annotation provides 2 command properties: syntax and synopsis
@@ -136,7 +136,7 @@ Here is the syntax format:
 
 cmd_name param_spec param_spec  ...
 cmd_name: name1 | name 2 | ...  - You can have multiple names associated to a command (the first one is the command name the others are aliases)
-param_spec is a parameter specification. 
+param_spec is a parameter specification.
 
 A parameter has a key (and 0 or more aliases), a default value, an optional flag and a type.
 
@@ -144,7 +144,7 @@ The type is important if you need auto-completion. There are several recognized 
 
 1. command  - a command (to complete with available command names)
 2. file     - a file (to complete with a file path)
-3. dir      - a directory (to complete with directory paths) 
+3. dir      - a directory (to complete with directory paths)
 4. item     - a remote object (to complete with remote object paths)
 
 Also a parameter can be an argument, a flag or a key/value pair. Flags are not
@@ -152,7 +152,7 @@ yet supported (i.e. -param without a value).
 
 An optional parameter must be enclosed in brackets '[' ']'.
 
-Optional parameters can have default values that can be specifed by appending
+Optional parameters can have default values that can be specified by appending
 ?the_default_value after the command spec.
 
 Example: [-d|--depth?1]
@@ -160,12 +160,12 @@ Example: [-d|--depth?1]
 The type is optional and is specified after the command name list separated by
 a ':'
 
-Example: [targetFile:file?/tmp/some_file] 
+Example: [targetFile:file?/tmp/some_file]
 
 Types parameters will be auto-completed with possible values when hiting tab
-key in shell. 
+key in shell.
 
-A complete example: 
+A complete example:
 
 > print|pr [-p|--pretty?true] [-v|--verbose?false] document:item [targetFile:file?out.txt]
 
