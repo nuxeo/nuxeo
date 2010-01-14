@@ -37,26 +37,6 @@ public class SimpleBrowser {
         doBrowse(root);
     }
 
-    protected void dumpWithPath(String tabs, CMISObject item) {
-        Console.getDefault().println(tabs+ " "+ item.getName()+" ["+item.getType().getId()+"]");
-    }
-
-    protected void dump(CMISObject item) {
-        Console.getDefault().println(item.getName() + " (" + item.getType().getDisplayName() + ")");
-    }
-
-    public void listChildren() throws IOException {
-        if (BaseType.FOLDER.equals(root.getBaseType())) {
-            Folder folder = root;
-            List<CMISObject> children = folder.getChildren();
-            for (CMISObject child : children) {
-                dump(child);
-            }
-        } else {
-            Console.getDefault().println("CMISObject " + root.getId() + " in not a folder");
-        }
-    }
-
     protected void doBrowse(Folder currentNode) throws IOException {
         doBrowse("+", currentNode);
     }
@@ -72,6 +52,10 @@ public class SimpleBrowser {
                 dumpWithPath(tabs + "---", child);
             }
         }
+    }
+
+    protected void dumpWithPath(String tabs, CMISObject item) {
+        Console.getDefault().println(tabs+ " "+ item.getName()+" ["+item.getType().getId()+"]");
     }
 
 }

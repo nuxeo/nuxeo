@@ -47,6 +47,11 @@ public abstract class AbstractApplication implements Application {
         ctx = getRootContext();
     }
 
+    public void login(String username, char[] password) {
+        this.username = username;
+        this.password = password;
+    }
+
     protected void initServerURL(URL serverUrl) {
         String userInfo = serverUrl.getUserInfo();
         if (userInfo != null) {
@@ -62,7 +67,7 @@ public abstract class AbstractApplication implements Application {
         try {
             this.serverUrl = new URL(serverUrl.getProtocol(), serverUrl.getHost(), serverUrl.getPort(), serverUrl.getPath());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -85,22 +90,6 @@ public abstract class AbstractApplication implements Application {
         return registry;
     }
 
-    public File resolveFile(String path) {
-        if (path.startsWith("/")) {
-            return new File(path);
-        } else {
-            return new File(wd, path);
-        }
-    }
-
-    public Context getContext() {
-        return ctx;
-    }
-
-    public Object getData(String key) {
-        return dataMap.get(key);
-    }
-
     public URL getServerUrl() {
         return serverUrl;
     }
@@ -113,9 +102,18 @@ public abstract class AbstractApplication implements Application {
         return wd;
     }
 
-    public void login(String username, char[] password) {
-        this.username = username;
-        this.password = password;
+    public void setWorkingDirectory(File file) {
+        wd = file;
+        Console.getDefault().updatePrompt();
+    }
+
+    public Context getContext() {
+        return ctx;
+    }
+
+    public void setContext(Context ctx) {
+        this.ctx = ctx;
+        Console.getDefault().updatePrompt();
     }
 
     public Context resolveContext(Path path) {
@@ -157,9 +155,16 @@ public abstract class AbstractApplication implements Application {
         return c;
     }
 
-    public void setContext(Context ctx) {
-        this.ctx = ctx;
-        Console.getDefault().updatePrompt();
+    public File resolveFile(String path) {
+        if (path.startsWith("/")) {
+            return new File(path);
+        } else {
+            return new File(wd, path);
+        }
+    }
+
+    public Object getData(String key) {
+        return dataMap.get(key);
     }
 
     public void setData(String key, Object data) {
@@ -168,11 +173,6 @@ public abstract class AbstractApplication implements Application {
         } else {
             dataMap.put(key, data);
         }
-    }
-
-    public void setWorkingDirectory(File file) {
-        wd = file;
-        Console.getDefault().updatePrompt();
     }
 
 }

@@ -67,9 +67,9 @@ public class ChemistryRootContext extends AbstractContext {
         Repository r = repos.get(name); // TODO  atompub client is using IDs to get repositories ...
         Repository repo = cm.getRepository(r.getId());
         if (repo != null) {
-            APPConnection conn = (APPConnection)repo.getConnection(null);
+            APPConnection conn = (APPConnection) repo.getConnection(null);
             CMISObject entry = conn.getRootFolder();
-            return new ChemistryContext((ChemistryApp)app, path.append(name), conn, entry);
+            return new ChemistryContext((ChemistryApp) app, path.append(name), conn, entry);
         }
         return null;
     }

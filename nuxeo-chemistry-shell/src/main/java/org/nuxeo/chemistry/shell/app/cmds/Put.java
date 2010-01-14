@@ -53,7 +53,7 @@ public class Put extends ChemistryCommand {
             Context currentCtx = app.getContext();
             Folder folder =  currentCtx.as(Folder.class);
             if (folder != null) {
-                new SimpleCreator(folder).createFile(target);
+                new SimpleCreator(folder).createFile("File", target);
                 currentCtx.reset();
                 targetCtx = app.resolveContext(new Path(target));
             }

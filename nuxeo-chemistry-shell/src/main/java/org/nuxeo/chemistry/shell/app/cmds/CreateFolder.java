@@ -48,7 +48,7 @@ public class CreateFolder extends ChemistryCommand {
             throw new CommandException(parent+" doesn't exist or is not a folder");
         }
 
-        new SimpleCreator(folder).createFolder(name);
+        new SimpleCreator(folder).createFolder("Workspace", name);
         ctx.reset();
     }
 

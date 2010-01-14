@@ -28,17 +28,19 @@ public class SimpleCreator {
         this.folder = folder;
     }
 
-    public void createFolder(String name) throws Exception {
-        Folder newFolder = folder.newFolder("Workspace");
+    public void createFolder(String typeName, String name) throws Exception {
+        Folder newFolder = folder.newFolder(typeName);
         newFolder.setName(name);
-        newFolder.setValue("dc:title", name);
+        // TODO
+        //newFolder.setValue("dc:title", name);
         newFolder.save();
     }
 
-    public void createFile(String name) throws Exception {
-        Document newDoc = folder.newDocument("File");
+    public void createFile(String typeName, String name) throws Exception {
+        Document newDoc = folder.newDocument(typeName);
         newDoc.setName(name);
-        newDoc.setValue("dc:title", name);
+        // TODO
+        //newDoc.setValue("dc:title", name);
         newDoc.save();
     }
 
