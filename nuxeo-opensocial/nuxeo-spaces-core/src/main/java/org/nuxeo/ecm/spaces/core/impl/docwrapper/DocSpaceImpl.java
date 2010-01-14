@@ -33,6 +33,10 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
+import org.nuxeo.ecm.spaces.api.SpaceManager;
+import org.nuxeo.ecm.spaces.api.SpaceProvider;
+import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
+import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -299,5 +303,25 @@ public class DocSpaceImpl implements Space {
     session.removeDocument(doc.getRef());
     session.save();
   }
+
+public String getProviderName() throws ClientException {
+    SpaceManager sm;
+    try {
+        sm = Framework.getService(SpaceManager.class);
+    } catch (Exception e) {
+        throw new SpaceException("Unable to get Space Manager",e);
+    }
+    List<SpaceProvider> providers = sm.getSpacesProviders();
+    for(SpaceProvider provider : providers) {
+    	try {
+			if (provider.getSpace(this.getName(), this.session()) != null) {
+				return sm.getProviderName(provider);
+			}
+		} catch (SpaceNotFoundException e) {
+			LOGGER.warn("space " + getName() + " not found in " + provider);
+		}
+    }
+	return null;
+}
 
 }

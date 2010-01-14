@@ -121,5 +121,7 @@ public interface Space extends Comparable<Space> {
   Calendar getPublicationDate() throws ClientException;
 
   void setPublicationDate(Calendar datePublication) throws ClientException;
+  
+  String getProviderName() throws ClientException;
 
 }

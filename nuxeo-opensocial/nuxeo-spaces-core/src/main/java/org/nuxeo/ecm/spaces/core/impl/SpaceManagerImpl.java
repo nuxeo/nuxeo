@@ -207,6 +207,30 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
         return result;
     }
 
+    public List<SpaceProvider> getSpacesProviders() {
+        List<SpaceProvider> result = new ArrayList<SpaceProvider>();
+        for (SpaceContribDescriptor desc : spaceProvider) {
+            try {
+                result.add(desc.getProvider());
+            } catch (Exception e) {
+                LOGGER.warn("Unable to instanciate " + desc.getName(), e);
+            }
+        }
+        return result;
+    }
+    
+    public String getProviderName(SpaceProvider provider) {
+        for (SpaceContribDescriptor desc : spaceProvider) {
+            try {
+            	if (desc.getProvider().equals(provider)) {
+            		return desc.getName();
+            	}
+            } catch (Exception e) {
+                LOGGER.warn("Unable to instanciate " + desc.getName(), e);
+            }
+        }
+        return null;
+    }
 
     public Univers getUniversFromId(String universId, CoreSession session) throws SpaceException {
         DocumentRef spaceRef = new IdRef(universId);
