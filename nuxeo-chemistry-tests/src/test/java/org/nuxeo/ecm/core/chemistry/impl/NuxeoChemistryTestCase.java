@@ -56,7 +56,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.chemistry.impl.NuxeoRepository;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
@@ -405,8 +404,7 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         assertNotNull(oe);
     }
 
-    // FIXME
-    public void XXXtestQuery() throws Exception {
+    public void testQuery() throws Exception {
         String query;
         Collection<CMISObject> res;
         Collection<ObjectEntry> col;
@@ -443,32 +441,6 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         assertEquals("testfile1_description", ob.getValue("dc:description"));
         assertEquals(file1.getId(), ob.getValue("cmis:objectId"));
 
-        // JOIN query through SPI
-
-        query = "SELECT A.dc:title, B.cmis:OBJECTID, B.dc:title" //
-                + " FROM cmis:folder A" //
-                + " JOIN cmis:document B ON A.cmis:objectId = B.cmis:parentId" //
-                + " WHERE A.dc:title = 'testfolder1_Title'" //
-                + " ORDER BY B.dc:title";
-        col = spi.query(query, false, null, null);
-        assertEquals(3, col.size());
-
-        it = col.iterator();
-        ob = it.next();
-        assertEquals("testfolder1_Title", ob.getValue("A.dc:title"));
-        assertEquals("testfile1_Title", ob.getValue("B.dc:title"));
-        assertEquals(file1.getId(), ob.getValue("B.cmis:objectId"));
-
-        ob = it.next();
-        assertEquals("testfolder1_Title", ob.getValue("A.dc:title"));
-        assertEquals("testfile2_Title", ob.getValue("B.dc:title"));
-        assertEquals(file2.getId(), ob.getValue("B.cmis:objectId"));
-
-        ob = it.next();
-        assertEquals("testfolder1_Title", ob.getValue("A.dc:title"));
-        assertEquals("testfile3_Title", ob.getValue("B.dc:title"));
-        assertEquals(file3.getId(), ob.getValue("B.cmis:objectId"));
-
         res = conn.query("SELECT * FROM cmis:document", false);
         assertNotNull(res);
         assertEquals(4, res.size());
@@ -500,6 +472,50 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
                 "SELECT * FROM cmis:document WHERE 'bob' = ANY dc:contributors",
                 false);
         assertEquals(2, res.size());
+    }
+
+    // FIXME problem with ObjectEntry model visible with AtomPub
+    public void XXXtestQueryJoin() throws Exception {
+        String query;
+        Collection<CMISObject> res;
+        Collection<ObjectEntry> col;
+        ObjectEntry ob;
+        Iterator<ObjectEntry> it;
+        DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
+        assertNotNull(folder1);
+
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        DocumentModel file2 = session.getDocument(new PathRef(
+                "/testfolder1/testfile2"));
+        DocumentModel file3 = session.getDocument(new PathRef(
+                "/testfolder1/testfile3"));
+
+        // JOIN query through SPI
+
+        query = "SELECT A.dc:title, B.cmis:OBJECTID, B.dc:title" //
+                + " FROM cmis:folder A" //
+                + " JOIN cmis:document B ON A.cmis:objectId = B.cmis:parentId" //
+                + " WHERE A.dc:title = 'testfolder1_Title'" //
+                + " ORDER BY B.dc:title";
+        col = spi.query(query, false, null, null);
+        assertEquals(3, col.size());
+
+        it = col.iterator();
+        ob = it.next();
+        assertEquals("testfolder1_Title", ob.getValue("A.dc:title"));
+        assertEquals("testfile1_Title", ob.getValue("B.dc:title"));
+        assertEquals(file1.getId(), ob.getValue("B.cmis:objectId"));
+
+        ob = it.next();
+        assertEquals("testfolder1_Title", ob.getValue("A.dc:title"));
+        assertEquals("testfile2_Title", ob.getValue("B.dc:title"));
+        assertEquals(file2.getId(), ob.getValue("B.cmis:objectId"));
+
+        ob = it.next();
+        assertEquals("testfolder1_Title", ob.getValue("A.dc:title"));
+        assertEquals("testfile3_Title", ob.getValue("B.dc:title"));
+        assertEquals(file3.getId(), ob.getValue("B.cmis:objectId"));
     }
 
     public void TODOtestQueryFulltext() throws Exception {

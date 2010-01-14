@@ -40,6 +40,7 @@ import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.CapabilityQuery;
 import org.apache.chemistry.CapabilityRendition;
 import org.apache.chemistry.Paging;
+import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryCapabilities;
 import org.apache.chemistry.RepositoryEntry;
@@ -167,6 +168,11 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
     public Type getType(String typeId) {
         initializeTypes();
         return typeManager.getType(typeId);
+    }
+
+    public PropertyDefinition getPropertyDefinition(String id) {
+        initializeTypes();
+        return typeManager.getPropertyDefinition(id);
     }
 
     public Collection<Type> getTypes() {
