@@ -21,9 +21,7 @@ package org.nuxeo.theme.webengine.fm.extensions;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,8 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.html.Utils;
-import org.nuxeo.theme.html.ui.Resources;
 
 import freemarker.core.Environment;
 import freemarker.template.TemplateDirectiveBody;

@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.html.ui.Resources;
 
 import freemarker.core.Environment;
@@ -49,10 +48,6 @@ public class NXThemesResourcesDirective implements TemplateDirectiveModel {
     public void execute(Environment env, Map params, TemplateModel[] loopVars,
             TemplateDirectiveBody body) throws TemplateException, IOException {
 
-        if (!params.isEmpty()) {
-            throw new TemplateModelException(
-                    "This directive doesn't allow parameters.");
-        }
         if (loopVars.length != 0) {
             throw new TemplateModelException(
                     "This directive doesn't allow loop variables.");
@@ -66,12 +61,12 @@ public class NXThemesResourcesDirective implements TemplateDirectiveModel {
         HttpServletRequest request = context.getRequest();
         final URL themeUrl = (URL) request.getAttribute("org.nuxeo.theme.url");
 
-        Map<String, String> attributes = new HashMap<String, String>();
+        Map<String, String> attributes = Utils.getTemplateDirectiveParameters(params);
         attributes.put("themeUrl", themeUrl.toString());
         attributes.put("path", context.getModulePath());
         attributes.put("basepath", context.getBasePath());
 
-        Boolean virtualHosting = Utils.isVirtualHosting(request);
+        Boolean virtualHosting = org.nuxeo.theme.html.Utils.isVirtualHosting(request);
         writer.write(Resources.render(attributes, virtualHosting));
     }
 }
