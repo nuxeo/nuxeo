@@ -5,7 +5,7 @@
     </title>
 
     <@nxthemes_head />
-    <@nxthemes_resources />
+    <@nxthemes_resources ignoreLocal="true"/>
 
   </head>
 
