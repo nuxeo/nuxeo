@@ -84,6 +84,9 @@
     <copy todir="${outdir}/nuxeo-dm-jetty">
       <fileset dir="${jetty}" />
     </copy>
+    <copy todir="${outdir}/nuxeo-dm-jetty/bundles">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-generic-wss-handler" />
+    </copy>
     <unzip dest="${outdir}/nuxeo-dm-jetty/bundles">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
       <patternset>
