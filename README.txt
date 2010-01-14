@@ -1,6 +1,43 @@
 About
 =====
 
+This is a prototype WebDAV extension to Nuxeo using JAX-RS and de webdav-jaxrs
+extension.
+
+Building / Running
+------------------
+
+Type: "make run". This starts an embedded server with a demo repository.
+
+Testing
+-------
+
+1. Using Cadaver
+
+Type: "cadaver http://localhost:9998/dav/workspaces"
+
+2. Using Litmus:
+
+Type: "litmus cadaver http://localhost:9998/dav/workspaces"
+
+3. Using the Mac
+
+On your Finder, type "Cmd-K" (Or Menu -> "Go" -> "Connect to server") and enter
+"cadaver http://localhost:9998/dav/workspaces"
+
+4. Usng Windows:
+
+Not tested for now.
+
+
+EVERYTHING BELOW THIS LINE IS OBSOLETE!
+
+-------------------------------------------------------------------------------
+
+
+About
+=====
+
 This addon is a prototype WebDAV implementation on top of WebEngine, using
 JAX-RS and de webdav-jaxrs extension.
 
