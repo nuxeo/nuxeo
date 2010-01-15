@@ -13,12 +13,11 @@
 
   <a4j:region rendered="#{slideShowManager.childrenSize > 0}">
 
-
-    <h3><h:outputText value="#{slideShowManager.child.title}" /></h3>
-
     <div class="slideshowContent">
 
   <h:form id="slideshowPoll">
+
+    <h3><h:outputText value="#{slideShowManager.child.title}" /></h3>
 
       <div class="slideShowControl">
     <a4j:poll interval="#{currentDocument.picturebook.timeinterval * 1000}"
