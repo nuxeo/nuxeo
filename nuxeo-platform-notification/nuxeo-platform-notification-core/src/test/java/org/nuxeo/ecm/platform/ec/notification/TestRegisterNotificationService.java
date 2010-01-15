@@ -18,15 +18,20 @@
  */
 package org.nuxeo.ecm.platform.ec.notification;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
+import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -43,6 +48,13 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+
+        // set properties needed for tests
+        assertTrue(runtime instanceof OSGiRuntimeService);
+        File notificationsPropertiesFile = FileUtils.getResourceFileFromContext("notifications.properties");
+        InputStream notificationsProperties = new FileInputStream(notificationsPropertiesFile);
+        ((OSGiRuntimeService) runtime).loadProperties(notificationsProperties);
+
         deployContrib("org.nuxeo.ecm.platform.notification.core.tests",
                 "NotificationService.xml");
         deployContrib("org.nuxeo.ecm.platform.notification.core.tests",
@@ -91,6 +103,14 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
         assertEquals(
                 Arrays.asList("Ajout d'un commentaire", "Workflow Change"),
                 sortedNotificationNames(notifs));
+    }
+
+    public void testExpandVarsInGeneralSettings() {
+        assertEquals("http://testServerPrefix/nuxeo", notificationService.getServerUrlPrefix());
+        assertEquals("testSubjectPrefix", notificationService.getEMailSubjectPrefix());
+
+        // this on should not be expanded
+        assertEquals("${not.existing.property}", notificationService.getMailSessionJndiName());
     }
 
 }
