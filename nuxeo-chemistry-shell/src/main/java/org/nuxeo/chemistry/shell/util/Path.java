@@ -455,6 +455,7 @@ public class Path implements Serializable {
         return append(new Path(tail));
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;

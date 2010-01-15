@@ -20,16 +20,17 @@
 package org.nuxeo.chemistry.shell;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.Console;
 import org.nuxeo.chemistry.shell.command.ExitException;
 import org.nuxeo.chemistry.shell.jline.JLineConsole;
-import org.nuxeo.chemistry.shell.util.FileUtils;
-import org.nuxeo.chemistry.shell.util.PwdReader;
+import org.nuxeo.chemistry.shell.util.PasswordReader;
 
 
 /**
@@ -100,7 +101,7 @@ public class Main {
                 }
             }
             if (username != null && password == null) {
-                password = PwdReader.read();
+                password = PasswordReader.read();
             }
             if (url != null && !url.contains("://")) {
                 url = "http://"+url;
@@ -137,9 +138,9 @@ public class Main {
         Console.getDefault().start(app);
         List<String> cmds;
         if (command == null) {
-            cmds = FileUtils.readLines(System.in);
+            cmds = IOUtils.readLines(System.in);
         } else {
-            cmds = FileUtils.readLines(new File(command));
+            cmds = IOUtils.readLines(new FileInputStream(new File(command)));
         }
         for (String cmd : cmds) {
             // Ignore empty lines / comments
@@ -184,7 +185,7 @@ public class Main {
 
     static void usage() throws IOException {
         URL url = Main.class.getResource("/help/usage.help");
-        String help = FileUtils.read(url.openStream());
+        String help = IOUtils.toString(url.openStream());
         System.out.print(help);
     }
 

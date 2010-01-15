@@ -19,11 +19,11 @@ package org.nuxeo.chemistry.shell.app;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
 import org.nuxeo.chemistry.shell.command.CommandRegistry;
-import org.nuxeo.chemistry.shell.util.FileUtils;
-import org.nuxeo.chemistry.shell.util.PwdReader;
+import org.nuxeo.chemistry.shell.util.PasswordReader;
 
 
 /**
@@ -98,7 +98,7 @@ public class Console {
      * Reads the stream an prints the result on the screen.
      */
     public void print(InputStream in) throws IOException {
-        FileUtils.copy(in, System.out);
+        IOUtils.copy(in, System.out);
         System.out.flush();
     }
 
@@ -120,7 +120,7 @@ public class Console {
     }
 
     public String promptPassword() throws IOException {
-        return PwdReader.read();
+        return PasswordReader.read();
     }
 
 }

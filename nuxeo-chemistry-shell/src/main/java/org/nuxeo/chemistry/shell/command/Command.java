@@ -23,9 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.chemistry.shell.app.Application;
 import org.nuxeo.chemistry.shell.app.Console;
-import org.nuxeo.chemistry.shell.util.FileUtils;
 
 
 /**
@@ -75,7 +75,7 @@ public abstract class Command {
         InputStream in = null;
         try {
             in = url.openStream();
-            return FileUtils.read(in);
+            return IOUtils.toString(in);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

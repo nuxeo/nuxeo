@@ -19,8 +19,6 @@
 
 package org.nuxeo.chemistry.shell.util;
 
-import org.apache.commons.io.FilenameUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,13 +116,6 @@ public class StringUtils {
             buf.setLength(0);
         }
         return tokens.toArray(new String[tokens.size()]);
-    }
-
-    /**
-     * Wildcard matches.
-     */
-    public static boolean matches(String pattern, String text) {
-        return FilenameUtils.wildcardMatch(text, pattern);
     }
 
 }

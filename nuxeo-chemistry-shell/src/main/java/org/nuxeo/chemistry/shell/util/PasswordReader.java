@@ -33,9 +33,9 @@ import java.io.InputStreamReader;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class PwdReader {
+public class PasswordReader {
 
-    private PwdReader() {
+    private PasswordReader() {
     }
 
     public static String read() throws IOException {

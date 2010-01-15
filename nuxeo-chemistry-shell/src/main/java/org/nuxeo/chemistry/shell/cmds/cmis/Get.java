@@ -22,13 +22,13 @@ import java.io.InputStream;
 
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
 import org.nuxeo.chemistry.shell.app.ChemistryCommand;
 import org.nuxeo.chemistry.shell.app.Context;
 import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
-import org.nuxeo.chemistry.shell.util.FileUtils;
 import org.nuxeo.chemistry.shell.util.Path;
 import org.nuxeo.chemistry.shell.util.SimplePropertyManager;
 
@@ -66,7 +66,7 @@ public class Get extends ChemistryCommand {
         File file = app.resolveFile(name);
         FileOutputStream out = new FileOutputStream(file);
         try {
-            FileUtils.copy(in, out);
+            IOUtils.copy(in, out);
             println("Object stream saved to local file: " + file);
         } finally {
             out.close();
