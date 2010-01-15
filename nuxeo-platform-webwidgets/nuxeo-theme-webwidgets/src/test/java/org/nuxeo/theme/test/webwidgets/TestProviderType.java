@@ -14,7 +14,6 @@
 
 package org.nuxeo.theme.test.webwidgets;
 
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.webwidgets.DecorationType;
 import org.nuxeo.theme.webwidgets.Service;
@@ -27,9 +26,10 @@ public class TestProviderType extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.ecm.core.persistence", "OSGI-INF/persistence-service.xml");
         deployContrib("org.nuxeo.theme.webwidgets", "OSGI-INF/nxthemes-webwidgets-service.xml");
         deployContrib("org.nuxeo.theme.test.webwidgets", "webwidgets-contrib.xml");
-        service = (Service) Framework.getRuntime().getComponent(Service.ID);
+        service = (Service) runtime.getComponent(Service.ID);
     }
 
     @Override

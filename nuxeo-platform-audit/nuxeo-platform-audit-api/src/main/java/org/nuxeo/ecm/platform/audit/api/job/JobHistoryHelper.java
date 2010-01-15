@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -52,7 +53,7 @@ public class JobHistoryHelper {
     protected LogEntry getNewLogEntry() {
         LogEntry entry = new LogEntry();
         entry.setCategory(jobName);
-        entry.setPrincipalName("system");
+        entry.setPrincipalName(SecurityConstants.SYSTEM_USERNAME);
         entry.setEventDate(new Date());
         return entry;
     }

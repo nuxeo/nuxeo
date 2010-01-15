@@ -21,7 +21,7 @@
         <documentation>
       This extension can be used to register default types mapping
         </documentation>
-        <object class="org.nuxeo.ecm.platform.wss.service.docTypes"/>
+        <object class="org.nuxeo.ecm.platform.wss.service.DocTypesDescriptor"/>
     </extension-point>
 
 </component>

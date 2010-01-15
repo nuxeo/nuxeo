@@ -9,7 +9,7 @@
     </title>
     
     <nxthemes:head />
-    <nxthemes:resources />
+    <nxthemes:resources ignoreLocal="true"/>
 
   </head>
 <body style="padding: 0; margin: 0">

@@ -20,6 +20,18 @@
 
 package org.nuxeo.ecm.platform.publisher.web;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -34,10 +46,12 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
@@ -58,17 +72,6 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
-
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * This Seam bean manages the publishing tab.
@@ -150,13 +153,14 @@ public class PublishActionsBean extends AbstractPublishActions implements
         return treesInformation;
     }
 
-    public String doPublish(PublicationNode publicationNode) throws ClientException {
+    public String doPublish(PublicationNode publicationNode)
+            throws ClientException {
         PublicationTree tree = getCurrentPublicationTreeForPublishing();
         return doPublish(tree, publicationNode);
     }
 
-    public String doPublish(PublicationTree tree, PublicationNode publicationNode)
-            throws ClientException {
+    public String doPublish(PublicationTree tree,
+            PublicationNode publicationNode) throws ClientException {
         if (tree == null) {
             return null;
         }
@@ -260,7 +264,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
 
     public List<PublishedDocument> getPublishedDocumentsFor(String treeName)
             throws ClientException {
-        if (treeName==null || "".equals(treeName)) {
+        if (treeName == null || "".equals(treeName)) {
             return null;
         }
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -328,13 +332,56 @@ public class PublishActionsBean extends AbstractPublishActions implements
         this.publishingComment = publishingComment;
     }
 
+    public class ApproverWithoutRestriction extends UnrestrictedSessionRunner {
+
+        public DocumentModel sourceDocument;
+
+        public DocumentModel liveDocument;
+
+        public String comment;
+
+        public PublishedDocument doc;
+
+        public ApproverWithoutRestriction(PublishedDocument doc,
+                String comment, CoreSession session) {
+            super(session);
+            this.doc = doc;
+            this.comment = comment;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            sourceDocument = session.getDocument(doc.getSourceDocumentRef());
+            liveDocument = session.getSourceDocument(sourceDocument.getRef());
+
+            sendApprovalEventToSourceDocument(session, sourceDocument,
+                    liveDocument, comment);
+        }
+
+        protected void sendApprovalEventToSourceDocument(CoreSession session,
+                DocumentModel sourceDocument, DocumentModel liveVersion,
+                String comment) throws ClientException {
+
+            notifyEvent(session,
+                    PublishingEvent.documentPublicationApproved.name(), null,
+                    comment, null, sourceDocument);
+
+            if (!sourceDocument.getRef().equals(liveVersion.getRef())) {
+                notifyEvent(session,
+                        PublishingEvent.documentPublicationApproved.name(),
+                        null, comment, null, liveVersion);
+            }
+        }
+
+    }
+
     public String approveDocument() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         PublicationTree tree = publisherService.getPublicationTreeFor(
                 currentDocument, documentManager);
         PublishedDocument publishedDocument = tree.wrapToPublishedDocument(currentDocument);
         tree.validatorPublishDocument(publishedDocument);
-        DocumentModel sourceDocument = documentManager.getDocument(publishedDocument.getSourceDocumentRef());
+
         FacesContext context = FacesContext.getCurrentInstance();
         String comment = publishingComment != null
                 && publishingComment.length() > 0 ? ComponentUtils.translate(
@@ -343,14 +390,15 @@ public class PublishActionsBean extends AbstractPublishActions implements
                 publishingComment) : ComponentUtils.translate(context,
                 "publishing.approved.without.comment", tree.getConfigName(),
                 publishedDocument.getParentPath());
-        notifyEvent(PublishingEvent.documentPublicationApproved.name(), null,
-                comment, null, sourceDocument);
 
-        DocumentModel liveVersion = documentManager.getDocument(new IdRef(
-                sourceDocument.getSourceId()));
-        if (!sourceDocument.getRef().equals(liveVersion.getRef())) {
-            notifyEvent(PublishingEvent.documentPublicationApproved.name(),
-                    null, comment, null, liveVersion);
+        ApproverWithoutRestriction approver = new ApproverWithoutRestriction(
+                publishedDocument, comment, documentManager);
+        if (documentManager.hasPermission(
+                publishedDocument.getSourceDocumentRef(),
+                SecurityConstants.WRITE)) {
+            approver.run();
+        } else {
+            approver.runUnrestricted();
         }
 
         Events.instance().raiseEvent(EventNames.DOCUMENT_PUBLISHED);
@@ -460,7 +508,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
     }
 
     public boolean hasReadRight(String documentPath) throws ClientException {
-        return documentManager.hasPermission(new PathRef(documentPath), SecurityConstants.READ);
+        return documentManager.hasPermission(new PathRef(documentPath),
+                SecurityConstants.READ);
     }
 
     public String getFormattedPath(String path) throws ClientException {
@@ -550,6 +599,12 @@ public class PublishActionsBean extends AbstractPublishActions implements
     public void notifyEvent(String eventId,
             Map<String, Serializable> properties, String comment,
             String category, DocumentModel dm) throws ClientException {
+        notifyEvent(documentManager, eventId, properties, comment, category, dm);
+    }
+
+    public static void notifyEvent(CoreSession session, String eventId,
+            Map<String, Serializable> properties, String comment,
+            String category, DocumentModel dm) throws ClientException {
 
         // Default category
         if (category == null) {
@@ -561,14 +616,13 @@ public class PublishActionsBean extends AbstractPublishActions implements
         }
 
         properties.put(CoreEventConstants.REPOSITORY_NAME,
-                documentManager.getRepositoryName());
-        properties.put(CoreEventConstants.SESSION_ID,
-                documentManager.getSessionId());
+                session.getRepositoryName());
+        properties.put(CoreEventConstants.SESSION_ID, session.getSessionId());
         properties.put(CoreEventConstants.DOC_LIFE_CYCLE,
                 dm.getCurrentLifeCycleState());
 
-        DocumentEventContext ctx = new DocumentEventContext(documentManager,
-                documentManager.getPrincipal(), dm);
+        DocumentEventContext ctx = new DocumentEventContext(session,
+                session.getPrincipal(), dm);
 
         ctx.setProperties(properties);
         ctx.setComment(comment);
