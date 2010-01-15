@@ -4,51 +4,61 @@
   <extension target="org.nuxeo.opensocial.gadgets.service"
     point="gadget">
 
+<internalGadget name="mappy">
+      <mountPoint>/mappy</mountPoint>
+      <entryPoint>mappy.xml</entryPoint>
+      <category>gadget.category.utilities</category>
+      <icon>mappy_icon.png</icon>
+    </internalGadget>
+
     <internalGadget name="tasks">
-      <mountPoint>/tasks/tasks</mountPoint>
-      <directory>tasks-gadget</directory>
+      <mountPoint>/tasks</mountPoint>
+      <entryPoint>tasks.xml</entryPoint>
       <category>Nuxeo</category>
       <icon>tasks.png</icon>
     </internalGadget>
 
     <internalGadget name="waitingfor">
-      <mountPoint>/waitingfor/waitingfor</mountPoint>
-      <directory>waitingfor-gadget</directory>
+      <mountPoint>/waitingfor</mountPoint>
+      <entryPoint>waitingfor.xml</entryPoint>
       <category>Nuxeo</category>
       <icon>tasks.png</icon>
     </internalGadget>
 
     <internalGadget name="bbcnews">
-      <mountPoint>/bbcnews/bbcnews</mountPoint>
-      <directory>bbcnews-gadget</directory>
+      <mountPoint>/bbcnews</mountPoint>
+      <entryPoint>bbcnews.xml</entryPoint>
       <category>Information</category>
       <icon>bbc.png</icon>
     </internalGadget>
 
     <internalGadget name="hello">
-      <mountPoint>/hello/hello</mountPoint>
-      <directory>hello-gadget</directory>
+      <mountPoint>/hello</mountPoint>
+      <entryPoint>hello.xml</entryPoint>
       <category>Information</category>
       <icon>hello.png</icon>
     </internalGadget>
 
     <internalGadget name="userworkspaces">
-      <mountPoint>/userworkspaces/documentlists</mountPoint>
-      <directory>documentlists-gadget</directory>
+      <mountPoint>/userworkspaces</mountPoint>
+      <directory>documentlists</directory>
+      <entryPoint>userworkspaces.xml</entryPoint>
       <category>Nuxeo</category>
       <icon>workspace_64.png</icon>
     </internalGadget>
 
     <internalGadget name="userdocuments">
-      <mountPoint>/userdocuments/documentlists</mountPoint>
-      <directory>documentlists-gadget</directory>
+      <mountPoint>/userdocuments</mountPoint>
+      <directory>documentlists</directory>
+      <entryPoint>userdocuments.xml</entryPoint>
       <category>Nuxeo</category>
       <icon>note_64.png</icon>
     </internalGadget>
 
     <internalGadget name="usersites">
-      <mountPoint>/userdocuments/documentlists</mountPoint>
-      <directory>documentlists-gadget</directory>
+      <mountPoint>/userdocuments</mountPoint>
+      <directory>documentlists</directory>
+      <entryPoint>usersites.xml</entryPoint>
       <category>Nuxeo</category>
       <icon>website_64.png</icon>
     </internalGadget>
