@@ -175,7 +175,7 @@ gwtBundleActivator and add you own login in the start() method after calling
 super.start(), or you can directly implement BundleActivator and call in
 start() method the following code: GwtBundleActivator.install(context)
  
-2. contains the generated GWT application files into a directory named "war" at
+2. contains the generated GWT application files into a directory named "gwt-war" at
 the root of the JAR.
 
 So the JAR will have a content similar to the following one:
@@ -185,18 +185,18 @@ your-gwt-module.jar
   OSGI-INF/deployment-fragment.xml
   ...
   org/
-  war/
+  gwt-war/
     your_gwt_module.html
     ...
 
 Then simply put your JAR into a Nuxeo Server. (Make sure the server contains
 nuxeo-webengine-gwt.jar in bundles directory).
 
-At first startup the "war" directory from your JAR will be copied into
+At first startup the "gwt-war" directory from your JAR will be copied into
 {web}/root.war/gwt/ where {web} is the webengine root directory.
 
 At each startup the GWT activator you added to your bundle will check if it
-needs to unzip again the "war" directory content.
+needs to unzip again the "gwt-war" directory content.
 
 This is true if the timestamp of the bundle JAR will be greater than the
 timestamp of the file {web}/root.war/gwt/.metadata/{your_bundle_symbolic_name}.
@@ -412,7 +412,7 @@ Example of a pom.xml
                   <!-- to speed up compiler
                   <arg value="-draftCompile" /-->
                   <arg value="-war" />
-                  <arg value="${project.build.outputDirectory}/war" />
+                  <arg value="${project.build.outputDirectory}/gwt-war" />
                   <arg value="${gwt.module}" />
                 </java>
               </tasks>

@@ -65,7 +65,7 @@ public class GwtBundleActivator implements BundleActivator {
         }
         if (markerFile.lastModified() < file.lastModified()) {
             log.info("Installing GWT Application from bundle "+symName);
-            ZipUtils.unzip("war", file, GWT_ROOT);
+            ZipUtils.unzip("gwt-war", file, GWT_ROOT);
             markerFile.getParentFile().mkdirs();
             markerFile.createNewFile();
         }
