@@ -20,10 +20,12 @@ package org.nuxeo.ecm.core.chemistry.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.Policy;
@@ -68,8 +70,7 @@ public class NuxeoObject extends BaseObject implements CMISObject,
     }
 
     public void move(Folder targetFolder, Folder sourceFolder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        connection.moveObject(this, targetFolder, sourceFolder);
     }
 
     public void delete() {
@@ -77,7 +78,7 @@ public class NuxeoObject extends BaseObject implements CMISObject,
     }
 
     public void unfile() {
-        throw new UnsupportedOperationException();
+        connection.removeObjectFromFolder(this, null);
     }
 
     public Folder getParent() {
@@ -92,13 +93,25 @@ public class NuxeoObject extends BaseObject implements CMISObject,
             return new NuxeoFolder(connection.session.getDocument(parentRef),
                     connection);
         } catch (ClientException e) {
-            throw new RuntimeException(e.toString(), e); // TODO
+            throw new CMISRuntimeException(e.toString(), e);
         }
     }
 
     public Collection<Folder> getParents() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (doc.getPathAsString().equals("/")) {
+            return Collections.emptyList();
+        }
+        DocumentRef parentRef = doc.getParentRef();
+        if (parentRef == null) {
+            return Collections.emptyList();
+        }
+        try {
+            Folder folder = new NuxeoFolder(
+                    connection.session.getDocument(parentRef), connection);
+            return Collections.singletonList(folder);
+        } catch (ClientException e) {
+            throw new CMISRuntimeException(e.toString(), e);
+        }
     }
 
     public List<Relationship> getRelationships(RelationshipDirection direction,

@@ -404,6 +404,34 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         assertNotNull(oe);
     }
 
+    public void testMoveSPI() throws Exception {
+        ObjectEntry fold = spi.getObjectByPath("/testfolder1", null);
+        ObjectEntry doc = spi.getObjectByPath(
+                "/testfolder2/testfolder3/testfile4", null);
+        ObjectId res = spi.moveObject(doc, fold, null);
+        assertEquals(doc.getId(), res.getId());
+        doc = spi.getObjectByPath("/testfolder2/testfolder3/testfile4", null);
+        assertNull(doc);
+        doc = spi.getObjectByPath("/testfolder1/testfile4", null);
+        assertNotNull(doc);
+    }
+
+    public void testMove() throws Exception {
+        ObjectEntry foldid = spi.getObjectByPath("/testfolder1", null);
+        Folder fold = (Folder) conn.getObject(foldid);
+
+        ObjectEntry docid = spi.getObjectByPath(
+                "/testfolder2/testfolder3/testfile4", null);
+        Document doc = (Document) conn.getObject(docid);
+        doc.move(fold, null);
+        assertEquals(docid.getId(), doc.getId());
+        ObjectEntry d = spi.getObjectByPath(
+                "/testfolder2/testfolder3/testfile4", null);
+        assertNull(d);
+        d = spi.getObjectByPath("/testfolder1/testfile4", null);
+        assertNotNull(d);
+    }
+
     public void testQuery() throws Exception {
         String query;
         Collection<CMISObject> res;

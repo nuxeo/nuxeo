@@ -445,7 +445,7 @@ public class NuxeoConnection implements Connection, SPI {
         } catch (ClientException e) {
             throw new RuntimeException(e); // TODO
         }
-        switch (repository.getType(doc.getType()).getBaseType()) {
+        switch (repository.getType(NuxeoType.mappedId(doc.getType())).getBaseType()) {
         case DOCUMENT:
             return new NuxeoDocument(doc, this);
         case FOLDER:
@@ -572,8 +572,41 @@ public class NuxeoConnection implements Connection, SPI {
 
     public ObjectId moveObject(ObjectId object, ObjectId targetFolder,
             ObjectId sourceFolder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String id = object.getId();
+        if (repository.getInfo().getRootFolderId().getId().equals(id)) {
+            throw new ConstraintViolationException("Cannot move root");
+        }
+        try {
+            DocumentRef docRef = new IdRef(id);
+            if (!session.exists(docRef)) {
+                throw new ObjectNotFoundException(id);
+            }
+            DocumentModel parent = session.getParentDocument(docRef);
+            String sourceFolderId;
+            if (sourceFolder == null) {
+                sourceFolderId = parent.getId();
+            } else {
+                // check it's there
+                sourceFolderId = sourceFolder.getId();
+                if (!parent.getId().equals(sourceFolderId)) {
+                    throw new ConstraintViolationException("Object " + id
+                            + " is not filed in " + sourceFolderId);
+                }
+            }
+            DocumentModel doc = session.move(docRef, new IdRef(
+                    targetFolder.getId()), null);
+            session.save();
+            // update entry if possible, otherwise return just id
+            if (object instanceof NuxeoObjectEntry) {
+                NuxeoObjectEntry noe = (NuxeoObjectEntry) object;
+                noe.setDocumentModel(doc);
+                return noe;
+            } else {
+                return newObjectId(doc.getId());
+            }
+        } catch (ClientException e) {
+            throw new CMISRuntimeException(e.toString(), e);
+        }
     }
 
     public void deleteObject(ObjectId object, boolean allVersions) {
