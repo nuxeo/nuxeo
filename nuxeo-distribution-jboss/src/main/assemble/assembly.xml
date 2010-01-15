@@ -62,8 +62,9 @@
     <unzip dest="${outdir}/nuxeo-ep-jboss/server/default/deploy/nuxeo.ear">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
     </unzip>
-    <antcall target="jboss-third-party-libraries" >
-      <param name="lib.dir" value="${outdir}/nuxeo-ep-jboss/server/default/deploy/nuxeo.ear/lib" />
+    <antcall target="jboss-third-party-libraries">
+      <param name="lib.dir"
+             value="${outdir}/nuxeo-ep-jboss/server/default/deploy/nuxeo.ear/lib" />
     </antcall>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
          basedir="${outdir}"
@@ -85,8 +86,9 @@
     <unzip dest="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
     </unzip>
-    <antcall target="jboss-third-party-libraries" >
-      <param name="lib.dir" value="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear/lib" />
+    <antcall target="jboss-third-party-libraries">
+      <param name="lib.dir"
+             value="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear/lib" />
     </antcall>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
          basedir="${outdir}"
@@ -105,8 +107,7 @@
     </delete>
     -->
     <!-- Add libraries required under JBoss (not present in the dependency tree) -->
-    <copy todir="${lib.dir}"
-          overwrite="true">
+    <copy todir="${lib.dir}" overwrite="true">
       <artifact:resolveFile key="org.jboss.el:jboss-el" />
       <artifact:resolveFile key="jboss:jboss-cache-jdk50" />
       <artifact:resolveFile key="org.jboss.seam:jboss-seam-remoting" />
