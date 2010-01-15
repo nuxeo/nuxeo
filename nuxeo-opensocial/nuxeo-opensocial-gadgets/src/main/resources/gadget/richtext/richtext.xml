@@ -16,6 +16,7 @@
   <UserPref name="richTitle" datatype="hidden"/>
   <UserPref name="link" datatype="hidden"/>
   <UserPref name="legend" datatype="hidden"/>
+  <UserPref name="place" datatype="hidden"/>
   
   <Content type="html" view="default">
   <![CDATA[
@@ -65,7 +66,7 @@
     	text-decoration:none;
   	}
   	
-  	#form{
+  	.form{
    		background:#666666;
   	}
   	
@@ -74,7 +75,7 @@
     	border:1px solid #ffffff;
   	}
 
-  	#form td{
+  	.form td{
    		color:#ffffff;
   	}
 
@@ -92,6 +93,8 @@
     </script>
    <div id="title"></div>
    	<div style="text-align:center;margin:auto;">
+   		<div id="photo"></div>
+   		<div id="text"></div>
    		<img id="loader" src="/nuxeo/img/standart_waiter.gif"/>
 		<a id="link" href="#" target="_tab" style="display:none;">
     		<img style="border:0;" id="photo" src="">
@@ -104,8 +107,14 @@
 	   
    <div style="margin:auto;display:none;" id="form">
 	<div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a></div>
-	<textarea id="richtext" cols="35" style="width:100%"></textarea>
-	<table style="width:100%" id="form">
+	<table style="width:100%;margin-bottom:10px;" class="form">
+  	<tr>
+    	<td style="width:30%"><label for="title">Titre : </label></td>
+    	<td style="width:70%"><input type="text" name="title" id="title-field" /></td>
+  	</tr>
+  	</table>
+  	<textarea id="richtext" cols="35" style="width:100%"></textarea>
+  	<table style="width:100%" class="form">
   	<tr>
     	<td style="width:30%"><label for="photo">Photo :</label> </td>
     	<td style="width:70%">
@@ -115,8 +124,11 @@
   	</td>
   	</tr>
   	<tr>
-    	<td style="width:30%"><label for="title">Titre : </label></td>
-    	<td style="width:70%"><input type="text" name="title" id="title-field" /></td>
+  		<td colspan="2">
+  			<input type="radio" class="place" name="place" value="left" checked>à gauche
+			<input type="radio" class="place" name="place" value="center">au centre
+			<input type="radio" class="place" name="place" value="rigth">à droite
+		</td>
   	</tr>
   	<tr>
     	<td style="width:30%"><label for="link">Lien : </label></td>
@@ -124,7 +136,7 @@
   	</tr>
   	<tr>
     	<td style="width:30%"><label for="legend">Légende :</label></td>
-    	<td style="width:70%"><textarea type="text" name="legend" id="legend-field" /></td>
+    	<td style="width:70%"><input type="text" name="legend" id="legend-field" /></td>
   	</tr>
   	<tr>
    		<td style="width:30%"></td>
@@ -132,6 +144,7 @@
       		<a href="" id="upload">Valider</a>
     	</td>
   	</tr>
+	<br/>
   	</table>
 	</div>
   ]]>
