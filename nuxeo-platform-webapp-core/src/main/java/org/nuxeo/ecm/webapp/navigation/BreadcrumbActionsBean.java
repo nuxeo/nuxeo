@@ -84,6 +84,8 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
     private static final String VIEW_DOMAIN_OUTCOME = "view_domains";
 
     private static final String BREADCRUMB_PREFIX = "breadcrumb";
+    
+    private static final String PATH_SHORTCUT = "....";
 
     // minimum path segments that must be displayed without shrinking
     protected static int MIN_PATH_SEGMENTS_LEN = 4;
@@ -95,6 +97,13 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
     public String navigateToParent() throws ClientException {
         List<PathElement> documentsFormingPath = getBackendPath();
         int nbDocInList = documentsFormingPath.size();
+        //if there is the case, remove the starting .... 
+        if (nbDocInList >= 0
+                && documentsFormingPath.get(0).getName().equals(PATH_SHORTCUT)) {
+            documentsFormingPath.remove(0);
+        }
+
+        nbDocInList = documentsFormingPath.size();
 
         if (nbDocInList == 0) {
             return "view_servers";
@@ -204,7 +213,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
                 break;
             }
         }
-        shrinkedPath.add(0,new TextPathElement("...."));
+        shrinkedPath.add(0,new TextPathElement(PATH_SHORTCUT));
         return shrinkedPath;
     }
 
@@ -212,7 +221,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
         List<PathElement> pathElements = new ArrayList<PathElement>();
         // add the current document to the path
         //pathElements.add(new DocumentPathElement(
-        //        navigationContext.getCurrentDocument()));
+        //navigationContext.getCurrentDocument()));
         FacesContext context = FacesContext.getCurrentInstance();
         PathElement pathLabel = new TextPathElement(ComponentUtils.translate(
                 context, label, null));
