@@ -32,9 +32,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
 import org.nuxeo.ecm.spaces.api.Univers;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
+import org.nuxeo.ecm.spaces.api.exceptions.UniversNotFoundException;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
@@ -87,6 +88,8 @@ public class SpacesModuleRoot extends ModuleRoot {
 
       return newObject("Univers", universe);
 
+    } catch (UniversNotFoundException e) {
+        throw new WebResourceNotFoundException("No univers " + universeName + "found", e);
     } catch (Exception e) {
       throw WebException.wrap(e);
     }

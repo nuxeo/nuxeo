@@ -35,6 +35,7 @@ import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
@@ -78,7 +79,7 @@ public class UniversWebObject extends DefaultObject {
             if (spaces.size() > 0) {
                 return newObject("Space", spaces.get(0));
             } else {
-                return Response.status(404).build();
+                throw new WebResourceNotFoundException("No space found for this universe");
             }
         } catch (Exception e) {
             return Response.status(404).build();
@@ -119,7 +120,7 @@ public class UniversWebObject extends DefaultObject {
             return newObject("Space",space);
 
         } catch (SpaceNotFoundException e) {
-            return Response.status(404).build();
+            throw new WebResourceNotFoundException("No space " + spacename + " found for this universe");
         } catch(Exception e) {
             throw WebException.wrap(e);
         }
