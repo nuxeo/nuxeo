@@ -219,7 +219,6 @@
         <include name="apacheds-core-shared*" />
         <include name="apacheds-protocol-shared*" />
         <include name="c3p0*" />
-        <include name="commons-fileupload*" />
         <include name="commons-httpclient*" />
         <include name="commons-lang*" />
         <include name="commons-logging*" />

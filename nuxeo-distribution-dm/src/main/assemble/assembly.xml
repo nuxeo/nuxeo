@@ -15,8 +15,6 @@
       <isset property="maven.profile.vcs" />
     </condition>
 
-    <!-- <artifact:print output="dependency-tree.log" /> -->
-
     <property name="outdir" value="${maven.project.build.directory}" />
     <property name="stagedir" value="${outdir}/stage" />
 
@@ -26,6 +24,7 @@
 
   <target name="expand" unless="no.build">
     <artifact:nuxeo-expand />
+    <artifact:print output="dependency-tree.log" />
   </target>
 
   <target name="build" depends="init" unless="maven.profile.nuxeo-ep">
@@ -185,7 +184,6 @@
         <include name="apacheds-core-shared*" />
         <include name="apacheds-protocol-shared*" />
         <include name="c3p0*" />
-        <include name="commons-fileupload*" />
         <include name="commons-httpclient*" />
         <include name="commons-lang*" />
         <include name="commons-logging*" />
