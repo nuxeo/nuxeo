@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.nuxeo.chemistry.shell.Application;
-import org.nuxeo.chemistry.shell.Console;
+import org.nuxeo.chemistry.shell.app.Application;
+import org.nuxeo.chemistry.shell.app.Console;
 import org.nuxeo.chemistry.shell.util.FileUtils;
 
 
@@ -38,8 +38,11 @@ public abstract class Command {
     protected String[] aliases;
     protected String synopsis;
 
-
-    protected Command() {
+    public Command() {
+        Cmd anno = getClass().getAnnotation(Cmd.class);
+        synopsis = anno.synopsis();
+        syntax = CommandSyntax.parse(anno.syntax());
+        aliases = syntax.getCommandToken().getNames();
     }
 
     public String getName() {
@@ -65,7 +68,7 @@ public abstract class Command {
     }
 
     public String getHelp() {
-        URL url = getClass().getResource("/META-INF/help/"+getName()+".help");
+        URL url = getClass().getResource("/help/"+getName()+".help");
         if (url == null) {
             return "N/A";
         }

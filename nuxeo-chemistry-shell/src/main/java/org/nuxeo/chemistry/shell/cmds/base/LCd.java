@@ -13,30 +13,38 @@
  *
  * Contributors:
  *     bstefanescu
+ *
+ * $Id$
  */
-package org.nuxeo.chemistry.shell.app;
 
+package org.nuxeo.chemistry.shell.cmds.base;
+
+import java.io.File;
+
+import org.nuxeo.chemistry.shell.app.Application;
+import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.Command;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class ChemistryCommand extends Command {
+@Cmd(syntax="lcd target:dir", synopsis="Change local working directory")
+public class LCd extends Command {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        if (app instanceof ChemistryApp) {
-            ensureConnected(app);
-            execute((ChemistryApp) app, cmdLine);
-        } else {
-            Console.getDefault().error(
-                    "Chemistry commands cannot be run outside chemistry context");
-        }
-    }
+        String target = cmdLine.getParameterValue("target");
 
-    protected abstract void execute(ChemistryApp app, CommandLine cmdLine)
-            throws Exception;
+        File file = app.resolveFile(target);
+        if (!file.isDirectory()) {
+            throw new CommandException("Target is not a directory: " + file);
+        }
+
+        app.setWorkingDirectory(file);
+    }
 
 }

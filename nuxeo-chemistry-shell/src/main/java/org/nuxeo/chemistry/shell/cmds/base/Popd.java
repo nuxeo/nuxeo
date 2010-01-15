@@ -13,30 +13,44 @@
  *
  * Contributors:
  *     bstefanescu
+ *
+ * $Id$
  */
-package org.nuxeo.chemistry.shell.app;
 
+package org.nuxeo.chemistry.shell.cmds.base;
+
+import java.util.Stack;
+
+import org.nuxeo.chemistry.shell.app.Application;
+import org.nuxeo.chemistry.shell.app.Context;
+import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.Command;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class ChemistryCommand extends Command {
+@Cmd(syntax="popd", synopsis="Pop directory stack")
+public class Popd extends Command {
+
+    public static final String CTX_STACK_KEY = "ctx.stack";
 
     @Override
+    @SuppressWarnings("unchecked")
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        if (app instanceof ChemistryApp) {
-            ensureConnected(app);
-            execute((ChemistryApp) app, cmdLine);
-        } else {
-            Console.getDefault().error(
-                    "Chemistry commands cannot be run outside chemistry context");
+        Stack<Context> stack = (Stack<Context>) app.getData(CTX_STACK_KEY);
+        if (stack == null || stack.isEmpty()) {
+            throw new CommandException("Context stack is empty");
+        }
+
+        Context ctx = stack.pop();
+        app.setContext(ctx);
+        if (stack.isEmpty()) {
+            app.setData(CTX_STACK_KEY, null);
         }
     }
-
-    protected abstract void execute(ChemistryApp app, CommandLine cmdLine)
-            throws Exception;
 
 }

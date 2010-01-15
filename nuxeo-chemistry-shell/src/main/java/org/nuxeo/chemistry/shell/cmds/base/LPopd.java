@@ -13,30 +13,44 @@
  *
  * Contributors:
  *     bstefanescu
+ *
+ * $Id$
  */
-package org.nuxeo.chemistry.shell.app;
 
+package org.nuxeo.chemistry.shell.cmds.base;
+
+import java.io.File;
+import java.util.Stack;
+
+import org.nuxeo.chemistry.shell.app.Application;
+import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.Command;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class ChemistryCommand extends Command {
+@Cmd(syntax="lpopd", synopsis="Pop local directory stack")
+public class LPopd extends Command {
+
+    public static final String WDIR_STACK_KEY = "wdir.stack";
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        if (app instanceof ChemistryApp) {
-            ensureConnected(app);
-            execute((ChemistryApp) app, cmdLine);
-        } else {
-            Console.getDefault().error(
-                    "Chemistry commands cannot be run outside chemistry context");
+        Stack<File> stack = (Stack<File>) app.getData(WDIR_STACK_KEY);
+        if (stack == null) {
+            throw new CommandException("No more directories on the stack");
         }
-    }
 
-    protected abstract void execute(ChemistryApp app, CommandLine cmdLine)
-            throws Exception;
+        File file = stack.pop();
+        if (stack.isEmpty()) {
+            app.setData(WDIR_STACK_KEY, null);
+        }
+        app.setWorkingDirectory(file);
+    }
 
 }

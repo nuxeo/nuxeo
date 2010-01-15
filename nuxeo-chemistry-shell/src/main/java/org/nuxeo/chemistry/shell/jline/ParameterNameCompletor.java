@@ -13,30 +13,24 @@
  *
  * Contributors:
  *     bstefanescu
+ *
+ * $Id$
  */
-package org.nuxeo.chemistry.shell.app;
+
+package org.nuxeo.chemistry.shell.jline;
+
+import jline.SimpleCompletor;
 
 import org.nuxeo.chemistry.shell.command.Command;
-import org.nuxeo.chemistry.shell.command.CommandLine;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class ChemistryCommand extends Command {
+public class ParameterNameCompletor extends SimpleCompletor {
 
-    @Override
-    public void run(Application app, CommandLine cmdLine) throws Exception {
-        if (app instanceof ChemistryApp) {
-            ensureConnected(app);
-            execute((ChemistryApp) app, cmdLine);
-        } else {
-            Console.getDefault().error(
-                    "Chemistry commands cannot be run outside chemistry context");
-        }
+    public ParameterNameCompletor(Command cmd) {
+        super(cmd.getSyntax().getParameterKeys());
     }
-
-    protected abstract void execute(ChemistryApp app, CommandLine cmdLine)
-            throws Exception;
 
 }

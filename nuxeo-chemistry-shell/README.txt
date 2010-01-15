@@ -72,7 +72,7 @@ cmds
 exit
 
 Ls listing supports colors based on object types - I've made a default schema
-for demonstration (you can change this in META-INF/color.properties).
+for demonstration (you can change this in color.properties).
 
 The shell has 3 modes:
 

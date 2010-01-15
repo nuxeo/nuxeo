@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import org.nuxeo.chemistry.shell.console.CompositeCompletor;
+import org.nuxeo.chemistry.shell.jline.CompositeCompletor;
 import org.nuxeo.chemistry.shell.util.StringUtils;
 
 /**

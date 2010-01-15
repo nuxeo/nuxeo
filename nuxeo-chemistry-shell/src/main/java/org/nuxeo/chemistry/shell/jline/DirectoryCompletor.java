@@ -14,29 +14,35 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.chemistry.shell.app;
+package org.nuxeo.chemistry.shell.jline;
 
-import org.nuxeo.chemistry.shell.command.Command;
-import org.nuxeo.chemistry.shell.command.CommandLine;
+import java.io.File;
+import java.util.List;
+
+import jline.FileNameCompletor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class ChemistryCommand extends Command {
+public class DirectoryCompletor extends FileNameCompletor {
 
     @Override
-    public void run(Application app, CommandLine cmdLine) throws Exception {
-        if (app instanceof ChemistryApp) {
-            ensureConnected(app);
-            execute((ChemistryApp) app, cmdLine);
-        } else {
-            Console.getDefault().error(
-                    "Chemistry commands cannot be run outside chemistry context");
+    public int matchFiles(String buffer, String translated, File[] entries,
+            List candidates) {
+        if (entries == null) {
+            return -1;
         }
-    }
 
-    protected abstract void execute(ChemistryApp app, CommandLine cmdLine)
-            throws Exception;
+        for (File entry : entries) {
+            if (entry.getAbsolutePath().startsWith(translated) && entry.isDirectory()) {
+                candidates.add(entry.getName());
+            }
+        }
+
+        int index = buffer.lastIndexOf(File.separator);
+
+        return index + File.separator.length();
+    }
 
 }

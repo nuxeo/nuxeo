@@ -1,13 +1,13 @@
 package org.nuxeo.chemistry.shell.command;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nuxeo.chemistry.shell.Application;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.nuxeo.chemistry.shell.app.Application;
 
 public class TestCommandLine extends Assert {
 
@@ -46,7 +46,8 @@ public class TestCommandLine extends Assert {
 
     @Ignore // this is not a test, you dummy Maven!
     @Cmd(syntax="cmd [-r] [-o:*] arg1 [titi:file?tutu]", synopsis="")
-    class DummyCommand extends AnnotatedCommand {
+    class DummyCommand extends Command {
+        @Override
         public void run(Application app, CommandLine cmdLine) throws Exception {}
     }
 

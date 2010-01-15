@@ -13,30 +13,45 @@
  *
  * Contributors:
  *     bstefanescu
+ *
+ * $Id$
  */
-package org.nuxeo.chemistry.shell.app;
 
+package org.nuxeo.chemistry.shell.cmds.base;
+
+import org.nuxeo.chemistry.shell.app.Application;
+import org.nuxeo.chemistry.shell.app.Context;
+import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.Command;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
+import org.nuxeo.chemistry.shell.util.Path;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class ChemistryCommand extends Command {
+@Cmd(syntax="id [item:item]", synopsis="Identity of the specified entry")
+public class Id extends Command {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        if (app instanceof ChemistryApp) {
-            ensureConnected(app);
-            execute((ChemistryApp) app, cmdLine);
-        } else {
-            Console.getDefault().error(
-                    "Chemistry commands cannot be run outside chemistry context");
-        }
-    }
+        ensureConnected(app);
 
-    protected abstract void execute(ChemistryApp app, CommandLine cmdLine)
-            throws Exception;
+        String param = cmdLine.getParameterValue("item");
+
+        Context ctx;
+        if (param != null) {
+            ctx = app.resolveContext(new Path(param));
+            if (ctx == null) {
+                throw new CommandException("Cannot resolve target: " + param);
+            }
+        } else {
+            ctx = app.getContext();
+        }
+
+        println(ctx.id());
+    }
 
 }

@@ -21,13 +21,13 @@ package org.nuxeo.chemistry.shell;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
 import org.nuxeo.chemistry.shell.app.ChemistryApp;
+import org.nuxeo.chemistry.shell.app.Console;
 import org.nuxeo.chemistry.shell.command.ExitException;
-import org.nuxeo.chemistry.shell.console.JLineConsole;
+import org.nuxeo.chemistry.shell.jline.JLineConsole;
 import org.nuxeo.chemistry.shell.util.FileUtils;
 import org.nuxeo.chemistry.shell.util.PwdReader;
 
@@ -183,7 +183,7 @@ public class Main {
     }
 
     static void usage() throws IOException {
-        URL url = Main.class.getResource("/META-INF/help/usage.help");
+        URL url = Main.class.getResource("/help/usage.help");
         String help = FileUtils.read(url.openStream());
         System.out.print(help);
     }

@@ -22,22 +22,22 @@ package org.nuxeo.chemistry.shell.command;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.chemistry.shell.cmds.Cd;
-import org.nuxeo.chemistry.shell.cmds.Connect;
-import org.nuxeo.chemistry.shell.cmds.Disconnect;
-import org.nuxeo.chemistry.shell.cmds.Exit;
-import org.nuxeo.chemistry.shell.cmds.Help;
-import org.nuxeo.chemistry.shell.cmds.Id;
-import org.nuxeo.chemistry.shell.cmds.LCd;
-import org.nuxeo.chemistry.shell.cmds.LPopd;
-import org.nuxeo.chemistry.shell.cmds.LPushd;
-import org.nuxeo.chemistry.shell.cmds.LPwd;
-import org.nuxeo.chemistry.shell.cmds.Ll;
-import org.nuxeo.chemistry.shell.cmds.Ls;
-import org.nuxeo.chemistry.shell.cmds.Match;
-import org.nuxeo.chemistry.shell.cmds.Popd;
-import org.nuxeo.chemistry.shell.cmds.Pushd;
-import org.nuxeo.chemistry.shell.cmds.Pwd;
+import org.nuxeo.chemistry.shell.cmds.base.Cd;
+import org.nuxeo.chemistry.shell.cmds.base.Connect;
+import org.nuxeo.chemistry.shell.cmds.base.Disconnect;
+import org.nuxeo.chemistry.shell.cmds.base.Exit;
+import org.nuxeo.chemistry.shell.cmds.base.Help;
+import org.nuxeo.chemistry.shell.cmds.base.Id;
+import org.nuxeo.chemistry.shell.cmds.base.LCd;
+import org.nuxeo.chemistry.shell.cmds.base.LPopd;
+import org.nuxeo.chemistry.shell.cmds.base.LPushd;
+import org.nuxeo.chemistry.shell.cmds.base.LPwd;
+import org.nuxeo.chemistry.shell.cmds.base.Ll;
+import org.nuxeo.chemistry.shell.cmds.base.Ls;
+import org.nuxeo.chemistry.shell.cmds.base.Match;
+import org.nuxeo.chemistry.shell.cmds.base.Popd;
+import org.nuxeo.chemistry.shell.cmds.base.Pushd;
+import org.nuxeo.chemistry.shell.cmds.base.Pwd;
 import org.nuxeo.chemistry.shell.util.StringUtils;
 
 /**

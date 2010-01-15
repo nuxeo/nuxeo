@@ -16,12 +16,18 @@
  */
 package org.nuxeo.chemistry.shell.app;
 
-import java.io.IOException;
-
 import org.apache.chemistry.atompub.client.connector.APPContentManager;
-import org.nuxeo.chemistry.shell.AbstractApplication;
-import org.nuxeo.chemistry.shell.Context;
-import org.nuxeo.chemistry.shell.app.cmds.*;
+import org.nuxeo.chemistry.shell.cmds.cmis.Cat;
+import org.nuxeo.chemistry.shell.cmds.cmis.CreateFile;
+import org.nuxeo.chemistry.shell.cmds.cmis.CreateFolder;
+import org.nuxeo.chemistry.shell.cmds.cmis.DumpProps;
+import org.nuxeo.chemistry.shell.cmds.cmis.DumpTree;
+import org.nuxeo.chemistry.shell.cmds.cmis.Get;
+import org.nuxeo.chemistry.shell.cmds.cmis.PropGet;
+import org.nuxeo.chemistry.shell.cmds.cmis.Put;
+import org.nuxeo.chemistry.shell.cmds.cmis.Remove;
+import org.nuxeo.chemistry.shell.cmds.cmis.SetProp;
+import org.nuxeo.chemistry.shell.cmds.cmis.SetStream;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

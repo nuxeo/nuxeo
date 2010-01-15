@@ -13,30 +13,46 @@
  *
  * Contributors:
  *     bstefanescu
+ *
+ * $Id$
  */
-package org.nuxeo.chemistry.shell.app;
 
+package org.nuxeo.chemistry.shell.cmds.base;
+
+import java.io.File;
+import java.util.Stack;
+
+import org.nuxeo.chemistry.shell.app.Application;
+import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.Command;
+import org.nuxeo.chemistry.shell.command.CommandException;
 import org.nuxeo.chemistry.shell.command.CommandLine;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class ChemistryCommand extends Command {
+@Cmd(syntax="lpushd dir:dir", synopsis="Push local directory stack")
+@SuppressWarnings("unchecked")
+public class LPushd extends Command {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        if (app instanceof ChemistryApp) {
-            ensureConnected(app);
-            execute((ChemistryApp) app, cmdLine);
-        } else {
-            Console.getDefault().error(
-                    "Chemistry commands cannot be run outside chemistry context");
-        }
-    }
+        String path = cmdLine.getParameterValue("dir");
 
-    protected abstract void execute(ChemistryApp app, CommandLine cmdLine)
-            throws Exception;
+        File file = app.resolveFile(path);
+        if (!file.isDirectory()) {
+            throw new CommandException("Not a directory: " + file);
+        }
+
+        Stack<File> stack = (Stack<File>)app.getData(LPopd.WDIR_STACK_KEY);
+        if (stack == null) {
+            stack = new Stack<File>();
+            app.setData(LPopd.WDIR_STACK_KEY, stack);
+        }
+        stack.push(app.getWorkingDirectory());
+        app.setWorkingDirectory(file);
+    }
 
 }

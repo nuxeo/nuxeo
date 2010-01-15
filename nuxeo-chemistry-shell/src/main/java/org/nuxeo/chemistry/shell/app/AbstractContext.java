@@ -16,27 +16,41 @@
  */
 package org.nuxeo.chemistry.shell.app;
 
-import org.nuxeo.chemistry.shell.command.Command;
-import org.nuxeo.chemistry.shell.command.CommandLine;
+import org.nuxeo.chemistry.shell.util.Path;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class ChemistryCommand extends Command {
+public abstract class AbstractContext implements Context {
 
-    @Override
-    public void run(Application app, CommandLine cmdLine) throws Exception {
-        if (app instanceof ChemistryApp) {
-            ensureConnected(app);
-            execute((ChemistryApp) app, cmdLine);
-        } else {
-            Console.getDefault().error(
-                    "Chemistry commands cannot be run outside chemistry context");
-        }
+    protected final Application app;
+    protected final Path path;
+
+    public AbstractContext(Application app, Path path) {
+        this.app = app;
+        this.path = path;
     }
 
-    protected abstract void execute(ChemistryApp app, CommandLine cmdLine)
-            throws Exception;
+    public String pwd() {
+        return path.toString();
+    }
+
+    public Path getPath() {
+        return path;
+    }
+
+    public Application getApplication() {
+        return app;
+    }
+
+    public Path resolvePath(String path) {
+        if (!path.startsWith("/")) {
+            return new Path(path);
+        } else {
+            return this.path.append(path);
+        }
+    }
 
 }

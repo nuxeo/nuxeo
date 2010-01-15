@@ -26,10 +26,8 @@ import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.atompub.client.APPConnection;
 import org.apache.chemistry.atompub.client.connector.APPContentManager;
-import org.nuxeo.chemistry.shell.AbstractContext;
-import org.nuxeo.chemistry.shell.Context;
-import org.nuxeo.chemistry.shell.Path;
-import org.nuxeo.chemistry.shell.console.ColorHelper;
+import org.nuxeo.chemistry.shell.util.ColorHelper;
+import org.nuxeo.chemistry.shell.util.Path;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

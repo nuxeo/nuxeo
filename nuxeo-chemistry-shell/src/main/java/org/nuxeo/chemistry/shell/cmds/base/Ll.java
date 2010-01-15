@@ -13,30 +13,40 @@
  *
  * Contributors:
  *     bstefanescu
+ *
+ * $Id$
  */
-package org.nuxeo.chemistry.shell.app;
 
+package org.nuxeo.chemistry.shell.cmds.base;
+
+import java.io.File;
+
+import org.nuxeo.chemistry.shell.app.Application;
+import org.nuxeo.chemistry.shell.command.Cmd;
 import org.nuxeo.chemistry.shell.command.Command;
 import org.nuxeo.chemistry.shell.command.CommandLine;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class ChemistryCommand extends Command {
+@Cmd(syntax="lls|ll [target:file]", synopsis="List local directory content")
+public class Ll extends Command {
 
     @Override
     public void run(Application app, CommandLine cmdLine) throws Exception {
-        if (app instanceof ChemistryApp) {
-            ensureConnected(app);
-            execute((ChemistryApp) app, cmdLine);
+
+        File file;
+        String param = cmdLine.getParameterValue("target");
+        if (param != null) {
+            file = app.resolveFile(param);
         } else {
-            Console.getDefault().error(
-                    "Chemistry commands cannot be run outside chemistry context");
+            file = app.getWorkingDirectory();
+        }
+        for (String f : file.list()) {
+            println(f);
         }
     }
-
-    protected abstract void execute(ChemistryApp app, CommandLine cmdLine)
-            throws Exception;
 
 }
