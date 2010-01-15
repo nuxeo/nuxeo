@@ -90,15 +90,13 @@ public class ChainSelectListboxComponent extends UIInput {
 
     public boolean isMultiSelect() {
         ChainSelect chain = getChain();
-        if (size != null && Integer.valueOf(size) < 2) {
-            // this allows the last element to be a simple select box event
-            // though the global chain is a multiselect thanks to some ajax add
-            // button
-            return false;
+        if (chain != null) {
+            boolean isLastSelect = getIndex() == chain.getSize() - 1;
+            boolean isChainMultiSelect = chain.getBooleanProperty(
+                    "multiSelect", false);
+            return isLastSelect && isChainMultiSelect;
         }
-
-        return getIndex() == chain.getSize() - 1
-        && chain.getBooleanProperty("multiSelect", false);
+        return false;
     }
 
     public String getDisplayIdAndLabelSeparator() {
@@ -352,8 +350,7 @@ public class ChainSelectListboxComponent extends UIInput {
             list = DirectoryHelper.instance().getSelectItems(directoryName,
                     filter);
         } else {
-            list = DirectoryHelper.getSelectItems(directoryValues,
-                    filter);
+            list = DirectoryHelper.getSelectItems(directoryValues, filter);
         }
 
         for (DirectorySelectItem item : list) {
@@ -398,6 +395,8 @@ public class ChainSelectListboxComponent extends UIInput {
      */
     @Override
     public void decode(FacesContext context) {
+        // FIXME: this code is nonsense, what it's doing and why is
+        // perfectly unclear
 
         ChainSelect chain = getChain();
         if (chain.getDisplayValueOnly()) {
@@ -456,11 +455,11 @@ public class ChainSelectListboxComponent extends UIInput {
         String[] lastValues = requestValueMap.get(name);
 
         boolean lastValueIsOk = lastValues != null && lastValues.length != 0
-        && !StringUtils.isEmpty(lastValues[0]);
+                && !StringUtils.isEmpty(lastValues[0]);
 
         Selection[] selections;
 
-        boolean stop = chain.getLastSelectedComponentIndex() <= index;
+        boolean stop = chain.getLastSelectedComponentIndex() < index;
         if (index == size - 1 && lastValueIsOk && !stop) {
             String[] keyListArray = new String[size];
             selections = new Selection[lastValues.length];
