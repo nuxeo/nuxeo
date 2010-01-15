@@ -51,6 +51,7 @@ http://dl.google.com/eclipse/plugin/3.4
 Eclipse 3.3 (Europa)
 http://dl.google.com/eclipse/plugin/3.3
 
+Also you need a nuxeo version >= 5.3.1-SNAPSHOT for Nuxeo base code.
 
 Creating a Hello World Application
 -----------------------------------
