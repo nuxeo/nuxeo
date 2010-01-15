@@ -41,14 +41,9 @@ jQuery(document).ready(function(){
     gadgets.window.adjustHeight();
   });
 
-  if(prefs.getString("id")!=""){
-    loadImage(prefs.getString("id"));
-  } else {
     gadgets.nuxeo.getGadgetId(function(id) {
-      prefs.set("id",id);
+    	loadImage(id);
     });
-  }
-
   });
 }
 
@@ -60,10 +55,7 @@ function setTitle(title){
 };
 
 function setLink(link){
-  if(_isSet(link)){
-    jQuery("#link-field").val(link);
-    jQuery("#link").attr("href",link);
-  }
+  jQuery("#link-field").val(link);
 };
 
 function setLegend(legend){
@@ -84,9 +76,9 @@ function _isSet(val){
 };
 
 function savePrefs(){
-  prefs.set("picTitle",gadgets.util.escapeString(jQuery("#title-field").val()));
-  prefs.set("link",gadgets.util.escapeString(jQuery("#link-field").val()));
-  prefs.set("legend",gadgets.util.escapeString(jQuery("#legend-field").val()));
+  prefs.set("picTitle",gadgets.util.escapeString(jQuery("#title-field").val()),
+  "link",gadgets.util.escapeString(jQuery("#link-field").val()),
+  "legend",gadgets.util.escapeString(jQuery("#legend-field").val()));
 };
 
 function loadImage(id){
@@ -102,6 +94,12 @@ function loadImage(id){
         showImage();
     },
     success : function(data, textStatus) {
+        if (_isSet(prefs.getString("link")))
+          var imgContainer = jQuery("<a id=\"link\" href=\""+prefs.getString("link")+"\" target=\"_tab\" ><img style=\"border:0;\" id=\"photo\" src=\"\"></a>");
+        else
+          var imgContainer = jQuery("<img style=\"border:0;\" id=\"photo\" src=\"\">");
+
+        jQuery("#pictureContainer").append(imgContainer);
         jQuery("#photo").attr("src", photoUrl);
         jQuery("#photo").width("100%");
         showImage();

@@ -26,29 +26,36 @@ public interface Gadget {
 
   /**
    * Unique identifier of a gadget
+   * 
    * @return
    */
   String getId();
+
   /**
    * name
+   * 
    * @return
    */
   String getName() throws ClientException;
 
   void setName(String name) throws ClientException;
 
-  URL getDefinitionUrl()  throws ClientException;
+  URL getDefinitionUrl() throws ClientException;
 
   void setDefinitionUrl(URL url) throws ClientException;
-/**
- * description
- * @return
- */
+
+  /**
+   * description
+   * 
+   * @return
+   */
   String getDescription() throws ClientException;
 
   void setDescription(String description) throws ClientException;
+
   /**
    * title
+   * 
    * @return
    */
   String getTitle() throws ClientException;
@@ -57,12 +64,16 @@ public interface Gadget {
 
   /**
    * creator name
+   * 
    * @return
    */
   String getOwner() throws ClientException;
 
+  String getViewer() throws ClientException;
+
   /**
    * category of a gadget
+   * 
    * @return
    */
   String getCategory() throws ClientException;
@@ -71,25 +82,28 @@ public interface Gadget {
 
   /**
    * preferences values
+   * 
    * @return
    */
   Map<String, String> getPreferences() throws ClientException;
 
-  void setPreferences(Map<String,String> prefs) throws ClientException;
+  void setPreferences(Map<String, String> prefs) throws ClientException;
 
   String getPref(String prefKey) throws ClientException;
 
   /**
-   * Key corresponding to the place where the gadget will be positionned in the view
+   * Key corresponding to the place where the gadget will be positionned in the
+   * view
+   * 
    * @return
    */
-  String getPlaceID() throws ClientException;
-
+  String getPlaceId() throws ClientException;
 
   void setPlaceId(String placeId) throws ClientException;
 
   /**
-   * Relative position in the parent container at the place id  "getPlaceID()"
+   * Relative position in the parent container at the place id "getPlaceID()"
+   * 
    * @return
    */
   int getPosition() throws ClientException;
@@ -98,12 +112,12 @@ public interface Gadget {
 
   /**
    * Determines if the display state of the gadget
+   * 
    * @return
    */
   boolean isCollapsed() throws ClientException;
 
   void setCollapsed(boolean collapsed) throws ClientException;
-
 
   boolean isEqualTo(Gadget gadget) throws ClientException;
 
@@ -119,7 +133,6 @@ public interface Gadget {
 
   void setHtmlContent(String htmlContent) throws ClientException;
 
-
-
+  boolean hasPermission(String permissioName) throws ClientException;
 
 }

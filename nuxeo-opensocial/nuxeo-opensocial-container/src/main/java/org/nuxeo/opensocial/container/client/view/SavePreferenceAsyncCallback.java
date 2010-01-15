@@ -26,8 +26,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
-* @author Guillaume Cusnieux
-*/
+ * @author Guillaume Cusnieux
+ */
 public class SavePreferenceAsyncCallback<T> implements
     AsyncCallback<GadgetBean> {
 
@@ -49,6 +49,7 @@ public class SavePreferenceAsyncCallback<T> implements
     JsLibrary.loadingHide();
     ContainerPortal c = ContainerEntryPoint.getContainerPortal();
     GadgetPortlet gp = c.getGadgetPortletByRef(gadget.getRef());
+    gp.setTitle(bean.getTitle());
     gp.setGadgetBean(bean);
     gp.updateGadgetPortlet();
     gp.doLayoutFrame();

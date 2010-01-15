@@ -31,14 +31,20 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
+import org.nuxeo.ecm.spaces.api.SpaceManager;
+import org.nuxeo.ecm.spaces.api.SpaceProvider;
+import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
+import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
 import org.nuxeo.runtime.api.Framework;
 
 public class DocSpaceImpl implements Space {
 
   protected final DocumentModel doc;
+  private boolean readOnly = false;
 
   public static final String TYPE = "Space";
   protected static final String SPACE_THEME = "space:theme";
@@ -53,14 +59,6 @@ public class DocSpaceImpl implements Space {
     this.doc = doc;
   }
 
-  private String getInternalStringProperty(String xpath) {
-    try {
-      return doc.getProperty(xpath)
-          .toString();
-    } catch (ClientException e) {
-      return null;
-    }
-  }
 
   public String getLayout() throws ClientException {
     return (String) doc.getPropertyValue(SPACE_LAYOUT);
@@ -76,8 +74,8 @@ public class DocSpaceImpl implements Space {
         .equals(getId());
   }
 
-  public String getTheme() {
-    return getInternalStringProperty(SPACE_THEME);
+  public String getTheme() throws  ClientException {
+    return (String) doc.getPropertyValue(SPACE_THEME);
   }
 
   protected boolean getBooleanProperty(String xpath) {
@@ -115,7 +113,19 @@ public class DocSpaceImpl implements Space {
       }
     }
     return result;
+  }
 
+  public Gadget getGadget(String gadgetName) throws ClientException {
+    DocumentModelList gadgets = doc.getCoreSession()
+        .getChildren(doc.getRef(), DocGadgetImpl.TYPE);
+    for (DocumentModel doc : gadgets) {
+      Gadget g = doc.getAdapter(Gadget.class);
+      if (g != null && g.getName()
+          .equals(gadgetName)) {
+        return g;
+      }
+    }
+    return null;
   }
 
   public String getId() {
@@ -150,7 +160,7 @@ public class DocSpaceImpl implements Space {
   }
 
   public boolean isReadOnly() throws ClientException {
-    return hasPermission("Write");
+    return readOnly;
   }
 
   public void setLayout(String name) throws ClientException {
@@ -299,5 +309,25 @@ public class DocSpaceImpl implements Space {
     session.removeDocument(doc.getRef());
     session.save();
   }
+
+public String getProviderName() throws ClientException {
+    SpaceManager sm;
+    try {
+        sm = Framework.getService(SpaceManager.class);
+    } catch (Exception e) {
+        throw new SpaceException("Unable to get Space Manager",e);
+    }
+    List<SpaceProvider> providers = sm.getSpacesProviders();
+    for(SpaceProvider provider : providers) {
+    	try {
+			if (provider.getSpace(this.getName(), this.session()) != null) {
+				return sm.getProviderName(provider);
+			}
+		} catch (SpaceNotFoundException e) {
+			LOGGER.warn("space " + getName() + " not found in " + provider);
+		}
+    }
+	return null;
+}
 
 }

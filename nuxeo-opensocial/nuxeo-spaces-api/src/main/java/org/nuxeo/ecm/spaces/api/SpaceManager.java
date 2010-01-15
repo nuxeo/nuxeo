@@ -88,7 +88,9 @@ public interface SpaceManager {
 
    Space getSpaceFromId(String spaceId, CoreSession session) throws SpaceException;
 
+   List<SpaceProvider> getSpacesProviders();
 
+   String getProviderName(SpaceProvider provider);
 
 
 }

@@ -32,9 +32,10 @@ import org.apache.shindig.common.xml.XmlUtil;
 import org.apache.shindig.gadgets.spec.SpecParserException;
 import org.apache.shindig.gadgets.spec.UserPref;
 import org.apache.shindig.gadgets.spec.UserPref.EnumValuePair;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.opensocial.container.client.bean.PreferencesBean;
 import org.nuxeo.opensocial.container.client.bean.ValuePair;
-import org.nuxeo.opensocial.container.factory.mapping.GadgetMapper;
 import org.nuxeo.opensocial.container.factory.utils.GadgetsUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -48,24 +49,26 @@ public class PreferenceManager {
 
   /**
    * Get Default Preferences
-   *
+   * 
    * @param gadget
    * @return ArrayList<PreferencesBean>
+   * @throws ClientException
    */
-  public static ArrayList<PreferencesBean> getDefaultPreferences(
-      GadgetMapper gadget) {
+  public static ArrayList<PreferencesBean> getDefaultPreferences(Gadget gadget)
+      throws ClientException {
     return mergePreferences(DefaultPreference.getPreferences(),
         gadget.getPreferences());
   }
 
-  public static ArrayList<PreferencesBean> getPreferences(GadgetMapper gadget) {
+  public static ArrayList<PreferencesBean> getPreferences(Gadget gadget)
+      throws ClientException {
     return mergePreferences(getOpenSocialPreferences(gadget),
         gadget.getPreferences());
   }
 
   /**
    * Merge preferences of gadget with preferences saving in Nuxeo
-   *
+   * 
    * @param defaultPrefs
    * @param loadPrefs
    * @return rrayList<PreferencesBean>
@@ -99,11 +102,11 @@ public class PreferenceManager {
 
   /**
    * Get default preferences with OpensocialService (Parse XML gadget)
-   *
+   * 
    * @param gadget
-   * @return  List<UserPref>
+   * @return List<UserPref>
    */
-  protected static List<UserPref> getOpenSocialPreferences(GadgetMapper gadget) {
+  protected static List<UserPref> getOpenSocialPreferences(Gadget gadget) {
     try {
       return GadgetsUtils.getGadgetSpec(gadget)
           .getUserPrefs();

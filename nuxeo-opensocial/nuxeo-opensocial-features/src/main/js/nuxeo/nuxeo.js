@@ -52,3 +52,7 @@ gadgets.nuxeo.maximizeGadget = function(view, callback) {
 gadgets.nuxeo.minimizeGadget = function(callback) {
   gadgets.rpc.call(null, "minimize", callback, null);
 };
+
+gadgets.nuxeo.setAjaxPref = function(key, value) {
+  gadgets.rpc.call(null, "set_ajax_pref", null, key, value);
+};

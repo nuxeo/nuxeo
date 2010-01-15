@@ -6,7 +6,8 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Provide-Package: org.nuxeo.opensocial.spaces.web
 Nuxeo-Component: OSGI-INF/spaces-type-contrib.xml,
- OSGI-INF/actions-contrib.xml
+ OSGI-INF/actions-contrib.xml,
+ OSGI-INF/layout-contrib.xml
 Require-Bundle: org.nuxeo.ecm.spaces.api,
  org.nuxeo.ecm.platform.types.api,
  org.nuxeo.ecm.platform.types.core,

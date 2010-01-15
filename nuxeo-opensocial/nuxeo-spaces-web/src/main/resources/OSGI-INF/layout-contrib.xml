@@ -1,0 +1,81 @@
+<component name="org.nuxeo.ecm.spaces.jsf.layout">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="space">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>theme</widget>
+        </row>
+        <row>
+          <widget>audience</widget>
+        </row>
+        <row>
+          <widget>category</widget>
+        </row>
+        <row>
+          <widget>layout</widget>
+        </row>
+      </rows>
+
+      <widget name="theme" type="text">
+        <labels>
+          <label mode="any">theme</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>space:theme</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+
+      <widget name="audience" type="text">
+        <labels>
+          <label mode="any">audience</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>space:audience</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      
+      <widget name="category" type="text">
+        <labels>
+          <label mode="any">category</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>space:categoryId</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      
+      <widget name="layout" type="text">
+        <labels>
+          <label mode="any">layout</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>space:layout</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      
+    </layout>
+
+  </extension>
+
+</component>

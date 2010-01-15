@@ -60,7 +60,7 @@
     <internalGadget name="richtext">
       <mountPoint>/richtext</mountPoint>
       <entryPoint>richtext.xml</entryPoint>
-      <category>Multimedia</category>
+      <category>gadget.category.utilities</category>
       <icon>richtext_icon.png</icon>
     </internalGadget>
     

@@ -59,6 +59,7 @@ public class SpaceWebObject extends DefaultObject {
         return getView("index");
     }
 
+    @POST
     public Object doUpdate() {
         FormData form = getContext().getForm();
         String title = form.getString("dc:title");
@@ -72,6 +73,7 @@ public class SpaceWebObject extends DefaultObject {
                 this.space.setDescription(description);
             if (theme != null)
                 this.space.setTheme(theme);
+            injectTheme();
             this.space.save();
         } catch (ClientException e) {
             throw WebException.wrap(e);
@@ -107,20 +109,24 @@ public class SpaceWebObject extends DefaultObject {
                 throw new Exception("Space argument can't be null");
 
             // JIRA WEB-279 => now use RequestAttribute
-            if (space.getTheme() != null) {
-                getContext().getRequest().setAttribute("org.nuxeo.theme.theme",
-                        space.getTheme() + "/default");
-                LOGGER
-                        .debug("setting theme from space in context request wall again "
-                                + space.getTheme());
-            } else {
-                LOGGER.debug("no theme found from space ");
-            }
+            injectTheme();
 
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
         LOGGER.debug("Space has been set");
+    }
+
+    private void injectTheme() throws ClientException {
+      if (space.getTheme() != null) {
+          getContext().getRequest().setAttribute("org.nuxeo.theme.theme",
+                  space.getTheme() + "/default");
+          LOGGER
+                  .debug("setting theme from space in context request wall again "
+                          + space.getTheme());
+      } else {
+          LOGGER.debug("no theme found from space ");
+      }
     }
 
 }
