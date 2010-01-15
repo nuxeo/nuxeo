@@ -37,7 +37,10 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 /**
  * Renders many listboxes for the MultiListbox component
  *
+ * @deprecated : renderer is useless (not declared correctly in
+ *             deployment-fragment.xml and bugg) should be refactored instead
  */
+@Deprecated
 public class ChainSelectMultiListboxRenderer extends Renderer {
 
     @SuppressWarnings("unused")
@@ -67,13 +70,14 @@ public class ChainSelectMultiListboxRenderer extends Renderer {
         for (ChainSelectListboxComponent component : sComps) {
             encodeInput(context, writer, component);
 
-            //mcomp.getChildren()
-            //mcomp.encodeChildren(context);
+            // mcomp.getChildren()
+            // mcomp.encodeChildren(context);
         }
     }
 
-    private static void encodeInput(FacesContext context, ResponseWriter writer,
-            ChainSelectListboxComponent comp) throws IOException {
+    private static void encodeInput(FacesContext context,
+            ResponseWriter writer, ChainSelectListboxComponent comp)
+            throws IOException {
         String id = comp.getClientId(context);
         ChainSelect chain = comp.getChain();
         String cssStyleClass = comp.getStringProperty("cssStyleClass", null);
@@ -82,7 +86,13 @@ public class ChainSelectMultiListboxRenderer extends Renderer {
 
         String id1 = comp.getClientId(context).split(":")[0];
         String id2 = comp.getClientId(context);
-        onchange="A4J.AJAX.Submit('_viewRoot','"+id1+"',event,{'parameters':{'" + id2 + "':'" + id2 + "'},'actionUrl':'/nuxeo/documents/tabs/document_externe_edit.faces'})";
+        onchange = "A4J.AJAX.Submit('_viewRoot','"
+                + id1
+                + "',event,{'parameters':{'"
+                + id2
+                + "':'"
+                + id2
+                + "'},'actionUrl':'/nuxeo/documents/tabs/document_externe_edit.faces'})";
 
         boolean multiSelect = comp.getBooleanProperty("multiSelect", false);
         String size = comp.getStringProperty("size", null);
@@ -116,9 +126,10 @@ public class ChainSelectMultiListboxRenderer extends Renderer {
             writer.writeAttribute("size", size, "size");
         }
 
-        //<select id="j_id202:theme7" name="j_id202:theme7"
-        // onchange="A4J.AJAX.Submit('_viewRoot','j_id202',event,{'parameters':{'j_id202:j_id286':'j_id202:j_id286'},'actionUrl':'/nuxeo/documents/tabs/document_externe_edit.faces'})" multiple="true" size="4"><option value="">Select a value</option>
-        //writer.writeAttribute("onchange","onchange");
+        // <select id="j_id202:theme7" name="j_id202:theme7"
+        // onchange="A4J.AJAX.Submit('_viewRoot','j_id202',event,{'parameters':{'j_id202:j_id286':'j_id202:j_id286'},'actionUrl':'/nuxeo/documents/tabs/document_externe_edit.faces'})"
+        // multiple="true" size="4"><option value="">Select a value</option>
+        // writer.writeAttribute("onchange","onchange");
 
         List<String> valueList = new ArrayList<String>();
 

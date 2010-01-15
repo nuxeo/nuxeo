@@ -31,6 +31,11 @@ import javax.faces.el.ValueBinding;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * @deprecated : component is useless (not declared correctly in
+ *             deployment-fragment.xml and bugg) should be refactored instead
+ */
+@Deprecated
 public class ChainSelectMultiListboxComponent extends UIInput {
 
     public static final String COMPONENT_TYPE = "nxdirectory.chainSelectMultiListbox";
