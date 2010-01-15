@@ -17,6 +17,10 @@
 
 package org.nuxeo.ecm.platform.publisher.remoting.restProxies;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -24,15 +28,11 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
-import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
 import org.nuxeo.ecm.platform.publisher.api.PublishingException;
+import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
 import org.nuxeo.ecm.platform.publisher.remoting.invoker.DefaultRemotePublicationInvoker;
 import org.nuxeo.ecm.platform.publisher.remoting.invoker.RemotePublicationInvoker;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePublisherMarshaler;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * HTTP facade for the {@link RemotePublicationTreeManager} service. This facade
@@ -180,7 +180,9 @@ public class RemotePublicationTreeManagerRestProxy implements
         // The current document is useless on a remote tree
     }
 
-    public void validatorPublishDocument(String sid, PublishedDocument publishedDocument) throws PublishingException {
+    public void validatorPublishDocument(String sid,
+            PublishedDocument publishedDocument, String comment)
+            throws PublishingException {
         throw new UnsupportedOperationException();
     }
 

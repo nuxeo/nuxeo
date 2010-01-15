@@ -17,6 +17,12 @@
 
 package org.nuxeo.ecm.platform.publisher.impl.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
@@ -45,12 +51,6 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * POJO implementation of the publisher service Implements both
@@ -502,10 +502,10 @@ public class PublisherServiceImpl extends DefaultComponent implements
     }
 
     public void validatorPublishDocument(String sid,
-            PublishedDocument publishedDocument) throws ClientException {
+            PublishedDocument publishedDocument, String comment) throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
-            tree.validatorPublishDocument(publishedDocument);
+            tree.validatorPublishDocument(publishedDocument, comment);
         } else {
             throw new ClientException(
                     "Calling validatorPublishDocument on a closed tree");

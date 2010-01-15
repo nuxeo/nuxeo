@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -38,6 +39,7 @@ import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
@@ -59,6 +61,7 @@ import org.nuxeo.runtime.api.Framework;
  * implementation using native proxy system with validation workflow.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
+ * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
  *
  */
 public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
@@ -161,7 +164,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                 prefixedActorIds.add(s);
             } else {
                 UserManager userManager = getUserManager();
-                String prefix = null;
+                String prefix;
                 try {
                     prefix = userManager.getPrincipal(s) == null ? NuxeoGroup.PREFIX
                             : NuxeoPrincipal.PREFIX;
@@ -177,13 +180,15 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                 document.getId());
         variables.put(JbpmService.VariableName.documentRepositoryName.name(),
                 document.getRepositoryName());
+        variables.put(JbpmService.VariableName.initiator.name(),
+                principal.getName());
         ti.setVariables(variables);
         ti.setName(TASK_NAME);
         ti.setCreate(new Date());
         getJbpmService().saveTaskInstances(Collections.singletonList(ti));
         DocumentEventContext ctx = new DocumentEventContext(session, principal,
                 document);
-        ctx.setProperty("recipients", actorIds);
+        ctx.setProperty(NotificationConstants.RECIPIENTS_KEY, actorIds);
         try {
             getEventProducer().fireEvent(
                     ctx.newEvent(JbpmEventNames.WORKFLOW_TASK_ASSIGNED));
@@ -279,13 +284,13 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
     }
 
     @Override
-    public void validatorPublishDocument(PublishedDocument publishedDocument)
+    public void validatorPublishDocument(PublishedDocument publishedDocument, String comment)
             throws PublishingException {
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
         try {
             removeACL(proxy, coreSession);
-            endTask(proxy, principal);
+            endTask(proxy, principal, coreSession, comment, PublishingEvent.documentPublicationApproved);
             notifyEvent(PublishingEvent.documentPublicationApproved, proxy,
                     coreSession);
             notifyEvent(PublishingEvent.documentPublished, proxy, coreSession);
@@ -306,20 +311,32 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         }
     }
 
-    protected void endTask(DocumentModel document, NuxeoPrincipal currentUser)
+    protected void endTask(DocumentModel document, NuxeoPrincipal currentUser, CoreSession session, String comment, PublishingEvent event)
             throws PublishingException {
         try {
             List<TaskInstance> tis = getJbpmService().getTaskInstances(
                     document, currentUser, null);
+            String initiator = null;
             for (TaskInstance ti : tis) {
                 if (ti.getName().equals(TASK_NAME)) {
+                    initiator = (String) ti.getVariable(JbpmService.VariableName.initiator.name());
                     ti.end();
                     jbpmService.saveTaskInstances(Collections.singletonList(ti));
-                    return;
+                    break;
                 }
             }
+
+            DocumentModel sourceDocument = session.getDocument(new IdRef(document.getSourceId()));
+            DocumentModel liveDocument = session.getDocument(new IdRef(sourceDocument.getSourceId()));
+            Map<String, Serializable> properties = new HashMap<String, Serializable>();
+            if (initiator != null){
+                properties.put(NotificationConstants.RECIPIENTS_KEY, new String[] { initiator });
+            }
+            notifyEvent(event.name(), properties, comment, null, liveDocument, session);
         } catch (NuxeoJbpmException e) {
             throw new PublishingException(e);
+        } catch (ClientException ce) {
+            throw new PublishingException(ce);
         }
     }
 
@@ -332,7 +349,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             notifyEvent(PublishingEvent.documentPublicationRejected, proxy,
                     coreSession);
             removeProxy(proxy, coreSession);
-            endTask(proxy, principal);
+            endTask(proxy, principal, coreSession, comment, PublishingEvent.documentPublicationRejected);
         } catch (ClientException e) {
             throw new PublishingException(e);
         }

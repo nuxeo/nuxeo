@@ -17,18 +17,18 @@
 
 package org.nuxeo.ecm.platform.publisher.api;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
-import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
-import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
 import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
+import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 
 public abstract class AbstractBasePublishedDocumentFactory implements
         PublishedDocumentFactory {
@@ -121,8 +121,8 @@ public abstract class AbstractBasePublishedDocumentFactory implements
         return validatorsRule;
     }
 
-    public void validatorPublishDocument(PublishedDocument publishedDocument)
-            throws ClientException {
+    public void validatorPublishDocument(PublishedDocument publishedDocument,
+            String comment) throws ClientException {
     }
 
     public void validatorRejectPublication(PublishedDocument publishedDocument,

@@ -172,7 +172,8 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
 
     public void testRights() throws Exception {
         changeUser("myuser1");
-        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(
+                0);
         PublicationTree treeUser1 = publisherService.getPublicationTree(
                 defaultTreeName, session, null);
         List<PublicationNode> nodes = treeUser1.getChildrenNodes();
@@ -202,7 +203,8 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
 
     public void testApprovePublication() throws Exception {
         changeUser("myuser1");
-        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(
+                0);
         PublicationTree treeUser1 = publisherService.getPublicationTree(
                 defaultTreeName, session, null);
 
@@ -222,7 +224,7 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         // myuser3 can't see the document waiting for validation
         changeUser("myuser3");
         session.save(); // Save session to get modifications made by other
-                        // sessions
+        // sessions
         PublicationTree treeUser3 = publisherService.getPublicationTree(
                 defaultTreeName, session, null);
         assertEquals(0, treeUser3.getExistingPublishedDocument(
@@ -239,20 +241,21 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         publishedDocument = publishedDocuments.get(0);
         assertTrue(publishedDocument.isPending());
 
-        treeUser2.validatorPublishDocument(publishedDocument);
+        treeUser2.validatorPublishDocument(publishedDocument, "Approved!");
         assertFalse(publishedDocument.isPending());
 
         // published so myuser3 can see it
         changeUser("myuser3");
         session.save(); // Save session to get modifications made by other
-                        // sessions (here, removing workflow ACL)
+        // sessions (here, removing workflow ACL)
         assertEquals(1, treeUser3.getExistingPublishedDocument(
                 new DocumentLocationImpl(doc2Publish)).size());
     }
 
     public void testRejectPublication() throws Exception {
         changeUser("myuser1");
-        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(
+                0);
         PublicationTree treeUser1 = publisherService.getPublicationTree(
                 defaultTreeName, session, null);
 
@@ -271,7 +274,7 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         // myuser3 can't see the document waiting for validation
         changeUser("myuser3");
         session.save(); // Save session to get modifications made by other
-                        // sessions
+        // sessions
         PublicationTree treeUser3 = publisherService.getPublicationTree(
                 defaultTreeName, session, null);
         assertEquals(0, treeUser3.getExistingPublishedDocument(
@@ -299,7 +302,7 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         // published so myuser3 still can't see it
         changeUser("myuser3");
         session.save(); // Save session to get modifications made by other
-                        // sessions (here, removing workflow ACL)
+        // sessions (here, removing workflow ACL)
         assertEquals(0, treeUser3.getExistingPublishedDocument(
                 new DocumentLocationImpl(doc2Publish)).size());
 

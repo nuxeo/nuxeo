@@ -17,13 +17,13 @@
 
 package org.nuxeo.ecm.platform.publisher.api;
 
+import java.util.Map;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
 import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
-
-import java.util.Map;
 
 /**
  * Interface of the pluggable factory used to create a PublishedDocument in a
@@ -81,10 +81,11 @@ public interface PublishedDocumentFactory {
      *
      * @param publishedDocument the current published document that will be
      *            approved
+     * @param comment
      * @throws PublishingException
      */
-    void validatorPublishDocument(PublishedDocument publishedDocument)
-            throws ClientException;
+    void validatorPublishDocument(PublishedDocument publishedDocument,
+            String comment) throws ClientException;
 
     /**
      * A validator (the current user) rejects the publication.
