@@ -25,8 +25,8 @@ package org.nuxeo.ecm.platform.gwt.client.ui;
  */
 public interface SiteEventHandler {
 
-    final static int SITE_CLOSED = 1;
-    final static int SITE_ACTIVATED = 2;
+    static final int SITE_CLOSED = 1;
+    static final int SITE_ACTIVATED = 2;
 
     void handleSiteEvent(Object handle, int event);
 

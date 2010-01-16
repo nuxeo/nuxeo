@@ -32,14 +32,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Extension {
 
-    final static int DEFAULT = -1;
-    final static int APPEND = -2;
-    final static int REPLACE = -3;
-    final static int AS_DEFAULT = -4;
+    static final int DEFAULT = -1;
+    static final int APPEND = -2;
+    static final int REPLACE = -3;
+    static final int AS_DEFAULT = -4;
 
     /**
-     * A list of target extension points
-     * @return
+     * A list of target extension points.
      */
     String[] targets();
 
@@ -51,7 +50,7 @@ public @interface Extension {
      * read the target extension point documentation.
      * Also, implementors MUST use a coherent hint system.
      * It is recommended to follow the system described below.
-     *<p>
+     * <p>
      * There are two type of extension points:
      * <ol>
      * <li> Containers - that manage a set of contributions.
@@ -73,11 +72,9 @@ public @interface Extension {
      *
      * Note that we define a DEFAULT value that can be used to specify the DEFAULT registration hint defined
      * by the target container. The DEFAULT is usually an APPEND or a REPLACE.
-     *
+     * <p>
      * Also, note that when using indexes >= 0 to control the order the indexes may have any value. They are not representing
      * the real index in the target container but a sort of 'weight' to be used to control ordering.
-     *
-     * @return
      */
     int hint() default DEFAULT;
 
