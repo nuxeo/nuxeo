@@ -52,10 +52,10 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
     private static final Log log = LogFactory.getLog(LifeCycleServiceImpl.class);
 
     /** Lifecycle name -> life cycle descriptor instance. */
-    private Map<String, LifeCycle> lifeCycles;
+    private final Map<String, LifeCycle> lifeCycles;
 
     /** Type name -> life cycle name. */
-    private Map<String, String> typesMapping;
+    private final Map<String, String> typesMapping;
 
     public LifeCycleServiceImpl() {
         lifeCycles = new HashMap<String, LifeCycle>();

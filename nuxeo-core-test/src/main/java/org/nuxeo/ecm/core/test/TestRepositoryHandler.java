@@ -31,14 +31,14 @@ public class TestRepositoryHandler {
 
     private Repository repository;
 
-    private String repositoryName;
+    private final String repositoryName;
 
     public TestRepositoryHandler(String name) {
-        this.repositoryName = name;
+        repositoryName = name;
     }
 
     public void openRepository() throws Exception {
-        this.repository = NXCore.getRepositoryService().getRepositoryManager().getRepository(
+        repository = NXCore.getRepositoryService().getRepositoryManager().getRepository(
                 repositoryName);
     }
 

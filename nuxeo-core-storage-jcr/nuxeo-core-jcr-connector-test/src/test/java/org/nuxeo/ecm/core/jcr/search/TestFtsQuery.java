@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.Query;
-import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryResult;
 import org.nuxeo.ecm.core.repository.jcr.JCRDocument;
 import org.nuxeo.ecm.core.repository.jcr.properties.BlobProperty;

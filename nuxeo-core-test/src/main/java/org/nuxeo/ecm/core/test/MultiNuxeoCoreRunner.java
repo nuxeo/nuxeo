@@ -50,7 +50,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryBackends;
 // annotation present to provide an accessible default
 public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoCoreRunner> {
 
-    private List<NuxeoCoreRunner> runners = new ArrayList<NuxeoCoreRunner>();
+    private final List<NuxeoCoreRunner> runners = new ArrayList<NuxeoCoreRunner>();
 
     private BackendType[] types;
 

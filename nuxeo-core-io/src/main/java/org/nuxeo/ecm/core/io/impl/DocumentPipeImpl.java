@@ -111,11 +111,10 @@ public class DocumentPipeImpl implements DocumentPipe {
         } else {
             // handle multiple doc case
             ExportedDocument[] docs;
-            DocumentTranslationMap map;
             while ((docs = reader.read(pageSize)) != null) {
                 if (docs.length != 0) {
                     applyTransforms(docs);
-                    map = writer.write(docs);
+                    DocumentTranslationMap map = writer.write(docs);
                     if (map != null) {
                         maps.add(map);
                     }

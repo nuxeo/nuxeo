@@ -150,7 +150,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
 
         public void transactionRollbacked() {
         }
-    };
+    }
 
     public void testAfterCompletion() throws Exception {
         EventService eventService = Framework.getLocalService(EventService.class);
@@ -160,4 +160,5 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         TransactionHelper.commitOrRollbackTransaction();
         assertTrue(listener.committed);
     }
+
 }

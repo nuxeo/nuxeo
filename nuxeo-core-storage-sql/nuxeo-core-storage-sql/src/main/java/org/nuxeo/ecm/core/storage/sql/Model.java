@@ -613,8 +613,7 @@ public class Model {
      * Infers type property information from all its schemas.
      */
     private void inferTypePropertyInfos(String typeName, String[] schemaNames) {
-        Map<String, PropertyInfo> propertyInfos;
-        propertyInfos = schemaPropertyInfos.get(typeName);
+        Map<String, PropertyInfo> propertyInfos = schemaPropertyInfos.get(typeName);
         if (propertyInfos == null) {
             propertyInfos = new HashMap<String, PropertyInfo>();
             schemaPropertyInfos.put(typeName, propertyInfos);

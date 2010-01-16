@@ -52,7 +52,6 @@ public class CoreSessionProvider implements Provider<CoreSession> {
             harness.deployBundle("org.nuxeo.ecm.core.event");
             harness.deployBundle("org.nuxeo.ecm.core");
 
-            DatabaseHelper dbHelper = null;
             if (repoType == BackendType.JCR) {
                 log.info("Deploying a JCR repo implementation");
                 harness.deployBundle("org.nuxeo.ecm.core.jcr");
@@ -63,6 +62,7 @@ public class CoreSessionProvider implements Provider<CoreSession> {
                 harness.deployBundle("org.nuxeo.ecm.core.storage.sql");
 
                 // TODO: should use a factory
+                DatabaseHelper dbHelper;
                 if (repoType == BackendType.H2) {
                     log.info("VCS relies on H2");
                     dbHelper = DatabaseH2.DATABASE;

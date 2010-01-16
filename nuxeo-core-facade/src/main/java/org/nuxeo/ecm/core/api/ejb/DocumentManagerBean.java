@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.api.ejb;
 
 import java.io.Serializable;
-import java.rmi.RemoteException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +29,6 @@ import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJBContext;
-import javax.ejb.EJBException;
 import javax.ejb.Local;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;

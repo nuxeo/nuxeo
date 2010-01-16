@@ -54,7 +54,7 @@ public class NuxeoCoreRunner extends NuxeoRunner implements
 
     private BackendType backendType;
 
-    private static Stack<CoreSession> injectedSessions = new Stack<CoreSession>();
+    private final static Stack<CoreSession> injectedSessions = new Stack<CoreSession>();
 
     public NuxeoCoreRunner(Class<?> classToRun) throws InitializationError {
         this(classToRun, new RuntimeModule(), new CoreModule());

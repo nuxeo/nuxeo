@@ -85,10 +85,10 @@ public class Children {
     private final Serializable mapKey;
 
     /** The map where this is stored when GCable. */
-    private Map<Serializable, Children> softMap;
+    private final Map<Serializable, Children> softMap;
 
     /** The map where this is stored when not GCable. */
-    private Map<Serializable, Children> hardMap;
+    private final Map<Serializable, Children> hardMap;
 
     /**
      * Constructs a Children cache.

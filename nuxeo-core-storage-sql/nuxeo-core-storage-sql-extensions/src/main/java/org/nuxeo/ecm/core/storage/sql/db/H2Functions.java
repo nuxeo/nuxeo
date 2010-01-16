@@ -192,12 +192,11 @@ public class H2Functions extends EmbeddedFunctions {
      */
 
     public static void initDescendants(Connection conn) throws SQLException {
-        String sql;
         LinkedList<String> todo = new LinkedList<String>();
 
         // find roots
         Statement s = conn.createStatement();
-        sql = "SELECT ID FROM REPOSITORIES";
+        String sql = "SELECT ID FROM REPOSITORIES";
         logDebug(sql);
         ResultSet rs = s.executeQuery(sql);
         while (rs.next()) {
@@ -316,7 +315,6 @@ public class H2Functions extends EmbeddedFunctions {
 
     public static String getReadAcl(Connection conn, String id)
             throws SQLException {
-        String localReadAcl;
         StringBuffer readAcl = new StringBuffer();
 
         PreparedStatement ps1 = null;
@@ -326,7 +324,7 @@ public class H2Functions extends EmbeddedFunctions {
             boolean first = true;
             do {
                 // local acl
-                localReadAcl = getLocalReadAcl(conn, id);
+                String localReadAcl = getLocalReadAcl(conn, id);
                 if (localReadAcl != null && (localReadAcl.length() > 0)) {
                     if (readAcl.length() == 0) {
                         readAcl.append(localReadAcl);
@@ -428,7 +426,7 @@ public class H2Functions extends EmbeddedFunctions {
     public static class LogAclsModified implements org.h2.api.Trigger,
             CloseListener {
 
-        private String idName = "ID";
+        private final String idName = "ID";
 
         private int idIndex;
 
@@ -494,17 +492,17 @@ public class H2Functions extends EmbeddedFunctions {
 
     public static class LogHierarchyModified implements org.h2.api.Trigger,
             CloseListener {
-        private String idName = "ID";
+        private final String idName = "ID";
 
         private int idIndex;
 
         private int idType;
 
-        private String parentIdName = "PARENTID";
+        private final String parentIdName = "PARENTID";
 
         private int parentIdIndex;
 
-        private String isPropertyName = "ISPROPERTY";
+        private final String isPropertyName = "ISPROPERTY";
 
         private int isPropertyIndex;
 

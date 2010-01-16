@@ -21,8 +21,6 @@ package org.nuxeo.ecm.core.repository.jcr.model;
 
 import javax.jcr.Node;
 
-import junit.framework.Assert;
-
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.repository.jcr.JCRDocument;

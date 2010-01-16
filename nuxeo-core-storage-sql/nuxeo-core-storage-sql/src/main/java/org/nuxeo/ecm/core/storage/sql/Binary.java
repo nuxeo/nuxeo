@@ -36,7 +36,7 @@ public class Binary implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private File file;
+    private final File file;
 
     private final String digest;
 

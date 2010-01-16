@@ -30,6 +30,6 @@ public interface RepositoryInit {
      *
      * @param session the session to use to create objects
      */
-    public void populate(CoreSession session) throws ClientException;
+    void populate(CoreSession session) throws ClientException;
 
 }

@@ -52,7 +52,7 @@ public class TestLocalAPIWithCustomVersioning extends TestLocalAPI {
         runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "LifeCycleServiceExtensions.xml");
         runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "DocumentAdapterService.xml");
 
-        // Adding this one. 
+        // Adding this one.
         runtime.deployContrib(CORE_FACADE_TESTS_BUNDLE, "CustomVersioningService.xml");
     }
 

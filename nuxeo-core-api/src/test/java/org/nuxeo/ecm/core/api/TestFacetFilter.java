@@ -110,4 +110,5 @@ public class TestFacetFilter extends TestCase {
         assertEquals(exc, f.excluded);
         assertEquals(sc, f.shortcut);
     }
+
 }

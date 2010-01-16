@@ -380,7 +380,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     protected CoreSession getTempCoreSession() throws ClientException {
-        CoreSession tempSession = null;
         if (sid != null) { // detached docs need a tmp session anyway
             if (useStrictSessionManagement()) {
                 throw new ClientException(
@@ -389,6 +388,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                                 + " is bound to a closed CoreSession, can not reconnect");
             }
         }
+        CoreSession tempSession;
         try {
             RepositoryManager mgr = Framework.getService(RepositoryManager.class);
             Repository repo = mgr.getRepository(repositoryName);

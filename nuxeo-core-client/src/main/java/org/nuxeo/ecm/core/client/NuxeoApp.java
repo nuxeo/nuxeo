@@ -98,9 +98,8 @@ public class NuxeoApp {
             throw new IllegalStateException("Framework not started");
         }
         BundleFile bf = file.isDirectory() ? new DirectoryBundleFile(file) : new JarBundleFile(file);
-        BundleImpl bundle = null;
         try {
-            bundle = new BundleImpl(osgi, bf, loader);
+            BundleImpl bundle = new BundleImpl(osgi, bf, loader);
             if (bundle.getSymbolicName() != null) {
                 osgi.install(bundle);
             }

@@ -1436,13 +1436,13 @@ public abstract class AbstractSession implements CoreSession,
         try {
             SecurityService securityService = getSecurityService();
             Principal principal = getPrincipal();
-            String permission = BROWSE;
             String[] principals;
             if (SecurityConstants.SYSTEM_USERNAME.equals(principal.getName())) {
                 principals = null; // means: no security check needed
             } else {
                 principals = SecurityService.getPrincipalsToCheck(principal);
             }
+            String permission = BROWSE;
             String[] permissions = securityService.getPermissionsToCheck(permission);
             QueryFilter queryFilter = new QueryFilter(principals, permissions,
                     null, Collections.<SQLQuery.Transformer> emptyList(), 0, 0);

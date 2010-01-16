@@ -46,13 +46,15 @@ import org.nuxeo.ecm.core.repository.jcr.InternalSessionOperationsProxy;
 import org.nuxeo.ecm.core.repository.jcr.JCRDocument;
 import org.nuxeo.ecm.core.repository.jcr.JCRHelper;
 import org.nuxeo.ecm.core.repository.jcr.JCRSession;
-import org.nuxeo.ecm.core.repository.jcr.NodeConstants;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
+
+import static org.nuxeo.ecm.core.repository.jcr.NodeConstants.*;
 
 /**
  * Utility class used by <code>CustomVersioningService</code>. This contains methods to
  * easy construction of a Document version by embedding several storage peculiarities
  * of a version node.
+ * <p>
  * Rux NXP-2617 made it public and also few methods to be able to use it from extension.
  *
  * @author DM
@@ -74,30 +76,24 @@ public final class VerServUtils {
     /**
      * Checks if the versionStorage root node exists, and if not creates it.
      * The node location is: //versionStorage/
-     *
-     * @param session
-     * @throws RepositoryException
      */
     private static Node getOrCreateVersionHistoryStorage(Session session)
             throws RepositoryException {
         final String logPrefix = "<getVersionHistoryStorage> ";
 
-        final String vhStorageNodeName = NodeConstants.ECM_VERSION_STORAGE.name;
+        final String vhStorageNodeName = ECM_VERSION_STORAGE.name;
 
         log.debug(logPrefix + "Creating ecm:versionStorage node. ["
                 + vhStorageNodeName + ']');
 
         final Node root = session.getRootNode();
 
-        return getOrCreateNode(root, vhStorageNodeName, NodeConstants.ECM_VERSION_STORAGE.rawname);
+        return getOrCreateNode(root, vhStorageNodeName, ECM_VERSION_STORAGE.rawname);
     }
 
     /**
      * Checks if the VersionHistory exists, and if not create it, and sets
      * ecm:versionHistory.
-     *
-     * @param forNode
-     * @throws RepositoryException
      */
     private static Node getOrCreateVersionHistoryNode(Node forNode)
             throws RepositoryException {
@@ -109,13 +105,12 @@ public final class VerServUtils {
         final Node vhParentNode = getOrCreateVHParent(storageNode, uuid);
 
         // final String versionHistoryNodeName =
-        // NodeConstants.ECM_VERSION_HISTORY.name;
+        // ECM_VERSION_HISTORY.name;
 
         log.debug(logPrefix + "Creating ecm:versionHistory node. " + '[' + uuid
                 + ']');
 
-        return getOrCreateNode(vhParentNode, uuid,
-                NodeConstants.ECM_VERSION_HISTORY.rawname);
+        return getOrCreateNode(vhParentNode, uuid, ECM_VERSION_HISTORY.rawname);
     }
 
     private static Node getOrCreateVHParent(Node storageNode, String uuid)
@@ -128,11 +123,11 @@ public final class VerServUtils {
         final String level_3_parentPath = uuid.substring(4, 6);
 
         Node level_1 = getOrCreateNode(storageNode, level_1_parentPath,
-                NodeConstants.ECM_VERSION_STORAGE.rawname);
+                ECM_VERSION_STORAGE.rawname);
         Node level_2 = getOrCreateNode(level_1, level_2_parentPath,
-                NodeConstants.ECM_VERSION_STORAGE.rawname);
+                ECM_VERSION_STORAGE.rawname);
         Node level_3 = getOrCreateNode(level_2, level_3_parentPath,
-                NodeConstants.ECM_VERSION_STORAGE.rawname);
+                ECM_VERSION_STORAGE.rawname);
 
         return level_3;
     }
@@ -140,13 +135,6 @@ public final class VerServUtils {
     /**
      * Creates a JCRDocument frozen copy within nodes defining a version with the
      * given label and description.
-     *
-     * @param jdoc
-     * @param description
-     * @param label
-     * @return
-     * @throws DocumentException
-     * @throws RepositoryException
      */
     public static DocumentVersion createVersion(JCRDocument jdoc, String label, String description)
             throws RepositoryException, DocumentException {
@@ -166,21 +154,21 @@ public final class VerServUtils {
         // check if we have a versionHistory node already
         // if not we create it
         final Node versionHistoryNode;
-        if (docNode.hasProperty(NodeConstants.ECM_VERSION_HISTORY.rawname)) {
+        if (docNode.hasProperty(ECM_VERSION_HISTORY.rawname)) {
             versionHistoryNode = docNode.getProperty(
-                    NodeConstants.ECM_VERSION_HISTORY.rawname).getNode();
+                    ECM_VERSION_HISTORY.rawname).getNode();
 
             predecessorNode = getLastVersionNode(versionHistoryNode);
         } else {
             versionHistoryNode = getOrCreateVersionHistoryNode(docNode);
             // add first version = root version
             final Node rootVersionNode = getOrCreateNode(versionHistoryNode,
-                    START_VERSION_NODE, NodeConstants.ECM_VERSION.rawname);
+                    START_VERSION_NODE, ECM_VERSION.rawname);
 
             predecessorNode = rootVersionNode;
 
-            log.debug(logPrefix + "init versionHistory: " + NodeConstants.ECM_VERSION_HISTORY.rawname);
-            docNode.setProperty(NodeConstants.ECM_VERSION_HISTORY.rawname,
+            log.debug(logPrefix + "init versionHistory: " + ECM_VERSION_HISTORY.rawname);
+            docNode.setProperty(ECM_VERSION_HISTORY.rawname,
                     versionHistoryNode);
         }
 
@@ -191,34 +179,34 @@ public final class VerServUtils {
         // create version node
         //
         final Node versionNode = getOrCreateNode(versionHistoryNode,
-                versionNodeName, NodeConstants.ECM_VERSION.rawname);
+                versionNodeName, ECM_VERSION.rawname);
 
         // set label and description
-        versionNode.setProperty(NodeConstants.ECM_VERSION_CREATEDATE.rawname, new GregorianCalendar());
-        versionNode.setProperty(NodeConstants.ECM_VERSION_LABEL.rawname, label);
-        versionNode.setProperty(NodeConstants.ECM_VERSION_DESCRIPTION.rawname,
+        versionNode.setProperty(ECM_VERSION_CREATEDATE.rawname, new GregorianCalendar());
+        versionNode.setProperty(ECM_VERSION_LABEL.rawname, label);
+        versionNode.setProperty(ECM_VERSION_DESCRIPTION.rawname,
                 description);
 
         // add element to list
         //                               startVNode --- successor --->.....previousVNode ----->lastVNode
         //                               startVNode <--- predecessor ---.....previousVNode <-----lastVNode
         // lastVNode <--- successor ---- startVNode
-        versionNode.setProperty(NodeConstants.ECM_VERSION_PREDECESSOR.rawname, predecessorNode);
-        predecessorNode.setProperty(NodeConstants.ECM_VERSION_SUCCESSOR.rawname, versionNode);
+        versionNode.setProperty(ECM_VERSION_PREDECESSOR.rawname, predecessorNode);
+        predecessorNode.setProperty(ECM_VERSION_SUCCESSOR.rawname, versionNode);
 
         Node startNode = versionHistoryNode.getNode(START_VERSION_NODE);
-        startNode.setProperty(NodeConstants.ECM_VERSION_PREDECESSOR.rawname, versionNode);
+        startNode.setProperty(ECM_VERSION_PREDECESSOR.rawname, versionNode);
 
         // --------- using JCR copy --------
         // be sure all node from the version path are saved (and avoid to save the entire session for optimization)
         JCRHelper.saveNode(versionNode);
         // make a copy of the current node
         final Node copyNode = copyNode((JCRSession) jdoc.getSession(), jdoc.getNode(), versionNode);
-        copyNode.setProperty(NodeConstants.ECM_FROZEN_NODE_UUID.rawname, docNode.getUUID());
+        copyNode.setProperty(ECM_FROZEN_NODE_UUID.rawname, docNode.getUUID());
         // CB: NXP-2219 - This property should be explicitly set in order to
         // avoid the breaking of the archive in the case when the first version
         // is restored.
-        copyNode.setProperty(NodeConstants.ECM_VERSION_HISTORY.rawname,
+        copyNode.setProperty(ECM_VERSION_HISTORY.rawname,
                 versionHistoryNode);
 
         // NXP-754
@@ -226,7 +214,7 @@ public final class VerServUtils {
         // ----------------------------------------
         // --------- using custom copy -------
 //        final Node copyNode = JCRHelper.copy(jdoc.getNode(), versionNode, jdoc.getName()+"_"+System.currentTimeMillis());
-//        copyNode.setProperty(NodeConstants.ECM_FROZEN_NODE_UUID.rawname, docNode.getUUID());
+//        copyNode.setProperty(ECM_FROZEN_NODE_UUID.rawname, docNode.getUUID());
 //        // NXP-754
 //        JCRHelper.saveNode(versionNode);
         // -----------------------------------------
@@ -250,7 +238,7 @@ public final class VerServUtils {
     private static void checkVersionable(Node docNode) throws DocumentException {
         final boolean isVersionable;
         try {
-            isVersionable = docNode.isNodeType(NodeConstants.ECM_VERSIONABLE_MIXIN.rawname);
+            isVersionable = docNode.isNodeType(ECM_VERSIONABLE_MIXIN.rawname);
         } catch (RepositoryException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -272,17 +260,14 @@ public final class VerServUtils {
     /**
      * Removes frozen nodes, version nodes and version history node for the given
      * Document.
-     *
-     * @param jdoc
-     * @throws RepositoryException
      */
     static void removeVersionHistory(JCRDocument jdoc) throws RepositoryException {
         final String logPrefix = "<removeVersionHistory> ";
         final Node docNode = jdoc.getNode();
         final Node versionHistoryNode;
-        if (docNode.hasProperty(NodeConstants.ECM_VERSION_HISTORY.rawname)) {
+        if (docNode.hasProperty(ECM_VERSION_HISTORY.rawname)) {
             versionHistoryNode = docNode.getProperty(
-                    NodeConstants.ECM_VERSION_HISTORY.rawname).getNode();
+                    ECM_VERSION_HISTORY.rawname).getNode();
         } else {
             // given document has no version history
             if (log.isDebugEnabled()) {
@@ -313,9 +298,9 @@ public final class VerServUtils {
                 + docNode.getName());
 
         final Node versionHistoryNode;
-        if (docNode.hasProperty(NodeConstants.ECM_VERSION_HISTORY.rawname)) {
+        if (docNode.hasProperty(ECM_VERSION_HISTORY.rawname)) {
             versionHistoryNode = docNode.getProperty(
-                    NodeConstants.ECM_VERSION_HISTORY.rawname).getNode();
+                    ECM_VERSION_HISTORY.rawname).getNode();
         } else {
             throw new RepositoryException("no version history");
         }
@@ -330,35 +315,35 @@ public final class VerServUtils {
         if (predecessor != null) {
             if (successor != null) {
                 predecessor.setProperty(
-                        NodeConstants.ECM_VERSION_SUCCESSOR.rawname, successor);
+                        ECM_VERSION_SUCCESSOR.rawname, successor);
                 successor.setProperty(
-                        NodeConstants.ECM_VERSION_PREDECESSOR.rawname,
+                        ECM_VERSION_PREDECESSOR.rawname,
                         predecessor);
             } else {
                 // predecessor becomes the first node after startNode
                 predecessor.setProperty(
-                        NodeConstants.ECM_VERSION_SUCCESSOR.rawname, startNode);
+                        ECM_VERSION_SUCCESSOR.rawname, startNode);
                 startNode.setProperty(
-                        NodeConstants.ECM_VERSION_PREDECESSOR.rawname,
+                        ECM_VERSION_PREDECESSOR.rawname,
                         predecessor);
             }
         } else {
             if (successor != null) {
                 // this was the first version (last in the list)
                 successor.setProperty(
-                        NodeConstants.ECM_VERSION_PREDECESSOR.rawname,
+                        ECM_VERSION_PREDECESSOR.rawname,
                         startNode);
                 startNode.setProperty(
-                        NodeConstants.ECM_VERSION_SUCCESSOR.rawname,
+                        ECM_VERSION_SUCCESSOR.rawname,
                         successor);
             } else {
                 // no version remaining
                 log.debug("no version remaining");
                 startNode.setProperty(
-                        NodeConstants.ECM_VERSION_PREDECESSOR.rawname,
+                        ECM_VERSION_PREDECESSOR.rawname,
                         startNode);
                 startNode.setProperty(
-                        NodeConstants.ECM_VERSION_SUCCESSOR.rawname,
+                        ECM_VERSION_SUCCESSOR.rawname,
                         startNode);
             }
         }
@@ -372,20 +357,14 @@ public final class VerServUtils {
 
     /**
      * Retrieves last added version node.
-     *
-     * @param versionHistoryNode
-     * @return
-     * @throws RepositoryException
      */
     static Node getLastVersionNode(Node versionHistoryNode)
             throws RepositoryException {
         Node rootVersionNode = versionHistoryNode.getNode(START_VERSION_NODE);
 
         // previous element for root is the last element in list???
-        Node lastVersionNode = rootVersionNode.getProperty(
-                NodeConstants.ECM_VERSION_PREDECESSOR.rawname).getNode();
 
-        return lastVersionNode;
+        return rootVersionNode.getProperty(ECM_VERSION_PREDECESSOR.rawname).getNode();
     }
 
     private static Node getVersionNodeWithLabel(Node versionHistoryNode,
@@ -394,13 +373,13 @@ public final class VerServUtils {
         while (nit.hasNext()) {
             final Node child = nit.nextNode();
             //final String childLabel = child.getProperty(
-            //        NodeConstants.ECM_VERSION_LABEL.rawname).getString();
+            //        ECM_VERSION_LABEL.rawname).getString();
             String childLabel = null;
             try {
                 if (child
-                        .hasProperty(NodeConstants.ECM_VERSION_LABEL.rawname)) {
+                        .hasProperty(ECM_VERSION_LABEL.rawname)) {
                     childLabel = child.getProperty(
-                            NodeConstants.ECM_VERSION_LABEL.rawname).getString();
+                            ECM_VERSION_LABEL.rawname).getString();
                 }
             } catch (RepositoryException e) {
                 //throw new DocumentException("cannot get version label", e);
@@ -416,7 +395,7 @@ public final class VerServUtils {
 
     private static synchronized String generateVersionName(Node versionHistoryNode)
             throws RepositoryException {
-        final String propName = NodeConstants.ECM_VERSION_ID.rawname;
+        final String propName = ECM_VERSION_ID.rawname;
 
         final long id;
         if (versionHistoryNode.hasProperty(propName)) {
@@ -428,9 +407,7 @@ public final class VerServUtils {
         }
         versionHistoryNode.setProperty(propName, id);
 
-        final String versionNodeName = VERSION_NODE_NAME_PREFIX + id;
-
-        return versionNodeName;
+        return VERSION_NODE_NAME_PREFIX + id;
     }
 
     public static Node copyNode(JCRSession session, Node scrNode, Node dstParent)
@@ -465,13 +442,9 @@ public final class VerServUtils {
 
     /**
      * Checks the node mixin property ecm:isCheckedOut.
-     *
-     * @param docNode
-     * @return
-     * @throws RepositoryException
      */
     static boolean isCheckedOut(Node docNode) throws RepositoryException {
-        final String propname = NodeConstants.ECM_VER_ISCHECKEDOUT.rawname;
+        final String propname = ECM_VER_ISCHECKEDOUT.rawname;
         if (docNode.hasProperty(propname)) {
             return docNode.getProperty(propname).getBoolean();
         }
@@ -481,7 +454,7 @@ public final class VerServUtils {
 
     public static void setCheckedOut(Node docNode, boolean checkedout)
             throws RepositoryException {
-        final String propname = NodeConstants.ECM_VER_ISCHECKEDOUT.rawname;
+        final String propname = ECM_VER_ISCHECKEDOUT.rawname;
         docNode.setProperty(propname, checkedout);
     }
 
@@ -506,10 +479,6 @@ public final class VerServUtils {
 
     /**
      * Utility method to retrieve nodes names.
-     *
-     * @param nodes
-     * @return
-     * @throws RepositoryException
      */
     static String printNodes(NodeIterator nodes)
             throws RepositoryException {
@@ -535,10 +504,6 @@ public final class VerServUtils {
     /**
      * Iterates through node properties and construct a readable string with
      * prop-value pairs.
-     *
-     * @param node
-     * @return
-     * @throws RepositoryException
      */
     private static String getPropsAsString(Node node) throws RepositoryException {
         final StringBuilder buf = new StringBuilder();
@@ -565,11 +530,7 @@ public final class VerServUtils {
     }
 
     /**
-     * Restores the liveNode with informations from versionNode.
-     *
-     * @param liveNode
-     * @param versionNode
-     * @throws RepositoryException
+     * Restores the liveNode with information from versionNode.
      */
     public static void restore(Node liveNode, Node versionNode) throws RepositoryException {
         final String logPrefix = "<restore(N,N)> ";
@@ -592,7 +553,7 @@ public final class VerServUtils {
 
         if (isMaster) {
             // reset our special fields
-            destNode.setProperty(NodeConstants.ECM_FROZEN_NODE_UUID.rawname, (Value) null);
+            destNode.setProperty(ECM_FROZEN_NODE_UUID.rawname, (Value) null);
         }
 
         // remove properties that do not exist in the frozen representation
@@ -646,10 +607,6 @@ public final class VerServUtils {
 
     /**
      * Removes properties from the given node which do not exist in the given set.
-     *
-     * @param keepPropNames
-     * @param destNode
-     * @throws RepositoryException
      */
     private static void removeProps(Set<String> keepPropNames, Node destNode)
             throws RepositoryException {
@@ -716,7 +673,7 @@ public final class VerServUtils {
 
         while (versionNode != null) {
             final Property prop = versionNode
-                    .getProperty(NodeConstants.ECM_VERSION_PREDECESSOR.rawname);
+                    .getProperty(ECM_VERSION_PREDECESSOR.rawname);
             if (prop != null) {
                 final Node predecessor = prop.getNode();
                 if (START_VERSION_NODE.equals(predecessor.getName())) {
@@ -740,8 +697,7 @@ public final class VerServUtils {
         while (versionNode != null) {
             final Property prop;
             try {
-                prop = versionNode
-                        .getProperty(NodeConstants.ECM_VERSION_SUCCESSOR.rawname);
+                prop = versionNode.getProperty(ECM_VERSION_SUCCESSOR.rawname);
             } catch (PathNotFoundException e) {
                 // no successor : end of line
                 break;
@@ -766,7 +722,7 @@ public final class VerServUtils {
         final Property prop;
         try {
             prop = versionNode
-                    .getProperty(NodeConstants.ECM_VERSION_SUCCESSOR.rawname);
+                    .getProperty(ECM_VERSION_SUCCESSOR.rawname);
         } catch (PathNotFoundException e) {
             // no successor : end of line
             return null;
@@ -786,7 +742,7 @@ public final class VerServUtils {
     static Node getVersNodePredecessor(Node versionNode)
             throws RepositoryException {
         final Property prop = versionNode.getProperty(
-                NodeConstants.ECM_VERSION_PREDECESSOR.rawname);
+                ECM_VERSION_PREDECESSOR.rawname);
         if (prop != null) {
             final Node predecessor = prop.getNode();
             if (START_VERSION_NODE.equals(predecessor.getName())) {

@@ -1880,11 +1880,11 @@ public class Mapper {
     }
 
     protected QueryMaker findQueryMaker(String query) throws StorageException {
-        QueryMaker queryMaker = null;
         List<Class<?>> classes = repository.getRepositoryDescriptor().queryMakerClasses;
         if (classes.isEmpty()) {
             classes.add(NXQLQueryMaker.class);
         }
+        QueryMaker queryMaker = null;
         for (Class<?> klass : classes) {
             // build QueryMaker instance
             try {

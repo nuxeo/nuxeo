@@ -348,7 +348,6 @@ public class SQLSession implements Session {
         assert Model.PROXY_TYPE == CoreSession.IMPORT_PROXY_TYPE;
         boolean isProxy = typeName.equals(Model.PROXY_TYPE);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        Node parentNode;
         Long pos = null; // TODO pos
         if (!isProxy) {
             // version & live document
@@ -364,6 +363,7 @@ public class SQLSession implements Session {
             props.put(Model.MAIN_MINOR_VERSION_PROP,
                     properties.get(CoreSession.IMPORT_VERSION_MINOR));
         }
+        Node parentNode;
         if (parent == null) {
             // version
             parentNode = null;

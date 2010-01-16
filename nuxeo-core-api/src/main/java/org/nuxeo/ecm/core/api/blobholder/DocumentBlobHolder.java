@@ -25,7 +25,6 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.Property;
 
 /**
  * {@link BlobHolder} implementation based on a {@link DocumentModel} and a

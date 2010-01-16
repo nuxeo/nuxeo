@@ -24,7 +24,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.api.model.Property;
 
 /**
  * {@link BlobHolder} implemention based on a {@link DocumentModel} and a Xpath
@@ -34,7 +33,7 @@ import org.nuxeo.ecm.core.api.model.Property;
  */
 public class DocumentStringBlobHolder extends DocumentBlobHolder {
 
-    protected String mt = null;
+    protected String mt;
 
     public DocumentStringBlobHolder(DocumentModel doc, String path) {
         super(doc, path);
