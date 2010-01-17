@@ -25,12 +25,12 @@ import java.net.URLClassLoader;
  *
  */
 public class DelegateLoader implements SharedClassLoader {
-    
-    protected URLClassLoader loader;
+
+    protected final URLClassLoader loader;
     protected Method addUrl;
-    
+
     public DelegateLoader(URLClassLoader loader) {
-        this.loader = loader; 
+        this.loader = loader;
         try {
             addUrl = loader.getClass().getDeclaredMethod("addURL", URL.class);
             addUrl.setAccessible(true);

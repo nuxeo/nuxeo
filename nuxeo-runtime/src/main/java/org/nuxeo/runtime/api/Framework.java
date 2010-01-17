@@ -71,18 +71,17 @@ public final class Framework {
 
     /**
      * A class loader used to share resources between all bundles.
+     * <p>
      * This is useful to put resources outside any bundle (in a directory on the file system)
      * and then refer them from XML contributions.
+     * <p>
      * The resource directory used by this loader is ${nuxeo_data_dir}/resources whee
      * ${nuxeo_data_dir} is usually ${nuxeo_home}/data
      */
     protected static URLClassLoader resourceLoader = null;
 
-
-
     // Utility class.
     private Framework() { }
-
 
     // FIXME: this method can't work as it is implemented here.
     public static void initialize(RuntimeService runtimeService) throws Exception {
@@ -146,10 +145,6 @@ public final class Framework {
 
     /**
      * Gets a service given its class.
-     *
-     * @param <T>
-     * @param serviceClass
-     * @return
      */
     public static <T> T getService(Class<T> serviceClass) throws Exception {
         return serviceMgr.getService(serviceClass);
@@ -157,11 +152,6 @@ public final class Framework {
 
     /**
      * Gets a service given its class and an identifier.
-     *
-     * @param <T>
-     * @param serviceClass
-     * @param name
-     * @return
      */
     public static <T> T getService(Class<T> serviceClass, String name)
             throws Exception {
@@ -170,10 +160,6 @@ public final class Framework {
 
     /**
      * Gets a nuxeo-runtime local service.
-     *
-     * @param <T>
-     * @param serviceClass
-     * @return
      */
     public static <T> T getLocalService(Class<T> serviceClass) {
         //TODO: obsolete code remove it
@@ -187,9 +173,6 @@ public final class Framework {
 
     /**
      * Lookup a registered object given its key.
-     *
-     * @param key
-     * @return
      */
     public static Object lookup(String key) {
         return null; //TODO
@@ -289,7 +272,7 @@ public final class Framework {
      * <p>
      * If the listener is not registered, do nothing.
      *
-     * @param listener
+     * @param listener the listener to remove
      */
     public static void removeListener(RuntimeServiceListener listener) {
         listeners.remove(listener);
@@ -340,9 +323,6 @@ public final class Framework {
      * The variable format is ${property_key}.
      * <p>
      * System properties are also expanded.
-     *
-     * @param expression
-     * @return
      */
     public static String expandVars(String expression) {
         int p = expression.indexOf("${");
@@ -437,7 +417,7 @@ public final class Framework {
     }
 
     /**
-     * This method delete the given file when the marker object is collected by
+     * Deletes the given file when the marker object is collected by
      * GC.
      *
      * @param file The file to delete
@@ -448,7 +428,7 @@ public final class Framework {
     }
 
     /**
-     * This method delete the given file when the marker object is collected by
+     * Deletes the given file when the marker object is collected by
      * GC. The fileDeleteStrategy can be used for instance do delete only empty
      * directory or force deletion.
      *

@@ -37,10 +37,6 @@ public interface ServiceProvider {
 
     /**
      * Gets the service instance given its API class.
-     *
-     * @param <T>
-     * @param serviceClass
-     * @return
      */
     <T> T getService(Class<T> serviceClass);
 

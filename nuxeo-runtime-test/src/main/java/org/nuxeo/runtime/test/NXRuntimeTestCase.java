@@ -116,7 +116,6 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
 
     /**
      * Fire the event {@code FrameworkEvent.STARTED}.
-     * @throws Exception
      */
     public void fireFrameworkStarted() throws Exception {
         osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, runtimeBundle, null));
@@ -238,8 +237,6 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
      * <p>
      * This happens for instance if a previous test had errors in its
      * <code>setUp()</code>, because <code>tearDown()</code> has not been called.
-     *
-     * @throws Exception
      */
     protected void wipeRuntime() throws Exception {
         // Make sure there is no active runtime (this might happen if an
@@ -313,20 +310,24 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
      *
      * @param bundle the name of the bundle to peek the contrib in
      * @param contrib the path to contrib in the bundle.
-     * @throws Exception
      */
     public void deployContrib(String bundle, String contrib) throws Exception {
         deployContrib(lookupBundle(bundle), contrib);
     }
 
     /**
-     * Deploy an XML contribution from outside a bundle. This should be used by tests
+     * Deploy an XML contribution from outside a bundle.
+     * <p>
+     * This should be used by tests
      * wiling to deploy test contribution as part of a real bundle.
-     * The bundle owner is important since the contribution may depend on resources deployed in that bundle.
+     * <p>
+     * The bundle owner is important since the contribution may depend on resources
+     * deployed in that bundle.
+     * <p>
      * Note that the owner bundle MUST be an already deployed bundle.
+     *
      * @param bundle the bundle that becomes the contribution owner
      * @param contrib the contribution to deploy as part of the given bundle
-     * @throws Exception
      */
     public RuntimeContext deployTestContrib(String bundle, String contrib) throws Exception {
         Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);
@@ -379,7 +380,6 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
      *
      * @param bundle the bundle
      * @param contrib the contribution
-     * @throws Exception
      */
     public void undeployContrib(String bundle, String contrib) throws Exception {
         BundleFile b = lookupBundle(bundle);
@@ -451,7 +451,6 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
      * for backwards compatibility.
      *
      * @param bundle the symbolic name
-     * @throws Exception
      */
     public void deployBundle(String bundle) throws Exception {
         BundleFile bundleFile = lookupBundle(bundle);

@@ -36,7 +36,6 @@ import javax.naming.Name;
  * This class is not thread safe.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @SuppressWarnings({"ProhibitedExceptionThrown"}) // This is mandated by the spec for javax.naming.Name!
 public class JndiName implements Name {

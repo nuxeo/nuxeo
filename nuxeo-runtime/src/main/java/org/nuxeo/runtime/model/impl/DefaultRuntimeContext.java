@@ -109,9 +109,8 @@ public class DefaultRuntimeContext implements RuntimeContext {
         URL url = getLocalResource(location);
         if (url != null) {
             return deploy(url);
-        } else {
-            log.warn("No local resources was found with this name: " + location);
         }
+        log.warn("No local resources was found with this name: " + location);
         return null;
     }
 

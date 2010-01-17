@@ -60,7 +60,7 @@ public class JettyComponent extends DefaultComponent implements FrameworkListene
     public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.server");
     public static final String XP_WEB_APP = "webapp";
     public static final String XP_DATA_SOURCE = "datasource";
-    public static String P_SCAN_WEBDIR = "org.nuxeo.runtime.jetty.scanWebDir";
+    public static final String P_SCAN_WEBDIR = "org.nuxeo.runtime.jetty.scanWebDir";
 
     protected Server server;
     // here we are putting all regular war contexts

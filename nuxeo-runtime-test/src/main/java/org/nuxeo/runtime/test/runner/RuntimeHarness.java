@@ -63,7 +63,7 @@ public class RuntimeHarness {
 
     protected RuntimeService runtime;
 
-    protected List<URL> urls = new ArrayList<URL>();
+    protected final List<URL> urls = new ArrayList<URL>();
 
     private File workingDir;
 
@@ -75,15 +75,11 @@ public class RuntimeHarness {
 
     private Map<String, BundleFile> bundles;
 
-    private ClassLoader classLoader = RuntimeHarness.class.getClassLoader();
+    private final ClassLoader classLoader = RuntimeHarness.class.getClassLoader();
 
     private OSGiAdapter osgi;
 
     private RootRuntimeBundle runtimeBundle;
-
-    public RuntimeHarness() {
-        super();
-    }
 
     /**
      * Starts Nuxeo Runtime.
@@ -369,8 +365,6 @@ public class RuntimeHarness {
     /**
      * Add a single jar file to this harness's urls searched for when loading
      * bundles.
-     *
-     * @param jar
      */
     public void addJar(File jar) throws MalformedURLException {
         urls.add(jar.toURI().toURL());

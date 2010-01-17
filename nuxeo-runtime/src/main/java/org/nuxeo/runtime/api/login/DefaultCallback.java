@@ -22,7 +22,8 @@ package org.nuxeo.runtime.api.login;
 import javax.security.auth.callback.Callback;
 
 /**
- * Copied from jbossx
+ * Copied from jbossx.
+ * <p>
  *
  * An implementation of Callback that simply obtains an Object to be used
  * as the authentication credential. Interpretation of the Object is up to

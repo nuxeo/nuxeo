@@ -21,13 +21,12 @@ import java.net.URL;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MutableClassLoaderDelegate implements MutableClassLoader {
 
     protected ClassLoader cl;
     protected Method addURL;
-    
+
     public MutableClassLoaderDelegate(ClassLoader cl) throws IllegalArgumentException {
         this.cl = cl;
         Class<?> clazz = cl.getClass();
@@ -37,15 +36,16 @@ public class MutableClassLoaderDelegate implements MutableClassLoader {
             } catch (NoSuchMethodException e) {
                 clazz = clazz.getSuperclass();
             } catch (Exception e) {
-                throw new IllegalArgumentException("Failed to adapt class loader: "+cl.getClass(), e);    
+                throw new IllegalArgumentException("Failed to adapt class loader: "+cl.getClass(), e);
             }
         } while (addURL == null && clazz != null);
         if (addURL == null) {
-            throw new IllegalArgumentException("Incompatible class loader: "+cl.getClass()+". ClassLoader must provide a method: addURL(URL url)");
+            throw new IllegalArgumentException(
+                    "Incompatible class loader: "+cl.getClass()+". ClassLoader must provide a method: addURL(URL url)");
         }
         addURL.setAccessible(true);
     }
-    
+
     public void addURL(URL url) {
         try {
             addURL.invoke(cl, url);

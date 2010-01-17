@@ -28,7 +28,6 @@ import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
  * Sets a property that is valid along the current preprocessing context.
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PropertyCommand implements Command {
 

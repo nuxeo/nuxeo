@@ -21,7 +21,6 @@ package org.nuxeo.runtime.deploy;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface ConfigurationChangedListener {
 

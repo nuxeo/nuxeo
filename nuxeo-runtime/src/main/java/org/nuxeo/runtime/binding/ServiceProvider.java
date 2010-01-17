@@ -23,7 +23,6 @@ package org.nuxeo.runtime.binding;
  * A service provider is responsible to lookup services.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface ServiceProvider {
 
@@ -44,7 +43,7 @@ public interface ServiceProvider {
 
     /**
      * The provider is no more needed.
-     * It should immediatley release any system resources.
+     * It should immediately release any system resources.
      */
     void destroy();
 

@@ -22,7 +22,6 @@ package org.nuxeo.runtime.binding;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class AbstractServiceProvider implements ServiceProvider {
 

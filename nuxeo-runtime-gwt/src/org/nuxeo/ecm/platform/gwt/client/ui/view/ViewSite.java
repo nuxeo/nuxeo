@@ -29,7 +29,7 @@ import org.nuxeo.ecm.platform.gwt.client.ui.View;
  */
 public class ViewSite implements Site {
 
-    protected String name;
+    protected final String name;
     protected View view;
     protected Object handle;
     protected Container container;
@@ -46,7 +46,6 @@ public class ViewSite implements Site {
     public String getName() {
         return name;
     }
-
 
     public Object getHandle() {
         return handle;
@@ -88,7 +87,6 @@ public class ViewSite implements Site {
     protected View findViewForInput(Object input) {
         return view.acceptInput(input) ? view : null;
     }
-
 
     public void updateIcon() {
         if (container != null) {

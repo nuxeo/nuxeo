@@ -44,7 +44,7 @@ public class ServerLocatorService extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(ServerLocatorService.class);
 
-    protected Map<String, MBeanServer> servers = new HashMap<String, MBeanServer>();
+    protected final Map<String, MBeanServer> servers = new HashMap<String, MBeanServer>();
 
     protected MBeanServer defaultServer = ManagementFactory.getPlatformMBeanServer();
 

@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface CommandProcessor {
 

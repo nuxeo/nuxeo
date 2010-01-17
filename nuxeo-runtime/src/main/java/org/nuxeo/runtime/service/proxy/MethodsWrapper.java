@@ -24,10 +24,10 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Define wrappers for some methods on the target c;ass
+/**
+ * Define wrappers for some methods on the target class.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class MethodsWrapper implements InvocationHandler {
 

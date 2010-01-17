@@ -160,7 +160,6 @@ public final class ServiceManager implements org.nuxeo.runtime.ServiceManager {
      *
      * @param serviceUri the service uri
      * @return the service
-     * @throws Exception
      */
     public Object getService(String serviceUri) throws Exception {
         URI uri = new URI(serviceUri);

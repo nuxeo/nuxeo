@@ -31,20 +31,18 @@ import org.nuxeo.osgi.application.FrameworkBootstrap;
 public class NuxeoLauncher2 implements LifecycleListener {
 
     protected String home = "nxserver";
-    
+
     protected FrameworkBootstrap bootstrap;
-    
+
 
     public void setHome(String home) {
         this.home = home;
     }
-    
+
     public String getHome() {
         return home;
     }
-    
-    
-    
+
     public void lifecycleEvent(LifecycleEvent event) {
         Lifecycle lf = event.getLifecycle();
         if (lf instanceof ContainerBase) {
@@ -52,28 +50,28 @@ public class NuxeoLauncher2 implements LifecycleListener {
             handleEvent(container, event);
         }
     }
-    
+
     protected void handleEvent(ContainerBase container, LifecycleEvent event) {
         try {
             ClassLoader cl = container.getParentClassLoader();
             String type = event.getType();
             if (type == Lifecycle.BEFORE_START_EVENT) {
-                
-                File homeDir = resolveHomeDirectory(); 
+
+                File homeDir = resolveHomeDirectory();
                 bootstrap = new FrameworkBootstrap(cl, homeDir);
                 bootstrap.setHostName("Tomcat");
                 bootstrap.setHostVersion("6.0.20");
                 bootstrap.initialize();
                 bootstrap.start();
             } else if (type == Lifecycle.STOP_EVENT) {
-                bootstrap.stop();        
+                bootstrap.stop();
             }
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to handle event", e);
         }
-    }    
-    
+    }
+
     protected File resolveHomeDirectory() {
         String path = null;
         if (home.startsWith("/")) {
@@ -91,6 +89,5 @@ public class NuxeoLauncher2 implements LifecycleListener {
         }
         return tomcatHome;
     }
-
 
 }

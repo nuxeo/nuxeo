@@ -26,7 +26,6 @@ import org.nuxeo.common.utils.TextTemplate;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class CommandContextImpl extends HashMap<String, String> implements CommandContext {
 

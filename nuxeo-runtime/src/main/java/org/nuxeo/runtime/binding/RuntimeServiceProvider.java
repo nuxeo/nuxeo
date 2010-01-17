@@ -30,7 +30,6 @@ import org.nuxeo.runtime.model.ComponentInstance;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class RuntimeServiceProvider extends AbstractServiceProvider implements ComponentListener {
 

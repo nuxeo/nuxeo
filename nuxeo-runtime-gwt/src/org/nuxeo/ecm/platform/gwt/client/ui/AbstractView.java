@@ -29,7 +29,7 @@ public abstract class AbstractView implements View {
 
     protected Object input;
     protected Site site;
-    protected String name;
+    protected final String name;
     protected Widget widget;
 
     public AbstractView(String name) {

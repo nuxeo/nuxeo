@@ -30,25 +30,21 @@ import org.nuxeo.osgi.application.FrameworkBootstrap;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class NuxeoDeployer implements LifecycleListener {
-    
+
     protected String home = "nxserver";
-    
+
     protected FrameworkBootstrap bootstrap;
-    
 
     public void setHome(String home) {
         this.home = home;
     }
-    
+
     public String getHome() {
         return home;
     }
-    
-    
-    
+
     public void lifecycleEvent(LifecycleEvent event) {
         Lifecycle lf = event.getLifecycle();
         if (lf instanceof ContainerBase) {
@@ -56,7 +52,7 @@ public class NuxeoDeployer implements LifecycleListener {
             handleEvent(container, event);
         }
     }
-    
+
     protected void handleEvent(ContainerBase container, LifecycleEvent event) {
         try {
             ClassLoader parentCl = container.getParentClassLoader();
@@ -64,7 +60,7 @@ public class NuxeoDeployer implements LifecycleListener {
             if (type == Lifecycle.BEFORE_START_EVENT) {
                 File homeDir = resolveHomeDirectory();
                 File bundles = new File(homeDir, "bundles");
-                File lib = new File(homeDir, "lib");                
+                File lib = new File(homeDir, "lib");
                 File deployerJar = FrameworkBootstrap.findFileStartingWidth(bundles, "nuxeo-runtime-deploy");
                 File commonJar = FrameworkBootstrap.findFileStartingWidth(bundles, "nuxeo-common");
                 File xercesJar = FrameworkBootstrap.findFileStartingWidth(lib, "xerces");
@@ -73,7 +69,7 @@ public class NuxeoDeployer implements LifecycleListener {
                     return;
                 }
                 ArrayList<URL> urls = new ArrayList<URL>();
-                File[] files = lib.listFiles(); 
+                File[] files = lib.listFiles();
                 if (files != null) {
                     for (File f : files) {
                         if (f.isFile() && f.getPath().endsWith(".jar")) {
@@ -81,7 +77,7 @@ public class NuxeoDeployer implements LifecycleListener {
                         }
                     }
                 }
-                files = bundles.listFiles(); 
+                files = bundles.listFiles();
                 if (files != null) {
                     for (File f : files) {
                         if (f.isFile() && f.getPath().endsWith(".jar")) {
@@ -92,7 +88,7 @@ public class NuxeoDeployer implements LifecycleListener {
                 urls.add(homeDir.toURI().toURL());
                 urls.add(new File(homeDir, "config").toURI().toURL());
                 URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), parentCl);
-//                URLClassLoader cl = new URLClassLoader(new URL[] {deployerJar.toURI().toURL(), 
+//                URLClassLoader cl = new URLClassLoader(new URL[] {deployerJar.toURI().toURL(),
 //                        commonJar.toURI().toURL(),
 //                        xercesJar.toURI().toURL(),
 //                        new File(homeDir, "config").toURI().toURL() // for log4j config
@@ -109,9 +105,8 @@ public class NuxeoDeployer implements LifecycleListener {
         }
     }
 
-    
     protected File resolveHomeDirectory() {
-        String path = null;
+        String path;
         if (home.startsWith("/")) {
             path = home;
         } else {
@@ -127,6 +122,5 @@ public class NuxeoDeployer implements LifecycleListener {
         }
         return tomcatHome;
     }
-
 
 }

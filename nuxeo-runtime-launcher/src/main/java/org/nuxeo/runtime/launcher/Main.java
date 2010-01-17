@@ -42,7 +42,6 @@ public class Main {
         // where the path may be a path to a Jar file or a directory
         // The default method name is 'main'
         String path = args[0];
-        String mainClassName = null;
         String method = "main";
         int p = path.lastIndexOf(':');
         if (p > -1) {
@@ -50,6 +49,7 @@ public class Main {
             path = path.substring(0, p);
         }
         p = path.lastIndexOf('/');
+        String mainClassName = null;
         if (p > -1) {
             mainClassName = path.substring(p+1);
             path = path.substring(0, p);

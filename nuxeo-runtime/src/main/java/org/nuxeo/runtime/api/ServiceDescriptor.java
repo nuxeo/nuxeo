@@ -41,7 +41,7 @@ public class ServiceDescriptor implements Serializable {
     // this should not be loaded when sending service descriptors to a client
     // because
     // the class may not exists on the client. the class should be loaded only
-    // if the client explicitelly
+    // if the client explicitly
     // lookup the service
     private transient Class<?> serviceClass;
 

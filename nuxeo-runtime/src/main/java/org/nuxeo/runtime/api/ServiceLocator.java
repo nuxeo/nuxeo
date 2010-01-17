@@ -64,7 +64,7 @@ public interface ServiceLocator extends Serializable {
      *
      * @param serviceId the service ID
      * @return the service instance or null if no such service was found
-     * @throws Exception
+     * @throws Exception if any error occurs
      */
     Object lookup(String serviceId) throws Exception;
 

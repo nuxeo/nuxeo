@@ -26,7 +26,6 @@ import javax.naming.NamingException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class BeanServiceProvider extends AbstractServiceProvider {
 
@@ -41,8 +40,6 @@ public class BeanServiceProvider extends AbstractServiceProvider {
      * This constructor should be used on server nodes.
      * It will initialize the provider by using the default initial context.
      * (as configured by the server application)
-     *
-     * @throws NamingException
      */
     public BeanServiceProvider() throws NamingException {
         this(new InitialContext(), false);
@@ -52,7 +49,6 @@ public class BeanServiceProvider extends AbstractServiceProvider {
      * This constructor should be used on clients.
      *
      * @param ctx the initial naming context
-     * @throws NamingException
      */
     public BeanServiceProvider(InitialContext ctx) throws NamingException {
         this(ctx, true);
@@ -63,7 +59,6 @@ public class BeanServiceProvider extends AbstractServiceProvider {
      * The JNDI environment should be passed by the client.
      *
      * @param ctx the initial naming context
-     * @throws NamingException
      */
     public BeanServiceProvider(InitialContext ctx, boolean tryLocalFirst) throws NamingException {
         this.tryLocalFirst = tryLocalFirst;

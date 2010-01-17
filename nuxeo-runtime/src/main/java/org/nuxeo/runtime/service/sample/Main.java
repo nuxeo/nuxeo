@@ -35,7 +35,6 @@ public class Main {
         Service2 s2 = s1.getAdapter(Service2.class);
         s1.m1();
         s2.m2();
-
     }
 
 }

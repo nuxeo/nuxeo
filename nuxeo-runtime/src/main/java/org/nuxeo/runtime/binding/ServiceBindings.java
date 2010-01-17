@@ -84,9 +84,6 @@ public class ServiceBindings implements BundleListener {
      * <p>
      * The JNDI service may be started after this one so we need to lazy get the initial context.
      * This can be solved by splitting the runtime in 2:  core and server.
-     *
-     * @return
-     * @throws javax.naming.NamingException
      */
     public InitialContext getInitialContext() throws NamingException {
         if (jndiContext == null) {
@@ -160,7 +157,8 @@ public class ServiceBindings implements BundleListener {
                         // use preferentially the static bindings
                         String staticImpl = staticBindings.getProperty(itf);
                         if (staticImpl != null) {
-                            log.debug("Using static binding: "+itf +" -> "+staticImpl+". Overriding default implementation: "+impl);
+                            log.debug("Using static binding: "+itf +" -> "+staticImpl
+                                    +". Overriding default implementation: "+impl);
                             impl = staticImpl;
                         }
                         createServiceAliases(itf, impl);
@@ -208,9 +206,7 @@ public class ServiceBindings implements BundleListener {
     }
 
     /**
-     * TODO XXX this method is working only on jboss.
-     * @param beanClass
-     * @return
+     * TODO XXX this method works only on jboss.
      */
     protected String getRemoteName(String beanClass) {
         String name = null;
@@ -225,8 +221,6 @@ public class ServiceBindings implements BundleListener {
 
     /**
      * TODO XXX this method is working only on jboss.
-     * @param beanClass
-     * @return
      */
     protected String getLocalName(String beanClass) {
         String name = null;

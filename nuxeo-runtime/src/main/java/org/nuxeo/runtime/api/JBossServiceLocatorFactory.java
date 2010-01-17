@@ -23,7 +23,6 @@ import java.net.URI;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JBossServiceLocatorFactory extends ServiceLocatorFactory {
 

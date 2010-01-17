@@ -31,7 +31,6 @@ import java.util.Map;
  * the nuxeo runtime framework to register services.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DefaultServiceProvider implements ServiceProvider {
 

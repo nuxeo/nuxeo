@@ -22,13 +22,13 @@ import junit.framework.TestCase;
 
 public class DataSourceHelperTest extends TestCase {
 
-    protected String nonPrefixedName = "nxsqldirectory";
+    protected final String nonPrefixedName = "nxsqldirectory";
 
-    protected String standardPrefixedName = "java:comp/env/jdbc/nxsqldirectory";
+    protected final String standardPrefixedName = "java:comp/env/jdbc/nxsqldirectory";
 
-    protected String jBossPrefixedName = "java:/nxsqldirectory";
+    protected final String jBossPrefixedName = "java:/nxsqldirectory";
 
-    protected String jettyPrefixedName = "jdbc/nxsqldirectory";
+    protected final String jettyPrefixedName = "jdbc/nxsqldirectory";
 
     @Override
     public void tearDown() throws Exception {

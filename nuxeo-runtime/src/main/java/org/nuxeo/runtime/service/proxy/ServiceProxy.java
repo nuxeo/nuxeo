@@ -19,13 +19,10 @@
 
 package org.nuxeo.runtime.service.proxy;
 
-
-
 /**
  * Must be implemented by proxy adapters
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface ServiceProxy<T> {
 

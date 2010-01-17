@@ -26,10 +26,8 @@ import org.nuxeo.osgi.application.MutableClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class NuxeoWebappClassLoader extends WebappClassLoader implements MutableClassLoader {
-
 
     public NuxeoWebappClassLoader() {
     }

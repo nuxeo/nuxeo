@@ -16,17 +16,21 @@
   limitations under the License.
 -->
 <Context antiResourceLocking="false" privileged="true">
-  
+
   <!-- Disable HTTP Session persistence between restart since webengine session objects are not serializable -->
   <Manager pathname="" />
 
   <!-- define custom loader that is responsible to start nuxeo runtime (it extends the default one) -->
-  <Loader className="org.nuxeo.runtime.tomcat.NuxeoWebappLoader" loaderClass="org.nuxeo.runtime.tomcat.NuxeoWebappClassLoader"
-          home="nxserver" classPath="bundles/.:lib/.:config" systemBundle="bundles/nuxeo-runtime-osgi-1.5-SNAPSHOT.jar" />
+  <Loader className="org.nuxeo.runtime.tomcat.NuxeoWebappLoader"
+      loaderClass="org.nuxeo.runtime.tomcat.NuxeoWebappClassLoader"
+      home="nxserver" classPath="bundles/.:lib/.:config"
+      systemBundle="bundles/nuxeo-runtime-osgi-1.5-SNAPSHOT.jar" />
 
   <!--
-      Define JDBC datasaources: the JNDI names will be: java:comp/env/jdbc/DATABASE_NAME. For example java:comp/env/jdbc/nxsqldirectory
-      This means you need to update correspondly JNDI bindings in nuxeo data source definitions in the config directory
+      Define JDBC datasaources: the JNDI names will be: java:comp/env/jdbc/DATABASE_NAME.
+      For example java:comp/env/jdbc/nxsqldirectory
+      This means you need to update correspondly JNDI bindings in nuxeo data source definitions
+      in the config directory
   -->
   <Resource name="jdbc/nxsqldirectory" auth="Container" type="javax.sql.DataSource"
             maxActive="100" maxIdle="30" maxWait="10000"

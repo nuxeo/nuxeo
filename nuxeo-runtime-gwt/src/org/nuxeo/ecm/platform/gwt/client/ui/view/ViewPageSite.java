@@ -29,10 +29,10 @@ import org.nuxeo.ecm.platform.gwt.client.ui.View;
  */
 public class ViewPageSite extends ViewSite {
 
-    protected ArrayList<View> views;
+    protected final ArrayList<View> views;
 
     public ViewPageSite(String name, View view) {
-        super (name, view);
+        super(name, view);
         views = new ArrayList<View>();
         views.add(view);
     }

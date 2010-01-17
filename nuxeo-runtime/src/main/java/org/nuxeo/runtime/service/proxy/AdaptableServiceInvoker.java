@@ -97,6 +97,4 @@ public class AdaptableServiceInvoker<T extends AdaptableService> implements Serv
         }
     }
 
-
-
 }

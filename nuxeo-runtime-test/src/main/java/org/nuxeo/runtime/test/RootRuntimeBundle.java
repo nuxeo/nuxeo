@@ -26,7 +26,6 @@ import org.osgi.framework.BundleActivator;
 
 /**
  * @author gracinet
- *
  */
 public class RootRuntimeBundle extends BundleImpl {
 

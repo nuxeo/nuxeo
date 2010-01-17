@@ -27,22 +27,21 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.WebappLoader;
 
 /**
- * shared attribute is experimental. do not use it yet.
- * (it's purpose is to be able to deploy multiple WARs using the same nuxeo instance but it is not working yet) 
- *  
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Shared attribute is experimental. do not use it yet.
+ * <p>
+ * (Its purpose is to be able to deploy multiple WARs using the same nuxeo instance
+ * but it is not working yet)
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class NuxeoWebappLoader extends WebappLoader {
 
     protected File baseDir; // the baseDir from the Context (which is private..)
-    
 
     protected void overwriteWar() throws Exception {
         //File baseDir = getBaseDir();
         // remove all files
     }
-    
 
     public File getBaseDir() throws Exception {
         if (baseDir == null) {
@@ -55,5 +54,4 @@ public class NuxeoWebappLoader extends WebappLoader {
         return baseDir;
     }
 
-    
 }

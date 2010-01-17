@@ -86,9 +86,6 @@ public class LocatorHelper {
      * getLocatorURI() as may need to change if port not specified, host is
      * 0.0.0.0, etc. If need original uri that is passed to this constructor,
      * need to call getOriginalURI().
-     *
-     * @param uri
-     * @throws MalformedURLException
      */
     public static InvokerLocator parse(String uri) throws MalformedURLException {
         String protocol;

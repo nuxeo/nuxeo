@@ -39,7 +39,6 @@ public interface LoginService {
      * permission.
      *
      * @return the login context
-     * @throws LoginException
      */
     LoginContext login() throws LoginException;
 
@@ -49,19 +48,14 @@ public interface LoginService {
      * <p>
      * The method requires the caller to have the {@link SystemLoginPermission}
      * permission.
+     *
      * @param username the username that originated the system login
      * @return the login context
-     * @throws LoginException
      */
     LoginContext loginAs(String username) throws LoginException;
 
     /**
      * Client login using the given username and password.
-     *
-     * @param username
-     * @param credentials
-     * @return
-     * @throws LoginException
      */
     LoginContext login(String username, Object credentials) throws LoginException;
 
@@ -70,7 +64,6 @@ public interface LoginService {
      *
      * @param cbHandler the callback handler to use to retrieve the login info
      * @return the login context
-     * @throws LoginException
      */
     LoginContext login(CallbackHandler cbHandler) throws LoginException;
 

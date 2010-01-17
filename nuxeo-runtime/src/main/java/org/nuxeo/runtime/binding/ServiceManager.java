@@ -26,7 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ServiceManager implements org.nuxeo.runtime.ServiceManager {
 

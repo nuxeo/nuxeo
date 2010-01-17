@@ -20,7 +20,7 @@ package org.nuxeo.osgi.application;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface LoaderConstants {
+public class LoaderConstants {
 
     public static final String HOST_NAME = "org.nuxeo.app.host.name";
     public static final String HOST_VERSION = "org.nuxeo.app.host.version";
@@ -37,5 +37,8 @@ public interface LoaderConstants {
     public static final String SCAN_FOR_NESTED_JARS = "org.nuxeo.app.scanForNestedJars";
     public static final String FLUSH_CACHE = "org.nuxeo.app.flushCache";
     public static final String ARGS = "org.nuxeo.app.args";
-    
+
+    private LoaderConstants() {
+    }
+
 }

@@ -311,9 +311,8 @@ public class StandaloneApplication extends OSGiAdapter {
         StandaloneApplication.args = args;
         options = new CommandLineOptions(args);
         // start framework
-        StandaloneApplication app = null;
         try {
-            app = createInstance(classLoader);
+            StandaloneApplication app = createInstance(classLoader);
             // start level 0
             app.setClassPath(classPath);
             app.setSystemBundle(new SystemBundle(app, createSystemBundle(systemBundle), classLoader.getLoader()));

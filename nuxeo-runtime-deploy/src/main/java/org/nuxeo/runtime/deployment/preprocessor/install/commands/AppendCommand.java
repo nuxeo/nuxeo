@@ -30,7 +30,6 @@ import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AppendCommand implements Command {
 
@@ -54,7 +53,8 @@ public class AppendCommand implements Command {
         File dstFile = new File(baseDir, ctx.expandVars(dst.toString()));
 
         if (!srcFile.exists()) {
-            throw new FileNotFoundException("Could not find the file " + srcFile.getAbsolutePath() + " to append.");
+            throw new FileNotFoundException("Could not find the file " + srcFile.getAbsolutePath()
+                    + " to append.");
         }
 
         if (!dstFile.isFile()) {

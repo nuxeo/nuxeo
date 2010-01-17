@@ -21,15 +21,15 @@ package org.nuxeo.runtime.api;
 
 import java.net.URI;
 import java.util.Hashtable;
+import java.util.Map;
 
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class ServiceLocatorFactory {
 
-    static final Hashtable<String, ServiceLocatorFactory> factories = new Hashtable<String, ServiceLocatorFactory>();
+    static final Map<String, ServiceLocatorFactory> factories = new Hashtable<String, ServiceLocatorFactory>();
 
     public abstract ServiceLocator createLocator(URI uri) throws Exception;
 
@@ -45,7 +45,6 @@ public abstract class ServiceLocatorFactory {
     public static ServiceLocatorFactory getFactory(String type) {
         return factories.get(type);
     }
-
 
     static {
         registerFactory("jboss", new JBossServiceLocatorFactory());

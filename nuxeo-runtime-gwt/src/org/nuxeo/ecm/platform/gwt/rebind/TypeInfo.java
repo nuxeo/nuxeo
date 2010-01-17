@@ -28,10 +28,10 @@ import com.google.gwt.core.ext.typeinfo.JClassType;
  */
 public class TypeInfo {
 
-    protected JClassType classType;
-    protected String proxyName;
-    protected String proxyQName;
-    protected String proxyPackage;
+    protected final JClassType classType;
+    protected final String proxyName;
+    protected final String proxyQName;
+    protected final String proxyPackage;
 
 
     public TypeInfo(JClassType classType) {
@@ -41,30 +41,18 @@ public class TypeInfo {
         proxyPackage = classType.getPackage().getName();
     }
 
-    /**
-     * @return the classType.
-     */
     public JClassType getClassType() {
         return classType;
     }
 
-    /**
-     * @return the proxyName.
-     */
     public String getProxyName() {
         return proxyName;
     }
 
-    /**
-     * @return the proxyPackage.
-     */
     public String getProxyPackage() {
         return proxyPackage;
     }
 
-    /**
-     * @return the proxyQName.
-     */
     public String getProxyQName() {
         return proxyQName;
     }

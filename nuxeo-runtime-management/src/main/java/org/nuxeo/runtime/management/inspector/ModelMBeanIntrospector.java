@@ -173,7 +173,7 @@ public class ModelMBeanIntrospector {
             ParameterDescriptor[] parameters = methodInfo.getParameterDescriptors();
             boolean hasParameters = parameters != null && parameters.length > 0;
             Class<?> returnType = method.getReturnType();
-            boolean returnValue = returnType != null && void.class.equals(returnType) == false;
+            boolean returnValue = returnType != null && !void.class.equals(returnType);
             if ((name.startsWith("get") && hasParameters && returnValue)
                     || (name.startsWith("is")
                             && !hasParameters && boolean.class.equals(returnType))) {

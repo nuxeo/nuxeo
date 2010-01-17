@@ -23,7 +23,6 @@ import java.util.Enumeration;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class SharedResourceLoader extends URLClassLoader {
 

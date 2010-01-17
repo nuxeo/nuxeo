@@ -31,7 +31,6 @@ import org.osgi.framework.BundleContext;
 
 /**
  * @author gracinet
- *
  */
 public class OSGIRuntimeTestActivator extends OSGiRuntimeActivator {
 

@@ -119,8 +119,7 @@ public class OSGiBundleContext implements BundleContext {
         File file = new File(location);
         try {
             BundleFile bf = file.isDirectory() ? new DirectoryBundleFile(file) : new JarBundleFile(file);
-            BundleImpl b = null;
-            b = new BundleImpl(bundle.osgi, bf, bundle.loader);
+            BundleImpl b = new BundleImpl(bundle.osgi, bf, bundle.loader);
             if (b.getSymbolicName() != null) {
                 bundle.osgi.install(b);
             }

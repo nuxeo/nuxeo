@@ -35,7 +35,6 @@ import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
  * A prefix may be specified.
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ZipCommand implements Command {
 
