@@ -2881,7 +2881,6 @@ public abstract class AbstractSession implements CoreSession,
         EventContextImpl ctx = new EventContextImpl(this, getPrincipal(),
                 operation);
         Event event = ctx.newEvent("!OPERATION_START!");
-        event.setInline(true); // avoid recording the event in bundle events
         try {
             fireEvent(event);
         } catch (ClientException e) {
@@ -2906,7 +2905,6 @@ public abstract class AbstractSession implements CoreSession,
         EventContextImpl ctx = new EventContextImpl(this, getPrincipal(),
                 operation);
         Event event = ctx.newEvent("!OPERATION_END!");
-        event.setInline(true); // avoid recording the event in bundle events
         try {
             fireEvent(event);
         } catch (ClientException e) {
