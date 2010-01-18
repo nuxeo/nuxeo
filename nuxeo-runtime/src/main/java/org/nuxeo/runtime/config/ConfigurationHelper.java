@@ -35,10 +35,6 @@ public class ConfigurationHelper {
      * <p>
      * The normalization replaces special hosts like 0.0.0.0, 127.0.0.1, localhost
      * with the given newHost.
-     *
-     * @param uri
-     * @param newHost
-     * @return
      */
     public static String getNormalizedURI(String uri, String newHost) {
         int p;

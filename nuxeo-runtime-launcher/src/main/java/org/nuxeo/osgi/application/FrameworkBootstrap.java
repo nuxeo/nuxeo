@@ -35,7 +35,6 @@ import java.util.zip.ZipEntry;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FrameworkBootstrap implements LoaderConstants {
 
@@ -128,7 +127,6 @@ public class FrameworkBootstrap implements LoaderConstants {
         stop.invoke(null);        
     }    
 
-
     @SuppressWarnings("unchecked")
     protected void initializeEnvironment() throws IOException {
         System.setProperty(HOME_DIR, home.getAbsolutePath());
@@ -172,10 +170,9 @@ public class FrameworkBootstrap implements LoaderConstants {
     }
 
     /**
-     * Fill the classloader with all jars found in the defined classpath.
-     * Return the list of bundle files. 
-     * @param cl
-     * @return
+     * Fills the classloader with all jars found in the defined classpath.
+     * 
+     * @return the list of bundle files. 
      */
     protected List<File> buildClassPath() throws IOException {
         List<File> bundleFiles = new ArrayList<File>();

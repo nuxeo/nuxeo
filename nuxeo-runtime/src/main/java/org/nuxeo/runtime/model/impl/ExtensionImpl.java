@@ -34,7 +34,6 @@ import org.w3c.dom.Element;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("extension")
 public class ExtensionImpl implements Extension {
@@ -140,8 +139,6 @@ public class ExtensionImpl implements Extension {
 
     /**
      * Gets the XML string for this extension.
-     *
-     * @return
      */
     public String toXML() {
         try {

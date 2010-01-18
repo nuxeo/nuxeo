@@ -27,7 +27,6 @@ import org.nuxeo.runtime.Version;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface ServerConfiguration extends Serializable {
 
@@ -50,8 +49,6 @@ public interface ServerConfiguration extends Serializable {
 
     /**
      * Get the JNDI properties required by clients to connect to this server.
-     *
-     * @return
      */
     Properties getJndiProperties();
 

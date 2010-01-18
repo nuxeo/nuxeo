@@ -45,15 +45,19 @@ import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
 
 /**
+ * This component registers and configures an embedded Jetty server.
+ * <p>
  * Contexts are registered like this:
- * If there is a jetty.config the contexts defined there are registered first.
- * If there is no jetty.config a log context will be create programatically and registered first
+ * <p>
+ * First, if there is a {@code jetty.xml} config file, the contexts defined there are registered first;
+ * if there is no {@code jetty.xml}, a log context will be create programatically and registered first.
+ * <p>
  * Second an empty collection context is registered. Here will be registered all regular war contexts.
- * Third a the root collection is registered. This way all requests not handled by regular wars are directed to the root war
- * which usually is the webengine war in a nxserver application.
+ * <p>
+ * Third, the root collection is registered. This way all requests not handled by regular wars are directed
+ * to the root war, which usually is the webengine war in a nxserver application.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JettyComponent extends DefaultComponent implements FrameworkListener {
 
@@ -144,9 +148,10 @@ public class JettyComponent extends DefaultComponent implements FrameworkListene
             File web = Environment.getDefault().getWeb();
             scanForWars(web);
         }
-        // start the server
-        //server.start(); -> server will be start after frameworks starts to be asure all services used by web.xml filters are registered.
 
+        // start the server
+        //server.start(); -> server will be start after frameworks starts to be sure that all services
+        // used by web.xml filters are registered.
     }
 
     @Override
@@ -237,7 +242,6 @@ public class JettyComponent extends DefaultComponent implements FrameworkListene
             }
         }
     }
-
 
     private void scanForWars(File dir) {
         scanForWars(dir, "");

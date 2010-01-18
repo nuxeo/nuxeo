@@ -36,7 +36,6 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface Server {
 
@@ -123,8 +122,6 @@ public interface Server {
 
     /**
      * Gets the runtime properties as a Java properties file content.
-     *
-     * @return
      */
     Properties getProperties();
 

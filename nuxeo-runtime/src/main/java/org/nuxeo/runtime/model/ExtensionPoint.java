@@ -37,7 +37,7 @@ public interface ExtensionPoint {
     /**
      * Gets the extension point name.
      *
-     * @return
+     * @return the extension point name
      */
     String getName();
 

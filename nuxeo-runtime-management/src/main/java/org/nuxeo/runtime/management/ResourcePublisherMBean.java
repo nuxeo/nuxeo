@@ -21,8 +21,7 @@ import java.util.Set;
 import javax.management.ObjectName;
 
 /**
- * @authorStephane Lacoin (Nuxeo EP Software Engineer)
- *
+ * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
 public interface ResourcePublisherMBean {
 

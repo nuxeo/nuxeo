@@ -22,10 +22,9 @@ package org.nuxeo.osgi.application;
 import java.net.URL;
 
 /**
- * Used to decorate a classloader with a public addURL() method
+ * Used to decorate a classloader with a public {@link #addURL(URL)} method.
  *   
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface SharedClassLoader {
 
@@ -33,7 +32,6 @@ public interface SharedClassLoader {
     
     /**
      * Must return itself.
-     * @return
      */
     public ClassLoader getLoader();
     

@@ -42,8 +42,8 @@ import org.osgi.framework.Bundle;
  * <p>
  * After the runtime service was initialized, it may be accessed through the
  * facade class {@link org.nuxeo.runtime.api.Framework}.
- *
- * @see {@link org.nuxeo.runtime.api.Framework}
+ * <p>
+ * See: {@link org.nuxeo.runtime.api.Framework}
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -119,7 +119,7 @@ public interface RuntimeService {
      * @param name the property name
      * @param defaultValue the default value to use when the property doesn't
      *            exists
-     * @return
+     * @return the property value
      */
     String getProperty(String name, String defaultValue);
 

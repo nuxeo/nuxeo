@@ -48,15 +48,11 @@ public interface RegistrationInfo extends Serializable {
 
     /**
      * Gets the component version.
-     *
-     * @return
      */
     Version getVersion();
 
     /**
      * Gets any comments on this component.
-     *
-     * @return
      */
     String getDocumentation();
 
@@ -132,7 +128,7 @@ public interface RegistrationInfo extends Serializable {
     boolean isActivated();
 
     /**
-     * Checks whether this component is resolved (i.e. all its dependencies are satisfied).
+     * Checks whether this component is resolved (i&dot;e&dot; all its dependencies are satisfied).
      *
      * @return true if the component is resolved, false otherwise
      */
@@ -147,7 +143,8 @@ public interface RegistrationInfo extends Serializable {
 
 
     /**
-     * Whether or not this registration is persisted by the user (not part of a real bundle)
+     * Whether or not this registration is persisted by the user (not part of a real bundle).
+     *
      * @return true if persisted, false otherwise
      */
     boolean isPersistent();

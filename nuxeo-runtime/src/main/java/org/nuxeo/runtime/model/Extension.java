@@ -122,8 +122,6 @@ public interface Extension extends Serializable {
      * The id is never null. If the user is not specifying an ID, one will be
      * generated as follow:
      * componentName#targetExtensionPoint.randomNumber
-     *
-     * @return
      */
     String getId();
 
@@ -138,8 +136,6 @@ public interface Extension extends Serializable {
 
     /**
      * Gets the XML representation for this extension.
-     *
-     * @return
      */
     String toXML();
 

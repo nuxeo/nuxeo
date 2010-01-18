@@ -83,19 +83,12 @@ public class RemotingService extends DefaultComponent {
 
     /**
      * Helper method to disconnect from a remote server.
-     *
-     * @param server
      */
     public static void disconnect(Server server) {
         TransporterClient.destroyTransporterClient(server);
     }
 
     /**
-     *
-     * @param host
-     * @param port
-     * @return
-     *
      * @deprecated must be removed since from runtime 1.5.1 the invoker protocol may be configurable
      */
     @Deprecated

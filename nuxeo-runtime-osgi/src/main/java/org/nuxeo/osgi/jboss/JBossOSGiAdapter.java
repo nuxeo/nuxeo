@@ -72,8 +72,6 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
      * <p>
      * This method should be used only on single Nuxeo deployments or when using
      * isolated class loaders for Nuxeo ears.
-     *
-     * @return
      */
     public static DeploymentInfo getEARDeployment() {
         if (instance == null) {

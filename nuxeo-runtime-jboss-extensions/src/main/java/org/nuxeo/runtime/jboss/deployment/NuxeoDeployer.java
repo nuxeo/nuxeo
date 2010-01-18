@@ -328,10 +328,6 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
      * services like topics, etc.
      * <p>
      * MBeans are deployed before any other bundle.
-     *
-     * @param di
-     * @return
-     * @throws DeploymentException
      */
     protected Collection<String> processNestedMBeans(DeploymentInfo di) throws DeploymentException {
         List<String>names = new ArrayList<String>();
@@ -537,7 +533,6 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
                 }
             }
         }
-
     }
 
     protected void addJarsToClassPath(DeploymentInfo di, File dir) throws DeploymentException {

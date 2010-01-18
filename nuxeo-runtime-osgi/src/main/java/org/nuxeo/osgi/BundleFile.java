@@ -28,7 +28,6 @@ import java.util.jar.Manifest;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface BundleFile {
 
@@ -96,7 +95,6 @@ public interface BundleFile {
     /**
      * Gets the entry at the given path in this bundle.
      *
-     * @param name
      * @return the entry URL if any null otherwise
      *
      * @see org.osgi.framework.Bundle#getEntry(String)
@@ -108,9 +106,6 @@ public interface BundleFile {
      * to entries within the bundle whose longest sub-path matches the supplied
      * path argument.
      *
-     * @param path
-     * @return
-     *
      * @see org.osgi.framework.Bundle#getEntryPaths(String)
      */
     Enumeration<String> getEntryPaths(String path);
@@ -118,13 +113,7 @@ public interface BundleFile {
     /**
      * Finds entries in that bundle.
      *
-     * @param name
-     * @param pattern
-     * @param recurse
-     * @return
-     *
      * @see org.osgi.framework.Bundle#findEntries(String, String, boolean)
-     *
      */
     Enumeration<URL> findEntries(String name, String pattern, boolean recurse);
 
@@ -135,7 +124,6 @@ public interface BundleFile {
      *
      * @param tmpDir optional temporary dir if the nested bundle should be
      *            extracted from an archive
-     * @return
      */
     Collection<BundleFile> getNestedBundles(File tmpDir) throws IOException;
 
@@ -145,8 +133,6 @@ public interface BundleFile {
      *
      * @param tmpDir optional temporary dir if the nested bundle should be
      *            extracted from an archive
-     * @return
-     * @throws IOException
      */
     Collection<BundleFile> findNestedBundles(File tmpDir) throws IOException;
 
