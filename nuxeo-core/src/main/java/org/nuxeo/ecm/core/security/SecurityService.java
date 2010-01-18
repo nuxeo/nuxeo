@@ -184,7 +184,7 @@ public class SecurityService extends DefaultComponent {
      * contain the given one (inclusive).
      * <p>
      * It is exposed remotely through
-     * {@link CoreSession#getPermissionsToCheck()}.
+     * {@link CoreSession#getPermissionsToCheck}.
      *
      * @param permission
      * @return the list, as an array of strings.

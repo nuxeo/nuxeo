@@ -35,7 +35,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Xml2TextHandler extends DefaultHandler {
 

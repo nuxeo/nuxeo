@@ -43,7 +43,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * contexts.
  * <p>
  * An event context also acts as an event factory. See {@link #newEvent(String)}
- * and {@link #newEvent(String, Set<Flag>)} methods. Events created by an event
+ * and {@link #newEvent(String, int>)} methods. Events created by an event
  * context are automatically mapped to that context.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -92,7 +92,7 @@ public interface EventContext extends Serializable {
      * Gets the named property from this context or null if not exists.
      *
      * @param key the property key
-     * @return the property or null if not exists
+     * @return the property, or null if it does not exist
      */
     Serializable getProperty(String key);
 
@@ -100,14 +100,14 @@ public interface EventContext extends Serializable {
      * Tests whether or not the given property exists.
      *
      * @param key the property to test
-     * @return true if the named property was set false otherwise
+     * @return true if the named property was set, false otherwise
      */
     boolean hasProperty(String key);
 
     /**
      * Gets the current core session if any.
      *
-     * @return the core session or null if none
+     * @return the core session, or null if none
      */
     CoreSession getCoreSession();
 
@@ -120,15 +120,11 @@ public interface EventContext extends Serializable {
 
     /**
      * Sets the core session.
-     *
-     * @param session
      */
     void setCoreSession(CoreSession session);
 
     /**
      * Sets the principal.
-     *
-     * @param principal
      */
     void setPrincipal(Principal principal);
 
@@ -138,7 +134,7 @@ public interface EventContext extends Serializable {
      *
      * @param name the event name
      * @return the event
-     * @see #newEvent(String, Set<Flag>)
+     * @see #newEvent(String, int)
      */
     Event newEvent(String name);
 

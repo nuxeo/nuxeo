@@ -29,8 +29,9 @@ import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 
 /**
- * @author bstefanescu
+ * {@link JBossRepositoryMBean} implementation.
  *
+ * @author bstefanescu
  */
 public class JBossRepository implements JBossRepositoryMBean {
 

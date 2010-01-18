@@ -38,7 +38,7 @@ public class ACLsFragment extends ArrayFragment {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Constructs an empty {@link ACLsFragment} of the given table with the
+     * Constructs an empty ACLsFragment of the given table with the
      * given id (which may be a temporary one).
      *
      * @param id the id

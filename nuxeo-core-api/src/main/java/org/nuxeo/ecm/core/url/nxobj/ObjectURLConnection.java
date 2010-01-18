@@ -27,7 +27,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-/** @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> */
+/**
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ */
 public class ObjectURLConnection extends URLConnection {
 
     protected Object obj;

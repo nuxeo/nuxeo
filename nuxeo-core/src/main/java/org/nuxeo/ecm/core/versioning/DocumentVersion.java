@@ -26,9 +26,7 @@ import org.nuxeo.ecm.core.model.Document;
 
 /**
  * @author <a href="mailto:eionica@nuxeo.com">Eugen Ionica</a>
- *
  */
-
 public interface DocumentVersion extends Document {
 
     /**

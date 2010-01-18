@@ -25,28 +25,27 @@ import java.io.InputStream;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface BlobStorageSession {
 
     /**
-     * Create a new blob
+     * Creates a new blob.
+     *
      * @param in the blob input stream
      * @return the blob resource
      */
     BlobResource put(InputStream in) throws BlobStorageException;
 
     /**
-     * Get a blob resource given it's hash.
-     * @param uri the blob URI
+     * Gets a blob resource given its hash.
+     *
      * @return the blob resource or null if none.
      * @throws IOException if any error occurs
      */
     BlobResource get(String hash) throws BlobStorageException;
 
     /**
-     * Remove the blob given it's hash
-     * @param uri
+     * Removes the blob given its hash.
      */
     void remove(String hash) throws BlobStorageException;
 

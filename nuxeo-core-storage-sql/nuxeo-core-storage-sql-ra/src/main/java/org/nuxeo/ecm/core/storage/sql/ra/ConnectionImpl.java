@@ -45,7 +45,8 @@ import org.nuxeo.ecm.core.storage.sql.SessionImpl;
  * {@link ConnectionFactory} to application code.
  * <p>
  * The actual link to the underlying storage ({@link Session}) is provided by
- * the {@link ManagedConnection} which created this {@link Connection}.
+ * the {@link javax.resource.spi.ManagedConnection} which created this
+ * {@link javax.resource.cci.Connection}.
  *
  * @author Florent Guillaume
  */

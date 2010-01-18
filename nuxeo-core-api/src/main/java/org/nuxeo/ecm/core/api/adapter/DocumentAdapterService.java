@@ -33,7 +33,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocumentAdapterService extends DefaultComponent {
 
@@ -52,7 +51,7 @@ public class DocumentAdapterService extends DefaultComponent {
      * if the factory is globally registered on all types having the name "type".
      * In that case the schema that declared the type is not important
      * The lookup is done by first looking for a "schema:type" entry and then
-     * for a global "type" entry
+     * for a global "type" entry.
      */
     protected Map<String, PropertyFactory> factories;
 
@@ -79,9 +78,8 @@ public class DocumentAdapterService extends DefaultComponent {
                     descriptor.schema, descriptor.type,
                     (PropertyFactory) descriptor.klass.newInstance());
         } catch (Exception e) {
-            log.error(
-                    "Failed to instantiate the property type for "
-                            + descriptor.schema + ':' + descriptor.type);
+            log.error("Failed to instantiate the property type for "
+                    + descriptor.schema + ':' + descriptor.type);
         }
     }
 

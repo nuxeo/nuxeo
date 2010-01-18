@@ -87,7 +87,6 @@ public class CoreService extends DefaultComponent {
 
     @Override
     public void unregisterExtension(Extension extension) {
-
     }
 
     protected void registerSessionFactory(CoreServiceFactoryDescriptor desc) {

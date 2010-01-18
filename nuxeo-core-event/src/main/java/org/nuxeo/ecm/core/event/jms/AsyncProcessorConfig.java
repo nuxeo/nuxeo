@@ -22,12 +22,12 @@ package org.nuxeo.ecm.core.event.jms;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Helper class to configured is Async Post Commit EventListener must be process
- * - by the core directly
- * or
- * - by JMS bus
+ * Helper class to configured is Async Post Commit EventListener must be processed:
+ * <ul>
+ * <li> by the core directly, or
+ * <li> by the JMS bus.
  * <p>
- * (mainly used for testing)
+ * (Mainly used for testing).
  *
  * @author tiry
  */

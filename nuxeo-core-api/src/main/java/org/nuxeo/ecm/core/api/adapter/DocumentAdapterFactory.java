@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface DocumentAdapterFactory {
 

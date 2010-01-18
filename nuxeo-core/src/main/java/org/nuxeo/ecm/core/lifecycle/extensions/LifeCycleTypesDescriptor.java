@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
 /**
  * Life cycle types mapping descriptor.
  *
- * @see org.nuxeo.ecm.core.lifecycle.impl.LifeCycleSerciceImpl
+ * @see org.nuxeo.ecm.core.lifecycle.impl.LifeCycleServiceImpl
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */

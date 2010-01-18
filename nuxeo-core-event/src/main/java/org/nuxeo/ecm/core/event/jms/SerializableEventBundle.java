@@ -257,6 +257,7 @@ public class SerializableEventBundle implements Serializable {
         public CannotReconstruct(String message) {
             super(message);
         }
+
     }
 
 }

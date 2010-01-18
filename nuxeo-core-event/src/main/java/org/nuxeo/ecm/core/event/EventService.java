@@ -131,7 +131,7 @@ public interface EventService extends EventProducer {
      * <p>
      * Any fired events will be recorded until the transaction is terminated
      * either by calling {@link #transactionRolledback()} either
-     * {@link #transactionCommited()()}
+     * {@link #transactionCommitted()}.
      */
     void transactionStarted();
 
@@ -172,4 +172,5 @@ public interface EventService extends EventProducer {
      * Removes the given event transaction listener.
      */
     void removeTransactionListener(EventTransactionListener listener);
+
 }

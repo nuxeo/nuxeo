@@ -1545,7 +1545,7 @@ public interface CoreSession {
     /**
      * Provides the full list of all permissions or groups of permissions that
      * contain the given one (inclusive). It makes the method
-     * {@link SecurityService#getPermissionsToCheck()} available remote.
+     * {@link org.nuxeo.ecm.core.security.SecurityService#getPermissionsToCheck} available remote.
      *
      * @param permission
      * @return the list, as an array of strings.
@@ -1563,10 +1563,9 @@ public interface CoreSession {
     boolean supportsTags(String repositoryName) throws ClientException;
 
     /**
-     * Indicates if current repository implementation supports Tags feature
+     * Indicates if the current repository implementation supports tags.
      *
-     * @param repositoryName
-     * @return
+     * @return true if tags are supported
      * @throws ClientException
      */
     boolean supportsTags() throws ClientException;

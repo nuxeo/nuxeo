@@ -30,9 +30,8 @@ import org.nuxeo.ecm.core.url.nxdoc.Handler;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
- *TODO use Weak references
  */
+// TODO use Weak references
 public class ObjectURL  implements URLStreamHandlerFactory {
 
     static final ConcurrentMap<String, Object> objects = new ConcurrentHashMap<String, Object>();

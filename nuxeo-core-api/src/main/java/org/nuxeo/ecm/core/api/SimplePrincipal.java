@@ -23,8 +23,7 @@ import java.io.Serializable;
 import java.security.Principal;
 
 /**
- *
- * used to change permission in connect.
+ * Used to change permission in connect.
  */
 //FIXME remove this when connect will be changed to use SystemPrincipal
 public class SimplePrincipal implements Principal, Serializable {

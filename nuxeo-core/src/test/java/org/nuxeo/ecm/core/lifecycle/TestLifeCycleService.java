@@ -29,11 +29,9 @@ import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- *
  * Test the lifecycle service.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class TestLifeCycleService extends NXRuntimeTestCase {
 
@@ -53,8 +51,6 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
 
     /**
      * Tests the life cycles registration.
-     *
-     * @throws LifeCycleException
      */
     public void testLifeCycleRegistration() throws LifeCycleException {
         Collection<LifeCycle> lcs = lifeCycleService.getLifeCycles();
@@ -146,6 +142,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         // work state
         LifeCycleState workState = lifeCycle.getStateByName("work");
         assertEquals("work", workState.getName());
+
         Collection<String> transitions = workState.getAllowedStateTransitions();
         assertEquals(3, transitions.size());
         assertTrue(transitions.contains("approve"));
@@ -161,6 +158,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         // reject state
         workState = lifeCycle.getStateByName("cancelled");
         assertEquals("cancelled", workState.getName());
+
         transitions = workState.getAllowedStateTransitions();
         assertEquals(1, transitions.size());
         assertTrue(transitions.contains("backToWork"));
@@ -168,6 +166,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         // obsolete state
         workState = lifeCycle.getStateByName("obsolete");
         assertEquals("obsolete", workState.getName());
+
         transitions = workState.getAllowedStateTransitions();
         assertEquals(0, transitions.size());
 
@@ -212,6 +211,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         // work state
         LifeCycleState workState = lifeCycle.getStateByName("work");
         assertEquals("work", workState.getName());
+
         Collection<String> transitions = workState.getAllowedStateTransitions();
         assertEquals(3, transitions.size());
         assertTrue(transitions.contains("approve"));
@@ -227,6 +227,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         // reject state
         workState = lifeCycle.getStateByName("cancelled");
         assertEquals("cancelled", workState.getName());
+
         transitions = workState.getAllowedStateTransitions();
         assertEquals(1, transitions.size());
         assertTrue(transitions.contains("backToWork"));
@@ -234,11 +235,13 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         // obsolete state
         workState = lifeCycle.getStateByName("obsolete");
         assertEquals("obsolete", workState.getName());
+
         transitions = workState.getAllowedStateTransitions();
         assertEquals(0, transitions.size());
 
         LifeCycleTransition transition = lifeCycle.getTransitionByName("approve");
         assertNotNull(transition);
+
         String destinationName = transition.getDestinationStateName();
         assertEquals("approved", destinationName);
     }

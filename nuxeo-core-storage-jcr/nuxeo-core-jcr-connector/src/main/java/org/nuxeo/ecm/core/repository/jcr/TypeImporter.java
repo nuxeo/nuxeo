@@ -58,7 +58,6 @@ import org.nuxeo.runtime.api.Framework;
 
 
 /**
- *
  * When registering types you must respect the following order to avoid dependency errors:
  * <ol>
  * <li> Register namespaces first
@@ -66,8 +65,8 @@ import org.nuxeo.runtime.api.Framework;
  * <li> Register schema types
  * <li> Register document types
  * </ol>
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TypeImporter implements NodeConstants {
 

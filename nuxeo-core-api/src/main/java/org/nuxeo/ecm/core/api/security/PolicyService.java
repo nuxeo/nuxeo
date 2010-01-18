@@ -20,7 +20,7 @@
 package org.nuxeo.ecm.core.api.security;
 
 /**
- * @deprecated use {@link org.nuxeo.ecm.core.SecurityPolicyService}
+ * @deprecated use {@link org.nuxeo.ecm.core.security.SecurityPolicyService}
  *      and {@link SearchSecurityPolicyService} instead
  */
 @Deprecated

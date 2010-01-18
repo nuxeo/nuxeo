@@ -30,7 +30,7 @@ import java.io.Serializable;
  * visibility:
  * <ul>
  * <li>LOCAL - events that are considered being visible to the local machine.
- * <li>PUBLIC - the default - events visible on any machine. Clearing this flag
+ * <li>PUBLIC (the default) - events visible on any machine. Clearing this flag
  * will avoid forwarding the event on remote machines (through JMS or other
  * messaging systems)
  * </ul>
@@ -49,19 +49,19 @@ import java.io.Serializable;
 public interface Event extends Serializable {
 
     // we don't use an EnumSet, as they use far too much memory
-    final int FLAG_NONE = 0;
+    int FLAG_NONE = 0;
 
-    final int FLAG_CANCEL = 1;
+    int FLAG_CANCEL = 1;
 
-    final int FLAG_ROLLBACK = 2;
+    int FLAG_ROLLBACK = 2;
 
-    final int FLAG_COMMIT = 4;
+    int FLAG_COMMIT = 4;
 
-    final int FLAG_LOCAL = 8;
+    int FLAG_LOCAL = 8;
 
-    final int FLAG_INLINE = 16;
+    int FLAG_INLINE = 16;
 
-    final int FLAG_IMMEDIATE = 32;
+    int FLAG_IMMEDIATE = 32;
 
     /**
      * Gets the event name.
@@ -121,14 +121,13 @@ public interface Event extends Serializable {
      * <p>
      * This will exit the event listeners loop and throw a RuntimeException In
      * JTA container, this will make the global transaction rollback.
-     *
      */
     void markRollBack();
 
     /**
      * Checks whether the event was marked for RollBack
      *
-     * @return true if rolledback, false otherwise.
+     * @return true if rolled back, false otherwise.
      */
     boolean isMarkedForRollBack();
 
@@ -188,7 +187,7 @@ public interface Event extends Serializable {
      * <p>
      * Public events are of interest to everyone.
      *
-     * @return true if public false otherwise
+     * @return true if public, false otherwise
      */
     boolean isPublic();
 
@@ -205,12 +204,12 @@ public interface Event extends Serializable {
      * <p>
      * Immediate events are sent in bundle without waiting for a commit
      *
-     * @return
+     * @return true if event is immediate, false otherwise
      */
     boolean isImmediate();
 
     /**
-     * Sets the immediate flag
+     * Sets the immediate flag.
      */
     void setImmediate(boolean immediate);
 

@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @SuppressWarnings( { "SuppressionAnnotation" })
 public class ArrayProperty extends JCRScalarProperty {

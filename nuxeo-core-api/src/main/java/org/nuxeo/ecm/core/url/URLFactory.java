@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.url.nxdoc.Handler;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class URLFactory {
 

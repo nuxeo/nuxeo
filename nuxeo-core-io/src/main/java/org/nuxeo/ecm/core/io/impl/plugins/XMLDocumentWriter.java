@@ -45,7 +45,7 @@ import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
  * <p>
  * Also blobs are not handled specially. The value existing in the blob data
  * element will be written down. By default blobs are referred as external
- * references, so if their content is not written in the XML document. If you
+ * references, so if their content is not written in the   XML document. If you
  * want to encode blobs as base64 inside the document you must use the
  * {@link InlineBlobTransformer}
  * <p>

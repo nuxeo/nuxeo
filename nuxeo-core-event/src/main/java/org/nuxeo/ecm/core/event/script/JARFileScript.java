@@ -23,8 +23,9 @@ import java.io.Reader;
 import java.net.URL;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Script that comes from a JAR.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class JARFileScript extends Script {
 

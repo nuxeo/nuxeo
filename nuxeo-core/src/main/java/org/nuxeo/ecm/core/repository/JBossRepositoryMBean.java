@@ -19,11 +19,9 @@
 package org.nuxeo.ecm.core.repository;
 
 /**
- *
  * Managed bean to be used in JBoss to introspect repository state and configuration.
  *
  * @author bstefanescu
- *
  */
 public interface JBossRepositoryMBean {
 

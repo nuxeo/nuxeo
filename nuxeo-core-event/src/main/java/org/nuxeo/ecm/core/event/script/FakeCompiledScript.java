@@ -24,7 +24,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 /**
- * This simulates a compiled script for scripts that doesn't support
+ * Simulates a compiled script for scripts that don't support
  * compilation.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

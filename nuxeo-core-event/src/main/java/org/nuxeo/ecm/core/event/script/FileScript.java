@@ -22,8 +22,9 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Script that comes from a file.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class FileScript extends Script {
 

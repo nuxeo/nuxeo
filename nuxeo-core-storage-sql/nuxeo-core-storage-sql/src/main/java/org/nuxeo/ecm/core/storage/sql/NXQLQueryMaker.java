@@ -547,7 +547,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
     /**
      * Collects various info about the query AST, and rewrites the toplevel AND
-     * {@link Predicates} of the WHERE clause into a single
+     * {@link Predicate}s of the WHERE clause into a single
      * {@link MultiExpression} for easier analysis.
      */
     public class QueryAnalyzer extends DefaultQueryVisitor {

@@ -26,7 +26,6 @@ import java.net.URLStreamHandler;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Handler extends URLStreamHandler {
 

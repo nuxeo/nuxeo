@@ -22,7 +22,7 @@ import java.io.Serializable;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
- * A {@link SimpleProperty} gives access to a scalar value stored in an
+ * A SimpleProperty gives access to a scalar value stored in an
  * underlying {@link SimpleFragment}.
  *
  * @author Florent Guillaume
@@ -36,7 +36,7 @@ public class SimpleProperty extends BaseProperty {
     private final String key;
 
     /**
-     * Creates a {@link SimpleProperty}, with specific info about row and key.
+     * Creates a SimpleProperty, with specific info about row and key.
      */
     public SimpleProperty(String name, PropertyType type, boolean readonly,
             SimpleFragment row, String key) {

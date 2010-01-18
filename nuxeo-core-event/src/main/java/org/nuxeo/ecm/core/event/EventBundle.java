@@ -84,7 +84,6 @@ public interface EventBundle extends Iterable<Event>, Serializable {
      */
     VMID getSourceVMID();
 
-
     /**
      * Check is bundle contains the specified event.
      */

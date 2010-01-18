@@ -26,7 +26,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("adapter")
 public class DocumentAdapterDescriptor {
@@ -53,9 +52,6 @@ public class DocumentAdapterDescriptor {
 
     /**
      * Used by XMap to set the factory.
-     *
-     * @param factoryClass
-     * @throws Throwable
      */
     @XNode("@factory")
     void setFactory(Class<DocumentAdapterFactory> factoryClass) throws Throwable {

@@ -1,0 +1,18 @@
+<body>
+<p>
+This custom search indexer changes the way proxies are indexed:
+instead of indexing the proxy itself it will index the target document version.
+</p>
+
+<p>
+To install the custom SearchIndex class you should modify the
+<code>default/workspaces/default/workspace.xml</code>>
+and replace the SearchIndex implementation with this one:
+</p>
+
+<pre>
+  &lt;SearchIndex class="org.nuxeo.ecm.core.repository.jcr.jackrabbit.SearchIndex">
+    &lt;param name="path" value="${wsp.home}/index"/>
+  &lt;/SearchIndex>
+</pre>
+</body>

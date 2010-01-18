@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
 
 /**
- * Default implementation for an {@link EventBundle} that need to be reconnected
+ * Default implementation for an {@link EventBundle} that needs to be reconnected
  * to a usable Session.
  *
  * @author tiry
@@ -84,4 +84,5 @@ public class ReconnectedJMSEventBundle extends ReconnectedEventBundleImpl {
     public boolean comesFromJMS() {
         return true;
     }
+
 }

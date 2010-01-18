@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.url.nxobj.ObjectURL;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PropertyURL implements URLStreamHandlerFactory {
 

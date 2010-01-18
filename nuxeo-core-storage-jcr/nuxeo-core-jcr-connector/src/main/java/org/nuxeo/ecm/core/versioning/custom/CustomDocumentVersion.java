@@ -46,7 +46,6 @@ import org.nuxeo.ecm.core.versioning.DocumentVersion;
  * This corresponds to ecm:version mixin which is a child of ecm:versionHistory.
  *
  * @author DM
- *
  */
 public class CustomDocumentVersion extends JCRDocument implements
         DocumentVersion {
@@ -59,7 +58,7 @@ public class CustomDocumentVersion extends JCRDocument implements
      * Protected constructor called by CustomVersioningService class.
      * Rux NXP-2617: actually made it public to allow service extension. Otherwise, the
      * contribution is not considered because the implementation of service framework
-     * (see {@link TypeImporter.createDocTypeDefinition})
+     * (see {@link org.nuxeo.ecm.core.repository.jcr.TypeImporter#createDocTypeDefinition})
      *
      * @param session
      * @param versionNode the node should be the immediate child of a versionHistory

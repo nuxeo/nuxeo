@@ -25,8 +25,9 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Not used.
  *
+ * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class NXCoreActivator implements BundleActivator {
 

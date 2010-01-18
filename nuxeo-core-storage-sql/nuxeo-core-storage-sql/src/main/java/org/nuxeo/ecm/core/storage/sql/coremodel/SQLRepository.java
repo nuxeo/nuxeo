@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
  * datasource.
  * <p>
  * (When repositories are looked up through JNDI, the class
- * {@link ConnectionFactoryImpl} is used instead of this one.)
+ * {@link org.nuxeo.ecm.core.storage.sql.ra.ConnectionFactoryImpl} is used instead of this one.)
  * <p>
  * This class is constructed by {@link SQLRepositoryFactory}.
  *

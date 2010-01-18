@@ -73,8 +73,6 @@ public final class DocumentModelUtils {
     /**
      * The given propertyName should have 'schema_name:property_name' format.
      *
-     * @param doc
-     * @param propertyName
      * @return <code>null</code> if any error occurs.
      */
     public static Object getPropertyValue(DocumentModel doc, String propertyName) {
@@ -111,8 +109,6 @@ public final class DocumentModelUtils {
     /**
      * Obtains the schema name from the full propertyName.
      *
-     * @param propertyName
-     * @return
      * @throws IllegalArgumentException if the propertyName does not have a
      *             schema:field pattern
      */
@@ -140,8 +136,6 @@ public final class DocumentModelUtils {
     /**
      * Obtains the field name from the full propertyName.
      *
-     * @param propertyName
-     * @return
      * @throws IllegalArgumentException if the propertyName does not have a
      *             schema:field pattern
      */
@@ -169,7 +163,6 @@ public final class DocumentModelUtils {
     /**
      * Gets all properties defined in declared schemas of a DocumentModel.
      *
-     * @param docModel
      * @return map with property names as keys
      */
     public static Map<String, Object> getProperties(DocumentModel docModel) {

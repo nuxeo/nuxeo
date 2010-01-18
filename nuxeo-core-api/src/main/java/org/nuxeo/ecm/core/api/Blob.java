@@ -101,9 +101,9 @@ public interface Blob {
     void transferTo(File file) throws IOException;
 
     /**
-     * Persist this stream so that getStream() method can be called successfully
-     * several times. The persistence is done in a temp file or in memory - this
-     * is up to the implementation.
+     * Persist this stream so that {@link #getStream()} method can be called
+     * successfully several times. The persistence is done in a temporary file
+     * or in memory - this is up to the implementation.
      * <p>
      * Blobs that are already persistent return themselves.
      * <p>
@@ -112,12 +112,11 @@ public interface Blob {
      * This behavior cannot be guaranteed by every implementation however.
      *
      * @return a persistent version of the blob
-     * @throws IOException
      */
     Blob persist() throws IOException;
 
     /**
-     * Checks whether this blob is persistent. (i.e. if {@code getStream()} can be
+     * Checks whether this blob is persistent. (i.e. if {@link #getStream()} can be
      * successfully called several times).
      *
      * @return true if persistent, false otherwise

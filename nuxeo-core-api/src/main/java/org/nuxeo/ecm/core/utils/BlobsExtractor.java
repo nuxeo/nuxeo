@@ -221,16 +221,15 @@ public class BlobsExtractor {
     }
 
     /**
-     * Call during the parsing of the schema structure in
-     * {@link BlobsExtractor#findInteresting if field
-     * contains a subfield of type Blob. This method do nothing.
+     * Called during the parsing of the schema structure in
+     * {@link BlobsExtractor#findInteresting} if field
+     * contains a subfield of type Blob. This method does nothing.
      *
      * @param schema The parent schema that contains the field
      * @param field Field that contains a subField of type BlobType
      */
     protected void containsBlob(DocumentType docType, Schema schema,
             String path, Field field) {
-
     }
 
     protected void getBlobValue(Property prop, List<String> subPath,
