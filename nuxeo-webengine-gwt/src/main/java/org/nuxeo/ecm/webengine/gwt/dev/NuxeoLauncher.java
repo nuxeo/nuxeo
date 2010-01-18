@@ -17,10 +17,16 @@
 package org.nuxeo.ecm.webengine.gwt.dev;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
+import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.dev.NuxeoApp;
@@ -36,6 +42,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
     private static final long serialVersionUID = 1L;
 
     protected static NuxeoApp app;
+    protected static RedirectService redirect;
 
     /**
      * You can overwrite this to add your own pom artifacts in the graph
@@ -89,41 +96,6 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
             }
         });
         
-//        String home = config.getInitParameter("home");
-//        String h = config.getInitParameter("host");
-//        String p = config.getInitParameter("profile");
-//        String v = config.getInitParameter("version");
-//        String c = config.getInitParameter("config");
-//        if (h == null) h = "localhost:8081";
-//        if (v == null) v = "5.3.1-SNAPSHOT";        
-//        ArrayList<String> args = new ArrayList<String>();
-//        if (home == null) {
-//            String userDir = System.getProperty("user.home");
-//            String sep = userDir.endsWith("/") ? "" : "/";
-//            args.add(userDir+sep+".nxserver-gwt");
-//        } else {
-//            home = StringUtils.expandVars(home, System.getProperties());
-//            args.add(home);
-//        }
-//        args.add("-h");
-//        args.add(h);
-//        args.add("-v");
-//        args.add(v);    
-//        if (c != null) {
-//            args.add("-c"); 
-//            args.add(c);            
-//        } else {
-//            if (p == null) p = NuxeoApp.CORE_SERVER;
-//            args.add("-p"); 
-//            args.add(p);
-//        }
-//        try {
-//            org.nuxeo.dev.Main.main(args.toArray(new String[args.size()]));
-//            frameworkStarted();
-//        } catch (Exception e) {
-//            System.err.println("Failed to start nuxeo");
-//            throw new ServletException(e);
-//        }
         super.init(config);
     }
     
@@ -134,6 +106,10 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         String portParam = config.getInitParameter("port");
         String profileParam = config.getInitParameter("profile");
         String versionParam = config.getInitParameter("version");
+        
+        String redirectPrefix = config.getInitParameter("redirectPrefix");
+        String redirectTrace = config.getInitParameter("redirectTrace");
+        String redirectTraceContent = config.getInitParameter("redirectTraceContent");
         
         File home = null;
         String host = hostParam == null ? "localhost" : null;
@@ -155,6 +131,19 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
                 throw new ServletException("Unknown build profile: "+profile);
             }
             profile = null;
+        }
+        
+        // start redirect service
+        redirect = new RedirectService(host, port);
+        if (redirectPrefix != null) {
+            redirect.setRedirectPrefix(redirectPrefix);
+        }
+        if (redirectTrace != null && Boolean.parseBoolean(redirectTrace)) {
+            redirect.setTrace(true);
+        }
+        if (redirectTraceContent != null && Boolean.parseBoolean(redirectTraceContent)) {
+            redirect.setTrace(true);
+            redirect.setTraceContent(true);
         }
         
         System.out.println("+---------------------------------------------------------");
@@ -194,5 +183,21 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
             super.initializeGraph();
             configureBuild(this);
         }
+    }
+    
+
+    /**
+     * check for calls to nuxeo server to redirect them to avoid SOP errors  
+     */
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response,
+            FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        if (httpRequest.getRequestURI().startsWith(redirect.getRedirectPrefix())) {
+            HttpServletResponse httpResponse = (HttpServletResponse) response;
+            redirect.redirect(httpRequest, httpResponse);
+            return;
+        }        
+        super.doFilter(request, response, chain);
     }
 }
