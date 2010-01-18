@@ -42,8 +42,6 @@ public final class IdUtils {
 
     /**
      * Generates an unique string identifier.
-     *
-     * @return
      */
     public static String generateStringId() {
         return String.valueOf(RANDOM.nextLong());
@@ -51,8 +49,6 @@ public final class IdUtils {
 
     /**
      * Generates an unique long identifier.
-     *
-     * @return
      */
     public static long generateLongId() {
         return RANDOM.nextLong();
@@ -119,9 +115,6 @@ public final class IdUtils {
      * Generates an id from a non-null String.
      * <p>
      * Uses default values for wordSeparator: '-', lower: true, maxChars: 24.
-     *
-     * @param s
-     * @return
      */
     public static String generateId(String s) {
         return generateId(s, "-", true, 24);

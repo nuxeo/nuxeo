@@ -42,8 +42,6 @@ public @interface XNodeMap {
 
     /**
      * Whether to trim text content for element nodes.
-     *
-     * @return
      */
     boolean trim() default true;
 
@@ -51,15 +49,11 @@ public @interface XNodeMap {
      * The path relative to the current node
      * (which is located by {@link XNodeMap#value()}) which contain
      * the map key to be used.
-     *
-     * @return
      */
     String key();
 
     /**
      * The type of collection object.
-     *
-     * @return the type of items
      */
     Class type();
 
@@ -71,8 +65,7 @@ public @interface XNodeMap {
     Class componentType();
 
     /**
-     * Whether the container should be
-     * @return
+     * Whether the container should be set to null when no value is specified.
      */
     boolean nullByDefault() default false;
 

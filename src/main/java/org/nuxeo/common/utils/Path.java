@@ -21,10 +21,8 @@ package org.nuxeo.common.utils;
 
 import java.io.Serializable;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Path implements Serializable {
 
@@ -210,7 +208,7 @@ public class Path implements Serializable {
      * In its canonical form, a path does not have any
      * "." segments, and parent references ("..") are collapsed
      * where possible.
-     * </p>
+     *
      * @return true if the path was modified, and false otherwise.
      */
     private boolean canonicalize() {
@@ -396,9 +394,6 @@ public class Path implements Serializable {
         return newSegments;
     }
 
-    /* (Intentionally not included in javadoc)
-     * Compares objects for equality.
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -427,9 +422,11 @@ public class Path implements Serializable {
         return true;
     }
 
-    /* (Intentionally not included in javadoc)
-     * @see IPath#getFileExtension
-     */
+    @Override
+    public int hashCode() {
+        return separators & HASH_MASK;
+    }
+
     public String getFileExtension() {
         if (hasTrailingSeparator()) {
             return null;
@@ -445,17 +442,6 @@ public class Path implements Serializable {
         return lastSegment.substring(index + 1);
     }
 
-    /* (Intentionally not included in javadoc)
-     * Computes the hash code for this object.
-     */
-    @Override
-    public int hashCode() {
-        return separators & HASH_MASK;
-    }
-
-    /* (Intentionally not included in javadoc)
-     * @see IPath#hasTrailingSeparator2
-     */
     public boolean hasTrailingSeparator() {
         return (separators & HAS_TRAILING) != 0;
     }
@@ -548,9 +534,6 @@ public class Path implements Serializable {
         return true;
     }
 
-    /* (Intentionally not included in javadoc)
-     * @see IPath#lastSegment()
-     */
     public String lastSegment() {
         int len = segments.length;
         return len == 0 ? null : segments[len - 1];
@@ -703,9 +686,6 @@ public class Path implements Serializable {
 
     /**
      * Gets the name of the icon file so that it can be displayed as alt text.
-     *
-     * @param iconPath
-     * @return
      */
     public static String getFileNameFromPath(String iconPath) {
         String iconName;

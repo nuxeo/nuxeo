@@ -22,10 +22,8 @@ package org.nuxeo.common.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FileNamePattern {
 
@@ -133,12 +131,7 @@ public class FileNamePattern {
     }
 
     /**
-     * indexOf with ? wildcard.
-     *
-     * @param chars
-     * @param pattern
-     * @param offset
-     * @return
+     * Variant of indexOf with ? wildcard.
      */
     public static int indexOf(char[] chars, char[] pattern, int offset) {
         // do not iterate if not needed
@@ -172,11 +165,6 @@ public class FileNamePattern {
     /**
      * Tests whether the given array match the pattern at the given position.
      * Matching allows ? wildcards.
-     *
-     * @param array
-     * @param offset
-     * @param pattern
-     * @return
      */
     public static boolean containsAt(char[] array, int offset, char[] pattern) {
         if (offset + pattern.length > array.length) {

@@ -425,9 +425,7 @@ public final class ZipUtils {
      * @param file
      *            the source file
      * @param entryName
-     *            teh entry name that has to be extracted
-     * @throws IOException
-     * @author lgodard <lgodard@nuxeo.com>
+     *            the entry name that has to be extracted
      */
     public static InputStream getEntryContentAsStream(File file,
             String entryName) throws IOException {
@@ -447,9 +445,7 @@ public final class ZipUtils {
      * @param file
      *            the source file
      * @param entryName
-     *            teh entry name that has to be extracted
-     * @throws IOException
-     * @author lgodard <lgodard@nuxeo.com>
+     *            the entry name that has to be extracted
      */
     public static String getEntryContentAsString(File file,
             String entryName) throws IOException {
@@ -466,9 +462,7 @@ public final class ZipUtils {
      * @param file
      *            the source file
      * @param entryName
-     *            teh entry name that has to be extracted
-     * @throws IOException
-     * @author lgodard <lgodard@nuxeo.com>
+     *            the entry name that has to be extracted
      */
     public static byte[] getEntryContentAsBytes(File file,
             String entryName) throws IOException {
@@ -484,7 +478,6 @@ public final class ZipUtils {
      * @param file
      *            The zip file
      * @return The list of entries
-     * @throws IOException
      */
     public static List<String> getEntryNames(File file) throws IOException {
         List<String> result = new ArrayList<String>();
@@ -509,7 +502,6 @@ public final class ZipUtils {
      * @param entryName
      *            The content to be checked
      * @return True if the file contains entryName. False otherwise
-     * @throws IOException
      */
     public static boolean hasEntry(File file, String entryName)
             throws IOException {

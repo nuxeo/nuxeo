@@ -188,8 +188,6 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
 
     /**
      * Entries are sorted so an entry never depends on entries on its right.
-     *
-     * @return
      */
     public List<Entry<K, T>> getResolvedEntries() {
         return resolved;

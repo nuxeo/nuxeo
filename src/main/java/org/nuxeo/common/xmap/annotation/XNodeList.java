@@ -42,8 +42,6 @@ public @interface XNodeList {
 
     /**
      * Whether to trim text content for element nodes.
-     *
-     * @return
      */
     boolean trim() default true;
 
@@ -62,8 +60,8 @@ public @interface XNodeList {
     Class componentType();
 
     /**
-     * Whether the container should be
-     * @return
+     * Whether the container should be set to null when not specified in the
+     * XML file.
      */
     boolean nullByDefault() default false;
 }

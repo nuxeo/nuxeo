@@ -81,7 +81,6 @@ import org.w3c.dom.Node;
  * </ul>
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @SuppressWarnings({"SuppressionAnnotation"})
 public class XMap {
@@ -130,9 +129,8 @@ public class XMap {
     /**
      * Gets a list of scanned objects.
      * <p>
-     * Scanned objects are annotated objects that was registered
+     * Scanned objects are annotated objects that were registered
      * by this XMap instance.
-     * @return
      */
     public Collection<XAnnotatedObject> getScannedObjects() {
         return objects.values();
@@ -204,14 +202,10 @@ public class XMap {
 
     /**
      * Processes the XML file at the given URL using a default context.
-     * <p>
-     * Returns the first registered top level object that is found in the file.
-     * <p>
-     * If not objects are found null is returned.
      *
      * @param url the XML file url
-     * @return the first register top level object
-     * @throws Exception
+     * @return the first registered top level object that is found in the file,
+     *    or null if no objects are found.
      */
     public Object load(URL url) throws Exception {
         return load(new Context(), url.openStream());
@@ -219,13 +213,10 @@ public class XMap {
 
     /**
      * Processes the XML file at the given URL and using the given contexts.
-     * <p>
-     * Returns the first registered top level object that is found in the file.
      *
      * @param ctx the context to use
      * @param url the XML file url
-     * @return the first register top level object
-     * @throws Exception
+     * @return the first registered top level object that is found in the file.
      */
     public Object load(Context ctx, URL url) throws Exception {
         return load(ctx, url.openStream());
@@ -233,12 +224,9 @@ public class XMap {
 
     /**
      * Processes the XML content from the given input stream using a default context.
-     * <p>
-     * Returns the first registered top level object that is found in the file.
      *
      * @param in the XML input source
-     * @return the first register top level object
-     * @throws Exception
+     * @return the first registered top level object that is found in the file.
      */
     public Object load(InputStream in) throws Exception {
         return load(new Context(), in);
@@ -246,13 +234,10 @@ public class XMap {
 
     /**
      * Processes the XML content from the given input stream using the given context.
-     * <p>
-     * Return the first registered top level object that is found in the file.
      *
      * @param ctx the context to use
      * @param in the input stream
-     * @return the first register top level object
-     * @throws Exception
+     * @return the first registered top level object that is found in the file.
      */
     public Object load(Context ctx, InputStream in) throws Exception {
         try {
@@ -281,7 +266,6 @@ public class XMap {
      *
      * @param url the XML file url
      * @return a list with all registered top level objects that are found in the file
-     * @throws Exception
      */
     public Object[] loadAll(URL url) throws Exception {
         return loadAll(new Context(), url.openStream());
@@ -297,7 +281,6 @@ public class XMap {
      * @param ctx the context to use
      * @param url the XML file url
      * @return a list with all registered top level objects that are found in the file
-     * @throws Exception
      */
     public Object[] loadAll(Context ctx, URL url) throws Exception {
         return loadAll(ctx, url.openStream());
@@ -310,10 +293,8 @@ public class XMap {
      * <p>
      * If not objects are found, an empty list is returned.
      *
-     * @param in
      * @param in the XML input stream
      * @return a list with all registered top level objects that are found in the file
-     * @throws Exception
      */
     public Object[] loadAll(InputStream in) throws Exception {
         return loadAll(new Context(), in);
@@ -329,7 +310,6 @@ public class XMap {
      * @param ctx the context to use
      * @param in the XML input stream
      * @return a list with all registered top level objects that are found in the file
-     * @throws Exception
      */
     public Object[] loadAll(Context ctx, InputStream in) throws Exception {
         try {
@@ -357,7 +337,6 @@ public class XMap {
      *
      * @param root the element to process
      * @return the first object found in this element or null if none
-     * @throws Exception
      */
     public Object load(Element root) throws Exception {
         return load(new Context(), root);
@@ -372,7 +351,6 @@ public class XMap {
      * @param ctx the context to use
      * @param root the element to process
      * @return the first object found in this element or null if none
-     * @throws Exception
      */
     public Object load(Context ctx, Element root) throws Exception {
         // check if the current element is bound to an annotated object
@@ -403,7 +381,6 @@ public class XMap {
      * @param ctx the context to use
      * @param root the element to process
      * @return the list of all top level objects found
-     * @throws Exception
      */
     public Object[] loadAll(Context ctx, Element root) throws Exception {
         List<Object> result = new ArrayList<Object>();
@@ -419,7 +396,6 @@ public class XMap {
      *
      * @param root the element to process
      * @return the list of all top level objects found
-     * @throws Exception
      */
     public Object[] loadAll(Element root) throws Exception {
         return loadAll(new Context(), root);
@@ -431,7 +407,6 @@ public class XMap {
      *
      * @param root the element to process
      * @param result the collection where to collect objects
-     * @throws Exception
      */
     public void loadAll(Element root, Collection<Object> result) throws Exception {
         loadAll(new Context(), root, result);
@@ -444,7 +419,6 @@ public class XMap {
      * @param ctx the context to use
      * @param root the element to process
      * @param result the collection where to collect objects
-     * @throws Exception
      */
     public void loadAll(Context ctx, Element root, Collection<Object> result) throws Exception {
         // check if the current element is bound to an annotated object
@@ -540,6 +514,5 @@ public class XMap {
         }
         XMLBuilder.saveToXML(object, root, xao);
     }
-
 
 }

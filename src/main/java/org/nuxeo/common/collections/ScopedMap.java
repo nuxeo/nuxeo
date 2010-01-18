@@ -37,7 +37,6 @@ import org.apache.commons.logging.LogFactory;
  * @see ScopeType
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class ScopedMap extends HashMap<String, Serializable> {
 
@@ -65,8 +64,6 @@ public class ScopedMap extends HashMap<String, Serializable> {
 
     /**
      * Creates a Map with entries from DEFAULT scope.
-     *
-     * @return
      */
     public Map<String, Serializable> getDefaultScopeValues() {
         return getScopeValues(ScopeType.DEFAULT);
@@ -74,8 +71,6 @@ public class ScopedMap extends HashMap<String, Serializable> {
 
     /**
      * Creates a Map with entries from specified scope.
-     *
-     * @return
      */
     public Map<String, Serializable> getScopeValues(ScopeType scopeType) {
         Map<String, Serializable> defMap = new HashMap<String, Serializable>();

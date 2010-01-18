@@ -77,10 +77,6 @@ public final class ArrayUtils {
      * <p>
      * This method will keep the initial order of elements (as found in the
      * first array).
-     *
-     * @param <T>
-     * @param arrays
-     * @return
      */
     @SuppressWarnings("unchecked")
     public static <T> T[] intersect(final T[]... arrays) {

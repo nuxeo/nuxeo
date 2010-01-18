@@ -44,8 +44,6 @@ public @interface XNode {
      * Whether to trim text content for element nodes.
      * <p>
      * Ignored for attribute nodes.
-     *
-     * @return
      */
     boolean trim() default true;
 

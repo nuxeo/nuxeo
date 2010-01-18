@@ -31,7 +31,6 @@ import java.lang.annotation.Target;
  * <code>int</code> that specifies the type of the annotation.
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
@@ -46,8 +45,6 @@ public @interface XMemberAnnotation {
 
     /**
      * The type of the annotation.
-     *
-     * @return
      */
     int value();
 
