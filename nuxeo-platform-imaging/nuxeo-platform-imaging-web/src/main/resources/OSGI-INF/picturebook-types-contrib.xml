@@ -17,12 +17,10 @@
       <category>Collaborative</category>
       <default-view>view_documents</default-view>
       <create-view>create_picturebook</create-view>
-      <layout>
-        <widget jsfcomponent="h:inputText" schemaname="dublincore"
-                fieldname="title" required="true"/>
-        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-                fieldname="description"/>
-      </layout>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>picturebook</layout>
+      </layouts>
     </type>
 
     <type id="Picture">
@@ -33,12 +31,9 @@
       <bigIcon>/icons/image_100.png</bigIcon>
       <category>SimpleDocument</category>
       <description>Picture.description</description>
-      <layout>
-        <widget jsfcomponent="h:inputText" schemaname="dublincore"
-                fieldname="title" required="true"/>
-        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-                fieldname="description"/>
-      </layout>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
     </type>
 
     <type id="Folder" coretype="Folder">

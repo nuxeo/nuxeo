@@ -9,6 +9,7 @@ Nuxeo-Component: OSGI-INF/actions-contrib.xml,
  OSGI-INF/imaging-various-contrib.xml,
  OSGI-INF/picturebook-search-contrib.xml,
  OSGI-INF/picturebook-types-contrib.xml,
+ OSGI-INF/picturebook-layouts-contrib.xml,
  OSGI-INF/theme-contrib.xml
 Eclipse-LazyStart: true
 Require-Bundle: org.nuxeo.ecm.platform.picture.api,

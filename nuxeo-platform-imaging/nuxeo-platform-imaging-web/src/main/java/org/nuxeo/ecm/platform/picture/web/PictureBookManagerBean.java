@@ -383,6 +383,7 @@ public class PictureBookManagerBean extends InputController implements
         this.selectedViews = selectedViews;
     }
 
+    @Deprecated
     public Integer getTimeinterval() {
         if (timeinterval == null){
             timeinterval = 5;

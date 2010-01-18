@@ -6,7 +6,7 @@
 
   <xs:include schemaLocation="core-types.xsd"/>
 
-  <xs:element name="timeinterval" type="xs:integer"/>
+  <xs:element name="timeinterval" type="xs:integer" default="5"/>
 
   <xs:element name="picturetemplates" type="nxs:picturetemplates"/>
 

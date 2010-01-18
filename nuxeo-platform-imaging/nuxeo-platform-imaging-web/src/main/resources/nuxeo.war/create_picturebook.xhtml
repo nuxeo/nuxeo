@@ -7,6 +7,7 @@
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <ui:define name="page title">
@@ -20,21 +21,7 @@
     <ui:include src="/incl/message_banner.xhtml" /> <h:form
       enctype="multipart/form-data">
 
-      <ui:include src="/incl/document_editor.xhtml" />
-      <table cellpadding="0" cellspacing="0" class="dataInput">
-        <tr>
-          <td class="labelColumn">
-            <h:outputText styleClass="required"
-              value="#{messages['label.picture.timeinterval']}" />
-          </td>
-          <td class="fieldColumn">
-            <h:inputText id="h_inputText"
-              value="#{pictureBookManager.timeinterval}" class="dataInputText"
-              required="true" />
-            <h:message styleClass="errorMessage" for="h_inputText" />
-          </td>
-        </tr>
-      </table>
+      <nxl:documentLayout mode="create" value="#{changeableDocument}" />
 
       <a4j:region>
 

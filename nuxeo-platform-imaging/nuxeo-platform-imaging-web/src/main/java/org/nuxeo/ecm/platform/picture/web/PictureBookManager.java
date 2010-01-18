@@ -52,7 +52,9 @@ public interface PictureBookManager {
      * picture is displayed in the slideshow in seconds.
      *
      * @return an Integer holding the Time Interval
+     * @deprecated The time interval is now handled by the PictureBook layout
      */
+    @Deprecated
     Integer getTimeinterval();
 
     /**
