@@ -8,7 +8,7 @@
   class="menu">
 
 <a4j:region renderRegionOnly="true">
-  <h:form rendered="#{directoryTreeManager.initialized}">
+  <h:form id="directoryTreeForm" rendered="#{directoryTreeManager.initialized}">
     <h:panelGroup id="directoryTreeNav">
       <rich:tree
         adviseNodeOpened="#{directoryTreeManager.adviseNodeOpened}"
@@ -17,16 +17,20 @@
         iconExpanded="/img/toggle_minus.png"
         iconCollapsed="/img/toggle_plus.png"
         rowKeyVar="rowKey"
+        id="directoryNavTree"
         stateVar="nodeState">
         <rich:recursiveTreeNodesAdaptor
           roots="#{treeModel}"
           nodes="#{node.children}"
+          id="directoryNavRecursiveAdaptor"
           var="node">
           <rich:treeNode
             highlightedClass="treeNodeHighlightedClass"
+            id="directoryNavTreeNode"
             selectedClass="treeNodeSelectedClass">
             <div class="#{nxu:test(node.selected, 'dropInto', '')}">
               <a4j:commandLink immediate="true"
+               id="directoryNavCommandLink"
                 action="#{node.selectNode}" styleClass="treeLink">
                 <h:outputText value="#{messages[node.description]}" />
               </a4j:commandLink>
