@@ -54,7 +54,7 @@ import org.osgi.framework.FrameworkListener;
 
 /**
  * The default implementation of NXRuntime over an OSGi compatible environment.
- * 
+ *
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
@@ -245,7 +245,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         File blacklistFile = new File(env.getConfig(), "blacklist");
         if (blacklistFile.isFile()) {
             List<String> lines = FileUtils.readLines(blacklistFile);
-            HashSet<String> blacklist = new HashSet<String>();
+            Set<String> blacklist = new HashSet<String>();
             for (String line : lines) {
                 line = line.trim();
                 if (line.length() > 0) {
@@ -519,7 +519,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                 return null;
             }
         }
-        if ((file != null) && file.exists()) {
+        if (file != null && file.exists()) {
             componentDebugLog.debug("getBundleFile: " + name
                     + " bound to file: " + file);
             return file;
