@@ -1835,6 +1835,18 @@
                   <packages>org.nuxeo.ecm.webapp*</packages>
                 </group>
                 <group>
+                  <title>Nuxeo WebEngine Packages</title>
+                  <packages>org.nuxeo.webengine*:org.nuxeo.ecm.webengine*</packages>
+                </group>
+                <group>
+                  <title>Nuxeo GWT Packages</title>
+                  <packages>org.nuxeo.ecm.gwt*</packages>
+                </group>
+                <group>
+                  <title>Nuxeo OpenSocial Packages</title>
+                  <packages>org.nuxeo.opensocial*</packages>
+                </group>
+                <group>
                   <title>Nuxeo Theme Packages</title>
                   <packages>org.nuxeo.theme:org.nuxeo.theme.*</packages>
                 </group>
