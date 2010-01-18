@@ -22,8 +22,10 @@ package org.nuxeo.ecm.platform.audit.web.listener.ejb;
 import static org.jboss.seam.ScopeType.EVENT;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,13 +39,18 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
+import org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
@@ -56,7 +63,7 @@ import org.nuxeo.runtime.api.Framework;
  * Content history actions bean.
  * <p>
  * :XXX: http://jira.nuxeo.org/browse/NXP-514
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @Name("contentHistoryActions")
@@ -94,7 +101,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
 
     protected SortInfo sortInfo;
 
-    protected Map<String, FilterMapEntry> filterMap =  Collections.emptyMap();
+    protected Map<String, FilterMapEntry> filterMap = Collections.emptyMap();
 
     protected Comparator<LogEntry> comparator;
 
@@ -174,20 +181,54 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
                  */
                 boolean doDefaultSort = comparator == null;
                 if (document.isProxy()) {
-                    DocumentModel version = documentManager.getSourceDocument(document.getRef());
-                    logEntries = logsBean.getLogEntriesFor(
-                            documentManager.getSourceDocument(version.getRef()).getId(),
-                            filterMap, doDefaultSort);
+                    // all users should have access to logs
+                    GetVersionInfoForDocumentRunner runner = new GetVersionInfoForDocumentRunner(
+                            documentManager, document);
+                    runner.runUnrestricted();
+                    if (runner.sourceDocForVersionId == null
+                            || runner.version == null) {
+                        String message = "An error occurred while grabbing log entries for "
+                                + document.getId();
+                        throw new AuditException(message);
+                    }
+
+                    Date versionCreationDate = getCreationDateForVersion(
+                            logsBean, runner.version);
+                    // add all the logs from the source document until the
+                    // version was created
+                    addLogEntries(getLogsForDocUntilDate(logsBean,
+                            runner.sourceDocForVersionId, versionCreationDate,
+                            doDefaultSort));
+
+                    // !! add the first publishing
+                    // event after the version is created; since the publishing
+                    // event is logged few milliseconds after the version is
+                    // created
+
+                    List<LogEntry> publishingLogs = getLogsForDocUntilDateWithEvent(
+                            logsBean, runner.sourceDocForVersionId,
+                            versionCreationDate,
+                            DocumentEventTypes.DOCUMENT_PUBLISHED,
+                            doDefaultSort);
+                    if (publishingLogs.size() > 0) {
+                        addLogEntry((publishingLogs.get(0)));
+                    }
+                    // add logs from the actual version
+                    filterMap = new HashMap<String, FilterMapEntry>();
+                    addLogEntries((logsBean.getLogEntriesFor(
+                            runner.version.getId(), filterMap, doDefaultSort)));
+
                 } else {
-                    logEntries = logsBean.getLogEntriesFor(document.getId(),
-                            filterMap, doDefaultSort);
+                    addLogEntries(logsBean.getLogEntriesFor(document.getId(),
+                            filterMap, doDefaultSort));
                 }
 
                 if (log.isDebugEnabled()) {
                     log.debug("logEntries computed .................!");
                 }
             } catch (Exception e) {
-                String message = "An error occurred while grabbing log entries for " + document.getId();
+                String message = "An error occurred while grabbing log entries for "
+                        + document.getId();
                 throw new AuditException(message, e);
             }
             return logEntries;
@@ -302,4 +343,104 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         return sortInfo;
     }
 
+    private Date getCreationDateForVersion(Logs logsService,
+            DocumentModel version) {
+        List<LogEntry> logs = logsService.getLogEntriesFor(version.getId(),
+                filterMap, true);
+        for (LogEntry logEntry : logs) {
+            if (logEntry.getEventId().equals(
+                    DocumentEventTypes.DOCUMENT_CREATED)) {
+                return logEntry.getEventDate();
+            }
+        }
+        return null;
+    }
+
+    private void addLogEntries(List<LogEntry> entries) {
+        if (logEntries != null) {
+            logEntries.addAll(entries);
+        } else {
+            logEntries = entries;
+        }
+    }
+
+    private void addLogEntry(LogEntry entry) {
+        if (logEntries != null) {
+            logEntries.add(entry);
+        } else {
+            logEntries = new ArrayList<LogEntry>();
+            logEntries.add(entry);
+        }
+    }
+
+    private FilterMapEntry computeQueryForLogsOnDocUntillDate(Date date) {
+        FilterMapEntry filterByDate = new FilterMapEntry();
+        filterByDate.setColumnName(BuiltinLogEntryData.LOG_EVENT_DATE);
+        filterByDate.setOperator("<=");
+        filterByDate.setQueryParameterName(BuiltinLogEntryData.LOG_EVENT_DATE);
+        filterByDate.setObject(date);
+        return filterByDate;
+    }
+
+    private FilterMapEntry computeQueryForLogsOnDocAfterDate(Date date) {
+        FilterMapEntry filterByDate = new FilterMapEntry();
+        filterByDate.setColumnName(BuiltinLogEntryData.LOG_EVENT_DATE);
+        filterByDate.setOperator(">=");
+        filterByDate.setQueryParameterName(BuiltinLogEntryData.LOG_EVENT_DATE);
+        filterByDate.setObject(date);
+        return filterByDate;
+    }
+
+    private FilterMapEntry computeQueryForLogsWithEvent(String eventName) {
+        FilterMapEntry filterByDate = new FilterMapEntry();
+        filterByDate.setColumnName(BuiltinLogEntryData.LOG_EVENT_ID);
+        filterByDate.setOperator("LIKE");
+        filterByDate.setQueryParameterName(BuiltinLogEntryData.LOG_EVENT_ID);
+        filterByDate.setObject(eventName);
+        return filterByDate;
+    }
+
+    private List<LogEntry> getLogsForDocUntilDate(Logs logsService,
+            String docId, Date date, boolean doDefaultSort) {
+        filterMap = new HashMap<String, FilterMapEntry>();
+        filterMap.put(BuiltinLogEntryData.LOG_EVENT_DATE,
+                computeQueryForLogsOnDocUntillDate(date));
+        return logsService.getLogEntriesFor(docId, filterMap, doDefaultSort);
+    }
+
+    private List<LogEntry> getLogsForDocUntilDateWithEvent(Logs logsService,
+            String docId, Date date, String eventName, boolean doDefaultSort) {
+        filterMap = new HashMap<String, FilterMapEntry>();
+        filterMap.put(BuiltinLogEntryData.LOG_EVENT_DATE,
+                computeQueryForLogsOnDocAfterDate(date));
+        filterMap.put(BuiltinLogEntryData.LOG_EVENT_ID,
+                computeQueryForLogsWithEvent(eventName));
+        return logsService.getLogEntriesFor(docId, filterMap, doDefaultSort);
+
+    }
+
+    private class GetVersionInfoForDocumentRunner extends
+            UnrestrictedSessionRunner {
+
+        public String sourceDocForVersionId;
+
+        public DocumentModel version;
+
+        DocumentModel document;
+
+        public GetVersionInfoForDocumentRunner(CoreSession session,
+                DocumentModel document) {
+            super(session);
+            this.document = document;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            version = documentManager.getSourceDocument(document.getRef());
+            if (version != null) {
+                sourceDocForVersionId = session.getSourceDocument(
+                        version.getRef()).getId();
+            }
+        }
+    };
 }
