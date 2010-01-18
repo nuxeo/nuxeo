@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
 /**
  * @author arussel
- *
  */
 public class DeleteDocumentUnrestricted extends UnrestrictedSessionRunner {
     private final DocumentModel document;

@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolderFactory;
 public class PictureBlobHolderFactory implements BlobHolderFactory {
 
     public PictureBlobHolderFactory(){
-
     }
 
     public BlobHolder getBlobHolder(DocumentModel doc) {

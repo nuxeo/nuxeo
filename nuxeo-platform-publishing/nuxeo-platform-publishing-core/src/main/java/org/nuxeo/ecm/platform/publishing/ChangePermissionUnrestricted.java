@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 
 /**
  * @author arussel
- *
  */
 public class ChangePermissionUnrestricted extends UnrestrictedSessionRunner {
     private final DocumentModel document;

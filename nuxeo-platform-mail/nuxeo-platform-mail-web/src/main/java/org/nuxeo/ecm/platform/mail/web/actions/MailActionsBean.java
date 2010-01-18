@@ -42,9 +42,9 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
- * Handles mail actions
+ * Handles mail actions.
  *
- * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
+ * @author Catalin Baican
  */
 @Name("mailActions")
 @Scope(ScopeType.CONVERSATION)

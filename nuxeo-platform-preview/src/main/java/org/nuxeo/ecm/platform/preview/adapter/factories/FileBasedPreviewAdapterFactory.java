@@ -20,11 +20,9 @@ import org.nuxeo.ecm.platform.preview.adapter.base.ConverterBasedHtmlPreviewAdap
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 
 /**
- *
- * Preview adapter factory for all documents that have the file schema
+ * Preview adapter factory for all documents that have the file schema.
  *
  * @author tiry
- *
  */
 public class FileBasedPreviewAdapterFactory implements PreviewAdapterFactory {
 

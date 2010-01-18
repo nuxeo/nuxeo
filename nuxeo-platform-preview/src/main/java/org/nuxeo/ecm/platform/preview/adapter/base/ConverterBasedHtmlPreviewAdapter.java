@@ -33,11 +33,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- * Base class for preview based on "on the fly" html transformers
+ * Base class for preview based on "on the fly" HTML transformers
  *
  * @author tiry
- *
  */
 public class ConverterBasedHtmlPreviewAdapter extends
         AbstractHtmlPreviewAdapter {
@@ -57,6 +55,7 @@ public class ConverterBasedHtmlPreviewAdapter extends
         return cs;
     }
 
+    @Override
     protected PreviewAdapterManager getPreviewManager() throws PreviewException {
         if (previewManager == null) {
             try {

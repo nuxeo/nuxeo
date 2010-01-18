@@ -23,10 +23,9 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 
 /**
- * Unit command to crop and resize an picture
+ * Unit command to crop and resize an picture.
  *
  * @author tiry
- *
  */
 public class ImageCropperAndResizer extends MagickExecutor {
 
@@ -44,4 +43,5 @@ public class ImageCropperAndResizer extends MagickExecutor {
         params.addNamedParameter("outputFilePath", formatFilePath(outputFilePath));
         execCommand("cropAndResize", params);
     }
+
 }

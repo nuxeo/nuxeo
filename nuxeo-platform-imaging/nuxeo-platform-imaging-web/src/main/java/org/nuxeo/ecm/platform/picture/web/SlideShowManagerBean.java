@@ -44,9 +44,7 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 
 /**
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
- *
  */
-
 @Name("slideShowManager")
 @Scope(CONVERSATION)
 public class SlideShowManagerBean implements SlideShowManager, Serializable {

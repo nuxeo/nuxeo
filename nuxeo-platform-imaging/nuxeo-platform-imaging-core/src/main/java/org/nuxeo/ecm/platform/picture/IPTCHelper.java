@@ -23,19 +23,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *
- * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- *
+ * @author Catalin Baican
  */
 public class IPTCHelper {
 
     public static final Log log = LogFactory.getLog(IPTCHelper.class);
 
     /**
-     * See http://jira.nuxeo.org/browse/NXP-4297
-     *
-     * @param data
-     * @return
+     * See {@link http://jira.nuxeo.org/browse/NXP-4297}.
      */
     public static String cleanupData(String data) {
         if (data != null) {

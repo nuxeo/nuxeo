@@ -25,7 +25,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author Alexandre Russel
- *
  */
 @XObject("pipe")
 public class MessageActionPipeDescriptor {

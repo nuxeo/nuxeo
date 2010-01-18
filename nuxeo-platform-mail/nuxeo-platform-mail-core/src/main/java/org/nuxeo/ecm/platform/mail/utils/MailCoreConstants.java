@@ -20,10 +20,9 @@
 package org.nuxeo.ecm.platform.mail.utils;
 
 /**
- * Constants specific to Mail Core
+ * Constants specific to Mail Core.
  *
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- *
  */
 public final class MailCoreConstants {
 

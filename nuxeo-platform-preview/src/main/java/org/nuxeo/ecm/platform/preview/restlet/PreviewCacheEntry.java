@@ -23,7 +23,7 @@ import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
  * Manage cache entry for computed previews.
  * <p>
  * This avoids the needs of rebuilding the preview on each access.
- * This is particularly important when the generated html references images
+ * This is particularly important when the generated HTML references images
  *
  * @author tiry
  */

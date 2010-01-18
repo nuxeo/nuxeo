@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.publishing.api;
 
 /**
  * @author arussel
- *
  */
 public class DocumentWaitingValidationException extends PublishingException {
 

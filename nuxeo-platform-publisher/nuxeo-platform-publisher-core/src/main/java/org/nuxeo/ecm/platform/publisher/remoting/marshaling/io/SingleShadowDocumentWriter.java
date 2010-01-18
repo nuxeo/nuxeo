@@ -28,11 +28,10 @@ import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
 import java.io.IOException;
 
 /**
- * {@link DocumentModelWriter} that creates a shallow DocumentModel (ie: not
- * path and no uuid)
- * 
+ * {@link DocumentModelWriter} that creates a shallow DocumentModel (ie: no
+ * path and no uuid).
+ *
  * @author tiry
- * 
  */
 public class SingleShadowDocumentWriter extends AbstractDocumentModelWriter {
 

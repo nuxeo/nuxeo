@@ -38,12 +38,12 @@ import org.nuxeo.ecm.platform.mail.utils.MailCoreHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Listens for MailReceivedEvent. The email connection corresponding to every
- * MailFolder document found in the repository is checked for new incoming
- * email.
+ * Listener that listens for MailReceivedEvent.
+ * <p>
+ * The email connection corresponding to every MailFolder document found in the
+ * repository is checked for new incoming email.
  *
- * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- *
+ * @author Catalin Baican
  */
 public class MailEventListener implements EventListener {
 

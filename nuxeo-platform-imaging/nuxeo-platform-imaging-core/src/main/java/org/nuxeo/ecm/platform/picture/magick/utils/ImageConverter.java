@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class ImageConverter extends MagickExecutor {
 

@@ -42,7 +42,7 @@ public interface PictureResourceAdapter {
     Blob getPictureFromTitle(String title) throws PropertyException, ClientException;
 
     /**
-     * Returns the xpath of the given view name, or {@code null} if
+     * Returns the XPath of the given view name, or {@code null} if
      * the view is not found on the Picture.
      *
      * @param viewName the view name
@@ -50,8 +50,9 @@ public interface PictureResourceAdapter {
     String getViewXPath(String viewName);
 
     /**
-     * Convenient method to get the xpath of the first view of the Picture.
-     * @return the first veiw xpath
+     * Convenience method to get the XPath of the first view of the Picture.
+     *
+     * @return the XPath of the first view
      */
     String getFirstViewXPath();
 

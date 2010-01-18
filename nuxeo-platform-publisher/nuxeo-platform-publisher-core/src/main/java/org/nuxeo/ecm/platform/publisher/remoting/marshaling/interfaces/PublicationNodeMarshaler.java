@@ -20,10 +20,9 @@ package org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 
 /**
- * Interface for {@link PublicationNode} marshaler
- * 
+ * Interface for {@link PublicationNode} marshaler.
+ *
  * @author tiry
- * 
  */
 public interface PublicationNodeMarshaler {
 

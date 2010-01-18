@@ -26,9 +26,7 @@ import javax.mail.Flags.Flag;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 
 /**
- *
- * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- *
+ * @author Catalin Baican
  */
 public class StartAction extends AbstractMailAction {
 

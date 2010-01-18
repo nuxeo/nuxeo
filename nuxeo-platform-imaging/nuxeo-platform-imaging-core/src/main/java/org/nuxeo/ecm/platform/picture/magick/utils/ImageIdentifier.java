@@ -26,11 +26,9 @@ import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 
 /**
- * Unit command to extract information from a picture file
- *
+ * Unit command to extract information from a picture file.
  *
  * @author tiry
- *
  */
 public class ImageIdentifier extends MagickExecutor {
 

@@ -22,8 +22,7 @@ package org.nuxeo.ecm.platform.picture.api;
 
 /**
  * @author Max Stepanov
- * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- *
+ * @author Catalin Baican
  */
 public class MetadataConstants {
 

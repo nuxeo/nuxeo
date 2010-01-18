@@ -28,11 +28,10 @@ import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- * Helper class to execute an ImageMagic command
+ * Helper class to execute an ImageMagic command.
+ * Depends on the {@link CommandLineExecutorService} to run external processes.
  *
  * @author tiry
- *
  */
 public class MagickExecutor {
 

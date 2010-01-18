@@ -19,7 +19,6 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * Factory for the DocumentModelAdapter service.
  * <p>
  * Delegates the calls to a service dedicated to Preview Adapter

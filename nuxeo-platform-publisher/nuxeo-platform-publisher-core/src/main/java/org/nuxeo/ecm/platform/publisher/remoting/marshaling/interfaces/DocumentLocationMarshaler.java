@@ -20,10 +20,9 @@ package org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 
 /**
- * Interface for {@link DocumentLocation} marshaler
- * 
+ * Interface for {@link DocumentLocation} marshaler.
+ *
  * @author tiry
- * 
  */
 public interface DocumentLocationMarshaler {
 
@@ -34,4 +33,5 @@ public interface DocumentLocationMarshaler {
             throws PublishingMarshalingException;;
 
     void setOriginatingServer(String serverName);
+
 }

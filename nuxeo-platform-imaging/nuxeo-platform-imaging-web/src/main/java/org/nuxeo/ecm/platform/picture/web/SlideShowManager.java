@@ -39,7 +39,7 @@ public interface SlideShowManager {
     void setIndex(Integer idx);
 
     /**
-     * Gets the Index.
+     * Gets the index.
      *
      * @return an Integer holding the current document's index.
      */

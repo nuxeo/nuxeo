@@ -26,18 +26,12 @@ import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * @author Max Stepanov
- *
  */
 public interface ImagingService {
 
     /**
-     * crop image
+     * Crop image.
      *
-     * @param in
-     * @param x
-     * @param y
-     * @param width
-     * @param height
      * @return resized image file created in temporary folder
      * @deprecated use {@link #crop(Blob, int, int, int, int)
      */
@@ -45,11 +39,8 @@ public interface ImagingService {
     InputStream crop(InputStream in, int x, int y, int width, int height);
 
     /**
-     * Resize image
+     * Resize image.
      *
-     * @param in
-     * @param width
-     * @param height
      * @return resized image file created in temporary folder
      * @deprecated use {@link #resize(Blob, String, int, int, int)
      */
@@ -57,59 +48,78 @@ public interface ImagingService {
     InputStream resize(InputStream in, int width, int height);
 
     /**
-     * Rotate image
+     * Rotate image.
      *
-     * @param in
-     * @param angle
-     * @return
      * @deprecated use {@link #rotate(Blob, int)
      */
     @Deprecated
     InputStream rotate(InputStream in, int angle);
 
+    /**
+     * Crops an image.
+     */
     Blob crop(Blob blob, int x, int y, int width, int height);
 
+    /**
+     * Resizes image.
+     */
     Blob resize(Blob blob, String finalFormat, int width, int height, int depth);
 
+    /**
+     * Rotates an image.
+     *
+     * @param blob a Blob containing the image
+     * @param angle the angle of the rotation
+     * @return a Blob holding the rotated image
+     */
     Blob rotate(Blob blob, int angle);
 
     /**
-     * Retrieve metadata from an image
-     *
-     * @param in
-     * @return metadata
+     * Retrieves metadata from an image.
      */
     @Deprecated
     Map<String, Object> getImageMetadata(InputStream in);
+
+    /**
+     * Retrieves metadata from an image.
+     */
     @Deprecated
     Map<String, Object> getImageMetadata(File file);
+
+    /**
+     * Retrieves metadata from an image contained in a {@link Blob}.
+     *
+     * @return the image metadata as a map String -> Object
+     */
     Map<String, Object> getImageMetadata(Blob blob);
 
     /**
-     * return file mime-type
-     *
-     * @param file
-     * @return
+     * Returns the mime-type for the given file.
      */
     String getImageMimeType(File file);
+
+    /**
+     * Returns the mime-type for the given input stream.
+     */
     String getImageMimeType(InputStream in);
 
     /**
-     * Retrieves the <b>ImageInfo</b> of the blob that is received as parameter.
+     * Retrieves the {@link ImageInfo} of the {@link Blob} that is received as parameter.
+     * <p>
      * The information provided by the <b>ImageInfo</b>, like width, height or
-     * format, is obtained using ImageMagick(see
+     * format, is obtained using ImageMagick (see
      * http://www.imagemagick.org/script/index.php for more details on
-     * ImageMagick)
+     * ImageMagick).
      *
-     * @param blob - the blob of a picture
-     * @return - the <b>ImageInfo</b> of a blob
+     * @param blob the blob of a picture
+     * @return the {@link ImageInfo} of a blob
      */
     ImageInfo getImageInfo(Blob blob);
 
     /**
      * Returns the value a configuration which name is received as parameter.
      *
-     * @param configurationName - the name of the configuration
+     * @param configurationName the name of the configuration
      * @return the value of the configuration, which can be null in case no
      *         configuration with the specified name was registered
      */
@@ -118,9 +128,9 @@ public interface ImagingService {
     /**
      * Returns the value a configuration which name is received as parameter. In
      * case no configuration with the specified name was registered, the
-     * received <b>defaultValue</b> parameter will be return.
+     * received <b>defaultValue</b> parameter will be returned.
      *
-     * @param configurationName - the name of the configuration
+     * @param configurationName the name of the configuration
      * @param defaultValue the value of the configuration
      * @return
      */
@@ -130,8 +140,8 @@ public interface ImagingService {
      * Sets the value of a configuration which could be used by the
      * ImagingService.
      *
-     * @param configurationName - the name of the configuration
-     * @param configurationValue - the value of the configuration
+     * @param configurationName the name of the configuration
+     * @param configurationValue the value of the configuration
      */
     void setConfigurationValue(String configurationName,
             String configurationValue);

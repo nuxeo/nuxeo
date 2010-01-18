@@ -24,10 +24,9 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 
 /**
- * Unit command to crop a picture using ImageMagick
+ * Unit command to crop a picture using ImageMagick.
  *
  * @author tiry
- *
  */
 public class ImageCropper extends MagickExecutor {
 
@@ -43,4 +42,5 @@ public class ImageCropper extends MagickExecutor {
         params.addNamedParameter("outputFilePath", formatFilePath(outputFilePath));
         execCommand("crop", params);
     }
+
 }

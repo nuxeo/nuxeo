@@ -36,7 +36,7 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePub
 
 /**
  * HTTP facade for the {@link RemotePublicationTreeManager} service. This facade
- * uses a invoker to do the actual calls to the remote backend.
+ * uses a invoker to do the actual calls to the remote back-end.
  *
  * @author tiry
  */

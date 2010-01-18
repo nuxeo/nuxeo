@@ -37,10 +37,7 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 public interface PictureManager {
 
     /**
-     * Creates and saves a picture pocument.
-     *
-     * @return
-     * @throws Exception
+     * Creates and saves a picture document.
      */
     String addPicture() throws Exception;
 
@@ -48,27 +45,14 @@ public interface PictureManager {
 
     /**
      * Turns every view of a picture 90 degrees to the left.
-     *
-     * @return
-     * @throws ClientException
-     * @throws IOException
      */
     String rotate90left() throws ClientException, IOException;
 
     /**
      * Turns every view of a picture 90 degrees to the right.
-     *
-     * @return
-     * @throws ClientException
-     * @throws IOException
      */
     String rotate90right() throws ClientException, IOException;
 
-    /**
-     *
-     * @param docView
-     * @throws ClientException
-     */
     void download(DocumentView docView) throws ClientException;
 
     /**
@@ -104,7 +88,6 @@ public interface PictureManager {
      * download function from the index of the picture's views.
      *
      * @return a String holding the fileurl.
-     * @throws ClientException
      */
     String getFileurlPicture() throws ClientException;
 
@@ -145,7 +128,6 @@ public interface PictureManager {
      * each picture's view. It's used to dynamically the selected view.
      *
      * @return an Array holding the selectItems.
-     * @throws ClientException
      */
     ArrayList getSelectItems() throws ClientException;
 

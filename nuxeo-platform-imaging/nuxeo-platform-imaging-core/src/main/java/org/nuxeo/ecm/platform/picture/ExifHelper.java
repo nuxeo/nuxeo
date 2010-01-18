@@ -25,10 +25,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Helper to handle the UNDEFINED Exif data type:
- * 
- * http://www.leadtools.com/help/leadtools/v15/Main/API/Dllaux/ExifComments.htm
- * 
+ * Helper to handle the UNDEFINED Exif data type.
+ * <p>
+ * See
+ * {@link http://www.leadtools.com/help/leadtools/v15/Main/API/Dllaux/ExifComments.htm}.
+ *
  * @author btatar
  */
 public class ExifHelper {
@@ -50,9 +51,9 @@ public class ExifHelper {
      * the comment is in the specified format.The first eight bytes can be any
      * of the following cases: 65, 83, 67, 73, 73, 0, 0, 0 = ASCII 74, 73, 83,
      * 0, 0, 0, 0, 0 = JIS 0, 0, 0, 0, 0, 0, 0, 0 = UNDEFINED
-     * 
+     *
      * @param rawBytes - the user comment represented as a byte array
-     * @return - the user comment as a String on the format retrived from the
+     * @return - the user comment as a String on the format retrieved from the
      *         data type.
      */
     public static String decodeUndefined(byte[] rawBytes) {
@@ -76,13 +77,13 @@ public class ExifHelper {
     }
 
     /**
-     * Extracts the bytes from the received byte array.The first argument
+     * Extracts the bytes from the received byte array. The first argument
      * represents the starting location (zero-based) and the second argument
-     * represent the ending location which is mot zero based.
-     * 
-     * @param bytes - the byte array
-     * @param beginIndex - the begin index which is zero based
-     * @param endIndex - the end index which is not zero based
+     * represent the ending location which is not zero based.
+     *
+     * @param bytes the byte array
+     * @param beginIndex the begin index which is zero based
+     * @param endIndex the end index which is not zero based
      * @return
      */
     public static byte[] extractBytes(byte[] bytes, int beginIndex, int endIndex) {

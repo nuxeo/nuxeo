@@ -39,7 +39,7 @@ import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_WIDTH;
 
 /**
- * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguint</a>
+ * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
  */
 public class ResizePictureConverter implements Converter {
 

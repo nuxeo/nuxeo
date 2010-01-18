@@ -24,10 +24,9 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 
 /**
- * Unit command to rotate a picture
+ * Unit command to rotate a picture.
  *
  * @author btatar
- *
  */
 public class ImageRotater extends MagickExecutor {
 

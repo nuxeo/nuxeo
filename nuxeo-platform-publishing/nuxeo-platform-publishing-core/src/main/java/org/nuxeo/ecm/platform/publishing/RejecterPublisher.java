@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.publishing.api.PublishingException;
 
 /**
  * @author arussel
- *
  */
 public class RejecterPublisher extends AbstractPublisher implements Publisher {
 

@@ -21,7 +21,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 @XObject("blobPostProcessor")
 public class BlobPostProcessorDescriptor {

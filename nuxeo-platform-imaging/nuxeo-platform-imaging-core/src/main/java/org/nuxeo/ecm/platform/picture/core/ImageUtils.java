@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.picture.core;
 
 import java.io.InputStream;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 
 /**
  * @author Max Stepanov

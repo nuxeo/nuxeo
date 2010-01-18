@@ -20,10 +20,9 @@
 package org.nuxeo.ecm.platform.mail.web.utils;
 
 /**
- * Constants specific to Mail Web
+ * Constants specific to Mail Web.
  *
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- *
  */
 public final class MailWebConstants {
 

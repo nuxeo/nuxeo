@@ -32,10 +32,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 
 /**
-*
-* @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
-*
-*/
+ * @author Catalin Baican
+ */
 public class EndAction extends AbstractMailAction {
 
     private static final Log log = LogFactory.getLog(EndAction.class);

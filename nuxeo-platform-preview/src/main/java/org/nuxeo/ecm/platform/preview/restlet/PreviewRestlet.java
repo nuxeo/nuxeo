@@ -52,7 +52,7 @@ import org.restlet.data.Response;
 import org.restlet.resource.OutputRepresentation;
 
 /**
- * Provides REST API to retrieve the preview of a document.
+ * Provides a REST API to retrieve the preview of a document.
  *
  * @author tiry
  */

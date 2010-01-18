@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * @author arussel
- *
  */
 public interface Publisher {
 
@@ -56,10 +55,7 @@ public interface Publisher {
             NuxeoPrincipal currentUser) throws PublishingException;
 
     /**
-     * check if this proxy is published
-     *
-     * @param proxy
-     * @return
+     * Checks if this proxy is published.
      */
     boolean isPublished(DocumentModel proxy) throws PublishingException;
 

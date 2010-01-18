@@ -44,7 +44,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class MailServiceImpl extends DefaultComponent implements MailService {
 

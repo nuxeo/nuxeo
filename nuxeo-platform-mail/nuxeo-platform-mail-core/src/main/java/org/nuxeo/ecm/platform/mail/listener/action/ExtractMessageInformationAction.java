@@ -57,9 +57,7 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
  * found in the INBOX. These values are used later when new MailMessage
  * documents are created based on them.
  *
- *
- * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- *
+ * @author Catalin Baican
  */
 public class ExtractMessageInformationAction extends AbstractMailAction {
 
@@ -245,10 +243,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
      * Interprets the body accordingly to the charset used. It relies on the
      * content type being ****;charset={charset};******
      *
-     * @param part
      * @return the decoded String
-     * @throws MessagingException
-     * @throws IOException
      */
     protected static String decodeMailBody(Part part)
             throws MessagingException, IOException {

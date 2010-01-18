@@ -20,7 +20,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author arussel
- *
  */
 public interface PublishingService extends Publisher {
     enum DocumentStatus {
@@ -30,9 +29,9 @@ public interface PublishingService extends Publisher {
     /**
      * Computes the list of publishing validators given the document model of
      * the document just published.
-     *
-     * The string can be prefixed with 'group:' or 'user:'. If there is no
-     * prefix (no : in the string) it is assumed to be a user.
+     * <p>
+     * The string can be prefixed with "group:" or "user:". If there is no
+     * prefix (no ":" in the string) it is assumed to be a user.
      *
      * @param dm a Nuxeo Core document model. (the document that just has been
      *            published)

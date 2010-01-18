@@ -34,7 +34,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- *
  */
 public abstract class AbstractPublisher {
     protected CoreSession getCoreSession(String repoName,

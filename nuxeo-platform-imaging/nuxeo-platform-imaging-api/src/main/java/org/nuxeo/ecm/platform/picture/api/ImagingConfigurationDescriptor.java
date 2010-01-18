@@ -31,9 +31,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * the ImagingService.
  *
  * @author btatar
- *
  */
-
 @XObject(value = "configuration")
 public class ImagingConfigurationDescriptor implements Serializable {
 
@@ -45,4 +43,5 @@ public class ImagingConfigurationDescriptor implements Serializable {
     public Map<String, String> getParameters() {
         return parameters;
     }
+
 }

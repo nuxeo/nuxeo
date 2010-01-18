@@ -30,7 +30,6 @@ import org.nuxeo.ecm.platform.preview.api.PreviewException;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class ImagePreviewer extends AbstractPreviewer implements
         MimeTypePreviewer {

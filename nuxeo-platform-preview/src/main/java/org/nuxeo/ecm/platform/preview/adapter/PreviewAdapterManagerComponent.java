@@ -29,7 +29,6 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- *
  * Runtime component that handles the extension points and the service interface
  * for Preview Adapter management.
  *

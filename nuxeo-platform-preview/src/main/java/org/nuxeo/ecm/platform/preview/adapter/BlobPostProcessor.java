@@ -20,7 +20,6 @@ import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public interface BlobPostProcessor {
 

@@ -22,10 +22,9 @@ package org.nuxeo.ecm.platform.picture.magick;
 import java.util.List;
 
 /**
- * Wraps the exec result of an ImageMagick command line
+ * Wraps the exec result of an ImageMagick command line.
  *
  * @author tiry
- *
  */
 public class ExecResult {
 

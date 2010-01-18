@@ -24,11 +24,9 @@ import org.nuxeo.ecm.platform.preview.adapter.base.PreprocessedHtmlPreviewAdapte
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 
 /**
- *
  * Preview adapter factory for the Note document type
  *
  * @author tiry
- *
  */
 public class NotePreviewAdapter implements PreviewAdapterFactory {
 

@@ -24,7 +24,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author Alexandre Russel
- *
  */
 @XObject("previewer")
 public class MimeTypePreviewerDescriptor {

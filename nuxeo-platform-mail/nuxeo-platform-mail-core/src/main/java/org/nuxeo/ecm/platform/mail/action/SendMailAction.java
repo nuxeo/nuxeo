@@ -29,7 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Action to answer the mail. It expect the text of the answer to
+ * Action to answer the mail. It expects the text of the answer to
  * be in the context under the "message" key.
  *
  * @author Alexandre Russel

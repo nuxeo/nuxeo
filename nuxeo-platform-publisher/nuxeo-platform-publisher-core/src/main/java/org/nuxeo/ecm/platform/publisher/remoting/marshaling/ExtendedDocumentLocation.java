@@ -21,19 +21,14 @@ import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 
 /**
- * 
  * Extension to {@link DocumentLocation} to provide informations about source
  * server
- * 
+ *
  * @author tiry
- * 
  */
 public class ExtendedDocumentLocation extends DocumentLocationImpl implements
         DocumentLocation {
 
-    /**
-    *
-    */
     private static final long serialVersionUID = 1L;
 
     protected String originalServer = null;
@@ -76,8 +71,9 @@ public class ExtendedDocumentLocation extends DocumentLocationImpl implements
         if (doc.hasSchema("dublincore")) {
             String source = (String) doc.getProperty("dublincore", "source");
 
-            if (source != null)
+            if (source != null) {
                 return parseString(source);
+            }
         }
         return null;
     }

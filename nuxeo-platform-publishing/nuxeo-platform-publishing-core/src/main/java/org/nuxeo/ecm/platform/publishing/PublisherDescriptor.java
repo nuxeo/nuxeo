@@ -22,7 +22,6 @@ import org.nuxeo.ecm.platform.publishing.api.Publisher;
 
 /**
  * @author arussel
- *
  */
 @XObject("publisher")
 public class PublisherDescriptor {

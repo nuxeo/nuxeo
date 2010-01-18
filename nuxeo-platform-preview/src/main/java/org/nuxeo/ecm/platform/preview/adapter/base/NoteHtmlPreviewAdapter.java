@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.preview.api.PreviewException;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class NoteHtmlPreviewAdapter extends PreprocessedHtmlPreviewAdapter {
 

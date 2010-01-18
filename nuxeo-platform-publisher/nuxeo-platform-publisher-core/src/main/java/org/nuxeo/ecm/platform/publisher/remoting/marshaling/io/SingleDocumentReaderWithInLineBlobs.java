@@ -26,11 +26,9 @@ import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelReader;
 import java.io.IOException;
 
 /**
- * 
- * {@link DocumentModelReader} implementation that uses inline blobs
- * 
+ * {@link DocumentModelReader} implementation that uses inline blobs.
+ *
  * @author tiry
- * 
  */
 public class SingleDocumentReaderWithInLineBlobs extends DocumentModelReader {
 
@@ -64,4 +62,5 @@ public class SingleDocumentReaderWithInLineBlobs extends DocumentModelReader {
         doc = null;
         return null;
     }
+
 }

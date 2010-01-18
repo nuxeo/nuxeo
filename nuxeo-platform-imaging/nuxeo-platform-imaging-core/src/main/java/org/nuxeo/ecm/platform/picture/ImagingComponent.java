@@ -39,7 +39,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author Max Stepanov
- *
  */
 public class ImagingComponent extends DefaultComponent implements
         ImagingService {
@@ -240,6 +239,7 @@ public class ImagingComponent extends DefaultComponent implements
         return imageInfo;
     }
 
+    @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
@@ -249,6 +249,7 @@ public class ImagingComponent extends DefaultComponent implements
         }
     }
 
+    @Override
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {

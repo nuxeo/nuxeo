@@ -43,7 +43,6 @@ public class Visitor {
      *
      * @param folder
      * @param initialContext context variables passed to each execution context
-     * @throws Exception
      */
     public void visit(Folder folder, ExecutionContext initialContext)
             throws Exception {
@@ -74,7 +73,6 @@ public class Visitor {
      *
      * @param messages
      * @param initialContext context variables passed to each execution context
-     * @throws Exception
      */
     public void visit(Message[] messages, ExecutionContext initialContext)
             throws Exception {

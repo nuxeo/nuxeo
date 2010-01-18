@@ -24,7 +24,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 
 /**
  * @author arussel
- *
  */
 public class RemoveACLUnrestricted extends UnrestrictedSessionRunner {
     private final DocumentModel document;

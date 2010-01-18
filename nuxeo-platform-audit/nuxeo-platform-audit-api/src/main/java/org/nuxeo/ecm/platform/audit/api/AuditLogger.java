@@ -25,10 +25,9 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 
 /**
- * Interface for adding audit logs
+ * Interface for adding audit logs.
  *
  * @author tiry
- *
  */
 public interface AuditLogger {
 
@@ -39,20 +38,13 @@ public interface AuditLogger {
      */
     void addLogEntries(List<LogEntry> entries);
 
-
     /**
-     * Logs an Event
-     *
-     * @param event
-     * @throws AuditException
+     * Logs an Event.
      */
     void logEvent(Event event) throws AuditException;
 
     /**
      * Logs a bundle of events
-     *
-     * @param eventBundle
-     * @throws AuditException
      */
     void logEvents(EventBundle eventBundle) throws AuditException;
 

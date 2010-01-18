@@ -64,10 +64,9 @@ import org.nuxeo.ecm.platform.mail.listener.MailEventListener;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Helper of Mail Core
+ * Helper for Mail Core.
  *
- * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- *
+ * @author Catalin Baican
  */
 public final class MailCoreHelper {
 
@@ -116,10 +115,6 @@ public final class MailCoreHelper {
      * Creates MailMessage documents for every unread mail found in the INBOX.
      * The parameters needed to connect to the email INBOX are retrieved from
      * the MailFolder document passed as a parameter.
-     *
-     * @param currentMailFolder
-     * @param coreSession
-     * @throws Exception
      */
     public static void checkMail(DocumentModel currentMailFolder,
             CoreSession coreSession) throws Exception {
@@ -244,7 +239,6 @@ public final class MailCoreHelper {
                     rootFolder.close(true);
                 }
             }
-
         }
     }
 

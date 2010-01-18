@@ -44,7 +44,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureBlobHolder;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -68,9 +67,7 @@ import org.jboss.seam.core.Events;
  * Provide Picture Book related Actions.
  *
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
- *
  */
-
 @Name("pictureBookManager")
 @Scope(CONVERSATION)
 public class PictureBookManagerBean extends InputController implements

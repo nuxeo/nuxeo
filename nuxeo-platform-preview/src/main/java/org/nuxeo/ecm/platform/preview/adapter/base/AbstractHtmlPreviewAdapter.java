@@ -33,11 +33,9 @@ import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- * base abstract class for PreviewAdapters
+ * Abstract base class for PreviewAdapters
  *
  * @author tiry
- *
  */
 public abstract class AbstractHtmlPreviewAdapter implements HtmlPreviewAdapter {
 

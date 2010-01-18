@@ -54,14 +54,12 @@ public class PictureConfigurationService extends DefaultComponent{
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
-
        if (extensionPoint.equals(PICTURE_ADAPTER_EP)) {
             PictureAdapterDescriptor pictureAdapter = (PictureAdapterDescriptor) contribution;
             registerPictureAdapter(pictureAdapter, contributor);
         } else {
             log.error("Extension point " + extensionPoint + "is unknown");
         }
-
     }
 
     public static void registerPictureAdapter(PictureAdapterDescriptor pictureAdapter,

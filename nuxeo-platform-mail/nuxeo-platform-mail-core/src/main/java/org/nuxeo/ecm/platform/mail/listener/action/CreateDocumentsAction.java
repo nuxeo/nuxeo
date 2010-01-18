@@ -55,8 +55,7 @@ import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
  * Creates a MailMessage document for every new email found in the INBOX. The
  * properties values are retrieved from the pipe execution context.
  *
- * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- *
+ * @author Catalin Baican
  */
 public class CreateDocumentsAction extends AbstractMailAction {
 

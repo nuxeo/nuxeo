@@ -27,7 +27,6 @@ import javax.mail.Message;
  * The execution context of an actions pipe.
  *
  * @author Alexandre Russel
- *
  */
 public class ExecutionContext extends HashMap<String, Object> {
 

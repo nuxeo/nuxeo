@@ -27,9 +27,7 @@ import org.nuxeo.ecm.platform.mail.action.MessageAction;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CORE_SESSION_ID_KEY;
 
 /**
- *
- * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- *
+ * @author Catalin Baican
  */
 public abstract class AbstractMailAction implements MessageAction {
 

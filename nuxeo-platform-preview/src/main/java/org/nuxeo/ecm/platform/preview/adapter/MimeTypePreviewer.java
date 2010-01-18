@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.preview.api.PreviewException;
 
 /**
  * @author Alexandre Russel
- *
  */
 public interface MimeTypePreviewer {
 

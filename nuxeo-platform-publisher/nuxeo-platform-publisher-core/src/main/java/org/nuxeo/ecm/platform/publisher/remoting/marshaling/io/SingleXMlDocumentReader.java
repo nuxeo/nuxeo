@@ -29,11 +29,9 @@ import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelReader;
 import java.io.IOException;
 
 /**
- * 
- * {@link DocumentModelReader} that read the {@link DocumentModel} from a String
- * 
+ * {@link DocumentModelReader} that reads the {@link DocumentModel} from a String.
+ *
  * @author tiry
- * 
  */
 public class SingleXMlDocumentReader extends AbstractDocumentReader {
 
@@ -50,8 +48,9 @@ public class SingleXMlDocumentReader extends AbstractDocumentReader {
             xdoc.setDocument(xmldoc);
             close();
             return xdoc;
-        } else
+        } else {
             return null;
+        }
     }
 
     public void close() {

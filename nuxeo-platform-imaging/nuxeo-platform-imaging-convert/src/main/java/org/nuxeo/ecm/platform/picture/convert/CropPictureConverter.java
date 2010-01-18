@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguint</a>
+ * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
  */
 public class CropPictureConverter implements Converter {
 
