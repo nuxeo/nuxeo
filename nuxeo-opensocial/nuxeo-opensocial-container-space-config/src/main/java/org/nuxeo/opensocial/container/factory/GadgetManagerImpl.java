@@ -34,7 +34,6 @@ import org.nuxeo.runtime.api.Framework;
 public class GadgetManagerImpl implements GadgetManager {
 
   private static final Log log = LogFactory.getLog(GadgetManagerImpl.class);
-  public static final String TITLE_KEY_PREF = "title";
 
   protected SpaceManager spaceManager() throws Exception {
     return Framework.getService(SpaceManager.class);
@@ -94,14 +93,10 @@ public class GadgetManagerImpl implements GadgetManager {
     try {
       Space space = getCurrentSpace(gwtParams);
       Gadget gadget = GadgetFactory.getGadget(bean);
-      if (updatePrefs != null) {
+      if (updatePrefs != null)
         gadget.setPreferences(updatePrefs);
-        if (updatePrefs.containsKey(TITLE_KEY_PREF)) {
-          gadget.setTitle(updatePrefs.get(TITLE_KEY_PREF));
-        }
-      }
       space.save(gadget);
-      return GadgetFactory.getGadgetBean(space.getGadget(gadget.getName()),
+      return GadgetFactory.getGadgetBean(space.getGadget(gadget.getId()),
           space.isReadOnly());
     } catch (Exception e) {
       log.error("GadgetManagerImpl - savePreferences : " + e.fillInStackTrace());

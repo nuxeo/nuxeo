@@ -2,7 +2,8 @@
 <Module>
   <ModulePrefs title="default-preferences" category="utils" author="Guillaume Cusnieux" directory_title="" singleton="true">
   </ModulePrefs>
-  <UserPref name="COLOR_header" display_name="Encadre" default_value="none" datatype="enum">
+  <UserPref name="title" display_name="Titre" default_value="none" value="none" datatype="string"/>
+  <UserPref name="COLOR_header" display_name="Encadre" default_value="none" value="none" datatype="enum">
     <EnumValue display_value="red" value="FF0000"/>
     <EnumValue display_value="pink" value="FF0066"/>
     <EnumValue display_value="orange" value="FF6600"/>

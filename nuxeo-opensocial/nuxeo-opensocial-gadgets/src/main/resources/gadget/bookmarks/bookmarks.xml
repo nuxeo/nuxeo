@@ -7,8 +7,6 @@
       <Require feature="settitle" />
       <Require feature="json" />
   </ModulePrefs>
-  <UserPref name="title" display_name="Title" required="false" default_value="Mes Favoris"/>
-
   <UserPref name="COLOR_bgcolor" display_name="Couleur des cellules" default_value="#000000" datatype="enum" >
     <EnumValue display_value="ref" value="FF0000"/>
     <EnumValue display_value="pink" value="FF0066"/>

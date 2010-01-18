@@ -63,7 +63,7 @@ public class InputFactory {
     } else if (TYPES.isComboColor(b.getDataType(), b.getName())) {
       box = new NXFieldColorCombo(gp, b);
     } else if (TYPES.isString(b.getDataType())) {
-      box = new NXField(b);
+      box = new NXField(gp, b);
     } else if (TYPES.isHidden(b.getDataType())) {
       box = new NXFieldHidden(b);
     } else if (TYPES.isCombo(b.getDataType())) {
@@ -79,11 +79,16 @@ public class InputFactory {
 
   private class NXField extends TextField {
 
-    public NXField(PreferencesBean bean) {
+    public NXField(GadgetPortlet gp, PreferencesBean bean) {
       this.setLabel(bean.getDisplayName());
       this.setName(bean.getName());
       this.setWidth(PREF_WIDTH_FIELD);
-      this.setValue(getPrefValue(bean));
+      if (bean.getName()
+          .equals("title"))
+        this.setValue(gp.getTitle());
+      else
+        this.setValue(getPrefValue(bean));
+
     }
   }
 
@@ -113,6 +118,7 @@ public class InputFactory {
       palette.setTitle(CONSTANTS.colorChoice());
       label.setCls(CSS_CLS.COLOR_LBL.toString());
       palette.setCls(CSS_CLS.COLOR.toString());
+      palette.select(bean.getValue());
       this.add(fieldHidden);
       this.add(label);
       this.add(palette);
@@ -231,6 +237,9 @@ public class InputFactory {
 
   private String getPrefValue(PreferencesBean bean) {
     String value = bean.getValue();
+    if (bean.getDefaultValue()
+        .equals("none"))
+      return "";
     if (value == null)
       value = bean.getDefaultValue();
     String decode = URL.decode(value);

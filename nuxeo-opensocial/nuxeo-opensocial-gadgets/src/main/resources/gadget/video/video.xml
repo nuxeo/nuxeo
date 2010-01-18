@@ -10,8 +10,6 @@
     <Require feature="nuxeo" />
     <Require feature="jquery" />
   </ModulePrefs>
-  <UserPref name="title" display_name="Title" required="false"
-    default_value="Video" />
   <UserPref name="vidTitle" datatype="hidden"/>
   <Content type="html">
     <![CDATA[
