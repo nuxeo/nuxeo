@@ -56,8 +56,6 @@ public class UserIdentificationInfo implements Serializable {
     /**
      * Returns the name of the Authentication Plugin used to get user identity
      * (FORM,BASIC,CAS2 ...).
-     *
-     * @return
      */
     public String getAuthPluginName() {
         return authPluginName;
@@ -99,7 +97,7 @@ public class UserIdentificationInfo implements Serializable {
     }
 
     /**
-     * Return the name of the LoginModule plugin that must be used to create the Principal.
+     * Returns the name of the LoginModule plugin that must be used to create the Principal.
      */
     public String getLoginPluginName() {
         return loginPluginName;
@@ -116,6 +114,5 @@ public class UserIdentificationInfo implements Serializable {
     public void setToken(String token) {
         this.token = token;
     }
-
 
 }

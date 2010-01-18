@@ -24,7 +24,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class TestActionFilter extends NXRuntimeTestCase {
 
@@ -178,7 +177,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
         Object precomputed = context.get(DefaultActionFilter.PRECOMPUTED_KEY);
         assertNotNull(precomputed);
     }
-    
+
     public void testGroupFilter() {
 		ActionFilter filter = getFilter("GroupFilter");
 		DefaultActionFilter dFilter = (DefaultActionFilter) filter;

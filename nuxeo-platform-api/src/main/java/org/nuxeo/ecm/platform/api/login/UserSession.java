@@ -27,8 +27,9 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
- * @deprected use instead {@link Framework#login(String, Object)}
+ * @deprecated use instead {@link Framework#login(String, Object)}
  */
+@Deprecated
 public class UserSession {
 
     private LoginContext loginContext;

@@ -36,8 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  * <p>
  * File Manager to handle file
  *
- * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
- *         Kalogeropoulos</a>
+ * @author Andreas Kalogeropoulos
  */
 public interface FileManager {
 

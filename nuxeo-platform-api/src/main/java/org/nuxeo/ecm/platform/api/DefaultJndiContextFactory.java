@@ -26,8 +26,9 @@ import javax.naming.NamingException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @deprecated use new service API {@link org.nuxeo.runtime.api.ServiceManagement}
+ * @deprecated use the new service API: {@link org.nuxeo.runtime.api.ServiceManagement}
  */
+@Deprecated
 @SuppressWarnings({"ALL"})
 public class DefaultJndiContextFactory implements JndiContextFactory {
 

@@ -31,7 +31,6 @@ import org.nuxeo.ecm.platform.actions.ActionFilter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Local
 @Remote
@@ -42,25 +41,18 @@ public interface ActionManager extends Serializable {
     boolean isRegistered(String actionId);
 
     /**
-     * Get actions for a category
+     * Gets actions for a category (filters are evaluated).
+     * <p>
      * Only actions available in the give context are returned
-     * (Filters are evaluated)
-     * @param category
-     * @param context
-     * @return
      */
     List<Action> getActions(String category, ActionContext context);
 
     /**
-     * Get actions for a category
+     * Gets actions for a category (filters are evaluated).
+     * <p>
      * If hideUnavailableActions, all actions of the category are returned
-     * but actions are flaged with a enable flag depending on filters evaluation
-     * (Filters are evaluated)
-     *
-     * @param category
-     * @param context
-     * @param hideUnavailableActions
-     * @return
+     * but actions are flagged with a enable flag depending on filters
+     * evaluation.
      */
     List<Action> getActions(String category, ActionContext context,
             boolean hideUnavailableActions);
@@ -70,26 +62,13 @@ public interface ActionManager extends Serializable {
     ActionFilter[] getFilters(String actionId);
 
     /**
-     * Get all actions in a category
-     * (Filters are NOT evaluated)
-     * @param category
-     * @return
+     * Gets all actions in a category (filters are NOT evaluated).
      */
     List<Action> getAllActions(String category);
 
     /**
-     * Initializes the bean with the associated nx runtime component.
-     *
-     */
-    // public void initialize();
-    /**
      * Cleanup method.
-     *
      */
     void remove();
-
-    // public void readState();
-
-    // public void saveState();
 
 }

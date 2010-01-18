@@ -39,7 +39,6 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
- *
  */
 @Stateless
 @Local(ActionManager.class)
