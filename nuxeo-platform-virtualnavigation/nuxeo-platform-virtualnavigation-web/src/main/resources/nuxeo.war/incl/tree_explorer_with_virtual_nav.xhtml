@@ -11,11 +11,11 @@
   <a4j:outputPanel id="MultiTreeView">
 
     <div class="tabsBar">
-      <h:form>
-        <nxu:dataList var="tree" layout="unorderedList"
+      <h:form id="treeTab">
+        <nxu:dataList var="tree" layout="unorderedList" id="treeList"
           value="#{multiNavTreeManager.availableNavigationTrees}"
           itemStyleClass="#{nxu:test(multiNavTreeManager.selectedNavigationTree == tree.treeId, 'selected', '')}">
-          <a4j:commandLink
+          <a4j:commandLink id="treeLink"
             action="#{multiNavTreeManager.setSelectedNavigationTree(tree.treeId)}"
             reRender="MultiTreeView">
             <nxu:graphicImage value="img/#{tree.treeId}.png" title="#{messages[docList.title]}" />
