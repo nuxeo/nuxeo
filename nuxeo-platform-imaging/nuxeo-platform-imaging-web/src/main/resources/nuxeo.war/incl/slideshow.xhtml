@@ -7,17 +7,20 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:s="http://jboss.com/products/seam/taglib"><a4j:region>
-    
+  xmlns:s="http://jboss.com/products/seam/taglib">
 
-    <h3><h:outputText value="#{slideShowManager.child.title}" /></h3>
+  <h:outputText value="#{messages['picturebook.slideshow.without.pictures']}" rendered="#{slideShowManager.childrenSize == 0}" />
+
+  <a4j:region rendered="#{slideShowManager.childrenSize > 0}">
 
     <div class="slideshowContent">
 
   <h:form id="slideshowPoll">
 
+    <h3><h:outputText value="#{slideShowManager.child.title}" /></h3>
+
       <div class="slideShowControl">
-    <a4j:poll interval="#{currentDocument.picturebook.timeinterval * 1000}" 
+    <a4j:poll interval="#{currentDocument.picturebook.timeinterval * 1000}"
       reRender="slideshow,slideshowPoll" action="#{slideShowManager.incIndex}"
       rendered="#{(slideShowManager.childrenSize >slideShowManager.index or slideShowManager.repeat) and !slideShowManager.stoped }" />
 
@@ -31,7 +34,7 @@
       styleClass="indexPicture">
       <a4j:support event="onkeyup"  reRender="slideshow,slideshowPoll"
         actionListener="#{slideShowManager.inputValidation}" />
-    </h:inputText> 
+    </h:inputText>
     <a4j:commandButton image="icons/control_fastforward_blue.png"
       action="#{slideShowManager.incIndex}"  reRender="slideshow,slideshowPoll"
       disabled="#{slideShowManager.childrenSize == slideShowManager.index}" />
@@ -80,4 +83,5 @@
     </nxd:restDocumentLink>
   </h:form>
     </div>
-</a4j:region></div>
+  </a4j:region>
+</div>

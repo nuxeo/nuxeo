@@ -17,12 +17,12 @@
 
 package org.nuxeo.ecm.platform.publisher.api;
 
+import java.util.List;
+import java.util.Map;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-
-import java.util.List;
-import java.util.Map;
 
 public abstract class AbstractBasePublicationTree implements PublicationTree {
 
@@ -167,12 +167,12 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return iconCollapsed;
     }
 
-    public void validatorPublishDocument(PublishedDocument publishedDocument)
-            throws ClientException {
+    public void validatorPublishDocument(PublishedDocument publishedDocument,
+            String comment) throws ClientException {
         if (!accept(publishedDocument)) {
             return;
         }
-        factory.validatorPublishDocument(publishedDocument);
+        factory.validatorPublishDocument(publishedDocument, comment);
     }
 
     public void validatorRejectPublication(PublishedDocument publishedDocument,

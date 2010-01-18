@@ -44,4 +44,16 @@
 
   </extension>
 
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="generalSettings">
+
+    <settings>
+      <serverPrefix>http://${org.nuxeo.ecm.notification.serverPrefix}/nuxeo</serverPrefix>
+      <eMailSubjectPrefix>${org.nuxeo.ecm.notification.eMailSubjectPrefix}</eMailSubjectPrefix>
+      <mailSessionJndiName>${not.existing.property}</mailSessionJndiName>
+    </settings>
+
+  </extension>
+
 </component>

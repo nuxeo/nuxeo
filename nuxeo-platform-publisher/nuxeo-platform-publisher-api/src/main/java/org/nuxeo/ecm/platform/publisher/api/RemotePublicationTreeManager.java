@@ -17,12 +17,12 @@
 
 package org.nuxeo.ecm.platform.publisher.api;
 
+import java.util.List;
+import java.util.Map;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Remote interface used by PublicationService to communicate with each others.
@@ -77,10 +77,11 @@ public interface RemotePublicationTreeManager {
      *
      * @param publishedDocument the current published document that will be
      *            approved
+     * @param comment
      * @throws ClientException
      */
-    void validatorPublishDocument(String sid, PublishedDocument publishedDocument)
-            throws ClientException;
+    void validatorPublishDocument(String sid, PublishedDocument publishedDocument,
+            String comment) throws ClientException;
 
     /**
      * A validator (the current user) rejects the publication.

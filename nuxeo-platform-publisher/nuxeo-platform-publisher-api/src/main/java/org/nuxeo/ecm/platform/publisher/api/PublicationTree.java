@@ -17,15 +17,13 @@
 
 package org.nuxeo.ecm.platform.publisher.api;
 
+import java.util.List;
+import java.util.Map;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
-import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Interface for the publication tree. A Publication Tree is a generic view on a
@@ -83,9 +81,10 @@ public interface PublicationTree extends PublicationNode {
      *
      * @param publishedDocument the current published document that will be
      *            approved
+     * @param comment
      * @throws PublishingException
      */
-    void validatorPublishDocument(PublishedDocument publishedDocument)
+    void validatorPublishDocument(PublishedDocument publishedDocument, String comment)
             throws ClientException;
 
     /**

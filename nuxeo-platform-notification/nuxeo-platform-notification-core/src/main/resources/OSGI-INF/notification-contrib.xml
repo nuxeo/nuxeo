@@ -16,15 +16,16 @@
       autoSubscribed="false" template="modif" subject="Document modified" label="label.nuxeo.notifications.modif">
       <event name="documentModified"/>
     </notification>
-    
+
     <notification name="Creation" channel="email" enabled="true" availableIn="Workspace"
       autoSubscribed="false" template="modif" subject="Document created" label="label.nuxeo.notifications.create">
       <event name="documentCreated"/>
     </notification>
 
     <notification name="Publication" channel="email" enabled="true" availableIn="Section"
-      autoSubscribed="false" template="publish" subject="Document published" label="label.nuxeo.notifications.publication">
+      autoSubscribed="true" template="publish" subject="Document published" label="label.nuxeo.notifications.publication">
       <event name="documentPublicationApproved"/>
+      <event name="documentPublicationRejected"/>
       <event name="documentPublished"/>
     </notification>
 

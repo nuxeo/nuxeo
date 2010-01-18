@@ -71,12 +71,18 @@ public class NotificationService extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(NotificationService.class);
 
-    protected EmailHelper emailHelper= new EmailHelper();
-
     public static final String SUBSCRIPTION_NAME = "UserSubscription";
+
+    protected static final String NOTIFICATIONS_EP = "notifications";
+
+    protected static final String TEMPLATES_EP = "templates";
+
+    protected static final String GENERAL_SETTINGS_EP = "generalSettings";
 
     // FIXME: performance issue when putting URLs in a Map.
     protected static final Map<String, URL> TEMPLATES_MAP = new HashMap<String, URL>();
+
+    protected EmailHelper emailHelper = new EmailHelper();
 
     protected GeneralSettingsDescriptor generalSettings;
 
@@ -114,7 +120,7 @@ public class NotificationService extends DefaultComponent implements
     public void registerExtension(Extension extension) throws Exception {
         log.info("Registering notification extention");
         String xp = extension.getExtensionPoint();
-        if ("notifications".equals(xp)) {
+        if (NOTIFICATIONS_EP.equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
                 try {
@@ -125,7 +131,7 @@ public class NotificationService extends DefaultComponent implements
                     log.error(e);
                 }
             }
-        } else if ("templates".equals(xp)) {
+        } else if (TEMPLATES_EP.equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
                 try {
@@ -136,16 +142,23 @@ public class NotificationService extends DefaultComponent implements
                     log.error(e);
                 }
             }
-        } else if ("generalSettings".equals(xp)) {
+        } else if (GENERAL_SETTINGS_EP.equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
                 try {
-                    generalSettings = (GeneralSettingsDescriptor) contrib;
+                    registerGeneralSettings((GeneralSettingsDescriptor) contrib);
                 } catch (Exception e) {
                     log.error(e);
                 }
             }
         }
+    }
+
+    protected void registerGeneralSettings(GeneralSettingsDescriptor desc) {
+        generalSettings = desc;
+        generalSettings.serverPrefix = Framework.expandVars(generalSettings.serverPrefix);
+        generalSettings.eMailSubjectPrefix = Framework.expandVars(generalSettings.eMailSubjectPrefix);
+        generalSettings.mailSessionJndiName = Framework.expandVars(generalSettings.mailSessionJndiName);
     }
 
     private static List<String> getNames(
@@ -160,7 +173,7 @@ public class NotificationService extends DefaultComponent implements
     @Override
     public void unregisterExtension(Extension extension) throws Exception {
         String xp = extension.getExtensionPoint();
-        if ("notifications".equals(xp)) {
+        if (NOTIFICATIONS_EP.equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
                 try {
@@ -171,7 +184,7 @@ public class NotificationService extends DefaultComponent implements
                     log.error(e);
                 }
             }
-        } else if ("templates".equals(xp)) {
+        } else if (TEMPLATES_EP.equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
                 try {
@@ -320,15 +333,14 @@ public class NotificationService extends DefaultComponent implements
         paramMap.put("docId", docId);
         paramMap.put("notification", notification);
 
-        serviceBean.removeAnnotationListByParamMap(paramMap,
-                    SUBSCRIPTION_NAME);
+        serviceBean.removeAnnotationListByParamMap(paramMap, SUBSCRIPTION_NAME);
         /*
-        * List<Annotation> subscriptions = serviceBean
-        * .getAnnotationListByParamMap(paramMap, SUBSCRIPTION_NAME); if
-        * (subscriptions != null && subscriptions.size() > 0) { for
-        * (Annotation subscription : subscriptions) { if (subscription !=
-        * null) { serviceBean.removeAnnotation(subscription); } } }
-        */
+         * List<Annotation> subscriptions = serviceBean
+         * .getAnnotationListByParamMap(paramMap, SUBSCRIPTION_NAME); if
+         * (subscriptions != null && subscriptions.size() > 0) { for (Annotation
+         * subscription : subscriptions) { if (subscription != null) {
+         * serviceBean.removeAnnotation(subscription); } } }
+         */
     }
 
     public List<String> getUsersSubscribedToNotificationOnDocument(

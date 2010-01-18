@@ -380,7 +380,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
         PublicationTree tree = publisherService.getPublicationTreeFor(
                 currentDocument, documentManager);
         PublishedDocument publishedDocument = tree.wrapToPublishedDocument(currentDocument);
-        tree.validatorPublishDocument(publishedDocument);
+        tree.validatorPublishDocument(publishedDocument, publishingComment);
 
         FacesContext context = FacesContext.getCurrentInstance();
         String comment = publishingComment != null
@@ -662,6 +662,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
     public void documentChanged() {
         currentPublicationTreeNameForPublishing = null;
         currentPublicationTree = null;
+        publishingComment = null;
     }
 
 }
