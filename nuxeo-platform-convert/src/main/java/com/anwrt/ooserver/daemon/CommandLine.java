@@ -13,7 +13,6 @@ import com.sun.star.uno.XComponentContext;
 /**
  * All command line specific menus and informations are made here
  * <br>
- * creation : 24 ao�t 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */

@@ -7,7 +7,6 @@ import java.io.File;
  *
  * A container that have all informations about configuration
  * <br>
- * creation : 28 ao�t 07
  *
  * @see com.anwrt.ooserver.daemon.ConfigHandler
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>

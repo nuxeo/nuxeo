@@ -4,7 +4,6 @@ package com.anwrt.ooserver.daemon;
  * 
  * Make an office process reenter the ready pool
  * <br>
- * creation : 30 août 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */

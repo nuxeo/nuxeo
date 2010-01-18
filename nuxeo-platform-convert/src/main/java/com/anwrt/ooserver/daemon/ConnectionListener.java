@@ -8,7 +8,6 @@ import com.sun.star.lib.uno.helper.ComponentBase;
  * Waits for a connection to stop. When the connection is lost or finished, the 
  * OfficeProcess corresponding is notified and added back to the ready process pool.
  * <br>
- * creation : 28 août 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */

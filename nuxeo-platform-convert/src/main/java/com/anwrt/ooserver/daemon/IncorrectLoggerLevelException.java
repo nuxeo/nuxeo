@@ -9,7 +9,6 @@ package com.anwrt.ooserver.daemon;
  * The string that seems to represent a level is not a valid level (syntax error,
  * try buying glasses or putting 'INFO', 'DEBUG', ...)
  * <br>
- * creation : 28 août 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */

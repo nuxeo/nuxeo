@@ -12,7 +12,6 @@ import com.sun.star.uno.UnoRuntime;
 /**
  * Accepts connections from admin daemon instances.
  * <br>
- * creation : 23 ao�t 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */

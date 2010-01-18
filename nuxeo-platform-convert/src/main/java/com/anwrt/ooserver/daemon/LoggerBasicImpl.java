@@ -5,7 +5,6 @@ package com.anwrt.ooserver.daemon;
  * Basic Logger implementation that throw everything to standard outputs.<br>
  * Use it as an example if you want to make something more inventive.
  * <br>
- * creation : 28 août 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */

@@ -13,7 +13,6 @@ import com.sun.star.container.XNameAccess;
  * Kind of interface structure to exchange status informations between the main
  * daemon process and an admin daemon process.
  * <br>
- * creation : 30 août 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */

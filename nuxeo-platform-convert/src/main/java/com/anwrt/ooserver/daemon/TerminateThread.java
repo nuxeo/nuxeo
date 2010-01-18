@@ -8,7 +8,6 @@ import com.sun.star.uno.XComponentContext;
  * 
  * Thread that tries to shutdown one open office process.
  * <br>
- * creation : 30 août 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */

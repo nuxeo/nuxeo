@@ -22,7 +22,6 @@ import com.sun.star.uno.XComponentContext;
  *  <strong>warning</strong> if there is no output, do not forget to instantiate the logger,
  *  (ex : Logger.newInstance(new LoggerBasicImpl());) otherwise the logger will not be enabled.<br>
  * <br>
- * creation : 24 ao�t 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  * @see com.anwrt.ooserver.daemon.CommandLine

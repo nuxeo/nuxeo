@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
  * 
  * An abstract layer that is useful for some system calls
  * <br>
- * creation : 30 août 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */

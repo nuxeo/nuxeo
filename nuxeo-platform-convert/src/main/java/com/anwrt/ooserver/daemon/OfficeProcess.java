@@ -12,7 +12,6 @@ import com.sun.star.lang.XComponent;
  *
  * All the informations and management of an open office server instance
  * <br>
- * creation : 28 ao�t 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */

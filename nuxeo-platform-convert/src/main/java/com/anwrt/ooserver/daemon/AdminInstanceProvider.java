@@ -10,7 +10,6 @@ import com.sun.star.lib.uno.helper.ComponentBase;
  * Used to execute admin actions and to return anything that the asker 
  * might want (status for example)
  * <br>
- * creation : 23 août 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */
@@ -29,7 +28,6 @@ public class AdminInstanceProvider extends ComponentBase implements XInstancePro
 	/**
 	 * Delayed shutdown
 	 * <br>
-	 * creation : 23 août 07
 	 *
 	 * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
 	 */

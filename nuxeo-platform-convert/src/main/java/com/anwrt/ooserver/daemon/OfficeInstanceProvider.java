@@ -7,7 +7,6 @@ import com.sun.star.lib.uno.helper.ComponentBase;
  * 
  * Returns the open office instance from the bridge
  * <br>
- * creation : 30 août 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */

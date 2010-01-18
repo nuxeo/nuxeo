@@ -7,7 +7,6 @@ import java.util.LinkedList;
  *
  * Pool of ready Open Office server instances
  * <br>
- * creation : 30 ao�t 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */

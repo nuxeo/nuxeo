@@ -7,7 +7,6 @@ import com.sun.star.lib.uno.helper.ComponentBase;
  * 
  * Empty instance, not used for normal situations
  * <br>
- * creation : 28 août 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */

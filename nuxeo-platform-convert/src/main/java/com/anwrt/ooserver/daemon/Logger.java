@@ -7,7 +7,6 @@ package com.anwrt.ooserver.daemon;
  * Logger.newInstance(new LoggerBasicImpl()); for example. <br>
  * Other loggers can be created using LoggerBasicImpl as an example.<br>
  * <br>
- * creation : 28 août 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */

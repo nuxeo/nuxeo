@@ -10,7 +10,6 @@ import com.sun.star.uno.XComponentContext;
  * Thread that tests if an OpenOffice process is still available and responsive
  * (no deadlock, etc...)
  * <br>
- * creation : 30 août 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */

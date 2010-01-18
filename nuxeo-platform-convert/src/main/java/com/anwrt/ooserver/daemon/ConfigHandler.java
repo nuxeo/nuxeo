@@ -12,7 +12,6 @@ import org.xml.sax.SAXParseException;
  * 
  * Used to parse a configuration from an XML file using SAX
  * <br>
- * creation : 28 août 07
  *
  * @author <a href="mailto:oodaemon@extraserv.net">Jounayd Id Salah</a>
  */
