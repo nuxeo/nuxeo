@@ -82,14 +82,11 @@ public class TestLifeCycleService extends RepositoryTestCase {
         // invalid initial states
         try {
             lifeCycleService.initialize(doc, "xxx");
-            fail("Invalid initial state, initialization should fail");
+            fail("Invalid initial state, intialization should fail");
         } catch (LifeCycleException e) {
         }
-        try {
-            lifeCycleService.initialize(doc, "cancelled");
-            fail("Invalid initial state, initialization should fail");
-        } catch (LifeCycleException e) {
-        }
+        // XXX this is not an initial state, but accepted anyway for import
+        lifeCycleService.initialize(doc, "cancelled");
         lifeCycleService.initialize(doc, "approved");
         doc.save();
         assertEquals("approved", doc.getCurrentLifeCycleState());
