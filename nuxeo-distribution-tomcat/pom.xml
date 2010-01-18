@@ -28,7 +28,9 @@
             <id>antbuild</id>
             <phase>package</phase>
             <configuration>
-              <buildFile>${basedir}/assembly.xml</buildFile>
+              <buildFiles>
+                <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+              </buildFiles>
             </configuration>
             <goals>
               <goal>build</goal>

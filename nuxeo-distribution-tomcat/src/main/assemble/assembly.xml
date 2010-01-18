@@ -12,7 +12,7 @@
 
 
   <target name="build">
-    <echo>Entering tomcat build</echo>
+    <echo>Building Tomcat distributions...</echo>
     <property name="tomcat" value="${stagedir}/nuxeo-distribution-tomcat" />
     <property name="nxserver" value="${tomcat}/nxserver" />
 
