@@ -22,7 +22,7 @@
       <div class="slideShowControl">
     <a4j:poll interval="#{currentDocument.picturebook.timeinterval * 1000}"
       reRender="slideshow,slideshowPoll" action="#{slideShowManager.incIndex}"
-      rendered="#{(slideShowManager.childrenSize >slideShowManager.index or slideShowManager.repeat) and !slideShowManager.stoped }" />
+      rendered="#{(slideShowManager.childrenSize >slideShowManager.index or slideShowManager.repeat) and !slideShowManager.stopped }" />
 
     <a4j:commandButton image="icons/control_start_blue.png"
       action="#{slideShowManager.firstPic}" reRender="slideshow,slideshowPoll"
@@ -46,10 +46,10 @@
       <span>
 
   <a4j:commandButton  image="icons/control_pause_blue.png"
-      action="#{slideShowManager.togglePause}" rendered="#{!slideShowManager.stoped}" reRender="slideshowPoll" />
+      action="#{slideShowManager.togglePause}" rendered="#{!slideShowManager.stopped}" reRender="slideshowPoll" />
 
    <a4j:commandButton  image="icons/control_play_blue.png"
-      action="#{slideShowManager.start}" rendered="#{slideShowManager.stoped}"  reRender="slideshowPoll" />
+      action="#{slideShowManager.start}" rendered="#{slideShowManager.stopped}"  reRender="slideshowPoll" />
 
    <a4j:commandButton  image="icons/control_stop_blue.png"
       action="#{slideShowManager.stop}"  reRender="slideshow,slideshowPoll" />

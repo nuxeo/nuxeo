@@ -19,9 +19,9 @@
 
 package org.nuxeo.ecm.platform.picture.web;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 import javax.ejb.Remove;
 import javax.faces.event.ActionEvent;
@@ -40,6 +40,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+
 /**
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
  *
@@ -47,32 +49,33 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 @Name("slideShowManager")
 @Scope(CONVERSATION)
-public class SlideShowManagerBean implements
-        SlideShowManager, Serializable {
+public class SlideShowManagerBean implements SlideShowManager, Serializable {
 
     private static final long serialVersionUID = -3281363416111697725L;
 
     private static final Log log = LogFactory.getLog(PictureBookManagerBean.class);
 
-    Integer index;
-
-    Integer childrenSize=null;
-
-    Boolean stoped;
-
-    Boolean repeat;
-
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
-    DocumentModel child;
+    protected List<DocumentModel> children;
+
+    protected Integer childrenSize = null;
+
+    protected DocumentModel child;
+
+    protected Integer index;
+
+    protected Boolean stopped;
+
+    protected Boolean repeat;
 
     @Create
     public void initialize() throws Exception {
         log.debug("Initializing...");
         index = 1;
         childrenSize = null;
-        stoped = false;
+        stopped = false;
         repeat = false;
     }
 
@@ -81,12 +84,7 @@ public class SlideShowManagerBean implements
     }
 
     public void lastPic() {
-        try {
-            index = navigationContext.getCurrentDocumentChildren().size();
-        } catch (ClientException e) {
-            log.error("Catching DocumentChildren size failed", e);
-            index = 1;
-        }
+        index = getChildren().size();
     }
 
     @Destroy
@@ -96,7 +94,7 @@ public class SlideShowManagerBean implements
         index = null;
         child = null;
         childrenSize = null;
-        stoped = null;
+        stopped = null;
         repeat = null;
     }
 
@@ -123,13 +121,15 @@ public class SlideShowManagerBean implements
         index = idx;
     }
 
-    @Observer({ EventNames.DOCUMENT_SELECTION_CHANGED })
+    @Observer( { EventNames.DOCUMENT_SELECTION_CHANGED,
+            EventNames.DOCUMENT_CHILDREN_CHANGED })
     @BypassInterceptors
     public void resetIndex() throws ClientException {
         index = 1;
         child = null;
+        children = null;
         childrenSize = null;
-        stoped = false;
+        stopped = false;
         repeat = false;
     }
 
@@ -138,36 +138,37 @@ public class SlideShowManagerBean implements
             index = getChildrenSize();
         }
         if (index <= 0) {
-             index = 1;
+            index = 1;
         }
     }
 
     public Integer getChildrenSize() {
-        if (childrenSize==null) {
-            try {
-                childrenSize = navigationContext.getCurrentDocumentChildren().size();
-            } catch (ClientException e) {
-                log.error("Error while calculating size of picturebook", e);
-                childrenSize=0;
-            }
+        if (childrenSize == null) {
+            childrenSize = getChildren().size();
         }
         return childrenSize;
     }
 
-    public void setChildrenSize(Integer childrenSize) {
-        this.childrenSize = childrenSize;
+    public DocumentModel getChild() {
+        if (index > getChildrenSize()) {
+            index = childrenSize;
+        }
+        if (!getChildren().isEmpty()) {
+            return getChildren().get(index - 1);
+        }
+        return null;
     }
 
-    public DocumentModel getChild() {
+    protected List<DocumentModel> getChildren() {
         try {
-            if ((index) > getChildrenSize()) {
-                    index = childrenSize;
+            if (children == null) {
+                children = navigationContext.getCurrentDocumentChildren();
             }
-            return navigationContext.getCurrentDocumentChildren().get(index - 1);
         } catch (ClientException e) {
-            log.error("Can't catch Child Document Model ", e);
-            return null;
+            log.error(e, e);
+            children = Collections.emptyList();
         }
+        return children;
     }
 
     public void setChild(DocumentModel child) {
@@ -175,32 +176,28 @@ public class SlideShowManagerBean implements
     }
 
     public void togglePause() {
-        stoped = true;
+        stopped = true;
     }
 
     public void stop() {
         index = 1;
-        stoped = true;
+        stopped = true;
     }
 
-    public void start(){
-            stoped = false;
+    public void start() {
+        stopped = false;
     }
 
-    public Boolean getStoped() {
-        return stoped;
+    public Boolean getStopped() {
+        return stopped;
     }
 
-    public void toggleRepeat(){
-        if (repeat) {
-            repeat = false;
-        } else {
-            repeat = true;
-        }
+    public void toggleRepeat() {
+        repeat = !repeat;
     }
 
-    public void setStoped(Boolean stoped) {
-        this.stoped = stoped;
+    public void setStopped(Boolean stopped) {
+        this.stopped = stopped;
     }
 
     public Boolean getRepeat() {

@@ -82,13 +82,6 @@ public interface SlideShowManager {
     Integer getChildrenSize();
 
     /**
-     * Sets the ChildrenSize. The amount of children from the current document.
-     *
-     * @param childrenSize an Integer holding childrenSize
-     */
-    void setChildrenSize(Integer childrenSize);
-
-    /**
      * Gets the DocumentModel of a child from the index.
      *
      * @return a DocumentModel holding the child
