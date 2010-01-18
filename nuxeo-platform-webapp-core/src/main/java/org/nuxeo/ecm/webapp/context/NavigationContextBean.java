@@ -19,10 +19,6 @@
 
 package org.nuxeo.ecm.webapp.context;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,8 +59,8 @@ import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -85,6 +81,11 @@ import org.nuxeo.ecm.webapp.helpers.ApplicationControllerHelper;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
+import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
+
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 /**
  * Implementation for the navigationContext component available on the session.
@@ -104,6 +105,9 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     @In
     protected transient Context eventContext;
+
+    @In(create = true)
+    protected transient QueryModelActions queryModelActions;
 
     // --------------------------------------------
     // fields managed by this class
@@ -256,6 +260,7 @@ public class NavigationContextBean implements NavigationContextLocal,
         resultsProvider = null;
     }
 
+    @Deprecated
     public DocumentModelList getCurrentDocumentChildren()
             throws ClientException {
         final String logPrefix = "<getCurrentDocumentChildren> ";
@@ -265,14 +270,11 @@ public class NavigationContextBean implements NavigationContextLocal,
             return new DocumentModelListImpl();
         }
 
-        FacetFilter facetFilter = new FacetFilter("HiddenInNavigation", false);
-        try {
-            currentDocumentChildren = documentManager.getChildren(
-                    currentDocument.getRef(), null, SecurityConstants.READ,
-                    facetFilter, null);
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
+        QueryModelDescriptor queryDescriptor = queryModelActions.get(
+                DocumentChildrenStdFarm.CHILDREN_BY_COREAPI).getDescriptor();
+        String query = queryDescriptor.getQuery(new Object[] { currentDocument.getId() });
+
+        currentDocumentChildren = documentManager.query(query);
         return currentDocumentChildren;
     }
 
@@ -756,8 +758,8 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     /**
      * Alias to
-     * <code>navigateToDocument(DocumentModel doc, String viewId)</code> so
-     * that JSF EL sees no ambiguity)
+     * <code>navigateToDocument(DocumentModel doc, String viewId)</code> so that
+     * JSF EL sees no ambiguity)
      * <p>
      * The view is supposed to be set on the document type information. If such
      * a view id is not available for the type, use its default vieW.
