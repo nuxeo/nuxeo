@@ -1519,7 +1519,7 @@ public class Mapper {
      * @param typeName the type of the fragment to copy (to avoid refetching
      *            known info)
      * @param destParentId the new parent id, or {@code null}
-     * @parem destName the new name
+     * @param destName the new name
      * @param overwriteId when not {@code null}, the copy is done onto this
      *            existing root id
      * @param overwriteMap when overwriting, set these hierarchy columns

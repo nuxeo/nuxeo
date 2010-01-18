@@ -256,8 +256,6 @@ public final class BuiltinTypes implements NodeConstants {
 
     /**
      * The base type of any ECM object.
-     *
-     * @return
      */
     public static NodeTypeDef createBaseNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
@@ -284,8 +282,6 @@ public final class BuiltinTypes implements NodeConstants {
 
     /**
      * The base type of any unstructured ECM object.
-     *
-     * @return
      */
     private static NodeTypeDef createUnstructuredMixinNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
@@ -311,8 +307,6 @@ public final class BuiltinTypes implements NodeConstants {
      * The system schema mixin type.
      * <p>
      * All types implement this schema.
-     *
-     * @return
      */
     public static NodeTypeDef createSecuritySchemaNodeType() {
         // create the mixin node type
@@ -338,9 +332,8 @@ public final class BuiltinTypes implements NodeConstants {
     }
 
     /**
-     * Create node type definition used to create child node that
+     * Creates node type definition used to create child node that
      * will hold any (random) system props for a doc.
-     * @return
      */
     public static NodeTypeDef createSystemAny() {
         NodeTypeDef ntd = new NodeTypeDef();
@@ -427,8 +420,6 @@ public final class BuiltinTypes implements NodeConstants {
 
     /**
      * The base type of any document.
-     *
-     * @return
      */
     public static NodeTypeDef createDocumentNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
@@ -456,8 +447,6 @@ public final class BuiltinTypes implements NodeConstants {
 
     /**
      * The marker mixin type for folder nodes.
-     *
-     * @return
      */
     public static NodeTypeDef createFolderMixinType() {
         NodeTypeDef ntd = new NodeTypeDef();
@@ -479,8 +468,6 @@ public final class BuiltinTypes implements NodeConstants {
 
     /**
      * The marker mixin type for ordered folder nodes.
-     *
-     * @return
      */
     public static NodeTypeDef createOrderedFolderMixinType() {
         NodeTypeDef ntd = new NodeTypeDef();
@@ -502,8 +489,6 @@ public final class BuiltinTypes implements NodeConstants {
 
     /**
      * The container node used by a folder to holds its children.
-     *
-     * @return
      */
     public static NodeTypeDef createContainerNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
@@ -522,8 +507,6 @@ public final class BuiltinTypes implements NodeConstants {
 
     /**
      * The ordered container node used by an ordered folder to holds its children.
-     *
-     * @return
      */
     public static NodeTypeDef createOrderedContainerNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
@@ -536,8 +519,6 @@ public final class BuiltinTypes implements NodeConstants {
 
     /**
      * The base node type for all schemas.
-     *
-     * @return
      */
     public static NodeTypeDef createSchemaNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
@@ -549,8 +530,6 @@ public final class BuiltinTypes implements NodeConstants {
 
     /**
      * The base node type for all complex fields.
-     *
-     * @return
      */
     public static NodeTypeDef createComplexFieldNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
@@ -562,8 +541,6 @@ public final class BuiltinTypes implements NodeConstants {
 
     /**
      * The node type used for all complex list.
-     *
-     * @return
      */
     public static NodeTypeDef createComplexListNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
@@ -631,8 +608,6 @@ public final class BuiltinTypes implements NodeConstants {
 
     /**
      * The ACP node type.
-     *
-     * @return
      */
     public static NodeTypeDef createACPNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
@@ -664,8 +639,6 @@ public final class BuiltinTypes implements NodeConstants {
 
     /**
      * The ACL node type.
-     *
-     * @return
      */
     public static NodeTypeDef createACLNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
@@ -694,8 +667,6 @@ public final class BuiltinTypes implements NodeConstants {
 
     /**
      * The ACE node type.
-     *
-     * @return
      */
     public static NodeTypeDef createACENodeType() {
         NodeTypeDef ntd = new NodeTypeDef();

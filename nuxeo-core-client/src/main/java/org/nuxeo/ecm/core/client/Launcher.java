@@ -32,7 +32,7 @@ import java.util.Map.Entry;
 import org.nuxeo.osgi.application.client.NuxeoApp;
 
 /**
- * @author <a href="mailto:gbamberger@nuxeo.com">Ga‘lle Bamberger</a>
+ * @author <a href="mailto:gbamberger@nuxeo.com">Gaelle Bamberger</a>
  */
 public class Launcher implements Runnable {
 

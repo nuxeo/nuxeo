@@ -41,13 +41,13 @@ public interface ConversionService {
     List<String> getConverterNames(String sourceMimeType, String destinationMimeType);
 
     /**
-     * Do a Blob conversion given a converter name.
+     * Converts a Blob given a converter name.
      */
     BlobHolder convert(String converterName, BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException;
 
     /**
-     * Do a Blob conversion given a target destination MimeType.
+     * Converts a Blob given a target destination MimeType.
      */
     BlobHolder convertToMimeType(String destinationMimeType,
             BlobHolder blobHolder, Map<String, Serializable> parameters)

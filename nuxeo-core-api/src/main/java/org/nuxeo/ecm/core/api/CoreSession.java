@@ -1141,12 +1141,8 @@ public interface CoreSession {
     /**
      * Executes a specific FULLTEXT enabled query for the given keywords.
      *
-     * @param keywords
-     * @return
-     * @throws ClientException
-     *
-     * @deprecated use SearchService instead. See {@url
-     *             http://doc.nuxeo.org/reference/html/search-service.html}
+     * @deprecated use SearchService instead. See
+     * {@link http://doc.nuxeo.org/reference/html/search-service.html}
      */
     @Deprecated
     DocumentModelList querySimpleFts(String keywords) throws ClientException;
@@ -1155,29 +1151,24 @@ public interface CoreSession {
      * Executes a specific FULLTEXT enabled query for the given keywords,
      * returning only results that match the specified filter.
      *
-     * @param keywords
-     * @param filter
-     * @return
-     * @throws ClientException
-     *
-     * @deprecated use SearchService instead. See {@url
-     *             http://doc.nuxeo.org/reference/html/search-service.html}
+     * @deprecated use SearchService instead. See
+     * {@link http://doc.nuxeo.org/reference/html/search-service.html}
      */
     @Deprecated
     DocumentModelList querySimpleFts(String keywords, Filter filter)
             throws ClientException;
 
     /**
-     * @deprecated use SearchService instead. See {@url
-     *             http://doc.nuxeo.org/reference/html/search-service.html}
+     * @deprecated use SearchService instead. See
+     * {@link http://doc.nuxeo.org/reference/html/search-service.html}
      */
     @Deprecated
     DocumentModelIterator querySimpleFtsIt(String query, Filter filter,
             int pageSize) throws ClientException;
 
     /**
-     * @deprecated use SearchService instead. See {@url
-     *             http://doc.nuxeo.org/reference/html/search-service.html}
+     * @deprecated use SearchService instead. See
+     * {@link http://doc.nuxeo.org/reference/html/search-service.html}
      */
     @Deprecated
     DocumentModelIterator querySimpleFtsIt(String query, String startingPath,

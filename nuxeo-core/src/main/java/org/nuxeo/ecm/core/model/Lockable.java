@@ -27,12 +27,11 @@ import org.nuxeo.ecm.core.api.DocumentException;
  * The key is used to store information about the lock owner.
  *
  * @author bstefanescu
- *
  */
 public interface Lockable {
 
     /**
-     * Set a lock on the current document.
+     * Sets a lock on the current document.
      * <p>
      * The lock key cannot be null.
      *

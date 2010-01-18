@@ -53,7 +53,7 @@ public interface Query {
      *
      * @return a query result object describing the resulting documents
      * @throws QueryException
-     * @see {@link FilterableQuery#execute(QueryFilter, boolean)}
+     * @see {@link FilterableQuery#execute(QueryFilter,boolean)}
      */
     QueryResult execute() throws QueryException;
 
@@ -69,7 +69,7 @@ public interface Query {
      *            documents when no limit/offset is passed
      * @return a query result object describing the resulting documents
      * @throws QueryException
-     * @see {@link FilterableQuery#execute(QueryFilter, boolean)}
+     * @see {@link FilterableQuery#execute(QueryFilter,boolean)}
      */
     QueryResult execute(boolean countTotal) throws QueryException;
 
