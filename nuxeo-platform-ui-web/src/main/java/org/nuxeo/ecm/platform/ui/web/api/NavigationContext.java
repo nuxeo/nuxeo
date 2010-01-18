@@ -131,7 +131,10 @@ public interface NavigationContext extends ResultsProviderFarm {
 
     /**
      * Retrieves the documents contained in the current parent.
+     * @deprecated this method is not scalable, all the documents will be in
+     * memory
      */
+    @Deprecated
     DocumentModelList getCurrentDocumentChildren() throws ClientException;
 
     /**
