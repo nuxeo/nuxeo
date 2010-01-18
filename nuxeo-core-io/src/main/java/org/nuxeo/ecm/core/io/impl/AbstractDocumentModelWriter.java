@@ -133,17 +133,20 @@ public abstract class AbstractDocumentModelWriter extends
 
         DocumentModel doc = new DocumentModelImpl(parentPath.toString(), name,
                 xdoc.getType());
-        doc = session.createDocument(doc);
-        // now fill it with data and save it -> TODO this should be changed
-        // after the core API will be refactored
 
-        // load into the document the system properties
-        loadSystemInfo(doc, xdoc.getDocument());
-
+        // set lifecycle state at creation
+        Element system = xdoc.getDocument().getRootElement().element(
+                ExportConstants.SYSTEM_TAG);
+        String lifeCycleState = system.element(
+                ExportConstants.LIFECYCLE_STATE_TAG).getText();
+        doc.putContextData("initialLifecycleState", lifeCycleState);
         // then load schemas data
         loadSchemas(xdoc, doc, xdoc.getDocument());
 
-        doc = session.saveDocument(doc);
+        doc = session.createDocument(doc);
+
+        // load into the document the system properties, document needs to exist
+        loadSystemInfo(doc, xdoc.getDocument());
 
         unsavedDocuments += 1;
         saveIfNeeded();
@@ -178,9 +181,6 @@ public abstract class AbstractDocumentModelWriter extends
     @SuppressWarnings("unchecked")
     protected void loadSystemInfo(DocumentModel docModel, Document doc)
             throws ClientException {
-        // how do I set the life cycle? would we set it?
-
-        // TODO import security
         Element system = doc.getRootElement().element(
                 ExportConstants.SYSTEM_TAG);
         Element accessControl = system.element(ExportConstants.ACCESS_CONTROL_TAG);

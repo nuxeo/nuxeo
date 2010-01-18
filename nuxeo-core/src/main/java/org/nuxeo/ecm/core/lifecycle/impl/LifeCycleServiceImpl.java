@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
+import org.nuxeo.ecm.core.lifecycle.LifeCycleState;
 import org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleDescriptor;
 import org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleTypesDescriptor;
 import org.nuxeo.ecm.core.model.Document;
@@ -112,13 +113,19 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             if (initialStateName == null) {
                 initialStateName = documentLifeCycle.getDefaultInitialStateName();
             } else {
-                // check it's a valid initial state
-                if (!documentLifeCycle.getInitialStateNames().contains(
+                // check it's a valid state
+                LifeCycleState state = documentLifeCycle.getStateByName(initialStateName);
+                if (state == null) {
+                    throw new LifeCycleException(String.format(
+                            "State '%s' is not a valid state "
+                                    + "for lifecycle %s", initialStateName,
+                            lifeCycleName));
+                } else if (!documentLifeCycle.getInitialStateNames().contains(
                         initialStateName)) {
-                    throw new LifeCycleException(
-                            String.format(
-                                    "State '%s' is not a valid initial state for lifecycle %s",
-                                    initialStateName, lifeCycleName));
+                    log.warn(String.format(
+                            "State '%s' is not a valid initial state "
+                                    + "for lifecycle %s", initialStateName,
+                            lifeCycleName));
                 }
             }
         }
@@ -136,8 +143,9 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
                     transitionName).getDestinationStateName();
             doc.setCurrentLifeCycleState(destinationStateName);
         } else {
-            throw new LifeCycleException("Not allowed to follow transition <" +
-                    transitionName + "> from state <" + currentStateName + '>');
+            throw new LifeCycleException("Not allowed to follow transition <"
+                    + transitionName + "> from state <" + currentStateName
+                    + '>');
         }
     }
 
@@ -169,8 +177,8 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             } else if (point.equals("types")) {
                 for (Object mapping : contributions) {
                     LifeCycleTypesDescriptor desc = (LifeCycleTypesDescriptor) mapping;
-                    log.info("Registering lifecycle types mapping: " +
-                            desc.getTypesMapping());
+                    log.info("Registering lifecycle types mapping: "
+                            + desc.getTypesMapping());
                     typesMapping.putAll(desc.getTypesMapping());
                 }
             }
@@ -189,8 +197,8 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             if (point.equals("lifecycle")) {
                 for (Object lifeCycle : contributions) {
                     LifeCycleDescriptor lifeCycleDescriptor = (LifeCycleDescriptor) lifeCycle;
-                    log.debug("Unregistering lifecycle: " +
-                            lifeCycleDescriptor.getName());
+                    log.debug("Unregistering lifecycle: "
+                            + lifeCycleDescriptor.getName());
                     lifeCycles.remove(lifeCycleDescriptor.getName());
                 }
             } else if (point.equals("types")) {
