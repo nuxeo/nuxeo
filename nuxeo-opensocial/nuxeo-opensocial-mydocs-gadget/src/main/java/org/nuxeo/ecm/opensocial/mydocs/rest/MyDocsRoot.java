@@ -1,4 +1,4 @@
-package orb.nuxeo.ecm.opensocial.mydocs.rest;
+package org.nuxeo.ecm.opensocial.mydocs.rest;
 
 import java.util.List;
 

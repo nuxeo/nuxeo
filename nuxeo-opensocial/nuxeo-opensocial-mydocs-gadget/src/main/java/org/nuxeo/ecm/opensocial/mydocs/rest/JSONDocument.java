@@ -1,4 +1,4 @@
-package orb.nuxeo.ecm.opensocial.mydocs.rest;
+package org.nuxeo.ecm.opensocial.mydocs.rest;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -55,7 +55,7 @@ public class JSONDocument extends DocumentObject {
   private static final Log log = LogFactory.getLog(JSONDocument.class);
 
   @GET
-  @Produces("text/html; charset=UTF-8")
+  @Produces("text/html;charset=UTF-8")
   public Object doGet() {
 
     String currentPage = ctx.getRequest()
@@ -76,7 +76,6 @@ public class JSONDocument extends DocumentObject {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    ;
 
     CoreSession session = ctx.getCoreSession();
     try {
