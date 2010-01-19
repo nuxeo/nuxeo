@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -29,7 +29,7 @@ options {
 /*
  * THIS FILE IS AUTO-GENERATED, DO NOT EDIT.
  *
- * (C) Copyright 2008-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -48,16 +48,12 @@ options {
  */
 package org.nuxeo.ecm.core.chemistry.impl;
 
+import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.chemistry.Property;
-import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.chemistry.impl.CMISQLQueryMaker.Join;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
@@ -65,51 +61,24 @@ import org.nuxeo.ecm.core.storage.sql.db.Table;
 
 @members {
     public CMISQLQueryMaker queryMaker;
-    public String sql;
-    /** columns referenced, keyed by full quoted name (includes alias name) */
-    public Map<String, Column> columns = new HashMap<String, Column>();
-    /** qualifier to set of columns full quoted names */
-    public Map<String, Set<String>> columnsPerQual = new HashMap<String, Set<String>>();
-    /** original column names as specified in query */
-    public Map<String, String> columnsSpecified = new HashMap<String, String>();
 
     public List<String> select_what = new LinkedList<String>();
 
-    public static class Join {
-        String kind;
-        String table;
-        String corr;
-        String on1;
-        String on2;
-    }
     /** without kind or on */
     public List<Join> from_joins = new LinkedList<Join>();
 
     public String select_where;
 
+    public List<Serializable> select_where_params;
+
     public List<String> select_orderby = new LinkedList<String>();
 
-    public String referToColumn(String c, String qual) {
-        Column col = queryMaker.findColumn(c, qual, false);
-        String fqn = col.getFullQuotedName();
-        columns.put(fqn, col);
-        columnsSpecified.put(fqn, queryMaker.getCanonicalColumnName(c, qual));
-        Set<String> set = columnsPerQual.get(qual);
-        if (set == null) {
-            columnsPerQual.put(qual, set = new HashSet<String>());
-        }
-        set.add(fqn);
-        return fqn;
-    }
-
     public int multiref = 1;
-
-    public List<String> errorMessages = new LinkedList<String>();
 
     @Override
     public void displayRecognitionError(String[] tokenNames,
             RecognitionException e) {
-        errorMessages.add(getErrorMessage(e, tokenNames));
+        queryMaker.errorMessages.add(getErrorMessage(e, tokenNames));
     }
 }
 
@@ -126,37 +95,37 @@ select_list
 }:
       STAR
         {
-            select_what.add(referToColumn(Property.ID, null)); // TODO
+            select_what.add(queryMaker.referToColumn(Property.ID, null)); // TODO
         }
     | ^(LIST (select_sublist { select_what.add($select_sublist.sql); })+)
     ;
 
-select_sublist returns [String sql]:
-      value_expression column_name?
+select_sublist returns [String sql, List<Serializable> params]:
+      v=value_expression column_name?
         {
-            $sql = $value_expression.sql;
+            $sql = $v.sql;
+            $params = $v.params;
         }
     | qualifier DOT STAR
         {
-            $sql = referToColumn(Property.ID, $qualifier.qual); // TODO
+            $sql = queryMaker.referToColumn(Property.ID, $qualifier.qual); // TODO
+            $params = new LinkedList<Serializable>();
         }
     ;
 
-value_expression returns [String sql]:
-      column_reference
-        {
-            $sql = $column_reference.sql;
-        }
+value_expression returns [String sql, List<Serializable> params]:
+      c=column_reference { $sql = $c.sql; $params = $c.params; }
 //    | string_value_function
 //    | numeric_value_function
     ;
 
-column_reference returns [String sql]:
+column_reference returns [String sql, List<Serializable> params]:
     ^(COL qualifier? column_name)
       {
           String c = $column_name.start.getText();
           String qual = $qualifier.qual;
-          $sql = referToColumn(c, qual);
+          $sql = queryMaker.referToColumn(c, qual);
+          $params = new LinkedList<Serializable>();
       }
     ;
 
@@ -171,10 +140,11 @@ multi_valued_column_reference returns [Column col, String qual, String mqual]:
       }
     ;
 
-qualifier returns [String qual]:
+qualifier returns [String qual, List<Serializable> params]:
       table_name
         {
             $qual = $table_name.text;
+            $params = new LinkedList<Serializable>();
         }
 //    | correlation_name
     ;
@@ -228,10 +198,11 @@ join_specification returns [String col1, String col2]:
       }
     ;
 
-where_clause returns [String sql]:
+where_clause returns [String sql, List<Serializable> params]:
       ^(WHERE search_condition)
         {
             select_where = $search_condition.sql;
+            select_where_params = $search_condition.params;
         }
     | /* nothing */
         {
@@ -239,72 +210,51 @@ where_clause returns [String sql]:
         }
     ;
 
-search_condition returns [String sql]
+search_condition returns [String sql, List<Serializable> params]:
+    b1=boolean_term { $sql = $b1.sql; $params = $b1.params; }
+    (OR b2=boolean_term { $sql += " OR " + $b2.sql; $params.addAll($b2.params); } )*
+    ;
+
+boolean_term returns [String sql, List<Serializable> params]:
+    b1=boolean_factor { $sql = $b1.sql; $params = $b1.params; }
+    (AND b2=boolean_factor { $sql += " AND " + $b2.sql; $params.addAll($b2.params); } )*
+    ;
+
+boolean_factor returns [String sql, List<Serializable> params]:
+      b=boolean_test { $sql = $b.sql; $params = $b.params; }
+    | NOT b=boolean_test { $sql = "NOT " + $b.sql; $params = $b.params; }
+    ;
+
+boolean_test returns [String sql, List<Serializable> params]:
+      p=predicate { $sql = $p.sql; $params = $p.params; }
+    | LPAR s=search_condition RPAR { $sql = "(" + $s.sql + ")"; $params = $s.params; }
+    ;
+
+predicate returns [String sql, List<Serializable> params]
 @init {
-    List<String> sqls = new ArrayList<String>();
+    List<Object> literals = new ArrayList<Object>();
 }:
-      boolean_term
-        {
-            $sql = $boolean_term.sql;
-        }
-    | ^(OR (boolean_term {sqls.add($boolean_term.sql);})+)
-        {
-            $sql = StringUtils.join(sqls, " OR ");
-        }
-    ;
-
-boolean_term returns [String sql]
-@init {
-    List<String> sqls = new ArrayList<String>();
-}:
-      boolean_factor
-        {
-            $sql = $boolean_factor.sql;
-        }
-    | ^(AND (boolean_factor {sqls.add($boolean_factor.sql);})+)
-        {
-            $sql = StringUtils.join(sqls, " AND ");
-        }
-    ;
-
-boolean_factor returns [String sql]:
-      boolean_test
-        {
-            $sql = $boolean_test.sql;
-        }
-    | ^(NOT boolean_test)
-        {
-            $sql = "(NOT " + $boolean_test.sql + ")";
-        }
-    ;
-
-boolean_test returns [String sql]:
-      predicate
-        {
-            $sql = $predicate.sql;
-        }
-//    | search_condition
-    ;
-
-predicate returns [String sql]:
       ^(UN_OP un_op un_arg)
         {
+            String op;
             int token = $un_op.start.getType();
             switch (token) {
                 case IS_NULL:
-                    $sql = $un_arg.sql + " IS NULL";
+                    op = " IS NULL";
                     break;
                 case IS_NOT_NULL:
-                    $sql = $un_arg.sql + " IS NOT NULL";
+                    op = " IS NOT NULL";
                     break;
                 default:
                     throw new UnwantedTokenException(token, input);
             }
+            $sql = $un_arg.sql + op;
+            $params = $un_arg.params;
         }
     | ^(BIN_OP bin_op arg1=bin_arg arg2=bin_arg)
         {
-            int token = $bin_op.start.getType();
             String op;
+            int token = $bin_op.start.getType();
             switch (token) {
                 case EQ:
                     op = "=";
@@ -334,11 +284,13 @@ predicate returns [String sql]:
                     throw new UnwantedTokenException(token, input);
             }
             $sql = "(" + $arg1.sql + " " + op + " " + $arg2.sql + ")";
+            $params = $arg1.params;
+            $params.addAll($arg2.params);
         }
     | ^(BIN_OP_ANY bin_op_any bin_arg mvc=multi_valued_column_reference)
         {
-            int token = $bin_op_any.start.getType();
             String op;
+            int token = $bin_op_any.start.getType();
             boolean neg;
             switch (token) {
                 case EQ:
@@ -374,19 +326,44 @@ predicate returns [String sql]:
                 realTableName, tableAlias,
                 hierMainId, multiMainId,
                 col.getFullQuotedName(), op, $bin_arg.sql);
+            $params = $bin_arg.params;
         }
-//    | text_search_predicate
-//    | folder_predicate
+    | ^(FUNC func_name (literal { literals.add($literal.value); })*)
+        {
+            String qual;
+            String arg;
+            if (literals.size() == 2) {
+                qual = (String) literals.get(0);
+                arg = (String) literals.get(1);
+            } else {
+                qual = null;
+                arg = (String) literals.get(0);
+            }
+            List<Serializable> params = new LinkedList<Serializable>();
+            int func = $func_name.start.getType();
+            switch (func) {
+                case IN_FOLDER:
+                    $sql = queryMaker.getInFolderSql(qual, arg, params);
+                    break;
+                case IN_TREE:
+                    $sql = queryMaker.getInTreeSql(qual, arg, params);
+                    break;
+                case CONTAINS:
+                    $sql = queryMaker.getContainsSql(qual, arg, params);
+                    break;
+                case ID:
+                default:
+                    throw new UnwantedTokenException(func, input);
+            }
+            $params = params;
+        }
     ;
 
 un_op:
     IS_NULL | IS_NOT_NULL;
 
-un_arg returns [String sql]:
-    column_reference
-      {
-          $sql = $column_reference.sql;
-      }
+un_arg returns [String sql, List<Serializable> params]:
+    c=column_reference { $sql = $c.sql; $params = $c.params; }
     ;
 
 bin_op:
@@ -395,37 +372,40 @@ bin_op:
 bin_op_any:
     EQ | NEQ | IN | NOT_IN;
 
-bin_arg returns [String sql]
-@init {
-    List<String> sqls = new ArrayList<String>();
-}:
-      value_expression
+bin_arg returns [String sql, List<Serializable> params]:
+      v=value_expression { $sql = $v.sql; $params = $v.params; }
+    | l=literal
         {
-            $sql = $value_expression.sql;
+          $sql = "?";
+          $params = new LinkedList<Serializable>(Collections.singleton($l.value));
         }
-    | literal
-        {
-            $sql = $literal.sql;
-        }
-    | ^(LIST (literal {sqls.add($literal.sql);})+)
-        {
-            $sql = StringUtils.join(sqls, ", ");
-        }
+    | ^(LIST
+         l1=literal
+           {
+             $sql = "?";
+             $params = new LinkedList<Serializable>(Collections.singleton($l1.value));
+           }
+         (l2=literal
+           {
+             $sql += ", ?";
+             $params.add($l2.value);
+           }
+         )*
+       )
     ;
 
-literal returns [String sql]:
+func_name:
+    IN_FOLDER | IN_TREE | CONTAINS | ID;
+
+literal returns [Serializable value]:
       NUM_LIT
         {
-            $sql = Long.valueOf($NUM_LIT.text).toString();
+            $value = Long.valueOf($NUM_LIT.text);
         }
     | STRING_LIT
         {
             String s = $STRING_LIT.text;
-            s = s.substring(1, s.length() - 1);
-            // TODO use query parameters to avoid injection attacks
-            // escape SQL string
-            s = s.replace("'", "''").replace("\\", "\\\\");
-            $sql = "'" + s + "'";
+            $value = s.substring(1, s.length() - 1);
         }
     ;
 

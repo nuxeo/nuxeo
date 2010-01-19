@@ -464,6 +464,14 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         col = spi.query(query, false, null, null);
         assertEquals(1, col.size());
 
+        query = "SELECT cmis:objectId, dc:DESCRIPTION" //
+                + " FROM cmis:document" //
+                + " WHERE dc:title = 'testfile1_Title'"
+                + " AND dc:description <> 'argh'"
+                + " AND dc:coverage <> 'zzzzz'";
+        col = spi.query(query, false, null, null);
+        assertEquals(1, col.size());
+
         it = col.iterator();
         ob = it.next();
         assertEquals("testfile1_description", ob.getValue("dc:description"));
@@ -546,15 +554,19 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         assertEquals(file3.getId(), ob.getValue("B.cmis:objectId"));
     }
 
-    public void TODOtestQueryFulltext() throws Exception {
+    public void testQueryFulltext() throws Exception {
         Collection<CMISObject> res;
         res = conn.query(
-                "SELECT * FROM cmis:document WHERE CONTAINS('restaurant')",
+                "SELECT * FROM cmis:document WHERE CONTAINS('testfile2_Title')",
                 false);
         assertEquals(1, res.size());
+        res = conn.query(
+                "SELECT * FROM cmis:document WHERE NOT CONTAINS('testfile2_Title')",
+                false);
+        assertEquals(3, res.size());
     }
 
-    public void TODOtestQueryInTree() throws Exception {
+    public void testQueryInTree() throws Exception {
         String folder1id = spi.getObjectByPath("/testfolder1", null).getId();
         String folder2id = spi.getObjectByPath("/testfolder2", null).getId();
 
@@ -598,8 +610,8 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         assertEquals(1, res.size());
     }
 
-    // FIXME
-    public void XXXtestQuerySecurity() throws Exception {
+    // TODO connect as different user with AtomPub
+    public void TODOtestQuerySecurity() throws Exception {
         String query;
         Collection<ObjectEntry> col;
 
@@ -636,8 +648,7 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         assertEquals(1, col.size());
     }
 
-    // FIXME
-    public void XXXtestQuerySecurityPolicy() throws Exception {
+    public void testQuerySecurityPolicy() throws Exception {
         deployContrib("org.nuxeo.ecm.core.query.test",
                 "OSGI-INF/security-policy-contrib.xml");
 
@@ -656,9 +667,10 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         col = spi.query(query, false, null, null);
         assertEquals(1, col.size());
 
-        query = "SELECT D.cmis:ObJeCtTyPeId FROM cmis:document D";
-        col = spi.query(query, false, null, null);
-        assertEquals(1, col.size());
+        // TODO column aliases through AtomPub
+        // query = "SELECT D.cmis:ObJeCtTyPeId FROM cmis:document D";
+        // col = spi.query(query, false, null, null);
+        // assertEquals(1, col.size());
     }
 
 }
