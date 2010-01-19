@@ -28,6 +28,10 @@
           <field schema="filter_query" name="topic" />
         </predicate>        
 
+        <predicate parameter="ecm:path" operator="STARTSWITH">
+          <field schema="filter_query" name="ecm_path" />
+        </predicate>
+
         <fixedPart>
           ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:mixinType != 'Folderish'
         </fixedPart>
@@ -41,6 +45,14 @@
       <sortAscending>
         <field schema="filter_query" name="sortAscending" />
       </sortAscending>
+    </queryModel>
+
+    <queryModel name="IMPORT_FOLDERS">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:primaryType = 'Folder' AND ecm:path STARTSWITH '/default-domain/import-sets'
+      </pattern>
+      <sortable value="true" defaultSortColumn="dc:title"
+        defaultSortAscending="true" />
     </queryModel>
 
   </extension>

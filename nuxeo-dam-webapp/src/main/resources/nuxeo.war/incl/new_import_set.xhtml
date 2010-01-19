@@ -40,7 +40,7 @@
         onclick="processInProgress()"
         data="#{facesContext.maximumSeverity.ordinal ge 2}"
         oncomplete="if (data) { hideWaiter() } else { processFinished() };"
-        reRender="filterResultTable, selectionView, importset_form"/>
+        reRender="filterFormPanel, filterResultTable, selectionView, importset_form"/>
 
       <a4j:commandButton styleClass="button"
         value="#{messages['command.cancel']}" action="#{importActions.cancel}"

@@ -35,6 +35,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
+import org.nuxeo.dam.platform.context.ImportActionsBean;
 import org.nuxeo.dam.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -49,6 +50,7 @@ import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeManager;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeNode;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 
@@ -72,6 +74,8 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
 
     protected static final String DOCTYPE_FIELD_XPATH = "filter_query:ecm_primaryType";
 
+    protected static final String PATH_FIELD_XPATH = "filter_query:ecm_path";
+
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
@@ -87,8 +91,14 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
     @In(create = true)
     protected DocumentActions documentActions;
 
+    @In(create = true)
+    protected ResourcesAccessor resourcesAccessor;
+
     @RequestParameter
     protected String docType;
+
+    @RequestParameter
+    protected String folderPath;
 
     protected DocumentModel filterDocument;
 
@@ -146,6 +156,32 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
 
     public List<DirectoryTreeNode> getTopicTreeRoots() {
         return directoryTreeManager.get(TOPIC_DIRECTORY_TREE).getChildren();
+    }
+
+    @Factory(value = "folderSelectItems", scope = ScopeType.EVENT)
+    public List<SelectItem> getFolderSelectItems() throws ClientException {
+        DocumentModel filterDocument = getFilterDocument();
+        String folderSelection = (String) filterDocument.getPropertyValue(PATH_FIELD_XPATH);
+        List<SelectItem> items = new ArrayList<SelectItem>();
+        items.add(new SelectItem("All", resourcesAccessor.getMessages().get(
+                "label.type.All"), "", folderSelection == null));
+        DocumentModelList docs = queryModelActions.get("IMPORT_FOLDERS").getDocuments(
+                documentManager);
+        for (DocumentModel doc : docs) {
+            String docPath = doc.getPathAsString();
+            items.add(new SelectItem(docPath, doc.getTitle(), "", docPath.equals(folderSelection)));
+        }
+        return items;
+    }
+
+    public void toggleSelectFolder() throws ClientException {
+        DocumentModel filterDocument = getFilterDocument();
+        if ("All".equals(folderPath)) {
+            filterDocument.setPropertyValue(PATH_FIELD_XPATH, null);
+        } else {
+            filterDocument.setPropertyValue(PATH_FIELD_XPATH, folderPath);
+        }
+        invalidateProvider();
     }
 
     public PagedDocumentsProvider getResultsProvider(String queryModelName)

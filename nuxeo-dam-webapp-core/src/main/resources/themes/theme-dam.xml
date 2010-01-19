@@ -755,6 +755,9 @@
       <selector path=".selected">
         <background-color>#d9e3ef</background-color>
       </selector>
+      <selector path=".folderFilter">
+        <width>100%</width>
+      </selector>
     </style>
     <style element="page[1]/section[2]/cell[2]" inherit="common style">
       <selector path="" view="cell frame">

@@ -20,9 +20,9 @@ package org.nuxeo.dam.platform.context;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
+
 import javax.faces.application.FacesMessage;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
@@ -93,10 +92,7 @@ public class ImportActionsBean implements Serializable {
 
     public DocumentModel getNewImportSet() throws ClientException {
         if (newImportSet == null) {
-            Map<String, Object> context = new HashMap<String, Object>();
-            context.put(CoreEventConstants.PARENT_PATH, IMPORTSET_ROOT_PATH);
-            newImportSet = documentManager.createDocumentModel(BATCH_TYPE_NAME,
-                    context);
+            newImportSet = documentManager.createDocumentModel(BATCH_TYPE_NAME);
         }
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
@@ -117,14 +113,23 @@ public class ImportActionsBean implements Serializable {
         return newImportSet;
     }
 
+    protected DocumentModel createContainerFolder(String title) throws ClientException {
+        DocumentModel folder = documentManager.createDocumentModel(IMPORTSET_ROOT_PATH, IdUtils.generateId(title), "Folder");
+        folder.setPropertyValue("dc:title", title);
+        folder = documentManager.createDocument(folder);
+        documentManager.save();
+        return folder;
+    }
+
     public String createImportSet() throws Exception {
         String title = (String) newImportSet.getProperty("dublincore", "title");
         if (title == null) {
             title = "";
         }
+        DocumentModel folder = createContainerFolder(title);
         String name = IdUtils.generateId(title);
         // set parent path and name for document model
-        newImportSet.setPathInfo(IMPORTSET_ROOT_PATH, name);
+        newImportSet.setPathInfo(folder.getPathAsString(), name);
         try {
             newImportSet = documentManager.createDocument(newImportSet);
             if (blob != null) {
