@@ -5,7 +5,6 @@
   <Require feature="settitle" />
   <Require feature="dynamic-height" />
   </ModulePrefs>
-  <UserPref name="title" datatype="string" default_value="Note" display_name="Titre"/>
   <UserPref name="textFont" display_name="Police du texte" default_value="courier" datatype="enum">
     <EnumValue value="courier" display_value="courier" />
     <EnumValue value="arial" display_value="arial" />

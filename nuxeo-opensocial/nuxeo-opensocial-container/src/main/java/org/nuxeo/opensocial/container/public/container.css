@@ -9,6 +9,11 @@
   margin-left: 88%;
 }
 
+.form-separator {
+  margin-left:-12px;
+ margin-bottom: 5px;
+}
+
 #gwtContainerMask {
   position: absolute;
   width: 100%;

@@ -34,6 +34,7 @@ import org.nuxeo.ecm.spaces.api.Univers;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -72,17 +73,17 @@ public class UniversWebObject extends DefaultObject {
     }
 
     @GET
-    public Object doGet() {
+    public Response doGet() {
         List<Space> spaces;
         try {
             spaces = getSpaces();
             if (spaces.size() > 0) {
-                return newObject("Space", spaces.get(0));
+                return redirect(getPath()+"/" +spaces.get(0).getName());
             } else {
                 throw new WebResourceNotFoundException("No space found for this universe");
             }
         } catch (Exception e) {
-            return Response.status(404).build();
+            throw new WebResourceNotFoundException(e.getMessage(),e);
         }
 
     }
@@ -105,7 +106,7 @@ public class UniversWebObject extends DefaultObject {
      * @return
      */
     @Path("{spacename}")
-    public Object doGetSpace(@PathParam("spacename") String spacename) {
+    public Resource doGetSpace(@PathParam("spacename") String spacename) {
         getContext().getRequest().setAttribute("currentUnivers", this.univers);
         try {
 
@@ -115,7 +116,7 @@ public class UniversWebObject extends DefaultObject {
 
             Space space = spaceManager.getSpace(spacename, this.univers, coreSession);
             if(space == null) {
-                return Response.status(404).build();
+                throw new WebResourceNotFoundException("No space " + spacename + " found");
             }
             return newObject("Space",space);
 

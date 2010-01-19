@@ -12,8 +12,6 @@
     <Require feature="datepicker" />
     <Require feature="tablesorter" />
   </ModulePrefs>
-  <UserPref name="title" display_name="Title" required="false"
-    default_value="Mes Taches" />
   <UserPref name="todolist" default_value="" datatype="hidden" />
   <Content type="html">
     <![CDATA[

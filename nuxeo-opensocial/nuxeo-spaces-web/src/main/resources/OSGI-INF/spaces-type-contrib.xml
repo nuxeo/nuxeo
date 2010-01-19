@@ -27,11 +27,13 @@
       </layouts>
     </type>
 
+        <!--
     <type id="Workspace">
       <subtypes>
         <type>Space</type>
       </subtypes>
     </type>
+        -->
 
   </extension>
 </component>

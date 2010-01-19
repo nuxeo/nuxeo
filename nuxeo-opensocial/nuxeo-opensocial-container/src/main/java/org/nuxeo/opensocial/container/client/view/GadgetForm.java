@@ -36,9 +36,9 @@ import com.gwtext.client.widgets.event.WindowListenerAdapter;
 import com.gwtext.client.widgets.form.FormPanel;
 
 /**
- *
+ * 
  * @author Guillaume Cusnieux
- *
+ * 
  */
 public class GadgetForm {
 
@@ -65,10 +65,9 @@ public class GadgetForm {
     form.setWidth("100%");
     form.setFrame(true);
     createFields(form);
-
+    this.setTitle(title);
     window.clear();
     window.add(form);
-    window.setTitle(MESSAGES.preferencesGadget((title != null) ? title : ""));
     window.setWidth(400);
     window.setModal(true);
     window.show();
@@ -84,13 +83,16 @@ public class GadgetForm {
 
   private FormPanel createFields(FormPanel form) {
     addFields(form, this.gadget.getDefaultPrefs());
+    Panel p = new Panel("", "");
+    p.addClass("form-separator");
+    form.add(p);
     addFields(form, this.gadget.getUserPrefs());
     return addButtons(form);
   }
 
-  private void addFields(FormPanel form, List<PreferencesBean> prefs) {
+  private void addFields(Panel p, List<PreferencesBean> prefs) {
     for (PreferencesBean b : prefs) {
-      form.add(InputFactory.getInstance()
+      p.add(InputFactory.getInstance()
           .createField(portlet, b));
     }
   }
@@ -127,7 +129,7 @@ public class GadgetForm {
 
   public void setTitle(String title) {
     this.title = title;
-    window.setTitle(title);
+    window.setTitle(MESSAGES.preferencesGadget((title != null) ? title : ""));
   }
 
   public void setGadget(GadgetBean gadget) {

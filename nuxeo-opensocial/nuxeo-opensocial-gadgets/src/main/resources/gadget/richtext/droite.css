@@ -1,0 +1,26 @@
+#picture{
+ width:100%;
+}
+
+#pictureContainer{
+width:49%;
+padding:0 1%;
+float:right;
+}
+
+#text{
+ float:right;
+ width:49%;
+}
+
+#title{
+  width:100%;
+  color:#13506B;
+  font-size:14px;
+  font-weight:bold;
+}
+
+span{
+ display:block;
+ text-align:center;
+}

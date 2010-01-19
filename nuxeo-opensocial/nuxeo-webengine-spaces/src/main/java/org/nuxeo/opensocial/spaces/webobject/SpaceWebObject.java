@@ -108,7 +108,6 @@ public class SpaceWebObject extends DefaultObject {
             if (this.space == null)
                 throw new Exception("Space argument can't be null");
 
-            // JIRA WEB-279 => now use RequestAttribute
             injectTheme();
 
         } catch (Exception e) {

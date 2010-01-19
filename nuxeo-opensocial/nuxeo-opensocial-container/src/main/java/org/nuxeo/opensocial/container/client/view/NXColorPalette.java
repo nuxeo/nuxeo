@@ -9,6 +9,11 @@ public class NXColorPalette extends ColorPalette {
     overrideHandleClick();
   }
 
+  @Override
+  public void select(String color) {
+    super.select(color == null ? "none" : color);
+  };
+
   public static native void overrideHandleClick()
   /*-{
     $wnd.Ext.override($wnd.Ext.ColorPalette, {
@@ -23,6 +28,7 @@ public class NXColorPalette extends ColorPalette {
         }
     }
     });
-  }-*/;
+    
+   }-*/;
 
 }

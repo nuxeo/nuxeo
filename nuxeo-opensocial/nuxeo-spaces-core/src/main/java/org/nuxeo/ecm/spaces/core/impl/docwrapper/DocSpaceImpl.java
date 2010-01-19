@@ -310,24 +310,24 @@ public class DocSpaceImpl implements Space {
     session.save();
   }
 
-public String getProviderName() throws ClientException {
-    SpaceManager sm;
-    try {
-        sm = Framework.getService(SpaceManager.class);
-    } catch (Exception e) {
-        throw new SpaceException("Unable to get Space Manager",e);
-    }
-    List<SpaceProvider> providers = sm.getSpacesProviders();
-    for(SpaceProvider provider : providers) {
-    	try {
-			if (provider.getSpace(this.getName(), this.session()) != null) {
-				return sm.getProviderName(provider);
-			}
-		} catch (SpaceNotFoundException e) {
-			LOGGER.warn("space " + getName() + " not found in " + provider);
-		}
-    }
-	return null;
-}
+  public String getProviderName() throws ClientException {
+	  SpaceManager sm;
+	  try {
+		  sm = Framework.getService(SpaceManager.class);
+	  } catch (Exception e) {
+		  throw new SpaceException("Unable to get Space Manager",e);
+	  }
+	  List<SpaceProvider> providers = sm.getSpacesProviders();
+	  for(SpaceProvider provider : providers) {
+		  try {
+			  if (provider.getSpace(this.getName(), this.session()) != null) {
+				  return sm.getProviderName(provider);
+			  }
+		  } catch (SpaceNotFoundException e) {
+//			LOGGER.warn("space " + getName() + " not found in " + provider);
+		  }
+	  }
+	  return null;
+  }
 
 }

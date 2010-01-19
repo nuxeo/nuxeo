@@ -14,7 +14,6 @@
      <Require feature="flash" />
   </ModulePrefs>
   
-  <UserPref name="title" datatype="hidden"/>
   <UserPref name="id" datatype="hidden"/>
   
   <Content type="html" view="default">
