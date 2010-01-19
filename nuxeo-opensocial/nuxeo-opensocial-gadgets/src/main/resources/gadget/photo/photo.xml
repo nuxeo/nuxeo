@@ -107,7 +107,6 @@
      <div style="text-align:center;margin:auto;" id="pictureContainer">
        <img id="loader" src="/nuxeo/img/standart_waiter.gif"/>
 
-      <div id="legend"></div>
     </div>
     <div id="perm">
     <div id="show"><a href="#">Modifier</a></div>

@@ -60,14 +60,14 @@ jQuery(document).ready(function(){
 function saveHtml(){
   var html = jQuery('.nicEdit-main').html();
   gadgets.nuxeo.setHtmlContent(html, function(content){
+  	savePrefs();
   });
 };
 
 function savePrefs(){
   prefs.set("richTitle",val("title-field"),
   "link",val("link-field"),
-  "legend",val("legend-field"),
-  "place",jQuery("input[name='place']:checked").val());
+  "legend",val("legend-field"));
 };
 
 function val(id){

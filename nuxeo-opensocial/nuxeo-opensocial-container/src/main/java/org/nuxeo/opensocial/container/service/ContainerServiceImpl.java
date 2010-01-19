@@ -78,9 +78,12 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
   public GadgetBean saveGadgetPreferences(GadgetBean gadget, String form,
       Map<String, String> gwtParams) throws ContainerServiceException {
     try {
-      Map<String, String> updatePrefs = getParameters(form);
-      if (updatePrefs.containsKey("title"))
-        gadget.setTitle(updatePrefs.get("title"));
+      Map<String, String> updatePrefs = null;
+      if (form != null) {
+        updatePrefs = getParameters(form);
+        if (updatePrefs.containsKey("title"))
+          gadget.setTitle(updatePrefs.get("title"));
+      }
       return Framework.getService(FactoryManager.class)
           .getGadgetFactory()
           .savePreferences(gadget, updatePrefs, gwtParams);
@@ -197,8 +200,6 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
    * @return Map of parameters key : name, value : result
    */
   private Map<String, String> getParameters(String form) {
-    if (form == null)
-      return null;
     StringTokenizer params = new StringTokenizer(form, "&");
     Map<String, String> map = new HashMap<String, String>();
     while (params.hasMoreTokens()) {

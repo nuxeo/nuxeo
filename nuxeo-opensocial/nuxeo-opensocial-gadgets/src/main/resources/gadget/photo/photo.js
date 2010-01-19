@@ -101,6 +101,8 @@ function loadImage(id){
 
         jQuery("#pictureContainer").append(imgContainer);
         jQuery("#photo").attr("src", photoUrl);
+        jQuery("#pictureContainer").append("<span id=\"legend\"></span>");
+        jQuery("#legend").text(gadgets.util.unescapeString(prefs.getString("legend")));
         jQuery("#photo").width("100%");
         showImage();
       }

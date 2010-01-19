@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
@@ -59,7 +58,6 @@ public class DocSpaceImpl implements Space {
     this.doc = doc;
   }
 
-
   public String getLayout() throws ClientException {
     return (String) doc.getPropertyValue(SPACE_LAYOUT);
 
@@ -74,7 +72,7 @@ public class DocSpaceImpl implements Space {
         .equals(getId());
   }
 
-  public String getTheme() throws  ClientException {
+  public String getTheme() throws ClientException {
     return (String) doc.getPropertyValue(SPACE_THEME);
   }
 
@@ -115,15 +113,12 @@ public class DocSpaceImpl implements Space {
     return result;
   }
 
-  public Gadget getGadget(String gadgetName) throws ClientException {
-    DocumentModelList gadgets = doc.getCoreSession()
-        .getChildren(doc.getRef(), DocGadgetImpl.TYPE);
-    for (DocumentModel doc : gadgets) {
-      Gadget g = doc.getAdapter(Gadget.class);
-      if (g != null && g.getName()
-          .equals(gadgetName)) {
-        return g;
-      }
+  public Gadget getGadget(String id) throws ClientException {
+    CoreSession session = doc.getCoreSession();
+    IdRef docRef = new IdRef(id);
+    if (session.exists(docRef)) {
+      DocumentModel document = session.getDocument(docRef);
+      return document.getAdapter(Gadget.class);
     }
     return null;
   }
@@ -311,23 +306,23 @@ public class DocSpaceImpl implements Space {
   }
 
   public String getProviderName() throws ClientException {
-	  SpaceManager sm;
-	  try {
-		  sm = Framework.getService(SpaceManager.class);
-	  } catch (Exception e) {
-		  throw new SpaceException("Unable to get Space Manager",e);
-	  }
-	  List<SpaceProvider> providers = sm.getSpacesProviders();
-	  for(SpaceProvider provider : providers) {
-		  try {
-			  if (provider.getSpace(this.getName(), this.session()) != null) {
-				  return sm.getProviderName(provider);
-			  }
-		  } catch (SpaceNotFoundException e) {
-//			LOGGER.warn("space " + getName() + " not found in " + provider);
-		  }
-	  }
-	  return null;
+    SpaceManager sm;
+    try {
+      sm = Framework.getService(SpaceManager.class);
+    } catch (Exception e) {
+      throw new SpaceException("Unable to get Space Manager", e);
+    }
+    List<SpaceProvider> providers = sm.getSpacesProviders();
+    for (SpaceProvider provider : providers) {
+      try {
+        if (provider.getSpace(this.getName(), this.session()) != null) {
+          return sm.getProviderName(provider);
+        }
+      } catch (SpaceNotFoundException e) {
+        // LOGGER.warn("space " + getName() + " not found in " + provider);
+      }
+    }
+    return null;
   }
 
 }
