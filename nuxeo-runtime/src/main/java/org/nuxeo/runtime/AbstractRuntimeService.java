@@ -50,6 +50,12 @@ import org.osgi.framework.Bundle;
  */
 public abstract class AbstractRuntimeService implements RuntimeService {
 
+    /**
+     * Property that controls whether or not to redirect JUL to JCL.
+     * By default is true (JUL will be redirected)  
+     */
+    public static final String REDIRECT_JUL = "org.nuxeo.runtime.redirectJUL";
+    
     private static final Log log = LogFactory.getLog(RuntimeService.class);
 
     protected boolean isStarted = false;
@@ -101,7 +107,9 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     public synchronized void start() throws Exception {
         if (!isStarted) {
-            JavaUtilLoggingHelper.redirectToApacheCommons();
+            if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "true"))) {
+                JavaUtilLoggingHelper.redirectToApacheCommons();
+            }
             log.info("Starting Nuxeo Runtime service " + getName() + "; version: "
                     + getVersion());
             //NXRuntime.setInstance(this);
