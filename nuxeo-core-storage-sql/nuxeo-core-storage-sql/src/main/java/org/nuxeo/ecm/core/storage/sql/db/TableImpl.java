@@ -110,7 +110,6 @@ public class TableImpl implements Table {
         Column column = new Column(this, physicalName, type, key, model);
         columns.put(name, column);
         return column;
-
     }
 
     /**
