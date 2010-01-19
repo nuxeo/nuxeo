@@ -38,9 +38,6 @@
 
     _IG_RegisterOnloadHandler( function() {
       prefs = new _IG_Prefs(__MODULE_ID__);
-      _IG_SetTitle(prefs.getString("title"));
-
-
 
       var todoliststring = prefs.getString("todolist").replace(/&#34;/g, "\"");
       if (todoliststring == "")

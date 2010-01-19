@@ -15,7 +15,7 @@ public class NXEventCallback implements EventCallback {
   }
 
   public void execute(EventObject e) {
-    gp.setTitle(field.getValueAsString());
+    gp.setPortletTitle(field.getValueAsString());
   }
 
 }

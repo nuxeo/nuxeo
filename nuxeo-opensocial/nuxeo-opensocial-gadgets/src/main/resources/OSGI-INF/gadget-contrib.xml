@@ -22,12 +22,12 @@
       <icon>photo_icon.png</icon>
     </internalGadget>
     
-    <!-- <internalGadget name="flash">
+   <internalGadget name="flash">
       <mountPoint>/flash</mountPoint>
       <entryPoint>flash.xml</entryPoint>
-      <category>Multimedia</category>
+      <category>gadget.category.utilities</category>
       <icon>flash_icon.png</icon>
-    </internalGadget>-->
+    </internalGadget>
     
     <internalGadget name="todolist">
       <mountPoint>/todolist</mountPoint>

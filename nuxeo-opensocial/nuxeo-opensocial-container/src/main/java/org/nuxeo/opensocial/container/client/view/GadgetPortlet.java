@@ -144,6 +144,14 @@ public class GadgetPortlet extends Portlet {
     }
   }
 
+  public void setPortletTitle(String title) {
+    if (title != null) {
+      super.setTitle(title);
+      if (this.form != null)
+        this.form.setTitle(title);
+    }
+  }
+
   public void reloadRenderUrl() {
     String url = gadget.getRenderUrl();
     if (url == null) {
@@ -280,5 +288,9 @@ public class GadgetPortlet extends Portlet {
   /*-{
     $wnd.jQuery("#"+id).find("span.x-panel-header-text").css("color","");
   }-*/;
+
+  public void renderTitle() {
+    this.setTitle(this.gadget.getTitle());
+  }
 
 }

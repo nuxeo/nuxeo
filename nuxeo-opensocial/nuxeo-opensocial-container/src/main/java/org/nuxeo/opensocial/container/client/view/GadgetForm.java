@@ -111,6 +111,7 @@ public class GadgetForm {
     cancel.addListener(new ButtonListenerAdapter() {
       public void onClick(Button button, EventObject e) {
         portlet.renderDefaultPreferences();
+        portlet.renderTitle();
         window.close();
       }
     });

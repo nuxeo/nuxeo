@@ -7,7 +7,7 @@
       <Require feature="settitle" />
       <Require feature="json" />
   </ModulePrefs>
-  <UserPref name="COLOR_bgcolor" display_name="Couleur des cellules" default_value="#000000" datatype="enum" >
+  <UserPref name="COLOR_bgcolor" display_name="Couleur des cellules" default_value="#none" datatype="enum" >
     <EnumValue display_value="ref" value="FF0000"/>
     <EnumValue display_value="pink" value="FF0066"/>
     <EnumValue display_value="orange" value="FF6600"/>
@@ -16,6 +16,7 @@
     <EnumValue display_value="gray" value="999999"/>
     <EnumValue display_value="light gray" value="CCCCCC"/>
     <EnumValue display_value="white" value="FFFFFF"/>
+    <EnumValue display_value="none" value="none"/>
   </UserPref>
   <UserPref name="bookmarks" default_value="" datatype="hidden"/>
   <Content type="html">
@@ -25,7 +26,6 @@
 
     _IG_RegisterOnloadHandler( function() {
       prefs = new _IG_Prefs(__MODULE_ID__);
-      _IG_SetTitle(prefs.getString("title"));
 
       var bookmarksstring = prefs.getString("bookmarks").replace(/&#34;/g, "\"");
       if (bookmarksstring == "")

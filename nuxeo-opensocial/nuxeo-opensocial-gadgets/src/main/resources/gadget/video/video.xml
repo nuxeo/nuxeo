@@ -100,7 +100,6 @@
       <script type="text/javascript" language="javascript" src="video.js"></script>
       <script type="text/javascript">
         var prefs = new _IG_Prefs(__MODULE_ID__);
-        _IG_SetTitle(prefs.getString("title"));
         gadgets.util.registerOnLoadHandler( function() {
 	       gadgets.nuxeo.getHtmlContent(function(content) {
 	         launchVideoWidget(content);
@@ -123,7 +122,7 @@
         <table style="width:100%" id="formVideo">
           <tr>
             <td style="width:30%">
-              <label>Titre : </label>
+              <label>Titre</label>
             </td>
             <td style="width:70%">
               <input type="text" name="title" id="title-field" value="">
@@ -131,7 +130,7 @@
           </tr>
           <tr>
             <td style="width:30%">
-              <label>Balise Video : </label>
+              <label>Balise Video</label>
             </td>
             <td style="width:70%">
                <textarea name="baliseVideo" id="baliseVideo"></textarea>

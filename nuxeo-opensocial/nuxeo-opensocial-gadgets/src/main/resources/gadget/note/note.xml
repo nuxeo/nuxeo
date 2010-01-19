@@ -85,7 +85,6 @@
     _IG_RegisterOnloadHandler(
     function loadNode__MODULE_ID__() {
       prefs__MODULE_ID__ = new _IG_Prefs(__MODULE_ID__);
-      _IG_SetTitle(prefs__MODULE_ID__.getString("title"));
       var tcolor = prefs__MODULE_ID__.getString("pickr-txtColor");
       var tsize = prefs__MODULE_ID__.getString("textSize");
       var text = prefs__MODULE_ID__.getString("txtNote");

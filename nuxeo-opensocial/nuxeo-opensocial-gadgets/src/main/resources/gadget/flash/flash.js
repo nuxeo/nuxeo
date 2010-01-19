@@ -38,13 +38,9 @@ jQuery(document).ready(function(){
 		gadgets.window.adjustHeight();
 	});
 	
-	if(prefs.getString("id")!=""){
-		loadFlash(prefs.getString("id"));
-	} else {
-		gadgets.nuxeo.getGadgetId(function(id) {
-			prefs.set("id",id);			
-		});
-	} 
+	gadgets.nuxeo.getGadgetId(function(id) {
+		loadFlash(prefs.getString("id"));		
+	});
 	
 	});
 }	
