@@ -33,7 +33,7 @@
 			    <c:if test="#{!documentActions.currentSelection.hasSchema('video') and !documentActions.currentSelection.hasSchema('audio')}">
 			    <a href="#" onclick="return popupAnnotation('#{annotationsActions.annotationsURL}')">
 			
-			      <c:if test="#{documentActions.currentSelection.hasSchema('picture')}">
+			      <c:if test="#{documentActions.currentSelection.hasSchema('picture') and documentActions.currentSelection.picture.views.size > 0}">
 			        <c:choose>
 			          <c:when test="#{documentActions.currentSelection.picture.views[0].width gt documentActions.currentSelection.picture.views[0].height}">
 			            <c:choose>
