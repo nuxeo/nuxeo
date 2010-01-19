@@ -329,7 +329,8 @@ Custom build
 ------------
 
 It is of course possible to create custom builds.
-For history reasons, there are multiple technologies used for packaging in this 
+
+For historical reasons, there are multiple technologies used for packaging in this 
 project (maven-assembly-plugin, maven-nuxeo-plugin, maven-antrun-extended-plugin,
 nuxeo-distribution-tools). 
 
@@ -337,10 +338,14 @@ They are all based on Maven principles with the objectives to avoid duplication,
 ease maintenance and upgrade, rely on Maven artifacts, be OS independant.
 
 We recommmend to use our newest tool "nuxeo-distribution-tools".
+
 Execution of the assembly may be done from Maven execution as a Maven plugin, 
 from command line or from Ant.
+
 Based on Ant syntax, it provides access to major Maven concepts.
+
 Principles of an assembly are generally to: 
+
 * retrieve a Maven dependency tree
 * use this dependency tree to dispatch artifacts into directories
 * download complementary artifacts (default packaging, resources, ...)
