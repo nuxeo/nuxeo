@@ -10,6 +10,7 @@ import org.nuxeo.opensocial.container.client.bean.ValuePair;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
+import com.gwtext.client.core.ListenerConfig;
 import com.gwtext.client.data.SimpleStore;
 import com.gwtext.client.data.Store;
 import com.gwtext.client.widgets.BoxComponent;
@@ -40,7 +41,7 @@ public class InputFactory {
 
   }
 
-  private static final int PREF_WIDTH_FIELD = 210;
+  private static final int PREF_WIDTH_FIELD = 232;
 
   private static final ContainerConstants CONSTANTS = GWT.create(ContainerConstants.class);
   private final static ContainerMessages MESSAGES = GWT.create(ContainerMessages.class);
@@ -79,14 +80,17 @@ public class InputFactory {
 
   private class NXField extends TextField {
 
-    public NXField(GadgetPortlet gp, PreferencesBean bean) {
+    public NXField(final GadgetPortlet gp, PreferencesBean bean) {
       this.setLabel(bean.getDisplayName());
       this.setName(bean.getName());
       this.setWidth(PREF_WIDTH_FIELD);
       if (bean.getName()
-          .equals("title"))
+          .equals("title")) {
         this.setValue(gp.getTitle());
-      else
+        ListenerConfig config = new ListenerConfig();
+        config.setDelay(200);
+        this.addKeyPressListener(new NXEventCallback(gp, this), config);
+      } else
         this.setValue(getPrefValue(bean));
 
     }

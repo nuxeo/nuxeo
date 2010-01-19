@@ -138,7 +138,6 @@ public class GadgetService {
   }-*/;
 
   public static void setTitleToGadget(String frameId, String title) {
-    JsLibrary.log("set title " + title + " to " + frameId);
     if (title != null) {
       GadgetPortlet p = ContainerEntryPoint.getContainerPortal()
           .getGadgetPortletByFrameId(frameId);
