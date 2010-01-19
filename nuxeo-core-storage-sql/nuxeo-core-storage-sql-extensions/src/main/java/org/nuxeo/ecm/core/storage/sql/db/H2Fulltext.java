@@ -612,6 +612,12 @@ public class H2Fulltext {
             if (newRow != null) {
                 insert(newRow);
             }
+            try {
+                // need to flush otherwise some unit tests don't pass
+                indexWriter.flush();
+            } catch (IOException e) {
+                throw convertException(e);
+            }
         }
 
         private void insert(Object[] row) throws SQLException {

@@ -249,7 +249,8 @@ public class DialectH2 extends Dialect {
         String queryTable = String.format(
                 "NXFT_SEARCH('%s', ?) %%s ON %s = %%<s.KEY", fullIndexName,
                 mainColumn.getFullQuotedName());
-        return new String[] { queryTable, fulltextQuery, null, null };
+        String whereExpr = "%s.KEY IS NOT NULL";
+        return new String[] { queryTable, fulltextQuery, whereExpr, null };
     }
 
     @Override

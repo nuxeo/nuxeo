@@ -1341,12 +1341,19 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node root = session.getRootNode();
         Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
         node.setSingleProperty("tst:title", "hello world");
+        node = session.addChildNode(root, "bar", null, "TestDoc", false);
+        node.setSingleProperty("tst:title", "barbar");
         session.save();
         DatabaseHelper.DATABASE.sleepForFulltext();
 
         // Note that MySQL is buggy and doesn't return answers on "hello", doh!
-        PartialList<Serializable> res = session.query(
+        PartialList<Serializable> res;
+        res = session.query(
                 "SELECT * FROM TestDoc WHERE ecm:fulltext = \"world\"",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE NOT (ecm:fulltext = \"world\")",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());
     }

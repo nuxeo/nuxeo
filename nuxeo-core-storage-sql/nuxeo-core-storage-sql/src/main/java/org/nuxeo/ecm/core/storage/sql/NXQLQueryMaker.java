@@ -442,8 +442,8 @@ public class NXQLQueryMaker implements QueryMaker {
             if (info.wherePredicate != null) {
                 info.wherePredicate.accept(whereBuilder);
                 // JOINs added by fulltext queries
-                joins.addAll(whereBuilder.joins);
-                joinsParams.addAll(whereBuilder.joinsParams);
+                leftJoins.addAll(whereBuilder.joins);
+                leftJoinsParams.addAll(whereBuilder.joinsParams);
                 // WHERE clause
                 String where = whereBuilder.buf.toString();
                 if (where.length() != 0) {
@@ -1290,13 +1290,9 @@ public class NXQLQueryMaker implements QueryMaker {
                     joinsParams.add(joinParam);
                 }
             }
-            if (whereExpr != null) {
-                buf.append(String.format(whereExpr, joinAlias));
-                if (whereParam != null) {
-                    whereParams.add(whereParam);
-                }
-            } else {
-                buf.append("1=1"); // we still need an expression in the tree
+            buf.append(String.format(whereExpr, joinAlias));
+            if (whereParam != null) {
+                whereParams.add(whereParam);
             }
         }
 
