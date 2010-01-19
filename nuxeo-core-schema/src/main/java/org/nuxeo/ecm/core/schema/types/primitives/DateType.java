@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.schema.utils.DateParser;
 // TODO this should be renamed to TimestampType
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DateType extends PrimitiveType {
 

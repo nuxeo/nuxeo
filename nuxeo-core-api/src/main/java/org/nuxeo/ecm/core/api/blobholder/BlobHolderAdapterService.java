@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
  *
  * @author tiry
  * @author Anahide Tchertchian
- *
  */
 public interface BlobHolderAdapterService {
 

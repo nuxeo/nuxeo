@@ -23,9 +23,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
- * Interface to follow when defining a way to get a blob that is not stored at
+ * Interface to implement when defining a way to get a {@link Blob} that is not stored at
  * the usual place handled by the repository.
- *
  * <p>
  * This is done storing a string instead of a blob, using a prefix that makes it
  * possible to find the adapter in charge of retrieving the file. It makes it
@@ -37,7 +36,6 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
  * retrieve the actual file for this adapter.
  *
  * @author Anahide Tchertchian
- *
  */
 public interface ExternalBlobAdapter extends Serializable {
 

@@ -23,15 +23,13 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
  * Abstract class for external blob adapters.
- *
  * <p>
  * Provides generic methods
  * <p>
  * Extend this class if you want your contributions to be robust to interface
- * changes
+ * changes.
  *
  * @author Anahide Tchertchian
- *
  */
 public abstract class AbstractExternalBlobAdapter implements
         ExternalBlobAdapter {

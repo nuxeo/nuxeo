@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.schema.types.Schema;
  * A document part is the root of a property tree which is specified by a schema
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface DocumentPart extends Property {
 

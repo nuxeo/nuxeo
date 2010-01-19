@@ -66,7 +66,7 @@ public interface PermissionProvider {
 
     /**
      * @param perm the name of a registered compound permission
-     * @return the list of permission names of sub permission of 'perm'
+     * @return the list of permission names of sub-permissions of 'perm'
      * @throws ClientException if 'perm' is not a registered permission
      */
     String[] getSubPermissions(String perm) throws ClientException;

@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.schema.types.PrimitiveType;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public final class DoubleType extends PrimitiveType {
 

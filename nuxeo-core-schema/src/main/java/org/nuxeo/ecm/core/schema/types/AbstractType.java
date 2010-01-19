@@ -29,7 +29,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @SuppressWarnings({ "SuppressionAnnotation" })
 public abstract class AbstractType implements Type {

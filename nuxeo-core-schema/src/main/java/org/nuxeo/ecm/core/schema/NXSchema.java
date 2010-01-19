@@ -22,8 +22,9 @@ package org.nuxeo.ecm.core.schema;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Helper to get the {@link SchemaManager} service.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class NXSchema {
 

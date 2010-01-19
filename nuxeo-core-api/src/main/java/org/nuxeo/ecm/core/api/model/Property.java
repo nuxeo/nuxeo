@@ -33,10 +33,10 @@ import org.nuxeo.ecm.core.schema.types.Type;
 /**
  * Document properties are instances of document schema fields.
  * <p>
- * You can say that a {@link Field} object is like a Java class and a {@link
- * Property} object like ia class instance. Thus, schemas defines fields (or
+ * You can say that a {@link Field} object is like a Java class and a Property
+ * object like ia class instance. Thus, schemas defines fields (or
  * elements) which have a name and a type, and each field of a document can be
- * instantiated (if the schema permits) as a {@link Property} object.
+ * instantiated (if the schema permits) as a Property object.
  * <p>
  * Properties are always bound to a schema field that provides the type and
  * constraints on the property values. An exception is the root property the
@@ -62,11 +62,13 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * possibility to use different compatible objects when setting or getting
  * property values. Each property implementation will automatically convert the
  * given value into a normalized one; so internally only the normalized value is
- * stored. For example for date properties you may use either <code>Date</code>
- * or <code>Calendar</code> when setting or retrieving a property value but
+ * stored.
+ * <p>
+ * For example, for date properties you may use either <code>Date</code>
+ * or <code>Calendar</code> when setting or retrieving a property value, but
  * the normalized value will be the <code>Calendar</code> one.
  * <p>
- * As we seen properties keep some state flags. Property flags can be divided in
+ * As we have seen, properties keep some state flags. Property flags can be divided in
  * two groups:
  * <ul>
  * <li> Dirty Flags - that reflect the public status of the document
