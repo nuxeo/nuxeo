@@ -19,7 +19,7 @@ package org.nuxeo.ecm.platform.tag;
  * Aggregates the weight with the tag holder. Note that usually the tag cloud
  * is generated considering the public/private flags.
  * <p>
- * We can basically define 2 types of clouds: “vote” and “popularity”. The first
+ * We can basically define 2 types of clouds: "vote" and "popularity". The first
  * is counting how many times a tag was applied on a document by different
  * users (votes), while the second counts how many documents in a particular
  * domain were tagged with a particular tag, aiming to measure the tag

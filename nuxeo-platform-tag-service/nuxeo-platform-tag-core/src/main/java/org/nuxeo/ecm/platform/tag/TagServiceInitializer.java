@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.com>"
- *
  */
 public class TagServiceInitializer extends RepositoryInitializationHandler {
 

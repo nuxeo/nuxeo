@@ -104,7 +104,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
                 enabled = true;
             } else {
                 enabled = false;
-                log.info("Default repository does not support Tag feature : Tag service won't be available.");
+                log.warn("Default repository does not support Tag feature : Tag service won't be available.");
             }
         } catch (Exception e) {
             enabled = false;
@@ -114,7 +114,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
                 try {
                     lc.logout();
                 } catch (LoginException e) {
-                    log.error("Error durint Framework.logout", e);
+                    log.error("Error during Framework.logout", e);
                     e.printStackTrace();
                 }
             }

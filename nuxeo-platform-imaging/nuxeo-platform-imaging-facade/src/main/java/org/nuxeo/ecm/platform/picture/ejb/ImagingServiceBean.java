@@ -38,7 +38,6 @@ import org.nuxeo.runtime.api.Framework;
  * Enable EJB remoting for the local nuxeo-runtime service
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Stateless
 @Remote(ImagingService.class)

@@ -150,10 +150,6 @@ public class TaggingProvider {
 
     /**
      * Returns author of a tagging based on docId and the tagLabel.
-     *
-     * @param docId
-     * @param tagLabel
-     * @return
      */
     @SuppressWarnings("unchecked")
     public String getTaggingId(String docId, String tagLabel, String author) {
@@ -241,14 +237,13 @@ public class TaggingProvider {
      *
      * @param docId the UUID of the tagged document
      * @param tagId the UUID of the tag document
-     *
-     * @return true in case the deleting was successful or false otherwise.
      */
     public void removeAllTagging(String docId, String tagId) {
         if (log.isDebugEnabled()) {
             log.debug("removeTagging() with targetId " + docId + " and tagId " + tagId);
         }
-        Query query = em.createQuery("DELETE FROM Tagging tagging " + "WHERE tagging.targetDocument.id=:targetId AND  tagging.tag.id=:tagId");
+        Query query = em.createQuery("DELETE FROM Tagging tagging "
+                + "WHERE tagging.targetDocument.id=:targetId AND tagging.tag.id=:tagId");
         query.setParameter("targetId", docId);
         query.setParameter("tagId", tagId);
         query.executeUpdate();
@@ -273,11 +268,6 @@ public class TaggingProvider {
      * {@link WeightedTag}. The private tags or tagging are not selected, but
      * the ones owned by the user. It gets the tags and the number of documents
      * they are applied on the list of documents received as argument.
-     *
-     * @param documents
-     * @param userName
-     * @return
-     * @throws ClientException
      */
     @SuppressWarnings("unchecked")
     public List<WeightedTag> getPopularCloud(DocumentModelList documents, String userName) {
@@ -358,12 +348,7 @@ public class TaggingProvider {
     }
 
     /**
-     * Checks if a particular tag was applied on specified daocument by user.
-     *
-     * @param tagId
-     * @param docId
-     * @param userName
-     * @return
+     * Checks if a particular tag was applied on specified document by user.
      */
     public boolean existTagging(String tagId, String docId, String userName) {
         if (log.isDebugEnabled()) {

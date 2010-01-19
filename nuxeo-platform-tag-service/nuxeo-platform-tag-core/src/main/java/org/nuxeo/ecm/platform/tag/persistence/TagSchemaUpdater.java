@@ -44,8 +44,6 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.cfg.Settings;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.DialectFactory;
-import org.hibernate.dialect.Oracle10gDialect;
-import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.ejb.packaging.PersistenceMetadata;
 import org.hibernate.ejb.packaging.PersistenceXmlLoader;
 import org.hibernate.impl.SessionImpl;
@@ -134,7 +132,7 @@ public class TagSchemaUpdater {
     }
 
     public void update() {
-        String dataSource = connectionProperties.getProperty("hibernate.connection.datasource"); 
+        String dataSource = connectionProperties.getProperty("hibernate.connection.datasource");
         // change JNDI name prefix if needed
         if (dataSource != null) {
             dataSource = DataSourceHelper.getDataSourceJNDIName(dataSource);

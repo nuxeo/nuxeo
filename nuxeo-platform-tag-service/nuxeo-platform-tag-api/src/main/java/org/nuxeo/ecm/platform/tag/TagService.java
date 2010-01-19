@@ -24,8 +24,11 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
  * The Tag Service interface. It gathers the entire service API. The available
- * capabilities are: <li>list the tags, either related or not to a document <li>
- * create tags and taggings <li>obtain tag cloud
+ * capabilities are:
+ * <ul>
+ * <li>list the tags, either related or not to a document
+ * <li>create tags and taggings <li>obtain tag cloud
+ * </ul>
  * <p>
  * As general rule, the flag private / public is always applied. It could be
  * ignored in the future: just simplify the queries. The service is using super
@@ -200,7 +203,6 @@ public interface TagService {
      */
     List<WeightedTag> getPopularCloudOnAllDocuments(CoreSession session) throws ClientException;
 
-
     /**
      * Tags a document.
      * <p>
@@ -250,11 +252,11 @@ public interface TagService {
     List<String> listDocumentsForTag(CoreSession session, String tagId,
             String user) throws ClientException;
 
-
     /**
      * Defines if tag service is enable.
      *
      * @return true is the underlying repository supports tag feature.
      */
     boolean isEnabled() throws ClientException;
+
 }
