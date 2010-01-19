@@ -48,10 +48,18 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
      * You can overwrite this to add your own pom artifacts in the graph
      * @param app
      */
-    protected void configureBuild(NuxeoApp app) {
-        //app.getMaven().getGraph().addRootNode("org.my:my-artifact:1.0:pom").expand(1, null);
+    protected void initializeGraph(NuxeoApp app) {
+        //app.addPom("org.my", "my-artifact", "1.0", 1);
     }
 
+    protected void buildDone(NuxeoApp app) {
+        
+    }
+    
+    protected void aboutToStartFramework(NuxeoApp app) {
+        
+    }    
+    
     /**
      * You can overwrite this add custom initialization after nuxeo started
      * @param app
@@ -59,6 +67,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
     protected void frameworkStarted(NuxeoApp app) {
         // do nothing
     }
+    
     
     /**
      * Get a custom configuration for the Nuxeo to build.
@@ -105,7 +114,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         String hostParam = config.getInitParameter("host");
         String portParam = config.getInitParameter("port");
         String profileParam = config.getInitParameter("profile");
-        String versionParam = config.getInitParameter("version");
+        String updatePolicy = config.getInitParameter("updatePolicy");
         
         String redirectPrefix = config.getInitParameter("redirectPrefix");
         String redirectTrace = config.getInitParameter("redirectTrace");
@@ -114,8 +123,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         File home = null;
         String host = hostParam == null ? "localhost" : null;
         int port = portParam == null ? 8081 : Integer.parseInt(portParam);
-        String version = versionParam == null ? "5.3.1-SNAPSHOT" : versionParam;
-        String profile = profileParam == null ? NuxeoApp.CORE_SERVER :profileParam;
+        String profile = profileParam == null ? NuxeoApp.CORE_SERVER_531 :profileParam;
         if (homeParam == null) {
             String userDir = System.getProperty("user.home");
             String sep = userDir.endsWith("/") ? "" : "/";
@@ -123,14 +131,6 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         } else {
             homeParam = StringUtils.expandVars(homeParam, System.getProperties());
             home = new File(homeParam);
-        }
-
-        if (cfg == null) {
-            cfg = NuxeoLauncher.class.getResource(profile+".cfg");
-            if (cfg == null) {
-                throw new ServletException("Unknown build profile: "+profile);
-            }
-            profile = null;
         }
         
         // start redirect service
@@ -147,7 +147,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         }
         
         System.out.println("+---------------------------------------------------------");
-        System.out.println("| Nuxeo Server Profile: "+(profile==null?"custom":profile)+"; version: "+version);
+        System.out.println("| Nuxeo Server Profile: "+(profile==null?"custom":profile));
         System.out.println("| Home Directory: "+home);
         System.out.println("| HTTP server at: "+host+":"+port);
         System.out.println("+---------------------------------------------------------\n");
@@ -156,19 +156,23 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         
         try {
             MyNuxeoApp app = new MyNuxeoApp(home);
+            if (updatePolicy != null) {
+                app.setUpdatePolicy(updatePolicy);
+            }
             if (cfg == null) {
-                app.build(profile, version, useCache());
+                app.build(profile, useCache());
             } else {
-                app.build(cfg, version, useCache());
+                app.build(cfg, useCache());
             }
             app.start();
-            frameworkStarted(app);
             return app;
         } catch (Exception e) {
             throw new ServletException(e);
         }
 
     }
+    
+    
     
   
     public class MyNuxeoApp extends NuxeoApp {
@@ -181,7 +185,22 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         @Override
         protected void initializeGraph() throws Exception {
             super.initializeGraph();
-            configureBuild(this);
+            NuxeoLauncher.this.initializeGraph(this);
+        }
+        @Override
+        protected void aboutToStartFramework() throws Exception {
+            super.aboutToStartFramework();
+            NuxeoLauncher.this.aboutToStartFramework(this);
+        }
+        @Override
+        protected void buildDone() {
+            super.buildDone();
+            NuxeoLauncher.this.buildDone(this);
+        }
+        @Override
+        protected void frameworkStarted() throws Exception {
+            super.frameworkStarted();
+            NuxeoLauncher.this.frameworkStarted(this);
         }
     }
     
