@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * URlBuilder is builder of gadget url; Util for render of gadget into Shinding
  * opensocial server
- * 
+ *
  */
 public class UrlBuilder {
 
@@ -114,7 +114,7 @@ public class UrlBuilder {
     }
 
     // #rpctoken=123415
-    sb.append("#" + RPC_TOKEN + "=" + gadget.getId());
+    sb.append("&" + RPC_TOKEN + "=" + gadget.getId());
 
     return sb.toString();
 
@@ -123,7 +123,7 @@ public class UrlBuilder {
   /**
    * Get Gadget Definition with GadgetService Gadget Definition is google xml
    * gadget
-   * 
+   *
    * @param name
    * @return
    * @throws Exception
@@ -143,7 +143,7 @@ public class UrlBuilder {
   /**
    * Build a url format parameters with preferences of gadget Util for render
    * gadget into Shinding opensocial server
-   * 
+   *
    * @param prefs
    * @return String &up_key=value&up..
    */

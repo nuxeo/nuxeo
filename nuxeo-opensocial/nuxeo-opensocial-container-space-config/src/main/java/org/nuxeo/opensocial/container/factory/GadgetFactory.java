@@ -2,6 +2,7 @@ package org.nuxeo.opensocial.container.factory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.apache.shindig.gadgets.spec.View;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -38,13 +39,17 @@ public class GadgetFactory {
   }
 
   private static String getTitle(Gadget gadget) throws ClientException {
-    if (gadget.getPref(GadgetManagerImpl.TITLE_KEY_PREF) != null)
-      return gadget.getPref(GadgetManagerImpl.TITLE_KEY_PREF);
-    else if (gadget.getTitle() != null && !gadget.getTitle()
+    if (gadget.getTitle() != null && !gadget.getTitle()
         .equals(""))
-      return gadget.getTitle();
+      return _getTitleWithoutKey(gadget.getTitle());
     else
-      return gadget.getName();
+      return _getTitleWithoutKey(gadget.getName());
+
+  }
+
+  private static String _getTitleWithoutKey(String title) {
+    StringTokenizer st = new StringTokenizer(title, ".");
+    return st.nextToken();
   }
 
   private static Map<String, GadgetView> createGadgetViews(Gadget gadget) {

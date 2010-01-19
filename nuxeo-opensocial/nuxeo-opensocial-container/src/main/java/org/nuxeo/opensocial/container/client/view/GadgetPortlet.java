@@ -136,6 +136,7 @@ public class GadgetPortlet extends Portlet {
   public void setTitle(String title) {
     if (title != null) {
       super.setTitle(title);
+      this.gadget.setTitle(title);
       if (this.form != null)
         this.form.setTitle(title);
       if (this.tools != null)
