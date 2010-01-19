@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.event.Event;
@@ -311,7 +312,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         }
     }
 
-    protected void endTask(DocumentModel document, NuxeoPrincipal currentUser, CoreSession session, String comment, PublishingEvent event)
+    protected void endTask(DocumentModel document, NuxeoPrincipal currentUser,
+            CoreSession session, String comment, PublishingEvent event)
             throws PublishingException {
         try {
             List<TaskInstance> tis = getJbpmService().getTaskInstances(
@@ -325,14 +327,16 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                     break;
                 }
             }
-
-            DocumentModel sourceDocument = session.getDocument(new IdRef(document.getSourceId()));
-            DocumentModel liveDocument = session.getDocument(new IdRef(sourceDocument.getSourceId()));
+            GetsProxySourceDocumentsUnrestricted runner = new GetsProxySourceDocumentsUnrestricted(
+                    session, document);
+            runner.runUnrestricted();
             Map<String, Serializable> properties = new HashMap<String, Serializable>();
-            if (initiator != null){
-                properties.put(NotificationConstants.RECIPIENTS_KEY, new String[] { initiator });
+            if (initiator != null) {
+                properties.put(NotificationConstants.RECIPIENTS_KEY,
+                        new String[] { initiator });
             }
-            notifyEvent(event.name(), properties, comment, null, liveDocument, session);
+            notifyEvent(event.name(), properties, comment, null,
+                    runner.liveDocument, session);
         } catch (NuxeoJbpmException e) {
             throw new PublishingException(e);
         } catch (ClientException ce) {
@@ -427,4 +431,28 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         return hasValidationTask(proxy, currentUser);
     }
 
+    
+    private class GetsProxySourceDocumentsUnrestricted extends
+            UnrestrictedSessionRunner {
+
+        public DocumentModel liveDocument;
+
+        private DocumentModel sourceDocument;
+
+        private DocumentModel document;
+
+        public GetsProxySourceDocumentsUnrestricted(CoreSession session,
+                DocumentModel proxy) {
+            super(session);
+            this.document = proxy;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            sourceDocument = session.getDocument(new IdRef(
+                    document.getSourceId()));
+            liveDocument = session.getDocument(new IdRef(
+                    sourceDocument.getSourceId()));
+        }
+    }
 }

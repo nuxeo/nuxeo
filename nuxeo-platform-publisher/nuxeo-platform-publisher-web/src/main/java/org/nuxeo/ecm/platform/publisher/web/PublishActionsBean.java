@@ -420,8 +420,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
                 currentDocument, documentManager);
         PublishedDocument publishedDocument = tree.wrapToPublishedDocument(currentDocument);
         tree.validatorRejectPublication(publishedDocument, publishingComment);
-        DocumentModel sourceDocument = documentManager.getDocument(publishedDocument.getSourceDocumentRef());
-
+        
+        
         FacesContext context = FacesContext.getCurrentInstance();
         String comment = publishingComment != null
                 && publishingComment.length() > 0 ? ComponentUtils.translate(
@@ -430,16 +430,16 @@ public class PublishActionsBean extends AbstractPublishActions implements
                 publishingComment) : ComponentUtils.translate(context,
                 "publishing.rejected.without.comment", tree.getConfigName(),
                 publishedDocument.getParentPath());
-        notifyEvent(PublishingEvent.documentPublicationRejected.name(), null,
-                comment, null, sourceDocument);
+       RejectWithoutRestrictionRunner runner = new RejectWithoutRestrictionRunner(
+                documentManager, publishedDocument, comment);
 
-        DocumentModel liveVersion = documentManager.getDocument(new IdRef(
-                sourceDocument.getSourceId()));
-        if (!sourceDocument.getRef().equals(liveVersion.getRef())) {
-            notifyEvent(PublishingEvent.documentPublicationRejected.name(),
-                    null, comment, null, liveVersion);
+        if (documentManager.hasPermission(
+                publishedDocument.getSourceDocumentRef(),
+                SecurityConstants.READ)) {
+            runner.run();
+        } else {
+            runner.runUnrestricted();
         }
-
         Events.instance().raiseEvent(EventNames.DOCUMENT_PUBLICATION_REJECTED);
 
         return navigationContext.navigateToRef(navigationContext.getCurrentDocument().getParentRef());
@@ -665,4 +665,40 @@ public class PublishActionsBean extends AbstractPublishActions implements
         publishingComment = null;
     }
 
+    class RejectWithoutRestrictionRunner extends UnrestrictedSessionRunner {
+
+        PublishedDocument publishedDocument;
+
+        DocumentModel sourceDocument;
+
+        DocumentModel liveDocument;
+
+        String comment;
+
+        DocumentModel liveVersion;
+
+        public RejectWithoutRestrictionRunner(CoreSession session,
+                PublishedDocument publishedDocument, String comment) {
+            super(session);
+            this.publishedDocument = publishedDocument;
+            this.comment = comment;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            sourceDocument = session.getDocument(publishedDocument.getSourceDocumentRef());
+            liveVersion = session.getDocument(new IdRef(
+                    sourceDocument.getSourceId()));
+            notifyRejectToSourceDocument();
+        }
+
+        private void notifyRejectToSourceDocument() throws ClientException {
+            notifyEvent(PublishingEvent.documentPublicationRejected.name(),
+                    null, comment, null, sourceDocument);
+            if (!sourceDocument.getRef().equals(liveVersion.getRef())) {
+                notifyEvent(PublishingEvent.documentPublicationRejected.name(),
+                        null, comment, null, liveVersion);
+            }
+        }
+    }
 }
