@@ -324,7 +324,7 @@ public String getProviderName() throws ClientException {
 				return sm.getProviderName(provider);
 			}
 		} catch (SpaceNotFoundException e) {
-			LOGGER.warn("space " + getName() + " not found in " + provider);
+//			LOGGER.warn("space " + getName() + " not found in " + provider);
 		}
     }
 	return null;
