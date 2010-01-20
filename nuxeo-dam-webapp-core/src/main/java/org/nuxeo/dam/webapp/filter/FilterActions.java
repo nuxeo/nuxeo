@@ -35,7 +35,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
-import org.nuxeo.dam.platform.context.ImportActionsBean;
 import org.nuxeo.dam.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -109,6 +108,7 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
         return filterDocument;
     }
 
+    @SuppressWarnings("unchecked")
     @Factory(value = "docTypeSelectItems", scope = ScopeType.EVENT)
     public List<SelectItem> getDocTypeSelectItems() throws ClientException {
         DocumentModel filterDocument = getFilterDocument();

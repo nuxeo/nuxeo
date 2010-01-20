@@ -33,6 +33,22 @@
   <a4j:form id="importset_form"
     ajaxSingle="true" enctype="multipart/form-data">
     <nxl:documentLayout mode="create" value="#{importActions.newImportSet}" />
+
+    <table class="dataInput">
+      <tbody>
+        <tr>
+          <td class="labelColumn">
+            <h:outputText value="#{messages['label.widget.importfolder']}" />
+          </td>
+          <td class="fieldColumn">
+            <h:selectOneMenu value="#{importActions.importFolder}">
+              <f:selectItems value="#{importActions.importFolders}" />
+            </h:selectOneMenu>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
     <p class="buttonsGadget">
 
       <a4j:commandButton id="importSetFormOk" styleClass="button"

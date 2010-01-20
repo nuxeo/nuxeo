@@ -19,9 +19,12 @@ package org.nuxeo.dam.platform.context;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,11 +40,14 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
@@ -79,9 +85,14 @@ public class ImportActionsBean implements Serializable {
     @In(create = true)
     protected Context eventContext;
 
+    @In(create = true)
+    protected transient QueryModelActions queryModelActions;
+
     protected FileManager fileManagerService;
 
     protected Blob blob;
+
+    protected String importFolderId;
 
     protected FileManager getFileManagerService() throws Exception {
         if (fileManagerService == null) {
@@ -126,10 +137,16 @@ public class ImportActionsBean implements Serializable {
         if (title == null) {
             title = "";
         }
-        DocumentModel folder = createContainerFolder(title);
+        DocumentModel importFolder;
+        if (importFolderId == null) {
+            importFolder = createContainerFolder(title);
+            importFolderId = importFolder.getId();
+        } else {
+            importFolder = documentManager.getDocument(new IdRef(importFolderId));
+        }
         String name = IdUtils.generateId(title);
         // set parent path and name for document model
-        newImportSet.setPathInfo(folder.getPathAsString(), name);
+        newImportSet.setPathInfo(importFolder.getPathAsString(), name);
         try {
             newImportSet = documentManager.createDocument(newImportSet);
             if (blob != null) {
@@ -191,6 +208,25 @@ public class ImportActionsBean implements Serializable {
             log.trace('[' + getClass().getSimpleName() + "] " + someLogString
                     + " NULL DOC");
         }
+    }
+
+    public List<SelectItem> getImportFolders() throws ClientException {
+        List<SelectItem> items = new ArrayList<SelectItem>();
+        items.add(new SelectItem(null, ""));
+        DocumentModelList docs = queryModelActions.get("IMPORT_FOLDERS").getDocuments(
+                documentManager);
+        for (DocumentModel doc : docs) {
+            items.add(new SelectItem(doc.getId(), doc.getTitle()));
+        }
+        return items;
+    }
+
+    public String getImportFolder() {
+        return importFolderId;
+    }
+
+    public void setImportFolder(String importFolder) {
+        this.importFolderId = importFolder;
     }
 
 }
