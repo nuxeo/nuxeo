@@ -1133,13 +1133,4 @@
     </pluginRepository>
   </pluginRepositories>
 
-  <!-- NXP-4272 - don't use timestamp -->
-  <distributionManagement>
-    <snapshotRepository>
-      <id>nuxeo-snapshot</id>
-      <url>http://maven.nuxeo.org/nexus/content/repositories/nuxeo-snapshot</url>
-      <uniqueVersion>false</uniqueVersion>
-    </snapshotRepository>
-  </distributionManagement>
-
 </project>
