@@ -378,6 +378,9 @@ public class UserManagerImpl implements UserManager {
             // Create a default admin if needed
             if (administratorIds != null && administratorIds.contains(username)) {
                 admin = true;
+                if (administratorGroups != null) {
+                    virtualGroups.addAll(administratorGroups);
+                }
             }
         }
 

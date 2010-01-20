@@ -10,6 +10,10 @@
           <property name="firstName">Anonymous</property>
           <property name="lastName">Coward</property>
         </anonymousUser>
+        <virtualUser id="tehroot">
+          <property name="firstName">The</property>
+          <property name="lastName">Root</property>
+        </virtualUser>
         <virtualUser id="ClassicAdministrator" searchable="false">
           <password>secret</password>
           <property name="firstName">Classic</property>

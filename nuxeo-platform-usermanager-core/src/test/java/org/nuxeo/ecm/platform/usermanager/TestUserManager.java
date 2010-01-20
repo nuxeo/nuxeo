@@ -80,7 +80,6 @@ public class TestUserManager extends NXRuntimeTestCase {
     public void testExistingSetup() throws Exception {
         NuxeoPrincipal principal = userManager.getPrincipal("Administrator");
         List<String> groups = principal.getGroups();
-
         assertTrue(groups.contains("administrators"));
     }
 
@@ -102,6 +101,39 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertEquals("Guest", principal.getName());
         assertEquals("Anonymous", principal.getFirstName());
         assertEquals("Coward", principal.getLastName());
+        assertNull(principal.getCompany());
+    }
+
+    public void testGetAdministrator() throws Exception {
+        NuxeoPrincipal principal = userManager.getPrincipal("tehroot");
+        assertNotNull(principal);
+        assertTrue(principal.isAdministrator());
+        assertTrue(principal.isMemberOf("administrators"));
+        assertTrue(principal.isMemberOf("defgr"));
+        assertFalse(principal.isMemberOf("myAdministrators"));
+        assertEquals("tehroot", principal.getName());
+        assertEquals("The", principal.getFirstName());
+        assertEquals("Root", principal.getLastName());
+        assertNull(principal.getCompany());
+    }
+
+    public void testGetAdministratorOverride() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                "test-usermanagerimpl/userservice-override-config.xml");
+        // user manager is recomputed after deployment => refetch it
+        userManager = userService.getUserManager();
+
+        NuxeoPrincipal principal = userManager.getPrincipal("tehroot");
+        assertNotNull(principal);
+        assertTrue(principal.isAdministrator());
+        // no administrators groups anymore
+        assertFalse(principal.isMemberOf("administrators"));
+        assertTrue(principal.isMemberOf("defgr"));
+        // new administrators group as virtual
+        assertTrue(principal.isMemberOf("myAdministrators"));
+        assertEquals("tehroot", principal.getName());
+        assertEquals("The", principal.getFirstName());
+        assertEquals("Root", principal.getLastName());
         assertNull(principal.getCompany());
     }
 

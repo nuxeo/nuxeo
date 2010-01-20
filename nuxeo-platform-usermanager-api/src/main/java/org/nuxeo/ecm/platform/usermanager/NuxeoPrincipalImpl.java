@@ -341,19 +341,26 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
             String groupName = groupsToProcess.remove(0);
             if (!checkedGroups.contains(groupName)) {
                 checkedGroups.add(groupName);
-                if (virtualGroups.contains(groupName)) {
-                    resultingGroups.add(groupName);
-                } else if (userManager != null) {
-                    NuxeoGroup nxGroup = userManager.getGroup(groupName);
-                    if (nxGroup == null) {
-                        // XXX this should only happens in case of inconsistency
-                        // in DB
+                NuxeoGroup nxGroup = null;
+                if (userManager != null) {
+                    nxGroup = userManager.getGroup(groupName);
+                }
+                if (nxGroup == null) {
+                    if (virtualGroups.contains(groupName)) {
+                        // just add the virtual group as is
+                        resultingGroups.add(groupName);
+                    } else if (userManager != null) {
+                        // XXX this should only happens in case of
+                        // inconsistency in DB
                         log.error("User " + getName() + " references the "
                                 + groupName + " group that does not exists");
-                    } else {
-                        groupsToProcess.addAll(nxGroup.getParentGroups());
-                        resultingGroups.add(groupName);
                     }
+                } else {
+                    groupsToProcess.addAll(nxGroup.getParentGroups());
+                    resultingGroups.add(groupName);
+                    // XXX: maybe remove group from virtual groups if it
+                    // actually exists? otherwise it would be ignored when
+                    // setting groups
                 }
             }
         }
