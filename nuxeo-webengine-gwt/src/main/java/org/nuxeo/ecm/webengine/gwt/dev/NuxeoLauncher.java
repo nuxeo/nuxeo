@@ -115,6 +115,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         String portParam = config.getInitParameter("port");
         String profileParam = config.getInitParameter("profile");
         String updatePolicy = config.getInitParameter("updatePolicy");
+        String offline = config.getInitParameter("offline");
         
         String redirectPrefix = config.getInitParameter("redirectPrefix");
         String redirectTrace = config.getInitParameter("redirectTrace");
@@ -150,6 +151,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         System.out.println("| Nuxeo Server Profile: "+(profile==null?"custom":profile));
         System.out.println("| Home Directory: "+home);
         System.out.println("| HTTP server at: "+host+":"+port);
+        System.out.println("| Use cache: "+useCache()+"; Snapshot update policy: "+updatePolicy+"; offline: "+offline);
         System.out.println("+---------------------------------------------------------\n");
 
         NuxeoApp.setHttpServerAddress(host, port);
@@ -158,6 +160,9 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
             MyNuxeoApp app = new MyNuxeoApp(home);
             if (updatePolicy != null) {
                 app.setUpdatePolicy(updatePolicy);
+            }
+            if (offline != null) {
+                app.setOffline(Boolean.parseBoolean(offline));
             }
             if (cfg == null) {
                 app.build(profile, useCache());

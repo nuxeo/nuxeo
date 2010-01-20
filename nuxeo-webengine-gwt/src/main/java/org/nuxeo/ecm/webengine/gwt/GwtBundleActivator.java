@@ -40,7 +40,7 @@ public class GwtBundleActivator implements BundleActivator {
     
     public static final String GWT_DEV_MODE_PROP = "nuxeo.gwt_dev_mode";
     public static final File GWT_ROOT = new File(Environment.getDefault().getWeb(), "root.war/gwt");
-    public static final boolean GWT_DEV_MODE = "true".equals(Framework.getProperty(GWT_DEV_MODE_PROP, "false"));
+    public static final boolean GWT_DEV_MODE = "true".equals(System.getProperty(GWT_DEV_MODE_PROP, "false"));
 
     public void start(BundleContext context) throws Exception {
         installGwtApp(context.getBundle());
