@@ -187,7 +187,19 @@ public class SQLHelper {
         try {
             // Check if table exists using metadata
             DatabaseMetaData metaData = connection.getMetaData();
-            ResultSet rs = metaData.getTables(null, null, table.getName(),
+            String schemaName = null;
+            String productName = metaData.getDatabaseProductName();
+            if("Oracle".equals(productName)) {
+                Statement st = connection.createStatement();
+                String sql = "SELECT SYS_CONTEXT('USERENV', 'SESSION_USER') FROM DUAL";
+                log.trace("SQL: " + sql);
+                ResultSet rs = st.executeQuery(sql);
+                rs.next();
+                schemaName = rs.getString(1);
+                log.trace("checking existing tables for oracle database, schema: " + schemaName);
+                st.close();
+            }
+            ResultSet rs = metaData.getTables(null, schemaName, table.getName(),
                     new String[] { "TABLE" });
             boolean exists = rs.next();
             log.debug(String.format("checking if table %s exists: %s",
