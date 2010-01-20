@@ -22,10 +22,7 @@ import org.nuxeo.theme.rendering.StandaloneFilter;
 
 public final class XmlNamespaces extends StandaloneFilter {
 
-    static final Pattern firstTagPattern = Pattern.compile("<(.*?)>",
-            Pattern.DOTALL);
-
-    static final Pattern otherTagsPattern = Pattern.compile("<.*?>(.*)",
+    static final Pattern tagsPattern = Pattern.compile("(.*?)<([^/@!<>].*?)>(.*)",
             Pattern.DOTALL);
 
     static final String xmlnsAttrStr = "xmlns[^\"]+\"([^\"]+)\"";
@@ -38,7 +35,7 @@ public final class XmlNamespaces extends StandaloneFilter {
     @Override
     public RenderingInfo process(final RenderingInfo info, final boolean cache) {
         String markup = info.getMarkup();
-
+        
         final Matcher attrMatcher = xmlnsAttrPattern.matcher(markup);
         if (!attrMatcher.find()) {
             return info;
@@ -56,18 +53,14 @@ public final class XmlNamespaces extends StandaloneFilter {
         // remove existing uid attributes, if any
         markup = markup.replaceAll(spaceXmlnsAttrStr, "");
 
-        final Matcher firstMatcher = firstTagPattern.matcher(markup);
-        final Matcher othersMatcher = otherTagsPattern.matcher(markup);
-
-        if (!(firstMatcher.find() && othersMatcher.find())) {
+        final Matcher firstMatcher = tagsPattern.matcher(markup);
+        if (!firstMatcher.find()) {
             return info;
         }
 
-        final String inBrackets = firstMatcher.group(1);
-
         // write the final markup
-        final String f = String.format("<%s%s>%s", inBrackets, s.toString(),
-                othersMatcher.group(1));
+        final String f = String.format("%s<%s%s>%s",firstMatcher.group(1), firstMatcher.group(2), s.toString(),
+                firstMatcher.group(3));
 
         info.setMarkup(f);
         return info;

@@ -84,4 +84,38 @@ public class TestXmlNamespacesFilter extends TestCase {
                 "<html xmlns=\"http://www.w3.org/1999/xhtml\"><div>content</div></html>",
                 info.getMarkup());
     }
+
+    public void testFilter7() {
+        info.setMarkup("<@abc></@abc><html xmlns=\"http://www.w3.org/1999/xhtml\"><div>content</div></html>");
+        filter.process(info, false);
+        assertEquals(
+                "<@abc></@abc><html xmlns=\"http://www.w3.org/1999/xhtml\"><div>content</div></html>",
+                info.getMarkup());
+    }
+
+    public void testFilter8() {
+        info.setMarkup("<!-- comment --><html xmlns=\"http://www.w3.org/1999/xhtml\"><div>content</div></html>");
+        filter.process(info, false);
+        assertEquals(
+                "<!-- comment --><html xmlns=\"http://www.w3.org/1999/xhtml\"><div>content</div></html>",
+                info.getMarkup());
+    }
+
+    public void testFilter9() {
+        info.setMarkup("<!-- comment -->");
+        filter.process(info, false);
+        assertEquals("<!-- comment -->", info.getMarkup());
+    }
+
+    public void testFilter10() {
+        info.setMarkup("<div></div>");
+        filter.process(info, false);
+        assertEquals("<div></div>", info.getMarkup());
+    }
+    
+    public void testFilter11() {
+        info.setMarkup("no tags");
+        filter.process(info, false);
+        assertEquals("no tags", info.getMarkup());
+    }
 }
