@@ -99,6 +99,12 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <version>0.6</version>
+        <scope>provided</scope>
+      </dependency>
       <!-- javax -->
       <dependency>
         <groupId>javax.ejb</groupId>
@@ -1688,7 +1694,7 @@
         <plugin>
           <groupId>org.nuxeo.build</groupId>
           <artifactId>nuxeo-distribution-tools</artifactId>
-          <version>0.5</version>
+          <version>0.6</version>
         </plugin>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
