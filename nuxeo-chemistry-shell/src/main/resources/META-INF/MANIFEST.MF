@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Chemistry CMIS Client
-Bundle-SymbolicName: org.nuxeo.chemistry.shell;singleton:=true
-Main-Class: org.nuxeo.chemistry.shell.Main

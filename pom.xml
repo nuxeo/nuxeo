@@ -22,7 +22,6 @@
     <module>nuxeo-chemistry-impl</module>
     <module>nuxeo-chemistry-jaxrs</module>
     <module>nuxeo-chemistry-ws</module>
-    <module>nuxeo-chemistry-shell</module>
     <module>nuxeo-chemistry-tests</module>
   </modules>
 

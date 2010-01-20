@@ -1,5 +1,0 @@
-#!/bin/sh
-
-LIB_DIR=.
-
-java ${JAVA_OPTS} -jar "$LIB_DIR"/nuxeo-chemistry-shell.jar $@
