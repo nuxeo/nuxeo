@@ -230,12 +230,12 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
 
     public String getProductVersion() {
         // TODO update this when releasing
-        return "5.2-SNAPSHOT";
+        return "5.3.1-SNAPSHOT";
     }
 
     public String getVersionSupported() {
         // TODO may be overriden by generic client layer
-        return "0.50";
+        return "1.0";
     }
 
     public org.w3c.dom.Document getRepositorySpecificInformation() {
