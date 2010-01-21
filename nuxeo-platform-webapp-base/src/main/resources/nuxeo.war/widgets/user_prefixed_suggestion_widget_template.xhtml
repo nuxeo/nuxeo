@@ -37,7 +37,7 @@
     <c:set var="frequency" value="#{nxu:test(!empty widget.properties.frequency, widget.properties.frequency, '0')}" />
     <c:set var="requestDelay" value="#{nxu:test(!empty widget.properties.requestDelay, widget.properties.requestDelay, '100')}" />
     <c:set var="searchType" value="#{nxu:test(!empty widget.properties.userSuggestionSearchType, widget.properties.userSuggestionSearchType, '')}" />
-    <c:set var="maxSearchResults" value="#{nxu:test(!empty widget.properties.userSuggestionMaxSearchResults, widget.properties.userSuggestionMaxSearchResults, 20)}" />
+    <c:set var="maxSearchResults" value="#{nxu:test(!empty widget.properties.userSuggestionMaxSearchResults, widget.properties.userSuggestionMaxSearchResults, 0)}" />
 
     <h:outputText value="#{messages['label.security.searchUsers']}"
       rendered="#{searchType =='USER_TYPE'}"

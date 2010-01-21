@@ -34,7 +34,7 @@
   <c:set var="searchType"
     value="#{nxu:test(!empty widget.properties.userSuggestionSearchType, widget.properties.userSuggestionSearchType, '')}" />
   <c:set var="maxSearchResults"
-    value="#{nxu:test(!empty widget.properties.userSuggestionMaxSearchResults, widget.properties.userSuggestionMaxSearchResults, 20)}" />
+    value="#{nxu:test(!empty widget.properties.userSuggestionMaxSearchResults, widget.properties.userSuggestionMaxSearchResults, 0)}" />
 
   <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
     <h:panelGrid id="#{widget.id}_panel" columns="2">
