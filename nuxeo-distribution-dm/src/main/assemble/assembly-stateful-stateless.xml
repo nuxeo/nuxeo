@@ -32,6 +32,7 @@
 
   <target name="expand" unless="no.build">
     <artifact:nuxeo-expand />
+    <!-- <artifact:print output="dependency-sf-tree.log" /> -->
   </target>
 
   <target name="build" depends="init" unless="no.build">

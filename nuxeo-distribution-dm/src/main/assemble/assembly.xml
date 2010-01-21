@@ -127,11 +127,7 @@
     <copy todir="${nuxeo.ear}/system" overwrite="true">
       <artifact:set>
         <includes>
-          <artifact groupId="org.nuxeo*"
-                    category="runtime,jboss4"
-                    dependsOnCategory="false" />
-          <artifact groupId="org.nuxeo*"
-                    category="core,search,web,stateful,stateless" />
+          <artifact groupId="org.nuxeo*" />
         </includes>
         <excludes>
           <artifact groupId="org.nuxeo.common" />
