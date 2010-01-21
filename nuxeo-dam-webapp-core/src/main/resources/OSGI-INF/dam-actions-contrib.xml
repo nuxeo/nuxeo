@@ -21,6 +21,11 @@
       label="action.delivery" icon="/icons/file.gif">
       <category>VIEW_ASSET_ACTION_LIST</category>
     </action>
+    
+    <action id="TAB_HISTORY" link="/incl/tabs/asset_history.xhtml" order="40"
+      label="action.asset.history" icon="/icons/file.gif">
+      <category>VIEW_ASSET_ACTION_LIST</category>
+    </action>
 
 
     <!-- BUTTONS -->
