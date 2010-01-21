@@ -105,6 +105,7 @@
       <artifact group="!org.nuxeo*" />
       <artifact group="org.nuxeo.common" />
       <artifact name="nuxeo-runtime-jboss-extensions" />
+      <artifact name="nuxeo-generic-wss-handler" />
 
       <artifact name="nuxeo-platform-webapp" />
       <artifact name="nuxeo-platform-webapp-core" />
