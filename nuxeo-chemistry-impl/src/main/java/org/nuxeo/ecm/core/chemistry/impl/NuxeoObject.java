@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.CMISRuntimeException;
+import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.Policy;
@@ -67,6 +68,10 @@ public class NuxeoObject extends BaseObject implements CMISObject,
         } else {
             return new NuxeoDocument(doc, connection);
         }
+    }
+
+    public Connection getConnection() {
+        return connection;
     }
 
     public void move(Folder targetFolder, Folder sourceFolder) {
