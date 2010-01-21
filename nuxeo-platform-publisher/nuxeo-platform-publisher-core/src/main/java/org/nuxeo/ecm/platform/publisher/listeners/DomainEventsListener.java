@@ -49,6 +49,10 @@ public class DomainEventsListener implements EventListener {
                 String eventName = event.getName();
                 if (DocumentEventTypes.DOCUMENT_CREATED.equals(eventName)) {
                     registerNewPublicationTrees(doc);
+                } else if (DocumentEventTypes.DOCUMENT_UPDATED.equals(eventName)) {
+                    // re-register in case of title update for instance
+                    unregisterPublicationTrees(doc);
+                    registerNewPublicationTrees(doc);
                 } else if (DocumentEventTypes.DOCUMENT_REMOVED.equals(eventName)) {
                     unregisterPublicationTrees(doc);
                 } else if (LifeCycleConstants.TRANSITION_EVENT.equals(eventName)) {
