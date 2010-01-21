@@ -48,6 +48,13 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
             boolean fulltextDisabled) throws Exception {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         assertNotNull(schemaManager);
+        RepositoryDescriptor descriptor = newDescriptor(clusteringDelay,
+                fulltextDisabled);
+        return new RepositoryImpl(descriptor, schemaManager);
+    }
+
+    protected RepositoryDescriptor newDescriptor(long clusteringDelay,
+            boolean fulltextDisabled) {
         RepositoryDescriptor descriptor = DatabaseHelper.DATABASE.getRepositoryDescriptor();
         descriptor.clusteringEnabled = clusteringDelay != -1;
         descriptor.clusteringDelay = clusteringDelay;
@@ -58,7 +65,7 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         descriptor.binaryStorePath = "testbinaries";
         descriptor.queryMakerClasses = Collections.<Class<?>> singletonList(NXQLQueryMaker.class);
         descriptor.fulltextDisabled = fulltextDisabled;
-        return new RepositoryImpl(descriptor, schemaManager);
+        return descriptor;
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -80,8 +82,15 @@ public class RepositoryImpl implements Repository {
         sessions = new CopyOnWriteArrayList<SessionImpl>();
         xadatasource = getXADataSource();
         try {
-            binaryManager = new BinaryManager(repositoryDescriptor);
-        } catch (IOException e) {
+            Class<? extends BinaryManager> klass = repositoryDescriptor.binaryManagerClass;
+            if (klass == null) {
+                klass = DefaultBinaryManager.class;
+            }
+            Constructor<? extends BinaryManager> constructor = klass.getConstructor(RepositoryDescriptor.class);
+            binaryManager = constructor.newInstance(repositoryDescriptor);
+        } catch (InvocationTargetException e) {
+            throw new StorageException(e.getCause());
+        } catch (Exception e) {
             throw new StorageException(e);
         }
     }
