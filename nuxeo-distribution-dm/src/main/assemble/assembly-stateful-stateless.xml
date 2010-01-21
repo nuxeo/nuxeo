@@ -238,7 +238,7 @@
         <include name="gwt-user*" />
         <include name="gwtext*" />
         <include name="h2-1.1.114*" />
-        <include name="hibernate-3.2.4.SP1_CP01-brew_NXP-3881*" />
+        <include name="hibernate-3.2.4.SP1_CP01-brew_NXP-3881-NXP-4604*" />
         <include name="hibernate-annotations*" />
         <include name="hibernate-entitymanager*" />
         <include name="imagej*" />

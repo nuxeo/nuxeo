@@ -295,6 +295,8 @@
               <tasks>
                 <echo message="Removing hibernate3 ..."/>
                 <delete file="${jboss.lib}/hibernate3.jar" />
+                <delete file="${jboss.lib}/hibernate3-3.2.1.ga-NXP-3881.jar" />
+                <delete file="${jboss.lib}/hibernate3-3.2.4.SP1_CP01-brew_NXP-3881.jar" />
               </tasks>
             </configuration>
           </execution>
@@ -395,7 +397,7 @@
                 <artifactItem>
                   <groupId>org.hibernate</groupId>
                   <artifactId>hibernate</artifactId>
-                  <version>3.2.4.SP1_CP01-brew_NXP-3881</version>
+                  <version>3.2.4.SP1_CP01-brew_NXP-3881-NXP-4604</version>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${jboss.lib}</outputDirectory>
