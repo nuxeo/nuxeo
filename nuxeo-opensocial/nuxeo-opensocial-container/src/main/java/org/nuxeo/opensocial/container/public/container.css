@@ -157,7 +157,9 @@
 }
 
 .x-3-header2cols>.x-portlet {
-  border:1px solid #D4D0C8;
+  -moz-border-radius-topleft: 4px;
+  -moz-border-radius-topright : 4px;
+  border : 2px solid #D4D0C8;
   margin-left:-2px;
   min-width: 100%;
   width: 100%
@@ -169,7 +171,9 @@
 }
 
 .x-1-default>.x-portlet {
-  border:1px solid #D4D0C8;
+  -moz-border-radius-topleft: 4px;
+  -moz-border-radius-topright : 4px;
+  border : 2px solid #D4D0C8;
   margin-left:-2px;
   min-width: 100%;
   width: 100%
@@ -181,7 +185,9 @@
 }
 
 .x-2-default>.x-portlet,.x-3-default>.x-portlet,.x-2-33-66>.x-portlet,.x-2-66-33>.x-portlet {
-  border:1px solid #D4D0C8;
+  -moz-border-radius-topleft: 4px;
+  -moz-border-radius-topright : 4px;
+  border : 2px solid #D4D0C8;
   margin-left:-2px;
   min-width: 100%;
   width: 100%;
@@ -224,7 +230,9 @@
 }
 
 .x-4-footer3cols>.x-portlet,.x-4-header3cols>.x-portlet  {
-  border:1px solid #D4D0C8;
+  -moz-border-radius-topleft: 4px;
+  -moz-border-radius-topright : 4px;
+  border : 2px solid #D4D0C8;
   margin-left:-2px;
   min-width: 100%;
   width: 100%;
@@ -238,7 +246,9 @@
 
 .x-4-66-33-50-50>.x-portlet,.x-4-50-50-66-33>.x-portlet,.x-4-100-66-33-100>.x-portlet,.x-4-100-33-66-100>.x-portlet
 {
-  border:1px solid #D4D0C8;
+  -moz-border-radius-topleft: 4px;
+  -moz-border-radius-topright : 4px;
+  border : 2px solid #D4D0C8;
   margin-left:-2px;
   min-width: 100%;
   width: 100%;
@@ -279,11 +289,14 @@
 
 .x-panel-tl {
     background-image: none;
+    background:#FFFFFF -moz-linear-gradient(center top , white, #CCCCCC);
     border-style: none;
+    min-height:25px;
 }
 
 .x-panel-tc {
     background-image: none;
+    padding-top:3px;
 }
 
 .x-panel-tl .x-panel-header {
