@@ -129,10 +129,8 @@ public interface Gadget {
 
   void copyFrom(Gadget gadget) throws ClientException;
 
-  String getHtmlContent() throws ClientException;
-
-  void setHtmlContent(String htmlContent) throws ClientException;
-
   boolean hasPermission(String permissioName) throws ClientException;
+
+  void save() throws ClientException;
 
 }

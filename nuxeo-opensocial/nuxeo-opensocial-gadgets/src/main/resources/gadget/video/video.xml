@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
   <ModulePrefs title="__UP_title__" category="tools"
-    render_inline="required" scrolling="false" author="" directory_title="Video"
-    singleton="false">
+    render_inline="required" scrolling="false" directory_title="Video"
+    singleton="false" author="Guillaume Cusnieux" author_email="gcusnieux@leroymerlin.fr" 
+    author_affiliation="Leroy Merlin" author_location="Lezennes, France">
     <Require feature="opensocial-0.8" />
     <Require feature="dynamic-height" />
     <Require feature="setprefs" />
-    <Require feature="settitle" />
     <Require feature="nuxeo" />
     <Require feature="jquery" />
+     <Require feature="form" />
   </ModulePrefs>
   <UserPref name="vidTitle" datatype="hidden"/>
   <Content type="html">
@@ -101,9 +102,7 @@
       <script type="text/javascript">
         var prefs = new _IG_Prefs(__MODULE_ID__);
         gadgets.util.registerOnLoadHandler( function() {
-	       gadgets.nuxeo.getHtmlContent(function(content) {
-	         launchVideoWidget(content);
-	       });
+	         launchVideoWidget();
         });
       </script>
       
@@ -118,6 +117,7 @@
       </div>
       
       <div id="form" style="display:none;margin:auto">
+        <form style="text-align:center;" method="post" id="formUpload" enctype="application/x-www-form-urlencoded" action="/nuxeo/site/gadgetDocumentAPI/ajaxSubmit/">
         <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a></div>
         <table style="width:100%" id="formVideo">
           <tr>
@@ -133,7 +133,7 @@
               <label>Balise Video</label>
             </td>
             <td style="width:70%">
-               <textarea name="baliseVideo" id="baliseVideo"></textarea>
+               <textarea id="baliseVideo" name="gadget:htmlContent"></textarea>
             </td>
           </tr>
           <tr>
@@ -145,7 +145,9 @@
         </table>
 
       </div>
+      </form>
 	  </div>
+	  <br/><br/>
 
     ]]>
   </Content>

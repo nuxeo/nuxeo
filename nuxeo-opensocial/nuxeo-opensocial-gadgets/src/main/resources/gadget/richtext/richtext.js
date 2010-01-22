@@ -1,23 +1,23 @@
 var url = "/nuxeo/site/gadgetDocumentAPI/getFile/";
+var urlHtml = "/nuxeo/site/gadgetDocumentAPI/getHtmlContent/";
+var urlForm =  "/nuxeo/site/gadgetDocumentAPI/ajaxSubmit/";
 var perm = gadgets.util.getUrlParameters().permission;
-var action = "";
 var firstTime = true;
 
 function launchGadget(){
 jQuery(document).ready(function(){
-
-  setTitle(prefs.getString("richTitle"));
-
-    setPhoto();
+    var idGadget = gadgets.nuxeo.getGadgetId();
+    jQuery("#formUpload").attr("action", [urlForm, idGadget].join(""));
+    loadHtml(idGadget);
+    loadImage(idGadget);
+    
+    setTitle(prefs.getString("richTitle"));
     setLink(prefs.getString("link"));
     setLegend(prefs.getString("legend"));
-
-    setHtml();
     setPlace(prefs.getString("place"));
 
 
   jQuery('#show').click(function(){
-
     jQuery("#mainContainer").hide();
     jQuery('#show').hide();
     jQuery('#form').show();
@@ -25,26 +25,24 @@ jQuery(document).ready(function(){
   });
 
   jQuery('#hide').click(function(){
-  jQuery("#mainContainer").show();
+    jQuery("#mainContainer").show();
     jQuery('#form').hide();
     jQuery('#show').show();
     gadgets.window.adjustHeight();
   });
+  
+  jQuery('#refresh').click(function(){
+  	gadgets.window.adjustHeight();
+  });
 
   if(perm != 'true') jQuery("#perm").remove();
 
-    var options = {
-      success:function(){
-        saveHtml();
-      }
-    };
 
   jQuery('#upload').click(function(){
-    if(control()) {
-      jQuery('#formUpload').ajaxSubmit(options);
-    } else {
-      saveHtml();
-    }
+  	jQuery('#richtext').val(jQuery('.nicEdit-main').html());
+  	savePrefs();
+  	
+  	jQuery('#formUpload').ajaxSubmit();
   });
 
   new nicEditor({iconsPath : '/nuxeo/site/gadgets/richtext/nicEditorIcons.gif'}).panelInstance('richtext');
@@ -55,13 +53,6 @@ jQuery(document).ready(function(){
 
 
 });
-};
-
-function saveHtml(){
-  var html = jQuery('.nicEdit-main').html();
-  gadgets.nuxeo.setHtmlContent(html, function(content){
-  	savePrefs();
-  });
 };
 
 function savePrefs(){
@@ -95,7 +86,6 @@ function setWidthAndBindEvents(){
     jQuery('.nicEdit-main').width("100%");
     var prev = jQuery(area).prev();
     prev.width(width);
-    action = jQuery("#formUpload").attr("action");
     firstTime = false;
   }
 };
@@ -128,25 +118,26 @@ function setPlace(place) {
     });
 };
 
-function setHtml() {
-   gadgets.nuxeo.getHtmlContent(function(content) {
-     if(_isSet(content))
-       jQuery(".nicEdit-main").html(content);
-       jQuery("#text").html(content);
-   });
-};
-
-function setPhoto() {
-   gadgets.nuxeo.getGadgetId(function(id) {
-      loadImage(id);
+function loadHtml(id){
+  jQuery.ajax({
+    type : "GET",
+    url :  [urlHtml,id].join(""),
+    success : function(html) {
+    	setHtml(html);
+    }
     });
 };
 
+function setHtml(content) {
+     if(_isSet(content)){
+       jQuery(".nicEdit-main").html(content);
+       jQuery("#text").html(content);
+    }
+};
+
 function loadImage(id){
-  var actionUrl = [action,id].join("");
   var imgContainer = "";
   var photoUrl = [url,id,'?junk=',Math.random()].join("");
-  jQuery("#formUpload").attr("action", actionUrl);
   jQuery.ajax({
     type : "GET",
     url : photoUrl,

@@ -36,7 +36,7 @@
         font-size:11px;
     }
 
-    #hide img{
+    #hide img, #refresh img{
      border:0;
      padding:5px 5px 0 0;
     }
@@ -121,21 +121,23 @@
     </div>
 
    <div style="margin:auto;display:none;" id="form">
-    <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a></div>
+    <div id="hideContainer">
+    <a href="#" id="refresh" title="refresh"><img src="page_refresh.png"></a>
+    <a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a>
+    </div>
+       <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="">
       <table style="width:100%;margin-bottom:10px;" class="form">
         <tr>
           <td style="width:30%"><label for="title">Titre</label></td>
           <td style="width:70%"><input type="text" name="title" id="title-field" /></td>
         </tr>
       </table>
-      <textarea id="richtext" cols="35" style="width:100%"></textarea>
+      <textarea name="gadget:htmlContent" id="richtext" cols="35" style="width:100%"></textarea>
       <table style="width:100%" class="form">
         <tr>
           <td style="width:30%"><label for="photo">Photo</label> </td>
           <td style="width:70%">
-            <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="/nuxeo/site/gadgetDocumentAPI/setFile/">
               <input type="file" name="file" id="file" size="20" />
-            </form>
           </td>
         </tr>
         <tr>
@@ -153,6 +155,7 @@
             </td>
         </tr>
       </table>
+       </form>
     </div>
 
   ]]>

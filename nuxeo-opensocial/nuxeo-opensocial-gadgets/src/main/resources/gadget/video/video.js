@@ -1,10 +1,14 @@
 var perm = gadgets.util.getUrlParameters().permission;
+var url = "/nuxeo/site/gadgetDocumentAPI/getHtmlContent/";
 
-
-function launchVideoWidget(balise) {
+function launchVideoWidget() {
+   var idGadget = gadgets.nuxeo.getGadgetId();
+   jQuery("#formUpload").attr("action", [jQuery("#formUpload").attr("action"), idGadget].join(""));
+   
   setTitle(prefs.getString("vidTitle"));
-  setVideo(balise);
-
+  
+  loadVideo(idGadget);
+  
   if(perm != 'true')
   	jQuery("#perm").remove();
   	
@@ -22,17 +26,23 @@ function launchVideoWidget(balise) {
     gadgets.window.adjustHeight();
   });
   
+ 
+  
   jQuery('#valid').click(function(){
-	var base = jQuery("#baliseVideo").val();
-	var ti = jQuery("#title-field").val();
-	gadgets.nuxeo.setAjaxPref("vidTitle",ti);
-	gadgets.nuxeo.setHtmlContent(base, function(content){
-		setTitle(ti);
-		setVideo(base);
-		gadgets.window.adjustHeight();
-	});
-	
+    prefs.set("vidTitle", gadgets.util.escapeString(jQuery("#title-field").val()));
+    jQuery('#formUpload').ajaxSubmit();
   });
+};
+
+
+function loadVideo(id){
+  jQuery.ajax({
+    type : "GET",
+    url :  [url,id].join(""),
+    success : function(html) {
+    	setVideo(html);
+    }
+    });
 };
 
 function setTitle(title){
@@ -55,8 +65,10 @@ function setVideo(balise){
   	var h = (dim.width * jQuery("embed").height())/jQuery("object").width();
   	jQuery("embed").width(dim.width);
   	jQuery("embed").height(h);
+  	jQuery("embed").attr("wmode","transparent");
   } else {
   	jQuery("#video").html("");
     jQuery("#baliseVideo").text("");
   }
+  gadgets.window.adjustHeight();
 };

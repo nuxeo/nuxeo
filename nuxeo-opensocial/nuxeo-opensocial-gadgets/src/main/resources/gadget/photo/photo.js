@@ -22,7 +22,7 @@ jQuery(document).ready(function(){
       success:function(){
         launchGadget();
       }
-  };
+    };
 
   jQuery('#upload').click(function(){
     savePrefs();
@@ -41,9 +41,8 @@ jQuery(document).ready(function(){
     gadgets.window.adjustHeight();
   });
 
-    gadgets.nuxeo.getGadgetId(function(id) {
-    	loadImage(id);
-    });
+    
+  loadImage(gadgets.nuxeo.getGadgetId());
   });
 }
 
@@ -80,6 +79,9 @@ function savePrefs(){
   "link",gadgets.util.escapeString(jQuery("#link-field").val()),
   "legend",gadgets.util.escapeString(jQuery("#legend-field").val()));
 };
+
+
+
 
 function loadImage(id){
   var actionUrl = [action,id].join("");

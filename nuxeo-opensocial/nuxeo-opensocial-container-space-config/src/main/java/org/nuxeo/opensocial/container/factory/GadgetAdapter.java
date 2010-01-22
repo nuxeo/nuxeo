@@ -193,4 +193,8 @@ class GadgetAdapter implements Gadget {
     this.placeId = placeId;
   }
 
+  public void save() throws ClientException {
+
+  }
+
 }

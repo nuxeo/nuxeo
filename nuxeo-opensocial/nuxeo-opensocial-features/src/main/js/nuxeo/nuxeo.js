@@ -33,26 +33,6 @@ gadgets.nuxeo.getSpaceId = function(callback) {
   gadgets.rpc.call(null, "get_nuxeo_space_id", callback, null);
 };
 
-gadgets.nuxeo.getHtmlContent = function(callback) {
-  gadgets.rpc.call(null, "get_htmlcontent", callback, null);
-};
-
-gadgets.nuxeo.setHtmlContent = function(htmlContent, callback) {
-  gadgets.rpc.call(null, "set_htmlcontent", callback, htmlContent);
-};
-
-gadgets.nuxeo.getGadgetId = function(callback) {
-  gadgets.rpc.call(null, "get_nuxeo_gadget_id", callback, null);
-};
-
-gadgets.nuxeo.maximizeGadget = function(view, callback) {
-  gadgets.rpc.call(null, "maximize", callback, view);
-};
-
-gadgets.nuxeo.minimizeGadget = function(callback) {
-  gadgets.rpc.call(null, "minimize", callback, null);
-};
-
-gadgets.nuxeo.setAjaxPref = function(key, value) {
-  gadgets.rpc.call(null, "set_ajax_pref", null, key, value);
+gadgets.nuxeo.getGadgetId = function() {
+  return window.name.split("-").slice(2).join("-");
 };

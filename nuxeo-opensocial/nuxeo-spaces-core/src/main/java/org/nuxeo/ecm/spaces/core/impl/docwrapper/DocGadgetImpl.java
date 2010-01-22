@@ -37,7 +37,6 @@ public class DocGadgetImpl extends AbstractGadget {
   private static final String GADGET_PREFERENCES = "gadget:props";
   private static final String GADGET_NAME = "gadget:name";
   private static final String GADGET_URL = "gadget:url";
-  private static final String GADGET_HTML = "gadget:htmlContent";
 
   public static final String TYPE = "Gadget";
 
@@ -228,7 +227,6 @@ public class DocGadgetImpl extends AbstractGadget {
     this.setPosition(gadget.getPosition());
     this.setHeight(gadget.getHeight());
     this.setCollapsed(gadget.isCollapsed());
-    this.setHtmlContent(gadget.getHtmlContent());
 
     // Preferences must be URL decoded....
     // TODO: should be changed
@@ -248,19 +246,6 @@ public class DocGadgetImpl extends AbstractGadget {
 
   }
 
-  public String getHtmlContent() throws ClientException {
-    String result = (String) doc.getPropertyValue(GADGET_HTML);
-    if (result == null) {
-      return "";
-    } else {
-      return result;
-    }
-  }
-
-  public void setHtmlContent(String htmlContent) throws ClientException {
-    doc.setPropertyValue(GADGET_HTML, htmlContent);
-  }
-
   public String getViewer() throws ClientException {
     return doc.getCoreSession()
         .getPrincipal()
@@ -270,6 +255,12 @@ public class DocGadgetImpl extends AbstractGadget {
   public boolean hasPermission(String permissioName) throws ClientException {
     return doc.getCoreSession()
         .hasPermission(doc.getRef(), permissioName);
+  }
+
+  public void save() throws ClientException {
+    CoreSession session = doc.getCoreSession();
+    session.saveDocument(doc);
+    session.save();
   }
 
 }
