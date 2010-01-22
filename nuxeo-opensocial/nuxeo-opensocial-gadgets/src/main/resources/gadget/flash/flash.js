@@ -38,9 +38,7 @@ jQuery(document).ready(function(){
 		gadgets.window.adjustHeight();
 	});
 	
-	gadgets.nuxeo.getGadgetId(function(id) {
-		loadFlash(prefs.getString("id"));		
-	});
+	loadFlash(gadgets.nuxeo.getGadgetId());
 	
 	});
 }	
