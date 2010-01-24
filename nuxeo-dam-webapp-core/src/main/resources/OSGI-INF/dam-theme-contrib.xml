@@ -27,7 +27,7 @@
     <view name="dam banner" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/banner.xhtml</template>
-      <resource>importset-creation.css</resource>
+      <resource>modal-popup.css</resource>
       <resource>importSetForm.js</resource>
     </view>
 
@@ -106,8 +106,8 @@
     <resource name="calendar.css">
       <path>css/calendar.css</path>
     </resource>
-    <resource name="importset-creation.css">
-      <path>css/importset_creation.css</path>
+    <resource name="modal-popup.css">
+      <path>css/modal_popup.css</path>
     </resource>
     <resource name="dam.css">
       <path>css/dam.css</path>
@@ -151,43 +151,7 @@
         <theme>dam/popup</theme>
       </view>
 
-      <view id="/view_users.xhtml">
-        <theme>dam/settings</theme>
-      </view>
-
-      <view id="/view_many_users.xhtml">
-        <theme>dam/settings</theme>
-      </view>
-
-      <view id="/edit_user.xhtml">
-        <theme>dam/settings</theme>
-      </view>
-
-      <view id="/edit_user_password.xhtml">
-        <theme>dam/settings</theme>
-      </view>
-
-      <view id="/view_user.xhtml">
-        <theme>dam/settings</theme>
-      </view>
-
-      <view id="/create_user.xhtml">
-        <theme>dam/settings</theme>
-      </view>
-
-      <view id="/view_groups.xhtml">
-        <theme>dam/settings</theme>
-      </view>
-
-      <view id="/view_group.xhtml">
-        <theme>dam/settings</theme>
-      </view>
-
-      <view id="/edit_group.xhtml">
-        <theme>dam/settings</theme>
-      </view>
-
-      <view id="/create_group.xhtml">
+      <view id="/administration.xhtml">
         <theme>dam/settings</theme>
       </view>
 

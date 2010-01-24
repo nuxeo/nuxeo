@@ -1,0 +1,107 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <script type="text/javascript">
+  function confirmDeleteUser() {
+    return confirm("#{messages['label.userManager.confirmDeleteUser']}");
+  }
+  </script>
+
+  <rich:modalPanel id="createUserFormPanel" autosized="true"
+   styleClass="CreateUserFormPanel">
+    <f:facet name="header">
+      <h:panelGroup>
+        <h:outputText value="#{messages['title.createUser']}"/>
+    </h:panelGroup>
+  </f:facet>
+  <f:facet name="controls">
+    <h:panelGroup>
+      <h:graphicImage value="/img/close.png"
+          styleClass="hidelink" id="createUserHidelink" />
+        <rich:componentControl for="createUserFormPanel" attachTo="createUserHidelink"
+          operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
+    <ui:include src="/incl/create_user_panel.xhtml" />
+  </rich:modalPanel>
+
+  <table cellspacing="0" cellpadding="0" border="0" style="height: 100%; width: 100%;">
+    <tbody>
+      <tr>
+        <td valign="top" style="width: 210px;">
+          <a4j:form id="userSearchForm">
+            <a4j:commandLink
+              onclick="Richfaces.showModalPanel('createUserFormPanel')"
+              id="user_creation_button" reRender="createUserPanel"
+              rendered="#{userManagerActions.allowCreateUser and notReadOnly}">
+              <h:outputText value="#{messages['command.createUser']}" />
+            </a4j:commandLink>
+            <br /><br />
+            <h:inputText id="userSearchInput"
+              value="#{userManagerActions.searchString}"
+              onkeydown="if(event.keyCode == 13 ||event.keyCode == 9 ){return false;}">
+              <a4j:support event="onkeyup" reRender="userSearchResult"
+                requestDelay="1000" action="#{userManagerActions.resetUsers}"
+                ignoreDupResponses="true" eventsQueue="userSearchQueue" />
+            </h:inputText>
+          </a4j:form>
+        </td>
+          <td valign="top">
+          <a4j:outputPanel id="userSearchResult">
+            <h:outputText
+              value="#{messages['label.userManager.emptyUserList']}"
+              rendered="#{userList.rowCount == 0 and userManagerActions.searchOverflow == false and !empty userManagerActions.searchString}" />
+
+            <h:outputText
+              value="#{messages['label.security.searchOverFlow']}"
+              rendered="#{userManagerActions.searchOverflow}" />
+
+            <c:set var="userSchema" value="#{userManager.userSchemaName}" />
+
+            <a4j:form rendered="#{userList.rowCount > 0}">
+              <h:dataTable var="userModel" value="#{userList}"
+                rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
+                <h:column>
+                  <a4j:commandLink
+                    action="#{userManagerActions.deleteUser(userModel)}"
+                    onclick="return confirmDeleteUser();"
+                    reRender="userSearchResult"
+                    rendered="#{userManagerActions.allowDeleteUser and notReadOnly}">
+                    <h:graphicImage value="/icons/action_delete.gif" />
+                  </a4j:commandLink>
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText
+                      value="#{messages['label.userManager.userName']}" />
+                  </f:facet>
+                  <h:outputText value="#{userModel[userSchema].username}" />
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText
+                      value="#{messages['label.userManager.firstName']}" />
+                  </f:facet>
+                  <h:outputText value="#{userModel[userSchema].firstName}" />
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText
+                      value="#{messages['label.userManager.lastName']}" />
+                  </f:facet>
+                  <h:outputText value="#{userModel[userSchema].lastName}" />
+                </h:column>
+              </h:dataTable>
+            </a4j:form>
+          </a4j:outputPanel>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

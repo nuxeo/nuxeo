@@ -28,6 +28,23 @@
     </action>
 
 
+    <!-- ADMIN TABS -->
+    <action id="ADMIN_USERS" link="/incl/admin/users.xhtml" order="10"
+      label="label.userManager.users">
+      <category>ADMIN_ACTION_LIST</category>
+    </action>
+
+    <action id="ADMIN_GROUPS" link="/incl/admin/groups.xhtml" order="20"
+      label="label.groupManager.groups">
+      <category>ADMIN_ACTION_LIST</category>
+    </action>
+
+    <action id="ADMIN_FOLDERS" link="/incl/admin/folders.xhtml" order="30"
+      label="action.admin.folders">
+      <category>ADMIN_ACTION_LIST</category>
+    </action>
+
+
     <!-- BUTTONS -->
     <action id="CURRENT_SELECTION_DELETE" link="#{bulkSelectActions.deleteSelection}"
       label="command.delete" icon="" help="command.delete.help"
