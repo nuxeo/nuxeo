@@ -70,8 +70,14 @@ public class GadgetDocument extends ModuleRoot {
               }
             }
           }
+
+          String contentDisposition = "attachment;filename=" + fileName;
+          if(fileName.endsWith(".swf")) {
+              contentDisposition = "inline;";
+          }
+
           return Response.ok(blob)
-              .header("Content-Disposition", "attachment;filename=" + fileName)
+              .header("Content-Disposition", contentDisposition)
               .type(blob.getMimeType())
               .build();
         } catch (Exception e) {
