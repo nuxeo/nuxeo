@@ -264,7 +264,7 @@ public class GadgetPortlet extends Portlet {
 
   private static native void removeHeaderColor(String id)
   /*-{
-    $wnd.jQuery("#"+id).find("div.x-panel-tl").attr("style","");
+    $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background","");
   }-*/;
 
   private static native void changeHeaderColor(String id, String color)
