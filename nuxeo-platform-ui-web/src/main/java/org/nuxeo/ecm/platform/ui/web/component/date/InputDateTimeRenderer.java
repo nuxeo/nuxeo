@@ -51,6 +51,7 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
         UIInputDateTime dateTimeComp = (UIInputDateTime) component;
         ResponseWriter writer = context.getResponseWriter();
         String localeString = dateTimeComp.getLocale();
+        String onchange = dateTimeComp.getOnchange();
         if (localeString == null) {
             // get local string
             Locale locale = context.getViewRoot().getLocale();
@@ -72,6 +73,9 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
         // input text
         writer.startElement("input", dateTimeComp);
         writer.writeAttribute("type", "text", null);
+        if (onchange != null) {
+            writer.writeAttribute("onchange", onchange, "onchange");
+        }
         writer.writeAttribute("id", inputTextId, null);
         writer.writeAttribute("name", inputTextId, null);
         Object currentValue = getCurrentValue(dateTimeComp);

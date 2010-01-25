@@ -59,6 +59,8 @@ public class UIInputDateTime extends UIInput {
 
     private String triggerLabel;
 
+    protected String onchange;
+
     public UIInputDateTime() {
         setRendererType(COMPONENT_TYPE);
     }
@@ -190,12 +192,36 @@ public class UIInputDateTime extends UIInput {
         this.triggerLabel = triggerLabel;
     }
 
+    public String getOnchange() {
+        if (onchange != null) {
+            return onchange;
+        }
+        return getStringValue("onchange", null);
+    }
+
+    protected String getStringValue(String name, String defaultValue) {
+        ValueExpression ve = getValueExpression(name);
+        if (ve != null) {
+            try {
+                return (String) ve.getValue(getFacesContext().getELContext());
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        } else {
+            return defaultValue;
+        }
+    }
+
+    public void setOnchange(String onchange) {
+        this.onchange = onchange;
+    }
+
     // state holder
 
     @Override
     public Object saveState(FacesContext context) {
         return new Object[] { super.saveState(context), format,
-                showsTime, locale, timeZone, triggerLabel };
+                showsTime, locale, timeZone, triggerLabel, onchange };
     }
 
     @Override
@@ -207,6 +233,7 @@ public class UIInputDateTime extends UIInput {
         locale = (String) values[3];
         timeZone = (String) values[4];
         triggerLabel = (String) values[5];
+        onchange = (String) values[6];
     }
 
 }
