@@ -101,11 +101,11 @@
     <example>
       <![CDATA[
 <!-- show the subject directory entries -->
-<nxu:selectItems directoryName="subject"
+<nxdir:selectItems directoryName="subject"
   var="item" itemValue="#{item.id}" itemLabel="#{item.vocabulary.label}" />
 
 <!-- show the subject directory entries filtered by given list -->
-<nxu:selectItems directoryName="subject"
+<nxdir:selectItems directoryName="subject"
   value="#{document.dublincore.subjects}" showAll="false"
   var="item" itemValue="#{item.id}" itemLabel="#{item.vocabulary.label}" />
       ]]>
