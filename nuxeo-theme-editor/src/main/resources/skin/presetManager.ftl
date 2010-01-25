@@ -18,7 +18,7 @@
 </div>
 </#if>
 
-<p class="nxthemesExplanation">List by category</p>
+<p class="nxthemesExplanation">Theme presets</p>
 
 <table style="width: 100%;" cellpadding="3" cellspacing="1">
   <tr>
