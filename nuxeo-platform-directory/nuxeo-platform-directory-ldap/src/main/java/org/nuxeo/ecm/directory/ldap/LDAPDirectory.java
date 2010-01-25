@@ -51,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author ogrisel
- *
+ * 
  */
 public class LDAPDirectory extends AbstractDirectory {
 
@@ -134,6 +134,16 @@ public class LDAPDirectory extends AbstractDirectory {
         props.put(Context.PROVIDER_URL, ldapUrls);
         props.put(Context.REFERRAL, "follow");
 
+        /*
+         * NOTE: Currently this directory service does not use SSL, however if
+         * it should then for SSL connections this value must not be set as this
+         * causes the connection to fail
+         */
+        if (serverConfig.getConnectionTimeout() > -1) {
+            props.put("com.sun.jndi.ldap.connect.timeout",
+                    Integer.toString(serverConfig.getConnectionTimeout()));
+        }
+
         String bindDn = serverConfig.getBindDn();
         if (bindDn != null) {
             // Authenticated connection
@@ -160,7 +170,7 @@ public class LDAPDirectory extends AbstractDirectory {
 
     /**
      * Search controls that only fetch attributes defined by the schema
-     *
+     * 
      * @return common search controls to use for all LDAP search queries
      * @throws DirectoryException
      */

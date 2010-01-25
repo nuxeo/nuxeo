@@ -25,7 +25,6 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.directory.DirectoryException;
 
-
 @XObject(value = "server")
 public class LDAPServerDescriptor {
 
@@ -35,6 +34,9 @@ public class LDAPServerDescriptor {
     public String ldapUrls;
 
     public String bindDn;
+
+    @XNode("connectionTimeout")
+    public int connectionTimeout = 10000; // timeout after 10 seconds
 
     @XNode("poolingEnabled")
     public boolean poolingEnabled = true;
@@ -92,4 +94,11 @@ public class LDAPServerDescriptor {
         return poolingEnabled;
     }
 
+    public int getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+    }
 }

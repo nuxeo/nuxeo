@@ -71,7 +71,7 @@ import org.nuxeo.ecm.directory.Reference;
 
 /**
  * This class represents a session against an LDAPDirectory.
- *
+ * 
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
 public class LDAPSession extends BaseSession implements EntrySource {
