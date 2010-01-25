@@ -5,6 +5,7 @@ syntax:glob
 .mylar
 .pmd
 .project
+.project.ok
 .settings
 bin
 build.properties
