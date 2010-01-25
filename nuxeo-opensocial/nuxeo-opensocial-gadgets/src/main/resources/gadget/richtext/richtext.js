@@ -1,16 +1,13 @@
-var url = "/nuxeo/site/gadgetDocumentAPI/getFile/";
-var urlHtml = "/nuxeo/site/gadgetDocumentAPI/getHtmlContent/";
-var urlForm =  "/nuxeo/site/gadgetDocumentAPI/ajaxSubmit/";
 var perm = gadgets.util.getUrlParameters().permission;
 var firstTime = true;
 
 function launchGadget(){
 jQuery(document).ready(function(){
     var idGadget = gadgets.nuxeo.getGadgetId();
-    jQuery("#formUpload").attr("action", [urlForm, idGadget].join(""));
+    jQuery("#formUpload").attr("action", gadgets.nuxeo.getFormActionUrl(idGadget));
     loadHtml(idGadget);
     loadImage(idGadget);
-    
+
     setTitle(prefs.getString("richTitle"));
     setLink(prefs.getString("link"));
     setLegend(prefs.getString("legend"));
@@ -30,19 +27,19 @@ jQuery(document).ready(function(){
     jQuery('#show').show();
     gadgets.window.adjustHeight();
   });
-  
+
   jQuery('#refresh').click(function(){
-  	gadgets.window.adjustHeight();
+    gadgets.window.adjustHeight();
   });
 
   if(perm != 'true') jQuery("#perm").remove();
 
 
   jQuery('#upload').click(function(){
-  	jQuery('#richtext').val(jQuery('.nicEdit-main').html());
-  	savePrefs();
-  	
-  	jQuery('#formUpload').ajaxSubmit();
+    jQuery('#richtext').val(jQuery('.nicEdit-main').html());
+    savePrefs();
+
+    jQuery('#formUpload').ajaxSubmit();
   });
 
   new nicEditor({iconsPath : '/nuxeo/site/gadgets/richtext/nicEditorIcons.gif'}).panelInstance('richtext');
@@ -121,9 +118,9 @@ function setPlace(place) {
 function loadHtml(id){
   jQuery.ajax({
     type : "GET",
-    url :  [urlHtml,id].join(""),
+    url :  gadgets.nuxeo.getHtmlActionUrl(id),
     success : function(html) {
-    	setHtml(html);
+      setHtml(html);
     }
     });
 };
@@ -137,7 +134,7 @@ function setHtml(content) {
 
 function loadImage(id){
   var imgContainer = "";
-  var photoUrl = [url,id,'?junk=',Math.random()].join("");
+  var photoUrl = [gadgets.nuxeo.getFileActionUrl(id),'?junk=',Math.random()].join("");
   jQuery.ajax({
     type : "GET",
     url : photoUrl,

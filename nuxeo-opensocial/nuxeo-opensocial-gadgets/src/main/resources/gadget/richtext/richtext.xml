@@ -125,7 +125,7 @@
     <a href="#" id="refresh" title="refresh"><img src="page_refresh.png"></a>
     <a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a>
     </div>
-       <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="">
+       <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="#">
       <table style="width:100%;margin-bottom:10px;" class="form">
         <tr>
           <td style="width:30%"><label for="title">Titre</label></td>
