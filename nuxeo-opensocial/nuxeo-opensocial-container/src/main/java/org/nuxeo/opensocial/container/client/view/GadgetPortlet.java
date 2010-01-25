@@ -269,7 +269,10 @@ public class GadgetPortlet extends Portlet {
 
   private static native void changeHeaderColor(String id, String color)
   /*-{
-    $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background","#"+color);
+    $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background-image","-moz-linear-gradient(center top , #"+color+", #FFFFFF)");
+    $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background-color","#"+color);
+
+
   }-*/;
 
   static native void changeBorderColor(String id, String color)
