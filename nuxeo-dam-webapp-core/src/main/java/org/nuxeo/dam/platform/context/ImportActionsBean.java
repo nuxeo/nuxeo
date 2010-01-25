@@ -124,8 +124,10 @@ public class ImportActionsBean implements Serializable {
         return newImportSet;
     }
 
-    protected DocumentModel createContainerFolder(String title) throws ClientException {
-        DocumentModel folder = documentManager.createDocumentModel(IMPORTSET_ROOT_PATH, IdUtils.generateId(title), "Workspace");
+    protected DocumentModel createContainerFolder(String title)
+            throws ClientException {
+        DocumentModel folder = documentManager.createDocumentModel(
+                IMPORTSET_ROOT_PATH, IdUtils.generateId(title), "Workspace");
         folder.setPropertyValue("dc:title", title);
         folder = documentManager.createDocument(folder);
         documentManager.save();
