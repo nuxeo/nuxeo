@@ -7,6 +7,7 @@ import org.nuxeo.opensocial.container.client.bean.GadgetView;
 import org.nuxeo.opensocial.container.client.bean.PreferencesBean;
 
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Frame;
 import com.gwtext.client.widgets.layout.FitLayout;
 import com.gwtext.client.widgets.portal.Portlet;
@@ -194,8 +195,17 @@ public class GadgetPortlet extends Portlet {
     if (this.gadget.isCollapsed())
       collapse(getIdWithRefAndView(gadget.getRef(), view));
     super.afterRender();
-    renderDefaultPreferences();
     updateFrameHeightIfContentTypeIsUrl();
+    Timer t = new Timer() {
+
+      @Override
+      public void run() {
+        renderDefaultPreferences();
+      }
+
+    };
+    t.schedule(200);
+
   }
 
   private void updateFrameHeightIfContentTypeIsUrl() {
