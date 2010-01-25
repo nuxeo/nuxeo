@@ -1120,6 +1120,27 @@ public class DialectPostgreSQL extends Dialect {
                         + "  RETURN;\n" //
                         + "END $$\n" //
                         + "LANGUAGE plpgsql VOLATILE;"));
+
+        statements.add(new ConditionalStatement(
+                false, // late
+                Boolean.FALSE, // do a drop
+                null, //
+                null, //
+                "CREATE OR REPLACE FUNCTION nx_vacuum_read_acls() RETURNS void AS $$\n" //
+                        + "-- Remove unused read acls entries\n" //
+                        + "DECLARE\n" //
+                        + "  update_count integer;\n" //
+                        + "BEGIN\n" //
+                        + "  RAISE INFO 'nx_vacuum_read_acls vacuuming ...';\n" //
+                        + "  DELETE FROM read_acls WHERE id IN (SELECT r.id FROM read_acls AS r\n" //
+                        + "    LEFT JOIN hierarchy_read_acl AS h ON r.id=h.acl_id\n" //
+                        + "    WHERE h.acl_id IS NULL);\n" //
+                        + "  GET DIAGNOSTICS update_count = ROW_COUNT;\n" //
+                        + "  RAISE INFO 'nx_vacuum_read_acls done, % read acls removed.', update_count;\n" //
+                        + "  RETURN;\n" //
+                        + "END $$\n" //
+                        + "LANGUAGE plpgsql VOLATILE;"));
+
         statements.add(new ConditionalStatement(
                 false, // late
                 Boolean.FALSE, // do a drop
@@ -1195,6 +1216,7 @@ public class DialectPostgreSQL extends Dialect {
                         + "  RETURN NEW;\n" //
                         + "END $$\n" //
                         + "LANGUAGE plpgsql;"));
+
         statements.add(new ConditionalStatement(
                 false, // late
                 Boolean.TRUE, // do a drop
@@ -1203,16 +1225,25 @@ public class DialectPostgreSQL extends Dialect {
                 "CREATE TRIGGER nx_trig_hierarchy_read_acl_modified\n" //
                         + "  AFTER INSERT OR UPDATE ON hierarchy_read_acl\n" //
                         + "  FOR EACH ROW EXECUTE PROCEDURE nx_log_hierarchy_read_acl_modified();"));
+
         if (aclOptimizationsEnabled) {
             // build the read acls if empty, this takes care of the upgrade
-            log.info("ACL optimizations enable, building read_acls if needed...");
+            log.info("ACL optimizations enable, building read acls if needed...");
             statements.add(new ConditionalStatement(
                     false, // late
                     null, // perform a check
                     "SELECT 1 WHERE NOT EXISTS(SELECT 1 FROM read_acls LIMIT 1);",
                     "SELECT * FROM nx_rebuild_read_acls();", //
                     "SELECT 1;"));
-            log.debug("read_acls updated.");
+            // Vacuum the read acls table if needed
+            log.info("Vacuuming read acls table...");
+            statements.add(new ConditionalStatement(
+                    false, // late
+                    Boolean.FALSE, // perform a check
+                    null, //
+                    null, //
+                    "SELECT nx_vacuum_read_acls();"));
+            log.info("ACL optimizations ready.");
         }
         return statements;
     }
