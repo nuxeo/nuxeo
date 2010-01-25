@@ -32,6 +32,11 @@
           <field schema="filter_query" name="ecm_path" />
         </predicate>
 
+        <predicate parameter="dc:created" operator="BETWEEN">
+          <field schema="filter_query" name="created_min" />
+          <field schema="filter_query" name="created_max" />
+        </predicate>
+        
         <fixedPart>
           ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:mixinType != 'Folderish'
         </fixedPart>

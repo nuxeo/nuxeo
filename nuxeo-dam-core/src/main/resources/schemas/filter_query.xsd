@@ -16,6 +16,8 @@
   <xs:element name="dc_coverage" type="nxs:stringList" />
   <xs:element name="topic" type="nxs:stringList"/>
   <xs:element name="ecm_path" type="xs:string" />
+  <xs:element name="created_min" type="xs:date" />
+  <xs:element name="created_max" type="xs:date" />
 
   <xs:element name="sortColumn" type="xs:string" default="dc:title" />
   <xs:element name="sortAscending" type="xs:boolean" default="true" />

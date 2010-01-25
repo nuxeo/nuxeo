@@ -148,8 +148,29 @@
 
     </rich:panelMenuGroup>
 
-   </rich:panelMenu>
+    <rich:panelMenuGroup label="#{messages['heading.filter.date']}"
+       expanded="true" id="datePanel">
 
+      <h:outputText value="#{messages['label.dublincore.creationDate']}" />
+      <h:outputText value=" #{messages['label.search.between']}" />
+      <br />
+      <nxu:inputDateTime value="#{filterActions.filterDocument.filter_query.created_min}"
+        showsTime="true" format="#{nxu:basicDateFormater()}" />
+      <h:outputText value="#{messages['label.search.and']}" />
+      <br />
+      <nxu:inputDateTime value="#{filterActions.filterDocument.filter_query.created_max}"
+        showsTime="true" format="#{nxu:basicDateFormater()}" />
+     
+     </rich:panelMenuGroup>
+     
+    </rich:panelMenu>
+   
+    <a4j:commandButton id="filterFormButton" type="button"
+      styleClass="button"
+      value="#{messages['label.action.filter.doFulltextSearch']}"
+      action="#{filterActions.invalidateProvider}"
+      reRender="filterResultTable,selectionView"/>
+      
   </a4j:form>
   </a4j:outputPanel>
   </a4j:region>
