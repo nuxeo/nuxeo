@@ -189,6 +189,13 @@ public class LDAPDirectory extends AbstractDirectory {
                 LDAPReference ldapReference = (LDAPReference) reference;
                 attrs.add(ldapReference.getStaticAttributeId(fieldMapper));
                 attrs.add(ldapReference.getDynamicAttributeId());
+
+                // Add Dynamic Reference attributes filtering
+                for (LDAPDynamicReferenceDescriptor dynAtt : ldapReference.getDynamicAttributes()) {
+                    attrs.add(dynAtt.baseDN);
+                    attrs.add(dynAtt.filter);
+                }
+
             }
         }
 
