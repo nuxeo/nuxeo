@@ -332,6 +332,8 @@ public class UserManagerActionsBean implements UserManagerActions {
         try {
             selectedUser = userManager.createUser(newUser);
             newUser = null;
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    resourcesAccessor.getMessages().get("info.userManager.userCreated"));
             return viewUser();
         } catch (UserAlreadyExistsException e) {
             facesMessages.add(FacesMessage.SEVERITY_ERROR,
@@ -339,6 +341,7 @@ public class UserManagerActionsBean implements UserManagerActions {
                             "error.userManager.userAlreadyExists"));
             return null;
         }
+
     }
 
     public DocumentModel getNewUser() throws ClientException {

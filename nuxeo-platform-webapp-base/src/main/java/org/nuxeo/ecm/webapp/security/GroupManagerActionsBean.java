@@ -226,6 +226,8 @@ public class GroupManagerActionsBean implements GroupManagerActions {
             newGroup = null;
             // reset so that group list is computed again
             resetGroups();
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    resourcesAccessor.getMessages().get("info.groupManager.groupCreated"));
             return viewGroup(selectedGroup, false);
         } catch (GroupAlreadyExistsException e) {
             String message = resourcesAccessor.getMessages().get(
