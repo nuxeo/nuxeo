@@ -10,7 +10,11 @@
 
   <ui:define name="body">
 
+
     <a4j:region id="administrationRegion">
+
+      <ui:include src="/incl/message_banner.xhtml"/>
+
       <a4j:outputPanel id="administrationView">
         <ui:include src="/incl/admin_action_tabs.xhtml"/>
         <div class="tabsContent"><ui:include src="#{webActions.currentAdminTabAction.link}" /></div>

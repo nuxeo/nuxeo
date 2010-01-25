@@ -119,6 +119,12 @@
       <redirect />
     </navigation-case>
 
+    <navigation-case>
+      <from-outcome>view_many_users</from-outcome>
+      <to-view-id>/administration.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
   </extension>
 
   <extension target="pages#PAGES">

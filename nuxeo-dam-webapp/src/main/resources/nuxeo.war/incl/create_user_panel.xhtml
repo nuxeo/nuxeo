@@ -6,6 +6,14 @@
   <a4j:region>
   <a4j:outputPanel id="createUserPanel">
   <a4j:form id="createUser" ajaxSingle="true">
+  
+    <div id="facesStatusMessage" class="facesStatusMessage">
+      <h:messages globalOnly="true"
+        infoClass="infoFeedback"
+        warnClass="warningFeedback"
+        errorClass="errorFeedback"/>
+    </div>
+
     <nxl:layout name="user" mode="create" value="#{userManagerActions.newUser}" />
 
     <p class="buttonsGadget">
@@ -13,7 +21,7 @@
         value="#{messages['command.create']}" action="#{userManagerActions.createUser}"
         data="#{facesContext.maximumSeverity.ordinal ge 2}"
         oncomplete="if (!data) { Richfaces.hideModalPanel('CreateUserFormPanel') };"
-        reRender="userSearchResult" />
+        reRender="userSearchResult, createUser" />
     </p>
   </a4j:form>
   </a4j:outputPanel>
