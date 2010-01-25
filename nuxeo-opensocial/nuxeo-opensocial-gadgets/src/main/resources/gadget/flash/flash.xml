@@ -11,8 +11,11 @@
     <Require feature="setprefs"/>
     <Require feature="jquery" />
     <Require feature="form" />
-     <Require feature="flash" />
+    <Require feature="flash" />
+
   </ModulePrefs>
+
+    <UserPref name="width" display_name="Hauteur"/>
 
   <Content type="html" view="default">
 <![CDATA[

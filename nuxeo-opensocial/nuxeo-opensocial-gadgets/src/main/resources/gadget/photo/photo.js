@@ -21,6 +21,9 @@ jQuery(document).ready(function(){
       beforeSubmit: control,
       success:function(){
         launchGadget();
+      },
+      error: function(xhr,rs) {
+        alert(xhr.responseText);
       }
     };
 

@@ -79,8 +79,8 @@ function loadFlash(id){
         gadgets.flash.embedFlash(flashUrl, "flash", {
             swf_version: 6,
             id: "flashid",
-           width: 300,
-            height: 250
+           width: prefs.getInt("width"),
+            height: prefs.getInt("height")
         });
 
        showFlash();
