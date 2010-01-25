@@ -125,7 +125,7 @@ public class ImportActionsBean implements Serializable {
     }
 
     protected DocumentModel createContainerFolder(String title) throws ClientException {
-        DocumentModel folder = documentManager.createDocumentModel(IMPORTSET_ROOT_PATH, IdUtils.generateId(title), "Folder");
+        DocumentModel folder = documentManager.createDocumentModel(IMPORTSET_ROOT_PATH, IdUtils.generateId(title), "Workspace");
         folder.setPropertyValue("dc:title", title);
         folder = documentManager.createDocument(folder);
         documentManager.save();
@@ -212,7 +212,7 @@ public class ImportActionsBean implements Serializable {
 
     public List<SelectItem> getImportFolders() throws ClientException {
         List<SelectItem> items = new ArrayList<SelectItem>();
-        items.add(new SelectItem(null, ""));
+        items.add(new SelectItem(null, "New Folder"));
         DocumentModelList docs = queryModelActions.get("IMPORT_FOLDERS").getDocuments(
                 documentManager);
         for (DocumentModel doc : docs) {
