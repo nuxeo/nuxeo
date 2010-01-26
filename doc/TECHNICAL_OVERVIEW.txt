@@ -184,17 +184,37 @@ See the accompanying document: import.txt for a full example.
 Each ImportSet document contains the assets imported.
 
 Hierarchy example:
-/default-domain/import-sets
-                  |- import-set-1
+/default-domain/import-sets-root
+                  |- folder1  
+                  |     |- import-set-1
+                  |     |     |
+                  |     |     |-file1
+                  |     |     |-image1
+                  |     |     |-subfolder1
+                  |     |     |  |-image2
+                  |     |     |  |-image3
+                  |     |     `-audio_file1
+                  |     `- import-set-2
                   |     |
-                  |     |-file1
-                  |     |-image1
-                  |     `-audio_file1
-                  `- import-set-2
+                  |     |-file2
+                  |     |-image4
+                  |     `-audio_file2
+                  `- folder2  
+                        |- import-set-3
+                        |     |
+                        |     |-file3
+                        |     |-image5
+                        |     |-subfolder2
+                        |     |  |-image6
+                        |     |  |-image7
+                        |     `-audio_file3
+                        `- import-set-4
                         |
-                        |-file2
-                        |-image2
-                        `-audio_file2
+                        |-file4
+                        |-image8
+                        `-audio_file4
+
+type of the forder1 & forlder2 is now "Workspace" ( see DAM-423 )
 
 
 Blobs stored externally (default in VCS?).
