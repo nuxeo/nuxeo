@@ -3,17 +3,17 @@ var url = "/nuxeo/site/gadgetDocumentAPI/getHtmlContent/";
 
 function launchVideoWidget() {
    var idGadget = gadgets.nuxeo.getGadgetId();
-   jQuery("#formUpload").attr("action", [jQuery("#formUpload").attr("action"), idGadget].join(""));
-   
-  setTitle(prefs.getString("vidTitle"));
-  
+   jQuery("#formUpload").attr("action", gadgets.nuxeo.getFormActionUrl(idGadget));
+
+   setTitle(prefs.getString("vidTitle"));
+
   loadVideo(idGadget);
-  
+
   if(perm != 'true')
-  	jQuery("#perm").remove();
-  	
+    jQuery("#perm").remove();
+
   gadgets.window.adjustHeight();
-  
+
   jQuery('#show').click(function(){
     jQuery('#show').hide();
     jQuery('#form').show();
@@ -25,9 +25,9 @@ function launchVideoWidget() {
     jQuery('#show').show();
     gadgets.window.adjustHeight();
   });
-  
- 
-  
+
+
+
   jQuery('#valid').click(function(){
     prefs.set("vidTitle", gadgets.util.escapeString(jQuery("#title-field").val()));
     jQuery('#formUpload').ajaxSubmit();
@@ -38,9 +38,9 @@ function launchVideoWidget() {
 function loadVideo(id){
   jQuery.ajax({
     type : "GET",
-    url :  [url,id].join(""),
+    url :  gadgets.nuxeo.getHtmlActionUrl(id),
     success : function(html) {
-    	setVideo(html);
+      setVideo(html);
     }
     });
 };
@@ -48,7 +48,7 @@ function loadVideo(id){
 function setTitle(title){
   var t = "";
   if(_isSet(title))
-  	t = gadgets.util.unescapeString(title);
+    t = gadgets.util.unescapeString(title);
   jQuery("#title-field").val(t);
   jQuery("#title").text(t);
 };
@@ -62,12 +62,12 @@ function setVideo(balise){
     jQuery("#video").html(balise);
     jQuery("#baliseVideo").text(balise);
     var dim = gadgets.window.getViewportDimensions();
-  	var h = (dim.width * jQuery("embed").height())/jQuery("object").width();
-  	jQuery("embed").width(dim.width);
-  	jQuery("embed").height(h);
-  	jQuery("embed").attr("wmode","transparent");
+    var h = (dim.width * jQuery("embed").height())/jQuery("object").width();
+    jQuery("embed").width(dim.width);
+    jQuery("embed").height(h);
+    jQuery("embed").attr("wmode","transparent");
   } else {
-  	jQuery("#video").html("");
+    jQuery("#video").html("");
     jQuery("#baliseVideo").text("");
   }
   gadgets.window.adjustHeight();

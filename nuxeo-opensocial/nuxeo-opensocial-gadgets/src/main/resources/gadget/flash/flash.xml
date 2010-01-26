@@ -11,9 +11,12 @@
     <Require feature="setprefs"/>
     <Require feature="jquery" />
     <Require feature="form" />
-     <Require feature="flash" />
+    <Require feature="flash" />
+
   </ModulePrefs>
-  
+
+    <UserPref name="width" display_name="Hauteur"/>
+
   <Content type="html" view="default">
 <![CDATA[
  <style type='text/css'>
@@ -85,20 +88,20 @@
   #upload:hover{
       text-decoration:underline;
     }
-    
+
   </style>
   <script type="text/javascript" language="javascript" src="flash.js"></script>
    <script type="text/javascript">
    var prefs = new _IG_Prefs(__MODULE_ID__);
-   	
+
   gadgets.util.registerOnLoadHandler(function() {
-  	launchGadget();
+    launchGadget();
   });
    </script>
    <div id="title"></div>
-   	<div style="text-align:center;margin:auto;">
-   		<img id="loader" src="/nuxeo/img/standart_waiter.gif"/>
-		<div id="flash"></div>
+     <div style="text-align:center;margin:auto;">
+       <img id="loader" src="/nuxeo/img/standart_waiter.gif"/>
+    <div id="flash"></div>
     </div>
    <div id="perm">
     <div id="show"><a href="#">Modifier</a></div>
@@ -117,7 +120,7 @@
   <tr>
     <td style="width:30%"><label for="photo">Animation</label> </td>
     <td style="width:70%">
-    <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="/nuxeo/site/gadgetDocumentAPI/setFile/">
+    <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="#">
       <input type="file" name="file" id="file" size="20" />
     </form>
   </td>

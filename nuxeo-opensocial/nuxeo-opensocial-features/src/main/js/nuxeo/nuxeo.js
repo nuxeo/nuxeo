@@ -15,24 +15,51 @@
  *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
  */
 
-/**
- * @fileoverview This library augments gadets.window with functionality to set
- *               the title of a gadget dynamically.
- */
-
 var gadgets = gadgets || {};
 
 gadgets.nuxeo = gadgets.nuxeo || {};
 
+gadgets.nuxeo.URLBASE = "/nuxeo/site/gadgetDocumentAPI/";
+gadgets.nuxeo.HTMLACTION = "/html";
+gadgets.nuxeo.FILEACTION =  "/file";
+
+
 /**
- * Gets the Id of the enclosing space doc id
+ * Get the url for the gadget's Resource
  *
  * @scope gadgets.nuxeo
  */
-gadgets.nuxeo.getSpaceId = function(callback) {
-  gadgets.rpc.call(null, "get_nuxeo_space_id", callback, null);
-};
+gadgets.nuxeo.getResourceUrl = function(id) {
+  return gadgets.nuxeo.URLBASE + id;
+}
 
+
+/**
+* Get the url for the gadget's HTML action
+*
+* @scope gadgets.nuxeo
+*/
+gadgets.nuxeo.getHtmlActionUrl = function(id) {
+  return this.getResourceUrl(id) + this.HTMLACTION;
+}
+
+/**
+* Get the url for the gadget's Form action
+*
+* @scope gadgets.nuxeo
+*/
+gadgets.nuxeo.getFormActionUrl = function(id) {
+  return this.getResourceUrl(id);
+}
+
+gadgets.nuxeo.getFileActionUrl = function(id) {
+  return this.getResourceUrl(id) + this.FILEACTION;
+}
+
+
+/**
+ * Returns the current gadget's id
+ */
 gadgets.nuxeo.getGadgetId = function() {
   return window.name.split("-").slice(2).join("-");
 };
