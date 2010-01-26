@@ -68,11 +68,12 @@
                 rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
                 <h:column>
                   <a4j:commandLink
-                    action="#{userManagerActions.deleteUser(userModel)}"
-                    onclick="return confirmDeleteUser();"
+                    action="#{userManagerActions.deleteUser}"
+                    onclick="if (!confirmDeleteUser()) { return false; }"
                     reRender="userSearchResult"
                     rendered="#{userManagerActions.allowDeleteUser and notReadOnly}">
                     <h:graphicImage value="/icons/action_delete.gif" />
+                    <f:param name="userId" value="#{userModel.id}" /> 
                   </a4j:commandLink>
                 </h:column>
                 <h:column>

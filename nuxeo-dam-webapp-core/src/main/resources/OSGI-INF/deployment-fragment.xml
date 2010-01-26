@@ -120,7 +120,19 @@
     </navigation-case>
 
     <navigation-case>
+      <from-outcome>view_user</from-outcome>
+      <to-view-id>/administration.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
       <from-outcome>view_many_users</from-outcome>
+      <to-view-id>/administration.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_users</from-outcome>
       <to-view-id>/administration.xhtml</to-view-id>
       <redirect />
     </navigation-case>
