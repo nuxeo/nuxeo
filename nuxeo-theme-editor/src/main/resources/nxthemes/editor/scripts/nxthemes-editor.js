@@ -504,7 +504,7 @@ NXThemesEditor.setElementPadding = function(info) {
              'id': id
          },
          onSuccess: function(r) {
-             NXThemes.getControllerById("editor perspectives").switchTo("edit padding");
+             NXThemes.getControllerById("editor perspectives").switchTo("padding editor");
          },
          onFailure: function(r) {
              var text = r.responseText;
