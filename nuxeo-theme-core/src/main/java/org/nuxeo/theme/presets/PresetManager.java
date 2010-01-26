@@ -195,8 +195,7 @@ public class PresetManager {
         for (Style style : themeManager.getStyles()) {
 
             if (style.isNamed()) {
-                if (!themeName.equals(themeManager.getThemeNameOfNamedObject(
-                        style))) {
+                if (!themeName.equals(themeManager.getThemeNameOfNamedObject(style))) {
                     continue;
                 }
             } else {
@@ -211,12 +210,17 @@ public class PresetManager {
 
             for (Map.Entry<Object, Object> entry : style.getAllProperties().entrySet()) {
                 String value = (String) entry.getValue();
+                String s = value.trim();
                 Matcher m = manyPresetNamePattern.matcher(value.trim());
                 while (m.find()) {
                     String name = m.group(1);
                     String presetStr = String.format("\"%s\"", name);
                     String presetName = extractPresetName(themeName, presetStr);
                     if (presetName == null) {
+                        continue;
+                    }
+                    // retain only local theme presets
+                    if (globalPresetNamePattern.matcher(s).find()) {
                         continue;
                     }
                     PresetType preset = getPresetByName(presetName);
