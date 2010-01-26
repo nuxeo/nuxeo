@@ -49,6 +49,7 @@ jQuery(document).ready(function(){
   gadgets.window.adjustHeight();
 
 
+
 });
 };
 
@@ -143,9 +144,9 @@ function loadImage(id){
     },
     success : function(data, textStatus) {
        if (_isSet(prefs.getString("link")))
-          imgContainer = jQuery("<a id=\"link\" href=\""+prefs.getString("link")+"\" target=\"_tab\" ><img style=\"border:0;\" id=\"picture\" src=\"\"></a>");
+          imgContainer = jQuery("<a id=\"link\" href=\""+prefs.getString("link")+"\" target=\"_tab\" ><img style=\"border:0;\" id=\"picture\" src=\"\" onload=\"gadgets.window.adjustHeight()\"></a>");
         else
-          imgContainer = jQuery("<img style=\"border:0;\" id=\"picture\" src=\"\">");
+          imgContainer = jQuery("<img style=\"border:0;\" id=\"picture\" src=\"\" onload=\"gadgets.window.adjustHeight()\">");
 
 
        jQuery("#pictureContainer").append(imgContainer);

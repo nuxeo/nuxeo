@@ -101,7 +101,9 @@
        launchGadget();
      });
     </script>
-
+    <div id="perm">
+        <div id="show"><a href="#">Modifier</a></div>
+    </div>
     <div id="mainContainer">
          <div id="title">
 
@@ -116,9 +118,7 @@
          <div style="clear:both"></div>
     </div>
 
-    <div id="perm">
-        <div id="show"><a href="#">Modifier</a></div>
-    </div>
+
 
    <div style="margin:auto;display:none;" id="form">
     <div id="hideContainer">

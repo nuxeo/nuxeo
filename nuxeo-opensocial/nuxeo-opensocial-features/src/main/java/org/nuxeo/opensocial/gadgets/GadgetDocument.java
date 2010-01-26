@@ -39,6 +39,7 @@ public class GadgetDocument extends DocumentObject {
   @Override
   public Response doPost() {
     FormData form = ctx.getForm();
+
     form.fillDocument(doc);
 
     if (form.isMultipartContent()) {
@@ -47,35 +48,22 @@ public class GadgetDocument extends DocumentObject {
       if (blob == null) {
         throw new IllegalArgumentException("Could not find any uploaded file");
       } else {
-        try {
-          Property p = doc.getProperty(xpath);
-          if (p.isList()) {
-            if ("files".equals(p.getSchema()
-                .getName())) {
-              Map<String, Serializable> map = new HashMap<String, Serializable>();
-              map.put("filename", blob.getFilename());
-              map.put("file", (Serializable) blob);
-              p.add(map);
-            } else {
-              p.add(blob);
-            }
-          } else {
-            if ("file".equals(p.getSchema()
-                .getName())) {
-              p.getParent()
-                  .get("filename")
-                  .setValue(blob.getFilename());
-            }
-            p.setValue(blob);
-          }
 
-        } catch (WebException e) {
-          throw e;
-        } catch (Exception e) {
-          throw WebException.wrap("Failed to attach file", e);
+        if (!"".equals(blob.getFilename())) {
+          try {
+            Property p = doc.getProperty(xpath);
+            p.getParent()
+                .get("filename")
+                .setValue(blob.getFilename());
+
+            p.setValue(blob);
+          } catch (Exception e) {
+            throw WebException.wrap("Failed to attach file", e);
+          }
         }
       }
     }
+
     try {
       CoreSession session = getContext().getCoreSession();
       session.saveDocument(doc);

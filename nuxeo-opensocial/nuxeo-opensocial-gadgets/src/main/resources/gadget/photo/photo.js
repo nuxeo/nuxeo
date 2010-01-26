@@ -99,9 +99,9 @@ function loadImage(id){
     },
     success : function(data, textStatus) {
         if (_isSet(prefs.getString("link")))
-          var imgContainer = jQuery("<a id=\"link\" href=\""+prefs.getString("link")+"\" target=\"_tab\" ><img style=\"border:0;\" id=\"photo\" src=\"\"></a>");
+          var imgContainer = jQuery("<a id=\"link\" href=\""+prefs.getString("link")+"\" target=\"_tab\" ><img style=\"border:0;\" id=\"photo\" src=\"\" onload=\"gadgets.window.adjustHeight()\"></a>");
         else
-          var imgContainer = jQuery("<img style=\"border:0;\" id=\"photo\" src=\"\">");
+          var imgContainer = jQuery("<img style=\"border:0;\" id=\"photo\" src=\"\" onload=\"gadgets.window.adjustHeight()\">");
 
         jQuery("#pictureContainer").append(imgContainer);
         jQuery("#photo").attr("src", photoUrl);
