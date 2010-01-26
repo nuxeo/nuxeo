@@ -54,7 +54,6 @@
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql-extensions" />      
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql-ra" />      
 
-      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-jcr-connector" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-web-common" />
       <!-- needed for UserIdentificationInfo - must be moved in web-common -->
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-api" />
