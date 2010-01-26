@@ -82,22 +82,22 @@ public class GroupManagerActionsBean implements GroupManagerActions {
     protected transient ResourcesAccessor resourcesAccessor;
 
     @DataModel(value = "groupList")
-    private DocumentModelList groups;
+    protected DocumentModelList groups;
 
     @DataModelSelection("groupList")
-    private DocumentModel selectedGroup;
+    protected DocumentModel selectedGroup;
 
-    private DocumentModel newGroup;
+    protected DocumentModel newGroup;
 
-    private String groupListingMode;
+    protected String groupListingMode;
 
-    private Boolean canEditGroups;
+    protected Boolean canEditGroups;
 
-    private String searchString = "";
+    protected String searchString = "";
 
-    private boolean searchOverflow;
+    protected boolean searchOverflow;
 
-    private String getGroupListingMode() throws ClientException {
+    protected String getGroupListingMode() throws ClientException {
         if (groupListingMode == null) {
             groupListingMode = userManager.getGroupListingMode();
         }
