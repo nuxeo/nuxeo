@@ -128,4 +128,19 @@ public class SpaceWebObject extends DefaultObject {
       }
     }
 
+	/* (non-Javadoc)
+	 * @see org.nuxeo.ecm.webengine.model.impl.AbstractResource#getAdapter(java.lang.Class)
+	 */
+	@Override
+	public <A> A getAdapter(Class<A> adapter) {
+		// TODO open NXP before commit
+		if (adapter == DocumentModel.class) {
+			return adapter.cast(this.getDocument());
+		} else {
+			return super.getAdapter(adapter);
+		}
+	}
+    
+    
+
 }
