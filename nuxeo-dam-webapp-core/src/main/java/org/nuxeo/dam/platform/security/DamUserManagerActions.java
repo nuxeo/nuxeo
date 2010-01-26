@@ -6,9 +6,7 @@ import static org.jboss.seam.annotations.Install.APPLICATION;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.webapp.security.UserManagerActionsBean;
 
@@ -21,11 +19,18 @@ public class DamUserManagerActions extends UserManagerActionsBean {
     
     protected String displayMode = BuiltinModes.VIEW;
     
-    @RequestParameter("userId")
     protected String selectedUserId;
+    
+    public String getSelectedUserId() {
+        return selectedUserId;
+    }
 
+    public void setSelectedUserId(String selectedUserId) throws ClientException {
+        this.selectedUserId = selectedUserId;
+        selectedUser = userManager.getUserModel(selectedUserId);
+    }
 
-    public String deleteUser() throws ClientException {
+    public String deleteUser(String selectedUserId) throws ClientException {
         if (selectedUserId == null) {
             return super.deleteUser();
         }
@@ -40,14 +45,10 @@ public class DamUserManagerActions extends UserManagerActionsBean {
         }
     }
     
-    public void setSelectedUser(DocumentModel selectedUser) {
-        this.selectedUser = selectedUser;
-    }
-
     public String getDisplayMode() {
         return displayMode;
     }
-
+    
     public void toggleDisplayMode() {
         if (BuiltinModes.VIEW.equals(displayMode)) {
             displayMode = BuiltinModes.EDIT;

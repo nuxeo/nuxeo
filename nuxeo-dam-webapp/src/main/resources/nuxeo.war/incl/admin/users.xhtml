@@ -30,6 +30,25 @@
     <ui:include src="/incl/create_user_panel.xhtml" />
   </rich:modalPanel>
 
+  <rich:modalPanel id="viewUserFormPanel" autosized="true"
+   styleClass="ViewUserFormPanel">
+    <f:facet name="header">
+      <h:panelGroup>
+        <h:outputText value="#{messages['title.viewUser']}" rendered="#{userManagerActions.displayMode == 'view'}"/>
+        <h:outputText value="#{messages['title.editUser']}" rendered="#{userManagerActions.displayMode == 'edit'}"/>
+    </h:panelGroup>
+  </f:facet>
+  <f:facet name="controls">
+    <h:panelGroup>
+      <h:graphicImage value="/img/close.png"
+          styleClass="hidelink" id="viewUserHidelink" />
+        <rich:componentControl for="viewUserFormPanel" attachTo="viewUserHidelink"
+          operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
+    <ui:include src="/incl/view_user_panel.xhtml" />
+  </rich:modalPanel>
+
   <table cellspacing="0" cellpadding="0" border="0" style="height: 100%; width: 100%;">
     <tbody>
       <tr>
@@ -68,20 +87,24 @@
                 rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
                 <h:column>
                   <a4j:commandLink
-                    action="#{userManagerActions.deleteUser}"
+                    action="#{userManagerActions.deleteUser(userModel.id)}"
                     onclick="if (!confirmDeleteUser()) { return false; }"
                     reRender="userSearchResult"
                     rendered="#{userManagerActions.allowDeleteUser and notReadOnly}">
-                    <h:graphicImage value="/icons/action_delete.gif" />
-                    <f:param name="userId" value="#{userModel.id}" /> 
-                  </a4j:commandLink>
+                   <h:graphicImage value="/icons/action_delete.gif" />
+                 </a4j:commandLink>
                 </h:column>
                 <h:column>
                   <f:facet name="header">
-                    <h:outputText
-                      value="#{messages['label.userManager.userName']}" />
+                      <h:outputText
+                        value="#{messages['label.userManager.userName']}" />
                   </f:facet>
-                  <h:outputText value="#{userModel[userSchema].username}" />
+                  <a4j:commandLink
+                    action="#{userManagerActions.setSelectedUserId(userModel.id)}"
+                    oncomplete="Richfaces.showModalPanel('viewUserFormPanel')"
+                    reRender="viewUserPanel">
+                    <h:outputText value="#{userModel[userSchema].username}" />
+                  </a4j:commandLink>
                 </h:column>
                 <h:column>
                   <f:facet name="header">
