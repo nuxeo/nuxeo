@@ -1457,6 +1457,27 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.0-beta-1</version>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <format>{0,date,yyyyMMdd-HHmmss}</format>
+          <items>
+            <item>timestamp</item>
+          </items>
+          <doCheck>false</doCheck>
+          <doUpdate>false</doUpdate>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-nuxeo-plugin</artifactId>
         <executions>
@@ -1504,11 +1525,6 @@
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <version>1.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-ejb-plugin</artifactId>
           <version>2.1</version>
           <configuration>
@@ -1518,7 +1534,9 @@
                 src/main/resources/META-INF/MANIFEST.MF
               </manifestFile>
               <manifestEntries>
-                <Bundle-Version>${eclipseVersion}</Bundle-Version>
+                <Bundle-Version>
+                  ${eclipseVersion}-t${buildNumber}
+                </Bundle-Version>
                 <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
               </manifestEntries>
             </archive>
@@ -1534,11 +1552,18 @@
                 src/main/resources/META-INF/MANIFEST.MF
               </manifestFile>
               <manifestEntries>
-                <Bundle-Version>${eclipseVersion}</Bundle-Version>
+                <Bundle-Version>
+                  ${eclipseVersion}-t${buildNumber}
+                </Bundle-Version>
                 <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
               </manifestEntries>
             </archive>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.1</version>
         </plugin>
         <!-- version should be also set in module for enabling mevenide to load it -->
         <plugin>
@@ -2036,149 +2061,6 @@
           <url>http://mavenpriv.in.nuxeo.com/snapshots</url>
         </snapshotRepository>
       </distributionManagement>
-    </profile>
-    <!-- build number using build time stamp for apogee -->
-    <profile>
-      <id>timestamp-rev-in-mf</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>buildnumber-maven-plugin</artifactId>
-            <version>1.0-beta-1</version>
-            <executions>
-              <execution>
-                <phase>validate</phase>
-                <goals>
-                  <goal>create</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <format>{0,date,yyyyMMdd-HHmmss}</format>
-              <items>
-                <item>timestamp</item>
-              </items>
-              <doCheck>false</doCheck>
-              <doUpdate>false</doUpdate>
-            </configuration>
-          </plugin>
-        </plugins>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-ejb-plugin</artifactId>
-              <version>2.1</version>
-              <configuration>
-                <ejbVersion>3.0</ejbVersion>
-                <archive>
-                  <manifestFile>
-                    src/main/resources/META-INF/MANIFEST.MF
-                  </manifestFile>
-                  <manifestEntries>
-                    <Bundle-Version>
-                      ${eclipseVersion}-t${buildNumber}
-                    </Bundle-Version>
-                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-                  </manifestEntries>
-                </archive>
-              </configuration>
-            </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-jar-plugin</artifactId>
-              <version>2.2</version>
-              <configuration>
-                <archive>
-                  <manifestFile>
-                    src/main/resources/META-INF/MANIFEST.MF
-                  </manifestFile>
-                  <manifestEntries>
-                    <Bundle-Version>
-                      ${eclipseVersion}-t${buildNumber}
-                    </Bundle-Version>
-                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-                  </manifestEntries>
-                </archive>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-    </profile>
-
-    <!-- activating the build number generation in plugins manifest for apogee -->
-    <profile>
-      <id>svn-rev-in-mf</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>buildnumber-maven-plugin</artifactId>
-            <version>1.0-beta-1</version>
-            <executions>
-              <execution>
-                <phase>validate</phase>
-                <goals>
-                  <goal>create</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <doCheck>false</doCheck>
-              <doUpdate>false</doUpdate>
-            </configuration>
-          </plugin>
-        </plugins>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-ejb-plugin</artifactId>
-              <version>2.1</version>
-              <configuration>
-                <ejbVersion>3.0</ejbVersion>
-                <archive>
-                  <manifestFile>
-                    src/main/resources/META-INF/MANIFEST.MF
-                  </manifestFile>
-                  <manifestEntries>
-                    <Bundle-Version>
-                      ${eclipseVersion}-r${buildNumber}
-                    </Bundle-Version>
-                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-                  </manifestEntries>
-                </archive>
-              </configuration>
-            </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-jar-plugin</artifactId>
-              <version>2.2</version>
-              <configuration>
-                <archive>
-                  <manifestFile>
-                    src/main/resources/META-INF/MANIFEST.MF
-                  </manifestFile>
-                  <manifestEntries>
-                    <Bundle-Version>
-                      ${eclipseVersion}-r${buildNumber}
-                    </Bundle-Version>
-                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-                  </manifestEntries>
-                </archive>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
     </profile>
     <profile>
       <id>apiviz</id>
