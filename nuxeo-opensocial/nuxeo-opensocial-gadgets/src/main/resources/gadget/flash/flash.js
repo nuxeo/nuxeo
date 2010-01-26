@@ -23,8 +23,9 @@ jQuery(document).ready(function(){
   };
 
   jQuery('#upload').click(function(){
-    jQuery('#formUpload').ajaxSubmit(options);
     savePrefs();
+    jQuery('#formUpload').ajaxSubmit(options);
+
   });
 
   jQuery('#show').click(function(){
@@ -76,11 +77,10 @@ function loadFlash(id){
         showFlash();
     },
     success : function(data, textStatus) {
-        gadgets.flash.embedFlash(flashUrl, "flash", {
-            swf_version: 6,
+      gadgets.flash.embedFlash(flashUrl, "flash", 10,{
             id: "flashid",
-           width: prefs.getInt("width"),
-            height: prefs.getInt("height")
+            height: prefs.getString("height") + "px",
+            onload: "gadgets.window.adjustHeight()"
         });
 
        showFlash();
@@ -91,6 +91,7 @@ function loadFlash(id){
 function showFlash(){
   jQuery("#loader").hide();
   jQuery("#flash").fadeIn("slow");
+  if(perm != 'true') aler("false");
   setTimeout(function(){
     gadgets.window.adjustHeight();
   },150);
