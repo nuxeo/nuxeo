@@ -40,9 +40,10 @@
 
       <div style="clear:both" />
 
-      <h:form id="searchForm" onkeypress="trapEnter(event, 'searchForm:searchButton');" >
+      <h:form id="searchForm" >
         <h:inputText id="searchText"
           value="#{userManagerActions.searchString}"
+          onkeydown="trapEnter(event, 'searchForm:searchButton');"
           class="directoryFilter" />
         &nbsp;
         <h:commandButton id="searchButton"
