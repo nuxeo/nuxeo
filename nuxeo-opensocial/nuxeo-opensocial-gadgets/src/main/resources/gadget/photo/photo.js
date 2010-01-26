@@ -1,13 +1,13 @@
 var firstTime = true;
-var action = "";
 var pUrl="/nuxeo/site/gadgets/photo/thumbnail.png";
 var perm = gadgets.util.getUrlParameters().permission;
-var url = "/nuxeo/site/gadgetDocumentAPI/getFile/";
+
 
 function launchGadget() {
 jQuery(document).ready(function(){
   if(firstTime){
-    action = jQuery("#formUpload").attr("action");
+    var idGadget = gadgets.nuxeo.getGadgetId();
+    jQuery("#formUpload").attr("action", gadgets.nuxeo.getFormActionUrl(idGadget));
     firstTime =false;
   }
 
@@ -21,8 +21,11 @@ jQuery(document).ready(function(){
       beforeSubmit: control,
       success:function(){
         launchGadget();
+      },
+      error: function(xhr,rs) {
+        alert(xhr.responseText);
       }
-  };
+    };
 
   jQuery('#upload').click(function(){
     savePrefs();
@@ -41,9 +44,8 @@ jQuery(document).ready(function(){
     gadgets.window.adjustHeight();
   });
 
-    gadgets.nuxeo.getGadgetId(function(id) {
-    	loadImage(id);
-    });
+
+  loadImage(gadgets.nuxeo.getGadgetId());
   });
 }
 
@@ -81,10 +83,12 @@ function savePrefs(){
   "legend",gadgets.util.escapeString(jQuery("#legend-field").val()));
 };
 
+
+
+
 function loadImage(id){
-  var actionUrl = [action,id].join("");
-  var photoUrl = [url,id,'?junk=',Math.random()].join("");
-  jQuery("#formUpload").attr("action", actionUrl);
+  var photoUrl = [gadgets.nuxeo.getFileActionUrl(id),'?junk=',Math.random()].join("");
+  jQuery("#formUpload").attr("action", gadgets.nuxeo.getFormActionUrl(id));
   jQuery.ajax({
     type : "GET",
     url : photoUrl,

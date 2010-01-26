@@ -15,44 +15,51 @@
  *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
  */
 
-/**
- * @fileoverview This library augments gadets.window with functionality to set
- *               the title of a gadget dynamically.
- */
-
 var gadgets = gadgets || {};
 
 gadgets.nuxeo = gadgets.nuxeo || {};
 
+gadgets.nuxeo.URLBASE = "/nuxeo/site/gadgetDocumentAPI/";
+gadgets.nuxeo.HTMLACTION = "/html";
+gadgets.nuxeo.FILEACTION =  "/file";
+
+
 /**
- * Gets the Id of the enclosing space doc id
+ * Get the url for the gadget's Resource
  *
  * @scope gadgets.nuxeo
  */
-gadgets.nuxeo.getSpaceId = function(callback) {
-  gadgets.rpc.call(null, "get_nuxeo_space_id", callback, null);
-};
+gadgets.nuxeo.getResourceUrl = function(id) {
+  return gadgets.nuxeo.URLBASE + id;
+}
 
-gadgets.nuxeo.getHtmlContent = function(callback) {
-  gadgets.rpc.call(null, "get_htmlcontent", callback, null);
-};
 
-gadgets.nuxeo.setHtmlContent = function(htmlContent, callback) {
-  gadgets.rpc.call(null, "set_htmlcontent", callback, htmlContent);
-};
+/**
+* Get the url for the gadget's HTML action
+*
+* @scope gadgets.nuxeo
+*/
+gadgets.nuxeo.getHtmlActionUrl = function(id) {
+  return this.getResourceUrl(id) + this.HTMLACTION;
+}
 
-gadgets.nuxeo.getGadgetId = function(callback) {
-  gadgets.rpc.call(null, "get_nuxeo_gadget_id", callback, null);
-};
+/**
+* Get the url for the gadget's Form action
+*
+* @scope gadgets.nuxeo
+*/
+gadgets.nuxeo.getFormActionUrl = function(id) {
+  return this.getResourceUrl(id);
+}
 
-gadgets.nuxeo.maximizeGadget = function(view, callback) {
-  gadgets.rpc.call(null, "maximize", callback, view);
-};
+gadgets.nuxeo.getFileActionUrl = function(id) {
+  return this.getResourceUrl(id) + this.FILEACTION;
+}
 
-gadgets.nuxeo.minimizeGadget = function(callback) {
-  gadgets.rpc.call(null, "minimize", callback, null);
-};
 
-gadgets.nuxeo.setAjaxPref = function(key, value) {
-  gadgets.rpc.call(null, "set_ajax_pref", null, key, value);
+/**
+ * Returns the current gadget's id
+ */
+gadgets.nuxeo.getGadgetId = function() {
+  return window.name.split("-").slice(2).join("-");
 };

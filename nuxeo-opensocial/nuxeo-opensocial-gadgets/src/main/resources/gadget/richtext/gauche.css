@@ -18,9 +18,20 @@ float:left;
   color:#13506B;
   font-size:14px;
   font-weight:bold;
+  text-align:center;
+  padding:3px 0;
 }
 
 span{
  display:block;
  text-align:center;
+}
+
+#show{
+ text-align:right;
+}
+
+#legend{
+  font-size:10px;
+  color:#333333;
 }

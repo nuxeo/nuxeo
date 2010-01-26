@@ -7,6 +7,7 @@ import org.nuxeo.opensocial.container.client.bean.GadgetView;
 import org.nuxeo.opensocial.container.client.bean.PreferencesBean;
 
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Frame;
 import com.gwtext.client.widgets.layout.FitLayout;
 import com.gwtext.client.widgets.portal.Portlet;
@@ -194,8 +195,17 @@ public class GadgetPortlet extends Portlet {
     if (this.gadget.isCollapsed())
       collapse(getIdWithRefAndView(gadget.getRef(), view));
     super.afterRender();
-    renderDefaultPreferences();
     updateFrameHeightIfContentTypeIsUrl();
+    Timer t = new Timer() {
+
+      @Override
+      public void run() {
+        renderDefaultPreferences();
+      }
+
+    };
+    t.schedule(200);
+
   }
 
   private void updateFrameHeightIfContentTypeIsUrl() {
@@ -254,18 +264,21 @@ public class GadgetPortlet extends Portlet {
 
   private static native void removeHeaderColor(String id)
   /*-{
-    $wnd.jQuery("#"+id).find("div.x-panel-tl").attr("style","");
+    $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background","");
   }-*/;
 
   private static native void changeHeaderColor(String id, String color)
   /*-{
+    $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background-image","-moz-linear-gradient(center top , #"+color+", #FFFFFF)");
     $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background-color","#"+color);
+
+
   }-*/;
 
   static native void changeBorderColor(String id, String color)
   /*-{
-    $wnd.jQuery("#"+id).find("div.x-panel-tl").css("border-bottom","1px solid #"+color);
-    $wnd.jQuery("#"+id).attr("style","border:1px solid #"+color);
+    $wnd.jQuery("#"+id).find("div.x-panel-tl").css("border-bottom","2px solid #"+color);
+    $wnd.jQuery("#"+id).attr("style","border:2px solid #"+color);
   }-*/;
 
   static native void removeBorderColor(String id)

@@ -23,7 +23,6 @@ public class GadgetFactory {
     GadgetBean bean = new GadgetBean();
     bean.setCollapsed(gadget.isCollapsed());
     bean.setHeight(gadget.getHeight());
-    bean.setHtmlContent(gadget.getHtmlContent());
     bean.setPosition(new GadgetPosition(gadget.getPlaceId(),
         gadget.getPosition()));
     bean.setRenderUrl(UrlBuilder.buildShindigUrl(gadget, permission));

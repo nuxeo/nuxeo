@@ -82,6 +82,7 @@ public class GadgetTools {
       Tool close = new Tool(Tool.CLOSE, new Function() {
         public void execute() {
           if (Window.confirm(MSG.askedDeleteGadget((title != null) ? title : ""))) {
+            portlet.hide();
             ContainerEntryPoint.getService()
                 .removeGadget(gadget, ContainerEntryPoint.getGwtParams(),
                     new AsyncCallback<GadgetBean>() {
