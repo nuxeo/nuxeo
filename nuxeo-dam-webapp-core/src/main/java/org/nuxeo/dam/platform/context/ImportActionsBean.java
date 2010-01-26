@@ -214,7 +214,7 @@ public class ImportActionsBean implements Serializable {
 
     public List<SelectItem> getImportFolders() throws ClientException {
         List<SelectItem> items = new ArrayList<SelectItem>();
-        items.add(new SelectItem(null, "New Folder"));
+        items.add(new SelectItem(null, resourcesAccessor.getMessages().get("label.widget.newFolder")));
         DocumentModelList docs = queryModelActions.get("IMPORT_FOLDERS").getDocuments(
                 documentManager);
         for (DocumentModel doc : docs) {
