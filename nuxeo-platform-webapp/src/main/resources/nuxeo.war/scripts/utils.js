@@ -96,7 +96,7 @@ function trapEnter(evt, submitButtonId) {
   if (keycode == 13) {     
       var button = document.getElementById(submitButtonId);
       if (button != null) {
-        document.click();
+        document.focus();
       }
       return false;
   } else {
