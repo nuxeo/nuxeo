@@ -58,7 +58,7 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
  * Dash board actions.
  * <p>
  * Those actions are related to the current authenticated principal.
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @Name("dashboardActions")
@@ -88,7 +88,7 @@ public class DashBoardActionsBean implements DashboardActions {
     @In
     protected transient Context eventContext;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     @In(create = true)
@@ -302,14 +302,17 @@ public class DashBoardActionsBean implements DashboardActions {
 
     @Factory(value = "availableDomains", scope = ScopeType.EVENT)
     public List<DocumentModel> getAvailableDomains() throws ClientException {
+        // if you don't have a document manager, you surely have 0 domains
+        if (documentManager == null) {
+            return new ArrayList<DocumentModel>();
+        }
         if (availableDomains == null) {
             DocumentModel rootDocument = documentManager.getRootDocument();
             String query = String.format(
                     "SELECT * from Document WHERE ecm:parentId = '%s' "
                             + "AND ecm:currentLifeCycleState != '%s' "
                             + "AND ecm:mixinType != '%s' "
-                            + "AND ecm:isProxy = 0",
-                    rootDocument.getId(),
+                            + "AND ecm:isProxy = 0", rootDocument.getId(),
                     ClipboardActionsBean.DELETED_LIFECYCLE_STATE,
                     FacetNames.HIDDEN_IN_NAVIGATION);
             availableDomains = documentManager.query(query);
@@ -334,6 +337,9 @@ public class DashBoardActionsBean implements DashboardActions {
 
     public void setSelectedDomainId(String selectedDomainId)
             throws ClientException {
+        // note: if document manager == null then you can't get a list of
+        // note: domains, so you should never reach here to try to select
+        // note: one. see above in getAvailableDomains()
         selectedDomain = documentManager.getDocument(new IdRef(selectedDomainId));
     }
 
