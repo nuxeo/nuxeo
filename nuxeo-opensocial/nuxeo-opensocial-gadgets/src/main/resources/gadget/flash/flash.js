@@ -44,42 +44,8 @@ jQuery(document).ready(function(){
   });
 }
 
-    setTitle(prefs.getString("title"));
-
-    if (perm != 'true')
-      jQuery("#perm").remove();
-
-    var options = {
-      beforeSubmit : control,
-      success : function() {
-        launchGadget();
-      }
-    };
-
-    jQuery('#upload').click( function() {
-      jQuery('#formUpload').ajaxSubmit(options);
-      savePrefs();
-    });
-
-    jQuery('#show').click( function() {
-      jQuery('#show').hide();
-      jQuery('#form').show();
-      gadgets.window.adjustHeight();
-    });
-
-    jQuery('#hide').click( function() {
-      jQuery('#form').hide();
-      jQuery('#show').show();
-      gadgets.window.adjustHeight();
-    });
-
-    loadFlash(gadgets.nuxeo.getGadgetId());
-
-  });
-}
-
-function setTitle(title) {
-  if (_isSet(title)) {
+function setTitle(title){
+  if(_isSet(title)){
     jQuery("#title-field").val(gadgets.util.unescapeString(title));
   }
 };
@@ -127,5 +93,5 @@ function showFlash(){
   jQuery("#flash").fadeIn("slow");
   setTimeout(function(){
     gadgets.window.adjustHeight();
-  },300);
+  },150);
 };

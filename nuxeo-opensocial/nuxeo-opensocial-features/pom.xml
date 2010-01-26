@@ -16,13 +16,12 @@
   <build>
     <plugins>
       <plugin>
-        <!--
-          TODO: Replace this with the more generic javascript plugin that allows
+
+          <!--   TODO: Replace this with the more generic javascript plugin that allows
           the use of arbitrary compressor / compilers. The
-          maven-javascript-plugin does not seem to work.
-        -->
-        <!-- <groupId>net.sf.hammerfest</groupId> -->
-        <!-- <artifactId>maven-javascript-plugin</artifactId> -->
+          maven-javascript-plugin does not seem to work. -->
+<!--         <groupId>net.sf.hammerfest</groupId>-->
+<!--         <artifactId>maven-javascript-plugin</artifactId>-->
         <groupId>net.sf.alchim</groupId>
         <artifactId>yuicompressor-maven-plugin</artifactId>
         <executions>
@@ -36,7 +35,7 @@
           <suffix>.opt</suffix>
           <excludes>
             <exclude>target/**</exclude>
-            <!-- don't bother with other file types. -->
+<!--             don't bother with other file types.-->
             <exclude>**/*.xml</exclude>
             <exclude>**/*.html</exclude>
             <exclude>**/*.gif</exclude>
