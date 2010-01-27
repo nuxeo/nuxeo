@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>nuxeo-distribution-dm</artifactId>
-  <packaging>pom</packaging>
+  <packaging>zip</packaging>
   <name>Nuxeo DM</name>
   <description>
     Nuxeo Enterprise Platform: The Nuxeo Document Management application.
@@ -309,29 +309,17 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jboss-packaging-maven-plugin</artifactId>
         <version>2.0-beta-1</version>
-        <!--
-          required for enabling mevenide
-        -->
         <extensions>true</extensions>
       </plugin>
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
-        <executions>
-          <execution>
-            <id>antbuild</id>
-            <phase>package</phase>
-            <configuration>
-              <buildFiles>
-                <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
-                <buildFile>${basedir}/src/main/assemble/assembly-stateful-stateless.xml</buildFile>
-              </buildFiles>
-            </configuration>
-            <goals>
-              <goal>build</goal>
-            </goals>
-          </execution>
-        </executions>
+        <configuration>
+          <buildFiles>
+            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+            <buildFile>${basedir}/src/main/assemble/assembly-stateful-stateless.xml</buildFile>
+          </buildFiles>
+        </configuration>
       </plugin>
       <!--
         copy nuxeo libraries that must go into $JBOSS/server/default/lib/
