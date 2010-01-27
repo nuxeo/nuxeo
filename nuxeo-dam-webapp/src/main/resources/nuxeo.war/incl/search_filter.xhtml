@@ -63,6 +63,23 @@
        </c:forEach>
 
      </rich:panelMenuGroup>
+
+     <rich:panelMenuGroup label="#{messages['heading.filter.my.folders']}"
+       expanded="true" id="myFolders">
+
+       <c:forEach varStatus="status" items="#{userFolderSelectItems}" var="item">
+
+         <rich:panelMenuItem label="#{item.label}"
+           styleClass="#{item.disabled ? 'selected' : ''}"
+           mode="ajax" action="#{filterActions.toggleSelectFolder}"
+           reRender="filterResultTable,filterFormPanel,selectionView"
+           eventsQueue="filterFormQueue">
+           <f:param name="folderPath" value="#{item.value}" />
+         </rich:panelMenuItem>
+
+       </c:forEach>
+
+     </rich:panelMenuGroup>
      
      <rich:panelMenuGroup label="#{messages['heading.filter.docType']}"
        expanded="true" id="docTypes">

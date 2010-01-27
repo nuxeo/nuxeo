@@ -52,6 +52,14 @@
       </sortAscending>
     </queryModel>
 
+    <queryModel name="USER_IMPORT_FOLDERS">
+      <pattern>
+        SELECT * FROM Workspace WHERE ecm:path STARTSWITH '/default-domain/import-sets' and dc:creator = ?
+      </pattern>
+      <sortable value="true" defaultSortColumn="dc:created"
+        defaultSortAscending="false" />
+    </queryModel>
+
     <queryModel name="IMPORT_FOLDERS">
       <pattern>
         SELECT * FROM Document WHERE ecm:primaryType = 'Workspace' AND ecm:path STARTSWITH '/default-domain/import-sets'

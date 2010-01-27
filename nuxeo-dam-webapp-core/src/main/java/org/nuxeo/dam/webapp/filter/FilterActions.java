@@ -69,11 +69,11 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
     public static final List<String> DAM_DOCUMENT_TYPES = Arrays.asList("File",
             "Picture", "Video", "Audio");
 
-    protected static final String QUERY_MODEL_NAME = "FILTERED_DOCUMENTS";
+    public static final String QUERY_MODEL_NAME = "FILTERED_DOCUMENTS";
 
-    protected static final String DOCTYPE_FIELD_XPATH = "filter_query:ecm_primaryType";
+    public static final String DOCTYPE_FIELD_XPATH = "filter_query:ecm_primaryType";
 
-    protected static final String PATH_FIELD_XPATH = "filter_query:ecm_path";
+    public static final String PATH_FIELD_XPATH = "filter_query:ecm_path";
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -156,6 +156,31 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
 
     public List<DirectoryTreeNode> getTopicTreeRoots() {
         return directoryTreeManager.get(TOPIC_DIRECTORY_TREE).getChildren();
+    }
+
+    // CB: DAM-392 - Create new filter widget for Importset
+    @Factory(value = "userFolderSelectItems", scope = ScopeType.EVENT)
+    public List<SelectItem> getUserFolderSelectItems() throws ClientException {
+        DocumentModel filterDocument = getFilterDocument();
+        String folderSelection = (String) filterDocument.getPropertyValue(PATH_FIELD_XPATH);
+        List<SelectItem> items = new ArrayList<SelectItem>();
+        String currentUser = documentManager.getPrincipal().getName();
+        DocumentModelList docs = queryModelActions.get("USER_IMPORT_FOLDERS").getDocuments(
+                documentManager, new Object[] { currentUser });
+        List<DocumentModel> lastUserFolders = new ArrayList<DocumentModel>();
+        if (docs.size() > 4) {
+            lastUserFolders = docs.subList(0, 5);
+        } else {
+            lastUserFolders = docs;
+        }
+
+        for (DocumentModel doc : lastUserFolders) {
+            String docPath = doc.getPathAsString();
+            items.add(new SelectItem(docPath, doc.getTitle(), "",
+                    docPath.equals(folderSelection)));
+        }
+
+        return items;
     }
 
     @Factory(value = "folderSelectItems", scope = ScopeType.EVENT)

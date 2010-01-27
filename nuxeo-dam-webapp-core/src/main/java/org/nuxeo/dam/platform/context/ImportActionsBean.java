@@ -17,6 +17,8 @@
 
 package org.nuxeo.dam.platform.context;
 
+import static org.nuxeo.dam.webapp.filter.FilterActions.PATH_FIELD_XPATH;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.dam.webapp.filter.FilterActions;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -87,6 +90,9 @@ public class ImportActionsBean implements Serializable {
 
     @In(create = true)
     protected transient QueryModelActions queryModelActions;
+
+    @In(create = true)
+    protected transient FilterActions filterActions;
 
     protected FileManager fileManagerService;
 
@@ -167,6 +173,20 @@ public class ImportActionsBean implements Serializable {
         documentManager.save();
         sendImportSetCreationEvent();
         invalidateImportContext();
+
+        // CB: DAM-392 - Create new filter widget for Importset -> When user
+        // finishes an import (and gets back the focus), he must see only his
+        // importset assets - his last import will be selected by default in the
+        // filter.
+        List<SelectItem> userFolderSelectItems = filterActions.getUserFolderSelectItems();
+        if (userFolderSelectItems != null && !userFolderSelectItems.isEmpty()) {
+            String folderPath = (String) userFolderSelectItems.get(0).getValue();
+            DocumentModel filterDocument = filterActions.getFilterDocument();
+            if (filterDocument != null) {
+                filterDocument.setPropertyValue(PATH_FIELD_XPATH, folderPath);
+            }
+        }
+
         return "nxstartup";
     }
 
