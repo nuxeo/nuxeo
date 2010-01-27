@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.webapp.context;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,10 +86,6 @@ import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 /**
  * Implementation for the navigationContext component available on the session.
@@ -550,7 +550,7 @@ public class NavigationContextBean implements NavigationContextLocal,
     }
 
     /**
-     * Updates variables according to hierachy rules and to the new
+     * Updates variables according to hierarchy rules and to the new
      * currentDocument.
      */
     protected void updateContextVariables() throws ClientException {
@@ -592,11 +592,7 @@ public class NavigationContextBean implements NavigationContextLocal,
                 }
 
                 if (docType != null && docType.equals("Domain")) {
-                    if (!docModel.equals(currentDomain)) {
-                        // update the currentDomain
-                        currentDomain = docModel;
-                        setCurrentDomain(docModel);
-                    }
+                    setCurrentDomain(docModel);
                 }
             }
         }
@@ -758,8 +754,8 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     /**
      * Alias to
-     * <code>navigateToDocument(DocumentModel doc, String viewId)</code> so that
-     * JSF EL sees no ambiguity)
+     * <code>navigateToDocument(DocumentModel doc, String viewId)</code> so
+     * that JSF EL sees no ambiguity)
      * <p>
      * The view is supposed to be set on the document type information. If such
      * a view id is not available for the type, use its default vieW.

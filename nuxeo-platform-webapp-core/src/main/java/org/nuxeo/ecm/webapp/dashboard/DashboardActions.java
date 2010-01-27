@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.dashboard;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.Remove;
@@ -34,7 +35,6 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.jbpm.dashboard.DashBoardItem;
 import org.nuxeo.ecm.platform.jbpm.dashboard.DocumentProcessItem;
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
-
 
 /**
  * Dashboard actions listener.
@@ -118,6 +118,22 @@ public interface DashboardActions extends Serializable, ResultsProviderFarm {
     String doSearch();
 
     SortInfo getSortInfo();
+
+    void invalidateDomainBoundInfo() throws ClientException;
+
+    void invalidateDomainResultProviders() throws ClientException;
+
+    DocumentModel getSelectedDomain() throws ClientException;
+
+    List<DocumentModel> getAvailableDomains() throws ClientException;
+
+    void invalidateAvailableDomains() throws ClientException;
+
+    String getSelectedDomainId() throws ClientException;
+
+    void setSelectedDomainId(String selectedDomainId) throws ClientException;
+
+    String submitSelectedDomainChange() throws ClientException;
 
     @Destroy
     @Remove
