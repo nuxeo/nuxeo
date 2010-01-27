@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
   <ModulePrefs title="Postit" description="Write your note here!" author="sergiosicari" author_email="sergiosicari+coolgadget@gmail.com" screenshot="http://www.fileden.com/files/2006/12/4/465575/Others/screenshot.png" author_location="Augusta(SR), Italy" author_affiliation="Google Inc." category="tools" height="263" scaling="false">
-  <Require feature="setprefs"/>
-  <Require feature="settitle" />
+  <Require feature="nuxeo" />
+  <Require feature="form" />
+  <Require feature="jquery" />
   <Require feature="dynamic-height" />
   </ModulePrefs>
   <UserPref name="textFont" display_name="Police du texte" default_value="courier" datatype="enum">
@@ -19,8 +20,6 @@
     <EnumValue value="18px" display_value="18" />
   </UserPref>
   <UserPref name="pickr-txtColor" display_name="Couleur du texte" default_value="#000000" datatype="hidden">
-  </UserPref>
-  <UserPref name="txtNote" default_value="" datatype="hidden">
   </UserPref>
   <Content type="html">
 
@@ -44,6 +43,10 @@
 
   #frmpostit{
    margin:5px 0 5px 0;
+  }
+  
+  #formtxt{
+   margin:0px;
   }
 
   #cacheText{
@@ -84,54 +87,34 @@
 
     _IG_RegisterOnloadHandler(
     function loadNode__MODULE_ID__() {
+      var idGadget = gadgets.nuxeo.getGadgetId();
+      jQuery("#formtxt").attr("action", gadgets.nuxeo.getFormActionUrl(idGadget));
+    
+    var url = gadgets.nuxeo.getHtmlActionUrl(idGadget);
+    
+    jQuery.ajax({
+    	type : "GET",
+    	url :  gadgets.nuxeo.getHtmlActionUrl(idGadget),
+    	success : function(html) {
+      	 setText(html);
+    	}
+    });
+    
+    
       prefs__MODULE_ID__ = new _IG_Prefs(__MODULE_ID__);
       var tcolor = prefs__MODULE_ID__.getString("pickr-txtColor");
       var tsize = prefs__MODULE_ID__.getString("textSize");
-      var text = prefs__MODULE_ID__.getString("txtNote");
       var tfont = prefs__MODULE_ID__.getString("textFont");
 
 
       _gel("txtareapostit").style.color = tcolor;
       _gel("txtareapostit").style.fontSize = tsize;
       _gel("txtareapostit").style.fontFamily = tfont;
-      _gel("txtareapostit").value = gadgets.util.unescapeString(text);
+     
       _IG_AdjustIFrameHeight();
 
     setRows();
     gadgets.window.adjustHeight();
-
-    var perm = gadgets.util.getUrlParameters().permission;
-
-    if(perm=='false'){
-     var elt2 = _gel("txtareapostit");
-
-   _gel("cacheText").style.top = _gel("txtareapostit").style.top;
-   _gel("cacheText").style.left = _gel("txtareapostit").style.left;
-   _gel("cacheText").style.width = _gel("txtareapostit").style.width;
-   _gel("cacheText").style.height = _gel("txtareapostit").style.height;
-   _gel("cacheText").style.color = tcolor;
-   _gel("cacheText").style.fontSize = tsize;
-   _gel("cacheText").style.fontFamily = tfont;
-
-   temp_chaine = gadgets.util.unescapeString(text);
-     while(temp_chaine.indexOf("\n") > 0){
-    temp_chaine = temp_chaine.replace("\n","<br>");
-    };
-
-   _gel("cacheText").innerHTML = temp_chaine;
-
-   _gel("txtareapostit").style.display='none';
-   _gel("cacheText").style.display='block';
-
-   elt2.setAttribute("disabled","disabled");
-     elt2.disabled="disabled";
-
-
-    setCols();
-    //_IG_AddDOMEventHandler(window,"resize",setCols);
-
-    }
-
 
 
         }
@@ -141,39 +124,71 @@
     var timeoutID = null;
 
     function setCols(){
-    var a=_gel("txtareapostit");
-    a.setAttribute("cols",Math.floor(a.clientWidth/7));
-    setRows();
-  }
+    	var a=_gel("txtareapostit");
+    	a.setAttribute("cols",Math.floor(a.clientWidth/7));
+    	setRows();
+  	}
+  
+  function setText(text){
+    
+  	_gel("txtareapostit").value = gadgets.util.unescapeString(text);
+    var perm = gadgets.util.getUrlParameters().permission;
 
-    function save(){
-    note.set("txtNote", _gel("txtareapostit").value, "refresh", false);
+    if(perm=='false') {
+    	var elt2 = _gel("txtareapostit");
+	   _gel("cacheText").style.top = _gel("txtareapostit").style.top;
+	   _gel("cacheText").style.left = _gel("txtareapostit").style.left;
+	   _gel("cacheText").style.width = _gel("txtareapostit").style.width;
+	   _gel("cacheText").style.height = _gel("txtareapostit").style.height;
+	   _gel("cacheText").style.color = tcolor;
+	   _gel("cacheText").style.fontSize = tsize;
+	   _gel("cacheText").style.fontFamily = tfont;
+
+	   _gel("txtareapostit").style.display='none';
+	   _gel("cacheText").style.display='block';
+	
+	   elt2.setAttribute("disabled","disabled");
+	   elt2.disabled="disabled";
+	
+	   setCols();
+	   
+	   var temp_chaine = gadgets.util.unescapeString(text);
+	   while(temp_chaine.indexOf("\n") > 0){
+	   	temp_chaine = temp_chaine.replace("\n","<br>");
+	   };
+	
+	   _gel("cacheText").innerHTML = temp_chaine;
+	
+	   }
+  	}
+
+    function save() {
+        jQuery('#formtxt').ajaxSubmit();
     }
 
     function save_note(){
-
       clearTimeout(timeoutID);
-        timeoutID = setTimeout("save();", 1000);
-
-    return true;
+      timeoutID = setTimeout("save();", 500);
+   	  return true;
     }
 
 
-  function setRows()
-  {
+  function setRows() {
     if (_gel("txtareapostit").value.length > 1100)
-    _gel("txtareapostit").value = _gel("txtareapostit").value.substring(0,1100);
+    	_gel("txtareapostit").value = _gel("txtareapostit").value.substring(0,1100);
     var zoneText=_gel("txtareapostit"),colonnes=zoneText.cols,contenu=zoneText.value;
     contenu=contenu.replace(/\r\n?/,"\n");
-    var e=2,c=0,d=0;
+    var e=2;
+    var c=0;
+    var d=0;
 
     for(;d<contenu.length;d++)
     {
       var g=contenu.charAt(d);
       c++;
-      if(g=="\n"||c==colonnes)
-      {
-        e++;c=0
+      if(g=="\n"||c==colonnes) {
+        e++;
+        c=0;
       }
     }
     zoneText.setAttribute("rows",e);
@@ -188,21 +203,21 @@
 
     return true;
 
-
-
   }
 
   </script>
-   <form name="frmpostit" id="frmpostit">
+   <div id="frmpostit">
 
    <div id="txtTop"></div>
    <div id="txtCenter">
    <div id="cacheText" style="display:none;" ></div>
-  <textarea id="txtareapostit" style="display:block;" name="txtareapostit" cols="30" wrap="hard" onkeyup="save_note();setRows();">
-  </textarea>
+    <form style="text-align:center;" method="post" id="formtxt" enctype="application/x-www-form-urlencoded" action="#">
+  	<textarea id="txtareapostit" style="display:block;" name="gadget:htmlContent" cols="30" wrap="hard" onkeyup="save_note();setRows();">
+  	</textarea>
+  	</form>
    </div>
    <div id="txtBottom"></div>
-  </form>
+  </div>
 
   <div style="clear:both"></div>
     ]]>
