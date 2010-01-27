@@ -169,6 +169,49 @@
   </tag>
 
   <tag>
+    <name>actionListenerMethod</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>
+      Facelet tag handler that add an action listener to the parent component.
+      Available since 5.3.1.
+      </p>
+      <p>
+      Parent needs to be an action source for the action listener to be declared
+       on it.
+      </p>
+      <p>
+      This is useful when declaring several action listeners on the same parent
+      component, and when the order of calls needs to be respected: the action
+      listener method declared on a component is the first one called. So this
+      method makes it possible to add other action listeners before it, without
+      having to declare a class (when using the f:actionListener tag).
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <description>
+        MethodBinding representing an action listener method that will be
+        notified when this component is activated by the user. The expression
+        must evaluate to a public method that takes an ActionEvent parameters,
+        with a return type of void.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<h:commandLink value="Go">
+  <nxu:actionListenerMethod value="#{myBean.performFirstAction}" />
+  <nxu:actionListenerMethod value="#{myBean.performSecondAction}" />
+</h:commandLink>
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
     <name>selectItems</name>
     <tag-class>None</tag-class>
     <body-content>None</body-content>

@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.util;
 
-import static org.jboss.seam.ScopeType.STATELESS;
+import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.Serializable;
 
@@ -43,7 +43,7 @@ import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
  * @since 5.2M4
  */
 @Name("suggestionActions")
-@Scope(STATELESS)
+@Scope(EVENT)
 public class SuggestionActionsBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -89,6 +89,16 @@ public class SuggestionActionsBean implements Serializable {
      */
     @RequestParameter
     protected String suggestionSelectionDeleteId;
+
+    protected String selectedValue;
+
+    public String getSelectedValue() {
+        return selectedValue;
+    }
+
+    public void setSelectedValue(String selectedValue) {
+        this.selectedValue = selectedValue;
+    }
 
     /**
      * Gets the base naming container from anchor.
@@ -144,10 +154,38 @@ public class SuggestionActionsBean implements Serializable {
     /**
      * Adds selection from selector as a list element
      * <p>
+     * Must pass request parameter "suggestionSelectionListId" holding the
+     * binding to model. Selection will be retrieved using the
+     * {@link #getSelectedValue()} method.
+     */
+    public void addBoundSelectionToList(ActionEvent event) {
+        UIComponent component = event.getComponent();
+        if (component == null) {
+            return;
+        }
+        UIComponent base = getBase(component);
+        UIEditableList list = getComponent(base, suggestionSelectionListId,
+                UIEditableList.class);
+
+        if (list != null) {
+            // add selected value to the list
+            String selectedValue = getSelectedValue();
+            list.addValue(selectedValue);
+        }
+    }
+
+    /**
+     * Adds selection from selector as a list element
+     * <p>
      * Must pass request parameters "suggestionInputSelectorId" holding the
      * value to pass to the binding component, "suggestionSelectionListId"
      * holding the binding to model.
+     *
+     * @deprecated use {@link #addBoundSelectionToList(ActionEvent)} which
+     *             retrieves selected value from bound method instead of
+     *             retrieving suggestion input.
      */
+    @Deprecated
     public void addSelectionToList(ActionEvent event) {
         UIComponent component = event.getComponent();
         if (component == null) {
@@ -168,14 +206,58 @@ public class SuggestionActionsBean implements Serializable {
     /**
      * Adds selection from selector as single element
      * <p>
+     * Must pass request parameters "suggestionSelectionOutputId" holding the
+     * value to show, and "suggestionSelectionHiddenId" holding the binding to
+     * model. Selection will be retrieved using the {@link #getSelectedValue()}
+     * method.
+     * <p>
+     * Additional optional request parameter "suggestionSelectionDeleteId" can
+     * be used to show an area where the "clear" button is shown.
+     */
+    public void addSingleBoundSelection(ActionEvent event) {
+        UIComponent component = event.getComponent();
+        if (component == null) {
+            return;
+        }
+        UIComponent base = getBase(component);
+        EditableValueHolder hiddenSelector = getComponent(base,
+                suggestionSelectionHiddenId, EditableValueHolder.class);
+        ValueHolder output = getComponent(base, suggestionSelectionOutputId,
+                ValueHolder.class);
+
+        if (hiddenSelector != null && output != null) {
+            String selectedValue = getSelectedValue();
+            output.setValue(selectedValue);
+            hiddenSelector.setSubmittedValue(selectedValue);
+
+            // display delete component if needed
+            if (suggestionSelectionDeleteId != null) {
+                UIComponent deleteComponent = getComponent(base,
+                        suggestionSelectionDeleteId, UIComponent.class);
+                if (deleteComponent != null) {
+                    deleteComponent.setRendered(true);
+                }
+            }
+
+        }
+    }
+
+    /**
+     * Adds selection from selector as single element
+     * <p>
      * Must pass request parameters "suggestionInputSelectorId" holding the
      * value to pass to the binding component, "suggestionSelectionOutputId"
      * holding the value to show, and "suggestionSelectionHiddenId" holding the
      * binding to model.
      * <p>
      * Additional optional request parameter "suggestionSelectionDeleteId" can
-     * be used to show an area where the "clear" button is shown.
+     * be used to show an area where the "clear" button is shown. *
+     *
+     * @deprecated use {@link #addBoundSelectionToList(ActionEvent)} which
+     *             retrieves selected value from bound method instead of
+     *             retrieving suggestion input.
      */
+    @Deprecated
     public void addSingleSelection(ActionEvent event) {
         UIComponent component = event.getComponent();
         if (component == null) {
@@ -209,10 +291,9 @@ public class SuggestionActionsBean implements Serializable {
     /**
      * Clears single selection.
      * <p>
-     * Must pass request parameters "suggestionInputSelectorId" holding the
-     * value to pass to the binding component, "suggestionSelectionOutputId"
-     * holding the value to show, and "suggestionSelectionHiddenId" holding the
-     * binding to model.
+     * Must pass request parameters "suggestionSelectionOutputId" holding the
+     * value to show, and "suggestionSelectionHiddenId" holding the binding to
+     * model.
      * <p>
      * Additional optional request parameter "suggestionSelectionDeleteId" can
      * be used to hide an area where the "clear" button is shown.
@@ -223,15 +304,12 @@ public class SuggestionActionsBean implements Serializable {
             return;
         }
         UIComponent base = component;
-        ValueHolder selector = getComponent(base, suggestionInputSelectorId,
-                ValueHolder.class);
-
         EditableValueHolder hiddenSelector = getComponent(base,
                 suggestionSelectionHiddenId, EditableValueHolder.class);
         ValueHolder output = getComponent(base, suggestionSelectionOutputId,
                 ValueHolder.class);
 
-        if (selector != null && hiddenSelector != null && output != null) {
+        if (hiddenSelector != null && output != null) {
             output.setValue("");
             hiddenSelector.setSubmittedValue("");
 

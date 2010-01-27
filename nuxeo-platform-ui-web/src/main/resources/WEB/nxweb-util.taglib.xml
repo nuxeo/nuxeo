@@ -209,6 +209,12 @@
       org.nuxeo.ecm.platform.ui.web.tag.handler.RepeatTagHandler
     </handler-class>
   </tag>
+  <tag>
+    <tag-name>actionListenerMethod</tag-name>
+    <handler-class>
+      org.nuxeo.ecm.platform.ui.web.tag.handler.ActionListenerMethodTagHandler
+    </handler-class>
+  </tag>
   <!-- selectItems easy utility -->
   <tag>
     <tag-name>selectItems</tag-name>
