@@ -45,8 +45,13 @@ public class WhereClauseDescriptor {
     @XNodeList(value = "predicate", componentType = PredicateDescriptor.class, type = PredicateDescriptor[].class)
     protected PredicateDescriptor[] predicates;
 
-    @XNode("fixedPart")
     protected String fixedPart;
+
+    @XNode("fixedPart")
+    public void setFixedPath(String fixedPart) {
+        // remove new lines and following spaces
+        this.fixedPart = fixedPart.replaceAll("\r?\n\\s*", " ");
+    }
 
     // default escaper instance
     protected Escaper escaper = new LuceneMinimalEscaper();

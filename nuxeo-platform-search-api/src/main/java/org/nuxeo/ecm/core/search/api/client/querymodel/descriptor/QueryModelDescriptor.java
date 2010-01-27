@@ -48,8 +48,13 @@ public class QueryModelDescriptor {
     @XNode("@docType")
     protected String docType;
 
-    @XNode("pattern")
     protected String pattern;
+
+    @XNode("pattern")
+    public void setPattern(String pattern) {
+        // remove new lines and following spaces
+        this.pattern = pattern.replaceAll("\r?\n\\s*", " ");
+    }
 
     @XNode("whereClause")
     protected WhereClauseDescriptor whereClause;

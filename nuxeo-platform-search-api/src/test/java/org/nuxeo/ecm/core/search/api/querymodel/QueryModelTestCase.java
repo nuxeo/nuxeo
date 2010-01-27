@@ -75,7 +75,10 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
 
     private DocumentModel documentModelWithMultiStartswith;
 
+    private QueryModel statelessModelWithLongPattern;
+
     private QueryModelService service;
+
 
     private static final String TEST_BUNDLE = "org.nuxeo.ecm.platform.search.api.tests";
 
@@ -114,6 +117,9 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
 
         statelessModel = new QueryModel(
                 service.getQueryModelDescriptor("statelessModel"));
+
+        statelessModelWithLongPattern = new QueryModel(
+                service.getQueryModelDescriptor("statelessModelWithLongPattern"));
 
         statelessModelWithSort = new QueryModel(
                 service.getQueryModelDescriptor("statelessModelWithSort"));
@@ -238,6 +244,22 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         String query = "SELECT * FROM Document WHERE ecm:floatParameter = 123.4";
         assertEquals(query, descriptor.getQuery(new Object[] { 123.4f }));
     }
+
+    public void testStatelessQueryModelWithLongPattern() throws ClientException {
+        QueryModelDescriptor descriptor = statelessModelWithLongPattern.getDescriptor();
+        assertTrue(descriptor.isStateless());
+        assertFalse(descriptor.isStateful());
+        assertEquals(
+                "SELECT * FROM Document WHERE dc:contributors = 'Administrator' AND ecm:path STARTSWITH 'somelocation' AND ecm:title = 'the title' dc:created >= DATE '2006-10-12' AND ecm:isProxy = 0",
+                descriptor.getQuery(new Object[] { "Administrator",
+                        "somelocation" }));
+        try {
+            descriptor.getQuery(documentModel);
+            fail("Should have raised an exception since stateless models need a parameters array");
+        } catch (ClientException e) {
+        }
+    }
+
 
     public void testSerialization() throws Exception {
         ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();

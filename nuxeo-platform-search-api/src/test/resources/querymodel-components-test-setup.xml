@@ -34,6 +34,13 @@
       </pattern>
     </queryModel>
 
+    <queryModel name="statelessModelWithLongPattern">
+      <pattern>
+        SELECT * FROM Document WHERE dc:contributors = ? AND ecm:path STARTSWITH ?
+         AND ecm:title = 'the title' dc:created >= DATE '2006-10-12' AND ecm:isProxy = 0
+      </pattern>
+    </queryModel>
+
     <queryModel name="statelessModelWithSort">
       <pattern>
         SELECT * FROM Document WHERE ecm:primaryType in ('File')
