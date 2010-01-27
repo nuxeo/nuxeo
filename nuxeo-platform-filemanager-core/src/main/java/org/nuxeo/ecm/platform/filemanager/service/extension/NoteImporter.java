@@ -64,6 +64,16 @@ public class NoteImporter extends AbstractFileImporter {
 
     private static final Log log = LogFactory.getLog(NoteImporter.class);
 
+    /**
+     * Return the note document type. Can be override if the document to be
+     * created is an extension of the Note type.
+     * 
+     * @return
+     */
+    protected String getNoteTypeName() {
+        return NOTE_TYPE;
+    }
+
     public DocumentModel create(CoreSession documentManager, Blob content,
             String path, boolean overwrite, String fullname,
             TypeManager typeService) throws ClientException, IOException {
@@ -85,7 +95,7 @@ public class NoteImporter extends AbstractFileImporter {
             // Create a new empty DocumentModel of type Note in memory
             String docId = IdUtils.generateId(title);
             docModel = documentManager.createDocumentModel(path, docId,
-                    NOTE_TYPE);
+                    getNoteTypeName());
 
             // Update known attributes (title, note)
             docModel.setProperty(DUBLINCORE_SCHEMA, TITLE_FIELD, title);
