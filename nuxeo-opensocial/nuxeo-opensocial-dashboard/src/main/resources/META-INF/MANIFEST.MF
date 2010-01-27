@@ -13,7 +13,6 @@ Nuxeo-Require: org.nuxeo.ecm.webengine.core, org.nuxeo.ecm.core.schema,
  org.nuxeo.ecm.platform.userworkspace.types
 Nuxeo-RequiredBy: org.nuxeo.ecm.war
 Nuxeo-Component: OSGI-INF/gadget-contrib.xml,
- OSGI-INF/spaces-contrib.xml,
  OSGI-INF/theme-contrib.xml,
  OSGI-INF/type-contrib.xml,
  OSGI-INF/ui-contrib.xml,
