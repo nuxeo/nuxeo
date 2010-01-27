@@ -168,23 +168,25 @@
     <rich:panelMenuGroup label="#{messages['heading.filter.date']}"
        expanded="true" id="datePanel">
 
-      <h:outputText value="#{messages['label.dublincore.creationDate']}" />
-      <h:outputText value=" #{messages['label.search.between']}" />
-      <br />
-      <nxu:inputDateTime value="#{filterActions.filterDocument.filter_query.created_min}"
-        showsTime="true" format="#{nxu:basicDateFormater()}">
-        <a4j:support event="onchange" reRender="filterResultTable,selectionView"
-          action="#{filterActions.invalidateProvider}" eventsQueue="filterFormQueue" />
-      </nxu:inputDateTime>
-      <h:outputText value="#{messages['label.search.and']}" />
-      <br />
-      <nxu:inputDateTime value="#{filterActions.filterDocument.filter_query.created_max}"
-        showsTime="true" format="#{nxu:basicDateFormater()}">
-        <a4j:support event="onchange" reRender="filterResultTable,selectionView"
-          action="#{filterActions.invalidateProvider}" eventsQueue="filterFormQueue" />
-      </nxu:inputDateTime>
-
-     </rich:panelMenuGroup>
+      <rich:panelMenuItem mode="none" disabledClass="hiddenMenuIcon" disabled="true" id="dateRichPanelMenuItem">
+        <h:outputText value="#{messages['label.dublincore.creationDate']}" />
+        <h:outputText value=" #{messages['label.search.between']}" />
+        <br />
+        <nxu:inputDateTime value="#{filterActions.filterDocument.filter_query.created_min}"
+          showsTime="true" format="#{nxu:basicDateFormater()}">
+          <a4j:support event="onchange" reRender="filterResultTable,selectionView"
+            action="#{filterActions.invalidateProvider}" eventsQueue="filterFormQueue" />
+        </nxu:inputDateTime>
+        <h:outputText value="#{messages['label.search.and']}" />
+        <br />
+        <nxu:inputDateTime value="#{filterActions.filterDocument.filter_query.created_max}"
+          showsTime="true" format="#{nxu:basicDateFormater()}">
+          <a4j:support event="onchange" reRender="filterResultTable,selectionView"
+            action="#{filterActions.invalidateProvider}" eventsQueue="filterFormQueue" />
+        </nxu:inputDateTime>
+      </rich:panelMenuItem>
+      
+    </rich:panelMenuGroup>
      
    </rich:panelMenu>
 
