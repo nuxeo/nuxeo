@@ -178,12 +178,14 @@ public class ImportActionsBean implements Serializable {
         // finishes an import (and gets back the focus), he must see only his
         // importset assets - his last import will be selected by default in the
         // filter.
-        List<SelectItem> userFolderSelectItems = filterActions.getUserFolderSelectItems();
-        if (userFolderSelectItems != null && !userFolderSelectItems.isEmpty()) {
-            String folderPath = (String) userFolderSelectItems.get(0).getValue();
-            DocumentModel filterDocument = filterActions.getFilterDocument();
-            if (filterDocument != null) {
-                filterDocument.setPropertyValue(PATH_FIELD_XPATH, folderPath);
+        if (filterActions != null) {
+            List<SelectItem> userFolderSelectItems = filterActions.getUserFolderSelectItems();
+            if (userFolderSelectItems != null && !userFolderSelectItems.isEmpty()) {
+                String folderPath = (String) userFolderSelectItems.get(0).getValue();
+                DocumentModel filterDocument = filterActions.getFilterDocument();
+                if (filterDocument != null) {
+                    filterDocument.setPropertyValue(PATH_FIELD_XPATH, folderPath);
+                }
             }
         }
 
