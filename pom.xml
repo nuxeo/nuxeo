@@ -102,7 +102,7 @@
       <dependency>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
-        <version>0.6</version>
+        <version>0.8</version>
         <scope>provided</scope>
       </dependency>
       <!-- javax -->
@@ -1719,7 +1719,8 @@
         <plugin>
           <groupId>org.nuxeo.build</groupId>
           <artifactId>nuxeo-distribution-tools</artifactId>
-          <version>0.6</version>
+          <version>0.8</version>
+          <extensions>true</extensions>
         </plugin>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
