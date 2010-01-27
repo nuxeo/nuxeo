@@ -67,8 +67,8 @@ public class TreeActionsBean implements TreeActions, Serializable {
 
     private static final Log log = LogFactory.getLog(TreeActionsBean.class);
 
-    public static final String NODE_SELECTED_MARKER = TreeActionsBean.class.getName() +
-            "_NODE_SELECTED_MARKER";
+    public static final String NODE_SELECTED_MARKER = TreeActionsBean.class.getName()
+            + "_NODE_SELECTED_MARKER";
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -89,8 +89,8 @@ public class TreeActionsBean implements TreeActions, Serializable {
                 List<DocumentModel> parents = documentManager.getParentDocuments(currentDocument.getRef());
                 if (!parents.isEmpty()) {
                     firstAccessibleParent = parents.get(0);
-                } else if (!"Root".equals(currentDocument.getType()) &&
-                        currentDocument.isFolder()) {
+                } else if (!"Root".equals(currentDocument.getType())
+                        && currentDocument.isFolder()) {
                     // default on current doc
                     firstAccessibleParent = currentDocument;
                 }
@@ -117,10 +117,10 @@ public class TreeActionsBean implements TreeActions, Serializable {
                         firstAccessibleParent, filter, leafFilter, sorter,
                         queryModel);
                 tree.add(treeRoot);
-                log.debug("Tree initialized with document: " +
-                        firstAccessibleParent.getId());
+                log.debug("Tree initialized with document: "
+                        + firstAccessibleParent.getId());
             } else {
-                log.warn("Could not initialize the navigation tree: no parent"
+                log.debug("Could not initialize the navigation tree: no parent"
                         + " found for current document");
             }
         }
@@ -162,8 +162,8 @@ public class TreeActionsBean implements TreeActions, Serializable {
                 DocumentTreeNode treeNode = (DocumentTreeNode) value;
                 String nodePath = treeNode.getPath();
                 String currentDocPath = getCurrentDocumentPath();
-                if (currentDocPath != null && nodePath != null &&
-                        currentDocPath.startsWith(nodePath)) {
+                if (currentDocPath != null && nodePath != null
+                        && currentDocPath.startsWith(nodePath)) {
                     // additional slower check for strict path prefix
                     if ((currentDocPath + '/').startsWith(nodePath + '/')) {
                         return true;
@@ -178,6 +178,11 @@ public class TreeActionsBean implements TreeActions, Serializable {
     @BypassInterceptors
     public void resetCurrentDocumentData() {
         currentDocumentPath = null;
+        // reset tree in case an accessible parent is finally found this time
+        // for the new current document
+        if (tree != null && tree.isEmpty()) {
+            tree = null;
+        }
     }
 
     @Observer(value = { EventNames.GO_HOME,
