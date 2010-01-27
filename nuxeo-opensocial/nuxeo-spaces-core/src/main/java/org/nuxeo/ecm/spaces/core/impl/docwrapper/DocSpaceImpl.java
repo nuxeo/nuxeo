@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
@@ -155,7 +156,7 @@ public class DocSpaceImpl implements Space {
   }
 
   public boolean isReadOnly() throws ClientException {
-    return readOnly;
+    return !hasPermission(SecurityConstants.WRITE);
   }
 
   public void setLayout(String name) throws ClientException {

@@ -101,15 +101,7 @@
     });
     
     
-      prefs__MODULE_ID__ = new _IG_Prefs(__MODULE_ID__);
-      var tcolor = prefs__MODULE_ID__.getString("pickr-txtColor");
-      var tsize = prefs__MODULE_ID__.getString("textSize");
-      var tfont = prefs__MODULE_ID__.getString("textFont");
 
-
-      _gel("txtareapostit").style.color = tcolor;
-      _gel("txtareapostit").style.fontSize = tsize;
-      _gel("txtareapostit").style.fontFamily = tfont;
      
       _IG_AdjustIFrameHeight();
 
@@ -130,8 +122,16 @@
   	}
   
   function setText(text){
-    
-  	_gel("txtareapostit").value = gadgets.util.unescapeString(text);
+      var prefs  = new _IG_Prefs(__MODULE_ID__);
+      var tcolor = prefs.getString("pickr-txtColor");
+      var tsize = prefs.getString("textSize");
+      var tfont = prefs.getString("textFont");
+      
+  		_gel("txtareapostit").value = gadgets.util.unescapeString(text);
+     _gel("txtareapostit").style.color = tcolor;
+      _gel("txtareapostit").style.fontSize = tsize;
+      _gel("txtareapostit").style.fontFamily = tfont;
+      
     var perm = gadgets.util.getUrlParameters().permission;
 
     if(perm=='false') {
@@ -144,8 +144,10 @@
 	   _gel("cacheText").style.fontSize = tsize;
 	   _gel("cacheText").style.fontFamily = tfont;
 
-	   _gel("txtareapostit").style.display='none';
-	   _gel("cacheText").style.display='block';
+	   jQuery("#formtxt").remove();
+	   jQuery("#cacheText").show();
+	   
+	   console.log("show");
 	
 	   elt2.setAttribute("disabled","disabled");
 	   elt2.disabled="disabled";
