@@ -64,6 +64,7 @@
 
      </rich:panelMenuGroup>
 
+     <c:if test="#{!empty userFolderSelectItems}">  
      <rich:panelMenuGroup label="#{messages['heading.filter.my.folders']}"
        expanded="true" id="myFolders">
 
@@ -80,7 +81,7 @@
        </c:forEach>
 
      </rich:panelMenuGroup>
-     
+     </c:if>
      <rich:panelMenuGroup label="#{messages['heading.filter.docType']}"
        expanded="true" id="docTypes">
        
@@ -166,27 +167,36 @@
     </rich:panelMenuGroup>
 
     <rich:panelMenuGroup label="#{messages['heading.filter.date']}"
-       expanded="true" id="datePanel">
-
-      <rich:panelMenuItem mode="none" disabledClass="hiddenMenuIcon" disabled="true" id="dateRichPanelMenuItem">
-        <h:outputText value="#{messages['label.dublincore.creationDate']}" />
-        <h:outputText value=" #{messages['label.search.between']}" />
-        <br />
-        <nxu:inputDateTime value="#{filterActions.filterDocument.filter_query.created_min}"
-          showsTime="true" format="#{nxu:basicDateFormater()}">
-          <a4j:support event="onchange" reRender="filterResultTable,selectionView"
-            action="#{filterActions.invalidateProvider}" eventsQueue="filterFormQueue" />
-        </nxu:inputDateTime>
-        <h:outputText value="#{messages['label.search.and']}" />
-        <br />
-        <nxu:inputDateTime value="#{filterActions.filterDocument.filter_query.created_max}"
-          showsTime="true" format="#{nxu:basicDateFormater()}">
-          <a4j:support event="onchange" reRender="filterResultTable,selectionView"
-            action="#{filterActions.invalidateProvider}" eventsQueue="filterFormQueue" />
-        </nxu:inputDateTime>
-      </rich:panelMenuItem>
-      
-    </rich:panelMenuGroup>
+       expanded="true" id="datePanel" styleClass="DateSearchBlock">
+      <rich:panelMenuItem mode="none" disabledClass="hiddenMenuIcon" disabled="true" id="dateRichPanelMenuItem">       
+      <table class="DateSelectors">
+        <tr>
+          <td class="labels">
+	      		<span><h:outputText value=" #{messages['label.search.between']}" /></span>
+	        </td>
+	        <td>
+	     		  <nxu:inputDateTime value="#{filterActions.filterDocument.filter_query.created_min}"
+	          	showsTime="true" format="#{nxu:basicDateFormater()}">
+	          <a4j:support event="onchange" reRender="filterResultTable,selectionView"
+	         	 action="#{filterActions.invalidateProvider}" eventsQueue="filterFormQueue" />
+	      		</nxu:inputDateTime>
+	    		</td>
+	      </tr>
+	      <tr>
+	        <td class="labels">
+	 		      <span><h:outputText value="#{messages['label.search.and']}" /></span>
+	 		    </td>
+	 		    <td>
+			      <nxu:inputDateTime value="#{filterActions.filterDocument.filter_query.created_max}"
+			        showsTime="true" format="#{nxu:basicDateFormater()}">
+			        <a4j:support event="onchange" reRender="filterResultTable,selectionView"
+			          action="#{filterActions.invalidateProvider}" eventsQueue="filterFormQueue" />
+			      </nxu:inputDateTime>
+			    </td>
+			  </tr>
+			</table>
+			</rich:panelMenuItem>
+     </rich:panelMenuGroup>
      
    </rich:panelMenu>
 

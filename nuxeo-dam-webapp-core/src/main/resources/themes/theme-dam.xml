@@ -611,6 +611,26 @@
       <selector path="#rightIconfilterForm\00003AtopicRichPanelMenuItem, #rightIconfilterForm\00003AcoverageRichPanelMenuItem">
         <width>0</width>
       </selector>
+      <selector path="#filterForm\00003AdatePanel p">
+        <padding>3px 0px 1px 5px</padding>
+        <margin-bottom>3px</margin-bottom>
+        <border-bottom>1px solid #C8CDD4</border-bottom>
+      </selector>
+      <selector path="#filterForm\00003AdatePanel .DateSelectors">
+        <width>auto</width>
+        <margin>4px 10px</margin>
+      </selector>
+      <selector path="#filterForm\00003AdatePanel .DateSelectors .labels">
+        <color>#555</color>
+        <padding-right>5px</padding-right>
+      </selector>
+      <selector path="#filterForm\00003AdatePanel span">
+      </selector>
+      <selector path="#filterForm\00003AdatePanel input">
+        <width>65px</width>
+        <margin-right>5px</margin-right>
+        <padding>0px 2px</padding>
+      </selector>
       <selector path=".dr-pmenu-selected-item">
         <font-style>normal</font-style>
       </selector>
