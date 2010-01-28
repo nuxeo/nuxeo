@@ -171,8 +171,8 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
         DocumentModelList docs = queryModelActions.get("USER_IMPORT_FOLDERS").getDocuments(
                 documentManager, new Object[] { currentUser });
         List<DocumentModel> lastUserFolders = new ArrayList<DocumentModel>();
-        if (docs.size() > 4) {
-            lastUserFolders = docs.subList(0, 5);
+        if (docs.size() > 2) {
+            lastUserFolders = docs.subList(0, 3);
         } else {
             lastUserFolders = docs;
         }
