@@ -26,6 +26,7 @@
 
   <Content type="html" view="default">
   <![CDATA[
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
   <link rel="stylesheet" type="text/css" href="gauche.css" title="gauche" media="screen" />
   <link rel="stylesheet" type="text/css" href="droite.css" title="droite" media="screen" />
   <link rel="stylesheet" type="text/css" href="centre.css" title="centre" media="screen" />
@@ -125,7 +126,7 @@
     <a href="#" id="refresh" title="refresh"><img src="page_refresh.png"></a>
     <a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a>
     </div>
-       <form method="post" id="formUpload" enctype="multipart/form-data" action="#">
+       <form method="post" id="formUpload"  action="#" enctype="multipart/form-data;charset=utf-8" >
         <table style="width:100%;margin-bottom:10px;" class="form">
           <tr>
             <td style="width:30%"><label for="title">Titre</label></td>

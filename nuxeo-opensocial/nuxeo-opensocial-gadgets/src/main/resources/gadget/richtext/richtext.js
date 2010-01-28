@@ -39,10 +39,14 @@ jQuery(document).ready(function(){
     jQuery('#richtext').val(jQuery('.nicEdit-main').html());
     savePrefs();
 
-    jQuery('#formUpload').ajaxSubmit();
+    jQuery('#formUpload').ajaxSubmit({skipEncodingOverride: false});
   });
 
-  new nicEditor({iconsPath : '/nuxeo/site/gadgets/richtext/nicEditorIcons.gif'}).panelInstance('richtext');
+  var myEditor = new nicEditor({iconsPath : '/nuxeo/site/gadgets/richtext/nicEditorIcons.gif'}).panelInstance('richtext');
+  myEditor.addEvent("key", function() {
+    gadgets.window.adjustHeight();
+  });
+
 
   setWidthAndBindEvents();
   jQuery('#loader').remove();
@@ -130,6 +134,7 @@ function setHtml(content) {
      if(_isSet(content)){
        jQuery(".nicEdit-main").html(content);
        jQuery("#text").html(content);
+       gadgets.window.adjustHeight();
     }
 };
 
