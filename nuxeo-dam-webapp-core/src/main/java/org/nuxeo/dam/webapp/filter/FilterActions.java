@@ -18,6 +18,7 @@
 package org.nuxeo.dam.webapp.filter;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
@@ -55,6 +57,7 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 
 @Scope(CONVERSATION)
 @Name("filterActions")
+@Install(precedence = FRAMEWORK)
 public class FilterActions implements Serializable, ResultsProviderFarm {
 
     public static final String DC_COVERAGE_DIRECTORY_TREE = "dcCoverageDirectoryTree";

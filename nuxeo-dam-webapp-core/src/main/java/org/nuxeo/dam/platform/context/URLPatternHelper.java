@@ -18,11 +18,13 @@
 package org.nuxeo.dam.platform.context;
 
 import static org.jboss.seam.ScopeType.EVENT;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
 
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.dam.webapp.contentbrowser.DocumentActions;
@@ -40,6 +42,7 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
  */
 @Name("urlPatternHelper")
 @Scope(EVENT)
+@Install(precedence = FRAMEWORK)
 public class URLPatternHelper implements Serializable {
 
     private static final long serialVersionUID = 1L;

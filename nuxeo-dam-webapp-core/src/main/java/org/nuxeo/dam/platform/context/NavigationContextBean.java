@@ -17,12 +17,15 @@
 
 package org.nuxeo.dam.platform.context;
 
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 import java.io.Serializable;
 import java.util.List;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
@@ -46,6 +49,7 @@ import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
 
 @Name("navigationContext")
 @Scope(ScopeType.CONVERSATION)
+@Install(precedence = FRAMEWORK)
 public class NavigationContextBean implements NavigationContext, Serializable {
 
     private static final long serialVersionUID = 1L;

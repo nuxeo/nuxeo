@@ -17,6 +17,8 @@
 
 package org.nuxeo.dam.webapp;
 
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 import java.io.IOException;
 
 import javax.faces.context.ExternalContext;
@@ -25,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
@@ -35,6 +38,7 @@ import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
  */
 @Name("logoutActions")
 @Scope(ScopeType.STATELESS)
+@Install(precedence = FRAMEWORK)
 public class LogoutActions {
 
     /**

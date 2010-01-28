@@ -17,11 +17,14 @@
 
 package org.nuxeo.dam.webapp.annotations;
 
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.dam.webapp.contentbrowser.DocumentActions;
@@ -38,6 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 @Name("annotationsActions")
 @Scope(ScopeType.CONVERSATION)
 @SerializedConcurrentAccess
+@Install(precedence = FRAMEWORK)
 public class AnnotationsActions {
 
     private static final Log log = LogFactory.getLog(AnnotationsActions.class);

@@ -17,6 +17,8 @@
 
 package org.nuxeo.dam.webapp.filter;
 
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -33,6 +35,7 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
@@ -41,6 +44,7 @@ import org.jboss.seam.ScopeType;
 
 @Name("filterResults")
 @Scope(ScopeType.CONVERSATION)
+@Install(precedence = FRAMEWORK)
 public class FilterResults implements SelectDataModelListener, Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -18,6 +18,7 @@
 package org.nuxeo.dam.webapp.comment;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
@@ -57,6 +59,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 @Name("commentActions")
 @Scope(CONVERSATION)
 @SerializedConcurrentAccess
+@Install(precedence = FRAMEWORK)
 public class CommentActions implements Serializable {
 
     private static final long serialVersionUID = 1L;

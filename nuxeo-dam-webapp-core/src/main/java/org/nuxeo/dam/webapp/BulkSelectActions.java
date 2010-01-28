@@ -1,6 +1,7 @@
 package org.nuxeo.dam.webapp;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import javax.faces.application.FacesMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
@@ -48,6 +50,7 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
  */
 @Scope(CONVERSATION)
 @Name("bulkSelectActions")
+@Install(precedence = FRAMEWORK)
 public class BulkSelectActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
