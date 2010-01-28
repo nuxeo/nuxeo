@@ -783,7 +783,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         String baseURL = service.getBaseURL(httpRequest);
 
         // go through plugins to get UserIndentity
-        for (String pluginName : service.getAuthChain()) {
+        for (String pluginName : service.getAuthChain(httpRequest)) {
             NuxeoAuthenticationPlugin plugin = service.getPlugin(pluginName);
             AuthenticationPluginDescriptor descriptor = service.getDescriptor(pluginName);
 
@@ -806,7 +806,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         UserIdentificationInfo userIdent = null;
 
         // go through plugins to get UserIndentity
-        for (String pluginName : service.getAuthChain()) {
+        for (String pluginName : service.getAuthChain(httpRequest)) {
             NuxeoAuthenticationPlugin plugin = service.getPlugin(pluginName);
             if (plugin != null) {
                 log.debug("Trying to retrieve userIndetification using plugin "

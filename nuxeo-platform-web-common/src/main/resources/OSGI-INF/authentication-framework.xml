@@ -98,4 +98,17 @@
       class="org.nuxeo.ecm.platform.ui.web.auth.service.OpenUrlDescriptor" />
   </extension-point>
 
+
+ <extension-point name="specificChains">
+  <documentation>
+    Contribute specific authentication chain for specific urls or request headers.
+    This is usefull to be able to change the authentication plugins used for a dedicated protocol (WSS, WebDav ...)
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ui.web.auth.service.SpecificAuthChainDescriptor" />
+  </extension-point>
+
+
 </component>

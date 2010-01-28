@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.auth.specificchain">
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="specificChains">
+
+
+    <specificAuthenticationChain name="test">
+        <urlPatterns>
+            <url>/test/.*</url>
+        </urlPatterns>
+
+        <replacementChain>
+            <plugin>FORM_AUTH</plugin>
+            <plugin>ANONYMOUS_AUTH</plugin>
+        </replacementChain>
+    </specificAuthenticationChain>
+
+    <specificAuthenticationChain name="test-allow">
+        <urlPatterns>
+            <url>/testallow/.*</url>
+        </urlPatterns>
+
+        <allowedPlugins>
+            <plugin>FORM_AUTH</plugin>
+        </allowedPlugins>
+    </specificAuthenticationChain>
+
+    <specificAuthenticationChain name="test-headers">
+        <headers>
+            <header name="test-header">only-anonymous</header>
+        </headers>
+
+        <allowedPlugins>
+            <plugin>ANONYMOUS_AUTH</plugin>
+        </allowedPlugins>
+    </specificAuthenticationChain>
+
+    <specificAuthenticationChain name="test-headers2">
+        <headers>
+            <header name="test-header">only-ba</header>
+        </headers>
+
+        <allowedPlugins>
+            <plugin>BASIC_AUTH</plugin>
+        </allowedPlugins>
+    </specificAuthenticationChain>
+
+
+    <specificAuthenticationChain name="WSS">
+        <urlPatterns>
+            <url>(.*)/_vti_.*</url>
+        </urlPatterns>
+        <headers>
+            <header name="User-Agent">MSFrontPage.*</header>
+        </headers>
+
+        <allowedPlugins>
+            <plugin>BASIC_AUTH</plugin>
+            <plugin>NTLM_AUTH</plugin>
+        </allowedPlugins>
+    </specificAuthenticationChain>
+
+  </extension>
+
+</component>

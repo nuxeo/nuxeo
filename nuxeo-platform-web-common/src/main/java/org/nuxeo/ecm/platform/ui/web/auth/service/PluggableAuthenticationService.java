@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -51,6 +54,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     public static final String EP_CHAIN = "chain";
 
+    public static final String EP_SPECIFIC_CHAINS = "specificChains";
+
     public static final String EP_PROPAGATOR = "propagator";
 
     public static final String EP_CBFACTORY = "JbossCallbackfactory";
@@ -59,7 +64,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     public static final String EP_OPENURL = "openUrl";
 
-    private static final Log log = LogFactory.getLog(PluggableAuthenticationService.class);
+    private static final Log log = LogFactory
+            .getLog(PluggableAuthenticationService.class);
 
     private Map<String, AuthenticationPluginDescriptor> authenticatorsDescriptors;
 
@@ -75,6 +81,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
     private NuxeoCallbackHandlerFactory cbhFactory;
 
     private List<String> authChain;
+
+    private Map<String, SpecificAuthChainDescriptor> specificAuthChains = new HashMap<String, SpecificAuthChainDescriptor>();
 
     private List<OpenUrlDescriptor> openUrls = new ArrayList<OpenUrlDescriptor>();
 
@@ -115,9 +123,11 @@ public class PluggableAuthenticationService extends DefaultComponent {
             }
 
             // create the new instance
-            AuthenticationPluginDescriptor actualDescriptor = authenticatorsDescriptors.get(descriptor.getName());
+            AuthenticationPluginDescriptor actualDescriptor = authenticatorsDescriptors
+                    .get(descriptor.getName());
             try {
-                NuxeoAuthenticationPlugin authPlugin = actualDescriptor.getClassName().newInstance();
+                NuxeoAuthenticationPlugin authPlugin = actualDescriptor
+                        .getClassName().newInstance();
                 authPlugin.initPlugin(actualDescriptor.getParameters());
                 authenticators.put(actualDescriptor.getName(), authPlugin);
             } catch (InstantiationException e) {
@@ -166,7 +176,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
             SessionManagerDescriptor smContrib = (SessionManagerDescriptor) contribution;
             if (smContrib.enabled) {
                 try {
-                    NuxeoAuthenticationSessionManager sm = smContrib.getClassName().newInstance();
+                    NuxeoAuthenticationSessionManager sm = smContrib
+                            .getClassName().newInstance();
                     sessionManagers.put(smContrib.getName(), sm);
                 } catch (Exception e) {
                     log.error("Unable to create session manager", e);
@@ -174,6 +185,9 @@ public class PluggableAuthenticationService extends DefaultComponent {
             } else {
                 sessionManagers.remove(smContrib.getName());
             }
+        } else if (extensionPoint.equals(EP_SPECIFIC_CHAINS)) {
+            SpecificAuthChainDescriptor desc = (SpecificAuthChainDescriptor) contribution;
+            specificAuthChains.put(desc.name, desc);
         }
     }
 
@@ -190,7 +204,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     private void mergeDescriptors(AuthenticationPluginDescriptor newContrib) {
-        AuthenticationPluginDescriptor oldDescriptor = authenticatorsDescriptors.get(newContrib.getName());
+        AuthenticationPluginDescriptor oldDescriptor = authenticatorsDescriptors
+                .get(newContrib.getName());
 
         // Enable/Disable
         oldDescriptor.setEnabled(newContrib.getEnabled());
@@ -203,7 +218,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
         // override LoginLModule
         if (newContrib.getLoginModulePlugin() != null
                 && newContrib.getLoginModulePlugin().length() > 0) {
-            oldDescriptor.setLoginModulePlugin(newContrib.getLoginModulePlugin());
+            oldDescriptor.setLoginModulePlugin(newContrib
+                    .getLoginModulePlugin());
         }
 
         oldDescriptor.setStateful(newContrib.getStateful());
@@ -212,7 +228,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
             oldDescriptor.setClassName(newContrib.getClassName());
         }
 
-        oldDescriptor.setNeedStartingURLSaving(newContrib.getNeedStartingURLSaving());
+        oldDescriptor.setNeedStartingURLSaving(newContrib
+                .getNeedStartingURLSaving());
     }
 
     // Service API
@@ -223,6 +240,59 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     public List<String> getAuthChain() {
         return authChain;
+    }
+
+    public List<String> getAuthChain(HttpServletRequest request) {
+
+        if (specificAuthChains == null || specificAuthChains.size() == 0) {
+            return getAuthChain();
+        }
+
+        String specificAuthChainName = getSpecificAuthChainName(request);
+        SpecificAuthChainDescriptor desc = specificAuthChains.get(specificAuthChainName);
+
+
+        if (desc!=null) {
+            return desc.computeResultingChain(getAuthChain());
+        }
+        else {
+            return getAuthChain();
+        }
+    }
+
+    public String getSpecificAuthChainName(HttpServletRequest request) {
+
+        for (String specificAuthChainName : specificAuthChains.keySet()) {
+
+            SpecificAuthChainDescriptor desc = specificAuthChains.get(specificAuthChainName);
+
+            List<Pattern> urlPatterns = desc.getUrlPatterns();
+            if (urlPatterns.size() > 0) {
+                // test on URI
+                String requestUrl = request.getRequestURI();
+                for (Pattern pattern : urlPatterns) {
+                    Matcher m = pattern.matcher(requestUrl);
+                    if (m.matches()) {
+                        return specificAuthChainName;
+                    }
+                }
+            }
+
+            Map<String, Pattern> headerPattern = desc.getHeaderPatterns();
+
+            for (String headerName : headerPattern.keySet()) {
+
+                String headerValue = request.getHeader(headerName);
+                if (headerValue != null) {
+                    Matcher m = headerPattern.get(headerName).matcher(
+                            headerValue);
+                    if (m.matches()) {
+                        return specificAuthChainName;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public UserIdentificationInfoCallbackHandler getCallbackHandler(
@@ -236,7 +306,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
     public void propagateUserIdentificationInformation(
             CachableUserIdentificationInfo cachableUserIdent) {
         if (propagator != null) {
-            propagator.propagateUserIdentificationInformation(cachableUserIdent);
+            propagator
+                    .propagateUserIdentificationInformation(cachableUserIdent);
         }
     }
 
@@ -268,7 +339,9 @@ public class PluggableAuthenticationService extends DefaultComponent {
         if (authenticatorsDescriptors.containsKey(pluginName)) {
             return authenticatorsDescriptors.get(pluginName);
         } else {
-            log.error("Plugin " + pluginName + " not registered or not created");
+            log
+                    .error("Plugin " + pluginName
+                            + " not registered or not created");
             return null;
         }
     }
@@ -276,7 +349,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
     public void invalidateSession(ServletRequest request) {
         if (!sessionManagers.isEmpty()) {
             for (String smName : sessionManagers.keySet()) {
-                NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
+                NuxeoAuthenticationSessionManager sm = sessionManagers
+                        .get(smName);
                 sm.onBeforeSessionInvalidate(request);
             }
         }
@@ -290,7 +364,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
     public HttpSession reinitSession(HttpServletRequest httpRequest) {
         if (!sessionManagers.isEmpty()) {
             for (String smName : sessionManagers.keySet()) {
-                NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
+                NuxeoAuthenticationSessionManager sm = sessionManagers
+                        .get(smName);
                 sm.onBeforeSessionReinit(httpRequest);
             }
         }
@@ -299,7 +374,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
         if (!sessionManagers.isEmpty()) {
             for (String smName : sessionManagers.keySet()) {
-                NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
+                NuxeoAuthenticationSessionManager sm = sessionManagers
+                        .get(smName);
                 sm.onAfterSessionReinit(httpRequest);
             }
         }
@@ -309,7 +385,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
     public boolean canBypassRequest(ServletRequest request) {
         if (!sessionManagers.isEmpty()) {
             for (String smName : sessionManagers.keySet()) {
-                NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
+                NuxeoAuthenticationSessionManager sm = sessionManagers
+                        .get(smName);
                 if (sm.canBypassRequest(request)) {
                     return true;
                 }
@@ -320,7 +397,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     public boolean needResetLogin(ServletRequest request) {
         if (!sessionManagers.isEmpty()) {
-            for (NuxeoAuthenticationSessionManager sm : sessionManagers.values()) {
+            for (NuxeoAuthenticationSessionManager sm : sessionManagers
+                    .values()) {
                 if (sm.needResetLogin(request)) {
                     return true;
                 }
@@ -337,7 +415,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
             HttpSession session, CachableUserIdentificationInfo cachebleUserInfo) {
         if (!sessionManagers.isEmpty()) {
             for (String smName : sessionManagers.keySet()) {
-                NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
+                NuxeoAuthenticationSessionManager sm = sessionManagers
+                        .get(smName);
                 sm.onAuthenticatedSessionCreated(request, session,
                         cachebleUserInfo);
             }
