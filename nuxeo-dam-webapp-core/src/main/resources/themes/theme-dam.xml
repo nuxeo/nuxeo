@@ -262,6 +262,7 @@
         <background preset="tableheader (DAM backgrounds)"/>
         <text-align>left</text-align>
         <height>18px</height>
+        <font-weight>normal</font-weight>
       </selector>
       <selector path=".dataOutput td">
         <padding>5px 3px</padding>
@@ -545,6 +546,16 @@
       <selector path="fieldset">
         <border>1px solid #ccc</border>
         <margin>5px 5px 10px</margin>
+        <padding>0 1px</padding>
+      </selector>
+      <selector path="fieldset table.dataOutput">
+        <margin>10px 0px 1px</margin>
+      </selector>
+      <selector path="fieldset table.dataOutput th">
+        <padding>3px 0px 3px 4px</padding>
+      </selector>
+      <selector path="fieldset table.dataOutput td">
+        <color>#525252</color>
       </selector>
       <selector path="legend">
         <font-weight>bold</font-weight>
