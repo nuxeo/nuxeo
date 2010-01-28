@@ -32,6 +32,7 @@
 
     <directory name="predicates" layout="vocabulary" sortField="label" />
     <directory name="inverse_predicates" layout="vocabulary" sortField="label" />
+    <directory name="language" layout="vocabulary" sortField="label" />
 
   </extension>
 
