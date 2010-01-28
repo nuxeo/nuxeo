@@ -175,9 +175,10 @@ class BasePage:
             ['j_id176:j_id178', 'j_id176:j_id178']],
                 description="View user creation form")
 
+        jsfState = fl.getLastJsfState()
+
         fl.post(fl.server_url + '/create_user.faces', params=[
             ['AJAXREQUEST', 'createUser:nxl_user:nxw_groups_ajax_region'],
-            ['createUser', 'createUser'],
             ['createUser:nxl_user:nxw_username', username],
             ['createUser:nxl_user:nxw_firstname', firstname],
             ['createUser:nxl_user:nxw_lastname', lastname],
@@ -187,13 +188,34 @@ class BasePage:
             ['createUser:nxl_user:nxw_secondPassword', password],
             ['createUser:nxl_user:nxw_passwordMatcher', 'needed'],
             ['createUser:nxl_user:nxw_groups_suggest', groups],
+            ['createUser:nxl_user:nxw_groups_suggestionBox_selection', ''],
+            ['createUser_SUBMIT', '1'],
+            ['javax.faces.ViewState', jsfState],
+            ['userSuggestionSearchType', 'GROUP_TYPE'],
+            ['userSuggestionMaxSearchResults', '0'],
+            ['ajaxSingle', 'createUser:nxl_user:nxw_groups_suggestionBox'],
+            ['createUser:nxl_user:nxw_groups_suggestionBox', 'createUser:nxl_user:nxw_groups_suggestionBox'],
+            ['inputvalue', groups],
+            ['AJAX:EVENTS_COUNT', '1']],
+            description="Create user search group")
+
+        fl.post(fl.server_url + '/create_user.faces', params=[
+            ['AJAXREQUEST', 'createUser:nxl_user:nxw_groups_ajax_region'],
+            ['createUser:nxl_user:nxw_username', username],
+            ['createUser:nxl_user:nxw_firstname', firstname],
+            ['createUser:nxl_user:nxw_lastname', lastname],
+            ['createUser:nxl_user:nxw_company', company],
+            ['createUser:nxl_user:nxw_email', email],
+            ['createUser:nxl_user:nxw_firstPassword', password],
+            ['createUser:nxl_user:nxw_secondPassword', password],
+            ['createUser:nxl_user:nxw_passwordMatcher', 'needed'],
+            ['createUser:nxl_user:nxw_groups_suggest', ''],
             ['createUser:nxl_user:nxw_groups_suggestionBox_selection', '0'],
             ['createUser_SUBMIT', '1'],
-            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['javax.faces.ViewState', jsfState],
             ['createUser:nxl_user:nxw_groups_suggestionBox:nxw_groups_listRegion_select', 'createUser:nxl_user:nxw_groups_suggestionBox:nxw_groups_listRegion_select'],
-            ['suggestionInputSelectorId', 'nxw_groups_suggest'],
             ['suggestionSelectionListId', 'nxw_groups_list']],
-                description="Create user select group")
+            description="Create user select group")
 
         fl.post(fl.server_url + "/create_user.faces", params=[
             ['createUser', 'createUser'],
@@ -209,8 +231,8 @@ class BasePage:
             ['createUser:nxl_user:nxw_groups_suggestionBox_selection', ''],
             ['createUser:button_create', 'Save'],
             ['createUser_SUBMIT', '1'],
-            ['javax.faces.ViewState', fl.getLastJsfState()]],
-                description="Submit user form")
+            ['javax.faces.ViewState', jsfState]],
+                description="Create user submit form")
         return self
 
     def dashboard(self):
@@ -470,16 +492,18 @@ class FolderPage(BasePage):
         server_url = fl.server_url
         params = [
             ['AJAXREQUEST', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_ajax_region'],
-            ['add_rights_form', 'add_rights_form'],
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest', user],
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', '0'],
+            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', ''],
             ['add_rights_form:rights_grant_select', 'Grant'],
-            ['add_rights_form:rights_permission_select', 'Read'],
+            ['add_rights_form:rights_permission_select', 'Everything'],
             ['add_rights_form_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['suggestionInputSelectorId', 'nxw_selection_suggest'],
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:nxw_selection_listRegion_select', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:nxw_selection_listRegion_select'],
-            ['suggestionSelectionListId', 'nxw_selection_list']]
+            ['userSuggestionSearchType', ''],
+            ['userSuggestionMaxSearchResults', '0'],
+            ['ajaxSingle', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox'],
+            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox'],
+            ['inputvalue', user],
+            ['AJAX:EVENTS_COUNT', '1']]
         fl.post(server_url + "/view_documents.faces", params,
                   description="Grant perm search user.")
         fl.assert_(user in fl.getBody(), "User not found")
@@ -487,15 +511,13 @@ class FolderPage(BasePage):
         state = fl.getLastJsfState()
         params = [
             ['AJAXREQUEST', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_ajax_region'],
-            ['add_rights_form', 'add_rights_form'],
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest', user],
+            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest', ''],
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', '0'],
             ['add_rights_form:rights_grant_select', 'Grant'],
             ['add_rights_form:rights_permission_select', 'Read'],
             ['add_rights_form_SUBMIT', '1'],
             ['javax.faces.ViewState', state],
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:nxw_selection_listRegion_select', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:nxw_selection_listRegion_select'],
-            ['suggestionInputSelectorId', 'nxw_selection_suggest'],
             ['suggestionSelectionListId', 'nxw_selection_list']]
         fl.post(server_url + "/view_documents.faces", params,
                   description="Grant perm select user " + user)
