@@ -86,7 +86,7 @@ public interface JbpmService {
      * @author arussel
      */
     enum HibernateQueries {
-        NuxeoHibernateQueries_getProcessInstancesForDoc, NuxeoHibernateQueries_getTaskInstancesForDoc
+        NuxeoHibernateQueries_getProcessInstancesForDoc, NuxeoHibernateQueries_getTaskInstancesForDoc, NuxeoHibernateQueries_getProcessInstancesForInitiator
     }
 
     /**
