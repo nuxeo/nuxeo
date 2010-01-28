@@ -12,7 +12,7 @@ SUITES=${SUITES:-"suite"}
 URL=${URL:-http://localhost:8080/nuxeo/}
 FIREFOX_CONF="*firefox"
 USER_EXTENSIONS="$HERE/user-extensions.js"
-OUTPUT=${1:-.}
+OUTPUT=${1:-../../target/integration/}
 
 # Build command line
 CMD="java -jar $OUTPUT/selenium-server.jar -log $OUTPUT/log.txt -port 14440 -timeout 7200 \

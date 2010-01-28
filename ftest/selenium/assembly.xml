@@ -16,7 +16,8 @@
     <antcall target="run-selenium-tests" />
   </target>
 
-  <target name="prepare-distribution" description="Prepare distribution to test">
+  <target name="prepare-distribution" description="Prepare distribution to test"
+    if="maven.profile.testit">
     <delete failonerror="false" dir="${jboss}" />
     <unzip dest="${integration.dir}">
       <artifact:resolveFile
@@ -40,12 +41,12 @@
         <exclude name="*-sources.jar" />
       </fileset>
     </copy>
-  <!--
-  <copy todir="${jboss}/server/default/deploy/nuxeo.ear/plugins" overwrite="true">
-    <artifact:resolveFile
-      key="${maven.project.groupId}:${maven.project.artifactId}:${maven.project.version}" />
-  </copy>
-  -->
+    <!--
+      <copy todir="${jboss}/server/default/deploy/nuxeo.ear/plugins"
+      overwrite="true"> <artifact:resolveFile
+      key="${maven.project.groupId}:${maven.project.artifactId}:${maven.project.version}"
+      /> </copy>
+    -->
   </target>
 
   <target name="run-selenium-tests" description="Run Selenium tests">
@@ -54,10 +55,13 @@
         key="org.seleniumhq.selenium.server:selenium-server:1.0.1" classifier="standalone" />
     </copy>
     <chmod dir="${selenium.dir}" perm="u+x" includes="*.sh" />
-    <exec executable="${selenium.dir}/hudson-run.sh" failonerror="true">
-      <arg value="${jboss}" />
-      <arg value="${integration.dir}" />
-    </exec>
+
+    <nx:profile name="testit">
+      <exec executable="${selenium.dir}/hudson-run.sh" failonerror="true">
+        <arg value="${jboss}" />
+        <arg value="${integration.dir}" />
+      </exec>
+    </nx:profile>
   </target>
 
 </project>
