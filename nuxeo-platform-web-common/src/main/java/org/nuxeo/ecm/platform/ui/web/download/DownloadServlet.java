@@ -133,7 +133,11 @@ public class DownloadServlet extends HttpServlet {
             }
 
             if (fileName == null || fileName.length() == 0) {
-                fileName = "file";
+                if (blob.getFilename()!=null && blob.getFilename().length()>0) {
+                    fileName = blob.getFilename();
+                } else {
+                    fileName = "file";
+                }
             }
             boolean inline = req.getParameter("inline") != null;
             String userAgent = req.getHeader("User-Agent");
