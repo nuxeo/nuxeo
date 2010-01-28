@@ -1,3 +1,6 @@
+#!/bin/sh -x
+HERE=$(cd $(dirname $0); pwd -P)
+
 JBOSS_HOME=$1
 OUTPUT=$2
 
