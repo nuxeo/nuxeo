@@ -295,6 +295,9 @@ public class ChainSelectOutputComponent extends UIOutput {
             }
             DirectorySelectItem item = DirectoryHelper.instance().getSelectItem(
                     directoryName, filter);
+            if (item == null) {
+                item = new DirectorySelectItem(id, id);
+            }
             String itemId = (String) item.getValue();
             String label = item.getLabel();
             if (getLocalize()) {
@@ -306,7 +309,6 @@ public class ChainSelectOutputComponent extends UIOutput {
                 label = itemId + DISPLAY_ID_AND_LABEL_SEPARATOR + label;
             }
             item.setLabel(label);
-
             itemList.add(item);
         }
         return new Selection(

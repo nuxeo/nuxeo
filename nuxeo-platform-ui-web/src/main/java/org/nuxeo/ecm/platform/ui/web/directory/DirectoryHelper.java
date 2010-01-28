@@ -88,9 +88,12 @@ public final class DirectoryHelper {
     public DirectorySelectItem getSelectItem(String directoryName, Map<String, Serializable> filter) {
         List<DirectorySelectItem> items = getSelectItems(directoryName, filter);
         if (items.size() > 1) {
-            throw new IllegalStateException("More than one entry found in directory " + directoryName);
+            log.warn("More than one entry found in directory " + directoryName + " and filter:");
+            for (Map.Entry<String, Serializable> e: filter.entrySet()) {
+                log.warn(String.format("%s=%s", e.getKey(), e.getValue()));
+            }
         } else if (items.isEmpty()) {
-            throw new IllegalStateException("Entry not found in directory " + directoryName + " filter=" + filter);
+            return null;
         }
         return items.get(0);
     }
