@@ -12,15 +12,10 @@ SUITES=${SUITES:-"suite"}
 URL=${URL:-http://localhost:8080/nuxeo/}
 FIREFOX_CONF="*firefox"
 USER_EXTENSIONS="$HERE/user-extensions.js"
-
-JBOSS_HOME=$1
-OUTPUT=$2
-
-echo "start jboss"
-$JBOSS_HOME/bin/jbossctl start || exit 1
+OUTPUT=${1:-.}
 
 # Build command line
-CMD="java -jar $OUTPUT/selenium-server.jar -log log.txt -port 14440 -timeout 7200 \
+CMD="java -jar $OUTPUT/selenium-server.jar -log $OUTPUT/log.txt -port 14440 -timeout 7200 \
       -htmlSuite "*chrome" $URL "
 if [ ! -z $HIDE_FF ]; then
     CMD="xvfb-run $CMD"
@@ -59,8 +54,5 @@ if [ $exit_code != 0 ]; then
 else
     echo "### [INFO] TESTS SUCCESSFUL"
 fi
-
-echo "stop jboss"
-$JBOSS_HOME/bin/jbossctl stop || exit 1
 
 exit $exit_code

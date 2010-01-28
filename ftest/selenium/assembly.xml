@@ -53,8 +53,8 @@
       <artifact:resolveFile
         key="org.seleniumhq.selenium.server:selenium-server:1.0.1" classifier="standalone" />
     </copy>
-    <chmod dir="${selenium.dir}" perm="u+x" includes="run.sh" />
-    <exec executable="${selenium.dir}/run.sh" failonerror="true">
+    <chmod dir="${selenium.dir}" perm="u+x" includes="*.sh" />
+    <exec executable="${selenium.dir}/hudson-run.sh" failonerror="true">
       <arg value="${jboss}" />
       <arg value="${integration.dir}" />
     </exec>
