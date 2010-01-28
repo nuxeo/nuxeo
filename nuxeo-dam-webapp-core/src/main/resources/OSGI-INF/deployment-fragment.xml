@@ -137,6 +137,25 @@
       <redirect />
     </navigation-case>
 
+    <navigation-case>
+      <from-outcome>view_group</from-outcome>
+      <to-view-id>/administration.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_many_groups</from-outcome>
+      <to-view-id>/administration.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_groups</from-outcome>
+      <to-view-id>/administration.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+
   </extension>
 
   <extension target="pages#PAGES">

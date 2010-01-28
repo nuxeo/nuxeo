@@ -15,27 +15,27 @@
         errorClass="errorFeedback"/>
     </div>
 
-    <f:subview id="viewSubView" rendered="#{documentActions.displayMode == 'view'}">
+    <f:subview id="viewSubView" rendered="#{userManagerActions.displayMode == 'view'}">
       <nxl:layout name="user" mode="view" value="#{userManagerActions.selectedUser}" />
     </f:subview>
-    <f:subview id="editSubView" rendered="#{documentActions.displayMode == 'edit'}">
+    <f:subview id="editSubView" rendered="#{userManagerActions.displayMode == 'edit'}">
       <nxl:layout name="user" mode="edit" value="#{userManagerActions.selectedUser}" />
     </f:subview>
 
     <p class="buttonsGadget">
       <a4j:commandLink styleClass="button"
                        action="#{userManagerActions.updateUser}"
-                       rendered="#{documentActions.displayMode == 'edit'}"
+                       rendered="#{userManagerActions.displayMode == 'edit'}"
                        reRender="viewUserPanel">
         <h:outputText value="#{messages['command.save']}"/>
       </a4j:commandLink>
       <a4j:commandLink styleClass="button"
-                       action="#{documentActions.toggleDisplayMode}"
+                       action="#{userManagerActions.toggleDisplayMode}"
                        immediate="true" reRender="viewUserPanel">
         <h:outputText value="#{messages['command.cancel']}"
-                      rendered="#{documentActions.displayMode == 'edit'}"/>
+                      rendered="#{userManagerActions.displayMode == 'edit'}"/>
         <h:outputText value="#{messages['command.edit']}"
-                      rendered="#{documentActions.displayMode == 'view'}"/>
+                      rendered="#{userManagerActions.displayMode == 'view'}"/>
       </a4j:commandLink>
     </p>
   </a4j:form>
