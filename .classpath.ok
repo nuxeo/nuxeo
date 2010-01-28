@@ -1,0 +1,117 @@
+<classpath>
+  <classpathentry kind="src" path="src/main/java"/>
+  <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
+  <classpathentry kind="src" path="target/generated"/>
+  <classpathentry kind="output" path="bin/main"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/ant/ant/1.7.0/ant-1.7.0.jar" sourcepath="M2_REPO/org/apache/ant/ant/1.7.0/ant-1.7.0-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/avalon-framework/avalon-framework/4.1.3/avalon-framework-4.1.3.jar"/>
+  <classpathentry kind="var" path="M2_REPO/bsh/bsh/2.0b1/bsh-2.0b1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/noelios/restlet/com.noelios.restlet/1.0.7/com.noelios.restlet-1.0.7.jar" sourcepath="M2_REPO/com/noelios/restlet/com.noelios.restlet/1.0.7/com.noelios.restlet-1.0.7-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/noelios/restlet/com.noelios.restlet.ext.servlet/1.0.7/com.noelios.restlet.ext.servlet-1.0.7.jar" sourcepath="M2_REPO/com/noelios/restlet/com.noelios.restlet.ext.servlet/1.0.7/com.noelios.restlet.ext.servlet-1.0.7-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-collections/commons-collections/3.1/commons-collections-3.1.jar" sourcepath="M2_REPO/commons-collections/commons-collections/3.1/commons-collections-3.1-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/Users/julien/.m2/repository/commons-collections/commons-collections/3.1/commons-collections-3.1-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/commons-fileupload/commons-fileupload/1.1.1/commons-fileupload-1.1.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-io/commons-io/1.4/commons-io-1.4.jar" sourcepath="M2_REPO/commons-io/commons-io/1.4/commons-io-1.4-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/Users/julien/.m2/repository/commons-io/commons-io/1.4/commons-io-1.4-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" sourcepath="M2_REPO/commons-logging/commons-logging/1.1/commons-logging-1.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/concurrent/concurrent/1.3.4/concurrent-1.3.4.jar" sourcepath="M2_REPO/concurrent/concurrent/1.3.4/concurrent-1.3.4-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/derby/derby/10.5.3.0_1/derby-10.5.3.0_1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar" sourcepath="M2_REPO/dom4j/dom4j/1.6.1/dom4j-1.6.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javax/ejb/ejb/3.0-RC8/ejb-3.0-RC8.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/fontbox/fontbox/0.1.0/fontbox-0.1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/google/code/guice/guice/1.0/guice-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/hibernate/hibernate/3.2.4.SP1_CP01-brew_NXP-3881-NXP-4604/hibernate-3.2.4.SP1_CP01-brew_NXP-3881-NXP-4604.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/jackrabbit/jackrabbit-api/1.5.0/jackrabbit-api-1.5.0.jar" sourcepath="M2_REPO/org/apache/jackrabbit/jackrabbit-api/1.5.0/jackrabbit-api-1.5.0-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/jackrabbit/jackrabbit-core/1.5.4/jackrabbit-core-1.5.4.jar" sourcepath="M2_REPO/org/apache/jackrabbit/jackrabbit-core/1.5.4/jackrabbit-core-1.5.4-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/jackrabbit/jackrabbit-jcr-commons/1.5.3/jackrabbit-jcr-commons-1.5.3.jar" sourcepath="M2_REPO/org/apache/jackrabbit/jackrabbit-jcr-commons/1.5.3/jackrabbit-jcr-commons-1.5.3-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/jackrabbit/jackrabbit-spi/1.5.0/jackrabbit-spi-1.5.0.jar" sourcepath="M2_REPO/org/apache/jackrabbit/jackrabbit-spi/1.5.0/jackrabbit-spi-1.5.0-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/jackrabbit/jackrabbit-spi-commons/1.5.0/jackrabbit-spi-commons-1.5.0.jar" sourcepath="M2_REPO/org/apache/jackrabbit/jackrabbit-spi-commons/1.5.0/jackrabbit-spi-commons-1.5.0-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/jackrabbit/jackrabbit-text-extractors/1.5.0/jackrabbit-text-extractors-1.5.0.jar" sourcepath="M2_REPO/org/apache/jackrabbit/jackrabbit-text-extractors/1.5.0/jackrabbit-text-extractors-1.5.0-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/cup/java-cup/0.11a/java-cup-0.11a.jar"/>
+  <classpathentry kind="var" path="M2_REPO/net/java/dev/javacc/javacc/4.0/javacc-4.0.jar" sourcepath="M2_REPO/net/java/dev/javacc/javacc/4.0/javacc-4.0-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/resteasy/jaxrs-api/1.0.2.GA/jaxrs-api-1.0.2.GA.jar" sourcepath="M2_REPO/org/jboss/resteasy/jaxrs-api/1.0.2.GA/jaxrs-api-1.0.2.GA-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/jboss/jboss-common/4.0.4.GA/jboss-common-4.0.4.GA.jar"/>
+  <classpathentry kind="var" path="M2_REPO/jboss/jboss-remoting/2.2.2.SP1/jboss-remoting-2.2.2.SP1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/seam/jboss-seam/2.0.3.CR1-NX2/jboss-seam-2.0.3.CR1-NX2.jar" sourcepath="M2_REPO/org/jboss/seam/jboss-seam/2.0.3.CR1-NX2/jboss-seam-2.0.3.CR1-NX2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jbpm/jbpm3/jbpm-jpdl/3.3.0.GA/jbpm-jpdl-3.3.0.GA.jar" sourcepath="M2_REPO/org/jbpm/jbpm3/jbpm-jpdl/3.3.0.GA/jbpm-jpdl-3.3.0.GA-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jempbox/jempbox/0.2.0/jempbox-0.2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/jmock/jmock/1.0.1/jmock-1.0.1.jar" sourcepath="M2_REPO/jmock/jmock/1.0.1/jmock-1.0.1-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/Users/julien/.m2/repository/jmock/jmock/1.0.1/jmock-1.0.1-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/joda-time/joda-time/1.4/joda-time-1.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/4.7/junit-4.7.jar"/>
+  <classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.13/log4j-1.2.13.jar" sourcepath="M2_REPO/log4j/log4j/1.2.13/log4j-1.2.13-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/logkit/logkit/1.0.1/logkit-1.0.1.jar" sourcepath="M2_REPO/logkit/logkit/1.0.1/logkit-1.0.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/lucene/lucene-core/2.3.2/lucene-core-2.3.2.jar" sourcepath="M2_REPO/org/apache/lucene/lucene-core/2.3.2/lucene-core-2.3.2-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/Users/julien/.m2/repository/org/apache/lucene/lucene-core/2.3.2/lucene-core-2.3.2-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/net/sourceforge/nekohtml/nekohtml/1.9.9/nekohtml-1.9.9.jar" sourcepath="M2_REPO/net/sourceforge/nekohtml/nekohtml/1.9.9/nekohtml-1.9.9-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/Users/julien/.m2/repository/net/sourceforge/nekohtml/nekohtml/1.9.9/nekohtml-1.9.9-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/build/nuxeo-apt-extensions/1.0/nuxeo-apt-extensions-1.0.jar" sourcepath="M2_REPO/org/nuxeo/build/nuxeo-apt-extensions/1.0/nuxeo-apt-extensions-1.0-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/Users/julien/.m2/repository/org/nuxeo/build/nuxeo-apt-extensions/1.0/nuxeo-apt-extensions-1.0-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/common/nuxeo-common/1.6.1-SNAPSHOT/nuxeo-common-1.6.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/core/nuxeo-core/1.6.1-SNAPSHOT/nuxeo-core-1.6.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/core/nuxeo-core-api/1.6.1-SNAPSHOT/nuxeo-core-api-1.6.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/core/nuxeo-core-event/1.6.1-SNAPSHOT/nuxeo-core-event-1.6.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/core/nuxeo-core-io/1.6.1-SNAPSHOT/nuxeo-core-io-1.6.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/core/nuxeo-core-query/1.6.1-SNAPSHOT/nuxeo-core-query-1.6.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/core/nuxeo-core-schema/1.6.1-SNAPSHOT/nuxeo-core-schema-1.6.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform/5.3.1-SNAPSHOT/nuxeo-platform-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform-actions-core/5.3.1-SNAPSHOT/nuxeo-platform-actions-core-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform-api/5.3.1-SNAPSHOT/nuxeo-platform-api-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform-directory-api/5.3.1-SNAPSHOT/nuxeo-platform-directory-api-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform-el/5.3.1-SNAPSHOT/nuxeo-platform-el-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform-filemanager-api/5.3.1-SNAPSHOT/nuxeo-platform-filemanager-api-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform-forms-layout-api/5.3.1-SNAPSHOT/nuxeo-platform-forms-layout-api-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform-mimetype-api/5.3.1-SNAPSHOT/nuxeo-platform-mimetype-api-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform-rendering/5.3.1-SNAPSHOT/nuxeo-platform-rendering-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform-search-api/5.3.1-SNAPSHOT/nuxeo-platform-search-api-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform-types-api/5.3.1-SNAPSHOT/nuxeo-platform-types-api-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform-ui-api/5.3.1-SNAPSHOT/nuxeo-platform-ui-api-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform-ui-web/5.3.1-SNAPSHOT/nuxeo-platform-ui-web-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform-url-api/5.3.1-SNAPSHOT/nuxeo-platform-url-api-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform-usermanager-api/5.3.1-SNAPSHOT/nuxeo-platform-usermanager-api-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform-versioning-api/5.3.1-SNAPSHOT/nuxeo-platform-versioning-api-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/platform/nuxeo-platform-web-common/5.3.1-SNAPSHOT/nuxeo-platform-web-common-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/runtime/nuxeo-runtime/1.6.1-SNAPSHOT/nuxeo-runtime-1.6.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/runtime/nuxeo-runtime-management/1.6.1-SNAPSHOT/nuxeo-runtime-management-1.6.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/runtime/nuxeo-runtime-osgi/1.6.1-SNAPSHOT/nuxeo-runtime-osgi-1.6.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/runtime/nuxeo-runtime-test/1.6.1-SNAPSHOT/nuxeo-runtime-test-1.6.1-20100127.180606-71.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/build/nuxeo-webengine-apt/1.2/nuxeo-webengine-apt-1.2.jar" sourcepath="M2_REPO/org/nuxeo/build/nuxeo-webengine-apt/1.2/nuxeo-webengine-apt-1.2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/nuxeo/ecm/webengine/nuxeo-webengine-core/5.3.1-SNAPSHOT/nuxeo-webengine-core-5.3.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/restlet/org.restlet/1.0.7/org.restlet-1.0.7.jar" sourcepath="M2_REPO/org/restlet/org.restlet/1.0.7/org.restlet-1.0.7-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/restlet/org.restlet.ext.fileupload/1.0.7/org.restlet.ext.fileupload-1.0.7.jar" sourcepath="M2_REPO/org/restlet/org.restlet.ext.fileupload/1.0.7/org.restlet.ext.fileupload-1.0.7-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/osgi/osgi-core/4.1/osgi-core-4.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/pdfbox/pdfbox/0.7.3/pdfbox-0.7.3.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/poi/poi/3.5-beta6/poi-3.5-beta6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/poi/poi-scratchpad/3.5-beta6/poi-scratchpad-3.5-beta6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/sun/xml/relaxngDatatype/1.0/relaxngDatatype-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javax/script/script-api/1.0/script-api-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javax/servlet/servlet-api/2.4/servlet-api-2.4.jar" sourcepath="M2_REPO/javax/servlet/servlet-api/2.4/servlet-api-2.4-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/metro/webservices/webservices-api/1.4/webservices-api-1.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/wikimodel/wem/2.0.2/wem-2.0.2.jar" sourcepath="M2_REPO/org/wikimodel/wem/2.0.2/wem-2.0.2-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/Users/julien/.m2/repository/org/wikimodel/wem/2.0.2/wem-2.0.2-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/xerces/xercesImpl/2.9.1/xercesImpl-2.9.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/sun/xml/xsom/20060306/xsom-20060306.jar"/>
+</classpath>

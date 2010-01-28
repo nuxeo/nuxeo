@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -48,7 +47,6 @@
       <groupId>javax.ejb</groupId>
       <artifactId>ejb</artifactId>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -67,6 +65,24 @@
         </executions>
       </plugin>
       <!-- end APT plugin -->
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <executions>
+          <execution>
+            <id>antbuild</id>
+            <phase>integration-test</phase>
+            <configuration>
+              <buildFiles>
+                <buildFile>${basedir}/ftest/selenium/assembly.xml</buildFile>
+              </buildFiles>
+            </configuration>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
