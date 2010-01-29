@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <ui:define name="page title"><h:outputText value="Nuxeo DAM" /></ui:define>
+
+  <ui:define name="body">
+
+
+    <a4j:region id="administrationRegion">
+
+      <ui:include src="/incl/message_banner.xhtml"/>
+
+      <a4j:outputPanel id="administrationView">
+        <ui:include src="/incl/admin_action_tabs.xhtml"/>
+        <div class="tabsContent"><ui:include src="#{webActions.currentAdminTabAction.link}" /></div>
+      </a4j:outputPanel>
+    </a4j:region>
+
+  </ui:define>
+
+</nxthemes:composition>

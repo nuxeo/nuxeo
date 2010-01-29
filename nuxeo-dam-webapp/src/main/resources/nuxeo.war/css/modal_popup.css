@@ -4,6 +4,10 @@
  width:540px;
 }
 
+.CreateUserFormPanel {
+ width:540px;
+}
+
 .dataInput {
   font:normal 11px "Lucida Grande", Verdana, sans-serif;
   height: 100%;

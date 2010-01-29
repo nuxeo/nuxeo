@@ -1,0 +1,137 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <script type="text/javascript">
+  function confirmDeleteGroup() {
+    return confirm("#{messages['label.groupManager.confirmDeleteGroup']}");
+  }
+  </script>
+
+  <rich:modalPanel id="createGroupFormPanel" autosized="true"
+   styleClass="CreateGroupFormPanel">
+    <f:facet name="header">
+      <h:panelGroup>
+        <h:outputText value="#{messages['title.createGroup']}"/>
+    </h:panelGroup>
+  </f:facet>
+  <f:facet name="controls">
+    <h:panelGroup>
+      <h:graphicImage value="/img/close.png"
+          styleClass="hidelink" id="createGroupHidelink" />
+        <rich:componentControl for="createGroupFormPanel" attachTo="createGroupHidelink"
+          operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
+    <ui:include src="/incl/create_group_panel.xhtml" />
+  </rich:modalPanel>
+
+  <rich:modalPanel id="viewGroupFormPanel" autosized="true"
+   styleClass="ViewGroupFormPanel">
+    <f:facet name="header">
+      <h:panelGroup>
+        <h:outputText value="#{messages['title.viewGroup']}" rendered="#{groupManagerActions.displayMode == 'view'}"/>
+        <h:outputText value="#{messages['title.editGroup']}" rendered="#{groupManagerActions.displayMode == 'edit'}"/>
+    </h:panelGroup>
+  </f:facet>
+  <f:facet name="controls">
+    <h:panelGroup>
+      <h:graphicImage value="/img/close.png"
+          styleClass="hidelink" id="viewGroupHidelink" />
+        <rich:componentControl for="viewGroupFormPanel" attachTo="viewGroupHidelink"
+          operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
+    <ui:include src="/incl/view_group_panel.xhtml" />
+  </rich:modalPanel>
+
+  <table cellspacing="0" cellpadding="0" border="0" style="height: 100%; width: 100%;">
+    <tbody>
+      <tr>
+        <td valign="top" style="width: 210px;">
+          <a4j:form id="groupSearchForm">
+            <a4j:commandLink
+              onclick="Richfaces.showModalPanel('createGroupFormPanel')"
+              id="group_creation_button" reRender="createGroupPanel"
+              rendered="#{groupManagerActions.allowCreateGroup and notReadOnly}">
+              <h:outputText value="#{messages['command.createGroup']}" />
+            </a4j:commandLink>
+            <br /><br />
+            <h:inputText id="groupSearchInput"
+              value="#{groupManagerActions.searchString}"
+              onkeydown="if(event.keyCode == 13 ||event.keyCode == 9 ){return false;}">
+              <a4j:support event="onkeyup" reRender="groupSearchResult"
+                requestDelay="1000" action="#{groupManagerActions.resetGroups}"
+                ignoreDupResponses="true" eventsQueue="groupSearchQueue" />
+            </h:inputText>
+          </a4j:form>
+        </td>
+          <td valign="top">
+          <a4j:outputPanel id="groupSearchResult">
+            <h:outputText
+              value="#{messages['label.groupManager.emptyGroupList']}"
+              rendered="#{groupList.rowCount == 0 and groupManagerActions.searchOverflow == false and !empty userManagerActions.searchString}" />
+
+            <h:outputText
+              value="#{messages['label.security.searchOverFlow']}"
+              rendered="#{groupManagerActions.searchOverflow}" />
+
+            <c:set var="groupSchema" value="#{userManager.groupSchemaName}" />
+
+            <a4j:form rendered="#{groupList.rowCount > 0}">
+              <h:dataTable var="groupModel" value="#{groupList}"
+                rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
+                <h:column>
+                  <a4j:commandLink
+                    action="#{groupManagerActions.deleteGroup(groupModel.id)}"
+                    onclick="if (!confirmDeleteGroup()) { return false; }"
+                    reRender="groupSearchResult"
+                    rendered="#{groupManagerActions.allowDeleteGroup and notReadOnly}">
+                   <h:graphicImage value="/icons/action_delete.gif" />
+                 </a4j:commandLink>
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                      <h:outputText
+                        value="#{messages['label.groupManager.groupName']}" />
+                  </f:facet>
+                  <a4j:commandLink
+                    action="#{groupManagerActions.setSelectedGroupId(groupModel.id)}"
+                    oncomplete="Richfaces.showModalPanel('viewGroupFormPanel')"
+                    reRender="viewGroupPanel">
+                    <h:outputText value="#{groupModel[groupSchema].groupname}" />
+                  </a4j:commandLink>
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText
+                      value="#{messages['label.groupManager.userMembers']}" />
+                  </f:facet>
+                  <nxu:dataList value="#{userManager.getGroupsInGroup(groupModel.id)}"
+                       var="subGroup">
+                    <h:outputText value="#{subGroup}"/>,
+                  </nxu:dataList>                  
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText
+                      value="#{messages['label.groupManager.groupMembers']}" />
+                  </f:facet>
+                  <nxu:dataList value="#{userManager.getUsersInGroup(groupModel.id)}"
+                       var="user">
+                    <h:outputText value="#{user}" />,
+                  </nxu:dataList>
+                </h:column>
+              </h:dataTable>
+            </a4j:form>
+          </a4j:outputPanel>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

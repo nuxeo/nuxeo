@@ -108,6 +108,60 @@
       <redirect />
     </navigation-case>
 
+    <navigation-case>
+      <from-outcome>annotations_popup</from-outcome>
+      <to-view-id>/annotations_popup.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>administration</from-outcome>
+      <to-view-id>/administration.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_user</from-outcome>
+      <to-view-id>/administration.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_many_users</from-outcome>
+      <to-view-id>/administration.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_users</from-outcome>
+      <to-view-id>/administration.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    
+    <navigation-case>
+      <from-outcome>view_folders</from-outcome>
+      <to-view-id>/administration.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_group</from-outcome>
+      <to-view-id>/administration.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_many_groups</from-outcome>
+      <to-view-id>/administration.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_groups</from-outcome>
+      <to-view-id>/administration.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+
   </extension>
 
   <extension target="pages#PAGES">

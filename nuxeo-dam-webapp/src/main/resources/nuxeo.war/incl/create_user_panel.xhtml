@@ -1,0 +1,29 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <a4j:region>
+  <a4j:outputPanel id="createUserPanel">
+  <a4j:form id="createUser" ajaxSingle="true">
+  
+    <div id="facesStatusMessage" class="facesStatusMessage">
+      <h:messages globalOnly="true"
+        infoClass="infoFeedback"
+        warnClass="warningFeedback"
+        errorClass="errorFeedback"/>
+    </div>
+
+    <nxl:layout name="user" mode="create" value="#{userManagerActions.newUser}" />
+
+    <p class="buttonsGadget">
+      <a4j:commandButton styleClass="button"
+        value="#{messages['command.create']}" action="#{userManagerActions.createUser}"
+        data="#{facesContext.maximumSeverity.ordinal ge 2}"
+        oncomplete="if (!data) { Richfaces.hideModalPanel('CreateUserFormPanel') };"
+        reRender="userSearchResult, createUser" />
+    </p>
+  </a4j:form>
+  </a4j:outputPanel>
+  </a4j:region>
+</div>

@@ -1,0 +1,21 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <div class="tabsBar">
+    <a4j:form>
+      <ul>
+        <nxu:dataList var="tab" value="#{adminActionsList}">
+          <li class="#{nxu:test(webActions.currentAdminTabAction == tab, 'selected', '')}">
+            <a4j:commandLink action="#{webActions.setCurrentAdminTabAction(tab)}" reRender="administrationView">
+              <h:outputText value="#{messages[tab.label]}" />
+            </a4j:commandLink>
+          </li>
+        </nxu:dataList>
+      </ul>
+    </a4j:form>
+  </div>
+
+  <div style="clear:both;"/>
+
+</div>

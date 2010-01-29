@@ -4,7 +4,7 @@ jetty.dir=C:/Program Files/Jetty
 tomcat.dir=C:/Program Files/Tomcat
 # Example for Unix
 #jboss.dir=/opt/jboss
-#jetty.dir=/opt/jetty
+jetty.dir=/opt/jetty
 #tomcat.dir=/opt/tomcat
 
 # Which JBoss server config to use

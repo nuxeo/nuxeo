@@ -1,0 +1,136 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <script type="text/javascript">
+  function confirmDeleteFolder() {
+    return confirm("#{messages['label.userManager.confirmDeleteFolder']}");
+  }
+  </script>
+
+  <rich:modalPanel id="createFolderFormPanel" autosized="true"
+   styleClass="CreateFolderFormPanel">
+    <f:facet name="header">
+      <h:panelGroup>
+        <h:outputText value="#{messages['title.createFolder']}"/>
+    </h:panelGroup>
+  </f:facet>
+  <f:facet name="controls">
+    <h:panelGroup>
+      <h:graphicImage value="/img/close.png"
+          styleClass="hidelink" id="createFolderHidelink" />
+        <rich:componentControl for="createFolderFormPanel" attachTo="createFolderHidelink"
+          operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
+    <ui:include src="/incl/create_folder_panel.xhtml" />
+  </rich:modalPanel>
+
+  <rich:modalPanel id="viewFolderFormPanel" autosized="true"
+   styleClass="ViewFolderFormPanel">
+    <f:facet name="header">
+      <h:panelGroup>
+        <h:outputText value="#{messages['label.folderManager.viewFolder']}" rendered="#{userManagerActions.displayMode == 'view'}"/>
+        <h:outputText value="#{messages['label.folderManager.editFolder']}" rendered="#{userManagerActions.displayMode == 'edit'}"/>
+    </h:panelGroup>
+  </f:facet>
+  <f:facet name="controls">
+    <h:panelGroup>
+      <h:graphicImage value="/img/close.png"
+          styleClass="hidelink" id="viewFolderHidelink" />
+        <rich:componentControl for="viewFolderFormPanel" attachTo="viewFolderHidelink"
+          operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
+    <ui:include src="/incl/view_folder_panel.xhtml" />
+  </rich:modalPanel>
+
+  <table cellspacing="0" cellpadding="0" border="0" style="height: 100%; width: 100%;">
+    <tbody>
+      <tr>
+        <td valign="top" style="width: 210px;">
+          <a4j:form id="userSearchForm">
+            <a4j:commandLink
+              action="#{folderAdminActions.resetNewFolder()}"
+              immediate="true"
+              reRender="createFolderFormPanel"
+              oncomplete="Richfaces.showModalPanel('createFolderFormPanel')"
+              id="folder_creation_button" 
+              rendered="#{userManagerActions.allowCreateUser and notReadOnly}">
+              <h:outputText value="#{messages['command.createFolder']}" />
+            </a4j:commandLink>
+            <br /><br />
+          </a4j:form>
+        </td>
+          <td valign="top">
+          <a4j:outputPanel id="folderSearchResult">
+            <h:outputText
+              value="#{messages['label.userManager.emptyUserList']}"
+              rendered="#{userList.rowCount == 0 and userManagerActions.searchOverflow == false and !empty userManagerActions.searchString}" />
+
+            <h:outputText
+              value="#{messages['label.security.searchOverFlow']}"
+              rendered="#{userManagerActions.searchOverflow}" />
+
+            <c:set var="userSchema" value="#{userManager.userSchemaName}" />
+
+            <a4j:form rendered="#{folderList.rowCount > 0}">
+              <h:dataTable var="folder" value="#{folderList}"
+                rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
+                <h:column>
+                  <a4j:commandLink
+                    action="#{folderAdminActions.deleteFolder(folder.id)}"
+                    onclick="if (!confirmDeleteFolder()) { return false; }"
+                    reRender="folderSearchResult"
+                    rendered="#{userManagerActions.allowDeleteUser and notReadOnly}">
+                   <h:graphicImage value="/icons/action_delete.gif" />
+                 </a4j:commandLink>
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                      <h:outputText
+                        value="#{messages['label.folderName']}" />
+                  </f:facet>
+                  <a4j:commandLink
+                    action="#{folderAdminActions.setSelectedFolder(folder.id)}"
+                    oncomplete="Richfaces.showModalPanel('viewFolderFormPanel')"
+                    reRender="viewFolderPanel">
+                    <h:outputText value="#{folder['dublincore'].title}" />
+                  </a4j:commandLink>
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText
+                      value="#{messages['label.dublincore.description']}" />
+                  </f:facet>
+                  <h:outputText value="#{folder['dublincore'].description}" />
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText
+                      value="#{messages['label.dublincore.creator']}" />
+                  </f:facet>
+                  <h:outputText value="#{folder['dublincore'].creator}" />
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText
+                      value="#{messages['label.dublincore.created']}" />
+                  </f:facet>
+                  <h:outputText value="#{folder['dublincore'].created}" />
+                </h:column>
+               
+              </h:dataTable>
+            </a4j:form>
+          </a4j:outputPanel>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+

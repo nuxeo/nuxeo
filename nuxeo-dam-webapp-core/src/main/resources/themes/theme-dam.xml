@@ -248,6 +248,18 @@
       <selector path="input, table">
         <margin>0</margin>
       </selector>
+
+      <selector path=".facesStatusMessage">
+        <position>absolute</position>
+        <left>48%</left>
+        <top>10%</top>
+      </selector>
+      <selector path=".facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul">
+        <list-style-type>none</list-style-type>
+        <width>200px</width>
+        <padding>10px</padding>
+      </selector>
+      
       <selector path="table, .dataInput, .dataOutput, .dataList">
         <border-collapse>collapse</border-collapse>
         <font preset="default (DAM fonts)"/>

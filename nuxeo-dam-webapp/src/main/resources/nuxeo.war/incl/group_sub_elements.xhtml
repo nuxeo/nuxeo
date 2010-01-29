@@ -1,0 +1,27 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:rich="http://richfaces.org/rich">
+    <h:dataTable value="#{subElements}"
+      var="item" rendered="#{not empty subElements}">
+      <h:column>
+        <nxu:methodResult name="info" value="#{userSuggestionActions.getUserInfo(item)}">
+          <f:subview rendered="#{info.type == 'USER_TYPE'}">
+            test
+            <h:graphicImage value="/icons/user.gif" alt="user.gif" />
+            <h:outputText value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
+          </f:subview>
+          <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
+            <h:graphicImage value="/icons/group.gif" alt="group.gif" />
+            <h:outputText value="#{info.id}" />
+          </f:subview>
+          <f:subview rendered="#{empty info.type}">
+            <h:outputText value="#{item}" />
+          </f:subview>
+        </nxu:methodResult>
+      </h:column>
+    </h:dataTable>
+</div>
