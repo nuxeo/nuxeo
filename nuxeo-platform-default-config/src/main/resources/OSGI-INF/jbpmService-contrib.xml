@@ -4,9 +4,9 @@
   <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
     point="processDefinition">
 
-    <processDefinition path="process/parallel-review.xml" deployer="ifChanged" />
+    <processDefinition path="process/parallel-review.xml" deployer="nuxeoProperties" />
     <processDefinition path="process/validation-review.xml"
-      deployer="ifChanged" />
+      deployer="nuxeoProperties" />
 
   </extension>
 
