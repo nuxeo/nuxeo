@@ -13,8 +13,11 @@
   <a4j:form id="#{documents.name}">
     <a4j:region>
     <a4j:outputPanel id="documentsList">
-    <h:outputText value="#{messages['label.content.empty.search']}"
-                  rendered="#{documents.rowCount == 0}" />
+    <f:subview rendered="#{documents.rowCount == 0}">
+        <div class="warningMessage">
+        <h:outputText value="#{messages['label.content.empty.search']}" />
+        </div>
+    </f:subview>
 
     <f:subview id="showListSubview" rendered="#{webActions.showList}">
 	  <ui:decorate template="/incl/documents_table.xhtml" >

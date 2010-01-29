@@ -489,6 +489,12 @@
         <padding>1px 5px</padding>
         <font-size>9px</font-size>
       </selector>
+      <selector path=".warningMessage">
+        <border>1px solid #445B71</border>
+        <margin>15px 70px</margin>
+        <padding>10px 15px 10px 25px</padding>
+        <background>#f8fcff url(/nuxeo/icons/warning.gif) no-repeat scroll 5px 8px</background>
+      </selector>
       <!-- style for Rich Faces thumb panel -->
       <selector path=".dr-pnl">
         <border>none</border>
@@ -628,8 +634,8 @@
         <border-bottom>1px solid #C8CDD4</border-bottom>
       </selector>
       <selector path="#filterForm\00003AdatePanel .DateSelectors">
-        <width>auto</width>
-        <margin>4px 10px</margin>
+        <width>100%</width>
+        <margin>4px 0 4px 5px</margin>
       </selector>
       <selector path="#filterForm\00003AdatePanel .DateSelectors .labels">
         <color>#555</color>
