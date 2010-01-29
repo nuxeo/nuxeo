@@ -8,7 +8,7 @@
 
   <script type="text/javascript">
   function confirmDeleteFolder() {
-    return confirm("#{messages['label.userManager.confirmDeleteFolder']}");
+    return confirm("#{messages['label.folderManager.confirmDeleteFolder']}");
   }
   </script>
 
@@ -34,8 +34,8 @@
    styleClass="ViewFolderFormPanel">
     <f:facet name="header">
       <h:panelGroup>
-        <h:outputText value="#{messages['label.folderManager.viewFolder']}" rendered="#{userManagerActions.displayMode == 'view'}"/>
-        <h:outputText value="#{messages['label.folderManager.editFolder']}" rendered="#{userManagerActions.displayMode == 'edit'}"/>
+        <h:outputText value="#{messages['label.folderManager.viewFolder']}" rendered="#{folderAdminActions.displayMode == 'view'}"/>
+        <h:outputText value="#{messages['label.folderManager.editFolder']}" rendered="#{folderAdminActions.displayMode == 'edit'}"/>
     </h:panelGroup>
   </f:facet>
   <f:facet name="controls">
@@ -53,14 +53,14 @@
     <tbody>
       <tr>
         <td valign="top" style="width: 210px;">
-          <a4j:form id="userSearchForm">
+          <a4j:form id="folderForm">
             <a4j:commandLink
               action="#{folderAdminActions.resetNewFolder()}"
               immediate="true"
               reRender="createFolderFormPanel"
               oncomplete="Richfaces.showModalPanel('createFolderFormPanel')"
               id="folder_creation_button" 
-              rendered="#{userManagerActions.allowCreateUser and notReadOnly}">
+              rendered="#{notReadOnly}">
               <h:outputText value="#{messages['command.createFolder']}" />
             </a4j:commandLink>
             <br /><br />
@@ -68,14 +68,7 @@
         </td>
           <td valign="top">
           <a4j:outputPanel id="folderSearchResult">
-            <h:outputText
-              value="#{messages['label.userManager.emptyUserList']}"
-              rendered="#{userList.rowCount == 0 and userManagerActions.searchOverflow == false and !empty userManagerActions.searchString}" />
-
-            <h:outputText
-              value="#{messages['label.security.searchOverFlow']}"
-              rendered="#{userManagerActions.searchOverflow}" />
-
+            
             <c:set var="userSchema" value="#{userManager.userSchemaName}" />
 
             <a4j:form rendered="#{folderList.rowCount > 0}">
@@ -86,7 +79,7 @@
                     action="#{folderAdminActions.deleteFolder(folder.id)}"
                     onclick="if (!confirmDeleteFolder()) { return false; }"
                     reRender="folderSearchResult"
-                    rendered="#{userManagerActions.allowDeleteUser and notReadOnly}">
+                    rendered="#{notReadOnly}">
                    <h:graphicImage value="/icons/action_delete.gif" />
                  </a4j:commandLink>
                 </h:column>

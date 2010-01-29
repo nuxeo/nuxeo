@@ -43,7 +43,7 @@
 </tr>
 <tr>
 	<td>watchA4jRequests</td>
-	<td></td>
+	<td>1000</td>
 	<td></td>
 </tr>
 <tr>
@@ -52,8 +52,43 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>click</td>
 	<td>link=Folders</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>1000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id=&quot;folderForm:folder_creation_button&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>1000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>createFolder:nxl_folderAdmin:nxw_name</td>
+	<td>TestFolder</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>createFolder:nxl_folderAdmin:nxw_description_1</td>
+	<td>Test Folder Description</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
 	<td></td>
 </tr>
 
