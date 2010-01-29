@@ -113,22 +113,22 @@ public class ImportActionsBean implements Serializable {
     public DocumentModel getNewImportSet() throws ClientException {
         if (newImportSet == null) {
             newImportSet = documentManager.createDocumentModel(BATCH_TYPE_NAME);
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+                    "yyyyMMdd HH:mm");
+            Calendar calendar = Calendar.getInstance();
+
+            String fullName;
+            if (currentNuxeoPrincipal != null) {
+                fullName = Functions.principalFullName(currentNuxeoPrincipal);
+            } else {
+                fullName = Functions.principalFullName((NuxeoPrincipal) documentManager.getPrincipal());
+            }
+
+            String defaultTitle = fullName + " - "
+                    + simpleDateFormat.format(calendar.getTime());
+            newImportSet.setPropertyValue("dc:title", defaultTitle);
         }
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-                "yyyyMMdd HH:mm");
-        Calendar calendar = Calendar.getInstance();
-
-        String fullName;
-        if (currentNuxeoPrincipal != null) {
-            fullName = Functions.principalFullName(currentNuxeoPrincipal);
-        } else {
-            fullName = Functions.principalFullName((NuxeoPrincipal) documentManager.getPrincipal());
-        }
-
-        String defaultTitle = fullName + " - "
-                + simpleDateFormat.format(calendar.getTime());
-        newImportSet.setPropertyValue("dc:title", defaultTitle);
 
         return newImportSet;
     }
