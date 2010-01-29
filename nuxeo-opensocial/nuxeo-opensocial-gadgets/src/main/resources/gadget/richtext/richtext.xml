@@ -66,7 +66,7 @@
       text-align:right;
     }
 
-    #upload{
+    #upload,#fileuploadBtn{
       padding-left:14px;
       background:url(/nuxeo/img/accept.png) no-repeat 0 0;
       color:#FFFFFF;
@@ -90,7 +90,7 @@
        color:#ffffff;
     }
 
-    #upload:hover{
+    #upload:hover,#fileuploadBtn:hover{
         text-decoration:underline;
     }
     </style>
@@ -126,8 +126,7 @@
     <a href="#" id="refresh" title="refresh"><img src="page_refresh.png"></a>
     <a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a>
     </div>
-       <form method="post" id="formUpload" enctype="multipart/form-data" action="#">
-        <input type="hidden" name="resize_width" id="resize_width" value="" />
+       <form method="post" id="formUpload" action="#">
         <table style="width:100%;margin-bottom:10px;" class="form">
           <tr>
             <td style="width:30%"><label for="title">Titre</label></td>
@@ -136,9 +135,6 @@
         </table>
         <textarea name="gadget:htmlContent" id="richtext" cols="35" style="width:100%"></textarea>
         <table style="width:100%" class="form">
-          <tr>
-            <td>
-              <table>
                <tr>
                   <td style="width:30%"><label for="link">Lien</label></td>
                     <td style="width:70%"><input type="text" name="link" id="link-field" /></td>
@@ -153,20 +149,32 @@
                       <a href="" id="upload">Valider</a>
                   </td>
                 </tr>
-              </table>
-            </td>
-            <td>
-              <table>
-                <tr>
-                  <label for="photo">Photo</label>
-                  <img id="preview" src="#"/>
-                  <input type="file" name="file" id="file" size="20" />
-                </tr>
-              </table>
-            </td>
-          </tr>
+
         </table>
        </form>
+
+       <form method="post" id="fileUploadForm" enctype="multipart/form-data" action="#">
+         <input type="hidden" name="resize_width" id="resize_width" value="" />
+         <table style="width:100%" class="form">
+            <tr>
+              <td>
+                <label>Photo</label><br/>
+                <img id="imgPreview" width="60" />
+              </td>
+              <td>
+                <input type="file" name="file" id="file" size="20" />
+              </td>
+
+            </tr>
+            <tr>
+              <td style="width:30%"></td>
+              <td style="width:70%">
+                  <a href="" id="fileuploadBtn">Télécharger</a>
+              </td>
+            </tr>
+         </table>
+       </form>
+
     </div>
 
   ]]>

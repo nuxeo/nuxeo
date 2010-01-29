@@ -5,6 +5,7 @@ function launchGadget(){
 jQuery(document).ready(function(){
     var idGadget = gadgets.nuxeo.getGadgetId();
     jQuery("#formUpload").attr("action", gadgets.nuxeo.getFormActionUrl(idGadget));
+    jQuery("#fileUploadForm").attr("action", gadgets.nuxeo.getFormActionUrl(idGadget));
     loadHtml(idGadget);
     loadImage(idGadget);
 
@@ -38,13 +39,8 @@ jQuery(document).ready(function(){
 
 
   jQuery('#upload').click(function(){
-
-
     jQuery('#richtext').val(jQuery('.nicEdit-main').html());
-    var width = Math.round(gadgets.window.getViewportDimensions().width / 2)
-    jQuery("#resize_width").val(width);
     jQuery('#formUpload').ajaxSubmit({
-        beforeSubmit: control,
         success:function(){
           savePrefs();
         },
@@ -54,6 +50,22 @@ jQuery(document).ready(function(){
       });
     return false;
   });
+
+
+  jQuery('#fileuploadBtn').click(function(){
+      var width = Math.round(gadgets.window.getViewportDimensions().width / 2)
+      jQuery("#resize_width").val(width);
+      jQuery('#fileUploadForm').ajaxSubmit({
+          beforeSubmit: control,
+          success:function(){
+            loadImage(gadgets.nuxeo.getGadgetId());
+          },
+          error: function(xhr,rs) {
+            alert(xhr.responseText);
+          }
+        });
+      return false;
+    });
 
   var myEditor = new nicEditor({iconsPath : '/nuxeo/site/gadgets/richtext/nicEditorIcons.gif'}).panelInstance('richtext');
   myEditor.addEvent("key", function() {
@@ -71,8 +83,10 @@ jQuery(document).ready(function(){
 };
 
 function control(){
-    return true;
-  };
+    if(jQuery.trim(jQuery("#file").val()) != "")
+      return true;
+    return false;
+};
 
 
 function savePrefs(){
@@ -167,7 +181,7 @@ function loadImage(id){
         else
           imgContainer = jQuery("<img style=\"border:0;\" id=\"picture\" src=\"\" onload=\"gadgets.window.adjustHeight()\">");
 
-
+       jQuery("#imgPreview").attr("src", photoUrl);
        jQuery("#pictureContainer").append(imgContainer);
        jQuery("#picture").attr("src", photoUrl);
        jQuery("#pictureContainer").append("<span id=\"legend\"></span>");
