@@ -586,7 +586,9 @@ public class LDAPReference extends AbstractReference {
         }
 
         /*
-         * This kind of reference is not supported yet. See NXP-4562
+         * This kind of reference is not supported because Active Directory use
+         * filter expression not yet supported by LDAPFilterMatcher. See
+         * NXP-4562
          */
         if (this.dynamicReferences != null && this.dynamicReferences.length > 0) {
             log.error("This kind of reference is not supported.");
@@ -770,7 +772,7 @@ public class LDAPReference extends AbstractReference {
 
                         // Search for references elements
                         targetIds.addAll(getReferencedElements(attributes,
-                                linkDn, ldapUrl.getFilter(), scope));
+                                directoryDn, linkDn, ldapUrl.getFilter(), scope));
 
                     }
                 }
@@ -782,35 +784,41 @@ public class LDAPReference extends AbstractReference {
                 // Only the first Dynamic Reference is used
                 LDAPDynamicReferenceDescriptor dynAtt = this.dynamicReferences[0];
 
-                // Get the BaseDN value from the descriptor
-                NamingEnumeration<?> baseDns = attributes.get(dynAtt.baseDN).getAll();
-                String linkDnValue = baseDns.next().toString();
-                linkDnValue = pseudoNormalizeDn(linkDnValue);
+                Attribute baseDnsAttribute = attributes.get(dynAtt.baseDN);
+                Attribute filterAttribute = attributes.get(dynAtt.filter);
 
-                // Get the filter value from the descriptor
-                NamingEnumeration<?> filters = attributes.get(dynAtt.filter).getAll();
-                String filterValue = filters.next().toString();
+                if (baseDnsAttribute != null && filterAttribute != null) {
 
-                // Get the scope value from the descriptor
-                int scope = "subtree".equalsIgnoreCase(dynAtt.type) ? SearchControls.SUBTREE_SCOPE
-                        : SearchControls.ONELEVEL_SCOPE;
+                    // Get the BaseDN value from the descriptor
+                    NamingEnumeration<?> baseDns = baseDnsAttribute.getAll();
+                    String linkDnValue = baseDns.next().toString();
+                    linkDnValue = pseudoNormalizeDn(linkDnValue);
 
-                String directoryDn = pseudoNormalizeDn(targetDirconfig.getSearchBaseDn());
+                    // Get the filter value from the descriptor
+                    NamingEnumeration<?> filters = filterAttribute.getAll();
+                    String filterValue = filters.next().toString();
 
-                // if the dns match, and if the link dn is pointing to elements
-                // that at
-                // upperlevel than directory elements
-                if ((linkDnValue.endsWith(directoryDn) || directoryDn.endsWith(linkDnValue))
-                        && !(directoryDn.endsWith(linkDnValue)
-                                && linkDnValue.length() < directoryDn.length() && scope == SearchControls.ONELEVEL_SCOPE)) {
+                    // Get the scope value from the descriptor
+                    int scope = "subtree".equalsIgnoreCase(dynAtt.type) ? SearchControls.SUBTREE_SCOPE
+                            : SearchControls.ONELEVEL_SCOPE;
 
-                    // Correct the filter expression
-                    filterValue = FilterExpressionCorrector.correctFilter(
-                            filterValue, FilterJobs.CORRECT_NOT);
+                    String directoryDn = pseudoNormalizeDn(targetDirconfig.getSearchBaseDn());
 
-                    // Search for references elements
-                    targetIds.addAll(getReferencedElements(attributes,
-                            linkDnValue, filterValue, scope));
+                    // if the dns match, and if the link dn is pointing to
+                    // elements that at upperlevel than directory elements
+                    if ((linkDnValue.endsWith(directoryDn) || directoryDn.endsWith(linkDnValue))
+                            && !(directoryDn.endsWith(linkDnValue)
+                                    && linkDnValue.length() < directoryDn.length() && scope == SearchControls.ONELEVEL_SCOPE)) {
+
+                        // Correct the filter expression
+                        filterValue = FilterExpressionCorrector.correctFilter(
+                                filterValue, FilterJobs.CORRECT_NOT);
+
+                        // Search for references elements
+                        targetIds.addAll(getReferencedElements(attributes,
+                                directoryDn, linkDnValue, filterValue, scope));
+
+                    }
 
                 }
 
@@ -828,22 +836,29 @@ public class LDAPReference extends AbstractReference {
      * Retrieve the elements referenced by the filter/BaseDN/Scope request.
      *
      * @param attributes Attributes of the referencer element
-     * @param linkDnValue BaseDn
-     * @param filterValue Filter expression
+     * @param directoryDn Dn of the Directory
+     * @param linkDnValue Dn specified in the parent
+     * @param filterValue Filter expression specified in the parent
      * @param scope scope for the search
      * @return The list of the referenced elements.
      * @throws DirectoryException
      * @throws NamingException
      */
     private Set<String> getReferencedElements(Attributes attributes,
-            String linkDn, String filter, int scope) throws DirectoryException,
-            NamingException {
+            String directoryDn, String linkDn, String filter, int scope)
+            throws DirectoryException, NamingException {
 
         Set<String> targetIds = new TreeSet<String>();
 
         LDAPDirectoryDescriptor targetDirconfig = getTargetDirectoryDescriptor();
         LDAPDirectory targetDirectory = (LDAPDirectory) getTargetDirectory();
         LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
+
+        // use the most specific scope between the one specified in the
+        // Directory and the specified in the Parent
+        String dn = directoryDn.endsWith(linkDn)
+                && directoryDn.length() > linkDn.length() ? directoryDn
+                : linkDn;
 
         // combine the ldapUrl search query with target
         // directory own constraints
@@ -868,12 +883,12 @@ public class LDAPReference extends AbstractReference {
         if (log.isDebugEnabled()) {
             log.debug(String.format(
                     "LDAPReference.getLdapTargetIds(%s): LDAP search dn='%s' "
-                            + " filter='%s' scope='%s' [%s]", attributes,
-                    linkDn, linkDn, scts.getSearchScope(), this));
+                            + " filter='%s' scope='%s' [%s]", attributes, dn,
+                    dn, scts.getSearchScope(), this));
         }
 
         NamingEnumeration<SearchResult> results = targetSession.dirContext.search(
-                linkDn, filter, scts);
+                dn, filter, scts);
         while (results.hasMore()) {
             // NXP-2461: check that id field is filled
             Attribute attr = results.next().getAttributes().get(
