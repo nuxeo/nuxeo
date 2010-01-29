@@ -22,6 +22,9 @@
     <property name="jboss" value="${stagedir}/jboss" />
 
     <antcall target="prepare-jboss" />
+    <artifact:attach file="pom.xml"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="pom" />
     <antcall target="build-nuxeo-ep-jboss" />
     <antcall target="build-nuxeo-dm-jboss" />
   </target>

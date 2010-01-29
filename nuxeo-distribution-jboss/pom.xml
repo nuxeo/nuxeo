@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>nuxeo-distribution-jboss</artifactId>
-  <packaging>zip</packaging>
+  <packaging>pom</packaging>
   <name>Nuxeo JBoss Distribution</name>
   <description>Package Nuxeo EP or DM EAR with JBoss</description>
 
@@ -46,6 +46,15 @@
             <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
           </buildFiles>
         </configuration>
+        <executions>
+          <execution>
+            <id>packaging</id>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
