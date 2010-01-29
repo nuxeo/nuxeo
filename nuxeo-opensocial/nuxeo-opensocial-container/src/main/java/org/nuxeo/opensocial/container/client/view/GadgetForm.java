@@ -32,7 +32,6 @@ import com.gwtext.client.widgets.Button;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.Window;
 import com.gwtext.client.widgets.event.ButtonListenerAdapter;
-import com.gwtext.client.widgets.event.WindowListenerAdapter;
 import com.gwtext.client.widgets.form.FormPanel;
 
 /**
@@ -50,7 +49,7 @@ public class GadgetForm {
   private GadgetBean gadget;
   private GadgetPortlet portlet;
 
-  private static final Window window = new Window();
+  public static final Window window = new Window();
 
   public GadgetForm(GadgetPortlet portlet) {
     this.portlet = portlet;
@@ -72,13 +71,6 @@ public class GadgetForm {
     window.setModal(true);
     window.show();
     window.syncSize();
-    window.addListener(new WindowListenerAdapter() {
-      @Override
-      public void onClose(Panel panel) {
-        JsLibrary.closeBrowserDoc();
-        super.onClose(panel);
-      }
-    });
   }
 
   private FormPanel createFields(FormPanel form) {

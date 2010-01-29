@@ -54,12 +54,6 @@ public class JsLibrary {
     return "";
   }-*/;
 
-  public static native void closeBrowserDoc()
-  /*-{
-    if($wnd.browser)
-      $wnd.browser.selectDocument = null;
-  }-*/;
-
   public static native void showSearchBrowser(String id, String url)
   /*-{
     $wnd.jQuery("#"+id).load(url);

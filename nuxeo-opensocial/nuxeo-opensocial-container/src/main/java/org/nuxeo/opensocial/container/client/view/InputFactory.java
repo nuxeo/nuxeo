@@ -7,8 +7,11 @@ import org.nuxeo.opensocial.container.client.ContainerConstants;
 import org.nuxeo.opensocial.container.client.ContainerMessages;
 import org.nuxeo.opensocial.container.client.bean.PreferencesBean;
 import org.nuxeo.opensocial.container.client.bean.ValuePair;
+import org.nuxeo.opensocial.container.client.view.rest.NXRequestCallback;
+import org.nuxeo.opensocial.container.client.view.rest.NXRestAPI;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.URL;
 import com.gwtext.client.core.ListenerConfig;
 import com.gwtext.client.data.SimpleStore;
@@ -17,9 +20,11 @@ import com.gwtext.client.widgets.BoxComponent;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.form.Checkbox;
 import com.gwtext.client.widgets.form.ComboBox;
+import com.gwtext.client.widgets.form.Field;
 import com.gwtext.client.widgets.form.Label;
 import com.gwtext.client.widgets.form.TextArea;
 import com.gwtext.client.widgets.form.TextField;
+import com.gwtext.client.widgets.form.event.FieldListenerAdapter;
 
 public class InputFactory {
 
@@ -58,21 +63,22 @@ public class InputFactory {
   }
 
   public BoxComponent createField(GadgetPortlet gp, PreferencesBean b) {
-    BoxComponent box = null;
     if (TYPES.isColor(b.getDataType(), b.getName())) {
-      box = new NXFieldColor(gp, b);
+      return new NXFieldColor(gp, b);
     } else if (TYPES.isComboColor(b.getDataType(), b.getName())) {
-      box = new NXFieldColorCombo(gp, b);
+      return new NXFieldColorCombo(gp, b);
+    } else if (TYPES.isNxId(b.getDataType(), b.getName())) {
+      return new NXFieldId(gp, b);
     } else if (TYPES.isString(b.getDataType())) {
-      box = new NXField(gp, b);
+      return new NXField(gp, b);
     } else if (TYPES.isHidden(b.getDataType())) {
-      box = new NXFieldHidden(b);
+      return new NXFieldHidden(b);
     } else if (TYPES.isCombo(b.getDataType())) {
-      box = new NXFieldComboBox(b);
+      return new NXFieldComboBox(b);
     } else if (TYPES.isBool(b.getDataType())) {
-      box = new NXFieldCheckbox(b);
+      return new NXFieldCheckbox(b);
     }
-    return box;
+    return null;
   }
 
   /****************************************************/
@@ -80,7 +86,7 @@ public class InputFactory {
 
   private class NXField extends TextField {
 
-    public NXField(final GadgetPortlet gp, PreferencesBean bean) {
+    public NXField(GadgetPortlet gp, PreferencesBean bean) {
       this.setLabel(bean.getDisplayName());
       this.setName(bean.getName());
       this.setWidth(PREF_WIDTH_FIELD);
@@ -92,7 +98,29 @@ public class InputFactory {
         this.addKeyPressListener(new NXEventCallback(gp, this), config);
       } else
         this.setValue(getPrefValue(bean));
+    }
+  }
 
+  /****************************************************/
+  /** Field NX ID **/
+
+  private class NXFieldId extends TextField {
+
+    public NXFieldId(GadgetPortlet gp, PreferencesBean bean) {
+      this.setLabel(bean.getDisplayName());
+      this.setName(bean.getName());
+      this.setWidth(PREF_WIDTH_FIELD);
+      this.setValue(getPrefValue(bean));
+      // TODO : split pref for check type
+
+      final RequestCallback callback = new NXRequestCallback(this);
+      this.addListener(new FieldListenerAdapter() {
+        @Override
+        public void onFocus(Field field) {
+          NXRestAPI.queryDocType("PictureBook", callback);
+
+        }
+      });
     }
   }
 
@@ -200,11 +228,17 @@ public class InputFactory {
   }
 
   private static enum TYPES {
-    STRING, HIDDEN, BOOL, ENUM, LIST, COLOR_, BROWS_;
+    STRING, HIDDEN, BOOL, ENUM, LIST, COLOR_, NXID_;
 
     public static boolean isString(String type) {
       return STRING.name()
           .equals(type);
+    }
+
+    public static boolean isNxId(String dataType, String name) {
+      return isString(dataType) && name.substring(0, NXID_.name()
+          .length())
+          .equals(NXID_.name());
     }
 
     public static boolean isHidden(String type) {

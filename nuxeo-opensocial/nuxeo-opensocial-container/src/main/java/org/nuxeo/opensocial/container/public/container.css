@@ -3,6 +3,46 @@
   color: #000000;
 }
 
+.thumb-wrap {
+  width:100px;
+  padding:8px;
+  margin:8px;
+  float:left;
+  border: 1px solid #666666;
+  text-align:center;
+}
+
+.x-view-over{
+  border: 1px solid grey;
+}
+
+.x-view-title{
+  font-size:17px;
+}
+
+.x-view-image {
+  margin:auto;
+  text-align:center;
+}
+
+.x-view-image > img {
+  max-width:190px;
+  padding-top:10px;
+}
+
+.x-view-no-image {
+  margin:auto;
+  text-align:center;
+  width:185px;
+  height:185px;
+  margin-top:10px;
+}
+
+.x-view-selected{
+  border: 1px solid white;
+  background: grey;
+}
+
 .addGadget {
   margin-top: 5px;
   margin-bottom: 5px;
