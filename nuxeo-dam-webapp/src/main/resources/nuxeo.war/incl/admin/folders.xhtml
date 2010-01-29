@@ -55,9 +55,11 @@
         <td valign="top" style="width: 210px;">
           <a4j:form id="userSearchForm">
             <a4j:commandLink
-              action="#{folderAdminActions.resetNewFolder}"
+              action="#{folderAdminActions.resetNewFolder()}"
+              immediate="true"
+              reRender="createFolderFormPanel"
               oncomplete="Richfaces.showModalPanel('createFolderFormPanel')"
-              id="folder_creation_button" reRender="createFormPanel"
+              id="folder_creation_button" 
               rendered="#{userManagerActions.allowCreateUser and notReadOnly}">
               <h:outputText value="#{messages['command.createFolder']}" />
             </a4j:commandLink>

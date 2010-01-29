@@ -125,11 +125,18 @@ public class DamFolderAdminActionBean implements Serializable{
     
     public void resetNewFolder() {
         newFolder = null;
-        userPermissions.clear();
-        groupPermissions.clear();
+        resetPermissions();
         displayMode = BuiltinModes.EDIT;
     }
-
+    
+    public void resetPermissions() {
+        userPermissions.clear();
+        groupPermissions.clear();
+        for ( String perm : visiblePermissions ){
+            userPermissions.put(perm, new ArrayList<String>());
+            groupPermissions.put(perm, new ArrayList<String>());
+        }
+    }
 
     public void toggleDisplayMode() {
         if (BuiltinModes.VIEW.equals(displayMode)) {
