@@ -67,7 +67,7 @@ import org.nuxeo.runtime.api.Framework;
 public class DamFolderAdminActionBean implements Serializable{
 
     // TODO change this to Workspace after merge 
-    private static final String FOLDER_TYPE = "Folder";
+    private static final String FOLDER_TYPE = "Workspace";
 
     private static final String VIEW_FOLDERS = "view_folders";
 
@@ -258,7 +258,7 @@ public class DamFolderAdminActionBean implements Serializable{
             if ( visiblePermissions == null ) {
                 visiblePermissions = new ArrayList<String>();
                 SecurityService securityService = Framework.getService(SecurityService.class);
-                List<UserVisiblePermission> permDescriptors = securityService.getPermissionProvider().getUserVisiblePermissionDescriptors("Workspace");
+                List<UserVisiblePermission> permDescriptors = securityService.getPermissionProvider().getUserVisiblePermissionDescriptors(FOLDER_TYPE);
                 for ( UserVisiblePermission pd : permDescriptors) {
                     visiblePermissions.add(pd.getPermission());
                 }
