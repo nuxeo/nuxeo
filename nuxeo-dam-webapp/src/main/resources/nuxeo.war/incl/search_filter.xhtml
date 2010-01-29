@@ -34,7 +34,7 @@
      iconExpandedGroup="disc" iconCollapsedGroup="disc" 
      iconExpandedTopGroup="chevronUp" iconGroupTopPosition="right" 
      iconCollapsedTopGroup="chevronDown" styleClass="filterBlock">
-     
+
      <rich:panelMenuGroup label="#{messages['heading.filter.fulltext']}"
        expanded="true" iconExpanded="none" id="keywords">
 
@@ -45,6 +45,23 @@
            ignoreDupResponses="true" eventsQueue="filterFormQueue" />
        </h:inputText>
      
+     </rich:panelMenuGroup>
+
+     <rich:panelMenuGroup label="#{messages['heading.filter.docType']}"
+       expanded="true" id="docTypes">
+       
+       <c:forEach varStatus="status" items="#{docTypeSelectItems}" var="item">
+       
+         <rich:panelMenuItem label="#{messages[item.label]}" id="#{messages[item.value]}"
+           styleClass="#{item.disabled ? 'selected' : ''}"
+           mode="ajax" action="#{filterActions.toggleSelectDocType}"
+           reRender="filterResultTable,filterFormPanel,selectionView"
+           eventsQueue="filterFormQueue">
+           <f:param name="docType" value="#{item.value}" />
+         </rich:panelMenuItem>
+       
+       </c:forEach>
+
      </rich:panelMenuGroup>
 
      <rich:panelMenuGroup label="#{messages['heading.filter.folders']}"
@@ -82,23 +99,7 @@
 
      </rich:panelMenuGroup>
      </c:if>
-     <rich:panelMenuGroup label="#{messages['heading.filter.docType']}"
-       expanded="true" id="docTypes">
-       
-       <c:forEach varStatus="status" items="#{docTypeSelectItems}" var="item">
-       
-         <rich:panelMenuItem label="#{messages[item.label]}" id="#{messages[item.value]}"
-           styleClass="#{item.disabled ? 'selected' : ''}"
-           mode="ajax" action="#{filterActions.toggleSelectDocType}"
-           reRender="filterResultTable,filterFormPanel,selectionView"
-           eventsQueue="filterFormQueue">
-           <f:param name="docType" value="#{item.value}" />
-         </rich:panelMenuItem>
-       
-       </c:forEach>
 
-     </rich:panelMenuGroup>
-     
      <!-- topic filter menu -->
      <rich:panelMenuGroup label="#{messages['heading.filter.topic']}"
       expanded="true" id="topicFilterPanel">
