@@ -1,0 +1,49 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <a4j:region>
+  <a4j:outputPanel id="viewFolderPanel">
+  <a4j:form id="viewUser" ajaxSingle="true">
+  
+    <div id="facesStatusMessage" class="facesStatusMessage">
+      <h:messages globalOnly="true"
+        infoClass="infoFeedback"
+        warnClass="warningFeedback"
+        errorClass="errorFeedback"/>
+    </div>
+
+    <f:subview id="viewSubView" rendered="#{folderAdminActions.displayMode == 'view'}">
+      <nxl:layout name="folderAdmin" mode="view" value="#{folderAdminActions.selectedFolder}" />
+    </f:subview>
+    <f:subview id="editSubView" rendered="#{folderAdminActions.displayMode == 'edit'}">
+      <nxl:layout name="folderAdmin" mode="edit" value="#{folderAdminActions.selectedFolder}" />
+    </f:subview>
+	
+	<ui:include src="/incl/folder_security.xhtml"/>
+
+
+    <p class="buttonsGadget">
+      <a4j:commandLink styleClass="button"
+                       action="#{folderAdminActions.updateFolder}"
+                       rendered="#{folderAdminActions.displayMode == 'edit'}"
+                       reRender="viewFolderPanel">
+        <h:outputText value="#{messages['command.save']}"/>
+      </a4j:commandLink>
+      <a4j:commandLink styleClass="button"
+                       action="#{folderAdminActions.toggleDisplayMode}"
+                       immediate="true" reRender="viewFolderPanel">
+        <h:outputText value="#{messages['command.cancel']}"
+                      rendered="#{folderAdminActions.displayMode == 'edit'}"/>
+        <h:outputText value="#{messages['command.edit']}"
+                      rendered="#{folderAdminActions.displayMode == 'view'}"/>
+      </a4j:commandLink>
+      
+    </p>
+  </a4j:form>
+  </a4j:outputPanel>
+  </a4j:region>
+</div>

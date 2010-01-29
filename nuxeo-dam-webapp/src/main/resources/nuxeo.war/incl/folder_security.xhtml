@@ -1,0 +1,39 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:nxu="http://nuxeo.org/nxweb/util"
+    xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<table cellspacing="0" cellpadding="0" border="1" style="height: 100%; width: 100%;">
+
+<tr>
+<th><h:outputText value="Permission" /></th>
+<th><h:outputText value="Users" /></th>
+<th><h:outputText value="Groups" /></th>
+</tr>
+
+ <nxu:repeat var="perm" value="#{folderAdminActions.visiblePermissions}" >
+ <tr>
+ 
+ <td valign="top" align="left">
+ <h:outputText value="#{perm}" /> 
+ </td>
+ 
+ <td valign="top" align="left">
+ <nxl:layout name="select_users" mode="#{folderAdminActions.displayMode}" 
+   value="#{folderAdminActions.userPermissions[perm]}" />
+ </td>
+
+ <td valign="top" align="left">
+ <nxl:layout name="select_groups" mode="#{folderAdminActions.displayMode}" 
+   value="#{folderAdminActions.groupPermissions[perm]}" />
+ </td>
+ 
+ </tr>
+ </nxu:repeat>
+ 
+</table>
+ 
+</div>

@@ -682,7 +682,96 @@
       </widget>
     </layout>
     
-      <layout name="group">
+    <layout name="folderAdmin">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>name</widget>
+        </row>
+        <row>
+          <widget>description</widget>
+        </row>
+      </rows>
+      
+      <widget name="name" type="text">
+        <labels>
+          <label mode="any">label.folderName</label>
+        </labels>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="description" type="text">
+        <labels>
+          <label mode="any">label.dublincore.description</label>
+        </labels>
+        <fields>
+          <field>dc:description</field>
+        </fields>
+        <properties mode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+    </layout>
+    
+    <layout name="select_users">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>selection</widget>
+        </row>
+      </rows>
+      <widget name="selection" type="template">
+        <!-- add empty field to map layout value directly -->
+        <fields>
+          <field></field>
+        </fields>
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <properties mode="any">
+          <property name="template">
+            /widgets/user_suggestion_widget_template.xhtml
+          </property>
+          <property name="userSuggestionSearchType">USER_TYPE</property>
+        </properties>
+      </widget>
+    </layout>
+    
+    <layout name="select_groups">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>selection</widget>
+        </row>
+      </rows>
+      <widget name="selection" type="template">
+        <!-- add empty field to map layout value directly -->
+        <fields>
+          <field></field>
+        </fields>
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <properties mode="any">
+          <property name="template">
+            /widgets/user_suggestion_widget_template.xhtml
+          </property>
+          <property name="userSuggestionSearchType">GROUP_TYPE</property>
+        </properties>
+      </widget>
+    </layout>
+
+	      <layout name="group">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
       </templates>
@@ -744,6 +833,7 @@
         </properties>
       </widget>
     </layout>
+    
   </extension>
 
 </component>
