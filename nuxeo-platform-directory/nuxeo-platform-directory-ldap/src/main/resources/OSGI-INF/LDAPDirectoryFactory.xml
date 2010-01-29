@@ -197,19 +197,42 @@
       single schema which is to be registered as any core document
       schema and that will be used to build a DocumentModel for each
       matching entry of the directory.
+      
+      
+      Nuxeo EP provides group resolution for statically dn-referenced
+      entries (in read and write mode) and for dynamically ldapUrl
+      matched entries (readonly).
 
       The references tags are used to dynamically build nxs:stringList
       fields of that schema that are to compute membership relationships
       between users and groups or between parent groups and sub groups.
       It can also resole children and parents following the ldap tree
       structure.
+      
+      You have two ways for declaring a dynamic reference in a 'references' tag.
+      You can use 'dynamicAttributeId' to point to an ldap attribute that 
+      contains an ldap url. 
+      
+      <code>
+      <ldapReference field="members" directory="userDirectory"
+               dynamicAttributeId="memberURL"/>
+      </code>
 
-      Nuxeo EP provides group resolution for statically dn-referenced
-      entries (in read and write mode) and for dynamically ldapUrl
-      matched entries (readonly).
+      Or, you can use a subtag 'dynamicReference' to declare attributes that 
+      contain a DN, a filter and a type. This values will be used to selected 
+      the references.
+
+      <code>
+      <ldapReference field="members" directory="userDirectory" />
+         <dynamicReference filter="ldapAttribute" 
+            type="subtree/onelevel" 
+            baseDN ="ldapAttribute" />
+      <ldapReference/>
+      </code>
 
       When using dynamic references, caching is advised since dynamic
       group resolution can be expensive.
+
     </documentation>
 
     <object
