@@ -24,10 +24,11 @@ import org.nuxeo.opensocial.container.client.view.SavePreferenceAsyncCallback;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * JSNI implementation of opensocial container
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public class GadgetService {
@@ -47,7 +48,7 @@ public class GadgetService {
 
   /**
    * Resize gadget
-   * 
+   *
    * @param height
    */
   public static native void resizeIframe(int height)
@@ -64,7 +65,17 @@ public class GadgetService {
       p.setHeight(h);
       bean.setHeight(h);
       ContainerEntryPoint.getService()
-          .saveGadget(bean, ContainerEntryPoint.getGwtParams(), null);
+          .saveGadget(bean, ContainerEntryPoint.getGwtParams(), new AsyncCallback<GadgetBean>() {
+
+            public void onFailure(Throwable arg0) {
+
+            }
+
+            public void onSuccess(GadgetBean arg0) {
+
+            }
+
+          });
     }
     portal.incrementLoading();
 
@@ -72,7 +83,7 @@ public class GadgetService {
 
   /**
    * Set new preference
-   * 
+   *
    * @param editToken
    * @param name
    * @param value
@@ -104,7 +115,7 @@ public class GadgetService {
 
   /**
    * Service : Set new title
-   * 
+   *
    * @param title
    */
   public static native void setTitle(String title)
@@ -122,7 +133,7 @@ public class GadgetService {
 
   /**
    * Service : Show List of image in Container
-   * 
+   *
    * @param childs
    * @param current
    */
@@ -154,7 +165,7 @@ public class GadgetService {
 
   /**
    * Security : Setter of rpc relay
-   * 
+   *
    * @param iframeId
    * @param rpcToken
    */
@@ -165,7 +176,7 @@ public class GadgetService {
 
   /**
    * Security : Setter of Auth token
-   * 
+   *
    * @param iframeId
    * @param rpcToken
    */

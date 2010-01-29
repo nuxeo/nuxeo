@@ -17,19 +17,20 @@ jQuery(document).ready(function(){
 
   if(perm != 'true') jQuery("#perm").remove();
 
-    var options = {
-      beforeSubmit: control,
-      success:function(){
-        launchGadget();
-      },
-      error: function(xhr,rs) {
-        alert(xhr.responseText);
-      }
-    };
 
   jQuery('#upload').click(function(){
-    savePrefs();
-    jQuery('#formUpload').ajaxSubmit(options);
+    jQuery("#resize_width").val(gadgets.window.getViewportDimensions().width);
+    jQuery('#formUpload').ajaxSubmit({
+        beforeSubmit: control,
+        success:function(data){
+          launchGadget();
+          savePrefs();
+        },
+        error: function(xhr,rs) {
+          alert(xhr.responseText);
+        }
+    });
+    return false;
   });
 
   jQuery('#show').click(function(){

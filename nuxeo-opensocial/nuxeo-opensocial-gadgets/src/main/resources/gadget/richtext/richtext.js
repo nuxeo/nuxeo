@@ -35,11 +35,24 @@ jQuery(document).ready(function(){
   if(perm != 'true') jQuery("#perm").remove();
 
 
-  jQuery('#upload').click(function(){
-    jQuery('#richtext').val(jQuery('.nicEdit-main').html());
-    savePrefs();
 
-    jQuery('#formUpload').ajaxSubmit({skipEncodingOverride: false});
+
+  jQuery('#upload').click(function(){
+
+
+    jQuery('#richtext').val(jQuery('.nicEdit-main').html());
+    var width = Math.round(gadgets.window.getViewportDimensions().width / 2)
+    jQuery("#resize_width").val(width);
+    jQuery('#formUpload').ajaxSubmit({
+        beforeSubmit: control,
+        success:function(){
+          savePrefs();
+        },
+        error: function(xhr,rs) {
+          alert(xhr.responseText);
+        }
+      });
+    return false;
   });
 
   var myEditor = new nicEditor({iconsPath : '/nuxeo/site/gadgets/richtext/nicEditorIcons.gif'}).panelInstance('richtext');
@@ -57,6 +70,11 @@ jQuery(document).ready(function(){
 });
 };
 
+function control(){
+    return true;
+  };
+
+
 function savePrefs(){
   prefs.set("richTitle",val("title-field"),
   "link",val("link-field"),
@@ -67,11 +85,7 @@ function val(id){
   return gadgets.util.escapeString(jQuery("#"+id).val());
 };
 
-function control(){
-  if(jQuery.trim(jQuery("#file").val()) != "")
-    return true;
-  return false;
-};
+
 
 function setWidthAndBindEvents(){
   if(firstTime){

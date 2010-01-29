@@ -52,9 +52,15 @@ function setTitle(title){
 };
 
 function control(){
-  if(jQuery.trim(jQuery("#file").val()) != "")
-    return true;
-  return false;
+  var filename  =jQuery.trim(jQuery("#file").val())  ;
+  if( filename == "")
+    return false;
+  if(filename.match(".swf$" == ".swf")) {
+    alert("Fichier non pris en charge (pas .swf)");
+    return false;
+  }
+
+  return true;
 };
 
 function _isSet(val){
