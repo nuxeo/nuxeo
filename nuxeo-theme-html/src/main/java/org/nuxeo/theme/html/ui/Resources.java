@@ -85,8 +85,11 @@ public class Resources {
 
         // scripts
         sb.append(String.format(
-                "<script type=\"text/javascript\"><!--\n var nxthemesBasePath = \"%s\";\n //--></script>\n",
-                nxthemeBasePath));
+                "<script type=\"text/javascript\">" +
+		  "<!--\n var nxthemesPath = \"%s\";\n //-->" +
+		  "<!--\n var nxthemesBasePath = \"%s\";\n //-->" +
+                "</script>\n",
+                path, nxthemeBasePath));
         if (hasScripts) {
             sb.append(String.format(
                     "<script type=\"text/javascript\" src=\"%s\"></script>",
