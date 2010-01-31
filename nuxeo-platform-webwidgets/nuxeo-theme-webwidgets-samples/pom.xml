@@ -4,28 +4,30 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
+
+ <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-webwidgets-parent</artifactId>
     <version>5.3.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-theme-webwidgets-ui</artifactId>
-  <name>Nuxeo Theme Web Widgets UI</name>
-  <description>Nuxeo Theme: Web widgets UI.</description>
+
+  <artifactId>nuxeo-theme-webwidgets-samples</artifactId>
+  <name>Nuxeo Theme Web Widgets Samples</name>
+  <description>Nuxeo Theme: Web widgets Samples.</description>
 
   <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.theme</groupId>
-      <artifactId>nuxeo-theme-core</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-theme-webwidgets</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-ui-web</artifactId>
+      <artifactId>nuxeo-theme-webwidgets-ui</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-url-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
@@ -41,16 +43,6 @@
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
