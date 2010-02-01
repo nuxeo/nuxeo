@@ -28,7 +28,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * JSNI implementation of opensocial container
- *
+ * 
  * @author Guillaume Cusnieux
  */
 public class GadgetService {
@@ -42,13 +42,13 @@ public class GadgetService {
     rpc.register('resize_iframe', @org.nuxeo.opensocial.container.client.GadgetService::resizeIframe(I));
     rpc.register('set_pref', @org.nuxeo.opensocial.container.client.GadgetService::setPref(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
     rpc.register('set_title', @org.nuxeo.opensocial.container.client.GadgetService::setTitle(Ljava/lang/String;));
-    rpc.register('show_image', @org.nuxeo.opensocial.container.client.GadgetService::showImage(Lcom/google/gwt/core/client/JsArray;I));
+    rpc.register('show_fancybox', @org.nuxeo.opensocial.container.client.GadgetService::showFancyBox(Lcom/google/gwt/core/client/JsArray;I));
     rpc.register('get_nuxeo_space_id', @org.nuxeo.opensocial.container.client.GadgetService::getSpaceId());
   }-*/;
 
   /**
    * Resize gadget
-   *
+   * 
    * @param height
    */
   public static native void resizeIframe(int height)
@@ -65,17 +65,18 @@ public class GadgetService {
       p.setHeight(h);
       bean.setHeight(h);
       ContainerEntryPoint.getService()
-          .saveGadget(bean, ContainerEntryPoint.getGwtParams(), new AsyncCallback<GadgetBean>() {
+          .saveGadget(bean, ContainerEntryPoint.getGwtParams(),
+              new AsyncCallback<GadgetBean>() {
 
-            public void onFailure(Throwable arg0) {
+                public void onFailure(Throwable arg0) {
 
-            }
+                }
 
-            public void onSuccess(GadgetBean arg0) {
+                public void onSuccess(GadgetBean arg0) {
 
-            }
+                }
 
-          });
+              });
     }
     portal.incrementLoading();
 
@@ -83,7 +84,7 @@ public class GadgetService {
 
   /**
    * Set new preference
-   *
+   * 
    * @param editToken
    * @param name
    * @param value
@@ -115,7 +116,7 @@ public class GadgetService {
 
   /**
    * Service : Set new title
-   *
+   * 
    * @param title
    */
   public static native void setTitle(String title)
@@ -133,26 +134,28 @@ public class GadgetService {
 
   /**
    * Service : Show List of image in Container
-   *
+   * 
    * @param childs
    * @param current
    */
-  public static native void showImage(JsArray<JavaScriptObject> childs,
+  public static native void showFancyBox(JsArray<JavaScriptObject> childs,
       int current)
   /*-{
-    var container = $wnd.jQuery("#gadget-fancy");
+        var container = $wnd.jQuery("#gadget-fancy");
         if(container.length == 0){
-          container = $wnd.jQuery("<div></div>").attr("id","gadget-fancy");
+          container = $wnd.jQuery("<div></div>").attr("id","gadget-fancy").attr("style","display:none");
           $wnd.jQuery($wnd.document.body).append(container);
         }
         container.html("");
 
         $wnd.jQuery.each(childs, function(index, child) {
-           var a = $wnd.jQuery("<a></a>").attr('href',child.path.value+"@@viewVersion?v=Original").attr('class','fancyboxImage').attr('rel','photoGroup');
+           var a = $wnd.jQuery("<a></a>").attr('href',child.path.value+"@view/Original.jpg").attr('class','zoom').attr("id","inline").attr('rel','group');
+           var img = $wnd.jQuery("<img></img>").attr("src",child.path.value+"@view/Original");
+           a.append(img);
            container.append(a);
         });
 
-        $wnd.jQuery($wnd.jQuery("a.fancyboxImage")).fancybox({
+        $wnd.jQuery($wnd.jQuery("a.zoom")).fancybox({
          'zoomSpeedIn': 500,
          'zoomSpeedOut': 500,
          'overlayShow': false,
@@ -160,12 +163,12 @@ public class GadgetService {
          'hideOnContentClick': false
         });
 
-        $wnd.jQuery($wnd.jQuery("a.fancyboxImage")[current]).click();
+        $wnd.jQuery($wnd.jQuery("a.zoom")[current]).click();
   }-*/;
 
   /**
    * Security : Setter of rpc relay
-   *
+   * 
    * @param iframeId
    * @param rpcToken
    */
@@ -176,7 +179,7 @@ public class GadgetService {
 
   /**
    * Security : Setter of Auth token
-   *
+   * 
    * @param iframeId
    * @param rpcToken
    */
