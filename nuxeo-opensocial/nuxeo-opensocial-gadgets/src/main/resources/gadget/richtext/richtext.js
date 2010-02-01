@@ -9,10 +9,10 @@ jQuery(document).ready(function(){
     loadHtml(idGadget);
     loadImage(idGadget);
 
-    setTitle(prefs.getString("richTitle"));
-    setLink(prefs.getString("link"));
-    setLegend(prefs.getString("legend"));
-    setPlace(prefs.getString("place"));
+    setTitle(gadgets.util.unescapeString(prefs.getString("richTitle")));
+    setLink(gadgets.util.unescapeString(prefs.getString("link")));
+    setLegend(gadgets.util.unescapeString(prefs.getString("legend")));
+    setPlace(gadgets.util.unescapeString(prefs.getString("place")));
 
 
   jQuery('#show').click(function(){
