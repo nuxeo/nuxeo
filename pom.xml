@@ -2006,7 +2006,7 @@
       </activation>
       <repositories>
         <repository>
-          <id>internal</id>
+          <id>internal-private</id>
           <url>http://mavenpriv.in.nuxeo.com/internal</url>
           <releases>
             <enabled>true</enabled>
@@ -2016,7 +2016,7 @@
           </snapshots>
         </repository>
         <repository>
-          <id>internal-snapshots</id>
+          <id>internal-private-snapshots</id>
           <url>http://mavenpriv.in.nuxeo.com/internal-snapshots</url>
           <releases>
             <enabled>false</enabled>
@@ -2029,7 +2029,7 @@
       </repositories>
       <pluginRepositories>
         <pluginRepository>
-          <id>internal</id>
+          <id>internal-private</id>
           <url>http://mavenpriv.in.nuxeo.com/internal</url>
           <name>Nuxeo virtual release repository</name>
           <releases>
@@ -2040,7 +2040,7 @@
           </snapshots>
         </pluginRepository>
         <pluginRepository>
-          <id>internal-snapshots</id>
+          <id>internal-private-snapshots</id>
           <url>http://mavenpriv.in.nuxeo.com/internal-snapshots</url>
           <name>Nuxeo virtual snapshot repository</name>
           <releases>
