@@ -75,6 +75,9 @@ jQuery(document).ready(function(){
 
   setWidthAndBindEvents();
   jQuery('#loader').remove();
+  
+  jQuery('.nicEdit-main').attr("style","min-height:60px;margin:4px;"); 
+  
   gadgets.window.adjustHeight();
 
 
