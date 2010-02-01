@@ -19,9 +19,10 @@
 
 package org.nuxeo.webengine.sites;
 
-import java.util.Vector;
 import java.util.List;
+import java.util.Vector;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -62,6 +63,12 @@ public class SiteContentProvider extends DocumentContentProvider {
             }
         }
         return v.toArray();
+    }
+
+    @Override
+    public String getLabel(Object obj) {
+        String label = super.getLabel(obj);
+        return label == null ? null : StringEscapeUtils.escapeXml(label);
     }
 
 }
