@@ -17,6 +17,9 @@
 
 package org.nuxeo.opensocial.container.client;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 import org.nuxeo.opensocial.container.client.view.ContainerPortal;
 import org.nuxeo.opensocial.container.client.view.GadgetPortlet;
@@ -24,6 +27,7 @@ import org.nuxeo.opensocial.container.client.view.SavePreferenceAsyncCallback;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -56,30 +60,43 @@ public class GadgetService {
     @org.nuxeo.opensocial.container.client.GadgetService::setHeight(Ljava/lang/String;I)(this.f,height);
   }-*/;
 
+  private static Map<String, Timer> adjustHeight = new HashMap<String, Timer>();
+
   public static void setHeight(String frameId, int height) {
     ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
-    GadgetPortlet p = portal.getGadgetPortletByFrameId(frameId);
-    GadgetBean bean = p.getGadgetBean();
-    int h = height + 30;
-    if (bean.getHeight() != h) {
+    final GadgetPortlet p = portal.getGadgetPortletByFrameId(frameId);
+    final GadgetBean bean = p.getGadgetBean();
+    final int h = height + 30;
+    if (p.getHeight() != h) {
+      Timer timer;
+      if (adjustHeight.containsKey(frameId)) {
+        adjustHeight.get(frameId)
+            .cancel();
+        adjustHeight.remove(frameId);
+      }
       p.setHeight(h);
       bean.setHeight(h);
-      ContainerEntryPoint.getService()
-          .saveGadget(bean, ContainerEntryPoint.getGwtParams(),
-              new AsyncCallback<GadgetBean>() {
+      timer = new Timer() {
+        @Override
+        public void run() {
+          ContainerEntryPoint.getService()
+              .saveGadget(bean, ContainerEntryPoint.getGwtParams(),
+                  new AsyncCallback<GadgetBean>() {
 
-                public void onFailure(Throwable arg0) {
+                    public void onFailure(Throwable arg0) {
 
-                }
+                    }
 
-                public void onSuccess(GadgetBean arg0) {
+                    public void onSuccess(GadgetBean arg0) {
+                    }
 
-                }
-
-              });
+                  });
+        }
+      };
+      timer.schedule(2000);
+      adjustHeight.put(frameId, timer);
+      portal.incrementLoading();
     }
-    portal.incrementLoading();
-
   };
 
   /**
