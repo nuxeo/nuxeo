@@ -5,8 +5,8 @@
     <div style="clear:both;"></div>
   </div>
   <div class="postHeadtitle">
-    <div class="postTitle">${Document.dublincore.title}</div>
-    <div class="postSubtitle">${Document.dublincore.description}</div>
+    <div class="postTitle">${Document.dublincore.title?xml}</div>
+    <div class="postSubtitle">${Document.dublincore.description?xml}</div>
   </div>
   <div class="postContent">${Document.webpage.content}</div>
 </div>
