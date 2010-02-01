@@ -35,7 +35,7 @@
     <!-- <artifact:print output="dependency-sf-tree.log" /> -->
   </target>
 
-  <target name="build" depends="init" unless="no.build">
+  <target name="build" depends="init,clean" unless="no.build">
     <echo>Building two parts Nuxeo DM EARs</echo>
     <property name="nuxeo.ear" value="${stagedir}/nuxeo.ear" />
     <mkdir dir="${nuxeo.ear}" />
@@ -45,6 +45,7 @@
     <copy todir="${outdir}/nuxeo-web-stateless.ear">
       <fileset dir="${nuxeo.ear}" />
     </copy>
+
     <antcall target="build-stateful" />
     <delete failonerror="false" dir="${outdir}/nuxeo.ear-platform-stateful" />
     <copy todir="${outdir}/nuxeo-platform-stateful.ear">
@@ -67,7 +68,7 @@
       <param name="distribution" value="h2" />
     </antcall>
 
-    <!--    <antcall target="clean" />-->
+    <antcall target="clean" />
   </target>
 
   <target name="build-distribution-stateful"
@@ -117,6 +118,7 @@
           <artifact groupId="org.nuxeo*" category="core,stateful" />
         </includes>
         <excludes>
+          <artifact groupId="org.nuxeo.ecm.distribution" artifactId="nuxeo-distribution-dm" />
           <artifact groupId="org.nuxeo.common" />
           <artifact artifactId="nuxeo-generic-wss-handler" />
           <artifact artifactId="nuxeo-platform-audit-facade" />
@@ -177,6 +179,7 @@
           <artifact groupId="org.nuxeo*" category="stateless" />
         </includes>
         <excludes>
+          <artifact groupId="org.nuxeo.ecm.distribution" artifactId="nuxeo-distribution-dm" />
           <artifact groupId="org.nuxeo.common" />
           <artifact artifactId="nuxeo-generic-wss-handler" />
           <artifact artifactId="nuxeo-platform-webapp" />
