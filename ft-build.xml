@@ -35,7 +35,7 @@
       <arg value="package" />
       <arg value="install" />
       <arg value="-P" />
-      <arg value="nuxeo-dam-jboss" />
+      <arg value="jboss" />
       <arg value="-P" />
       <arg value="${mvn.profiles}" />
     </exec>
@@ -49,7 +49,7 @@
       <arg value="package" />
       <arg value="install" />
       <arg value="-P" />
-      <arg value="nuxeo-dam-tomcat" />
+      <arg value="tomcat" />
       <arg value="-P" />
       <arg value="${mvn.profiles}" />
     </exec>
@@ -63,7 +63,7 @@
       <arg value="package" />
       <arg value="install" />
       <arg value="-P" />
-      <arg value="nuxeo-dam-jetty" />
+      <arg value="jetty" />
       <arg value="-P" />
       <arg value="${mvn.profiles}" />
     </exec>
@@ -92,9 +92,9 @@
 
   <target name="start-tomcat">
     <chmod perm="+x"
-      dir="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-tomcat/target/stage/nuxeo-dam-distribution-tomcat/bin" includes="**/*.sh"/>
+      dir="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-tomcat/target/nuxeo-dam-tomcat/bin" includes="**/*.sh"/>
     <exec
-      executable="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-tomcat/target/stage/nuxeo-dam-distribution-tomcat/bin/startup.sh">
+      executable="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-tomcat/target/nuxeo-dam-tomcat/bin/startup.sh">
     </exec>
     <waitfor>
       <http url="http://localhost:8080/nuxeo/login.jsp" />
@@ -103,7 +103,7 @@
 
   <target name="stop-tomcat">
     <exec
-      executable="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-tomcat/target/stage/nuxeo-dam-distribution-tomcat/bin/shutdown.sh">
+      executable="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-tomcat/target/nuxeo-dam-tomcat/bin/shutdown.sh">
     </exec>
   </target>
 

@@ -4,12 +4,12 @@
 ant -f ft-build.xml make-jetty-distribution -Dmvn.profiles=$MAVEN_PROFILES || exit 1
 
 # Start Jetty
-(cd nuxeo-dam-distribution/nuxeo-dam-distribution-jetty/target && unzip nuxeo-dam-distribution-jetty-*.zip && rm *.zip && mv nuxeo-dam-distribution-jetty-* nuxeo-dam-jetty) || exit 1
+(cd nuxeo-dam-distribution/nuxeo-dam-distribution-jetty/target && unzip nuxeo-dam-distribution-jetty-*.zip && rm *.zip) || exit 1
 chmod +x nuxeo-dam-distribution/nuxeo-dam-distribution-jetty/target/nuxeo-dam-jetty/*.sh || exit 1
 (cd ./nuxeo-dam-distribution/nuxeo-dam-distribution-jetty/target/nuxeo-dam-jetty/ && ./nxserverctl.sh start) || exit 1
 
 # Wait for Jetty to be completely started
-sleep 15
+sleep 20
 
 # Run selenium tests
 HIDE_FF=true ./nuxeo-dam-distribution/nuxeo-dam-ear/ftest/selenium/run.sh
