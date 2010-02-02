@@ -1,4 +1,11 @@
 <@extends src="base.ftl">
+
+<@block name="header_scripts">
+  <@superBlock/>
+  <script>var nxBaseUrl = "${This.baseUrl}"</script>
+</@block>
+
+
 <@block name="content">
 <div>
   <div style="min-height:300px;height:auto !important;height:300px;">

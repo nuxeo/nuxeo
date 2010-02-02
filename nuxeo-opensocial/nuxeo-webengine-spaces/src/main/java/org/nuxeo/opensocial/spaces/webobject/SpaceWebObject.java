@@ -17,6 +17,7 @@
 
 package org.nuxeo.opensocial.spaces.webobject;
 
+import javax.servlet.ServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
@@ -25,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.Univers;
 import org.nuxeo.ecm.spaces.core.impl.docwrapper.DocSpaceImpl;
@@ -128,19 +130,24 @@ public class SpaceWebObject extends DefaultObject {
       }
     }
 
-	/* (non-Javadoc)
-	 * @see org.nuxeo.ecm.webengine.model.impl.AbstractResource#getAdapter(java.lang.Class)
-	 */
-	@Override
-	public <A> A getAdapter(Class<A> adapter) {
-		// TODO open NXP before commit
-		if (adapter == DocumentModel.class) {
-			return adapter.cast(this.getDocument());
-		} else {
-			return super.getAdapter(adapter);
-		}
-	}
-    
-    
+    public String getBaseUrl() {
+      ServletRequest request = getContext().getRequest();
+      return VirtualHostHelper.getBaseURL(request);
+    }
+
+  /* (non-Javadoc)
+   * @see org.nuxeo.ecm.webengine.model.impl.AbstractResource#getAdapter(java.lang.Class)
+   */
+  @Override
+  public <A> A getAdapter(Class<A> adapter) {
+    // TODO open NXP before commit
+    if (adapter == DocumentModel.class) {
+      return adapter.cast(this.getDocument());
+    } else {
+      return super.getAdapter(adapter);
+    }
+  }
+
+
 
 }

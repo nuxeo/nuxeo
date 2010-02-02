@@ -4,9 +4,6 @@ var currentPage=0;
 var maxPage = 0;
 var errors = 0;
 
-function getNuxeoServerSideUrl() {
-  return top.nxServerSideUrl;
-}
 
 function getNuxeoClientSideUrl() {
   return top.nxBaseUrl;
@@ -18,7 +15,7 @@ function getUserLang() {
 
 function getResourceUrl() {
   var url = "";
-  url = "http://localhost:8080/nuxeo/site/myDocsRestAPI/";
+  url = getNuxeoClientSideUrl() +"site/myDocsRestAPI/";
   url += gadgetId + "/";
 
   strPath = path.join();
