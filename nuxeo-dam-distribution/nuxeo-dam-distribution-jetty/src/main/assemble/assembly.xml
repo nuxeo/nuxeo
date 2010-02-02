@@ -91,7 +91,8 @@
       <mapper type="flatten" />
     </unzip>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-         basedir="${stagedir}" />
+         basedir="${stagedir}"
+         includes="nuxeo-dam-jetty/**"/>
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      type="zip" />

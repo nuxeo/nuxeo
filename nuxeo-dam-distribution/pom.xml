@@ -26,21 +26,21 @@
       </modules>
     </profile>
     <profile>
-      <id>nuxeo-dam-jboss</id>
+      <id>jboss</id>
       <modules>
         <module>nuxeo-dam-ear</module>
         <module>nuxeo-dam-distribution-jboss</module>
       </modules>
     </profile>
     <profile>
-      <id>nuxeo-dam-jetty</id>
+      <id>jetty</id>
       <modules>
         <module>nuxeo-dam-ear</module>
         <module>nuxeo-dam-distribution-jetty</module>
       </modules>
     </profile>
     <profile>
-      <id>nuxeo-dam-tomcat</id>
+      <id>tomcat</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>

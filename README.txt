@@ -23,7 +23,7 @@ TODO: add here instructions for Seam and nuxeo.war hot redeployment.
 You can also build a complete jboss or tomcat distribtion with the DAM
 application included with the following maven commands::
 
-  $ mvn install -Dmaven.test.skip=true -Pnuxeo-dam-jboss
+  $ mvn install -Dmaven.test.skip=true -Pjboss
 
 
 Technical Overview

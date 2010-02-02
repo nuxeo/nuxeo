@@ -18,38 +18,16 @@
   <packaging>pom</packaging>
   <description>Nuxeo DAM Parent</description>
 
-  <profiles>
-    <profile>
-      <id>nuxeo-dam-wo-distribution</id>
-      <modules>
-        <module>nuxeo-dam-api</module>
-        <module>nuxeo-dam-core</module>
-        <module>nuxeo-dam-facade</module>
-        <module>nuxeo-dam-webapp-core</module>
-        <module>nuxeo-dam-webapp</module>
-        <module>nuxeo-dam-webapp-override</module>
-        <module>nuxeo-dam-lang</module>
-        <module>nuxeo-dam-test</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>nuxeo-dam-all</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>nuxeo-dam-api</module>
-        <module>nuxeo-dam-core</module>
-        <module>nuxeo-dam-facade</module>
-        <module>nuxeo-dam-webapp-core</module>
-        <module>nuxeo-dam-webapp</module>
-        <module>nuxeo-dam-webapp-override</module>
-        <module>nuxeo-dam-lang</module>
-        <module>nuxeo-dam-test</module>
-        <module>nuxeo-dam-distribution</module>
-      </modules>
-    </profile>
-  </profiles>
+  <modules>
+    <module>nuxeo-dam-api</module>
+    <module>nuxeo-dam-core</module>
+    <module>nuxeo-dam-facade</module>
+    <module>nuxeo-dam-webapp-core</module>
+    <module>nuxeo-dam-webapp</module>
+    <module>nuxeo-dam-webapp-override</module>
+    <module>nuxeo-dam-lang</module>
+    <module>nuxeo-dam-test</module>
+  </modules>
 
   <properties>
     <nuxeo.dam.version>${pom.version}</nuxeo.dam.version>

@@ -44,61 +44,20 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
-        <artifactId>maven-antrun-extended-plugin</artifactId>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <configuration>
+          <buildFiles>
+            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+          </buildFiles>
+        </configuration>
         <executions>
           <execution>
-            <phase>package</phase>
-            <configuration>
-              <tasks>
-                <resolveArtifact groupId="org.nuxeo.ecm.distribution" artifactId="nuxeo-distribution-jboss"
-                  type="zip" property="jboss" classifier="nuxeo-ep" />
-                <unzip src="${jboss}" dest="${project.build.directory}" />
-                <delete dir="${project.build.directory}/${nuxeo.ep.jboss}/server/default/deploy/nuxeo.ear" />
-                <resolveArtifact groupId="org.nuxeo.dam" artifactId="nuxeo-dam-ear"
-                  type="zip" property="dam-ear" />
-                <unzip src="${dam-ear}" dest="${project.build.directory}/${nuxeo.ep.jboss}/server/default/deploy/nuxeo.ear" />
-                <chmod dir="${project.build.directory}/${nuxeo.ep.jboss}/bin" perm="750"
-                  includes="*.sh" />
-                <move file="${project.build.directory}/${nuxeo.ep.jboss}" tofile="${project.build.directory}/nuxeo-dam-jboss"/>
-              </tasks>
-            </configuration>
+            <id>packaging</id>
             <goals>
-              <goal>run</goal>
+              <goal>build</goal>
             </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-nuxeo-plugin</artifactId>
-        <extensions>false</extensions>
-        <executions>
-          <execution>
-            <id>assemble-app</id>
             <phase>package</phase>
-            <goals>
-              <goal>assembly</goal>
-            </goals>
-            <configuration>
-              <runPreprocessor>false</runPreprocessor>
-              <format>zip</format>
-              <zipRoot>${artifactId}-${version}</zipRoot>
-              <outputDirectory>target</outputDirectory>
-              <targetFile>${artifactId}-${version}</targetFile>
-              <descriptor>${basedir}/src/main/assemble/assembly.xml</descriptor>
-            </configuration>
-          </execution>
-          <execution>
-            <id>attach-app</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach</goal>
-            </goals>
-            <configuration>
-              <file>${project.build.directory}/${artifactId}-${version}.zip</file>
-              <type>zip</type>
-            </configuration>
           </execution>
         </executions>
       </plugin>

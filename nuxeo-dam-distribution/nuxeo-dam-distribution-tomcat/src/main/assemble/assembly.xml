@@ -115,7 +115,8 @@ set JAVA_OPTS=%JAVA_OPTS% -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding
     </copy>
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-         basedir="${stagedir}" />
+         basedir="${stagedir}"
+         includes="nuxeo-dam-tomcat/**"/>
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
                      type="zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
