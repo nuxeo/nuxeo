@@ -7,28 +7,28 @@
       <category>gadget.category.utilities</category>
       <icon>mappy_icon.png</icon>
     </internalGadget>
-    
+
      <internalGadget name="meteo">
       <mountPoint>/meteo</mountPoint>
       <entryPoint>meteo.xml</entryPoint>
       <category>gadget.category.utilities</category>
       <icon>meteo_icon.png</icon>
     </internalGadget>
-    
+
     <internalGadget name="photo">
       <mountPoint>/photo</mountPoint>
       <entryPoint>photo.xml</entryPoint>
-      <category>gadget.category.utilities</category>
+      <category>gadget.category.media</category>
       <icon>photo_icon.png</icon>
     </internalGadget>
-    
+
    <internalGadget name="flash">
       <mountPoint>/flash</mountPoint>
       <entryPoint>flash.xml</entryPoint>
-      <category>gadget.category.utilities</category>
+      <category>gadget.category.media</category>
       <icon>flash_icon.png</icon>
     </internalGadget>
-    
+
     <internalGadget name="todolist">
       <mountPoint>/todolist</mountPoint>
       <entryPoint>toDoList.xml</entryPoint>
@@ -46,23 +46,23 @@
     <internalGadget name="video">
       <mountPoint>/video</mountPoint>
       <entryPoint>video.xml</entryPoint>
-      <category>gadget.category.utilities</category>
+      <category>gadget.category.media</category>
       <icon>video_icon.png</icon>
     </internalGadget>
-    
+
     <internalGadget name="bookmarks">
       <mountPoint>/bookmarks</mountPoint>
       <entryPoint>bookmarks.xml</entryPoint>
       <category>gadget.category.utilities</category>
       <icon>bookmarks_icon.png</icon>
     </internalGadget>
-    
+
     <internalGadget name="richtext">
       <mountPoint>/richtext</mountPoint>
       <entryPoint>richtext.xml</entryPoint>
       <category>gadget.category.utilities</category>
       <icon>richtext_icon.png</icon>
     </internalGadget>
-    
+
   </extension>
 </component>
