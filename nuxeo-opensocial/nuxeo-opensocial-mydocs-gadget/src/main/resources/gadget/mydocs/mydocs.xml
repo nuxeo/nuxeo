@@ -52,6 +52,7 @@
 <![CDATA[
     <script type="text/javascript" language="javascript" src="documentlists.js"></script>
     <script type="text/javascript">
+      gadgets.window.adjustHeight()
       var gadgetId = gadgets.nuxeo.getGadgetId();
       var url = "";
       url = "http://localhost:8080/nuxeo/site/myDocsRestAPI/";
@@ -62,15 +63,20 @@
         spaceId = jsonObject.summary.id;
         var html="";
         //FIXME: repo id is hard coded
-        var iframesrc="/nuxeo/nxdoc/default/" + jsonObject.spaceId + "/view_documents?theme=galaxy/popup";
-        html += "<iframe src=\""+ iframesrc + "\" width=\"100%\" height=\"700px\" frameborder=\"0\" border=\"0\" onload=\"gadgets.window.adjustHeight()\">";
+
+        var iframesrc= top.nxBaseUrl + "nxdoc/default/" + jsonObject.summary.id + "/view_documents?theme=galaxy/popup";
+        alert(iframesrc);
+        html += "<div style=\"min-height:700px;\"><iframe src=\""+ iframesrc + "\" width=\"100%\" height=\"100%\" frameborder=\"0\" border=\"0\"></div>";
         _gel("ifplace").innerHTML = html;
+
       });
 
 
 
     </script>
-    <div id="ifplace"></div>
+    <div style="height:700px" id="ifplace">
+
+    </div>
 
   ]]>
   </Content>
