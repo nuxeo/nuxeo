@@ -1,0 +1,44 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <a4j:region>
+  <a4j:outputPanel id="viewUserPanel">
+  <a4j:form id="viewUser" ajaxSingle="true">
+  
+    <div id="facesStatusMessage" class="facesStatusMessage">
+      <h:messages globalOnly="true"
+        infoClass="infoFeedback"
+        warnClass="warningFeedback"
+        errorClass="errorFeedback"/>
+    </div>
+
+    <f:subview id="viewSubView" rendered="#{userManagerActions.displayMode == 'view'}">
+      <nxl:layout name="user" mode="view" value="#{userManagerActions.selectedUser}" />
+    </f:subview>
+    <f:subview id="editSubView" rendered="#{userManagerActions.displayMode == 'edit'}">
+      <nxl:layout name="user" mode="edit" value="#{userManagerActions.selectedUser}" />
+    </f:subview>
+
+    <p class="buttonsGadget">
+      <a4j:commandLink styleClass="button"
+                       action="#{userManagerActions.updateUser}"
+                       rendered="#{userManagerActions.displayMode == 'edit'}"
+                       reRender="viewUserPanel">
+        <h:outputText value="#{messages['command.user.save']}"/>
+      </a4j:commandLink>
+      <a4j:commandLink styleClass="button"
+                       action="#{userManagerActions.toggleDisplayMode}"
+                       immediate="true" reRender="viewUserPanel">
+        <h:outputText value="#{messages['command.user.cancel']}"
+                      rendered="#{userManagerActions.displayMode == 'edit'}"/>
+        <h:outputText value="#{messages['command.user.edit']}"
+                      rendered="#{userManagerActions.displayMode == 'view'}"/>
+      </a4j:commandLink>
+    </p>
+  </a4j:form>
+  </a4j:outputPanel>
+  </a4j:region>
+</div>

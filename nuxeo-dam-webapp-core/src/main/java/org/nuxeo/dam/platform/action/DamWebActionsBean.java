@@ -29,6 +29,7 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -72,6 +73,11 @@ public class DamWebActionsBean extends WebActionsBean {
 
     private boolean showAdministration = false;
 
+    protected List<Action> adminActionsList;
+
+    @Out(required = false)
+    protected Action currentAdminTabAction;
+
     @Override
     @Factory(value = "tabsActionsList", scope = EVENT)
     public List<Action> getTabsList() {
@@ -82,6 +88,38 @@ public class DamWebActionsBean extends WebActionsBean {
             currentTabAction = getDefaultTab();
         }
         return tabsActionsList;
+    }
+
+    @Factory(value = "adminActionsList", scope = EVENT)
+    public List<Action> getAdminTabsList() {
+        if (adminActionsList == null) {
+            adminActionsList = getActionService().getActions(
+                    "ADMIN_ACTION_LIST", createActionContext());
+            currentAdminTabAction = getDefaultAdminTab();
+        }
+        return adminActionsList;
+    }
+
+    protected Action getDefaultAdminTab() {
+        if (getAdminTabsList() == null) {
+            return null;
+        }
+        try {
+            return adminActionsList.get(0);
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
+    public Action getCurrentAdminTabAction() {
+        if (currentAdminTabAction == null) {
+            currentAdminTabAction = getDefaultAdminTab();
+        }
+        return currentAdminTabAction;
+    }
+
+    public void setCurrentAdminTabAction(Action currentAdminTabAction) {
+        this.currentAdminTabAction = currentAdminTabAction;
     }
 
     @Factory(value = "actionManager", scope = EVENT)
@@ -109,7 +147,7 @@ public class DamWebActionsBean extends WebActionsBean {
 
     public String navigateToAdministration() throws ClientException {
         showAdministration = true;
-        return userManagerActions.viewUsers();
+        return "administration";
     }
 
     public String navigateToAssetManagement() throws ClientException {

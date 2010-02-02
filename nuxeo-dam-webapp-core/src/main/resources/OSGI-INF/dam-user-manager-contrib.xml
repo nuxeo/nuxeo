@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.dam.usermanager.UserManagerImpl">
+ 
+  <require>org.nuxeo.ecm.platform.usermanager.UserManagerImpl</require>
+
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
+      point="userManager">
+    <userManager
+        class="org.nuxeo.ecm.platform.usermanager.UserManagerImpl">
+      <groups>
+        <listingMode>*</listingMode>
+      </groups>
+      <users>
+        <listingMode>*</listingMode>
+      </users>
+    </userManager>
+  </extension>
+</component>

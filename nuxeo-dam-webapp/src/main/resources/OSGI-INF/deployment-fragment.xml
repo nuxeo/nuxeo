@@ -7,13 +7,6 @@
     </module>
   </extension>
 
-  <extension target="faces-config#NAVIGATION">
-    <navigation-case>
-      <from-outcome>annotations_popup</from-outcome>
-      <to-view-id>/annotations_popup.xhtml</to-view-id>
-    </navigation-case>
-  </extension>
-  
   <extension target="web#CONTEXT-PARAM-RICHFACES" mode="replace">
     <context-param>
      <param-name>org.richfaces.SKIN</param-name>

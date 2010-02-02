@@ -16,11 +16,6 @@
   <description>Defines the skeleton of a jetty Nuxeo DAM application
   </description>
 
-  <properties>
-    <application.name>${project.artifactId}-${project.version}
-    </application.name>
-  </properties>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
