@@ -48,43 +48,65 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>click</td>
 	<td>link=Create a new user</td>
 	<td></td>
 </tr>
 <tr>
+	<td>waitForA4jRequest</td>
+	<td>1000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_username']</td>
+	<td>createUser:nxl_user:nxw_username</td>
 	<td>jdoe</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstname']</td>
+	<td>createUser:nxl_user:nxw_firstname</td>
 	<td>John</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_lastname']</td>
+	<td>createUser:nxl_user:nxw_lastname</td>
 	<td>Doe</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_company']</td>
+	<td>createUser:nxl_user:nxw_company</td>
 	<td>Nuxeo</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstPassword']</td>
+	<td>createUser:nxl_user:nxw_firstPassword</td>
 	<td>jdoe1</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_secondPassword']</td>
+	<td>createUser:nxl_user:nxw_secondPassword</td>
 	<td>foo</td>
+</tr>
+<!--Strange behavior of Selenium (Username and first name cleared)-->
+<tr>
+	<td>type</td>
+	<td>createUser:nxl_user:nxw_username</td>
+	<td>jdoe</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_email']</td>
+	<td>createUser:nxl_user:nxw_firstname</td>
+	<td>John</td>
+</tr>
+<!--End strange behavior of Selenium-->
+<tr>
+	<td>type</td>
+	<td>createUser:nxl_user:nxw_email</td>
 	<td>sg+jdoe@nuxeo.com</td>
 </tr>
 <tr>
@@ -94,7 +116,7 @@
 </tr>
 <tr>
 	<td>typeKeys</td>
-	<td>//input[@name='createUser:nxl_user:nxw_groups_suggest']</td>
+	<td>createUser:nxl_user:nxw_groups_suggest</td>
 	<td>members</td>
 </tr>
 <tr>
@@ -119,12 +141,22 @@
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
-	<td>10000</td>
+	<td>3000</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@value='Save']</td>
+	<td>click</td>
+	<td>//*[@value='Create user']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -134,17 +166,43 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstPassword']</td>
+	<td>createUser:nxl_user:nxw_firstPassword</td>
 	<td>jdoe1</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_secondPassword']</td>
+	<td>createUser:nxl_user:nxw_secondPassword</td>
 	<td>jdoe1</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@value='Save']</td>
+	<td>click</td>
+	<td>//*[@value='Create user']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<!--Check jdoe created-->
+<tr>
+	<td>typeKeys</td>
+	<td>userSearchForm:userSearchInput</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -158,104 +216,104 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Back to the list</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>searchForm:searchText</td>
-	<td>jdoe</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>searchForm:searchButton</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
+	<td>click</td>
 	<td>link=jdoe</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Change password</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//input[@id='editUser:nxl_user:nxw_firstPassword']</td>
-	<td>jdoe1</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//input[@id='editUser:nxl_user:nxw_secondPassword']</td>
-	<td>foo</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value='Save']</td>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Passwords do not match</td>
+	<td>click</td>
+	<td>link=Edit</td>
 	<td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//input[@id='editUser:nxl_user:nxw_firstPassword']</td>
-	<td>jdoe1</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//input[@id='editUser:nxl_user:nxw_secondPassword']</td>
-	<td>jdoe1</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value='Save']</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>sg+jdoe@nuxeo.com</td>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Back to the list</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Create a new user</td>
+	<td>click</td>
+	<td>viewUserHidelink</td>
 	<td></td>
 </tr>
 <!-- test unique id -->
 <tr>
+	<td>click</td>
+	<td>link=Create a new user</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>1000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_username']</td>
+	<td>createUser:nxl_user:nxw_username</td>
 	<td>jdoe</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_email']</td>
+	<td>createUser:nxl_user:nxw_firstname</td>
+	<td>John</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>createUser:nxl_user:nxw_lastname</td>
+	<td>Doe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>createUser:nxl_user:nxw_company</td>
+	<td>Nuxeo</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>createUser:nxl_user:nxw_firstPassword</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>createUser:nxl_user:nxw_secondPassword</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>createUser:nxl_user:nxw_email</td>
 	<td>sg+jdoe@nuxeo.com</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstPassword']</td>
-	<td>jdoe1</td>
+	<td>click</td>
+	<td>//*[@value='Create user']</td>
+	<td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_secondPassword']</td>
-	<td>jdoe1</td>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@value='Save']</td>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -263,40 +321,41 @@
 	<td>User already exists</td>
 	<td></td>
 </tr>
+<!--Create John Smith-->
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_username']</td>
+	<td>createUser:nxl_user:nxw_username</td>
 	<td>jsmith</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstname']</td>
+	<td>createUser:nxl_user:nxw_firstname</td>
 	<td>John</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_lastname']</td>
+	<td>createUser:nxl_user:nxw_lastname</td>
 	<td>Smith</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_company']</td>
+	<td>createUser:nxl_user:nxw_company</td>
 	<td>Nuxeo</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_email']</td>
+	<td>createUser:nxl_user:nxw_firstPassword</td>
+	<td>jsmith1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>createUser:nxl_user:nxw_secondPassword</td>
+	<td>jsmith1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>createUser:nxl_user:nxw_email</td>
 	<td>sg+jsmith@nuxeo.com</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstPassword']</td>
-	<td>jsmith1</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_secondPassword']</td>
-	<td>jsmith1</td>
 </tr>
 <tr>
 	<td>watchA4jRequests</td>
@@ -305,7 +364,7 @@
 </tr>
 <tr>
 	<td>typeKeys</td>
-	<td>//input[@name='createUser:nxl_user:nxw_groups_suggest']</td>
+	<td>createUser:nxl_user:nxw_groups_suggest</td>
 	<td>members</td>
 </tr>
 <tr>
@@ -330,17 +389,38 @@
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
-	<td>10000</td>
+	<td>3000</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@value='Save']</td>
+	<td>click</td>
+	<td>//*[@value='Create user']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Smith</td>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<!--Check John Smith created-->
+<tr>
+	<td>type</td>
+	<td>userSearchForm:userSearchInput</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>userSearchForm:userSearchInput</td>
+	<td>jsmith</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
 	<td></td>
 </tr>
 <tr>
@@ -349,93 +429,59 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Back to the list</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>searchForm:searchText</td>
-	<td>jsmith</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>searchForm:searchButton</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=jsmith</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Change password</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class='tabsContent']//table//tr[1]//input</td>
-	<td>jsmith1</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class='tabsContent']//table//tr[2]//input</td>
-	<td>jsmith1</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value='Save']</td>
-	<td></td>
-</tr>
-<tr>
 	<td>verifyTextPresent</td>
-	<td>sg+jsmith@nuxeo.com</td>
+	<td>Smith</td>
 	<td></td>
 </tr>
+<!--Create Bree user-->
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Back to the list</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
+	<td>click</td>
 	<td>link=Create a new user</td>
 	<td></td>
 </tr>
 <tr>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_username']</td>
+	<td>createUser:nxl_user:nxw_username</td>
 	<td>bree</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstname']</td>
+	<td>createUser:nxl_user:nxw_firstname</td>
 	<td>Bree</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_lastname']</td>
+	<td>createUser:nxl_user:nxw_lastname</td>
 	<td>Van de Kaamp</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_company']</td>
+	<td>createUser:nxl_user:nxw_company</td>
 	<td>Nuxeo</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_email']</td>
+	<td>createUser:nxl_user:nxw_email</td>
 	<td>sg+bree@nuxeo.com</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstPassword']</td>
+	<td>createUser:nxl_user:nxw_firstPassword</td>
 	<td>bree1</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_secondPassword']</td>
+	<td>createUser:nxl_user:nxw_secondPassword</td>
 	<td>bree1</td>
 </tr>
 <tr>
@@ -444,13 +490,18 @@
 	<td></td>
 </tr>
 <tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
 	<td>typeKeys</td>
-	<td>//input[@name='createUser:nxl_user:nxw_groups_suggest']</td>
+	<td>createUser:nxl_user:nxw_groups_suggest</td>
 	<td>members</td>
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
-	<td>10000</td>
+	<td>3000</td>
 	<td></td>
 </tr>
 <tr>
@@ -470,17 +521,38 @@
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
-	<td>10000</td>
+	<td>3000</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@value='Save']</td>
+	<td>click</td>
+	<td>//*[@value='Create user']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Bree</td>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<!--Check Bree created-->
+<tr>
+	<td>type</td>
+	<td>userSearchForm:userSearchInput</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>userSearchForm:userSearchInput</td>
+	<td>bree</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
 	<td></td>
 </tr>
 <tr>
@@ -489,94 +561,65 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Back to the list</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>searchForm:searchText</td>
-	<td>bree</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>searchForm:searchButton</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=bree</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Change password</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class='tabsContent']//table//tr[1]//input</td>
-	<td>bree1</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class='tabsContent']//table//tr[2]//input</td>
-	<td>bree1</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value='Save']</td>
-	<td></td>
-</tr>
-<tr>
 	<td>verifyTextPresent</td>
-	<td>sg+bree@nuxeo.com</td>
+	<td>Van de Kaamp</td>
 	<td></td>
 </tr>
+<!--Create Lucien-->
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Back to the list</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
+	<td>click</td>
 	<td>link=Create a new user</td>
 	<td></td>
 </tr>
 <tr>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_username']</td>
+	<td>createUser:nxl_user:nxw_username</td>
 	<td>lbramard</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstname']</td>
+	<td>createUser:nxl_user:nxw_firstname</td>
 	<td>Lucien</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_lastname']</td>
+	<td>createUser:nxl_user:nxw_lastname</td>
 	<td>Bramard</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_company']</td>
+	<td>createUser:nxl_user:nxw_company</td>
 	<td>Nuxeo</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstPassword']</td>
+	<td>createUser:nxl_user:nxw_email</td>
+	<td>sg+bree@nuxeo.com</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>createUser:nxl_user:nxw_firstPassword</td>
 	<td>lbramard1</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_secondPassword']</td>
+	<td>createUser:nxl_user:nxw_secondPassword</td>
 	<td>lbramard1</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_email']</td>
-	<td>sg+lbramard@nuxeo.com</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
 </tr>
 <tr>
 	<td>watchA4jRequests</td>
@@ -585,12 +628,12 @@
 </tr>
 <tr>
 	<td>typeKeys</td>
-	<td>//input[@name='createUser:nxl_user:nxw_groups_suggest']</td>
+	<td>createUser:nxl_user:nxw_groups_suggest</td>
 	<td>members</td>
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
-	<td>10000</td>
+	<td>3000</td>
 	<td></td>
 </tr>
 <tr>
@@ -610,82 +653,38 @@
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
-	<td>10000</td>
+	<td>3000</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@value='Save']</td>
+	<td>click</td>
+	<td>//*[@value='Create user']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Back to the list</td>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
 	<td></td>
 </tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<!--Check Lucien created-->
 <tr>
 	<td>type</td>
-	<td>searchForm:searchText</td>
+	<td>userSearchForm:userSearchInput</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>userSearchForm:userSearchInput</td>
 	<td>lbramard</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>searchForm:searchButton</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=lbramard</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Change password</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class='tabsContent']//table//tr[1]//input</td>
-	<td>lbramard1</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class='tabsContent']//table//tr[2]//input</td>
-	<td>lbramard1</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value='Save']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>sg+lbramard@nuxeo.com</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Back to the list</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>searchForm:searchText</td>
-	<td>lbramard</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>searchForm:searchButton</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=lbramard</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Lucien</td>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
 	<td></td>
 </tr>
 <tr>
@@ -694,48 +693,59 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Back to the list</td>
+	<td>verifyTextPresent</td>
+	<td>Bramard</td>
 	<td></td>
 </tr>
+<!--Create Linnet-->
 <tr>
-	<td>clickAndWait</td>
+	<td>click</td>
 	<td>link=Create a new user</td>
 	<td></td>
 </tr>
 <tr>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_username']</td>
+	<td>createUser:nxl_user:nxw_username</td>
 	<td>linnet</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstname']</td>
+	<td>createUser:nxl_user:nxw_firstname</td>
 	<td>Linnet</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_lastname']</td>
+	<td>createUser:nxl_user:nxw_lastname</td>
 	<td>Scavo</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_company']</td>
+	<td>createUser:nxl_user:nxw_company</td>
 	<td>Nuxeo</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstPassword']</td>
+	<td>createUser:nxl_user:nxw_firstPassword</td>
 	<td>linnet1</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_secondPassword']</td>
+	<td>createUser:nxl_user:nxw_secondPassword</td>
 	<td>linnet1</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_email']</td>
+	<td>createUser:nxl_user:nxw_email</td>
 	<td>sg+linnet@nuxeo.com</td>
 </tr>
 <tr>
@@ -745,12 +755,12 @@
 </tr>
 <tr>
 	<td>typeKeys</td>
-	<td>//input[@name='createUser:nxl_user:nxw_groups_suggest']</td>
+	<td>createUser:nxl_user:nxw_groups_suggest</td>
 	<td>members</td>
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
-	<td>10000</td>
+	<td>3000</td>
 	<td></td>
 </tr>
 <tr>
@@ -770,32 +780,42 @@
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
-	<td>10000</td>
+	<td>3000</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@value='Save']</td>
+	<td>click</td>
+	<td>//*[@value='Create user']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Back to the list</td>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>searchForm:searchText</td>
-	<td>linnet</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>searchForm:searchButton</td>
+	<td>userSearchForm:userSearchInput</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=linnet</td>
+	<td>typeKeys</td>
+	<td>userSearchForm:userSearchInput</td>
+	<td>linnet</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>

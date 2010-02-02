@@ -8,10 +8,10 @@
     <userManager
         class="org.nuxeo.ecm.platform.usermanager.UserManagerImpl">
       <groups>
-        <listingMode>search_only</listingMode>
+        <listingMode>*</listingMode>
       </groups>
       <users>
-        <listingMode>search_only</listingMode>
+        <listingMode>*</listingMode>
       </users>
     </userManager>
   </extension>

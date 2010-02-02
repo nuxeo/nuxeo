@@ -32,9 +32,9 @@
       <a4j:commandLink styleClass="button"
                        action="#{groupManagerActions.toggleDisplayMode}"
                        immediate="true" reRender="viewGroupPanel">
-        <h:outputText value="#{messages['command.cancel']}"
+        <h:outputText value="#{messages['command.group.cancel']}"
                       rendered="#{groupManagerActions.displayMode == 'edit'}"/>
-        <h:outputText value="#{messages['command.edit']}"
+        <h:outputText value="#{messages['command.group.edit']}"
                       rendered="#{groupManagerActions.displayMode == 'view'}"/>
       </a4j:commandLink>
     </p>

@@ -56,7 +56,7 @@
         </row>
         <row>
           <widget>topic</widget>
-        </row>
+        </row>      
         <row>
           <widget>coverage</widget>
         </row>
@@ -102,7 +102,7 @@
       <widget name="expired" type="datetime">
         <widgetModes>
           <mode value="create">hidden</mode>
-        </widgetModes>
+        </widgetModes>       
         <labels>
           <label mode="any">label.dublincore.expired</label>
         </labels>
@@ -157,7 +157,7 @@
         <properties widgetMode="edit">
           <property name="styleClass">dataInputText</property>
         </properties>
-      </widget>
+      </widget>    
     </layout>
 
     <layout name="heading">
@@ -173,12 +173,12 @@
         </row>
         <row>
           <widget>filename</widget>
-        </row>
+        </row>         
       </rows>
       <widget name="title" type="text">
         <widgetModes>
           <mode value="view">hidden</mode>
-        </widgetModes>
+        </widgetModes>       
         <labels>
           <label mode="any">label.dublincore.title</label>
         </labels>
@@ -206,19 +206,19 @@
       <widget name="filename" type="template">
         <widgetModes>
           <mode value="create">hidden</mode>
-        </widgetModes>
+        </widgetModes>       
         <labels>
           <label mode="any">label.file.filename</label>
         </labels>
         <translated>true</translated>
         <fields>
           <field>picture.views[0].filename</field>
-          <field>file.filename</field>
-        </fields>
+          <field>file.filename</field>          
+        </fields>        
         <properties mode="any">
           <property name="template">/widgets/filename_widget.xhtml</property>
         </properties>
-      </widget>
+      </widget>      
     </layout>
 
     <layout name="exif_info">
@@ -592,13 +592,13 @@
       <rows>
         <row>
           <widget>media_type</widget>
-        </row>
+        </row>      
         <row>
           <widget>geo_broadcast</widget>
-        </row>
+        </row>      
         <row>
           <widget>copyright_holder</widget>
-        </row>
+        </row>                
         <row>
           <widget>licence</widget>
         </row>
@@ -646,8 +646,8 @@
         <properties widgetMode="edit">
           <property name="styleClass">dataInputText</property>
         </properties>
-      </widget>
-
+      </widget>            
+      
       <widget name="licence" type="template">
         <translated>true</translated>
         <fields>
@@ -655,10 +655,10 @@
         </fields>
         <properties mode="any">
           <property name="template">/widgets/licence_widget.xhtml</property>
-        </properties>
-      </widget>
-
-      <widget name="embargo_date" type="datetime">
+        </properties>               
+      </widget>   
+      
+      <widget name="embargo_date" type="datetime">     
         <translated>true</translated>
         <fields>
           <field>ipr:embargo_date</field>
@@ -671,7 +671,7 @@
           <property name="styleClass">dataInputTextDate</property>
         </properties>
       </widget>
-      <widget name="expiration_date" type="datetime">
+      <widget name="expiration_date" type="datetime">     
         <translated>true</translated>
         <fields>
           <field>ipr:expiration_date</field>
@@ -837,7 +837,6 @@
         </properties>
       </widget>
     </layout>
-    
   </extension>
 
 </component>

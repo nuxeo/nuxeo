@@ -49,6 +49,26 @@
     <ui:include src="/incl/view_user_panel.xhtml" />
   </rich:modalPanel>
 
+  <rich:modalPanel id="editPasswordFormPanel" autosized="true"
+   styleClass="EditPasswordFormPanel">
+    <f:facet name="header">
+      <h:panelGroup>
+        <h:outputText value="#{messages['title.editPassword']}"/>
+    </h:panelGroup>
+  </f:facet>
+  <f:facet name="controls">
+    <h:panelGroup>
+      <h:graphicImage value="/img/close.png"
+          styleClass="hidelink" id="editPasswordHidelink" />
+        <rich:componentControl for="editPasswordFormPanel" attachTo="editPasswordHidelink"
+          operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
+    change password
+    <!-- ui:include src="/incl/view_user_panel.xhtml" /-->
+  </rich:modalPanel>
+
+
   <table cellspacing="0" cellpadding="0" border="0" style="height: 100%; width: 100%;">
     <tbody>
       <tr>
@@ -82,11 +102,11 @@
 
             <c:set var="userSchema" value="#{userManager.userSchemaName}" />
 
-            <a4j:form rendered="#{userList.rowCount > 0}">
-              <h:dataTable var="userModel" value="#{userList}"
+            <a4j:form id="userSearchFormTab" rendered="#{userList.rowCount > 0}">
+              <h:dataTable id="UserSearchTab" var="userModel" value="#{userList}"
                 rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
                 <h:column>
-                  <a4j:commandLink
+                  <a4j:commandLink id="delete-user"
                     action="#{userManagerActions.deleteUser(userModel.id)}"
                     onclick="if (!confirmDeleteUser()) { return false; }"
                     reRender="userSearchResult"
@@ -117,6 +137,13 @@
                   <f:facet name="header">
                     <h:outputText
                       value="#{messages['label.userManager.lastName']}" />
+                  </f:facet>
+                  <h:outputText value="#{userModel[userSchema].lastName}" />
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText
+                      value="#{messages['label.userManager.password']}" />
                   </f:facet>
                   <h:outputText value="#{userModel[userSchema].lastName}" />
                 </h:column>
