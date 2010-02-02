@@ -3,7 +3,7 @@
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
     <repository name="default"
-      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
+      factory="org.nuxeo.ecm.core.storage.sql.PoolingRepositoryFactory">
       <repository name="default">
         <schema>
           <field type="largetext">note</field>
@@ -11,10 +11,10 @@
         <indexing>
           <!-- for H2 (Lucene Analyzer): -->
           <fulltext analyzer="org.apache.lucene.analysis.fr.FrenchAnalyzer">
-            <index name="default"> 
+            <index name="default">
               <!-- all props implied -->
             </index>
-          </fulltext> 
+          </fulltext>
           <!-- for PostgreSQL (Text Search Configuration):
           <fulltext analyzer="english"/>
           -->
