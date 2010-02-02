@@ -18,6 +18,8 @@
     <script type="text/javascript" language="javascript" src="todolist.js"></script>
       <script>
 
+	var prefs = new _IG_Prefs(__MODULE_ID__);
+
     jQuery(document).ready(function() {
 
       jQuery(".entete th:first-child").addClass("headerLeft");
@@ -37,8 +39,6 @@
   });
 
     _IG_RegisterOnloadHandler( function() {
-      prefs = new _IG_Prefs(__MODULE_ID__);
-
       var todoliststring = prefs.getString("todolist").replace(/&#34;/g, "\"");
       if (todoliststring == "")
         todolist = {
@@ -48,19 +48,10 @@
         todolist = JSON.parse(todoliststring);
       edited = false;
 
-      var perm = gadgets.util.getUrlParameters().permission;
-
       createTable();
+      
       if(perm == 'true')
-      {
-        permission = true;
         createAddItemButton()
-      }
-      else
-      {
-       permission = false;
-      }
-
     })
       </script>
        <link rel="stylesheet" href="datePicker.css" type="text/css" media="screen" charset="utf-8" />

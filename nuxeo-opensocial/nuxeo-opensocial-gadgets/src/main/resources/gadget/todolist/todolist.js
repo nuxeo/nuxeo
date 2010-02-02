@@ -1,156 +1,133 @@
 var todolist; // This is a json object of bookmark items
-    var edited;
-    var prefs;
-    var permission;
+var edited;
+var prefs;
+var perm = gadgets.util.getUrlParameters().permission;
 
-    function saveToDoList() {
-      prefs.set("todolist", JSON.stringify(todolist));
-      var ver = navigator.appVersion;
-      if (ver.indexOf("MSIE") == -1)
-      _gel("newNameInput").focus();
-    }
+function saveToDoList() {
+  prefs.set("todolist", JSON.stringify(todolist));
+  var ver = navigator.appVersion;
+  if (ver.indexOf("MSIE") == -1)
+    _gel("newNameInput").focus();
+}
 
-
-    function editItem(indexItem, name, owner, deadline)
-    {
-      if (indexItem > -1 && indexItem < numToDoList()-1)
-      {
-      todolist.array[indexItem] = {
+function editItem(indexItem, name, owner, deadline) {
+  if (indexItem > -1 && indexItem < numToDoList()-1) {
+    todolist.array[indexItem] = {
         "name" :name,
         "deadline" :deadline,
         "owner" :owner
-      };
-      saveToDoList();
-      }
+    };
+    saveToDoList();
+  }
+}
 
-    }
+function testTypeDate(dateEntree) {
+var tst=false;
+  try {
+	var rc = dateEntree.split("/");
+	var nd = new Date(rc[2],(rc[1]-1),rc[0]);
+    tst = (rc[2] > 1800 && rc[2] < 2200 && rc[2] == nd.getFullYear() && rc[1] == (nd.getMonth()+1) && rc[0] == nd.getDate());
+  } catch(e) {
+  }
+  return tst;
+}
 
-    function testTypeDate(dateEntree)
-    {
-      tst=false;
-      try
-      {rc=dateEntree.split("/");nd=new Date(rc[2],(rc[1]-1),rc[0]);
-      tst=(rc[2]>1800&&rc[2]<2200&&rc[2]==nd.getFullYear()&&rc[1]==(nd.getMonth()+1)&&rc[0]==nd.getDate());
-      } catch(e) {}
-      return tst;
-    }
+function addItem(name, owner, deadline) {
+  var name = _trim(name);
+  var hasError = false
+  if (name == "") {
+    _gel("labelIntitule").className="labelError";
+    hasError = true;
+  }
+  
+  if(deadline!= "" && !testTypeDate(deadline)) {
+    _gel("labelEcheance").className="labelError";
+    hasError = true;
+  }
+  
+  if (hasError)
+    return false;
 
-    function addItem(name, owner, deadline) {
+  _gel("newNameInput").value = "";
+  _gel("newDeadLineInput").value = "";
+  _gel("newOwnerInput").value = "";
+  _gel("labelIntitule").className="label";
+  _gel("labelEcheance").className="label";
 
-      var name = _trim(name);
-
-      hasError = false
-      if (name == "")
-      {
-      _gel("labelIntitule").className="labelError";
-      hasError = true;
-      }
-
-      if(deadline!= "" && !testTypeDate(deadline))
-      {
-        _gel("labelEcheance").className="labelError";
-        hasError = true;
-      }
-
-      if (hasError)
-          return false;
-
-      _gel("newNameInput").value = "";
-      _gel("newDeadLineInput").value = "";
-      _gel("newOwnerInput").value = "";
-      _gel("labelIntitule").className="label";
-      _gel("labelEcheance").className="label";
-
-
-      if (document.newItemForm.action.value == "edit")
-      {
-      todolist.array[document.newItemForm.indexTab.value] = {
+  if (document.newItemForm.action.value == "edit") {
+   todolist.array[document.newItemForm.indexTab.value] = {
           "name" :name,
           "deadline" :deadline,
           "owner" :owner
         };
-      }
-      else
-      {
+  } else {
       todolist.array[numToDoList()] = {
         "name" :name,
         "deadline" :deadline,
         "owner" :owner
       };
-      }
-
-      toogleForms();
-
-      //sortByName(numToDoList() - 1);
-      createTable();
-      saveToDoList();
-      gadgets.window.adjustHeight();
-      return false;
-    }
-
-
-    function editFormItem(number){
-
-      toogleForms("edit");
-
-      document.newItemForm.indexTab.value= number;
-      document.newItemForm.newNameInput.value= todolist.array[number].name;
-      document.newItemForm.newDeadLineInput.value= todolist.array[number].deadline;
-      document.newItemForm.newOwnerInput.value= todolist.array[number].owner;
-
-
-    }
-
-    function deleteItem(number) {
-      if (edited)
-      return;
-      if (!confirm("Etes-vous sûr de vouloir supprimer cette tâche ?"))
-      return;
-      var beginning = todolist.array.slice(0, number);
-      var end = todolist.array.slice(number + 1, numToDoList());
-      todolist.array = beginning.concat(end);
-      createTable();
-      saveToDoList();
-      gadgets.window.adjustHeight();
-    }
-
-    function swapToDoList(to, from) {
-      var temp = todolist.array[to];
-      todolist.array[to] = todolist.array[from];
-      todolist.array[from] = temp;
-    }
-
-    function sortByName(number) {
-      var bookmark = todolist.array[number];
-      ;
-      var lastName = bookmark.name;
-      for (i = number - 1; i >= 0; i--) {
-      var currentItem = todolist.array[i];
-      if (currentItem == null)
-        break;
-      var currentName = currentItem.name;
-      if (currentName.toUpperCase() <= lastName.toUpperCase())
-        break;
-      swapToDoList(i + 1, i);
-      }
-    }
-
-    function rowClass(number) {
-    if (number % 2 != 0)
-      return " class=odd ";
-    else
-      return " class=even ";
   }
+  
+  toogleForms();
+  createTable();
+  saveToDoList();
+  gadgets.window.adjustHeight();
+  return false;
+}
 
+function editFormItem(number) {
+  toogleForms("edit");
+  document.newItemForm.indexTab.value= number;
+  document.newItemForm.newNameInput.value= todolist.array[number].name;
+  document.newItemForm.newDeadLineInput.value= todolist.array[number].deadline;
+  document.newItemForm.newOwnerInput.value= todolist.array[number].owner;
+}
 
-    function createAddItemButton(){
+function deleteItem(number) {
+  if (edited)
+    return;
+  if (!confirm("Etes-vous sûr de vouloir supprimer cette tâche ?"))
+    return;
+  var beginning = todolist.array.slice(0, number);
+  var end = todolist.array.slice(number + 1, numToDoList());
+  todolist.array = beginning.concat(end);
+  createTable();
+  saveToDoList();
+  gadgets.window.adjustHeight();
+}
 
-      var html ="<a class=\"addItem\" href=\"javascript: toogleForms('create')\" style=\"text-decoration:none; font-size: 80%; color: black;\">Ajouter</a>";
+function swapToDoList(to, from) {
+  var temp = todolist.array[to];
+  todolist.array[to] = todolist.array[from];
+  todolist.array[from] = temp;
+}
 
-      _gel("addItemIcon").innerHTML = html;
-      gadgets.window.adjustHeight();
+function sortByName(number) {
+  var bookmark = todolist.array[number];
+  var lastName = bookmark.name;
+  for (var i = number - 1; i >= 0; i--) {
+	  var currentItem = todolist.array[i];
+	  if (currentItem == null) break;
+	  var currentName = currentItem.name;
+	  if (currentName.toUpperCase() <= lastName.toUpperCase())
+	    break;
+	  swapToDoList(i + 1, i);
+  }
+}
 
-    }
+function rowClass(number) {
+	if (number % 2 != 0)
+	  return " class=odd ";
+	else
+	  return " class=even ";
+}
+
+function createAddItemButton(){
+  var html ="<a class=\"addItem\" href=\"javascript: toogleForms('create')\" style=\"text-decoration:none; font-size: 80%; color: black;\">Ajouter</a>";
+  _gel("addItemIcon").innerHTML = html;
+  gadgets.window.adjustHeight();
+
+}
 
     function createTable() {
       var html = "<table cellspacing=0 id=todolistTable>";
@@ -255,16 +232,12 @@ var todolist; // This is a json object of bookmark items
       return html;
     }
 
-    function createEdit(number)
-    {
+    function createEdit(number) {
       var html;
-      if (permission == true)
-      {
+      if (perm == 'true') {
       html = "<a class=\"editLink\" title=\"Editer la tâche\" href=\"javascript:editFormItem("
         + number + ")\">" + "</a>";
-      }
-      else
-      {
+      } else {
         html="";
       }
       return html;
@@ -272,14 +245,11 @@ var todolist; // This is a json object of bookmark items
 
     function createDelete(number) {
       var html;
-      if (permission == true)
-      {
-      html = "<a class=\"deleteLink\" title=\"Supprimer la tâche\" href=\"javascript:deleteItem("
+      if (perm == 'true') {
+        html = "<a class=\"deleteLink\" title=\"Supprimer la tâche\" href=\"javascript:deleteItem("
         + number + ")\">" + "</a>";
-      }
-      else
-      {
-      html="";
+      } else {
+        html="";
       }
       return html;
     }
