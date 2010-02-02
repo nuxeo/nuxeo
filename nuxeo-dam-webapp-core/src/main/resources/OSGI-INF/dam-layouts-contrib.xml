@@ -682,7 +682,7 @@
       </widget>
     </layout>
     
-      <layout name="group">
+    <layout name="group">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
       </templates>

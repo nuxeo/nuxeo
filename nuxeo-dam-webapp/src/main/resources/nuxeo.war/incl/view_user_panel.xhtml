@@ -27,14 +27,14 @@
                        action="#{userManagerActions.updateUser}"
                        rendered="#{userManagerActions.displayMode == 'edit'}"
                        reRender="viewUserPanel">
-        <h:outputText value="#{messages['command.save']}"/>
+        <h:outputText value="#{messages['command.user.save']}"/>
       </a4j:commandLink>
       <a4j:commandLink styleClass="button"
                        action="#{userManagerActions.toggleDisplayMode}"
                        immediate="true" reRender="viewUserPanel">
-        <h:outputText value="#{messages['command.cancel']}"
+        <h:outputText value="#{messages['command.user.cancel']}"
                       rendered="#{userManagerActions.displayMode == 'edit'}"/>
-        <h:outputText value="#{messages['command.edit']}"
+        <h:outputText value="#{messages['command.user.edit']}"
                       rendered="#{userManagerActions.displayMode == 'view'}"/>
       </a4j:commandLink>
     </p>

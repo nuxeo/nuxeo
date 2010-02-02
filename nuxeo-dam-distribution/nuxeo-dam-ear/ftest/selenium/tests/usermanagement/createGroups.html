@@ -1,12 +1,15 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>createGroup</title>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>createGroups</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">createGroup</td></tr>
+<tr><td rowspan="1" colspan="3">createGroups</td></tr>
 </thead><tbody>
 <!--@Test groups:CreateGroup,introduction|depends:CreateUsers-->
 <tr>
@@ -40,20 +43,14 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>click</td>
 	<td>link=Groups</td>
 	<td></td>
 </tr>
-<!--creation d'un groupe Johns-->
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Create a new group</td>
+	<td>waitForA4jRequest</td>
+	<td>1000</td>
 	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//input[@id='createGroup:nxl_group:nxw_groupname']</td>
-	<td>Johns</td>
 </tr>
 <tr>
 	<td>watchA4jRequests</td>
@@ -61,8 +58,28 @@
 	<td></td>
 </tr>
 <tr>
+	<td>click</td>
+	<td>link=Create a new group</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>1000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>createGroup:nxl_group:nxw_groupname</td>
+	<td>Johns</td>
+</tr>
+<tr>
 	<td>typeKeys</td>
-	<td>//input[@name='createGroup:nxl_group:nxw_members_suggest']</td>
+	<td>createGroup:nxl_group:nxw_members_suggest</td>
 	<td>bre</td>
 </tr>
 <tr>

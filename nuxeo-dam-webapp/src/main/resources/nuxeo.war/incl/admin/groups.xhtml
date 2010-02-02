@@ -22,9 +22,12 @@
   <f:facet name="controls">
     <h:panelGroup>
       <h:graphicImage value="/img/close.png"
-          styleClass="hidelink" id="createGroupHidelink" />
-        <rich:componentControl for="createGroupFormPanel" attachTo="createGroupHidelink"
-          operation="hide" event="onclick" />
+          styleClass="hidelink" id="createGroupHidelink">
+        <a4j:support event="onclick" oncomplete="#{groupManagerActions.resetDisplayMode()}"/>
+      </h:graphicImage>
+      
+      <rich:componentControl for="createGroupFormPanel" attachTo="createGroupHidelink"
+        operation="hide" event="onclick" />
       </h:panelGroup>
     </f:facet>
     <ui:include src="/incl/create_group_panel.xhtml" />
@@ -41,9 +44,11 @@
   <f:facet name="controls">
     <h:panelGroup>
       <h:graphicImage value="/img/close.png"
-          styleClass="hidelink" id="viewGroupHidelink" />
-        <rich:componentControl for="viewGroupFormPanel" attachTo="viewGroupHidelink"
-          operation="hide" event="onclick" />
+          styleClass="hidelink" id="viewGroupHidelink" onmouseup="#{groupManagerActions.toggleDisplayMode()}">
+        <a4j:support event="onclick" oncomplete="#{groupManagerActions.resetDisplayMode()}"/>
+      </h:graphicImage>
+      <rich:componentControl for="viewGroupFormPanel" attachTo="viewGroupHidelink"
+        operation="hide" event="onclick" />
       </h:panelGroup>
     </f:facet>
     <ui:include src="/incl/view_group_panel.xhtml" />
