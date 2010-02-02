@@ -78,9 +78,8 @@ function loadFlash(id){
     type : "GET",
     url : flashUrl,
     error : function(){
-      console.log("error");
       jQuery("#flash").html("");
-        showFlash();
+      showFlash();
     },
     success : function(data, textStatus) {
       gadgets.flash.embedFlash(flashUrl, "flash", 10,{
@@ -97,7 +96,6 @@ function loadFlash(id){
 function showFlash(){
   jQuery("#loader").hide();
   jQuery("#flash").fadeIn("slow");
-  if(perm != 'true') aler("false");
   setTimeout(function(){
     gadgets.window.adjustHeight();
   },150);
