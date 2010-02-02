@@ -92,6 +92,18 @@
 	<td>createUser:nxl_user:nxw_secondPassword</td>
 	<td>foo</td>
 </tr>
+<!--Strange behavior of Selenium (Username and first name cleared)-->
+<tr>
+	<td>type</td>
+	<td>createUser:nxl_user:nxw_username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>createUser:nxl_user:nxw_firstname</td>
+	<td>John</td>
+</tr>
+<!--End strange behavior of Selenium-->
 <tr>
 	<td>type</td>
 	<td>createUser:nxl_user:nxw_email</td>
@@ -177,6 +189,7 @@
 	<td></td>
 	<td></td>
 </tr>
+<!--Check jdoe created-->
 <tr>
 	<td>typeKeys</td>
 	<td>userSearchForm:userSearchInput</td>
@@ -308,6 +321,7 @@
 	<td>User already exists</td>
 	<td></td>
 </tr>
+<!--Create John Smith-->
 <tr>
 	<td>type</td>
 	<td>createUser:nxl_user:nxw_username</td>
@@ -393,6 +407,7 @@
 	<td></td>
 	<td></td>
 </tr>
+<!--Check John Smith created-->
 <tr>
 	<td>type</td>
 	<td>userSearchForm:userSearchInput</td>
@@ -404,6 +419,11 @@
 	<td>jsmith</td>
 </tr>
 <tr>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
 	<td>watchA4jRequests</td>
 	<td></td>
 	<td></td>
@@ -413,6 +433,7 @@
 	<td>Smith</td>
 	<td></td>
 </tr>
+<!--Create Bree user-->
 <tr>
 	<td>click</td>
 	<td>link=Create a new user</td>
@@ -518,6 +539,33 @@
 	<td></td>
 	<td></td>
 </tr>
+<!--Check Bree created-->
+<tr>
+	<td>type</td>
+	<td>userSearchForm:userSearchInput</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>userSearchForm:userSearchInput</td>
+	<td>bree</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Van de Kaamp</td>
+	<td></td>
+</tr>
+<!--Create Lucien-->
 <tr>
 	<td>click</td>
 	<td>link=Create a new user</td>
@@ -600,16 +648,6 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//*[@value='Create user']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
 	<td>//*[@id='createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
 	<td></td>
 </tr>
@@ -618,6 +656,48 @@
 	<td>3000</td>
 	<td></td>
 </tr>
+<tr>
+	<td>click</td>
+	<td>//*[@value='Create user']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<!--Check Lucien created-->
+<tr>
+	<td>type</td>
+	<td>userSearchForm:userSearchInput</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>userSearchForm:userSearchInput</td>
+	<td>lbramard</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Bramard</td>
+	<td></td>
+</tr>
+<!--Create Linnet-->
 <tr>
 	<td>click</td>
 	<td>link=Create a new user</td>
@@ -716,6 +796,31 @@
 <tr>
 	<td>watchA4jRequests</td>
 	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>userSearchForm:userSearchInput</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>userSearchForm:userSearchInput</td>
+	<td>linnet</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Scavo</td>
 	<td></td>
 </tr>
 <tr>
