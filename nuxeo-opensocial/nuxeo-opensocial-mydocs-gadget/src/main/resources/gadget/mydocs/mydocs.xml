@@ -60,7 +60,6 @@
       makeRequest(url, function(obj) {
         var jsonObject = obj.data;
         spaceId = jsonObject.summary.id;
-        alert(jsonObject.summary.title);
         var html="";
         //FIXME: repo id is hard coded
         var iframesrc="/nuxeo/nxdoc/default/" + jsonObject.spaceId + "/view_documents?theme=galaxy/popup";
