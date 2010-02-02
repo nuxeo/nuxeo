@@ -19,7 +19,7 @@
 
       <p class="buttonsGadget">
       <a4j:commandButton styleClass="button"
-        value="#{messages['command.create']}" action="#{groupManagerActions.createGroup}"
+        value="#{messages['command.group.create']}" action="#{groupManagerActions.createGroup}"
         data="#{facesContext.maximumSeverity.ordinal ge 2}"
         oncomplete="if (!data) { Richfaces.hideModalPanel('CreateGroupFormPanel') };"
         reRender="groupSearchResult, createGroup" />
