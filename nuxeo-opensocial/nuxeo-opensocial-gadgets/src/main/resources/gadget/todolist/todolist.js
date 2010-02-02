@@ -53,7 +53,7 @@ var todolist; // This is a json object of bookmark items
       }
 
       if (hasError)
-          return;
+          return false;
 
       _gel("newNameInput").value = "";
       _gel("newDeadLineInput").value = "";

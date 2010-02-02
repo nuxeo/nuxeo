@@ -49,6 +49,8 @@
       edited = false;
 
       var perm = gadgets.util.getUrlParameters().permission;
+
+      createTable();
       if(perm == 'true')
       {
         permission = true;
@@ -58,12 +60,19 @@
       {
        permission = false;
       }
-      createTable();
 
     })
       </script>
        <link rel="stylesheet" href="datePicker.css" type="text/css" media="screen" charset="utf-8" />
       <style type="text/css">
+        *{
+          font-size:11px;
+          font-family:Arial,Verdana, sans-serif;
+        }
+
+        img{
+          border:0;
+        }
 
         a.dp-choose-date{
          display:none;
@@ -77,9 +86,7 @@
 
         input
         {
-         font-family:Arial,Verdana, sans-serif;
-         font-size:80%;
-         border:1px solid #000000;
+         border:1px solid #ffffff;
         }
 
         img.favicon{
@@ -115,38 +122,28 @@
          height:13px;
         }
 
-        .favicon_td {
-          font-family: arial;
-          font-size: 80%;
-        }
+
         .p1_:link, .p1_:visited {
           color: red;
           text-decoration: none;
-          font-size: 80%;
         }
         .p2_:link, .p2_:visited {
           color: blue;
           text-decoration: none;
-          font-size: 80%;
         }
         .p3_:link, .p3_:visited {
           color: #ff00ff;
           text-decoration: none;
-          font-size: 80%;
         }
 
       #addText:link, .addText:visited {
           text-decoration:none;
-          font-size: 80%;
           color: black;
         }
 
         #addItemForm{
-         position:absolute;
-         border:1px solid #000000;
-         background-color:#ffffff;
-         left:5px;
-         top:0px;
+         width:100%;
+         background-color:#666666;
         }
 
         #addItemIcon{
@@ -160,9 +157,6 @@
         }
 
         #todolistDiv{
-        min-height:75px;
-        height:auto !important;
-        height:75px;
          padding-bottom:5px;
         }
 
@@ -172,15 +166,12 @@
       }
 
         #name_input, #newNameInput, #newDeadLineInput {
-
-          font-family: arial;
           padding: 0px;
         }
         #new_bookmark_td {
           font-size: 11px
         }
         #input {
-          font-family: arial;
           padding: 0px;
         }
         #todolistTable {
@@ -190,12 +181,11 @@
         }
 
         #newNameInput{
-         border:1px solid #000000;
+         border:1px solid #ffffff;
         }
 
 
         .name_td, .owner_td, .deadline_td {
-          font-size: 80%;
           color: black;
         }
 
@@ -204,21 +194,16 @@
         }
 
         .addItem{
-          /*text-align:right;
-          width:100%;*/
-          background-image:url(bookmark_add.jpg);
-          background-repeat:no-repeat;
-          padding-left:20px;
+          font-weight:bold;
+      text-decoration:none;
+      color:#000000;
         }
 
         .option {
-          font-size: 80%;
           padding: 0px;
           margin: 0px;
-          font-family: arial;
         }
         #select {
-          font-family: arial;
           width: 52px;
           margin: 0px;
           padding: 0px;
@@ -243,8 +228,8 @@
         }
 
         span.label{
-          color:#000000;
-          font-weight:normal;
+          color:#ffffff;
+          font-weight:bold;
         }
 
          span.labelError{
@@ -284,16 +269,35 @@
          padding:2px 0 0 0;
         }
 
+        #hideContainer {
+    text-align:right;
+    }
+
+    #valider{
+    background:url("accept.png") no-repeat scroll 0 0 transparent;
+    color:#FFFFFF;
+    display:block;
+    float:right;
+    font-weight:bold;
+    padding-left:18px;
+    text-decoration:none;
+    }
+
 
       </style>
-    <div id="addItemIcon" style="visibility:visible;">
 
-    </div>
+      <div id="todolistDiv"></div>
+      <div id="addItemIcon" style="visibility:visible;"></div>
       <div id="addItemForm" style="display: none">
-        <form name = "newItemForm" onsubmit="return addItem(document.newItemForm.newNameInput.value,document.newItemForm.newOwnerInput.value,document.newItemForm.newDeadLineInput.value, false)" style="margin:0px;">
+        <div id="hideContainer">
+          <a href="javascript: toogleForms();" id="hide" title="fermer">
+            <img src="x.gif">
+          </a>
+        </div>
+        <form id="newFormItem" name = "newItemForm" style="margin:0px;">
             <input type="hidden" id="action" value="">
              <input type="hidden" id="indexTab" value="">
-            <table cellspacing="5" style="width:280px">
+            <table cellspacing="5">
               <tr>
                   <td id="new_bookmark_td" width="45">
                     <span class="label" id="labelIntitule">Intitulé:</span>
@@ -320,14 +324,12 @@
                </tr>
                <tr>
                  <td colspan="2" align="right">
-                    <input type="button" onclick="return addItem(document.newItemForm.newNameInput.value, document.newItemForm.newOwnerInput.value, document.newItemForm.newDeadLineInput.value, false)" value="Valider" style="font-size: 11px;">
-                    &nbsp;<input type="button" onclick="javascript: toogleForms();" value="Annuler" style="font-size: 11px;">
+                   <a id="valider" href="#" onclick="javascript:addItem(document.newItemForm.newNameInput.value,document.newItemForm.newOwnerInput.value,document.newItemForm.newDeadLineInput.value, false);">Valider</a>
                 </td>
                </tr>
             </table>
           </form>
       </div>
-      <div id="todolistDiv" style="min-height:165px;height:auto !important;height:165px;"></div>
 
     ]]>
   </Content>
