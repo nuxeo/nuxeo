@@ -5,8 +5,8 @@
   <ul>  
     <#list nxthemesInfo.model.items as item>
       <div class="contextualLinkBlock">
-        <div class="contextualLink"><a href="${item.link}" target="_blank"> ${item.title} &nbsp; </a></div>
-        <div class="contextualLinkText">${item.description}</div>
+        <div class="contextualLink"><a href="${item.link}" target="_blank"> ${item.title?xml} &nbsp; </a></div>
+        <div class="contextualLinkText">${item.description?xml}</div>
       </div>
     </#list>
   </ul>
