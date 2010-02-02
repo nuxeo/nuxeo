@@ -26,12 +26,12 @@ public class MyDocsRoot extends ModuleRoot {
         return Response.serverError();
     }
 
-    @Path("{spaceid}")
-    public Object getParentWorkspace(@PathParam("spaceid") String spaceId) {
+    @Path("{gadgetid}")
+    public Object getParentWorkspace(@PathParam("gadgetid") String gadgetId) {
 
         CoreSession session = ctx.getCoreSession();
         try {
-            IdRef spaceRef = new IdRef(spaceId);
+            IdRef spaceRef = new IdRef(gadgetId);
             if(!session.exists(spaceRef)) {
                 return Response.status(404);
             }

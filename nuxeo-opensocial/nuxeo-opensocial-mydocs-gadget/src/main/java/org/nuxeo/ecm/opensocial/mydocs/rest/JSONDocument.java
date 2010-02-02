@@ -113,6 +113,7 @@ public class JSONDocument extends DocumentObject {
 
   @POST
   public Object addDocument() throws Exception {
+    log.info("Adding a new File");
     FileManager fm = Framework.getService(FileManager.class);
     CoreSession session = ctx.getCoreSession();
     FormData form = ctx.getForm();
@@ -133,6 +134,7 @@ public class JSONDocument extends DocumentObject {
     docItem.put("url", getDocumentURL(doc));
     docItem.put("icon", doc.getPropertyValue("common:icon"));
     docItem.put("title", doc.getTitle());
+    docItem.put("type", doc.getType());
     docItem.put("creator", doc.getPropertyValue("dublincore:creator"));
     docItem.put(
         "modified",

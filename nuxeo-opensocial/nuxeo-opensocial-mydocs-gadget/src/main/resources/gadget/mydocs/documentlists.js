@@ -1,4 +1,4 @@
-var spaceId="";
+var gadgetId="";
 var path=new Array();
 var currentPage=0;
 var maxPage = 0;
@@ -19,7 +19,7 @@ function getUserLang() {
 function getResourceUrl() {
   var url = "";
   url = "http://localhost:8080/nuxeo/site/myDocsRestAPI/";
-  url += spaceId + "/";
+  url += gadgetId + "/";
 
   strPath = path.join();
   regEx = new RegExp(",", "g");
@@ -226,18 +226,22 @@ function mkRow(document, i) {
     htmlRow += "<td><a title=\"" + document.title
         + "\" onclick=\"followPath('" + document.name
         + "');return false;\" />";
-  } else {
-  var DLUrl = getDLUrl(document.name);
+    htmlRow += document.title + "</a></td>";
+  } else if (document.type == "File"){
+    var DLUrl = getDLUrl(document.name);
     htmlRow += "<td><a title=\"" + document.title
         + "\" href=\"" + DLUrl + "\" />";
+    htmlRow += document.title + "</a></td>";
+  } else {
+    htmlRow +="<td>" + document.title + "</td>";
   }
-  htmlRow += document.title;
+
   /*
    * if (document.folderish == 0) { var DLUrl = getDLUrl(document.name);
    * htmlRow += "<a href=\"" + DLUrl + "\"><img
    * src=\"/nuxeo/icons/download.png\" alt=\"Download\"></a>"; }
    */
-  htmlRow += "</a></td><td class=\"iconColumn\"/>";
+  htmlRow += "<td class=\"iconColumn\"/>";
   htmlRow += "<td>";
   htmlRow += getDateForDisplay(document.modified);
   htmlRow += "</td>";
@@ -281,11 +285,16 @@ function delete(obj) {
 
 
 jQuery(document).ready(function(){
-    jQuery('#formUpload').submit(function(){
+
+
+  jQuery('#formUpload').submit(function(){
       jQuery(this).ajaxSubmit({ beforeSubmit: control,
                                 success:function(){
                                   refresh();
                                    },
+                                error: function(xhr,rs) {
+                                    alert(xhr.responseText);
+                                },
                                 url: getResourceUrl(),
                                 method: 'put'
                               });
