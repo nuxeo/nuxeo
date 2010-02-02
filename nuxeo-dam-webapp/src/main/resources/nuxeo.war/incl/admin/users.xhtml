@@ -102,11 +102,11 @@
 
             <c:set var="userSchema" value="#{userManager.userSchemaName}" />
 
-            <a4j:form rendered="#{userList.rowCount > 0}">
-              <h:dataTable var="userModel" value="#{userList}"
+            <a4j:form id="userSearchFormTab" rendered="#{userList.rowCount > 0}">
+              <h:dataTable id="UserSearchTab" var="userModel" value="#{userList}"
                 rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
                 <h:column>
-                  <a4j:commandLink
+                  <a4j:commandLink id="delete-user"
                     action="#{userManagerActions.deleteUser(userModel.id)}"
                     onclick="if (!confirmDeleteUser()) { return false; }"
                     reRender="userSearchResult"
