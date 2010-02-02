@@ -1,233 +1,214 @@
-<assembly>
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
 
-  <zipEntrySet id="base-template">
-    <artifact>
-      org.nuxeo.ecm.distribution:nuxeo-distribution-server:${nuxeo.distribution.version}:zip
-    </artifact>
-    <!-- to avoid duplicate libraries -->
-    <excludes>
-      <exclude>lib/javassist-3.6.jar</exclude>
-      <exclude>lib/servlet-api-2.4.jar</exclude>
-    </excludes>
-  </zipEntrySet>
+  <target name="init" unless="init.done">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="stagedir" value="${outdir}/stage" />
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
+  </target>
 
-  <fileSet id="template">
-    <directory>src/main/resources</directory>
-  </fileSet>
+  <target name="expand" unless="no.build">
+    <artifact:nuxeo-expand />
+  </target>
 
-  <artifactSet id="bundles">
-    <import>**</import>
-    <includeDependencies>true</includeDependencies>
-    <includes>
-      <artifact group="org.nuxeo*" />
-      <!-- add here nuxeo-addons -->
-    </includes>
-    <excludes>
-      <artifact group="!org.nuxeo*" />
-      <artifact group="org.nuxeo.common" />
+  <target name="build" depends="init" unless="no.build">
+    <echo>Building Jetty distribution...</echo>
+    <property name="jetty" value="${stagedir}/nuxeo-dam-jetty" />
 
-      <artifact name="nuxeo-core-storage-sql-ra" />
-      <artifact name="nuxeo-apt-extensions" />
-      <artifact name="nuxeo-webengine-apt" />
+    <antcall target="prepare-jetty" />
+    <antcall target="build-nuxeo-dam-jetty" />
+  </target>
 
-      <!-- exclude webservices -->
-      <artifact name="nuxeo-platform-ws" />
+  <target name="prepare-jetty">
+    <unzip dest="${jetty}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-server:${nuxeo.distribution.version}:zip" />
+    </unzip>
+    <copy todir="${jetty}">
+      <fileset dir="src/main/resources" />
+    </copy>
 
-      <!-- exclude facades -->
-      <artifact name="nuxeo-platform-audit-facade" />
-      <artifact name="nuxeo-core-facade" />
-      <artifact name="nuxeo-platform-directory-facade" />
-      <artifact name="nuxeo-platform-filemanager-facade" />
-      <artifact name="nuxeo-platform-io-facade" />
-      <artifact name="nuxeo-platform-jbpm-facade" />
-      <artifact name="nuxeo-platform-mimetype-facade" />
-      <artifact name="nuxeo-platform-notification-facade" />
-      <artifact name="nuxeo-platform-placeful-facade" />
-      <artifact name="nuxeo-platform-relations-facade" />
-      <artifact name="nuxeo-platform-search-facade" />
-      <artifact name="nuxeo-platform-types-facade" />
-      <artifact name="nuxeo-platform-url-facade" />
-      <artifact name="nuxeo-platform-usermanager-facade" />
-      <artifact name="nuxeo-platform-tag-facade" />
-      <artifact name="nuxeo-platform-annotations-facade" />
-      <artifact name="nuxeo-platform-imaging-facade" />
-      <artifact name="nuxeo-platform-userworkspace-facade" />
-      <artifact name="nuxeo-dam-facade" />
+    <!-- Remove unused files for DAM -->
+    <delete file="${jetty}/config/login-anonymous-config.xml" />
+    <delete dir="${jetty}/examples" />
+    <delete dir="${jetty}/extras" />
+    <delete dir="${jetty}/scripts" />
+    <delete>
+      <filelist dir="${jetty}/bundles">
+        <file name="nuxeo-webengine-admin*" />
+        <file name="nuxeo-webengine-ui*" />
+        <file name="nuxeo-webengine-sites*" />
+        <file name="nuxeo-platform-comment-web*" />
+      </filelist>
+    </delete>
 
-      <!-- exclude jboss dependencies -->
-      <artifact name="nuxeo-runtime-jboss-adapter" />
-      <artifact name="nuxeo-platform-auth-web-jboss" />
-      <artifact name="nuxeo-platform-login-jboss" />
+    <chmod dir="${jetty}" perm="750" includes="*.sh" />
+    <copy todir="${jetty}/bundles">
+      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-jetty-adapter" />
+      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-deploy" />
+      <artifact:resolveFile key="org.nuxeo.ecm.core:nuxeo-core-storage-sql" />
+      <artifact:resolveFile key="org.nuxeo.ecm.core:nuxeo-core-storage-sql-extensions" />
+    </copy>
+    <antcall target="jetty-third-party-libraries">
+      <param name="lib.dir" value="${jetty}/lib" />
+    </antcall>
+  </target>
 
-      <!-- exclude dependencies not needed by DAM -->
-      <artifact name="nuxeo-platform-webapp" />
-      <artifact name="nuxeo-platform-webapp-core" />
+  <target name="build-nuxeo-dam-jetty"
+          description="Build jetty distribution with Nuxeo DAM">
+    <copy todir="${stagedir}/nuxeo-dam-jetty/bundles">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-generic-wss-handler" />
+    </copy>
+    <unzip dest="${stagedir}/nuxeo-dam-jetty/bundles">
+      <artifact:resolveFile key="org.nuxeo.dam:nuxeo-dam-ear:${maven.project.version}:zip" />
+      <patternset>
+        <include name="nuxeo-dam-webapp*.jar" />
+        <include name="plugins/*.*" />
+        <include name="system/*.*" />
+        <exclude name="system/nuxeo-platform-auth-web-jboss*" />
+        <exclude name="system/nuxeo-platform-login-jboss*" />
+        <exclude name="system/nuxeo-runtime-jboss-adapter*" />
+        <exclude name="system/*.pom" />
+        <exclude name="system/*facade*" />
+        <exclude name="system/*facade*/**" />
 
-      <artifact name="nuxeo-platform-imaging-web" />
-      <artifact name="nuxeo-platform-virtualnavigation-web" />
-      <artifact name="nuxeo-platform-forum*" />
-      <artifact name="nuxeo-platform-syndication" />
-      <artifact name="nuxeo-platform-publish*" />
-      <artifact name="nuxeo-platform-comment-web" />
-      <artifact name="nuxeo-platform-workflow*" />
+        <!-- Exclude dependencies not needed by DAM -->
+        <exclude name="system/nuxeo-core-storage-sql-ra*" />
+        <exclude name="system/nuxeo-apt-extensions*" />
+        <exclude name="system/nuxeo-webengine-apt*" />
 
-      <artifact name="nuxeo-platform-lang" />
+        <exclude name="system/nuxeo-platform-ws*" />
 
-      <artifact name="nuxeo-platform-ear" />
-      <artifact name="nuxeo-dam-ear" />
-      <artifact name="nuxeo-apt-extensions" />
+        <exclude name="nuxeo-dam-ear*" />
 
-      <artifact name="nuxeo-webengine-admin" />
-      <artifact name="nuxeo-webengine-sites" />
-      <artifact name="nuxeo-webengine-ui" />
-    </excludes>
-  </artifactSet>
+        <exclude name="system/nuxeo-webengine-admin*" />
+      </patternset>
+      <mapper type="flatten" />
+    </unzip>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+         basedir="${stagedir}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
+  </target>
 
-  <artifactSet id="third-party-libs">
-    <artifacts>
+  <target name="jetty-third-party-libraries">
+    <!-- Remove duplicate, not needed and/or wrong third-parties -->
+    <delete>
+      <filelist dir="${lib.dir}">
+        <file name="javassist-3.6.jar" />
+        <file name="servlet-api-2.4.jar" />
+        <file name="el-api-unknown.jar" />
+        <file name="el-ri-unknown.jar" />
+      </filelist>
+    </delete>
+    <!-- Add libraries required under jetty (not present in the dependency tree) -->
+    <copy todir="${lib.dir}" overwrite="true">
       <!-- Synchro Added packages -->
-      <artifact group="javax.activation" name="activation" />
-      <artifact group="apache-httpclient" name="commons-httpclient" />
-      <artifact group="commons-codec" name="commons-codec" />
-      <artifact group="metro.webservices" name="webservices-api" />
-      <artifact group="metro.webservices" name="webservices-rt" />
-      <artifact group="metro.webservices" name="webservices-tools" />
+      <artifact:resolveFile key="javax.activation:activation" />
+      <artifact:resolveFile key="apache-httpclient:commons-httpclient" />
+      <artifact:resolveFile key="commons-codec:commons-codec" />
+      <artifact:resolveFile key="metro.webservices:webservices-api" />
+      <artifact:resolveFile key="metro.webservices:webservices-rt" />
+      <artifact:resolveFile key="metro.webservices:webservices-tools" />
       <!-- End Synchro Added packages -->
 
-      <artifact group="javax.servlet" name="servlet-api" />
-      <artifact group="org.mortbay.jetty" name="jetty" />
-      <artifact group="org.mortbay.jetty" name="jetty-plus" />
-      <artifact group="org.mortbay.jetty" name="jetty-naming" />
-      <artifact group="org.mortbay.jetty" name="jetty-annotations" />
-      <artifact group="org.mortbay.jetty" name="jetty-util" />
-      <artifact group="jotm" name="jotm" />
-      <artifact group="javax.ejb" name="ejb-api" />
-      <artifact group="javax.transaction" name="jta" />
+      <artifact:resolveFile key="javax.servlet:servlet-api" />
+      <artifact:resolveFile key="org.mortbay.jetty:jetty" />
+      <artifact:resolveFile key="org.mortbay.jetty:jetty-plus" />
+      <artifact:resolveFile key="org.mortbay.jetty:jetty-naming" />
+      <artifact:resolveFile key="org.mortbay.jetty:jetty-annotations" />
+      <artifact:resolveFile key="org.mortbay.jetty:jetty-util" />
+      <artifact:resolveFile key="jotm:jotm" />
+      <artifact:resolveFile key="javax.ejb:ejb-api" />
+      <artifact:resolveFile key="javax.transaction:jta" />
 
-      <artifact group="org.apache.ant" name="ant" />
-      <artifact group="bsh" name="bsh" />
-      <artifact group="commons-el" name="commons-el" />
-      <artifact group="commons-digester" name="commons-digester" />
-      <artifact group="org.jboss.el" name="jboss-el" />
+      <artifact:resolveFile key="org.apache.ant:ant" />
+      <artifact:resolveFile key="bsh:bsh" />
+      <artifact:resolveFile key="commons-el:commons-el" />
+      <artifact:resolveFile key="commons-digester:commons-digester" />
+      <artifact:resolveFile key="org.jboss.el:jboss-el" />
 
-      <artifact group="org.jboss.seam" name="jboss-seam" />
-      <artifact group="org.jboss.seam" name="jboss-seam-debug" />
-      <artifact group="org.jboss.seam" name="jboss-seam-mail" />
-      <artifact group="org.jboss.seam" name="jboss-seam-ui" />
-      <artifact group="org.jboss.seam" name="jboss-seam-remoting" />
+      <artifact:resolveFile key="org.jboss.seam:jboss-seam" />
+      <artifact:resolveFile key="org.jboss.seam:jboss-seam-debug" />
+      <artifact:resolveFile key="org.jboss.seam:jboss-seam-mail" />
+      <artifact:resolveFile key="org.jboss.seam:jboss-seam-ui" />
+      <artifact:resolveFile key="org.jboss.seam:jboss-seam-remoting" />
 
-      <artifact group="org.jbpm.jbpm3" name="jbpm-jpdl" />
+      <artifact:resolveFile key="org.jbpm.jbpm3:jbpm-jpdl" />
 
-      <artifact group="org.openoffice" name="ridl" />
-      <artifact group="org.openoffice" name="juh" />
-      <artifact group="org.openoffice" name="unoil" />
-      <artifact group="org.openoffice" name="jurt" />
-      <artifact group="com.artofsolving" name="jodconverter" />
-      <artifact group="com.thoughtworks.xstream" name="xstream" />
-      <artifact group="pdfbox" name="pdfbox" />
-      <artifact group="org.fontbox" name="fontbox" />
+      <artifact:resolveFile key="org.openoffice:ridl" />
+      <artifact:resolveFile key="org.openoffice:juh" />
+      <artifact:resolveFile key="org.openoffice:unoil" />
+      <artifact:resolveFile key="org.openoffice:jurt" />
+      <artifact:resolveFile key="com.artofsolving:jodconverter" />
+      <artifact:resolveFile key="com.thoughtworks.xstream:xstream" />
+      <artifact:resolveFile key="pdfbox:pdfbox" />
+      <artifact:resolveFile key="org.fontbox:fontbox" />
+      <artifact:resolveFile key="org.jempbox:jempbox" />
+      <artifact:resolveFile key="bouncycastle:bcmail-jdk14" />
+      <artifact:resolveFile key="bouncycastle:bcprov-jdk14" />
 
-      <artifact group="org.richfaces.framework" name="richfaces-api" />
-      <artifact group="org.richfaces.framework" name="richfaces-impl" />
-      <artifact group="org.richfaces.ui" name="richfaces-ui" />
-      <artifact group="org.richfaces.framework" name="richfaces-api" />
-      <artifact group="javax.script" name="script-api" />
-      <artifact group="org.apache.lucene" name="lucene-analyzers" />
+      <artifact:resolveFile key="org.richfaces.framework:richfaces-api" />
+      <artifact:resolveFile key="org.richfaces.framework:richfaces-impl" />
+      <artifact:resolveFile key="org.richfaces.ui:richfaces-ui" />
+      <artifact:resolveFile key="org.richfaces.framework:richfaces-api" />
+      <artifact:resolveFile key="javax.script:script-api" />
+      <artifact:resolveFile key="org.apache.lucene:lucene-analyzers" />
 
-      <artifact group="com.sun.facelets" name="jsf-facelets" />
-      <artifact group="javax.faces" name="jsf-api" />
-      <artifact group="javax.faces" name="jsf-impl" />
+      <artifact:resolveFile key="com.sun.facelets:jsf-facelets" />
+      <artifact:resolveFile key="javax.faces:jsf-api" />
+      <artifact:resolveFile key="javax.faces:jsf-impl" />
 
-      <artifact group="org.mortbay.jetty" name="jsp-api-2.1" />
-      <artifact group="org.mortbay.jetty" name="jsp-2.1" />
+      <artifact:resolveFile key="org.mortbay.jetty:jsp-api-2.1" />
+      <artifact:resolveFile key="org.mortbay.jetty:jsp-2.1" />
 
-      <artifact group="jboss" name="javassist" />
+      <artifact:resolveFile key="jboss:javassist" />
 
-      <artifact group="com.h2database" name="h2" />
+      <artifact:resolveFile key="com.h2database:h2" />
 
-      <artifact group="org.eclipse.jdt" name="core" />
+      <artifact:resolveFile key="org.eclipse.jdt:core" />
 
-      <artifact group="com.sun.xml" name="relaxngDatatype" />
-      <artifact group="com.sun.xml" name="xsom" />
-      <artifact group="cup" name="java-cup" />
-      <artifact group="joda-time" name="joda-time" />
-      <artifact group="org.wikimodel" name="wem" />
+      <artifact:resolveFile key="com.sun.xml:relaxngDatatype" />
+      <artifact:resolveFile key="com.sun.xml:xsom" />
+      <artifact:resolveFile key="cup:java-cup" />
+      <artifact:resolveFile key="joda-time:joda-time" />
+      <artifact:resolveFile key="org.wikimodel:wem" />
 
-      <artifact group="com.hp.hpl.jena" name="jena" />
-      <artifact group="com.hp.hpl.jena" name="arq" />
-      <artifact group="com.hp.hpl.jena" name="iri" />
-      <artifact group="com.ibm.icu" name="icu4j" />
+      <artifact:resolveFile key="com.hp.hpl.jena:jena" />
+      <artifact:resolveFile key="com.hp.hpl.jena:arq" />
+      <artifact:resolveFile key="com.hp.hpl.jena:iri" />
+      <artifact:resolveFile key="com.ibm.icu:icu4j" />
 
-      <artifact group="rome" name="rome" />
-      <artifact group="jdom" name="jdom" />
+      <artifact:resolveFile key="rome:rome" />
+      <artifact:resolveFile key="jdom:jdom" />
 
-      <artifact group="net.sf.opencsv" name="opencsv" />
-      <artifact group="org.codehaus.plexus" name="plexus-utils" />
+      <artifact:resolveFile key="jmimemagic:jmimemagic" />
+      <artifact:resolveFile key="org.apache.poi:ooxml-schemas" />
+      <artifact:resolveFile key="org.apache.poi:poi" />
+      <artifact:resolveFile key="org.apache.poi:poi-ooxml" />
+      <artifact:resolveFile key="org.apache.poi:poi-scratchpad" />
+      <artifact:resolveFile key="org.apache:xmlbeans" />
+      <artifact:resolveFile key="oro:oro" />
+      <artifact:resolveFile key="opensymphony:quartz-all" />
 
-
-      <artifact group="jmimemagic" name="jmimemagic" />
-      <artifact group="org.apache.poi" name="ooxml-schemas" />
-      <artifact group="org.apache.poi" name="poi" />
-      <artifact group="org.apache.poi" name="poi-ooxml" />
-      <artifact group="org.apache.poi" name="poi-scratchpad" />
-      <artifact group="org.apache" name="xmlbeans" />
-      <artifact group="oro" name="oro" />
-      <artifact group="opensymphony" name="quartz-all" />
-
-      <artifact group="net.sf.ehcache" name="ehcache" />
-      <artifact group="com.google.gwt" name="gwt-servlet" />
-      <artifact group="backport-util-concurrent" name="backport-util-concurrent" />
+      <artifact:resolveFile key="net.sf.ehcache:ehcache" />
+      <artifact:resolveFile key="com.google.collections:google-collections" />
+      <artifact:resolveFile key="com.google.gwt:gwt-servlet" />
+      <artifact:resolveFile key="backport-util-concurrent:backport-util-concurrent" />
 
       <!-- Nuxeo DAM libs -->
-      <artifact group="de.schlichtherle.io" name="truezip"/>
-    </artifacts>
-  </artifactSet>
+      <artifact:resolveFile key="de.schlichtherle.io:truezip" />
+    </copy>
+  </target>
 
-  <assemble>
-    <set>base-template</set>
-    <set>template</set>
-    <outputFile>/</outputFile>
-  </assemble>
+  <target name="clean">
+    <delete dir="${stagedir}" />
+  </target>
 
-  <assemble>
-    <set>third-party-libs</set>
-    <outputFile>lib</outputFile>
-  </assemble>
-
-  <assemble>
-    <set>bundles</set>
-    <outputFile>bundles</outputFile>
-  </assemble>
-
-  <assemble>
-    <delete>true</delete>
-    <outputFile>config</outputFile>
-    <file>login-anonymous-config.xml</file>
-  </assemble>
-
-  <assemble>
-    <delete>true</delete>
-    <outputFile>lib</outputFile>
-    <file>el-api-unknown.jar</file>
-    <file>el-ri-unknown.jar</file>
-  </assemble>
-
-  <!-- Remove unused files for DAM -->
-  <assemble>
-    <delete>true</delete>
-    <outputFile>/</outputFile>
-    <file>examples</file>
-    <file>extras</file>
-    <file>scripts</file>
-  </assemble>
-
-  <assemble>
-    <delete>true</delete>
-    <outputFile>bundles</outputFile>
-    <file>nuxeo-webengine-admin-${nuxeo.webengine.version}.jar</file>
-    <file>nuxeo-webengine-ui-${nuxeo.webengine.version}.jar</file>
-    <file>nuxeo-webengine-sites-${nuxeo.webengine.version}.jar</file>
-    <file>nuxeo-platform-comment-web-${nuxeo.features.version}.jar</file>
-  </assemble>
-
-</assembly>
+</project>
