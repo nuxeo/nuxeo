@@ -23,7 +23,19 @@ TODO: add here instructions for Seam and nuxeo.war hot redeployment.
 You can also build a complete jboss or tomcat distribtion with the DAM
 application included with the following maven commands::
 
-  $ mvn install -Dmaven.test.skip=true -Pjboss
+  $ mvn install -Dmaven.test.skip=true
+  $ cd nuxeo-dam-distribution
+  $ mvn install -Dmaven.test.skip=true -Ptomcat
+
+The generated zip should be available in::
+
+  nuxeo-dam-distribution/nuxeo-dam-distribution-tomcat/target/nuxeo-dam-distribution-tomcat-X.X-SNAPSHOT.zip
+
+After unzipping make the tomcat start scripts runnable and launch tomcat::
+
+  $ cd nuxeo-dam-tomcat
+  $ chmod a+x bin/*.sh
+  $ ./bin/catalina.sh start
 
 
 Technical Overview
