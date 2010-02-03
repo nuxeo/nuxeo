@@ -195,7 +195,7 @@ public class ImportActions implements Serializable {
     }
 
     protected void sendImportSetCreationEvent() {
-        Events.instance().raiseEvent(ImportActions.IMPORTSET_CREATED);
+        Events.instance().raiseEvent(IMPORTSET_CREATED);
 
         logDocumentWithTitle("document_saved", "Created the document: ",
                 newImportSet);
