@@ -25,7 +25,7 @@
           styleClass="hidelink" id="createGroupHidelink">
         <a4j:support event="onclick" oncomplete="#{groupManagerActions.resetDisplayMode()}"/>
       </h:graphicImage>
-      
+
       <rich:componentControl for="createGroupFormPanel" attachTo="createGroupHidelink"
         operation="hide" event="onclick" />
       </h:panelGroup>
@@ -116,17 +116,17 @@
                     <h:outputText
                       value="#{messages['label.groupManager.userMembers']}" />
                   </f:facet>
-                  <nxu:dataList value="#{userManager.getGroupsInGroup(groupModel.id)}"
+                  <nxu:dataList value="#{userManager.getUsersInGroup(groupModel.id)}"
                        var="subGroup">
                     <h:outputText value="#{subGroup}"/>,
-                  </nxu:dataList>                  
+                  </nxu:dataList>
                 </h:column>
                 <h:column>
                   <f:facet name="header">
                     <h:outputText
                       value="#{messages['label.groupManager.groupMembers']}" />
                   </f:facet>
-                  <nxu:dataList value="#{userManager.getUsersInGroup(groupModel.id)}"
+                  <nxu:dataList value="#{userManager.getGroupsInGroup(groupModel.id)}"
                        var="user">
                     <h:outputText value="#{user}" />,
                   </nxu:dataList>
