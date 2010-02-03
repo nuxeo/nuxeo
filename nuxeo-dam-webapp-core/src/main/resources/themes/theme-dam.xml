@@ -824,14 +824,6 @@
         <padding>2px 5px 1px 10px</padding>
         <white-space>normal</white-space>
       </selector>
-      <selector path="td.fieldColumn input">
-        <width>285px</width>
-        <border>1px solid #dedede</border>
-      </selector>
-      <selector path="td.fieldColumn input.dataInputTextDate">
-        <width>250px</width>
-        <margin>0 5px 0 0</margin>
-      </selector>
       <selector path=".buttonsBar">
         <padding-left>150px</padding-left>
         <margin>10px 0px 5px</margin>
