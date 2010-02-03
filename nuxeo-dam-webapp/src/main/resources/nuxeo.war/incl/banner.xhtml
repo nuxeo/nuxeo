@@ -8,6 +8,7 @@
   xmlns:rich="http://richfaces.org/rich">
 
 <div class="banner_actions">
+    
    <rich:modalPanel id="importSetFormPanel" autosized="true"
      onshow="javascript:initImportSetForm();" styleClass="ImportSetFormPanel">
       <f:facet name="header">
@@ -30,6 +31,15 @@
     <a4j:region>
       <a4j:outputPanel id="administrationTable">
         <a4j:form><ul>
+          <li>  
+            <h:outputText styleClass="separator" value="#{messages['label.loggedAsUser']}" />
+          </li>
+          <li>  
+            &#160;
+          </li>
+          <li>  
+            <h:outputText styleClass="separator" value="#{documentActions.fullUserName}" />
+          </li>
           <li>
             <a4j:commandLink action="#{importActions.invalidateImportContext}" onclick="javascript:Richfaces.showModalPanel('importSetFormPanel');"
               rendered="#{importActions.importFolders.size() > 0}" id="importset_creation_button" reRender="importSetPanel">

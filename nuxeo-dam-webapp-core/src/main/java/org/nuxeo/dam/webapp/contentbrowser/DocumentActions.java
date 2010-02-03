@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.actions.Action;
@@ -50,6 +51,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
@@ -79,6 +81,9 @@ public class DocumentActions implements Serializable {
 
     @In(create = true)
     protected transient WebActions webActions;
+
+    @In(create = true)
+    private transient NuxeoPrincipal currentNuxeoPrincipal;
 
     /**
      * Current selected asset
@@ -332,6 +337,17 @@ public class DocumentActions implements Serializable {
     public static void raiseEvents(DocumentModel document) {
         Events eventManager = Events.instance();
         eventManager.raiseEvent(EventNames.DOCUMENT_SELECTION_CHANGED, document);
+    }
+
+    public String getFullUserName() {
+        String fullName;
+        if (currentNuxeoPrincipal != null) {
+            fullName = Functions.principalFullName(currentNuxeoPrincipal);
+        } else {
+            fullName = Functions.principalFullName((NuxeoPrincipal) documentManager.getPrincipal());
+        }
+
+        return fullName;
     }
 
     public boolean isShowExifArea() {
