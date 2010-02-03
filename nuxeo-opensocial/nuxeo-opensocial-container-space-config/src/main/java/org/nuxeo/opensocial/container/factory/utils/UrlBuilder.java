@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * URlBuilder is builder of gadget url; Util for render of gadget into Shinding
  * opensocial server
- *
+ * 
  */
 public class UrlBuilder {
 
@@ -52,7 +52,6 @@ public class UrlBuilder {
   private static final String COUNTRY_VALUE = "ALL";
 
   private static final String LANG_KEY = "lang";
-  private static final String LANG_VALUE = "ALL";
 
   private static final String VIEW_KEY = "view";
   private static final String VIEW_VALUE = "default";
@@ -73,8 +72,8 @@ public class UrlBuilder {
 
   private static int containerId = 0;
 
-  public static String buildShindigUrl(Gadget gadget, boolean permission)
-      throws ClientException {
+  public static String buildShindigUrl(Gadget gadget, boolean permission,
+      String locale) throws ClientException {
 
     // TODO: get away prefs definition from the url
     // TODO: Better implementation of RPC_Token that relies now on gadget id
@@ -88,7 +87,7 @@ public class UrlBuilder {
     sb.append(ServerBase.getBase() + SERVLET_PATH + "?");
 
     // container=default&nocache=1&country=ALL&lang=ALL&view=default&
-    sb.append(getDefaultParams() + "&");
+    sb.append(getDefaultParams(locale) + "&");
 
     // mid=123456&
     sb.append(GADGET_ID_KEY + "=" + containerId++ + "&");
@@ -123,7 +122,7 @@ public class UrlBuilder {
   /**
    * Get Gadget Definition with GadgetService Gadget Definition is google xml
    * gadget
-   *
+   * 
    * @param name
    * @return
    * @throws Exception
@@ -143,7 +142,7 @@ public class UrlBuilder {
   /**
    * Build a url format parameters with preferences of gadget Util for render
    * gadget into Shinding opensocial server
-   *
+   * 
    * @param prefs
    * @return String &up_key=value&up..
    */
@@ -163,9 +162,9 @@ public class UrlBuilder {
     return prefsParams;
   }
 
-  private static String getDefaultParams() {
+  private static String getDefaultParams(String locale) {
     return CONTAINER_KEY + "=" + CONTAINER_VALUE + "&" + NOCACHE_KEY + "="
         + NOCACHE_VALUE + "&" + COUNTRY_KEY + "=" + COUNTRY_VALUE + "&"
-        + LANG_KEY + "=" + LANG_VALUE + "&" + VIEW_KEY + "=" + VIEW_VALUE;
+        + LANG_KEY + "=" + locale + "&" + VIEW_KEY + "=" + VIEW_VALUE;
   }
 }

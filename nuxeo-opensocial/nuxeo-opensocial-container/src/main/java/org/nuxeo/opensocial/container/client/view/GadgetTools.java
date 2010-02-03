@@ -72,50 +72,49 @@ public class GadgetTools {
 
   private Tool[] getDefaultButtons() {
     final GadgetBean gadget = portlet.getGadgetBean();
-    if (gadget.isPermission()) {
-      Tool gear = new Tool(Tool.GEAR, new Function() {
-        public void execute() {
-          launchGear();
-        }
-      });
-
-      Tool close = new Tool(Tool.CLOSE, new Function() {
-        public void execute() {
-          if (Window.confirm(MSG.askedDeleteGadget((title != null) ? title : ""))) {
-            portlet.hide();
-            ContainerEntryPoint.getService()
-                .removeGadget(gadget, ContainerEntryPoint.getGwtParams(),
-                    new AsyncCallback<GadgetBean>() {
-                      public void onFailure(Throwable arg0) {
-                        ContainerPortal.showErrorMessage(CST.error(),
-                            CST.deleteError());
-                      }
-
-                      public void onSuccess(GadgetBean gadget) {
-                        ContainerEntryPoint.getContainerPortal()
-                            .removeGadgetPortlet(portlet.getId());
-                      }
-                    });
-          }
-        }
-
-      });
-
-      if (gadget.getView(GadgetPortlet.CANVAS_VIEW) != null) {
-        Tool max = new Tool(Tool.MAXIMIZE, new Function() {
-
-          public void execute() {
-            maximize(GadgetPortlet.CANVAS_VIEW);
-          }
-
-        });
-        return new Tool[] { max, gear, close };
+    Tool gear = new Tool(Tool.GEAR, new Function() {
+      public void execute() {
+        launchGear();
       }
-      return new Tool[] { gear, close };
+    });
 
+    Tool close = new Tool(Tool.CLOSE, new Function() {
+      public void execute() {
+        if (Window.confirm(MSG.askedDeleteGadget((title != null) ? title : ""))) {
+          portlet.hide();
+          ContainerEntryPoint.getService()
+              .removeGadget(gadget, ContainerEntryPoint.getGwtParams(),
+                  new AsyncCallback<GadgetBean>() {
+                    public void onFailure(Throwable arg0) {
+                      ContainerPortal.showErrorMessage(CST.error(),
+                          CST.deleteError());
+                    }
+
+                    public void onSuccess(GadgetBean gadget) {
+                      ContainerEntryPoint.getContainerPortal()
+                          .removeGadgetPortlet(portlet.getId());
+                    }
+                  });
+        }
+      }
+
+    });
+
+    Tool max = new Tool(Tool.MAXIMIZE, new Function() {
+
+      public void execute() {
+        maximize(GadgetPortlet.CANVAS_VIEW);
+      }
+
+    });
+
+    if (gadget.getView(GadgetPortlet.CANVAS_VIEW) != null
+        && gadget.isPermission()) {
+      return new Tool[] { max, gear, close };
+    } else if (gadget.getView(GadgetPortlet.CANVAS_VIEW) != null) {
+      return new Tool[] { max };
     }
     return new Tool[] {};
-
   }
 
   public void maximize(String view) {

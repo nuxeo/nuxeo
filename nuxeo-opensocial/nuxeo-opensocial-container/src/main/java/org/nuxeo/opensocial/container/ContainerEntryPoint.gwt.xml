@@ -11,6 +11,8 @@
   <!-- Specify the app entry point class.                         -->
   <entry-point class='org.nuxeo.opensocial.container.client.ContainerEntryPoint' />
 
+  <extend-property name='locale' values='fr' />
+
   <!-- apport ext js -->
   <stylesheet src="js/ext/resources/css/ext-all.css" />
   <script src="js/ext/adapter/ext/ext-base.js" />

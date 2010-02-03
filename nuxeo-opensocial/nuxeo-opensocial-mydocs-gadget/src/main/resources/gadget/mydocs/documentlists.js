@@ -3,6 +3,7 @@ var path=new Array();
 var currentPage=0;
 var maxPage = 0;
 var errors = 0;
+var prefs;
 
 
 function getNuxeoClientSideUrl() {
@@ -121,8 +122,7 @@ function handleJSONResponse(obj) {
 }
 
 function displayNoWorkspaceFound() {
-  var html = "";
-  html = "Aucun espace de travail n'a été trouvé pour cet espace";
+  var html = prefs.getMsg("displayNoWorkspaceFound");
   _gel("nxDocumentListData").innerHTML = html;
   gadgets.window.adjustHeight();
 }
@@ -130,8 +130,8 @@ function displayNoWorkspaceFound() {
 // insert the whole table, as stupid IE can't do a tbody.innerHtml
 function tableStart(jsonObject) {
   var title = "Document";
-  var modified = "Modified";
-  var creator = "Author";
+  var modified = prefs.getMsg("modified");
+  var creator = prefs.getMsg("author");
   var labelInfo = jsonObject.translations;
   if (labelInfo != null && labelInfo != 'undefined') {
     title = labelInfo['label.dublincore.title'];

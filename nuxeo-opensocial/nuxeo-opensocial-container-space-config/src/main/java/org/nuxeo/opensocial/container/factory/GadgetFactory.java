@@ -18,14 +18,14 @@ import org.nuxeo.opensocial.container.factory.utils.UrlBuilder;
  */
 public class GadgetFactory {
 
-  public static GadgetBean getGadgetBean(Gadget gadget, boolean permission)
-      throws ClientException {
+  public static GadgetBean getGadgetBean(Gadget gadget, boolean permission,
+      String locale) throws ClientException {
     GadgetBean bean = new GadgetBean();
     bean.setCollapsed(gadget.isCollapsed());
     bean.setHeight(gadget.getHeight());
     bean.setPosition(new GadgetPosition(gadget.getPlaceId(),
         gadget.getPosition()));
-    bean.setRenderUrl(UrlBuilder.buildShindigUrl(gadget, permission));
+    bean.setRenderUrl(UrlBuilder.buildShindigUrl(gadget, permission, locale));
     bean.setTitle(getTitle(gadget));
     bean.setUserPrefs(PreferenceManager.getPreferences(gadget));
     bean.setDefaultPrefs(PreferenceManager.getDefaultPreferences(gadget));

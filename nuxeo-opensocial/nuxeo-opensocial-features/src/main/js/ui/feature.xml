@@ -18,7 +18,7 @@ specific language governing permissions and limitations under the License.
 -->
 <feature>
   <name>jquery-ui</name>
-    <container>
+  <container>
     <script src="ui.accordion.js"/>
     <script src="ui.core.js"/>
     <script src="ui.datepicker.js"/>

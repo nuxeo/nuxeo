@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-  <ModulePrefs title="My documents" height="95" scrolling="true"
-    scaling="true" directory_title="My Documents"
-    description="File browser in the ECM system" author="Damien METZLER"
+  <ModulePrefs title="__MSG_myDocuments__" height="95" scrolling="true"
+    scaling="true" directory_title="__MSG_myDocuments__"
+    description="__MSG_description__" author="Damien METZLER"
     author_email="damien.metzler@leroymerlin.fr" author_affiliation="Leroy Merlin"
     author_location="Lezennes, France">
 
+    <Locale messages="ALL_ALL.xml"/> 
+    <Locale lang="fr" messages="fr_ALL.xml"/> 
+   
     <Require feature="dynamic-height" />
     <Require feature="settitle" />
     <Require feature="opensocial-0.8" />
@@ -18,9 +21,11 @@
 <![CDATA[
     <script type="text/javascript" language="javascript" src="documentlists.js"></script>
     <script type="text/javascript">
+      var prefs = new _IG_Prefs(__MODULE_ID__);
       gadgets.util.registerOnLoadHandler( function() {
         gadgetId = gadgets.nuxeo.getGadgetId();
         getDocumentLists();
+        jQuery("#uploadBtn").attr("value",prefs.getMsg("add"));
       });
 
     </script>
@@ -39,7 +44,7 @@
          </div>
          <div id="addfile">
          <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="">
-            <input type="file" name="file" id="uploadFile" size="20" /> <input  id="uploadBtn" type="submit" value="Ajouter" />
+            <input type="file" name="file" id="uploadFile" size="20" /> <input  id="uploadBtn" type="submit" value="" />
         </form>
 
          </div>

@@ -28,6 +28,7 @@ import org.nuxeo.opensocial.container.client.view.ContainerPortal;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -74,6 +75,9 @@ public class ContainerEntryPoint implements EntryPoint {
     for (String key : objects.keySet()) {
       GWT_PARAMS.put(key, getGwtParam(objects, key));
     }
+
+    GWT_PARAMS.put("locale", LocaleInfo.getCurrentLocale()
+        .getLocaleName());
 
     windowWidth = getWindowWidth(objects);
 

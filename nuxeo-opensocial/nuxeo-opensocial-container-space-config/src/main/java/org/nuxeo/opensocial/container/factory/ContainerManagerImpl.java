@@ -59,11 +59,17 @@ public class ContainerManagerImpl implements ContainerManager {
       String spaceId = getParamValue(DOC_REF, containerParams, true, null);
       Space space = spaceManager().getSpaceFromId(spaceId,
           getCoreSession(containerParams));
-      return createContainer(space);
+      return createContainer(space, getLocale(containerParams));
     } catch (Exception e) {
       throw new ClientException("Space not found");
     }
 
+  }
+
+  protected static String getLocale(Map<String, String> params) {
+    if (params.containsKey("locale"))
+      return params.get("locale");
+    return "ALL";
   }
 
   /**
@@ -128,7 +134,8 @@ public class ContainerManagerImpl implements ContainerManager {
     Gadget createGadget = space.createGadget(gadgetName);
     space.save();
 
-    return GadgetFactory.getGadgetBean(createGadget, !space.isReadOnly());
+    return GadgetFactory.getGadgetBean(createGadget, !space.isReadOnly(),
+        getLocale(gwtParams));
 
   }
 
@@ -165,16 +172,16 @@ public class ContainerManagerImpl implements ContainerManager {
     }
     space.setLayout(layout);
     space.save();
-    return createContainer(space);
+    return createContainer(space, getLocale(containerParams));
   }
 
-  private Container createContainer(Space space) {
+  private Container createContainer(Space space, String locale) {
     try {
       if (space != null) {
         ArrayList<GadgetBean> gadgets = new ArrayList<GadgetBean>();
         Boolean perm = !space.isReadOnly();
         for (Gadget g : space.getGadgets()) {
-          gadgets.add(GadgetFactory.getGadgetBean(g, perm));
+          gadgets.add(GadgetFactory.getGadgetBean(g, perm, locale));
         }
         Collections.sort(gadgets);
         String layout = space.getLayout();

@@ -343,7 +343,11 @@ public class ContainerPortal extends Portal {
   }
 
   public GadgetPortlet getGadgetPortletByFrameId(String frameId) {
-    return getGadgetPortlet(GadgetPortlet.getIdWithIframeId(frameId));
+    if (maximizedCol.isHidden())
+      return getGadgetPortlet(GadgetPortlet.getIdWithIframeId(frameId));
+    else
+      return maximizedPortlet;
+
   }
 
   public void showPortlets() {
