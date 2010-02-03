@@ -64,9 +64,9 @@ import org.nuxeo.runtime.api.Framework;
 @Name("folderAdminActions")
 @Scope(ScopeType.PAGE)
 @Install(precedence = APPLICATION)
-public class DamFolderAdminActionBean implements Serializable{
+public class DamFolderAdminActions implements Serializable{
 
-    // TODO change this to Workspace after merge 
+    // TODO change this to Workspace after merge
     private static final String FOLDER_TYPE = "Workspace";
 
     private static final String VIEW_FOLDERS = "view_folders";
@@ -122,13 +122,13 @@ public class DamFolderAdminActionBean implements Serializable{
     public void resetFolderList() {
         folders = null;
     }
-    
+
     public void resetNewFolder() {
         newFolder = null;
         resetPermissions();
         displayMode = BuiltinModes.EDIT;
     }
-    
+
     public void resetPermissions() {
         userPermissions.clear();
         groupPermissions.clear();
@@ -200,7 +200,7 @@ public class DamFolderAdminActionBean implements Serializable{
         } catch ( Throwable t ){
             throw ClientException.wrap(t);
         }
-        
+
     }
 
     private void savePermissionMap(Map<String, List<String>> map, ACL acl) {
@@ -213,8 +213,8 @@ public class DamFolderAdminActionBean implements Serializable{
         }
     }
 
-    
-    
+
+
     private void loadPermissionMaps() throws ClientException {
         groupPermissions.clear();
         userPermissions.clear();
@@ -241,8 +241,8 @@ public class DamFolderAdminActionBean implements Serializable{
             throw ClientException.wrap(t);
         }
     }
-    
-    
+
+
     private void loadPermission(Map<String, List<String>> map, String perm, String id) {
         List<String> list = map.get(perm);
         if( list == null) {
