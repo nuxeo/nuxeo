@@ -3,7 +3,7 @@
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
     <repository name="default"
-      factory="org.nuxeo.ecm.core.storage.sql.PoolingRepositoryFactory">
+      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository name="default">
         <schema>
           <field type="largetext">note</field>
@@ -16,17 +16,16 @@
             </index>
           </fulltext>
           <!-- for PostgreSQL (Text Search Configuration):
+               http://www.postgresql.org/docs/8.3/static/textsearch-configuration.html
           <fulltext analyzer="english"/>
+          -->
+          <!-- for Oracle (Oracle Text indexing parameters):
+               http://download.oracle.com/docs/cd/B19306_01/text.102/b14218/cdatadic.htm
+          <fulltext analyzer="LEXER MY_LEXER"/>
           -->
         </indexing>
         <queryMaker class="org.nuxeo.ecm.core.storage.sql.NXQLQueryMaker" />
         <queryMaker class="org.nuxeo.ecm.core.chemistry.impl.CMISQLQueryMaker" />
-
-        <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
-        <!-- Property name mentioned in SQLBackendHelper -->
-        <property name="URL">jdbc:h2:vcsh2repo</property>
-        <property name="User">sa</property>
-        <property name="Password"></property>
       </repository>
     </repository>
   </extension>
