@@ -26,6 +26,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 /**
  * This activator must be used as an activator by bundles that wants to 
@@ -34,7 +36,7 @@ import org.osgi.framework.BundleContext;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class GwtBundleActivator implements BundleActivator {
+public class GwtBundleActivator implements BundleActivator, FrameworkListener {
     
     private static final Log log = LogFactory.getLog(GwtBundleActivator.class); 
     
@@ -42,12 +44,16 @@ public class GwtBundleActivator implements BundleActivator {
     public static final File GWT_ROOT = new File(Environment.getDefault().getWeb(), "root.war/gwt");
     public static final boolean GWT_DEV_MODE = "true".equals(System.getProperty(GWT_DEV_MODE_PROP, "false"));
 
+    
+    protected BundleContext context;
+    
     public void start(BundleContext context) throws Exception {
-        installGwtApp(context.getBundle());
+        this.context = context;
+        context.addFrameworkListener(this);
     }
     
     public void stop(BundleContext context) throws Exception {
-        // do nothing
+        context.removeFrameworkListener(this);
     }
     
     public static void installGwtApp(Bundle bundle) throws Exception {
@@ -70,4 +76,15 @@ public class GwtBundleActivator implements BundleActivator {
             markerFile.createNewFile();
         }
     }
+    
+    public void frameworkEvent(FrameworkEvent event) {
+        if (FrameworkEvent.STARTED == event.getType()) {
+            try {
+                installGwtApp(context.getBundle());
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to install GWT application: "+context.getBundle().getSymbolicName());
+            }
+        }
+    }
+
 }
