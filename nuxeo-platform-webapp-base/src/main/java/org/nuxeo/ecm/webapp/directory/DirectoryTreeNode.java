@@ -59,7 +59,7 @@ public class DirectoryTreeNode {
     protected final int level;
 
     protected boolean open = false;
-    
+
     protected final DirectoryTreeDescriptor config;
 
     protected String identifier;
@@ -96,11 +96,24 @@ public class DirectoryTreeNode {
         String schemaName = config.getSchemaName();
         String value = path;
         if (config.isMultiselect()) {
-            List<Object> values = (List<Object>) queryModel.getProperty(
+            List<String> values = (List<String>) queryModel.getProperty(
                     schemaName, fieldName);
             if (values.contains(value)) {
                 values.remove(value);
             } else {
+                // unselect all previous selection that are either more generic or more specific
+                List<String> valuesToRemove = new ArrayList<String>();
+                String valueSlash = value + "/";
+                for (String existingSelection : values) {
+                    String existingSelectionSlash = existingSelection + "/";
+                    if (existingSelectionSlash.startsWith(valueSlash)
+                            || valueSlash.startsWith(existingSelectionSlash)) {
+                        valuesToRemove.add(existingSelection);
+                    }
+                }
+                values.removeAll(valuesToRemove);
+
+                // add the new selection
                 values.add(value);
             }
             queryModel.setProperty(schemaName, fieldName, values);
