@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>nuxeo-dam-distribution-jetty</artifactId>
-  <packaging>pom</packaging>
+  <packaging>zip</packaging>
   <name>Nuxeo DAM Jetty Distribution</name>
   <description>Defines the skeleton of a jetty Nuxeo DAM application
   </description>
@@ -60,20 +60,11 @@
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
-        <executions>
-          <execution>
-            <id>antbuild</id>
-            <phase>package</phase>
-            <configuration>
-              <buildFiles>
-                <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
-              </buildFiles>
-            </configuration>
-            <goals>
-              <goal>build</goal>
-            </goals>
-          </execution>
-        </executions>
+        <configuration>
+          <buildFiles>
+            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+          </buildFiles>
+        </configuration>
       </plugin>
     </plugins>
   </build>

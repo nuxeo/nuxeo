@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>nuxeo-dam-distribution-jboss</artifactId>
-  <packaging>pom</packaging>
+  <packaging>zip</packaging>
   <name>Nuxeo DAM JBoss Distribution</name>
   <description>Packages Nuxeo DAM EAR with JBoss</description>
 
@@ -51,15 +51,6 @@
             <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
           </buildFiles>
         </configuration>
-        <executions>
-          <execution>
-            <id>packaging</id>
-            <goals>
-              <goal>build</goal>
-            </goals>
-            <phase>package</phase>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
