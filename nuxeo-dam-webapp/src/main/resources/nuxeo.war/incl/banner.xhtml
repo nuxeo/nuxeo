@@ -26,27 +26,27 @@
       <ui:include src="/incl/new_import_set.xhtml" />
     </rich:modalPanel>
 
-    
+
     <a4j:region>
       <a4j:outputPanel id="administrationTable">
-        <a4j:form><ul>      
+        <a4j:form><ul>
           <li>
             <a4j:commandLink action="#{importActions.invalidateImportContext}" onclick="javascript:Richfaces.showModalPanel('importSetFormPanel');" id="importset_creation_button" reRender="importSetPanel">
               <h:outputText class="importButton" value="${messages['label.action.createImportSet']}"/>
             </a4j:commandLink>
-          </li>   
+          </li>
           <li>
-            <a4j:commandLink id="administration_button" action="#{webActions.navigateToAdministration}" 
-              rendered="#{!isInsideAdministration}" reRender="administrationTable">
+            <a4j:commandLink id="administration_button" action="#{webActions.navigateToAdministration}"
+              rendered="#{!isInsideAdministration and currentUser.isAdministrator()}" reRender="administrationTable">
               <h:outputText class="administrationButton" value="${messages['label.action.administration']}"/>
             </a4j:commandLink>
           </li>
           <li>
-            <a4j:commandLink id="asset_management_button" action="#{webActions.navigateToAssetManagement}" 
+            <a4j:commandLink id="asset_management_button" action="#{webActions.navigateToAssetManagement}"
               rendered="#{isInsideAdministration}" reRender="administrationTable">
               <h:outputText class="assetManagementButton" value="${messages['label.action.asset.management']}"/>
             </a4j:commandLink>
-          </li>        
+          </li>
           <li>
             <h:outputText class="separator" value=" | " />
           </li>
