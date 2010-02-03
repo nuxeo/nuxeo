@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
-    <version>5.3.1-SNAPSHOT</version>
+    <version>5.3.1-I20100203_1548</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -65,7 +65,7 @@
   </distributionManagement>
 
   <properties>
-    <core.version>1.6.1-SNAPSHOT</core.version>
+    <core.version>1.6.1-I20100203_1548</core.version>
     <gf3.version>3.0-b38</gf3.version>
     <application.name>${project.artifactId}-${project.version}</application.name>
   </properties>
