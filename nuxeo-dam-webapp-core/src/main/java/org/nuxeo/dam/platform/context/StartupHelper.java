@@ -119,7 +119,7 @@ public class StartupHelper implements Serializable {
         localeSelector.selectLanguage(localeStr);
 
         // TODO : REMOVE
-        return "view_documents";
+        return "assets";
     }
 
     public void setupCurrentUser() {
