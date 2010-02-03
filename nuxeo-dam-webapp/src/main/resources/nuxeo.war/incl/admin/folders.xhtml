@@ -92,7 +92,7 @@
                     action="#{folderAdminActions.setSelectedFolder(folder.id)}"
                     oncomplete="Richfaces.showModalPanel('viewFolderFormPanel')"
                     reRender="viewFolderPanel">
-                    <h:outputText value="#{folder['dublincore'].title}" />
+                    <h:outputText value="#{documentActions.getTitleCropped(folder,50)}" />
                   </a4j:commandLink>
                 </h:column>
                 <h:column>
