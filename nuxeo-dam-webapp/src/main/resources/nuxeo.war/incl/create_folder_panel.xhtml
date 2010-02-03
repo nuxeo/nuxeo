@@ -7,7 +7,7 @@
   <a4j:region>
   <a4j:outputPanel id="createFolderPanel">
   <a4j:form id="createFolder" ajaxSingle="true">
-  
+
     <div id="facesStatusMessage" class="facesStatusMessage">
       <h:messages globalOnly="true"
         infoClass="infoFeedback"
@@ -20,7 +20,7 @@
 
     <p class="buttonsGadget">
       <a4j:commandButton styleClass="button"
-        value="#{messages['command.create']}" action="#{folderAdminActions.createFolder}"
+        value="#{messages['command.folder.create']}" action="#{folderAdminActions.createFolder}"
         data="#{facesContext.maximumSeverity.ordinal ge 2}"
         oncomplete="if (!data) { Richfaces.hideModalPanel('CreateFolderFormPanel') };"
         reRender="folderSearchResult, createFolder" />

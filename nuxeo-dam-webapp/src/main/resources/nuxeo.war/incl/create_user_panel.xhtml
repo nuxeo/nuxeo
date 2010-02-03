@@ -6,7 +6,7 @@
   <a4j:region>
   <a4j:outputPanel id="createUserPanel">
   <a4j:form id="createUser" ajaxSingle="true">
-  
+
     <div id="facesStatusMessage" class="facesStatusMessage">
       <h:messages globalOnly="true"
         infoClass="infoFeedback"
@@ -18,7 +18,7 @@
 
     <p class="buttonsGadget">
       <a4j:commandButton styleClass="button"
-        value="#{messages['command.create.user']}" action="#{userManagerActions.createUser}"
+        value="#{messages['command.user.create']}" action="#{userManagerActions.createUser}"
         data="#{facesContext.maximumSeverity.ordinal ge 2}"
         oncomplete="if (!data) { Richfaces.hideModalPanel('CreateUserFormPanel') };"
         reRender="userSearchResult, createUser" />
