@@ -278,8 +278,8 @@ function createAddItemButton(){
       // this is the way the standards work
       var style2 = document.getElementById(whichLayer).style;
       if (whichLayer == "addItemIcon") {
-        style2.visibility = (style2.visibility == "visible") ? "hidden"
-          : "visible";
+        style2.display = (style2.display == "block") ? "none"
+          : "block";
       } else {
         style2.display = (style2.display == "block") ? "none" : "block";
       }
