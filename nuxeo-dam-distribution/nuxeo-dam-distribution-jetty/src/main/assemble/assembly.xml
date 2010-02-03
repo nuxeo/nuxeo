@@ -110,15 +110,6 @@
     </delete>
     <!-- Add libraries required under jetty (not present in the dependency tree) -->
     <copy todir="${lib.dir}" overwrite="true">
-      <!-- Synchro Added packages -->
-      <artifact:resolveFile key="javax.activation:activation" />
-      <artifact:resolveFile key="apache-httpclient:commons-httpclient" />
-      <artifact:resolveFile key="commons-codec:commons-codec" />
-      <artifact:resolveFile key="metro.webservices:webservices-api" />
-      <artifact:resolveFile key="metro.webservices:webservices-rt" />
-      <artifact:resolveFile key="metro.webservices:webservices-tools" />
-      <!-- End Synchro Added packages -->
-
       <artifact:resolveFile key="javax.servlet:servlet-api" />
       <artifact:resolveFile key="org.mortbay.jetty:jetty" />
       <artifact:resolveFile key="org.mortbay.jetty:jetty-plus" />
