@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>1.6.1-SNAPSHOT</version>
+    <version>1.6.1-I20100203_1548</version>
   </parent>
 
   <artifactId>nuxeo-core-api</artifactId>
