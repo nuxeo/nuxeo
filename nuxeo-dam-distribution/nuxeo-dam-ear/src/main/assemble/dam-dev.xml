@@ -37,6 +37,7 @@
       <artifact name="nuxeo-platform-imaging*" />
       <artifact name="nuxeo-platform-video*" />
       <artifact name="nuxeo-platform-audio*" />
+      <artifact name="nuxeo-chemistry*" />
       <artifact name="nuxeo-webengine*"/>
     </includes>
     <excludes>
@@ -163,6 +164,23 @@
       <artifact group="org.jempbox" name="jempbox" />
       <artifact group="com.google.gwt" name="gwt-servlet" />
       <artifact group="de.schlichtherle.io" name="truezip" />
+
+      <!-- CMIS libs -->
+      <artifact group="org.apache.chemistry" name="chemistry-api" />
+      <artifact group="org.apache.chemistry" name="chemistry-atompub" />
+      <artifact group="org.apache.chemistry" name="chemistry-atompub-server" />
+      <artifact group="org.apache.chemistry" name="chemistry-commons" />
+      <artifact group="org.apache.chemistry" name="chemistry-ws" />
+
+      <artifact group="org.apache.abdera" name="abdera-core" />
+      <artifact group="org.apache.abdera" name="abdera-i18n" />
+      <artifact group="org.apache.abdera" name="abdera-parser" />
+      <artifact group="org.apache.abdera" name="abdera-server" />
+
+      <artifact group="org.apache.ws.commons.axiom" name="axiom-api" />
+      <artifact group="org.apache.ws.commons.axiom" name="axiom-impl" />
+      <artifact group="org.antlr" name="antlr-runtime" />
+
     </artifacts>
   </artifactSet>
 

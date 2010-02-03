@@ -110,6 +110,14 @@
     </delete>
     <!-- Add libraries required under jetty (not present in the dependency tree) -->
     <copy todir="${lib.dir}" overwrite="true">
+      <!-- Needed by CMIS -->
+      <artifact:resolveFile key="javax.activation:activation" />
+      <artifact:resolveFile key="apache-httpclient:commons-httpclient" />
+      <artifact:resolveFile key="commons-codec:commons-codec" />
+      <artifact:resolveFile key="metro.webservices:webservices-api" />
+      <artifact:resolveFile key="metro.webservices:webservices-rt" />
+      <artifact:resolveFile key="metro.webservices:webservices-tools" />
+
       <artifact:resolveFile key="javax.servlet:servlet-api" />
       <artifact:resolveFile key="org.mortbay.jetty:jetty" />
       <artifact:resolveFile key="org.mortbay.jetty:jetty-plus" />
@@ -196,6 +204,24 @@
 
       <!-- Nuxeo DAM libs -->
       <artifact:resolveFile key="de.schlichtherle.io:truezip" />
+
+      <!-- CMIS libs -->
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-api" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-atompub" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-atompub-server" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-commons" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-ws" />
+
+      <artifact:resolveFile key="org.apache.abdera:abdera-core" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-i18n" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-parser" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-server" />
+
+      <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-api" />
+      <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-impl" />
+      <artifact:resolveFile key="org.antlr:antlr-runtime" />
+
+      <artifact:resolveFile key="jaxen:jaxen" />
     </copy>
   </target>
 
