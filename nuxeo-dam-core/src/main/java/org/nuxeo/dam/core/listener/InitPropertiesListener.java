@@ -17,7 +17,9 @@
 
 package org.nuxeo.dam.core.listener;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.dam.api.Constants;
@@ -31,11 +33,8 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 public class InitPropertiesListener implements EventListener {
 
-    protected static final String DUBLINCORE_DESCRIPTION = "dc:description";
-
-    protected static final String DUBLINCORE_COVERAGE = "dc:coverage";
-
-    protected static final String DUBLINCORE_EXPIRED = "dc:expired";
+    protected static final List<String> DUBLINCORE_PROPERTIES = Arrays.asList(
+            "dc:description", "dc:coverage", "dc:subjects", "dc:expired");
 
     public void handleEvent(Event event) throws ClientException {
         EventContext ctx = event.getContext();
@@ -63,11 +62,7 @@ public class InitPropertiesListener implements EventListener {
                 for (Map.Entry<String, Object> entry : dublincoreMap.entrySet()) {
                     String key = entry.getKey();
                     Object value = entry.getValue();
-                    if (DUBLINCORE_DESCRIPTION.equals(key)) {
-                        importSetMap.put(key, value);
-                    } else if (DUBLINCORE_COVERAGE.equals(key)) {
-                        importSetMap.put(key, value);
-                    } else if (DUBLINCORE_EXPIRED.equals(key)) {
+                    if (DUBLINCORE_PROPERTIES.contains(key)) {
                         importSetMap.put(key, value);
                     }
                 }

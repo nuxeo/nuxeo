@@ -7,6 +7,5 @@
 
   <xs:element name="author" type="xs:string"/>
   <xs:element name="authoringDate" type="xs:date"/>
-  <xs:element name="topic" type="xs:string"/>
 
 </xs:schema>
