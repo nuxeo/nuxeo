@@ -71,21 +71,13 @@ public class NuxeoObjectEntry implements ObjectEntry, DocumentModelHolder {
     }
 
     public Serializable getValue(String id) {
-        try {
-            // TODO avoid constructing property object
-            return NuxeoProperty.construct(id, type, this).getValue();
-        } catch (ClientException e) {
-            throw new RuntimeException(e.toString(), e); // TODO
-        }
+        // TODO avoid constructing property object
+        return NuxeoProperty.construct(id, type, this).getValue();
     }
 
     public void setValue(String id, Serializable value) {
-        try {
-            // TODO avoid constructing property object
-            NuxeoProperty.construct(id, type, this).setValue(value);
-        } catch (ClientException e) {
-            throw new RuntimeException(e.toString(), e); // TODO
-        }
+        // TODO avoid constructing property object
+        NuxeoProperty.construct(id, type, this).setValue(value);
     }
 
     public Map<String, Serializable> getValues() {

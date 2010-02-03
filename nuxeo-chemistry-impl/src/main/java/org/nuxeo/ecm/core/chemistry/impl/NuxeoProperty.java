@@ -100,7 +100,7 @@ public class NuxeoProperty extends NuxeoPropertyBase {
      * Factory for a new Property.
      */
     protected static Property construct(String name, Type type,
-            DocumentModelHolder docHolder) throws ClientException {
+            DocumentModelHolder docHolder) {
         PropertyDefinition pd = type.getPropertyDefinition(name);
         if (pd == null) {
             throw new IllegalArgumentException(name);
@@ -229,7 +229,7 @@ public class NuxeoProperty extends NuxeoPropertyBase {
 
         protected final Serializable value;
 
-        public FixedProperty(PropertyDefinition propertyDefinition,
+        protected FixedProperty(PropertyDefinition propertyDefinition,
                 Serializable value) {
             this.propertyDefinition = propertyDefinition;
             this.value = value;
@@ -260,7 +260,7 @@ public class NuxeoProperty extends NuxeoPropertyBase {
      */
     protected static class PathProperty extends NuxeoPropertyBase {
 
-        public PathProperty(PropertyDefinition propertyDefinition,
+        protected PathProperty(PropertyDefinition propertyDefinition,
                 DocumentModelHolder docHolder) {
             super(propertyDefinition, docHolder);
         }
@@ -276,7 +276,7 @@ public class NuxeoProperty extends NuxeoPropertyBase {
      */
     protected static class ParentIdProperty extends NuxeoPropertyBase {
 
-        public ParentIdProperty(PropertyDefinition propertyDefinition,
+        protected ParentIdProperty(PropertyDefinition propertyDefinition,
                 DocumentModelHolder docHolder) {
             super(propertyDefinition, docHolder);
         }
@@ -305,7 +305,7 @@ public class NuxeoProperty extends NuxeoPropertyBase {
      */
     protected static class LastModifiedByProperty extends NuxeoPropertyBase {
 
-        public LastModifiedByProperty(PropertyDefinition propertyDefinition,
+        protected LastModifiedByProperty(PropertyDefinition propertyDefinition,
                 DocumentModelHolder docHolder) {
             super(propertyDefinition, docHolder);
         }
@@ -331,7 +331,7 @@ public class NuxeoProperty extends NuxeoPropertyBase {
     protected static class ContentStreamFileNameProperty extends
             NuxeoPropertyBase {
 
-        public ContentStreamFileNameProperty(
+        protected ContentStreamFileNameProperty(
                 PropertyDefinition propertyDefinition,
                 DocumentModelHolder docHolder) {
             super(propertyDefinition, docHolder);
@@ -367,7 +367,7 @@ public class NuxeoProperty extends NuxeoPropertyBase {
     protected static class ContentStreamLengthProperty extends
             NuxeoPropertyBase {
 
-        public ContentStreamLengthProperty(
+        protected ContentStreamLengthProperty(
                 PropertyDefinition propertyDefinition,
                 DocumentModelHolder docHolder) {
             super(propertyDefinition, docHolder);
@@ -385,7 +385,7 @@ public class NuxeoProperty extends NuxeoPropertyBase {
     protected static class ContentStreamMimeTypeProperty extends
             NuxeoPropertyBase {
 
-        public ContentStreamMimeTypeProperty(
+        protected ContentStreamMimeTypeProperty(
                 PropertyDefinition propertyDefinition,
                 DocumentModelHolder docHolder) {
             super(propertyDefinition, docHolder);
@@ -403,7 +403,7 @@ public class NuxeoProperty extends NuxeoPropertyBase {
      */
     protected static class NameProperty extends NuxeoPropertyBase {
 
-        public NameProperty(PropertyDefinition propertyDefinition,
+        protected NameProperty(PropertyDefinition propertyDefinition,
                 DocumentModelHolder docHolder) {
             super(propertyDefinition, docHolder);
         }

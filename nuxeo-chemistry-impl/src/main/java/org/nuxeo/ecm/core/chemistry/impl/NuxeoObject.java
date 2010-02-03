@@ -154,11 +154,7 @@ public class NuxeoObject extends BaseObject implements CMISObject,
     }
 
     public Property getProperty(String name) {
-        try {
-            return NuxeoProperty.construct(name, getType(), this);
-        } catch (ClientException e) {
-            throw new RuntimeException(e.toString(), e); // TODO
-        }
+        return NuxeoProperty.construct(name, getType(), this);
     }
 
     public ContentStream getContentStream(String contentStreamId) {
