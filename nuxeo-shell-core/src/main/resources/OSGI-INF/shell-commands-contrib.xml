@@ -238,6 +238,36 @@
       </params>
       <help>TODO</help>
     </command>
+    
+    <command name="addlocalace" class="org.nuxeo.ecm.shell.commands.repository.AddLocalAceCommand">
+      <description>
+        For the current document, add a local ACE.
+      </description>
+      <help>
+        For the current document, add a local ACE. Takes 3
+        parameters: the username, the permission and a boolean
+        (grant if true, deny if false)
+      </help>
+    </command>
+    
+    <command name="viewlocalacl" class="org.nuxeo.ecm.shell.commands.repository.ViewLocalAclCommand">
+      <description>
+        For the current document, view the local acl.
+      </description>
+      <help>
+        For the current document, view the local acl.
+      </help>
+    </command>
+    
+    <command name="rmlocalace" class="org.nuxeo.ecm.shell.commands.repository.RmLocalAceCommand">
+      <description>
+        For the current document, remove a local ACE.
+      </description>
+      <help>
+        For the current document, add a local ACE. Takes 1
+        parameter: the index of the ace to remove.
+      </help>
+    </command>
 
     <command name="import" class="org.nuxeo.ecm.shell.commands.io.ImportCommand"
       alt="imp">
