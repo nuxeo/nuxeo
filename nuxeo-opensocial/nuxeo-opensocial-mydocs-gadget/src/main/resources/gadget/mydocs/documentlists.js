@@ -220,7 +220,7 @@ function mkRow(document, i) {
   htmlRow += "\"/>";
   htmlRow += "</td>";
   if (document.folderish == 1) {
-    htmlRow += "<td><a title=\"" + document.title
+    htmlRow += "<td><a href=\"#\" title=\"" + document.title
         + "\" onclick=\"followPath('" + document.name
         + "');return false;\" />";
     htmlRow += document.title + "</a></td>";
