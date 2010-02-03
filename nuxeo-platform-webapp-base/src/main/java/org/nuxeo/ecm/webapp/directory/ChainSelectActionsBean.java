@@ -28,9 +28,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
-import javax.ejb.Remove;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -40,41 +37,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.platform.ui.web.directory.ChainSelect;
 import org.nuxeo.ecm.platform.ui.web.directory.ChainSelectStatus;
 import org.nuxeo.ecm.platform.ui.web.directory.Selection;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
-import org.nuxeo.ecm.webapp.base.InputController;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
 @Name("chainSelectActions")
 @Scope(SESSION)
-public class ChainSelectActionsBean extends InputController implements
-        ChainSelectActions, Serializable {
+public class ChainSelectActionsBean implements ChainSelectActions, Serializable {
 
     private static final long serialVersionUID = 27502317512904295L;
+
     private static final Log log = LogFactory.getLog(ChainSelectActionsBean.class);
-
-    @RequestParameter("selectionValue")
-    private String selectionValue;
-
-    @PrePassivate
-    public void saveState() {
-        log.info("PrePassivate");
-    }
-
-    @PostActivate
-    public void readState() {
-        log.info("PostActivate");
-    }
-
-    @Remove
-    public void destroy() {
-        log.debug("Removing SEAM action listener...");
-    }
 
     private ChainSelect getChainSelect(ActionEvent event) {
         UIComponent component = event.getComponent();
@@ -96,7 +73,8 @@ public class ChainSelectActionsBean extends InputController implements
 
         LinkedHashMap<String, Selection> map = new LinkedHashMap<String, Selection>();
         for (Selection selection : chainSelect.getComponentValue()) {
-            map.put(selection.getValue(chainSelect.getKeySeparator()), selection);
+            map.put(selection.getValue(chainSelect.getKeySeparator()),
+                    selection);
         }
         for (Selection selection : chainSelect.getSelections()) {
             int selectionSize = selection.getSize();
@@ -108,7 +86,8 @@ public class ChainSelectActionsBean extends InputController implements
                 chainSelect.setValid(false);
                 return;
             }
-            if (!allowBranchSelection && selectionSize > 0 && selectionSize != size) {
+            if (!allowBranchSelection && selectionSize > 0
+                    && selectionSize != size) {
                 String messageStr = ComponentUtils.translate(context,
                         "label.chainSelect.incomplete_selection");
                 FacesMessage message = new FacesMessage(messageStr);
@@ -117,7 +96,8 @@ public class ChainSelectActionsBean extends InputController implements
                 return;
             }
 
-            map.put(selection.getValue(chainSelect.getKeySeparator()), selection);
+            map.put(selection.getValue(chainSelect.getKeySeparator()),
+                    selection);
         }
 
         Selection[] componentValue = map.values().toArray(new Selection[0]);
@@ -144,7 +124,8 @@ public class ChainSelectActionsBean extends InputController implements
         List<Selection> componentValueList = new ArrayList<Selection>();
         componentValueList.addAll(Arrays.asList(chainSelect.getComponentValue()));
 
-        String value = context.getExternalContext().getRequestParameterMap().get(ChainSelectStatus.REMOVE_ID);
+        String value = context.getExternalContext().getRequestParameterMap().get(
+                ChainSelectStatus.REMOVE_ID);
 
         for (Iterator<Selection> i = componentValueList.iterator(); i.hasNext();) {
             Selection selection = i.next();

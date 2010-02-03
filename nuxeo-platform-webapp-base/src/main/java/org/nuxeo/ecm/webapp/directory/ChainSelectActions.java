@@ -21,16 +21,12 @@ package org.nuxeo.ecm.webapp.directory;
 
 import javax.faces.event.ActionEvent;
 
-import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
-
 /**
- * An EJB that handles the add/remove actions on chain selects.
+ * An Seam component that handles the add/remove actions on chain selects.
  *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
-public interface ChainSelectActions extends StatefulBaseLifeCycle {
-
-    void destroy();
+public interface ChainSelectActions {
 
     void add(ActionEvent event);
 
