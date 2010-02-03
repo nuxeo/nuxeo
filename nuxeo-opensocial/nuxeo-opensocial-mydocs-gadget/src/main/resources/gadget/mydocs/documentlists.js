@@ -171,6 +171,11 @@ function displayDocumentList(jsonObject) {
   }
   htmlContent += tableEnd();
   _gel("nxDocumentListData").innerHTML = htmlContent;
+  jQuery(".deleteaction").click(function() {
+    deleteDoc(jQuery(this));
+    return false;
+    });
+
 
 
   // page info
@@ -244,7 +249,7 @@ function mkRow(document, i) {
   htmlRow += "</td>";
 
   htmlRow += "<td class=\"iconColumn\">";
-  //htmlRow += "<a class=\"deleteaction\" href=\"" + getResourceUrl() + document.name +"\" onclick=\"return delete(this)\"><img src=\"/nuxeo/icons/action_delete_mini.gif\"></a>&nbsp;";
+  htmlRow += "<a class=\"deleteaction\" href=\"" + getResourceUrl() + document.name +"\" onclick=\"delete(this);\"><img src=\"/nuxeo/icons/action_delete_mini.gif\"></a>&nbsp;";
   htmlRow += "<a target=\"_tab\" href=\"/nuxeo/"
       + document.url
       + "\"><img src=\"/nuxeo/img/external.gif\" alt=\"Download\"></a>";
@@ -252,6 +257,7 @@ function mkRow(document, i) {
   htmlRow += "</tr>";
   return htmlRow;
 }
+
 
 function refresh() {
   getDocumentLists();
@@ -270,9 +276,9 @@ function readCookie(name) {
   return null;
 }
 
-function delete(obj) {
+function deleteDoc(obj) {
   if(confirm("Voulez vous réellement supprimer le document ?")) {
-    url = this.attr('href');
+    url = obj.attr('href');
     makeRequest(url, function() { refresh();}, gadgets.io.MethodType.DELETE);
   }
   return false;
