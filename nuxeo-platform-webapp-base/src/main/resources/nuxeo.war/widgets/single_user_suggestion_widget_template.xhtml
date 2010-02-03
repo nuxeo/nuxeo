@@ -42,7 +42,7 @@
       <h:panelGroup id="#{widget.id}_suggestionGroup">
         <span id="#{widget.id}_suggestDiv">
           <h:inputText id="#{widget.id}_suggest"
-            onkeydown="if (event.keyCode == 13) {return false;}" />
+            onkeydown="if (event.keyCode == 13 || event.keyCode == 9) {return false;}" />
         </span>
         <a4j:status>
           <f:facet name="start">
@@ -52,7 +52,7 @@
         <rich:suggestionbox id="#{widget.id}_suggestionBox"
           for="#{widget.id}_suggest" tokens=""
           suggestionAction="#{userSuggestionActions.getSuggestions}"
-          var="result" fetchValue=""
+          var="result" fetchValue="#{result.id}"
           nothingLabel="#{messages['label.suggestion.noSearchResultsOrSearchOverflow']}"
           minChars="#{minChars}" frequency="#{frequency}"
           requestDelay="#{requestDelay}">
@@ -60,12 +60,14 @@
           <f:param name="userSuggestionMaxSearchResults"
             value="#{maxSearchResults}" />
           <a4j:support event="onselect"
+            actionListener="#{suggestionActions.addSingleSelection}"
+            onsubmit="if (event.keyCode == 9) {blankSuggestionInput($('#{widget.id}_suggestDiv'));return false;}"
+            oncomplete="javascript:blankSuggestionInput($('#{widget.id}_suggestDiv'));"
             focus="#{widget.id}_suggest" bypassUpdates="true"
             reRender="#{widget.id}_selectionGroup"
             id="#{widget.id}_listRegion_select">
-            <f:setPropertyActionListener value="#{result.id}"
-                  target="#{suggestionActions.selectedValue}" />
-            <nxu:actionListenerMethod value="#{suggestionActions.addSingleBoundSelection}" />
+            <f:param name="suggestionInputSelectorId"
+              value="#{widget.id}_suggest" />
             <f:param name="suggestionSelectionOutputId"
               value="#{widget.id}_selectionOutput" />
             <f:param name="suggestionSelectionHiddenId"
@@ -104,6 +106,7 @@
           reRender="#{widget.id}_selectionGroup"
           rendered="#{!empty field_0}">
           <h:graphicImage value="/icons/action_delete.gif" />
+          <f:param name="suggestionInputSelectorId" value="#{widget.id}_suggest" />
           <f:param name="suggestionSelectionOutputId"
             value="#{widget.id}_selectionOutput" />
           <f:param name="suggestionSelectionHiddenId"
