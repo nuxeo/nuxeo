@@ -16,9 +16,8 @@
  */
 package org.nuxeo.dam.platform.action;
 
-import static org.jboss.seam.ScopeType.PAGE;
-import static org.jboss.seam.annotations.Install.APPLICATION;
-import static org.nuxeo.dam.platform.context.ImportActionsBean.IMPORTSET_ROOT_PATH;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.dam.platform.context.ImportActions.IMPORTSET_ROOT_PATH;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -33,8 +32,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.datamodel.DataModel;
-import org.jboss.seam.annotations.datamodel.DataModelSelection;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -47,11 +44,8 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
-import org.nuxeo.ecm.core.event.script.FakeCompiledScript;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
-import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
-import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 import org.nuxeo.runtime.api.Framework;
@@ -60,28 +54,24 @@ import org.nuxeo.runtime.api.Framework;
  * @author eugen
  *
  */
-
 @Name("folderAdminActions")
 @Scope(ScopeType.PAGE)
-@Install(precedence = APPLICATION)
+@Install(precedence = FRAMEWORK)
 public class DamFolderAdminActions implements Serializable{
 
-    // TODO change this to Workspace after merge
-    private static final String FOLDER_TYPE = "Workspace";
+    protected static final String FOLDER_TYPE = "Workspace";
 
-    private static final String VIEW_FOLDERS = "view_folders";
+    protected static final String VIEW_FOLDERS = "view_folders";
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public static final DocumentModelList NO_FOLDERS = new DocumentModelListImpl();
 
     @In(create = true)
     protected transient UserManager userManager;
 
-    @DataModel(value="folderList")
     protected DocumentModelList folders;
 
-    @DataModelSelection("folderList")
     protected DocumentModel selectedFolder;
 
     protected DocumentModel newFolder;
@@ -94,12 +84,11 @@ public class DamFolderAdminActions implements Serializable{
 
     protected String displayMode = BuiltinModes.VIEW;
 
-    Map<String, List<String>> userPermissions = new HashMap<String, List<String>>();
+    protected Map<String, List<String>> userPermissions = new HashMap<String, List<String>>();
 
-    Map<String, List<String>> groupPermissions = new HashMap<String, List<String>>();
+    protected Map<String, List<String>> groupPermissions = new HashMap<String, List<String>>();
 
-    @DataModel(value="visiblePermissions")
-    List<String> visiblePermissions;
+    protected List<String> visiblePermissions;
 
     @Factory(value = "folderList")
     public DocumentModelList getFolders() throws ClientException {
@@ -184,7 +173,7 @@ public class DamFolderAdminActions implements Serializable{
         displayMode = BuiltinModes.VIEW;
     }
 
-    private void savePermissionMaps(DocumentModel doc) throws ClientException {
+    protected void savePermissionMaps(DocumentModel doc) throws ClientException {
         try {
             ACP acp = doc.getACP();
             ACL acl = acp.getACL(ACL.LOCAL_ACL);
@@ -203,7 +192,7 @@ public class DamFolderAdminActions implements Serializable{
 
     }
 
-    private void savePermissionMap(Map<String, List<String>> map, ACL acl) {
+    protected void savePermissionMap(Map<String, List<String>> map, ACL acl) {
         for ( Entry<String, List<String>> entry : map.entrySet()){
             String perm = entry.getKey();
             List<String> list = entry.getValue();
@@ -213,9 +202,7 @@ public class DamFolderAdminActions implements Serializable{
         }
     }
 
-
-
-    private void loadPermissionMaps() throws ClientException {
+    protected void loadPermissionMaps() throws ClientException {
         groupPermissions.clear();
         userPermissions.clear();
         try {
@@ -243,7 +230,7 @@ public class DamFolderAdminActions implements Serializable{
     }
 
 
-    private void loadPermission(Map<String, List<String>> map, String perm, String id) {
+    protected void loadPermission(Map<String, List<String>> map, String perm, String id) {
         List<String> list = map.get(perm);
         if( list == null) {
             list = new ArrayList<String>();

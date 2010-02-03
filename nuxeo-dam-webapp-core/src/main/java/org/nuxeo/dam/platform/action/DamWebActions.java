@@ -50,28 +50,28 @@ import org.nuxeo.runtime.api.Framework;
 @Name("webActions")
 @Scope(CONVERSATION)
 @Install(precedence = Install.APPLICATION)
-public class DamWebActionsBean extends WebActionsBean {
+public class DamWebActions extends WebActionsBean {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(DamWebActionsBean.class);
+    private static final Log log = LogFactory.getLog(DamWebActions.class);
 
     @In(create = true)
-    private transient NuxeoPrincipal currentNuxeoPrincipal;
+    protected transient NuxeoPrincipal currentNuxeoPrincipal;
 
     @In(create = true, required = false)
-    private transient CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true, required = false)
-    private transient UserManagerActions userManagerActions;
+    protected transient UserManagerActions userManagerActions;
 
     protected ActionManager actionService;
 
-    private boolean showList = false;
+    protected boolean showList = false;
 
-    private boolean showThumbnail = true;
+    protected boolean showThumbnail = true;
 
-    private boolean showAdministration = false;
+    protected boolean showAdministration = false;
 
     protected List<Action> adminActionsList;
 

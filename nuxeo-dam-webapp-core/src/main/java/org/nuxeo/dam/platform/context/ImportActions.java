@@ -60,11 +60,11 @@ import org.richfaces.model.UploadItem;
 @Name("importActions")
 @Scope(ScopeType.CONVERSATION)
 @Install(precedence = FRAMEWORK)
-public class ImportActionsBean implements Serializable {
+public class ImportActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected static final Log log = LogFactory.getLog(ImportActionsBean.class);
+    protected static final Log log = LogFactory.getLog(ImportActions.class);
 
     public static final String BATCH_TYPE_NAME = "ImportSet";
 
@@ -196,7 +196,7 @@ public class ImportActionsBean implements Serializable {
     }
 
     protected void sendImportSetCreationEvent() {
-        Events.instance().raiseEvent(ImportActionsBean.IMPORTSET_CREATED);
+        Events.instance().raiseEvent(ImportActions.IMPORTSET_CREATED);
 
         logDocumentWithTitle("document_saved", "Created the document: ",
                 newImportSet);

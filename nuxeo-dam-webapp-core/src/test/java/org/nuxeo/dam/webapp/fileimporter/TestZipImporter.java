@@ -20,7 +20,7 @@ package org.nuxeo.dam.webapp.fileimporter;
 import java.io.File;
 
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.dam.platform.context.ImportActionsBean;
+import org.nuxeo.dam.platform.context.ImportActions;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -138,7 +138,7 @@ public class TestZipImporter extends SQLRepositoryJUnit4 {
     @Test
     public void testImportSetCreation() throws Exception {
 
-        ImportActionsBean importActions = new ImportActionsMock(session,
+        ImportActions importActions = new ImportActionsMock(session,
                 service);
 
         DocumentModel importSet = importActions.getNewImportSet();

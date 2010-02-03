@@ -17,12 +17,12 @@
 
 package org.nuxeo.dam.webapp.fileimporter;
 
-import org.nuxeo.dam.platform.context.ImportActionsBean;
+import org.nuxeo.dam.platform.context.ImportActions;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 
-public class ImportActionsMock extends ImportActionsBean {
+public class ImportActionsMock extends ImportActions {
 
     private static final long serialVersionUID = 1L;
 
