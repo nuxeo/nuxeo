@@ -59,7 +59,7 @@
               immediate="true"
               reRender="createFolderFormPanel"
               oncomplete="Richfaces.showModalPanel('createFolderFormPanel')"
-              id="folder_creation_button" 
+              id="folder_creation_button"
               rendered="#{notReadOnly}">
               <h:outputText value="#{messages['command.createFolder']}" />
             </a4j:commandLink>
@@ -68,10 +68,10 @@
         </td>
           <td valign="top">
           <a4j:outputPanel id="folderSearchResult">
-            
+
             <c:set var="userSchema" value="#{userManager.userSchemaName}" />
 
-            <a4j:form rendered="#{folderList.rowCount > 0}">
+            <a4j:form rendered="#{folderList.size() > 0}">
               <h:dataTable var="folder" value="#{folderList}"
                 rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
                 <h:column>
@@ -116,7 +116,7 @@
                   </f:facet>
                   <h:outputText value="#{folder['dublincore'].created}" />
                 </h:column>
-               
+
               </h:dataTable>
             </a4j:form>
           </a4j:outputPanel>

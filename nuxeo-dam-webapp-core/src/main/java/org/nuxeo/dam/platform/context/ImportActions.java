@@ -18,7 +18,6 @@
 package org.nuxeo.dam.platform.context;
 
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
-import static org.nuxeo.dam.webapp.filter.FilterActions.PATH_FIELD_XPATH;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -48,7 +47,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -84,8 +85,6 @@ public class ImportActions implements Serializable {
     protected FacesMessages facesMessages;
 
     @In(create = true, required = false)
-    // won't inject this because of seam problem after activation
-    // ::protected Map<String, String> messages;
     protected ResourcesAccessor resourcesAccessor;
 
     @In(create = true)
@@ -168,7 +167,7 @@ public class ImportActions implements Serializable {
         } catch (Exception e) {
             log.error(e, e);
         } finally {
-            // delete the temporary file that was made by the richface
+            // delete the temporary file that was made by the richfaces
             if (blob != null) {
                 ((FileBlob) blob).getFile().delete();
             }
@@ -187,7 +186,7 @@ public class ImportActions implements Serializable {
                 String folderPath = (String) userFolderSelectItems.get(0).getValue();
                 DocumentModel filterDocument = filterActions.getFilterDocument();
                 if (filterDocument != null) {
-                    filterDocument.setPropertyValue(PATH_FIELD_XPATH, folderPath);
+                    filterDocument.setPropertyValue(FilterActions.PATH_FIELD_XPATH, folderPath);
                 }
             }
         }
@@ -239,11 +238,15 @@ public class ImportActions implements Serializable {
 
     public List<SelectItem> getImportFolders() throws ClientException {
         List<SelectItem> items = new ArrayList<SelectItem>();
-        items.add(new SelectItem(null, resourcesAccessor.getMessages().get("label.widget.newFolder")));
+        if (documentManager.hasPermission(new PathRef(IMPORTSET_ROOT_PATH), SecurityConstants.ADD_CHILDREN)) {
+            items.add(new SelectItem(null, resourcesAccessor.getMessages().get("label.widget.newFolder")));
+        }
         DocumentModelList docs = queryModelActions.get("IMPORT_FOLDERS").getDocuments(
                 documentManager);
         for (DocumentModel doc : docs) {
-            items.add(new SelectItem(doc.getId(), doc.getTitle()));
+            if (documentManager.hasPermission(doc.getRef(), SecurityConstants.ADD_CHILDREN)) {
+                items.add(new SelectItem(doc.getId(), doc.getTitle()));
+            }
         }
         return items;
     }
