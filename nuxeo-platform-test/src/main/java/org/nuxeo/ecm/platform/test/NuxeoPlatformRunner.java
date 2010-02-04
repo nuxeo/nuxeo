@@ -16,24 +16,36 @@
  */
 package org.nuxeo.ecm.platform.test;
 
+import javax.sql.DataSource;
+
+import org.hsqldb.jdbc.jdbcDataSource;
 import org.junit.runners.model.InitializationError;
 import org.nuxeo.ecm.core.test.NuxeoCoreRunner;
-import org.nuxeo.ecm.core.test.guice.CoreModule;
-import org.nuxeo.runtime.test.runner.RuntimeModule;
-
-import com.google.inject.Module;
 
 public class NuxeoPlatformRunner extends NuxeoCoreRunner {
 
-    public NuxeoPlatformRunner(Class<?> classToRun) throws InitializationError {
-        // FIXME: There's surely a better way to inherit from parent modules...
-        this(classToRun, new RuntimeModule(), new CoreModule(),
-                new PlatformModule());
-    }
-
-    public NuxeoPlatformRunner(Class<?> classToRun, Module... modules)
+    public NuxeoPlatformRunner(Class<?> classToRun)
             throws InitializationError {
-        super(classToRun, modules);
+        super(classToRun);
     }
 
+    @Override
+    protected void deploy() throws Exception {        
+        scanDeployments(PlatformDeployment.class);
+    }
+    
+    @Override
+    protected void initialize() throws Exception {
+        super.initialize();
+        bindDatasource("nxsqldirectory", createDataSource("jdbc:hsqldb:mem:directories"));
+    }
+    
+    public static DataSource createDataSource(String dbName) {
+        jdbcDataSource datasource = new jdbcDataSource();
+        datasource.setDatabase(dbName);
+        datasource.setUser("sa");
+        datasource.setPassword("");
+        return datasource;
+    }
+        
 }
