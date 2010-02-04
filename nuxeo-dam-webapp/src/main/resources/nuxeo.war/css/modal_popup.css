@@ -1,4 +1,8 @@
-// Can 't be in theme because javascript creation
+// Cant be in theme because javascript creation
+
+.rich-mp-content-table {
+ min-width:450px;
+}
 
 .ImportSetFormPanel {
  width:540px;
@@ -6,6 +10,26 @@
 
 .CreateUserFormPanel {
  width:540px;
+}
+
+.rich-mp-content-table .dataOutput {
+  border-collapse: collapse;
+}
+
+.rich-mp-content-table .dataOutput:first-child th {
+  background:#E8E8E9 url(/nuxeo/img/table_header.png) repeat-x left top;
+  padding: 2px;
+  border: 1px solid #999;
+}
+
+.rich-mp-content-table .dataOutput:first-child td {
+  padding: 2px;
+  border: 1px solid #999;
+}
+
+.rich-mp-content-table .dataOutput .dataInput td {
+  padding: 0px;
+  border: none;
 }
 
 .dataInput {
@@ -27,6 +51,11 @@
   vertical-align: top;
   margin: 10px;
 }
+
+.fieldColumn a img {
+  border:none;
+}
+
 
 .fieldColumn input {
   font:normal 11px "Lucida Grande", Verdana, sans-serif;
