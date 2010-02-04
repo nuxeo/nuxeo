@@ -30,84 +30,84 @@
     <table>
       <tr>
         <td class="assetContainer">
-			    <c:if test="#{!documentActions.currentSelection.hasSchema('video') and !documentActions.currentSelection.hasSchema('audio')}">
-			    <a href="#" onclick="return popupAnnotation('#{annotationsActions.annotationsURL}')">
+          <c:if test="#{!documentActions.currentSelection.hasSchema('video') and !documentActions.currentSelection.hasSchema('audio')}">
+          <a href="#" onclick="return popupAnnotation('#{annotationsActions.annotationsURL}')">
 
-			      <c:if test="#{documentActions.currentSelection.hasSchema('picture') and documentActions.currentSelection.picture.views.size > 0}">
-			        <c:choose>
-			          <c:when test="#{documentActions.currentSelection.picture.views[0].width gt documentActions.currentSelection.picture.views[0].height}">
-			            <c:choose>
-			              <c:when test="#{documentActions.currentSelection.picture.views[0].width gt 384}">
-			                <nxh:graphicImage id="theImage"
-			                            url="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Medium:content', documentActions.currentSelection.dublincore.modified)}?conversationId=#{conversation.id}"
-			                            title="#{messages['label.click.annotate']}"
-			                            rendered="#{documentActions.currentSelection.hasSchema('picture')}"
-			                            width="384" />
-			              </c:when>
-			              <c:otherwise>
-			                <nxh:graphicImage id="theImage"
-			                            url="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Medium:content', documentActions.currentSelection.dublincore.modified)}?conversationId=#{conversation.id}"
-			                            title="#{messages['label.click.annotate']}"
-			                            rendered="#{documentActions.currentSelection.hasSchema('picture')}"
-			                            width="#{documentActions.currentSelection.picture.views[0].width}" />
-			              </c:otherwise>
-			            </c:choose>
-			          </c:when>
-			          <c:otherwise>
-			            <c:choose>
-			              <c:when test="#{documentActions.currentSelection.picture.views[0].height gt 384}">
-			                <nxh:graphicImage id="theImage"
-			                            url="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Medium:content', documentActions.currentSelection.dublincore.modified)}?conversationId=#{conversation.id}"
-			                            title="#{messages['label.click.annotate']}"
-			                            rendered="#{documentActions.currentSelection.hasSchema('picture')}"
-			                            height="384" />
-			              </c:when>
-			              <c:otherwise>
-			                <nxh:graphicImage id="theImage"
-			                            url="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Medium:content', documentActions.currentSelection.dublincore.modified)}?conversationId=#{conversation.id}"
-			                            title="#{messages['label.click.annotate']}"
-			                            rendered="#{documentActions.currentSelection.hasSchema('picture')}"
-			                            height="#{documentActions.currentSelection.picture.views[0].height}" />
-			              </c:otherwise>
-			            </c:choose>
-			          </c:otherwise>
-			        </c:choose>
-			        </c:if>
+            <c:if test="#{documentActions.currentSelection.hasSchema('picture') and documentActions.currentSelection.picture.views.size > 0}">
+              <c:choose>
+                <c:when test="#{documentActions.currentSelection.picture.views[0].width gt documentActions.currentSelection.picture.views[0].height}">
+                  <c:choose>
+                    <c:when test="#{documentActions.currentSelection.picture.views[0].width gt 384}">
+                      <nxh:graphicImage id="theImage"
+                                  url="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Medium:content', documentActions.currentSelection.dublincore.modified)}?conversationId=#{conversation.id}"
+                                  title="#{messages['label.click.annotate']}"
+                                  rendered="#{documentActions.currentSelection.hasSchema('picture')}"
+                                  width="384" />
+                    </c:when>
+                    <c:otherwise>
+                      <nxh:graphicImage id="theImage"
+                                  url="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Medium:content', documentActions.currentSelection.dublincore.modified)}?conversationId=#{conversation.id}"
+                                  title="#{messages['label.click.annotate']}"
+                                  rendered="#{documentActions.currentSelection.hasSchema('picture')}"
+                                  width="#{documentActions.currentSelection.picture.views[0].width}" />
+                    </c:otherwise>
+                  </c:choose>
+                </c:when>
+                <c:otherwise>
+                  <c:choose>
+                    <c:when test="#{documentActions.currentSelection.picture.views[0].height gt 384}">
+                      <nxh:graphicImage id="theImage"
+                                  url="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Medium:content', documentActions.currentSelection.dublincore.modified)}?conversationId=#{conversation.id}"
+                                  title="#{messages['label.click.annotate']}"
+                                  rendered="#{documentActions.currentSelection.hasSchema('picture')}"
+                                  height="384" />
+                    </c:when>
+                    <c:otherwise>
+                      <nxh:graphicImage id="theImage"
+                                  url="#{nxd:fileUrl('downloadPicture', documentActions.currentSelection, 'Medium:content', documentActions.currentSelection.dublincore.modified)}?conversationId=#{conversation.id}"
+                                  title="#{messages['label.click.annotate']}"
+                                  rendered="#{documentActions.currentSelection.hasSchema('picture')}"
+                                  height="#{documentActions.currentSelection.picture.views[0].height}" />
+                    </c:otherwise>
+                  </c:choose>
+                </c:otherwise>
+              </c:choose>
+              </c:if>
 
-			        <nxh:graphicImage value="/icons/office_big.png"
-			                      	  title="#{messages['label.click.annotate']}"
-			                       	  rendered="#{!documentActions.currentSelection.hasSchema('picture') and
-			                                    !documentActions.currentSelection.hasSchema('video') and
-			                                    !documentActions.currentSelection.hasSchema('audio') }"/>
-			      </a>
-			      </c:if>
+              <nxh:graphicImage value="/icons/office_big.png"
+                                title="#{messages['label.click.annotate']}"
+                                 rendered="#{!documentActions.currentSelection.hasSchema('picture') and
+                                          !documentActions.currentSelection.hasSchema('video') and
+                                          !documentActions.currentSelection.hasSchema('audio') }"/>
+            </a>
+            </c:if>
 
-			      <c:if test="#{documentActions.currentSelection.hasSchema('video')}">
-			      <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B' width="400" height="350" codebase='http://www.apple.com/qtactivex/qtplugin.cab'>
-			        <param name='src' value="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}"/>
-			        <param name='autoplay' value="false"/>
-			        <param name='controller' value="true"/>
-			        <param name='loop' value="false"/>
-			        <param name='scale' value="aspect"/>
-			        <embed src="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}" width="400" height="350" autoplay="false"
-			          controller="true" loop="false" scale="aspect" bgcolor="#6F6F6F" pluginspage='http://www.apple.com/quicktime/download/'>
-			        </embed>
-			      </object>
-			    </c:if>
-			    <c:if test="#{documentActions.currentSelection.hasSchema('audio')}">
-			      <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B' codebase='http://www.apple.com/qtactivex/qtplugin.cab'>
-			        <param name='src' value="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}"/>
-			        <param name='autoplay' value="false"/>
-			        <param name='controller' value="true"/>
-			        <param name='loop' value="false"/>
-			        <param name='scale' value="aspect"/>
-			        <embed src="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}" autoplay="false"
-			          controller="true" loop="false" scale="aspect" bgcolor="#6F6F6F" pluginspage='http://www.apple.com/quicktime/download/'>
-			        </embed>
-  		      </object>
-  	     </c:if>
-		   </td>
-		 </tr>
+            <c:if test="#{documentActions.currentSelection.hasSchema('video')}">
+            <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B' width="400" height="350" codebase='http://www.apple.com/qtactivex/qtplugin.cab'>
+              <param name='src' value="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}"/>
+              <param name='autoplay' value="false"/>
+              <param name='controller' value="true"/>
+              <param name='loop' value="false"/>
+              <param name='scale' value="aspect"/>
+              <embed src="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}" width="400" height="350" autoplay="false"
+                controller="true" loop="false" scale="aspect" bgcolor="#6F6F6F" pluginspage='http://www.apple.com/quicktime/download/'>
+              </embed>
+            </object>
+          </c:if>
+          <c:if test="#{documentActions.currentSelection.hasSchema('audio')}">
+            <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B' codebase='http://www.apple.com/qtactivex/qtplugin.cab'>
+              <param name='src' value="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}"/>
+              <param name='autoplay' value="false"/>
+              <param name='controller' value="true"/>
+              <param name='loop' value="false"/>
+              <param name='scale' value="aspect"/>
+              <embed src="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}" autoplay="false"
+                controller="true" loop="false" scale="aspect" bgcolor="#6F6F6F" pluginspage='http://www.apple.com/quicktime/download/'>
+              </embed>
+            </object>
+         </c:if>
+       </td>
+     </tr>
     </table>
 
 
@@ -141,9 +141,10 @@
             </a4j:commandLink>
           </span>
           <span>
+          
             <a4j:commandLink styleClass="button"
                              action="#{documentActions.toggleDisplayMode}"
-                             immediate="true" reRender="assetView" rendered="documentActions.canEditAsset">
+                             immediate="true" reRender="assetView" rendered="#{documentActions.canEditAsset()}">
               <h:outputText value="#{messages['command.cancel']}"
                             rendered="#{documentActions.displayMode == 'edit'}"/>
               <h:outputText value="#{messages['command.edit']}"
@@ -193,28 +194,28 @@
             <h:outputText id="imgWidth" value="#{documentActions.currentSelection.picture.views[1].width}"/>
           </h:panelGrid>
           <!-- Save and cancel buttons appear above comments when in edit mode -->
-	      <c:if test="#{documentActions.displayMode == 'edit'}">
-	        <div class="buttonsBar">
-	      	  <span>
-	           <a4j:commandLink styleClass="button"
-	                            action="#{documentActions.updateCurrentSelection}"
-	                            rendered="#{documentActions.displayMode == 'edit'}"
-	                            reRender="assetView">
-	             <h:outputText value="#{messages['command.save']}"/>
-	           </a4j:commandLink>
-	         </span>
-	         <span>
-	           <a4j:commandLink styleClass="button"
-	                            action="#{documentActions.toggleDisplayMode}"
-	                            immediate="true" reRender="assetView">
-	             <h:outputText value="#{messages['command.cancel']}"
-	                           rendered="#{documentActions.displayMode == 'edit'}"/>
-	           </a4j:commandLink>
-	         </span>
-	        </div>
-	      </c:if>
+        <c:if test="#{documentActions.displayMode == 'edit'}">
+          <div class="buttonsBar">
+            <span>
+             <a4j:commandLink styleClass="button"
+                              action="#{documentActions.updateCurrentSelection}"
+                              rendered="#{documentActions.displayMode == 'edit'}"
+                              reRender="assetView">
+               <h:outputText value="#{messages['command.save']}"/>
+             </a4j:commandLink>
+           </span>
+           <span>
+             <a4j:commandLink styleClass="button"
+                              action="#{documentActions.toggleDisplayMode}"
+                              immediate="true" reRender="assetView">
+               <h:outputText value="#{messages['command.cancel']}"
+                             rendered="#{documentActions.displayMode == 'edit'}"/>
+             </a4j:commandLink>
+           </span>
+          </div>
+        </c:if>
         </div>
-	  </div>
+    </div>
 
       <div class="togglePanel">
         <a4j:outputPanel id="commentPanel">
