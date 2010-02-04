@@ -11,18 +11,42 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
- * Contributors:
  *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
 package org.nuxeo.runtime.test.runner;
 
-import com.google.inject.AbstractModule;
+import org.nuxeo.runtime.api.Framework;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
+
+/**
+ * This module is registering all the services deployed in the framework.
+ * Services registered after the runner is started (after the injector is created)
+ * will not be available for injection.
+ * To enforce your services are bound in the injector you must use only {@link Deploy} annotations
+ * to declare them, and avoid deploying them using the API.  
+ * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ */
 public class RuntimeModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(RuntimeHarness.class).toProvider(RuntimeHarnessProvider.class);
+        for (String svc : Framework.getRuntime().getComponentManager().getServices()) {
+            try {
+                Class<?> clazz = Class.forName(svc);
+                bind0(clazz);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to bind service: "+svc, e);
+            }
+        }
+        bind(RuntimeHarness.class).toInstance(NuxeoRunner.getRuntimeHarness());
     }
 
+    protected <T> void bind0(Class<T> type) {
+        bind(type).toProvider(new ServiceProvider<T>(type)).in(Scopes.SINGLETON);
+    }
+    
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,26 +12,33 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- * $Id$
+ *     bstefanescu
  */
 package org.nuxeo.runtime.test.runner;
 
-import static org.junit.Assert.assertNotNull;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
 
+import com.google.inject.Provider;
 
-@RunWith(NuxeoRunner.class)
-@Deploy({"org.nuxeo.runtime.jetty"})
-public class RunnerTest {
+/**
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ */
+public class ServiceProvider<T> implements Provider<T> {
 
-
-    @Test
-    public void jettyComponentIsDeployed() throws Exception {
-        assertNotNull(Framework.getService(org.mortbay.jetty.Server.class));
+    protected Class<?> clazz;
+    
+    public ServiceProvider(Class<?> clazz) {
+        this.clazz = clazz;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public T get() {
+        try {
+            return (T)Framework.getService(clazz);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to get service: "+clazz, e);
+        }
     }
 
 }

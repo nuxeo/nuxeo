@@ -31,6 +31,25 @@
   </build>
 
   <dependencies>
+  
+    <!-- 
+    The guice dependency should be removed when opensocial server will be updatyed to use 
+    guice 2.0. This is overwritting the guice 1.0 from root pom
+    see NXP-4667
+    -->
+    <dependency>
+      <groupId>com.google.code.guice</groupId>
+      <artifactId>guice</artifactId>
+      <version>2.0</version>
+    </dependency>
+    <!-- needed by guice 2 -->
+    <dependency>
+      <groupId>aopalliance</groupId>
+      <artifactId>aopalliance</artifactId>
+      <version>1.0</version>
+    </dependency>
+    
+  
     <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
@@ -64,12 +83,6 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>com.google.code.guice</groupId>
-      <artifactId>guice</artifactId>
       <scope>compile</scope>
     </dependency>
 

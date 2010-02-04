@@ -40,11 +40,13 @@ import org.nuxeo.osgi.DirectoryBundleFile;
 import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.application.StandaloneBundleLoader;
+import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.ServiceManager;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
 
@@ -57,7 +59,13 @@ import org.osgi.framework.FrameworkEvent;
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 //Make sure this class is kept in sync with with RuntimeHarness
-public class NXRuntimeTestCase extends MockObjectTestCase {
+public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarness {
+
+    static {
+        // jul to jcl redirection may pose problems (infinite loops) in some environment
+        // where slf4j to jul, and jcl over slf4j is deployed
+        System.setProperty(AbstractRuntimeService.REDIRECT_JUL, "false");
+    }
 
     private static final Log log = LogFactory.getLog(NXRuntimeTestCase.class);
 
@@ -88,6 +96,10 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
         super(name);
     }
 
+    public File getWorkingDir() {
+        return workingDir;
+    }
+    
     /**
      * Restarts the runtime and preserve homes directory.
      */
@@ -101,6 +113,10 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
         }
     }
 
+    public void start() throws Exception {
+        setUp();
+    }
+    
     @Override
     public void setUp() throws Exception {
         System.setProperty("org.nuxeo.runtime.testing", "true");
@@ -111,7 +127,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
             initTestRuntime();
         } else {
             initOsgiRuntime();
-        }
+        }        
     }
 
     /**
@@ -134,6 +150,14 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
         bundles = null;
         ServiceManager.getInstance().reset();
         super.tearDown();
+    }
+    
+    public void stop() throws Exception {
+        tearDown();
+    }
+    
+    public boolean isStarted() {
+        return runtime != null;
     }
 
     private static synchronized String generateId() {
@@ -453,9 +477,12 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
      * @param bundle the symbolic name
      */
     public void deployBundle(String bundle) throws Exception {
-        BundleFile bundleFile = lookupBundle(bundle);
-        bundleLoader.loadBundle(bundleFile);
-        bundleLoader.installBundle(bundleFile);
+        // install only if not yet installed
+        if (bundleLoader.getOSGi().getRegistry().getBundle(bundle) == null) {
+            BundleFile bundleFile = lookupBundle(bundle);
+            bundleLoader.loadBundle(bundleFile);
+            bundleLoader.installBundle(bundleFile);
+        }
     }
 
     protected String readSymbolicName(BundleFile bf) {

@@ -20,7 +20,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.google.inject.Provider;
-
+/**
+ * Should be removed
+ * @deprecated replaced by direct instance binding see {@link RuntimeModule} 
+ */
+@Deprecated
 public class RuntimeHarnessProvider implements Provider<RuntimeHarness> {
 
     private static final Log log = LogFactory.getLog(RuntimeHarnessProvider.class);

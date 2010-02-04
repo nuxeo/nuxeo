@@ -152,6 +152,14 @@ public interface ComponentManager {
     <T> T getService(Class<T> serviceClass);
 
     /**
+     * Get the list of all registered service names
+     * An empty array is returned if no registered services are found.
+     * 
+     * @return an array of registered service.
+     */
+    public String[] getServices();
+    
+    /**
      * Gets the component that provides the given service.
      *
      * @param serviceClass the service class

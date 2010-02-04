@@ -478,7 +478,6 @@ public class ComponentManagerImpl implements ComponentManager {
         }
     }
 
-    // Not used. Remove ?
     public String[] getServices() {
         return services.keySet().toArray(new String[services.size()]);
     }

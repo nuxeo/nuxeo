@@ -27,7 +27,7 @@ public class Settings {
     }
 
     public String[] getBundles() {
-        Bundles annotation = description.getAnnotation(Bundles.class);
+        Deploy annotation = description.getAnnotation(Deploy.class);
         if (annotation != null) {
             return annotation.value();
         } else {
