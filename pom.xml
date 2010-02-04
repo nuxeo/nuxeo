@@ -123,11 +123,6 @@
         <artifactId>nuxeo-platform-audio-core</artifactId>
         <version>5.3.1-I20100203_2200</version>
       </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-document-categorization</artifactId>
-        <version>5.3.1-I20100203_2200</version>
-      </dependency>
 
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -145,7 +140,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-ui-web</artifactId>
-        <version>5.3.1-I20100203_2200</version>
+        <version>${nuxeo.jsf.version}</version>
       </dependency>
 
       <dependency>
