@@ -209,16 +209,16 @@ class BasePage:
             ['createUser:nxl_user:nxw_firstPassword', password],
             ['createUser:nxl_user:nxw_secondPassword', password],
             ['createUser:nxl_user:nxw_passwordMatcher', 'needed'],
-            ['createUser:nxl_user:nxw_groups_suggest', ''],
+            ['createUser:nxl_user:nxw_groups_suggest', groups],
             ['createUser:nxl_user:nxw_groups_suggestionBox_selection', '0'],
             ['createUser_SUBMIT', '1'],
             ['javax.faces.ViewState', jsfState],
             ['createUser:nxl_user:nxw_groups_suggestionBox:nxw_groups_listRegion_select', 'createUser:nxl_user:nxw_groups_suggestionBox:nxw_groups_listRegion_select'],
-            ['suggestionSelectionListId', 'nxw_groups_list']],
+            ['suggestionSelectionListId', 'nxw_groups_list'],
+            ['suggestionInputSelectorId', 'nxw_groups_suggest']],
             description="Create user select group")
 
         fl.post(fl.server_url + "/create_user.faces", params=[
-            ['createUser', 'createUser'],
             ['createUser:nxl_user:nxw_username', username],
             ['createUser:nxl_user:nxw_firstname', firstname],
             ['createUser:nxl_user:nxw_lastname', lastname],
@@ -518,7 +518,8 @@ class FolderPage(BasePage):
             ['add_rights_form_SUBMIT', '1'],
             ['javax.faces.ViewState', state],
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:nxw_selection_listRegion_select', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:nxw_selection_listRegion_select'],
-            ['suggestionSelectionListId', 'nxw_selection_list']]
+            ['suggestionSelectionListId', 'nxw_selection_list'],
+            ['suggestionInputSelectorId', 'nxw_selection_suggest']]
         fl.post(server_url + "/view_documents.faces", params,
                   description="Grant perm select user " + user)
 
