@@ -22,8 +22,10 @@ import com.gwtext.client.data.RecordDef;
 import com.gwtext.client.data.Store;
 import com.gwtext.client.data.StringFieldDef;
 import com.gwtext.client.util.Format;
+import com.gwtext.client.widgets.Button;
 import com.gwtext.client.widgets.DataView;
 import com.gwtext.client.widgets.Panel;
+import com.gwtext.client.widgets.event.ButtonListenerAdapter;
 import com.gwtext.client.widgets.event.DataViewListenerAdapter;
 import com.gwtext.client.widgets.layout.FitLayout;
 
@@ -97,7 +99,6 @@ public class NXDataView extends Panel {
 
       public void onClick(DataView source, int index, Element node,
           EventObject e) {
-        updateSettingsPanel(source.getSelectedRecords());
         super.onClick(source, index, node, e);
       }
 
@@ -140,7 +141,20 @@ public class NXDataView extends Panel {
     t.schedule(500);
 
     inner.add(dataView);
+
+    Button b = new Button();
+    b.setTitle("title");
+    b.setText("text");
+    b.addListener(new ButtonListenerAdapter() {
+      @Override
+      public void onClick(Button button, EventObject e) {
+        nxDataWindow.setValue(dataView.getSelectedRecords()[0].getAsString(ID));
+        super.onClick(button, e);
+      }
+    });
+
     this.add(inner);
+    this.add(b);
   }
 
   private Object[][] getDatas(JSONArray jsonArray) {

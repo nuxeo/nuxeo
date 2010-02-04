@@ -51,7 +51,7 @@
 
       createTable();
 
-      if(perm == 'true')
+      if(perm)
         createAddItemButton()
     })
       </script>

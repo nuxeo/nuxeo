@@ -1,7 +1,5 @@
 package org.nuxeo.opensocial.container.client.view;
 
-import java.util.List;
-
 import org.nuxeo.opensocial.container.client.GadgetService;
 import org.nuxeo.opensocial.container.client.JsLibrary;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
@@ -54,7 +52,10 @@ public class GadgetPortlet extends Portlet {
       this.setHideCollapseTool(true);
     } else {
       this.setDraggable(gadget.hasPermission("Everything"));
-      this.setHideCollapseTool(!gadget.hasPermission("Everything"));
+      if (!(gadget.hasPermission("Everything") || gadget.hasPermission("SpaceContributeur"))) {
+        JsLibrary.log("hid col");
+        this.setHideCollapseTool(true);
+      }
     }
     this.setHeight(this.gadget.getHeight());
     this.addListener(new PortletListener(this));
