@@ -81,10 +81,10 @@
       <widget name="topic" type="template">
         <translated>true</translated>
         <fields>
-          <field>dc:subjects</field>
+          <field>damc:topic</field>
         </fields>
         <properties mode="any">
-          <property name="template">/widgets/subjects_widget.xhtml</property>
+          <property name="template">/widgets/topic_widget.xhtml</property>
         </properties>
       </widget>
       <widget name="coverage" type="template">

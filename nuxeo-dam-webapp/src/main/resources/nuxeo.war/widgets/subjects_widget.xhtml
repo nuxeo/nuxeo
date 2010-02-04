@@ -40,21 +40,19 @@
           reRender="#{widget.id}_status" id="#{widget.id}_add" />
         <br />
         <nxdir:chainSelectStatus display="value"
-          styleClass="selectionStatus"
+          entryCssStyle="background-color: #DDEEFF"
           label="#{messages['label.chainSelect.selection']}"
           id="#{widget.id}_status">
           <f:facet name="removeButton">
             <a4j:commandButton actionListener="#{chainSelectActions.delete}"
               immediate="true" reRender="#{widget.id}_status"
-              image="/icons/toggle_minus.png" id="#{widget.id}_delete" />
+              image="/img/toggle_minus.png" id="#{widget.id}_delete" />
           </f:facet>
         </nxdir:chainSelectStatus>
       </nxdir:chainSelect>
     </a4j:region>
-    <a4j:outputPanel ajaxRendered="true">
-      <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
-        id="#{widget.id}_message" />
-    </a4j:outputPanel>
+    <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
+      id="#{widget.id}_message" />
 
   </c:if>
 

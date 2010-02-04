@@ -24,7 +24,7 @@
           <field schema="filter_query" name="dc_coverage" />
         </predicate>
         
-        <predicate parameter="dc:subjects" operator="STARTSWITH">
+        <predicate parameter="damc:topic" operator="STARTSWITH">
           <field schema="filter_query" name="topic" />
         </predicate>        
 
