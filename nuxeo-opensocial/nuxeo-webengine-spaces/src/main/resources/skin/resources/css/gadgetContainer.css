@@ -1,162 +1,34 @@
-div.x-window-mr div.x-window-mc{
- background:#666666;
+div.x-window-mr div.x-window-mc {
+  background: #666666;
 }
 
-div.x-panel-body  label, div.x-panel-palette label{
-  color:#ffffff;
-  font-weight:bold;
-  font-size:11px;
+div.x-panel-body  label,div.x-panel-palette label {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 11px;
 }
 
-div.x-panel-body  .x-color-palette em{
- border:0;
- padding:2px 0 0;
+div.x-panel-body  .x-color-palette em {
+  border: 0;
+  padding: 2px 0 0;
 }
 
-div.x-panel-body  .x-color-palette span{
-  width:18px;
- height:18px;
+div.x-panel-body  .x-color-palette span {
+  width: 18px;
+  height: 18px;
 }
 
-div.x-panel-body  .x-color-palette a{
- border:0;
- height:22px;
- width:22px;
+div.x-panel-body  .x-color-palette a {
+  border: 0;
+  height: 22px;
+  width: 22px;
 }
 
-.x-panel-header-text{
- color:#13506B;
+.x-panel-header-text {
+  color: #13506B;
 }
 
-/*.x-tool  {
-background:url("/nuxeo/img/themes/intralm/tool-sprites.gif") no-repeat scroll 0 0 transparent;
-cursor:pointer;
-float:right;
-height:15px;
-margin-left:2px;
-overflow:hidden;
-width:15px;
-}*/
-
-
-.x-tool-toggle  {
-background-position:0 -60px;
+.x-panel-tc {
+  background-image: none;
+  padding-top: 1px;
 }
-.x-tool-toggle-over {
-background-position:-15px -60px;
-}
-.x-panel-collapsed .x-tool-toggle {
-background-position:0 -75px;
-}
-.x-panel-collapsed .x-tool-toggle-over {
-background-position:-15px -75px;
-}
-.x-tool-close {
-background-position:0 0;
-}
-.x-tool-close-over {
-background-position:-15px 0;
-}
-.x-tool-minimize {
-background-position:0 -15px;
-}
-.x-tool-minimize-over {
-background-position:-15px -15px;
-}
-.x-tool-maximize {
-background-position:0 -30px;
-}
-.x-tool-maximize-over {
-background-position:-15px -30px;
-}
-.x-tool-restore {
-background-position:0 -45px;
-}
-.x-tool-restore-over {
-background-position:-15px -45px;
-}
-.x-tool-gear {
-background-position:0 -90px;
-}
-.x-tool-gear-over {
-background-position:-15px -90px;
-}
-.x-tool-pin {
-background-position:0 -135px;
-}
-.x-tool-pin-over {
-background-position:-15px -135px;
-}
-.x-tool-unpin {
-background-position:0 -150px;
-}
-.x-tool-unpin-over {
-background-position:-15px -150px;
-}
-.x-tool-right {
-background-position:0 -165px;
-}
-.x-tool-right-over {
-background-position:-15px -165px;
-}
-.x-tool-left {
-background-position:0 -180px;
-}
-.x-tool-left-over {
-background-position:-15px -180px;
-}
-.x-tool-up {
-background-position:0 -210px;
-}
-.x-tool-up-over {
-background-position:-15px -210px;
-}
-.x-tool-down {
-background-position:0 -195px;
-}
-.x-tool-down-over {
-background-position:-15px -195px;
-}
-.x-tool-refresh {
-background-position:0 -225px;
-}
-.x-tool-refresh-over {
-background-position:-15px -225px;
-}
-.x-tool-minus {
-background-position:0 -255px;
-}
-.x-tool-minus-over {
-background-position:-15px -255px;
-}
-.x-tool-plus {
-background-position:0 -240px;
-}
-.x-tool-plus-over {
-background-position:-15px -240px;
-}
-.x-tool-search {
-background-position:0 -270px;
-}
-.x-tool-search-over {
-background-position:-15px -270px;
-}
-.x-tool-save {
-background-position:0 -285px;
-}
-.x-tool-save-over {
-background-position:-15px -285px;
-}
-.x-tool-help {
-background-position:0 -300px;
-}
-.x-tool-help-over {
-background-position:-15px -300px;
-}
-.x-tool-print {
-background-position:0 -315px;
-}
-.x-tool-print-over {
-background-position:-15px -315px;
-}
-

@@ -4,7 +4,7 @@
     scaling="true" directory_title="Photo"
     description="File browser in the ECM system" author="Guillaume CUSNIEUX"
     author_email="gcusnieux@leroymerlin.fr" author_affiliation="Leroy Merlin"
-    author_location="Lezennes, France">
+    author_location="Lezennes, France"  icon="photo.png">
     <Require feature="dynamic-height" />
     <Require feature="nuxeo" />
     <Require feature="setprefs"/>
