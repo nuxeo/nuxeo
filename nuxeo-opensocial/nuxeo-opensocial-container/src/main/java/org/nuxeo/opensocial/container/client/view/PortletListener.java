@@ -18,6 +18,7 @@
 package org.nuxeo.opensocial.container.client.view;
 
 import org.nuxeo.opensocial.container.client.ContainerEntryPoint;
+import org.nuxeo.opensocial.container.client.JsLibrary;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 
 import com.gwtext.client.widgets.Panel;

@@ -144,8 +144,10 @@ public class GadgetTools {
     canvas.doLayout();
     maximizedCol.doLayout();
     updateLayoutSizeForMax(canvas.getId());
-    if (gadget.isCollapsed())
+    if (gadget.isCollapsed()) {
       canvas.unCollapseGadget();
+      gadget.setCollapsed(true);
+    }
   }
 
   private native void updateLayoutSizeForMax(String id)

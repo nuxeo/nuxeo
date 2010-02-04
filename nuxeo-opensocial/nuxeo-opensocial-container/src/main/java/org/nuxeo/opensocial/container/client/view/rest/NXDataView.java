@@ -1,7 +1,6 @@
 package org.nuxeo.opensocial.container.client.view.rest;
 
 import org.nuxeo.opensocial.container.client.ContainerConstants;
-import org.nuxeo.opensocial.container.client.JsLibrary;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.Request;
