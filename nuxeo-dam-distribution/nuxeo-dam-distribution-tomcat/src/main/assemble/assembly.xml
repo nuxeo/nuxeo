@@ -81,7 +81,7 @@ set JAVA_OPTS=%JAVA_OPTS% -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding
     <nx:preprocess src="${nxserver}" /-->
 
     <copy todir="${tomcat}/lib">
-      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-tomcat-adapter:1.6.1-I20100204_1241:jar" />
+      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-tomcat-adapter:${nuxeo.runtime.version}:jar" />
     </copy>
     <!-- we need to move DS related jars into tomcat lib ... The move must be done after running the processing since it is depending on these jars -->
     <move todir="${tomcat}/lib">

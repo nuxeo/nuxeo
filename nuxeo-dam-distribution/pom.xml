@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.dam</groupId>
     <artifactId>nuxeo-dam-parent</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.dam.distribution</groupId>
@@ -15,7 +15,7 @@
   <description>Build package distributions of Nuxeo DAM applications</description>
 
   <properties>
-    <nuxeo.distribution.version>5.3.1-I20100203_1548</nuxeo.distribution.version>
+    <nuxeo.distribution.version>5.3.1-SNAPSHOT</nuxeo.distribution.version>
   </properties>
 
   <profiles>
