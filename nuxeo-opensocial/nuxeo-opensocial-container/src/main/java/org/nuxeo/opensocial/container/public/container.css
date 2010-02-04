@@ -196,10 +196,14 @@
   width: 99%;
 }
 
+.x-panel-tl{
+  -moz-border-radius:4px 4px 0 0;
+  }
+
 .x-3-header2cols>.x-portlet {
   -moz-border-radius : 4px;
   -webkit-border-radius : 4px;
-  border : 2px solid #D4D0C8;
+  border : 1px solid #D4D0C8;
   margin-left:-2px;
   min-width: 100%;
   width: 100%
@@ -213,7 +217,7 @@
 .x-1-default>.x-portlet {
   -moz-border-radius : 4px;
   -webkit-border-radius : 4px;
-  border : 2px solid #D4D0C8;
+  border : 1px solid #D4D0C8;
   margin-left:-2px;
   min-width: 100%;
   width: 100%
@@ -227,7 +231,7 @@
 .x-2-default>.x-portlet,.x-3-default>.x-portlet,.x-2-33-66>.x-portlet,.x-2-66-33>.x-portlet {
   -moz-border-radius : 4px;
   -webkit-border-radius : 4px;
-  border : 2px solid #D4D0C8;
+  border : 1px solid #D4D0C8;
   margin-left:-2px;
   min-width: 100%;
   width: 100%;
@@ -272,7 +276,7 @@
 .x-4-footer3cols>.x-portlet,.x-4-header3cols>.x-portlet  {
   -moz-border-radius : 4px;
   -webkit-border-radius : 4px;
-  border : 2px solid #D4D0C8;
+  border : 1px solid #D4D0C8;
   margin-left:-2px;
   min-width: 100%;
   width: 100%;
@@ -288,7 +292,7 @@
 {
   -moz-border-radius : 4px;
   -webkit-border-radius : 4px;
-  border : 2px solid #D4D0C8;
+  border : 1px solid #D4D0C8;
   margin-left:-2px;
   min-width: 100%;
   width: 100%;
