@@ -24,20 +24,17 @@ import org.junit.runner.Description;
 import org.junit.runner.manipulation.Filter;
 import org.junit.runner.manipulation.NoTestsRemainException;
 import org.junit.runners.model.InitializationError;
-import org.nuxeo.ecm.core.test.guice.CoreModule;
-import org.nuxeo.ecm.platform.test.NuxeoPlatformRunner;
-import org.nuxeo.ecm.platform.test.PlatformModule;
-import org.nuxeo.ecm.webengine.test.WebengineModule;
-import org.nuxeo.runtime.test.runner.RuntimeModule;
+import org.nuxeo.ecm.webengine.test.NuxeoWebengineRunner;
 
-public class BrowserRunner extends NuxeoPlatformRunner {
+import com.google.inject.Binder;
+import com.google.inject.Scopes;
+
+public class BrowserRunner extends NuxeoWebengineRunner {
 
     private static final Log log = LogFactory.getLog(BrowserRunner.class);
 
     public BrowserRunner(Class<?> classToRun) throws InitializationError {
-        super(classToRun, new RuntimeModule(), new CoreModule(),
-                new PlatformModule(), new WebengineModule(),
-                new BrowserModule());
+        super(classToRun);
         try {
             BrowserConfig config = getInjector().getInstance(
                     BrowserConfig.class);
@@ -67,4 +64,10 @@ public class BrowserRunner extends NuxeoPlatformRunner {
         }
     }
 
+    @Override
+    protected void configure(Binder binder) {
+        super.configure(binder);
+        binder.bind(BrowserConfig.class).to(StandardBrowserConfig.class).in(
+                Scopes.SINGLETON);
+    }
 }

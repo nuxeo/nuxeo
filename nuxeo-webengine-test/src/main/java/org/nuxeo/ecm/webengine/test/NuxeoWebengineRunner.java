@@ -16,25 +16,70 @@
  */
 package org.nuxeo.ecm.webengine.test;
 
-import org.junit.runners.model.InitializationError;
-import org.nuxeo.ecm.core.test.guice.CoreModule;
-import org.nuxeo.ecm.platform.test.NuxeoPlatformRunner;
-import org.nuxeo.ecm.platform.test.PlatformModule;
-import org.nuxeo.runtime.test.runner.RuntimeModule;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
-import com.google.inject.Module;
+import org.junit.runners.model.InitializationError;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.platform.test.NuxeoPlatformRunner;
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.model.impl.ModuleManager;
+import org.nuxeo.runtime.api.Framework;
 
 public class NuxeoWebengineRunner extends NuxeoPlatformRunner {
 
-    public NuxeoWebengineRunner(Class<?> classToRun) throws InitializationError {
-        // FIXME: There's surely a better way to inherit from parent modules...
-        this(classToRun, new RuntimeModule(), new CoreModule(),
-                new PlatformModule(), new WebengineModule());
-    }
-
-    public NuxeoWebengineRunner(Class<?> classToRun, Module... modules)
+    public NuxeoWebengineRunner(Class<?> classToRun)
             throws InitializationError {
-        super(classToRun, modules);
+        super(classToRun);
+    }
+    
+    @Override
+    protected void deploy() throws Exception {        
+        scanDeployments(WebEngineDeployment.class);
+    }
+    
+    @Override
+    protected void initialize() throws Exception {
+        super.initialize();
+        setupWorkingDir();
+    }
+    
+    private void setupWorkingDir() throws IOException {
+        File dest = new File(harness.getWorkingDir(), "config");
+        dest.mkdir();
+
+        InputStream in = getResource("webengine/config/default-web.xml").openStream();
+        dest = new File(harness.getWorkingDir() + "/config", "default-web.xml");
+        FileOutputStream out = new FileOutputStream(dest);
+        FileUtils.copy(in, out);
+
+        in = getResource("webengine/config/jetty.xml").openStream();
+        dest = new File(harness.getWorkingDir() + "/config", "jetty.xml");
+        out = new FileOutputStream(dest);
+        FileUtils.copy(in, out);
+
+        dest = new File(harness.getWorkingDir(), "web/root.war/WEB-INF/");
+        dest.mkdirs();
+
+        in = getResource("webengine/web/WEB-INF/web.xml").openStream();
+        dest = new File(harness.getWorkingDir() + "/web/root.war/WEB-INF/",
+                "web.xml");
+        out = new FileOutputStream(dest);
+        FileUtils.copy(in, out);
     }
 
+    private static URL getResource(String resource) {
+        return Thread.currentThread().getContextClassLoader().getResource(
+                resource);
+    }
+
+    public void deployTestModule() {
+        URL currentDir = Thread.currentThread().getContextClassLoader().getResource(
+                ".");
+        ModuleManager moduleManager = Framework.getLocalService(WebEngine.class).getModuleManager();
+        moduleManager.loadModuleFromDir(new File(currentDir.getFile()));
+    }
 }
