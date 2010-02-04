@@ -1,4 +1,4 @@
-var perm = gadgets.util.getUrlParameters().permission;
+var perm = gadgets.nuxeo.isEditable();
 var firstTime = true;
 
 function launchGadget(){

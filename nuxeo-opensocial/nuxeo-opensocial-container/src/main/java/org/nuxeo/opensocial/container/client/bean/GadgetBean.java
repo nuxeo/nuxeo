@@ -36,7 +36,7 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
   private String viewer;
   private List<PreferencesBean> defaultPrefs;
   private List<PreferencesBean> userPrefs;
-  private boolean permission;
+  private List<String> permissions;
   private GadgetPosition position;
   private boolean collapsed;
   private String name;
@@ -52,14 +52,14 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
 
   public GadgetBean(String ref, String title, String viewer,
       List<PreferencesBean> defaultPrefs, List<PreferencesBean> userPrefs,
-      boolean permission, boolean collapsed, String name,
+      List<String> permissions, boolean collapsed, String name,
       Map<String, GadgetView> gadgetViews, String htmlContent, Integer height) {
     this.ref = ref;
     this.title = title;
     this.defaultPrefs = defaultPrefs;
     this.userPrefs = userPrefs;
     this.viewer = viewer;
-    this.permission = permission;
+    this.permissions = permissions;
     this.collapsed = collapsed;
     this.name = name;
     this.gadgetViews = gadgetViews;
@@ -135,12 +135,12 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
     return viewer;
   }
 
-  public boolean isPermission() {
-    return permission;
+  public boolean hasPermission(String name) {
+    return permissions.contains(name);
   }
 
-  public void setPermission(boolean permission) {
-    this.permission = permission;
+  public void setPermission(List<String> permissions) {
+    this.permissions = permissions;
   }
 
   public boolean isCollapsed() {

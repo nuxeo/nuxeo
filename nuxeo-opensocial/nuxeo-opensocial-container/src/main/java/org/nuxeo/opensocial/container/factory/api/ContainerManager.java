@@ -33,7 +33,7 @@ public interface ContainerManager {
       throws ClientException;
 
   GadgetBean addGadget(String gadgetName, Map<String, String> gwtParams)
-      throws ClientException;
+      throws Exception;
 
   Map<String, ArrayList<String>> getGadgetList() throws ClientException;
 

@@ -126,4 +126,6 @@ public interface Space extends Comparable<Space> {
 
   String getProviderName() throws ClientException;
 
+  public List<String> getPermissions() throws Exception;
+
 }

@@ -6,6 +6,7 @@
       <Require feature="setprefs" />
       <Require feature="settitle" />
       <Require feature="json" />
+      <Require feature="nuxeo" />
   </ModulePrefs>
   <UserPref name="COLOR_bgcolor" display_name="Couleur des cellules" default_value="#none" datatype="enum" >
     <EnumValue display_value="ref" value="FF0000"/>
@@ -36,7 +37,7 @@
         bookmarks = JSON.parse(bookmarksstring);
       edited = false;
 
-      var perm = gadgets.util.getUrlParameters().permission;
+      var perm = gadgets.nuxeo.isEditable();
       if(perm == 'true')
       {
         permission = true;

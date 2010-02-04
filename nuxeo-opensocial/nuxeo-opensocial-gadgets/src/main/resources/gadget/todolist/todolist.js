@@ -1,7 +1,7 @@
 var todolist; // This is a json object of bookmark items
 var edited;
 var prefs;
-var perm = gadgets.util.getUrlParameters().permission;
+var perm = gadgets.nuxeo.isEditable();
 
 function saveToDoList() {
   prefs.set("todolist", JSON.stringify(todolist));

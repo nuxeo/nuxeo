@@ -72,7 +72,7 @@ public class UrlBuilder {
 
   private static int containerId = 0;
 
-  public static String buildShindigUrl(Gadget gadget, boolean permission,
+  public static String buildShindigUrl(Gadget gadget, List<String> permissions,
       String locale) throws ClientException {
 
     // TODO: get away prefs definition from the url
@@ -96,7 +96,7 @@ public class UrlBuilder {
     sb.append(PARENT_KEY + "=" + ServerBase.getBase() + "&");
 
     // perm=1 -> does the session has write perm on gadget
-    sb.append(PERMISSION_KEY + "=" + permission + "&");
+    sb.append(PERMISSION_KEY + "=" + permissions + "&");
 
     // url=http://.../gadget.xml?up_prefname=prefvalue
     sb.append(URL_KEY + "=" + gadgetDef

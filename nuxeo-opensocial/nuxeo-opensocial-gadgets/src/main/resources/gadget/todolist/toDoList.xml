@@ -9,6 +9,7 @@
     <Require feature="settitle" />
     <Require feature="jquery" />
     <Require feature="json" />
+    <Require feature="nuxeo" />
     <Require feature="datepicker" />
     <Require feature="tablesorter" />
   </ModulePrefs>

@@ -19,6 +19,7 @@ specific language governing permissions and limitations under the License.
 <feature>
   <name>nuxeo</name>
   <dependency>rpc</dependency>
+  <dependency>jquery</dependency>
   <container>
 
   </container>

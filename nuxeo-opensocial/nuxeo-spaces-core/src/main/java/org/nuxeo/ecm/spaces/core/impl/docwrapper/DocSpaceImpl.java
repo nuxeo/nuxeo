@@ -31,7 +31,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
@@ -44,8 +49,6 @@ import org.nuxeo.runtime.api.Framework;
 public class DocSpaceImpl implements Space {
 
   protected final DocumentModel doc;
-  private boolean readOnly = false;
-
   public static final String TYPE = "Space";
   protected static final String SPACE_THEME = "space:theme";
   protected static final String SPACE_LAYOUT = "space:layout";
@@ -153,6 +156,10 @@ public class DocSpaceImpl implements Space {
 
   public boolean hasPermission(String permissionName) throws ClientException {
     return session().hasPermission(doc.getRef(), permissionName);
+  }
+
+  public List<String> getAvailableSecurityPermissions() throws ClientException {
+    return session().getAvailableSecurityPermissions();
   }
 
   public boolean isReadOnly() throws ClientException {
@@ -304,6 +311,28 @@ public class DocSpaceImpl implements Space {
     CoreSession session = doc.getCoreSession();
     session.removeDocument(doc.getRef());
     session.save();
+  }
+
+  public List<String> getPermissions() throws Exception {
+    ACP acp = session().getACP(doc.getRef());
+
+    String user = session().getPrincipal()
+        .getName();
+    UserManager userManager = Framework.getService(UserManager.class);
+    List<String> perms = new ArrayList<String>();
+    for (ACL acl : acp.getACLs()) {
+      for (ACE ace : acl.getACEs()) {
+        if (user.equals(ace.getUsername())) {
+          perms.add(ace.getPermission());
+        } else {
+          NuxeoGroup group = userManager.getGroup(ace.getUsername());
+          if (group != null && group.getMemberUsers()
+              .contains(user))
+            perms.add(ace.getPermission());
+        }
+      }
+    }
+    return perms;
   }
 
   public String getProviderName() throws ClientException {

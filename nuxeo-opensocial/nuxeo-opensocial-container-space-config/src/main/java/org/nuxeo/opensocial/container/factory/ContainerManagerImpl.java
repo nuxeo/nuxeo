@@ -19,6 +19,7 @@ package org.nuxeo.opensocial.container.factory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -122,7 +123,7 @@ public class ContainerManagerImpl implements ContainerManager {
    * @return GadgetBean
    */
   public GadgetBean addGadget(final String gadgetName,
-      Map<String, String> gwtParams) throws ClientException {
+      Map<String, String> gwtParams) throws Exception {
 
     String spaceId = getParamValue(DOC_REF, gwtParams, true, null);
     Space space;
@@ -134,7 +135,7 @@ public class ContainerManagerImpl implements ContainerManager {
     Gadget createGadget = space.createGadget(gadgetName);
     space.save();
 
-    return GadgetFactory.getGadgetBean(createGadget, !space.isReadOnly(),
+    return GadgetFactory.getGadgetBean(createGadget, getPermissions(space),
         getLocale(gwtParams));
 
   }
@@ -179,16 +180,18 @@ public class ContainerManagerImpl implements ContainerManager {
     try {
       if (space != null) {
         ArrayList<GadgetBean> gadgets = new ArrayList<GadgetBean>();
-        Boolean perm = !space.isReadOnly();
+
+        List<String> perms = getPermissions(space);
+
         for (Gadget g : space.getGadgets()) {
-          gadgets.add(GadgetFactory.getGadgetBean(g, perm, locale));
+          gadgets.add(GadgetFactory.getGadgetBean(g, perms, locale));
         }
         Collections.sort(gadgets);
         String layout = space.getLayout();
         if (layout == null || layout.equals(""))
           layout = DEFAULT_LAYOUT;
 
-        return new Container(gadgets, getStructure(space), layout, perm,
+        return new Container(gadgets, getStructure(space), layout, perms,
             space.getId());
       }
     } catch (Exception e) {
@@ -198,4 +201,8 @@ public class ContainerManagerImpl implements ContainerManager {
     return null;
   }
 
+  static List<String> getPermissions(Space space) throws Exception {
+    return space.isReadOnly() ? new ArrayList<String>()
+        : space.getPermissions();
+  }
 }

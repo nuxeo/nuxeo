@@ -1,5 +1,8 @@
 package org.nuxeo.opensocial.container.client.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.opensocial.container.client.ContainerConstants;
 import org.nuxeo.opensocial.container.client.ContainerEntryPoint;
 import org.nuxeo.opensocial.container.client.ContainerMessages;
@@ -108,13 +111,20 @@ public class GadgetTools {
 
     });
 
-    if (gadget.getView(GadgetPortlet.CANVAS_VIEW) != null
-        && gadget.isPermission()) {
-      return new Tool[] { max, gear, close };
-    } else if (gadget.getView(GadgetPortlet.CANVAS_VIEW) != null) {
-      return new Tool[] { max };
-    }
-    return new Tool[] {};
+    List<Tool> tools = new ArrayList<Tool>();
+
+    if (gadget.getView(GadgetPortlet.CANVAS_VIEW) != null)
+      tools.add(max);
+
+    if (gadget.hasPermission("Everything")
+        || gadget.hasPermission("SpaceContributeur"))
+      tools.add(gear);
+
+    if (gadget.hasPermission("Everything"))
+      tools.add(close);
+
+    Tool[] array = tools.toArray(new Tool[tools.size()]);
+    return array;
   }
 
   public void maximize(String view) {

@@ -23,15 +23,15 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * Global container of gadgets
- *
+ * 
  * @author Guillaume Cusnieux
- *
+ * 
  */
 public class Container implements IsSerializable {
 
   private static final long serialVersionUID = 1L;
   private List<GadgetBean> gadgets;
-  private Boolean permission;
+  private List<String> permissions;
   private String layout;
   private String spaceId;
   private int structure;
@@ -45,17 +45,17 @@ public class Container implements IsSerializable {
 
   /**
    * Constructor for create Container instance with all important parameter
-   *
+   * 
    * @param gadgets
    * @param structure
-   * @param permission
+   * @param permissions
    */
   public Container(List<GadgetBean> gadgets, int structure, String layout,
-      Boolean permission, String spaceId) {
+      List<String> permissions, String spaceId) {
     this.gadgets = gadgets;
     this.layout = layout;
     this.structure = structure;
-    this.permission = permission;
+    this.permissions = permissions;
     this.spaceId = spaceId;
   }
 
@@ -64,7 +64,7 @@ public class Container implements IsSerializable {
   }
 
   public String getSpaceId() {
-      return spaceId;
+    return spaceId;
   }
 
   public String getLayout() {
@@ -83,8 +83,8 @@ public class Container implements IsSerializable {
     this.structure = structure;
   }
 
-  public Boolean getPermission() {
-    return permission;
+  public List<String> getPermission() {
+    return permissions;
   }
 
   public GadgetBean getGadgetBean(String ref) {
