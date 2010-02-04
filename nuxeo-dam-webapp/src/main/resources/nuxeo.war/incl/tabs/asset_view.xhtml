@@ -32,7 +32,7 @@
         <td class="assetContainer">
 			    <c:if test="#{!documentActions.currentSelection.hasSchema('video') and !documentActions.currentSelection.hasSchema('audio')}">
 			    <a href="#" onclick="return popupAnnotation('#{annotationsActions.annotationsURL}')">
-			
+
 			      <c:if test="#{documentActions.currentSelection.hasSchema('picture') and documentActions.currentSelection.picture.views.size > 0}">
 			        <c:choose>
 			          <c:when test="#{documentActions.currentSelection.picture.views[0].width gt documentActions.currentSelection.picture.views[0].height}">
@@ -73,7 +73,7 @@
 			          </c:otherwise>
 			        </c:choose>
 			        </c:if>
-			
+
 			        <nxh:graphicImage value="/icons/office_big.png"
 			                      	  title="#{messages['label.click.annotate']}"
 			                       	  rendered="#{!documentActions.currentSelection.hasSchema('picture') and
@@ -81,7 +81,7 @@
 			                                    !documentActions.currentSelection.hasSchema('audio') }"/>
 			      </a>
 			      </c:if>
-			
+
 			      <c:if test="#{documentActions.currentSelection.hasSchema('video')}">
 			      <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B' width="400" height="350" codebase='http://www.apple.com/qtactivex/qtplugin.cab'>
 			        <param name='src' value="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}"/>
@@ -143,7 +143,7 @@
           <span>
             <a4j:commandLink styleClass="button"
                              action="#{documentActions.toggleDisplayMode}"
-                             immediate="true" reRender="assetView">
+                             immediate="true" reRender="assetView" rendered="documentActions.canEditAsset">
               <h:outputText value="#{messages['command.cancel']}"
                             rendered="#{documentActions.displayMode == 'edit'}"/>
               <h:outputText value="#{messages['command.edit']}"
@@ -220,7 +220,7 @@
         <a4j:outputPanel id="commentPanel">
           <div class="togglePanelTitleBox">
             <h3>
-              <a4j:commandLink id="commentTitlePanel" 
+              <a4j:commandLink id="commentTitlePanel"
                 styleClass="#{commentActions.showCommentsArea ? 'unfolded' : 'folded'}"
                 value="#{messages['label.header.info.comments']} (#{commentActions.comments.size})"
                 actionListener="#{commentActions.toggleCommentsArea}"
@@ -268,7 +268,7 @@
           <div class="togglePanel">
             <div class="togglePanelTitleBox">
               <h3>
-                <a4j:commandLink id="exifTitlePanel" 
+                <a4j:commandLink id="exifTitlePanel"
                   styleClass="#{documentActions.showExifArea ? 'unfolded' : 'folded'}"
                   value="#{messages['label.header.info.exif']}"
                   actionListener="#{documentActions.toggleExifArea}"
@@ -288,7 +288,7 @@
           <div class="togglePanel">
             <div class="togglePanelTitleBox">
               <h3>
-                <a4j:commandLink id="iptcTitlePanel" 
+                <a4j:commandLink id="iptcTitlePanel"
                   styleClass="#{documentActions.showIptcArea ? 'unfolded' : 'folded'}"
                   value="#{messages['label.header.info.iptc']}"
                   actionListener="#{documentActions.toggleIptcArea}"

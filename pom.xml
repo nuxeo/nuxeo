@@ -8,12 +8,12 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
-    <version>5.3.1-SNAPSHOT</version>
+    <version>5.3.1-I20100203_1548</version>
   </parent>
 
   <groupId>org.nuxeo.dam</groupId>
   <artifactId>nuxeo-dam-parent</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <name>Nuxeo DAM Parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo DAM Parent</description>
@@ -31,6 +31,8 @@
 
   <properties>
     <nuxeo.dam.version>${pom.version}</nuxeo.dam.version>
+    <nuxeo.chemistry.version>1.6.1-20100121</nuxeo.chemistry.version>
+    <apache.chemistry.version>0.5-20100121</apache.chemistry.version>
   </properties>
 
   <dependencyManagement>
@@ -114,17 +116,17 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-video-core</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>5.3.1-I20100203_2200</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-audio-core</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>5.3.1-I20100203_2200</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-categorization</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>5.3.1-I20100203_2200</version>
       </dependency>
 
       <dependency>
@@ -143,13 +145,95 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-ui-web</artifactId>
-        <version>${nuxeo.jsf.version}</version>
+        <version>5.3.1-I20100203_2200</version>
       </dependency>
 
       <dependency>
         <groupId>de.schlichtherle.io</groupId>
         <artifactId>truezip</artifactId>
         <version>6.6</version>
+      </dependency>
+
+      <!-- CMIS dependencies -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-chemistry-impl</artifactId>
+        <version>${nuxeo.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-chemistry-jaxrs</artifactId>
+        <version>${nuxeo.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-chemistry-ws</artifactId>
+        <version>${nuxeo.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-api</artifactId>
+        <version>${apache.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-atompub</artifactId>
+        <version>${apache.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-atompub-server</artifactId>
+        <version>${apache.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-commons</artifactId>
+        <version>${apache.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-ws</artifactId>
+        <version>${apache.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.abdera</groupId>
+        <artifactId>abdera-core</artifactId>
+        <version>0.4.0-incubating</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.abdera</groupId>
+        <artifactId>abdera-i18n</artifactId>
+        <version>0.4.0-incubating</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.abdera</groupId>
+        <artifactId>abdera-parser</artifactId>
+        <version>0.4.0-incubating</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.abdera</groupId>
+        <artifactId>abdera-server</artifactId>
+        <version>0.4.0-incubating</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.ws.commons.axiom</groupId>
+        <artifactId>axiom-api</artifactId>
+        <version>1.2.5</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.ws.commons.axiom</groupId>
+        <artifactId>axiom-impl</artifactId>
+        <version>1.2.5</version>
+      </dependency>
+      <dependency>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr-runtime</artifactId>
+        <version>3.1.3</version>
+      </dependency>
+      <dependency>
+        <groupId>jaxen</groupId>
+        <artifactId>jaxen</artifactId>
+        <version>1.1-beta-6</version>
       </dependency>
 
       <dependency>
