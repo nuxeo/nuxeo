@@ -512,49 +512,51 @@ public class ChainSelect extends UIInput {
     }
 
     private void init() {
-        Object value = getValue();
-        if (value == null) {
-            componentValue = new Selection[0];
-            selections = new Selection[1];
-            selections[0] = new Selection(new DirectorySelectItem[0]);
-            return;
-        }
-        String[] rows;
-        if (multiSelect) {
-            if (value instanceof String[]) {
-                rows = (String[]) value;
-            } else if (value instanceof Object[]) {
-                Object[] values = (Object[]) value;
-                rows = new String[values.length];
-                for (int i = 0; i < rows.length; i++) {
-                    rows[i] = String.valueOf(values[i]);
-                }
-            } else if (value instanceof List) {
-                List valueList = (List) value;
-                rows = new String[valueList.size()];
-                for (int i = 0; i < rows.length; i++) {
-                    rows[i] = String.valueOf(valueList.get(i));
+        if (componentValue == null) {
+            Object value = getValue();
+            if (value == null) {
+                componentValue = new Selection[0];
+                selections = new Selection[1];
+                selections[0] = new Selection(new DirectorySelectItem[0]);
+                return;
+            }
+            String[] rows;
+            if (multiSelect) {
+                if (value instanceof String[]) {
+                    rows = (String[]) value;
+                } else if (value instanceof Object[]) {
+                    Object[] values = (Object[]) value;
+                    rows = new String[values.length];
+                    for (int i = 0; i < rows.length; i++) {
+                        rows[i] = String.valueOf(values[i]);
+                    }
+                } else if (value instanceof List) {
+                    List valueList = (List) value;
+                    rows = new String[valueList.size()];
+                    for (int i = 0; i < rows.length; i++) {
+                        rows[i] = String.valueOf(valueList.get(i));
+                    }
+                } else {
+                    rows = new String[] {};
                 }
             } else {
-                rows = new String[] {};
+                rows = new String[] { (String) value };
             }
-        } else {
-            rows = new String[] { (String) value };
-        }
 
-        componentValue = new Selection[rows.length];
-        for (int i = 0; i < rows.length; i++) {
-            String[] columns = StringUtils.split(rows[i],
-                    keySeparator != null ? keySeparator
-                            : ChainSelect.DEFAULT_KEY_SEPARATOR);
-            componentValue[i] = createSelection(columns);
-        }
+            componentValue = new Selection[rows.length];
+            for (int i = 0; i < rows.length; i++) {
+                String[] columns = StringUtils.split(rows[i],
+                        keySeparator != null ? keySeparator
+                                : ChainSelect.DEFAULT_KEY_SEPARATOR);
+                componentValue[i] = createSelection(columns);
+            }
 
-        if (multiParentSelect) {
-            selections = new Selection[1];
-            selections[0] = new Selection(new DirectorySelectItem[0]);
-        } else {
-            selections = componentValue;
+            if (multiParentSelect) {
+                selections = new Selection[1];
+                selections[0] = new Selection(new DirectorySelectItem[0]);
+            } else {
+                selections = componentValue;
+            }
         }
     }
 
