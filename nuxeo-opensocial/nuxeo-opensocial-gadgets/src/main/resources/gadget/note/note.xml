@@ -134,7 +134,7 @@
 
     var perm = gadgets.nuxeo.isEditable();
 
-    if(perm=='false') {
+    if(perm == false) {
       var elt2 = _gel("txtareapostit");
      _gel("cacheText").style.top = _gel("txtareapostit").style.top;
      _gel("cacheText").style.left = _gel("txtareapostit").style.left;

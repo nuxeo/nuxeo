@@ -33,10 +33,7 @@ jQuery(document).ready(function(){
     gadgets.window.adjustHeight();
   });
 
-  if(perm != 'true') jQuery("#perm").remove();
-
-
-
+  if(!perm) jQuery("#perm").remove();
 
   jQuery('#upload').click(function(){
     jQuery('#richtext').val(jQuery('.nicEdit-main').html());

@@ -37,15 +37,9 @@
         bookmarks = JSON.parse(bookmarksstring);
       edited = false;
 
-      var perm = gadgets.nuxeo.isEditable();
-      if(perm == 'true')
-      {
-        permission = true;
+      var permission = gadgets.nuxeo.isEditable();
+      if(permission == true) {
         createAddBookmarkButton()
-      }
-      else
-      {
-       permission = false;
       }
       createTable();
 

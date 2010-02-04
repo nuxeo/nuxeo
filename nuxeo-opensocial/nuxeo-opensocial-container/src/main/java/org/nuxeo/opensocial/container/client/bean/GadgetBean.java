@@ -40,6 +40,7 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
   private GadgetPosition position;
   private boolean collapsed;
   private String name;
+  private String icon;
   private Map<String, GadgetView> gadgetViews;
   private String htmlContent;
   private Integer height;
@@ -208,6 +209,14 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
 
   public void setHtmlContent(String htmlContent) {
     this.htmlContent = htmlContent;
+  }
+
+  public void setIcon(String icon) {
+    this.icon = icon;
+  }
+
+  public String getIcon() {
+    return icon;
   }
 
 }

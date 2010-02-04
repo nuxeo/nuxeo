@@ -15,7 +15,7 @@ jQuery(document).ready(function(){
   setLink(prefs.getString("link"));
   setLegend(prefs.getString("legend"));
 
-  if(perm != 'true') jQuery("#perm").remove();
+  if(!perm) jQuery("#perm").remove();
 
 
   jQuery('#upload').click(function(){

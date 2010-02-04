@@ -234,7 +234,7 @@ function createAddItemButton(){
 
     function createEdit(number) {
       var html;
-      if (perm == 'true') {
+      if (perm) {
       html = "<a class=\"editLink\" title=\"Editer la tâche\" href=\"javascript:editFormItem("
         + number + ")\">" + "</a>";
       } else {
@@ -245,7 +245,7 @@ function createAddItemButton(){
 
     function createDelete(number) {
       var html;
-      if (perm == 'true') {
+      if (perm) {
         html = "<a class=\"deleteLink\" title=\"Supprimer la tâche\" href=\"javascript:deleteItem("
         + number + ")\">" + "</a>";
       } else {

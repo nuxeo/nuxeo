@@ -13,7 +13,7 @@ jQuery(document).ready(function(){
 
   setTitle(prefs.getString("title"));
 
-  if(perm != 'true') jQuery("#perm").remove();
+  if(!perm) jQuery("#perm").remove();
 
     var options = {
       beforeSubmit: control,
