@@ -52,10 +52,8 @@ public class GadgetPortlet extends Portlet {
       this.setHideCollapseTool(true);
     } else {
       this.setDraggable(gadget.hasPermission("Everything"));
-      if (!(gadget.hasPermission("Everything") || gadget.hasPermission("SpaceContributeur"))) {
-        JsLibrary.log("hid col");
+      if (!(gadget.hasPermission("Everything") || gadget.hasPermission("SpaceContributeur")))
         this.setHideCollapseTool(true);
-      }
     }
     this.setHeight(this.gadget.getHeight());
     this.addListener(new PortletListener(this));

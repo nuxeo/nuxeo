@@ -1,6 +1,7 @@
 package org.nuxeo.opensocial.container.client.view.rest;
 
 import org.nuxeo.opensocial.container.client.ContainerConstants;
+import org.nuxeo.opensocial.container.client.JsLibrary;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.Request;
@@ -12,6 +13,9 @@ import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Widget;
 import com.gwtext.client.core.EventObject;
 import com.gwtext.client.core.XTemplate;
 import com.gwtext.client.data.ArrayReader;
@@ -22,10 +26,8 @@ import com.gwtext.client.data.RecordDef;
 import com.gwtext.client.data.Store;
 import com.gwtext.client.data.StringFieldDef;
 import com.gwtext.client.util.Format;
-import com.gwtext.client.widgets.Button;
 import com.gwtext.client.widgets.DataView;
 import com.gwtext.client.widgets.Panel;
-import com.gwtext.client.widgets.event.ButtonListenerAdapter;
 import com.gwtext.client.widgets.event.DataViewListenerAdapter;
 import com.gwtext.client.widgets.layout.FitLayout;
 
@@ -72,7 +74,7 @@ public class NXDataView extends Panel {
     inner.setId("images-view");
     inner.setFrame(true);
     inner.setLayout(new FitLayout());
-    inner.setHeight(500);
+    inner.setHeight(450);
     inner.setAutoScroll(true);
     inner.setHeader(false);
 
@@ -125,7 +127,6 @@ public class NXDataView extends Panel {
     dataView.setStore(store);
     dataView.setTpl(template);
     dataView.setAutoHeight(true);
-    // dataView.setMultiSelect(true);
     dataView.setOverCls("x-view-over");
     dataView.setSingleSelect(true);
     Timer t = new Timer() {
@@ -142,19 +143,23 @@ public class NXDataView extends Panel {
 
     inner.add(dataView);
 
+    Panel footer = new Panel();
+    footer.setId("footer-view");
+    footer.setFrame(true);
+    footer.setLayout(new FitLayout());
+    footer.setHeight(50);
     Button b = new Button();
-    b.setTitle("title");
-    b.setText("text");
-    b.addListener(new ButtonListenerAdapter() {
-      @Override
-      public void onClick(Button button, EventObject e) {
+    b.setText(CONSTANTS.add());
+    b.addClickListener(new ClickListener() {
+
+      public void onClick(Widget arg0) {
         nxDataWindow.setValue(dataView.getSelectedRecords()[0].getAsString(ID));
-        super.onClick(button, e);
       }
     });
+    footer.add(b);
 
     this.add(inner);
-    this.add(b);
+    this.add(footer);
   }
 
   private Object[][] getDatas(JSONArray jsonArray) {

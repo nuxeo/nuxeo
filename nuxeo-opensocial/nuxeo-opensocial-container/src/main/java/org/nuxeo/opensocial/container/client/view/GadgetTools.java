@@ -44,7 +44,6 @@ public class GadgetTools {
     final Tool min = new Tool(Tool.MINIMIZE, new Function() {
       public void execute() {
         minimize();
-
       }
 
     });
@@ -67,10 +66,10 @@ public class GadgetTools {
 
   private native void updateLayoutSizeForMin(String width)
   /*-{
-  $wnd.jQuery("#containerPortal").width(width);
-  $wnd.jQuery(".containerPortal").width(width);
-  $wnd.jQuery(".x-column-inner").width(width);
-  $wnd.jQuery("#containerPanel").width(width);
+    $wnd.jQuery("#containerPortal").width(width);
+    $wnd.jQuery(".containerPortal").width(width);
+    $wnd.jQuery(".x-column-inner").width(width);
+    $wnd.jQuery("#containerPanel").width(width);
   }-*/;
 
   private Tool[] getDefaultButtons() {

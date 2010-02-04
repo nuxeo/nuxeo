@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.shindig.gadgets.spec.Icon;
 import org.apache.shindig.gadgets.spec.View;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.spaces.api.Gadget;
@@ -21,8 +18,6 @@ import org.nuxeo.opensocial.container.factory.utils.UrlBuilder;
  * @author Guillaume Cusnieux
  */
 public class GadgetFactory {
-
-  private static final Log log = LogFactory.getLog(GadgetFactory.class);
 
   public static GadgetBean getGadgetBean(Gadget gadget,
       List<String> permissions, String locale) throws ClientException {
@@ -40,28 +35,7 @@ public class GadgetFactory {
     bean.setPermission(permissions);
     bean.setRef(gadget.getId());
     bean.setViewer(gadget.getViewer());
-    bean.setIcon(getIcon(gadget));
     return bean;
-  }
-
-  private static String getIcon(Gadget gadget) {
-    try {
-      List<Icon> icons = GadgetsUtils.getGadgetSpec(gadget)
-          .getModulePrefs()
-          .getIcons();
-
-      log.info("Icons size " + icons.size() + " for " + gadget.getName());
-
-      for (Icon icon : icons) {
-        log.info("Icons to string " + icon.toString());
-        log.info("Icons mode " + icon.getMode());
-        log.info("Icons type " + icon.getType());
-      }
-
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return null;
   }
 
   private static String getTitle(Gadget gadget) throws ClientException {
