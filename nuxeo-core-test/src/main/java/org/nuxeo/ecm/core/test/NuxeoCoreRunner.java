@@ -31,15 +31,17 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
-import org.nuxeo.ecm.core.test.guice.CoreModule;
+import org.nuxeo.ecm.core.test.guice.CoreSessionProvider;
+import org.nuxeo.ecm.core.test.guice.SchemaManagerProvider;
 import org.nuxeo.runtime.test.runner.NuxeoRunner;
-import org.nuxeo.runtime.test.runner.RuntimeModule;
 
-import com.google.inject.Module;
+import com.google.inject.Binder;
 import com.google.inject.Provider;
+import com.google.inject.Scopes;
 
 /**
  * JUnit4 runner that provide facilities to setup {@link CoreSession}-based
@@ -57,14 +59,10 @@ public class NuxeoCoreRunner extends NuxeoRunner implements
     private final static Stack<CoreSession> injectedSessions = new Stack<CoreSession>();
 
     public NuxeoCoreRunner(Class<?> classToRun) throws InitializationError {
-        this(classToRun, new RuntimeModule(), new CoreModule());
-    }
-
-    public NuxeoCoreRunner(Class<?> classToRun, Module... modules)
-            throws InitializationError {
-        super(classToRun, modules);
+        super (classToRun);
         settings = new Settings(getDescription());
     }
+
 
     public void setBackendType(BackendType backendType) {
         this.backendType = backendType;
@@ -161,4 +159,19 @@ public class NuxeoCoreRunner extends NuxeoRunner implements
         }
     }
 
+    @Override
+    protected void configure(Binder binder) {
+        super.configure(binder);        
+        binder.bind(BackendType.class).toProvider(
+                (NuxeoCoreRunner) NuxeoCoreRunner.getInstance());
+        binder.bind(SchemaManager.class).toProvider(SchemaManagerProvider.class).in(
+                Scopes.SINGLETON);
+        binder.bind(CoreSession.class).toProvider(CoreSessionProvider.class).in(
+                Scopes.SINGLETON);
+    }
+    
+    @Override
+    protected void deploy() throws Exception {
+        scanDeployments(CoreDeployment.class);
+    }
 }

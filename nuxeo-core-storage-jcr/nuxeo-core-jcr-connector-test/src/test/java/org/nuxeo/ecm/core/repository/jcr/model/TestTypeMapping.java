@@ -34,11 +34,11 @@ public class TestTypeMapping extends RepositoryTestCase {
     Document doc;
     Session session;
 
-    protected void start() throws Exception {
+    public void start() throws Exception {
         super.setUp();
     }
 
-    protected void shutdown() throws Exception {
+    public void shutdown() throws Exception {
         super.tearDown();
     }
 

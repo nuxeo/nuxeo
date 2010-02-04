@@ -113,11 +113,20 @@ public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoCoreRunner> {
         return runners;
     }
 
+    /* (non-Javadoc)
+     * @see org.junit.runners.ParentRunner#run(org.junit.runner.notification.RunNotifier)
+     */
+    @Override
+    public void run(RunNotifier notifier) {
+        // TODO Auto-generated method stub
+        super.run(notifier);
+    }
+    
     @Override
     protected void runChild(NuxeoCoreRunner child, RunNotifier notifier) {
         for (BackendType type : types) {
             child.setBackendType(type);
-            child.resetInjector();
+//            child.resetInjector();
             child.run(notifier);
         }
     }
