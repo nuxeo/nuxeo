@@ -36,6 +36,7 @@ import java.util.zip.ZipEntry;
 import static org.nuxeo.osgi.application.LoaderConstants.*;
 
 /**
+ * TODO: needs to be kept in sync with the one from nuxeo-runtime-launcher until they will be merged
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class FrameworkBootstrap {
@@ -220,8 +221,11 @@ public class FrameworkBootstrap {
                 File[] files = entryFile.listFiles();
                 if (files != null) {
                     for (File file : files) {
-                        bundleFiles.add(file);
-                        loader.addURL(file.toURI().toURL());
+                        String path = file.getPath();
+                        if (path.endsWith(".jar") || path.endsWith(".zip") || path.endsWith(".war")) {
+                            bundleFiles.add(file);
+                            loader.addURL(file.toURI().toURL());
+                        }
                     }
                 }
             } else {

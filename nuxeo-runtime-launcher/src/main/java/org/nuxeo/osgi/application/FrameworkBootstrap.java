@@ -218,8 +218,11 @@ public class FrameworkBootstrap implements LoaderConstants {
                 File[] files = entryFile.listFiles();
                 if (files != null) {
                     for (File file : files) {
-                        bundleFiles.add(file);
-                        loader.addURL(file.toURI().toURL());
+                        String path = file.getPath();
+                        if (path.endsWith(".jar") || path.endsWith(".zip") || path.endsWith(".war")) {
+                            bundleFiles.add(file);
+                            loader.addURL(file.toURI().toURL());
+                        }
                     }
                 }
             } else {
