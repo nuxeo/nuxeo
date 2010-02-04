@@ -384,7 +384,7 @@ public class ClipboardActionsBean extends InputController implements
 
         List<DocumentModel> newDocs = moveDocumentsToNewParent(targetDoc, docs);
 
-        documentsListsManager.getWorkingList(listName).clear();
+        documentsListsManager.resetWorkingList(listName);
 
         Object[] params = { newDocs.size() };
         facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
