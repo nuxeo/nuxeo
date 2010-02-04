@@ -17,8 +17,6 @@
 
 package org.nuxeo.dam.webapp.contentbrowser;
 
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +44,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
@@ -58,6 +57,8 @@ import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 @Name("documentActions")
 @Scope(ScopeType.CONVERSATION)
@@ -348,6 +349,11 @@ public class DocumentActions implements Serializable {
         }
 
         return fullName;
+    }
+
+    public boolean canEditAsset() throws ClientException {
+        return documentManager.hasPermission(currentSelection.getRef(),
+                SecurityConstants.WRITE);
     }
 
     public boolean isShowExifArea() {
