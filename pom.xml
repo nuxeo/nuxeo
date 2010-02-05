@@ -1914,26 +1914,6 @@
       </reporting>
     </profile>
 
-    <profile>
-      <id>local-deployment</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <distributionManagement>
-        <site>
-          <id>maven_website</id>
-          <url>scpexe://gironde.nuxeo.com/home/mavenweb/site/</url>
-        </site>
-        <repository>
-          <id>nuxeo-release</id>
-          <url>file:///home/nexus/repositories/nuxeo-release</url>
-        </repository>
-        <snapshotRepository>
-          <id>nuxeo-snapshot</id>
-          <url>file:///home/nexus/repositories/nuxeo-snapshot</url>
-        </snapshotRepository>
-      </distributionManagement>
-    </profile>
     <!-- For use by Nuxeo internal QA -->
     <profile>
       <id>qa</id>
