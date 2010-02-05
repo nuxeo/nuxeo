@@ -187,9 +187,15 @@
         }
 
         .addItem{
-          font-weight:bold;
-      text-decoration:none;
-      color:#000000;
+         display:inline-block;
+        font-weight:bold;
+        height:16px;
+        text-decoration:none;
+        color:#000000;
+        background-image:url("bookmark_add.jpg");
+        background-repeat:no-repeat;
+        padding-left:20px;
+        font-size:11px;
         }
 
         .option {
@@ -276,6 +282,10 @@
     text-decoration:none;
     }
 
+#hide img {
+border:0 none;
+padding:5px 5px 0 0;
+}
 
       </style>
 

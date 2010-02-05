@@ -24,8 +24,8 @@ function editItem(indexItem, name, owner, deadline) {
 function testTypeDate(dateEntree) {
 var tst=false;
   try {
-	var rc = dateEntree.split("/");
-	var nd = new Date(rc[2],(rc[1]-1),rc[0]);
+  var rc = dateEntree.split("/");
+  var nd = new Date(rc[2],(rc[1]-1),rc[0]);
     tst = (rc[2] > 1800 && rc[2] < 2200 && rc[2] == nd.getFullYear() && rc[1] == (nd.getMonth()+1) && rc[0] == nd.getDate());
   } catch(e) {
   }
@@ -39,12 +39,12 @@ function addItem(name, owner, deadline) {
     _gel("labelIntitule").className="labelError";
     hasError = true;
   }
-  
+
   if(deadline!= "" && !testTypeDate(deadline)) {
     _gel("labelEcheance").className="labelError";
     hasError = true;
   }
-  
+
   if (hasError)
     return false;
 
@@ -67,7 +67,7 @@ function addItem(name, owner, deadline) {
         "owner" :owner
       };
   }
-  
+
   toogleForms();
   createTable();
   saveToDoList();
@@ -106,24 +106,24 @@ function sortByName(number) {
   var bookmark = todolist.array[number];
   var lastName = bookmark.name;
   for (var i = number - 1; i >= 0; i--) {
-	  var currentItem = todolist.array[i];
-	  if (currentItem == null) break;
-	  var currentName = currentItem.name;
-	  if (currentName.toUpperCase() <= lastName.toUpperCase())
-	    break;
-	  swapToDoList(i + 1, i);
+    var currentItem = todolist.array[i];
+    if (currentItem == null) break;
+    var currentName = currentItem.name;
+    if (currentName.toUpperCase() <= lastName.toUpperCase())
+      break;
+    swapToDoList(i + 1, i);
   }
 }
 
 function rowClass(number) {
-	if (number % 2 != 0)
-	  return " class=odd ";
-	else
-	  return " class=even ";
+  if (number % 2 != 0)
+    return " class=odd ";
+  else
+    return " class=even ";
 }
 
 function createAddItemButton(){
-  var html ="<a class=\"addItem\" href=\"javascript: toogleForms('create')\" style=\"text-decoration:none; font-size: 80%; color: black;\">Ajouter</a>";
+  var html ="<a class=\"addItem\" href=\"javascript: toogleForms('create')\" style=\"text-decoration:none;color: black;\">Ajouter</a>";
   _gel("addItemIcon").innerHTML = html;
   gadgets.window.adjustHeight();
 

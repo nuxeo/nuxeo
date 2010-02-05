@@ -1,7 +1,7 @@
 var bookmarks; // This is a json object of bookmark items
 var edited;
 var prefs;
-var permission;
+var permission = gadgets.nuxeo.isEditable();
 
 function saveBookmarks() {
   prefs.set("bookmarks", JSON.stringify(bookmarks));
@@ -228,8 +228,8 @@ function toggleLayer(whichLayer) {
     // this is the way the standards work
     var style2 = document.getElementById(whichLayer).style;
     if (whichLayer == "addBookmarkIcon") {
-      style2.visibility = (style2.visibility == "visible") ? "hidden"
-          : "visible";
+      style2.display = (style2.display == "block") ? "none"
+          : "block";
     } else {
       style2.display = (style2.display == "block") ? "none" : "block";
     }

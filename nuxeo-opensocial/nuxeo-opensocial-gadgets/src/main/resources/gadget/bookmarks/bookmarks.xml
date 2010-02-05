@@ -46,11 +46,21 @@
     })
       </script>
       <style type="text/css">
+
+      *{
+          font-size:11px;
+          font-family:Arial,Verdana, sans-serif;
+        }
+
+        img{
+         border:0;
+        }
+
         input
         {
          font-family:Arial,Verdana, sans-serif;
          font-size:11px;
-         border:1px solid #000000;
+         border:1px solid #ffffff;
         }
 
         img.favicon{
@@ -116,15 +126,10 @@
         }
 
         #addBookmarkForm{
-         position:absolute;
-         border:1px solid #000000;
-         background-color:#ffffff;
-         left:5px;
-         top:0px;
+         background-color:#666666;
         }
 
         #addBookmarkIcon{
-         height:25px
          text-align:right;
         }
 
@@ -134,15 +139,11 @@
         }
 
         #bookmarksDiv{
-        min-height:75px;
-        height:auto !important;
-        height:75px;
         padding-bottom:5px;
         }
 
       #addBookmarkIcon{
        text-align:right;
-       height:25px;
       }
 
         #name_input, #newNameInput, #newUrlInput {
@@ -151,7 +152,9 @@
           padding: 0px;
         }
         #new_bookmark_td {
-          font-size: 11px
+          font-size: 11px;
+          color:#ffffff;
+          font-weight:bold;
         }
         #input {
           font-family: arial;
@@ -195,41 +198,72 @@
         .odd {
           background: white;
         }
-      </style>
-    <div id="addBookmarkIcon" style="visibility:visible;">
 
-    </div>
+        #hideContainer {
+        text-align:right;
+        }
+
+        #addButton{
+          background:url("accept.png") no-repeat scroll 0 0 transparent;
+          border:medium none;
+          color:#FFFFFF;
+          display:block;
+          font-weight:bold;
+          height:21px;
+          padding:0 0 7px 14px;
+          text-decoration:none;
+          width:61px;
+        }
+
+        #addButton:hover{
+          text-decoration:underline;
+          cursor:pointer;
+        }
+
+        #hide img {
+        border:0 none;
+        padding:5px 5px 0 0;
+        }
+      </style>
+
+      <div id="bookmarksDiv"></div>
+      <div id="addBookmarkIcon" style="display:block;">
+
+      </div>
       <div id="addBookmarkForm" style="display: none">
+        <div id="hideContainer">
+          <a href="javascript: toogleForms();" id="hide" title="fermer">
+            <img src="x.png">
+          </a>
+        </div>
         <form name = "newBookmarkForm" onsubmit="return addBookmark(document.newBookmarkForm.newNameInput.value,document.newBookmarkForm.newUrlInput.value, false)" style="margin:0px;">
             <input type="hidden" id="action" value="">
              <input type="hidden" id="indexTab" value="">
-            <table cellspacing="5" style="width:250px">
+            <table cellspacing="5" style="width:100%">
               <tr>
-                  <td id="new_bookmark_td" width="20">
+                  <td id="new_bookmark_td">
                     <nobr>Intitulé:</nobr>
                   </td>
-                  <td width="230">
+                  <td>
                     <input id="newNameInput" type="text" style="width:100%; font-size: 11px;">
                   </td>
                </tr>
                <tr>
-                <td id="new_bookmark_td" width="20">
+                <td id="new_bookmark_td">
                     <nobr>URL:</nobr>
                 </td>
-                <td width="230">
+                <td>
                     <input id="newUrlInput" type="text" style="width:100%; font-size: 11px;">
                   </td>
                </tr>
                <tr>
                  <td colspan="2" align="right">
-                    <input type="button" onclick="return addBookmark(document.newBookmarkForm.newNameInput.value, document.newBookmarkForm.newUrlInput.value, false)" value="Valider" style="font-size: 11px;">
-                    &nbsp;<input type="button" onclick="javascript: toogleForms();" value="Annuler" style="font-size: 11px;">
+                    <input type="button" id="addButton" onclick="return addBookmark(document.newBookmarkForm.newNameInput.value, document.newBookmarkForm.newUrlInput.value, false)" value="Valider">
                 </td>
                </tr>
             </table>
           </form>
       </div>
-      <div id="bookmarksDiv"></div>
     ]]>
   </Content>
 </Module>
