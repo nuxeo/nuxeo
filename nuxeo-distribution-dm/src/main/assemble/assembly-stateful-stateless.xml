@@ -6,7 +6,6 @@
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
            uri="urn:nuxeo-artifact" />
 
-
   <target name="init" unless="init.done">
     <condition property="no.build">
       <and>
@@ -18,9 +17,18 @@
           <or>
             <isset property="maven.profile.all" />
             <isset property="maven.profile.all-distributions" />
+            <isset property="maven.profile.nuxeo-2parts" />
           </or>
         </not>
       </and>
+    </condition>
+    <condition property="no.alternate.build">
+      <not>
+        <or>
+          <isset property="maven.profile.all" />
+          <isset property="maven.profile.all-distributions" />
+        </or>
+      </not>
     </condition>
 
     <property name="outdir" value="${maven.project.build.directory}" />
@@ -72,7 +80,7 @@
   </target>
 
   <target name="build-distribution-stateful"
-          depends="init"
+          depends="init" unless="no.alternate.build"
           description="Build stateful distributions on various backends">
     <delete failonerror="false"
             dir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear" />
@@ -118,7 +126,8 @@
           <artifact groupId="org.nuxeo*" category="core,stateful" />
         </includes>
         <excludes>
-          <artifact groupId="org.nuxeo.ecm.distribution" artifactId="nuxeo-distribution-dm" />
+          <artifact groupId="org.nuxeo.ecm.distribution"
+                    artifactId="nuxeo-distribution-dm" />
           <artifact groupId="org.nuxeo.common" />
           <artifact artifactId="nuxeo-generic-wss-handler" />
           <artifact artifactId="nuxeo-platform-audit-facade" />
@@ -179,7 +188,8 @@
           <artifact groupId="org.nuxeo*" category="stateless" />
         </includes>
         <excludes>
-          <artifact groupId="org.nuxeo.ecm.distribution" artifactId="nuxeo-distribution-dm" />
+          <artifact groupId="org.nuxeo.ecm.distribution"
+                    artifactId="nuxeo-distribution-dm" />
           <artifact groupId="org.nuxeo.common" />
           <artifact artifactId="nuxeo-generic-wss-handler" />
           <artifact artifactId="nuxeo-platform-webapp" />

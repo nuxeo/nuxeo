@@ -300,6 +300,9 @@
         </property>
       </activation>
     </profile>
+    <profile>
+      <id>nuxeo-2parts</id>
+    </profile>
   </profiles>
 
   <build>

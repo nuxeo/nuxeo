@@ -6,7 +6,10 @@
 
   <target name="init" unless="init.done">
     <condition property="no.build">
-      <isset property="maven.profile.nuxeo-ep" />
+      <or>
+        <isset property="maven.profile.nuxeo-ep" />
+        <isset property="maven.profile.nuxeo-2parts" />
+      </or>
     </condition>
     <condition property="no.alternate.build">
       <isset property="maven.profile.vcs" />
@@ -24,7 +27,7 @@
     <!-- <artifact:print output="dependency-tree.log" /> -->
   </target>
 
-  <target name="build" depends="init,clean" unless="maven.profile.nuxeo-ep">
+  <target name="build" depends="init,clean" unless="no.build">
     <echo>Building default Nuxeo DM EAR</echo>
     <property name="nuxeo.ear" value="${stagedir}/nuxeo.ear" />
     <mkdir dir="${nuxeo.ear}" />
