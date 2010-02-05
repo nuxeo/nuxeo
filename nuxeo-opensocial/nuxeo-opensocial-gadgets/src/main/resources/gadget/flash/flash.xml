@@ -41,10 +41,16 @@
       background:url(/nuxeo/img/edit.png) no-repeat 0 0;
       color:#000000;
       font-weight:bold;
+      display:inline-block;
+      height:16px;
     }
 
     #show a:hover{
       text-decoration:underline;
+    }
+
+    #show{
+     text-align:right;
     }
 
 
