@@ -58,11 +58,9 @@ public class PortletListener extends PanelListenerAdapter {
             new AsyncCallback<GadgetBean>() {
 
               public void onFailure(Throwable arg0) {
-                JsLibrary.error("Failed : saveCollapsed");
               }
 
               public void onSuccess(GadgetBean arg0) {
-                JsLibrary.info("Succes : saveCollapsed");
               }
             });
   }

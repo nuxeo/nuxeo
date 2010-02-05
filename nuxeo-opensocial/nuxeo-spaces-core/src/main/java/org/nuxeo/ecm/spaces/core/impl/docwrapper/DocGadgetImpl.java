@@ -160,7 +160,6 @@ public class DocGadgetImpl extends AbstractGadget {
 
   public void setCollapsed(boolean collapsed) throws ClientException {
     doc.setPropertyValue(GADGET_COLLAPSED, collapsed);
-
   }
 
   public void setDefinitionUrl(URL url) throws ClientException {

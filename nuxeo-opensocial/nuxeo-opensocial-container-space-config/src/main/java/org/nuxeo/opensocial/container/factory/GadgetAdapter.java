@@ -153,6 +153,7 @@ class GadgetAdapter implements Gadget {
   }
 
   public void setCollapsed(boolean collapsed) throws ClientException {
+    this.collapsed = collapsed;
   }
 
   public void setDefinitionUrl(URL url) throws ClientException {
