@@ -51,7 +51,8 @@
 
       createTable();
 
-      if(perm)
+      var permission = gadgets.nuxeo.isEditable();
+      if(permission)
         createAddItemButton()
     })
       </script>
