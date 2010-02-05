@@ -7,7 +7,7 @@
   <a4j:region>
   <a4j:outputPanel id="viewUserPanel">
   <a4j:form id="viewUser" ajaxSingle="true">
-  
+
     <div id="facesStatusMessage" class="facesStatusMessage">
       <h:messages globalOnly="true"
         infoClass="infoFeedback"
@@ -24,9 +24,10 @@
 
     <p class="buttonsGadget">
       <a4j:commandLink styleClass="button"
-                       action="#{userManagerActions.updateUser}"
+                       action="#{userManagerActions.updateUserNoRedirect}"
                        rendered="#{userManagerActions.displayMode == 'edit'}"
-                       reRender="viewUserPanel">
+                       reRender="viewUserPanel"
+                       oncomplete="if (!data) { Richfaces.hideModalPanel('createUserFormPanel') };">
         <h:outputText value="#{messages['command.user.save']}"/>
       </a4j:commandLink>
       <a4j:commandLink styleClass="button"

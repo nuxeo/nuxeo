@@ -18,9 +18,9 @@
 
     <p class="buttonsGadget">
       <a4j:commandButton styleClass="button"
-        value="#{messages['command.user.create']}" action="#{userManagerActions.createUser}"
+        value="#{messages['command.user.create']}" action="#{userManagerActions.createUserNoRedirect}"
         data="#{facesContext.maximumSeverity.ordinal ge 2}"
-        oncomplete="if (!data) { Richfaces.hideModalPanel('CreateUserFormPanel') };"
+        oncomplete="if (!data) { Richfaces.hideModalPanel('createUserFormPanel'); }"
         reRender="userSearchResult, createUser" />
     </p>
   </a4j:form>

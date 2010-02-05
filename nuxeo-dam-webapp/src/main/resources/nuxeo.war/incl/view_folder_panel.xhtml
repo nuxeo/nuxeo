@@ -8,7 +8,7 @@
   <a4j:region>
   <a4j:outputPanel id="viewFolderPanel">
   <a4j:form id="viewUser" ajaxSingle="true">
-  
+
     <div id="facesStatusMessage" class="facesStatusMessage">
       <h:messages globalOnly="true"
         infoClass="infoFeedback"
@@ -22,15 +22,16 @@
     <f:subview id="editSubView" rendered="#{folderAdminActions.displayMode == 'edit'}">
       <nxl:layout name="folderAdmin" mode="edit" value="#{folderAdminActions.selectedFolder}" />
     </f:subview>
-	
+
 	<ui:include src="/incl/folder_security.xhtml"/>
 
 
     <p class="buttonsGadget">
       <a4j:commandLink styleClass="button"
-                       action="#{folderAdminActions.updateFolder}"
+                       action="#{folderAdminActions.updateFolderNoRedirect}"
                        rendered="#{folderAdminActions.displayMode == 'edit'}"
-                       reRender="viewFolderPanel">
+                       reRender="viewFolderPanel"
+                       oncomplete="if (!data) { Richfaces.hideModalPanel('createFolderFormPanel') };">
         <h:outputText value="#{messages['command.save']}"/>
       </a4j:commandLink>
       <a4j:commandLink styleClass="button"
@@ -41,7 +42,7 @@
         <h:outputText value="#{messages['command.edit']}"
                       rendered="#{folderAdminActions.displayMode == 'view'}"/>
       </a4j:commandLink>
-      
+
     </p>
   </a4j:form>
   </a4j:outputPanel>

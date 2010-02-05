@@ -7,7 +7,7 @@
   <a4j:region>
   <a4j:outputPanel id="viewGroupPanel">
   <a4j:form id="viewGroup" ajaxSingle="true">
-  
+
     <div id="facesStatusMessage" class="facesStatusMessage">
       <h:messages globalOnly="true"
         infoClass="infoFeedback"
@@ -24,9 +24,10 @@
 
     <p class="buttonsGadget">
       <a4j:commandLink styleClass="button"
-                       action="#{groupManagerActions.updateGroup}"
+                       action="#{groupManagerActions.updateGroupNoRedirect}"
                        rendered="#{groupManagerActions.displayMode == 'edit'}"
-                       reRender="viewGroupPanel">
+                       reRender="viewGroupPanel"
+                       oncomplete="if (!data) { Richfaces.hideModalPanel('createGroupFormPanel') };">
         <h:outputText value="#{messages['command.save']}"/>
       </a4j:commandLink>
       <a4j:commandLink styleClass="button"

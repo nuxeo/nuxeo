@@ -107,7 +107,7 @@
                 rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
                 <h:column>
                   <a4j:commandLink id="delete-user"
-                    action="#{userManagerActions.deleteUser(userModel.id)}"
+                    action="#{userManagerActions.deleteUserNoRedirect(userModel.id)}"
                     onclick="if (!confirmDeleteUser()) { return false; }"
                     reRender="userSearchResult"
                     rendered="#{userManagerActions.allowDeleteUser and notReadOnly}">

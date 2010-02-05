@@ -92,7 +92,7 @@
                 rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
                 <h:column>
                   <a4j:commandLink
-                    action="#{groupManagerActions.deleteGroup(groupModel.id)}"
+                    action="#{groupManagerActions.deleteGroupNoRedirect(groupModel.id)}"
                     onclick="if (!confirmDeleteGroup()) { return false; }"
                     reRender="groupSearchResult"
                     rendered="#{groupManagerActions.allowDeleteGroup and notReadOnly}">

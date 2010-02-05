@@ -20,9 +20,9 @@
 
     <p class="buttonsGadget">
       <a4j:commandButton styleClass="button"
-        value="#{messages['command.folder.create']}" action="#{folderAdminActions.createFolder}"
+        value="#{messages['command.folder.create']}" action="#{folderAdminActions.createFolderNoRedirect}"
         data="#{facesContext.maximumSeverity.ordinal ge 2}"
-        oncomplete="if (!data) { Richfaces.hideModalPanel('CreateFolderFormPanel') };"
+        oncomplete="if (!data) { Richfaces.hideModalPanel('createFolderFormPanel') };"
         reRender="folderSearchResult, createFolder" />
     </p>
   </a4j:form>

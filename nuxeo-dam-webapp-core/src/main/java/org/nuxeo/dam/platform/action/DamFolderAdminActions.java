@@ -16,9 +16,6 @@
  */
 package org.nuxeo.dam.platform.action;
 
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
-import static org.nuxeo.dam.platform.context.ImportActions.IMPORTSET_ROOT_PATH;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,6 +47,9 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.dam.platform.context.ImportActions.IMPORTSET_ROOT_PATH;
+
 /**
  * @author eugen
  *
@@ -57,7 +57,7 @@ import org.nuxeo.runtime.api.Framework;
 @Name("folderAdminActions")
 @Scope(ScopeType.PAGE)
 @Install(precedence = FRAMEWORK)
-public class DamFolderAdminActions implements Serializable{
+public class DamFolderAdminActions implements Serializable {
 
     protected static final String FOLDER_TYPE = "Workspace";
 
@@ -92,20 +92,20 @@ public class DamFolderAdminActions implements Serializable{
 
     @Factory(value = "folderList")
     public DocumentModelList getFolders() throws ClientException {
-        if ( folders == null) {
-            folders = queryModelActions.get("IMPORT_FOLDERS").getDocuments(documentManager);
+        if (folders == null) {
+            folders = queryModelActions.get("IMPORT_FOLDERS").getDocuments(
+                    documentManager);
         }
-        if ( folders == null ) { // still null
+        if (folders == null) { // still null
             folders = NO_FOLDERS;
         }
         return folders;
     }
 
-    public String deleteFolder(String folderId) throws ClientException {
+    public void deleteFolderNoRedirect(String folderId) throws ClientException {
         documentManager.removeDocument(new IdRef(folderId));
         documentManager.save();
         resetFolderList();
-        return VIEW_FOLDERS;
     }
 
     public void resetFolderList() {
@@ -121,7 +121,7 @@ public class DamFolderAdminActions implements Serializable{
     public void resetPermissions() {
         userPermissions.clear();
         groupPermissions.clear();
-        for ( String perm : visiblePermissions ){
+        for (String perm : visiblePermissions) {
             userPermissions.put(perm, new ArrayList<String>());
             groupPermissions.put(perm, new ArrayList<String>());
         }
@@ -135,68 +135,55 @@ public class DamFolderAdminActions implements Serializable{
         }
     }
 
-    public String createFolder() throws ClientException {
-        try {
-            DocumentModel doc = documentManager.createDocument(newFolder);
-            savePermissionMaps(doc);
-            documentManager.save();
-            resetNewFolder();
-            resetFolderList();
-            return VIEW_FOLDERS;
-        } catch (Exception t) {
-            throw ClientException.wrap(t);
-        }
+    public void createFolderNoRedirect() throws ClientException {
+        DocumentModel doc = documentManager.createDocument(newFolder);
+        savePermissionMaps(doc);
+        documentManager.save();
+        resetNewFolder();
+        resetFolderList();
     }
 
-    public String updateFolder() throws ClientException {
-        try {
-            selectedFolder = documentManager.saveDocument(selectedFolder);
-            savePermissionMaps(selectedFolder);
-            documentManager.save();
-            resetFolderList();
-            return VIEW_FOLDERS;
-        } catch (Exception t) {
-            throw ClientException.wrap(t);
-        }
+    public void updateFolderNoRedirect() throws ClientException {
+        selectedFolder = documentManager.saveDocument(selectedFolder);
+        savePermissionMaps(selectedFolder);
+        documentManager.save();
+        resetFolderList();
     }
 
     public DocumentModel getNewFolder() throws ClientException {
-        if ( newFolder == null ) {
-            newFolder = documentManager.createDocumentModel(IMPORTSET_ROOT_PATH, IdUtils.generateStringId(), FOLDER_TYPE);
+        if (newFolder == null) {
+            newFolder = documentManager.createDocumentModel(
+                    IMPORTSET_ROOT_PATH, IdUtils.generateStringId(),
+                    FOLDER_TYPE);
         }
         return newFolder;
     }
 
-    public void setSelectedFolder(String id) throws ClientException{
+    public void setSelectedFolder(String id) throws ClientException {
         selectedFolder = documentManager.getDocument(new IdRef(id));
         loadPermissionMaps();
         displayMode = BuiltinModes.VIEW;
     }
 
     protected void savePermissionMaps(DocumentModel doc) throws ClientException {
-        try {
-            ACP acp = doc.getACP();
-            ACL acl = acp.getACL(ACL.LOCAL_ACL);
-            if ( acl == null ) {
-                acl = new ACLImpl();
-                acp.addACL(acl);
-            } else {
-                acl.clear();
-            }
-            savePermissionMap(userPermissions, acl);
-            savePermissionMap(groupPermissions, acl);
-            documentManager.setACP(doc.getRef(), acp , true);
-        } catch ( Throwable t ){
-            throw ClientException.wrap(t);
+        ACP acp = doc.getACP();
+        ACL acl = acp.getACL(ACL.LOCAL_ACL);
+        if (acl == null) {
+            acl = new ACLImpl();
+            acp.addACL(acl);
+        } else {
+            acl.clear();
         }
-
+        savePermissionMap(userPermissions, acl);
+        savePermissionMap(groupPermissions, acl);
+        documentManager.setACP(doc.getRef(), acp, true);
     }
 
     protected void savePermissionMap(Map<String, List<String>> map, ACL acl) {
-        for ( Entry<String, List<String>> entry : map.entrySet()){
+        for (Entry<String, List<String>> entry : map.entrySet()) {
             String perm = entry.getKey();
             List<String> list = entry.getValue();
-            for ( String id : list){
+            for (String id : list) {
                 acl.add(new ACE(id, perm, true));
             }
         }
@@ -205,34 +192,30 @@ public class DamFolderAdminActions implements Serializable{
     protected void loadPermissionMaps() throws ClientException {
         groupPermissions.clear();
         userPermissions.clear();
-        try {
-            ACP acp = selectedFolder.getACP();
-            ACL acl = acp.getACL(ACL.LOCAL_ACL);
-            if ( acl != null ) {
-                ACE[] aces = acl.getACEs();
-                for ( ACE ace : aces) {
-                    if ( ace.isGranted() ){
-                        String perm = ace.getPermission();
-                        if( visiblePermissions.contains(perm)){
-                            String id = ace.getUsername();
-                            if ( userManager.getGroup(id) != null){ // group
-                                loadPermission(groupPermissions, perm, id);
-                            } else { // user
-                                loadPermission(userPermissions, perm, id);
-                            }
+        ACP acp = selectedFolder.getACP();
+        ACL acl = acp.getACL(ACL.LOCAL_ACL);
+        if (acl != null) {
+            ACE[] aces = acl.getACEs();
+            for (ACE ace : aces) {
+                if (ace.isGranted()) {
+                    String perm = ace.getPermission();
+                    if (visiblePermissions.contains(perm)) {
+                        String id = ace.getUsername();
+                        if (userManager.getGroup(id) != null) { // group
+                            loadPermission(groupPermissions, perm, id);
+                        } else { // user
+                            loadPermission(userPermissions, perm, id);
                         }
                     }
                 }
             }
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
         }
     }
 
-
-    protected void loadPermission(Map<String, List<String>> map, String perm, String id) {
+    protected void loadPermission(Map<String, List<String>> map, String perm,
+            String id) {
         List<String> list = map.get(perm);
-        if( list == null) {
+        if (list == null) {
             list = new ArrayList<String>();
             map.put(perm, list);
         }
@@ -240,19 +223,20 @@ public class DamFolderAdminActions implements Serializable{
     }
 
     @Factory(value = "visiblePermissions")
-    public List<String> getVisiblePermissions() throws ClientException{
+    public List<String> getVisiblePermissions() throws ClientException {
         try {
-            if ( visiblePermissions == null ) {
+            if (visiblePermissions == null) {
                 visiblePermissions = new ArrayList<String>();
                 SecurityService securityService = Framework.getService(SecurityService.class);
-                List<UserVisiblePermission> permDescriptors = securityService.getPermissionProvider().getUserVisiblePermissionDescriptors(FOLDER_TYPE);
-                for ( UserVisiblePermission pd : permDescriptors) {
+                List<UserVisiblePermission> permDescriptors = securityService.getPermissionProvider().getUserVisiblePermissionDescriptors(
+                        FOLDER_TYPE);
+                for (UserVisiblePermission pd : permDescriptors) {
                     visiblePermissions.add(pd.getPermission());
                 }
             }
             return visiblePermissions;
-        } catch ( Throwable t ) {
-            throw ClientException.wrap(t);
+        } catch (Exception e) {
+            throw ClientException.wrap(e);
         }
     }
 

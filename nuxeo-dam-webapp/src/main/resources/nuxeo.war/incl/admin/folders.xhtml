@@ -76,7 +76,7 @@
                 rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
                 <h:column>
                   <a4j:commandLink
-                    action="#{folderAdminActions.deleteFolder(folder.id)}"
+                    action="#{folderAdminActions.deleteFolderNoRedirect(folder.id)}"
                     onclick="if (!confirmDeleteFolder()) { return false; }"
                     reRender="folderSearchResult"
                     rendered="#{notReadOnly}">
