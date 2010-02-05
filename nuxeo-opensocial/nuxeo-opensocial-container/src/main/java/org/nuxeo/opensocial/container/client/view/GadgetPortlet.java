@@ -193,7 +193,6 @@ public class GadgetPortlet extends Portlet {
 
   @Override
   protected void afterRender() {
-    JsLibrary.log("This. " + this.gadget.isCollapsed());
     if (this.gadget.isCollapsed())
       collapse(getIdWithRefAndView(gadget.getRef(), view));
     super.afterRender();
