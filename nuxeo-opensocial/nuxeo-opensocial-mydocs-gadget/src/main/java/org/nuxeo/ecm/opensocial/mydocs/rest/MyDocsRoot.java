@@ -1,5 +1,6 @@
 package org.nuxeo.ecm.opensocial.mydocs.rest;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -38,6 +39,7 @@ public class MyDocsRoot extends ModuleRoot {
 
 
             List<DocumentModel> parents  = session.getParentDocuments(spaceRef);
+            Collections.reverse(parents);
             for(DocumentModel parent : parents) {
                 if(parent.getType().equals("Workspace")) {
                     return newObject("JSONDocument", parent);
