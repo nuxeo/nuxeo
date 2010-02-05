@@ -100,6 +100,7 @@ public class NXDataView extends Panel {
 
       public void onClick(DataView source, int index, Element node,
           EventObject e) {
+        updateSettingsPanel(source.getSelectedRecords());
         super.onClick(source, index, node, e);
       }
 
@@ -176,7 +177,7 @@ public class NXDataView extends Panel {
       datas[i][2] = o.get(CREATOR)
           .isString()
           .stringValue();
-      datas[i][3] = "http://localhost:8080/nuxeo/site/gadgets/picturebook/picturebook_icon.png";
+      datas[i][3] = "/nuxeo/site/gadgets/picturebook/picturebook_icon.png";
 
       datas[i][4] = o.get(ID)
           .isString()
