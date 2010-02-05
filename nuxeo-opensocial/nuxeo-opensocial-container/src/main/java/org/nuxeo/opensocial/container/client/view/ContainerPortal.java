@@ -31,6 +31,7 @@ import org.nuxeo.opensocial.container.client.bean.GadgetPosition;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
+import com.google.gwt.user.client.ui.HTML;
 import com.gwtext.client.dd.DropTargetConfig;
 import com.gwtext.client.widgets.BoxComponent;
 import com.gwtext.client.widgets.MessageBox;
