@@ -318,6 +318,7 @@ public class DocSpaceImpl implements Space {
 
     String user = session().getPrincipal()
         .getName();
+
     UserManager userManager = Framework.getService(UserManager.class);
     List<String> perms = new ArrayList<String>();
     for (ACL acl : acp.getACLs()) {

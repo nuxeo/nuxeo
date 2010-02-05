@@ -27,6 +27,7 @@ import org.nuxeo.opensocial.container.client.bean.GadgetPosition;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.gwtext.client.core.EventObject;
 import com.gwtext.client.core.ExtElement;
 import com.gwtext.client.dd.DragData;
@@ -304,7 +305,14 @@ public class DropZone extends PortalDropZone {
     beans.addAll(getOrderingAndUpdatingBeans(dropCol, bean));
     ContainerEntryPoint.getService()
         .saveGadgetsCollection(beans, ContainerEntryPoint.getGwtParams(),
-            new SaveGadgetAsyncCallback());
+            new AsyncCallback<Boolean>() {
+
+              public void onFailure(Throwable arg0) {
+              }
+
+              public void onSuccess(Boolean arg0) {
+              }
+            });
   }
 
   private static ArrayList<GadgetBean> getOrderingAndUpdatingBeans(

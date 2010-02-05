@@ -18,8 +18,10 @@
 package org.nuxeo.opensocial.container.client.view;
 
 import org.nuxeo.opensocial.container.client.ContainerEntryPoint;
+import org.nuxeo.opensocial.container.client.JsLibrary;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.event.PanelListenerAdapter;
 
@@ -53,6 +55,15 @@ public class PortletListener extends PanelListenerAdapter {
     gadget.setCollapsed(collapsed);
     ContainerEntryPoint.getService()
         .saveGadget(gadget, ContainerEntryPoint.getGwtParams(),
-            new SaveGadgetAsyncCallback());
+            new AsyncCallback<GadgetBean>() {
+
+              public void onFailure(Throwable arg0) {
+                JsLibrary.error("Failed : saveCollapsed");
+              }
+
+              public void onSuccess(GadgetBean arg0) {
+                JsLibrary.info("Succes : saveCollapsed");
+              }
+            });
   }
 }

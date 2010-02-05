@@ -18,7 +18,7 @@
 package org.nuxeo.opensocial.container.client.service.api;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 import org.nuxeo.opensocial.container.client.bean.Container;
@@ -99,7 +99,7 @@ public interface ContainerService extends RemoteService {
    * @param gwtParams
    * @throws ContainerServiceException
    */
-  GadgetBean saveGadgetsCollection(List<GadgetBean> beans,
+  Boolean saveGadgetsCollection(Collection<GadgetBean> beans,
       Map<String, String> gwtParams) throws ContainerServiceException;
 
   /**

@@ -17,6 +17,7 @@
 
 package org.nuxeo.opensocial.container.client;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,41 +61,46 @@ public class GadgetService {
     @org.nuxeo.opensocial.container.client.GadgetService::setHeight(Ljava/lang/String;I)(this.f,height);
   }-*/;
 
-  private static Map<String, Timer> adjustHeight = new HashMap<String, Timer>();
+  private static Map<String, GadgetBean> beans = new HashMap<String, GadgetBean>();
+  private static Timer saveAllGadgets;
 
   public static void setHeight(String frameId, int height) {
+    if (saveAllGadgets != null)
+      saveAllGadgets.cancel();
+    if (height < 30)
+      return;
+
     ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
     final GadgetPortlet p = portal.getGadgetPortletByFrameId(frameId);
-    final GadgetBean bean = p.getGadgetBean();
-    final int h = height + 30;
-    if (p.getHeight() != h) {
-      Timer timer;
-      if (adjustHeight.containsKey(frameId)) {
-        adjustHeight.get(frameId)
-            .cancel();
-        adjustHeight.remove(frameId);
-      }
-      p.setHeight(h);
-      bean.setHeight(h);
-      timer = new Timer() {
+    GadgetBean bean = p.getGadgetBean();
+    height += 30;
+    int test = bean.getHeight() - height;
+    if (test != 0) {
+      if (beans.containsKey(p.getId()))
+        beans.remove(p.getId());
+      p.setHeight(height);
+      bean.setHeight(height);
+      beans.put(p.getId(), bean);
+
+      saveAllGadgets = new Timer() {
+
         @Override
         public void run() {
           ContainerEntryPoint.getService()
-              .saveGadget(bean, ContainerEntryPoint.getGwtParams(),
-                  new AsyncCallback<GadgetBean>() {
+              .saveGadgetsCollection(new ArrayList<GadgetBean>(beans.values()),
+                  ContainerEntryPoint.getGwtParams(),
+                  new AsyncCallback<Boolean>() {
 
                     public void onFailure(Throwable arg0) {
-
                     }
 
-                    public void onSuccess(GadgetBean arg0) {
+                    public void onSuccess(Boolean arg0) {
+                      beans.clear();
                     }
-
                   });
         }
       };
-      timer.schedule(2000);
-      adjustHeight.put(frameId, timer);
+      saveAllGadgets.schedule(4000);
       portal.incrementLoading();
     }
   };

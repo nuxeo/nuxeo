@@ -17,6 +17,7 @@
 
 package org.nuxeo.opensocial.container.client.service.api;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -93,13 +94,13 @@ public interface ContainerServiceAsync {
   /**
    * Save collection of gadgets
    * 
-   * @param beans
+   * @param collection
    * @param gwtParams
    * @param AsyncCallback
    *          <GadgetBean>
    */
-  void saveGadgetsCollection(List<GadgetBean> beans,
-      Map<String, String> gwtParams, AsyncCallback<GadgetBean> callback);
+  void saveGadgetsCollection(Collection<GadgetBean> collection,
+      Map<String, String> gwtParams, AsyncCallback<Boolean> callback);
 
   /**
    * Save Gadget

@@ -19,8 +19,8 @@ package org.nuxeo.opensocial.container.service;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -100,21 +100,20 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
    * @param gwtParams
    * @throws ContainerServiceException
    */
-  public GadgetBean saveGadgetsCollection(List<GadgetBean> beans,
+  public Boolean saveGadgetsCollection(Collection<GadgetBean> beans,
       Map<String, String> gwtParams) throws ContainerServiceException {
     try {
+
       GadgetManager factory = Framework.getService(FactoryManager.class)
           .getGadgetFactory();
       for (GadgetBean gadget : beans) {
         factory.saveGadget(gadget, gwtParams);
       }
-    } catch (ClientException e) {
-      log.error("save error " + e, e);
-      throw new ContainerServiceException(e.getMessage(), e);
     } catch (Exception e) {
       log.error(e);
+      throw new ContainerServiceException(e.getMessage(), e);
     }
-    return null;
+    return true;
   }
 
   /**
@@ -131,11 +130,9 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
       Framework.getService(FactoryManager.class)
           .getGadgetFactory()
           .removeGadget(gadget, gwtParams);
-    } catch (ClientException e) {
-      log.error("removeGadget error : " + e, e);
-      throw new ContainerServiceException(e.getMessage(), e);
     } catch (Exception e) {
       log.error(e);
+      throw new ContainerServiceException(e.getMessage(), e);
     }
     return gadget;
   }

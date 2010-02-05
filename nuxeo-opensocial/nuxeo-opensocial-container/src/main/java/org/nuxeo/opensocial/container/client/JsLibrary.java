@@ -25,6 +25,12 @@ public class JsLibrary {
       $wnd.console.log(msg);
   }-*/;
 
+  public static native void info(String msg)
+  /*-{
+    if($wnd.console)
+      $wnd.console.info(msg);
+  }-*/;
+
   public static native void error(String msg)
   /*-{
     if($wnd.console)
