@@ -62,4 +62,6 @@ public interface ContainerConstants extends Constants {
   String noImageDisplay();
 
   String createdBy();
+
+  String select();
 }

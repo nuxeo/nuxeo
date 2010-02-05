@@ -148,7 +148,7 @@ public class NXDataView extends Panel {
     footer.setLayout(new FitLayout());
     footer.setHeight(50);
     Button b = new Button();
-    b.setText(CONSTANTS.add());
+    b.setText(CONSTANTS.select());
     b.addClickListener(new ClickListener() {
 
       public void onClick(Widget arg0) {
