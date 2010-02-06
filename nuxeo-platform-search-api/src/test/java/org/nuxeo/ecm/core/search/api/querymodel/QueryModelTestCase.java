@@ -472,6 +472,13 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
                 descriptor.getQuery(documentModel2));
         documentModel2.setProperty(QM_SCHEMA, "intfield", null);
 
+        // add a value for textparameter
+        documentModel2.setProperty(QM_SCHEMA, "textfield", "foo");
+        assertEquals(
+                "SELECT * FROM Document WHERE (dc:creator = 'Pedro' OR dc:creator = 'Piotr' OR dc:creator = 'Pierre') AND textparameter ILIKE 'foo'",
+                descriptor.getQuery(documentModel2));
+        documentModel2.setProperty(QM_SCHEMA, "textfield", null);
+
         // an empty array of options is ignored as if the field was left null
         documentModel2.setProperty(QM_SCHEMA, "listfield", new String[] {});
 

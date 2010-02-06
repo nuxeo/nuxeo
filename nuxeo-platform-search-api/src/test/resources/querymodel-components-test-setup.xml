@@ -130,6 +130,10 @@
           <field schema="querymodel_test" name="intfield"/>
         </predicate>
 
+        <predicate parameter="textparameter" operator="ILIKE">
+          <field schema="querymodel_test" name="textfield" />
+        </predicate>
+
       </whereClause>
 
 
