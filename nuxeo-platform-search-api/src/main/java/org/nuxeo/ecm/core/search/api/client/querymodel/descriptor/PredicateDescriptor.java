@@ -117,14 +117,15 @@ public class PredicateDescriptor {
         if (operator.equals("=") || operator.equals("!=")
                 || operator.equals("<") || operator.equals(">")
                 || operator.equals("<=") || operator.equals(">=")
-                || operator.equals("<>") || operator.equals("LIKE")) {
+                || operator.equals("<>") || operator.equals("LIKE")
+                || operator.equals("ILIKE")) {
             // Unary predicate
             String value = values[0].getStringValue(model);
             if (value == null) {
                 // value not provided: ignore predicate
                 return "";
             }
-            if (operator.equals("LIKE")) {
+            if (operator.equals("LIKE") || operator.equals("LIKE")) {
                 value = escaper.escape(value);
             }
             return serializeUnary(operator, value);
