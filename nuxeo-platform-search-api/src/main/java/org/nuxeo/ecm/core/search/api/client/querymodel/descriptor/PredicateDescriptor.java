@@ -125,7 +125,7 @@ public class PredicateDescriptor {
                 // value not provided: ignore predicate
                 return "";
             }
-            if (operator.equals("LIKE") || operator.equals("LIKE")) {
+            if (operator.equals("LIKE") || operator.equals("ILIKE")) {
                 value = escaper.escape(value);
             }
             return serializeUnary(operator, value);
