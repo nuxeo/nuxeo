@@ -66,10 +66,18 @@ public abstract class UserSession extends HashMap<String, Object> {
 
     public static UserSession getCurrentSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-        if (session == null) {
-            return (UserSession) request.getAttribute(WE_SESSION_KEY);
+        UserSession us = null;
+        if (session!=null) {
+            us = (UserSession) session.getAttribute(WE_SESSION_KEY);
         }
-        return (UserSession) session.getAttribute(WE_SESSION_KEY);
+        if (us==null) {
+            us = (UserSession) request.getAttribute(WE_SESSION_KEY);
+        }
+
+        if (us==null) {
+            log.warn("Unable to find UserSession");
+        }
+        return us;
     }
 
     public static void register(HttpServletRequest request, UserSession us) {
