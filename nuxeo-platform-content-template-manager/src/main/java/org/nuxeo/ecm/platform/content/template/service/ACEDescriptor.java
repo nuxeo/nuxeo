@@ -29,13 +29,13 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class ACEDescriptor {
 
     @XNode("@granted")
-    private boolean granted = true;
+    protected boolean granted = true;
 
     @XNode("@principal")
-    private String principal;
+    protected String principal;
 
     @XNode("@permission")
-    private String permission;
+    protected String permission;
 
     public boolean getGranted() {
         return granted;

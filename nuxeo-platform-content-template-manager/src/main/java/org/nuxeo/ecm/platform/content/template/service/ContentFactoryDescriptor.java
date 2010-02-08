@@ -29,13 +29,13 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class ContentFactoryDescriptor {
 
     @XNode("@name")
-    private String name;
+    protected String name;
 
     @XNode("@enabled")
-    private boolean enabled = true;
+    protected boolean enabled = true;
 
     @XNode("@class")
-    private Class<ContentFactory> className;
+    protected Class<ContentFactory> className;
 
     public Class<ContentFactory> getClassName() {
         return className;

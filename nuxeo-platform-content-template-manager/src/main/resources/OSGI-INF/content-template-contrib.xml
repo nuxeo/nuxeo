@@ -21,6 +21,16 @@
 
   <extension
       target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
+      point="factorySelector">
+      
+      <factorySelector name="00-property" class="org.nuxeo.ecm.platform.content.template.selectors.PropertySelector"/>
+      <factorySelector name="10-type" class="org.nuxeo.ecm.platform.content.template.selectors.TypeSelector"/>
+      <factorySelector name="20-facet" class="org.nuxeo.ecm.platform.content.template.selectors.FacetSelector"/>
+   
+   </extension>
+  
+  <extension
+      target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
       point="factoryBinding">
 
     <factoryBinding name="RootFactory" factoryName="SimpleTemplateRootFactory" targetType="Root">

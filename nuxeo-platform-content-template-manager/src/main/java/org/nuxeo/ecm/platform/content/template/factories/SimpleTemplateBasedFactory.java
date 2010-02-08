@@ -46,14 +46,21 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
         else {
             return true;
         }
-
+    }
+    
+    protected boolean accept(DocumentModel eventDoc) throws ClientException {
+       return isTargetEmpty(eventDoc);
+    }
+    
+    protected void contentCreated(DocumentModel template) {
+        
     }
 
     public void createContentStructure(DocumentModel eventDoc)
             throws ClientException {
         super.initSession(eventDoc);
 
-        if (!isTargetEmpty(eventDoc)) {
+        if (!accept(eventDoc)) {
             return;
         }
 
@@ -70,6 +77,7 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
             newChild.setProperty("dublincore", "description",
                     item.getDescription());
             setProperties(item.getProperties(), newChild);
+            contentCreated(newChild);
             newChild = session.createDocument(newChild);
             setAcl(item.getAcl(), newChild.getRef());
         }

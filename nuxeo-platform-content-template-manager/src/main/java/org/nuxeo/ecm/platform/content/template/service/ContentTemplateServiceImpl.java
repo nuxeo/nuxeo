@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.content.template.service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,6 +41,8 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
     public static final String FACTORY_DECLARATION_EP = "factory";
 
     public static final String FACTORY_BINDING_EP = "factoryBinding";
+    
+    public static final String FACTORY_SELECTOR_EP = "factorySelector";
 
     private static final Log log = LogFactory.getLog(ContentTemplateServiceImpl.class);
 
@@ -48,9 +50,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
 
     private Map<String, FactoryBindingDescriptor> factoryBindings;
 
-    private Map<String, ContentFactory> factoryInstancesByType;
-
-    private Map<String, ContentFactory> factoryInstancesByFacet;
+    private Map<String, FactorySelector> factorySelectors;
 
     private RepositoryInitializationHandler initializationHandler;
 
@@ -58,8 +58,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
     public void activate(ComponentContext context) {
         factories = new HashMap<String, ContentFactoryDescriptor>();
         factoryBindings = new HashMap<String, FactoryBindingDescriptor>();
-        factoryInstancesByType = new HashMap<String, ContentFactory>();
-        factoryInstancesByFacet = new HashMap<String, ContentFactory>();
+        factorySelectors = new TreeMap<String, FactorySelector>();
 
         // register our Repo init listener
         initializationHandler = new RepositoryInitializationListener();
@@ -73,86 +72,87 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
         }
     }
 
+    protected ContentFactory newContentFactory(ContentFactoryDescriptor desc, FactoryBindingDescriptor binding) {
+        ContentFactory factory  = null;
+        try {
+            factory = desc.getClassName().newInstance();
+        } catch (Exception e) {
+            log.error("Error while creating instance of factory " + desc.getName() + " :" + e.getMessage());
+            return null;
+        }
+        Boolean factoryOK = factory.initFactory(binding.getOptions(), binding.getRootAcl(), binding.getTemplate());
+        if (!factoryOK) {
+            log.error("Error while initializing instance of factory " + desc.getName());
+            return null;
+        }
+        return factory;
+    }
+    
+    protected void registerFactoryBinding(FactoryBindingDescriptor binding) {
+        ContentFactoryDescriptor desc = factories.get(binding.getFactoryName());
+        if (desc == null) {
+            log.error("Factory Binding" + binding.getName() + " can not be registred since Factory "
+                    + binding.getFactoryName() + " is not registred");
+            return;
+        }
+        ContentFactory factory = newContentFactory(desc, binding);
+        for (FactorySelector selector:factorySelectors.values()) {
+            String key = selector.register(desc,binding,factory);
+            if (key != null) {
+                factoryBindings.put(key, binding);
+            }
+        }
+    }
+   
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
-
         if (extensionPoint.equals(FACTORY_DECLARATION_EP)) {
             // store factories
             ContentFactoryDescriptor descriptor = (ContentFactoryDescriptor) contribution;
             factories.put(descriptor.getName(), descriptor);
         } else if (extensionPoint.equals(FACTORY_BINDING_EP)) {
-            // store factories binding to types
-            FactoryBindingDescriptor descriptor = (FactoryBindingDescriptor) contribution;
-            if (factories.containsKey(descriptor.getFactoryName())) {
-                String targetType = descriptor.getTargetType();
-                String targetFacet = descriptor.getTargetFacet();
-
-                // store binding
-                if (null != targetType) {
-                    factoryBindings.put(targetType, descriptor);
-                } else {
-                    factoryBindings.put(targetFacet, descriptor);
-                }
-
-                // create factory instance : one instance per binding
-                ContentFactoryDescriptor factoryDescriptor = factories.get(descriptor.getFactoryName());
-                try {
-                    ContentFactory factory = factoryDescriptor.getClassName().newInstance();
-                    Boolean factoryOK = factory.initFactory(
-                            descriptor.getOptions(), descriptor.getRootAcl(),
-                            descriptor.getTemplate());
-                    if (!factoryOK) {
-                        log.error("Error while initializing instance of factory "
-                                + factoryDescriptor.getName());
-                        return;
-                    }
-
-                    // store initialized instance
-                    if (null != targetType) {
-                        factoryInstancesByType.put(targetType, factory);
-                    } else {
-                        factoryInstancesByFacet.put(targetFacet, factory);
-                    }
-
-                } catch (InstantiationException e) {
-                    log.error("Error while creating instance of factory "
-                            + factoryDescriptor.getName() + " :"
-                            + e.getMessage());
-                } catch (IllegalAccessException e) {
-                    log.error("Error while creating instance of factory "
-                            + factoryDescriptor.getName() + " :"
-                            + e.getMessage());
-                }
-            } else {
-                log.error("Factory Binding" + descriptor.getName()
-                        + " can not be registred since Factory "
-                        + descriptor.getFactoryName() + " is not registred");
-            }
+            registerFactoryBinding((FactoryBindingDescriptor)contribution);
+        } else if (extensionPoint.equals(FACTORY_SELECTOR_EP)) {
+            registerFactorySelector((FactorySelectorDescriptor)contribution);
+        } else {
+            log.error("Unknow extension point : " +  extensionPoint);
         }
     }
 
-    public ContentFactory getFactoryForType(String documentType) {
-        return factoryInstancesByType.get(documentType);
+    protected void registerFactorySelector(FactorySelectorDescriptor desc) {
+        try {
+            factorySelectors.put(desc.name, desc.selector.newInstance());
+        } catch (Exception e) {
+            log.error("Error while creating instance of selector " + desc.name, e);
+        }
     }
 
-    public ContentFactory getFactoryForFacet(String facet) {
-        return factoryInstancesByFacet.get(facet);
+    public ContentFactory getFactoryFor(DocumentModel doc) {
+        for(FactorySelector selector:factorySelectors.values()) {
+            ContentFactory factory = selector.getFactoryFor(doc);
+            if (factory != null) {
+                return factory;
+            }
+        }
+        return null;
     }
 
     public void executeFactoryForType(DocumentModel createdDocument)
             throws ClientException {
-        ContentFactory factory = getFactoryForType(createdDocument.getType());
+        ContentFactory factory = getFactoryFor(createdDocument);
         if (factory != null) {
             factory.createContentStructure(createdDocument);
         }
-        Set<String> facets = createdDocument.getDeclaredFacets();
-        for (String facet : facets) {
-            factory = getFactoryForFacet(facet);
-            if (factory != null) {
-                factory.createContentStructure(createdDocument);
-            }
+    }
+    
+    public ContentFactory getFactoryForType(String documentType) {
+        try {
+            throw new UnsupportedOperationException("deprecated ");
+        } catch (UnsupportedOperationException e) {
+            log.warn("use of deprecated getFactoryForType API, please correct", e);
         }
+        return null;
     }
 
     // for testing
@@ -164,12 +164,5 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
         return factoryBindings;
     }
 
-    public Map<String, ContentFactory> getFactoryInstancesByType() {
-        return factoryInstancesByType;
-    }
-
-    public Map<String, ContentFactory> getFactoryInstancesByFacet() {
-        return factoryInstancesByFacet;
-    }
 
 }

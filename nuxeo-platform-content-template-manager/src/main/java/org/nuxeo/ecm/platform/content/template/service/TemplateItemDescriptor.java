@@ -34,28 +34,28 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class TemplateItemDescriptor  implements Serializable {
 
     private static final long serialVersionUID = 18765764747899L;
-
+    
     @XNode("@typeName")
-    private String typeName;
+    protected String typeName;
 
     @XNode("@id")
-    private String id;
+    protected String id;
 
     @XNode("@title")
-    private String title;
+    protected String title;
 
     @XNode("@path")
-    private String path;
+    protected String path;
 
     @XNode("@description")
-    private String description;
+    protected String description;
 
     // Declared as ArrayList to be serializable.
     @XNodeList(value = "acl/ace", type = ArrayList.class, componentType = ACEDescriptor.class)
-    public List<ACEDescriptor> acl;
+    public List<ACEDescriptor> acl = new ArrayList<ACEDescriptor>();
 
     @XNodeList(value = "properties/property", type = ArrayList.class, componentType = PropertyDescriptor.class)
-    public List<PropertyDescriptor> properties;
+    public List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
 
     public String getPath() {
         return path;
