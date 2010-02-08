@@ -194,7 +194,7 @@ public class GadgetPortlet extends Portlet {
   @Override
   protected void afterRender() {
     if (this.gadget.isCollapsed())
-      collapse(getIdWithRefAndView(gadget.getRef(), view));
+      collapse(getIdWithRefAndView(gadget.getRef(), view), "x-tmp-collapsed");
     super.afterRender();
     updateFrameHeightIfContentTypeIsUrl();
     Timer t = new Timer() {
@@ -215,10 +215,10 @@ public class GadgetPortlet extends Portlet {
       this.setHeight(1000);
   }
 
-  static native void collapse(String id)
+  static native void collapse(String id, String className)
   /*-{
     var p = $wnd.jQuery("#"+id);
-    $wnd.jQuery(p).addClass("x-panel-collapsed");
+    $wnd.jQuery(p).addClass("x-panel-collapsed "+ className);
     $wnd.jQuery(p.children()[1]).hide();
   }-*/;
 
@@ -228,7 +228,8 @@ public class GadgetPortlet extends Portlet {
     $wnd.jQuery(p).removeClass("x-panel-collapsed");
     var f = $wnd.jQuery(p).children()[1];
     $wnd.jQuery(f).show();
-    if($wnd.jQuery(f).height() < 20) {
+    if($wnd.jQuery(p).hasClass("x-tmp-collapsed")) {
+      $wnd.jQuery(p).removeClass("x-tmp-collapsed");
       $wnd.document.getElementById(idFrame).src = "";
       setTimeout(function(){
         $wnd.document.getElementById(idFrame).src = url;
@@ -247,7 +248,7 @@ public class GadgetPortlet extends Portlet {
   }
 
   public void collapseGadget() {
-    collapse(this.getId());
+    collapse(this.getId(), "");
     this.gadget.setCollapsed(true);
   }
 
