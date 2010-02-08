@@ -49,6 +49,7 @@ public class ContainerManagerImpl implements ContainerManager {
   public static final int DEFAULT_STRUCTURE = 3;
   public static final String DEFAULT_LAYOUT = LAYOUT_PREFIX + DEFAULT_STRUCTURE
       + LAYOUT_SEPARATOR + "default";
+  private static final Object NX_BASE_URL = "nxBaseUrl";
 
   protected SpaceManager spaceManager() throws Exception {
     return Framework.getService(SpaceManager.class);
@@ -60,7 +61,7 @@ public class ContainerManagerImpl implements ContainerManager {
       String spaceId = getParamValue(DOC_REF, containerParams, true, null);
       Space space = spaceManager().getSpaceFromId(spaceId,
           getCoreSession(containerParams));
-      return createContainer(space, getLocale(containerParams));
+      return createContainer(space, getLocale(containerParams), getServerBase(containerParams));
     } catch (Exception e) {
       throw new ClientException("Space not found");
     }
@@ -74,7 +75,7 @@ public class ContainerManagerImpl implements ContainerManager {
   }
 
   /**
-   * 
+   *
    * @param key
    * @param containerParams
    * @param required
@@ -115,7 +116,7 @@ public class ContainerManagerImpl implements ContainerManager {
 
   /**
    * Add Gadget to Container
-   * 
+   *
    * @param gadgetName
    *          : Name of gadget
    * @param gwtParams
@@ -136,13 +137,18 @@ public class ContainerManagerImpl implements ContainerManager {
     space.save();
 
     return GadgetFactory.getGadgetBean(createGadget, getPermissions(space),
-        getLocale(gwtParams));
+        getLocale(gwtParams), getServerBase(gwtParams));
 
   }
 
+  private String getServerBase(Map<String, String> gwtParams) {
+    return gwtParams.get(NX_BASE_URL);
+  }
+
+
   /**
    * Get a list of gadget
-   * 
+   *
    * @return Map of gadgets, key is category and value is list of gadget name
    */
   public Map<String, ArrayList<String>> getGadgetList() throws ClientException {
@@ -173,10 +179,10 @@ public class ContainerManagerImpl implements ContainerManager {
     }
     space.setLayout(layout);
     space.save();
-    return createContainer(space, getLocale(containerParams));
+    return createContainer(space, getLocale(containerParams), getServerBase(containerParams));
   }
 
-  private Container createContainer(Space space, String locale) {
+  private Container createContainer(Space space, String locale, String serverBase) {
     try {
       if (space != null) {
         ArrayList<GadgetBean> gadgets = new ArrayList<GadgetBean>();
@@ -184,7 +190,7 @@ public class ContainerManagerImpl implements ContainerManager {
         List<String> perms = getPermissions(space);
 
         for (Gadget g : space.getGadgets()) {
-          gadgets.add(GadgetFactory.getGadgetBean(g, perms, locale));
+          gadgets.add(GadgetFactory.getGadgetBean(g, perms, locale, serverBase));
         }
         Collections.sort(gadgets);
         String layout = space.getLayout();

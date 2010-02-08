@@ -34,11 +34,11 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * URlBuilder is builder of gadget url; Util for render of gadget into Shinding
  * opensocial server
- * 
+ *
  */
 public class UrlBuilder {
 
-  private static final String SERVLET_PATH = "/nuxeo/opensocial/gadgets/ifr";
+  private static final String SERVLET_PATH = "opensocial/gadgets/ifr";
 
   private static final String CONTAINER_KEY = "container";
   private static final String CONTAINER_VALUE = "default";
@@ -72,11 +72,10 @@ public class UrlBuilder {
 
   private static int containerId = 0;
 
-  public static String buildShindigUrl(Gadget gadget, List<String> permissions,
+  public static String buildShindigUrl(Gadget gadget, String serverBase, List<String> permissions,
       String locale) throws ClientException {
 
-    // TODO: get away prefs definition from the url
-    // TODO: Better implementation of RPC_Token that relies now on gadget id
+
 
     String gadgetDef = gadget.getDefinitionUrl()
         .toString();
@@ -84,7 +83,7 @@ public class UrlBuilder {
     StringBuilder sb = new StringBuilder();
 
     // http://localhost:8080/nuxeo/opensocial/gadgets/ifr?
-    sb.append(ServerBase.getBase() + SERVLET_PATH + "?");
+    sb.append(serverBase + SERVLET_PATH + "?");
 
     // container=default&nocache=1&country=ALL&lang=ALL&view=default&
     sb.append(getDefaultParams(locale) + "&");
@@ -93,7 +92,8 @@ public class UrlBuilder {
     sb.append(GADGET_ID_KEY + "=" + containerId++ + "&");
 
     // parent=http://localhost:8080/...
-    sb.append(PARENT_KEY + "=" + ServerBase.getBase() + "&");
+    //TODO: Verify it works... should not.
+    sb.append(PARENT_KEY + "=" + serverBase + "&");
 
     // perm=1 -> does the session has write perm on gadget
     sb.append(PERMISSION_KEY + "=" + permissions + "&");
@@ -122,7 +122,7 @@ public class UrlBuilder {
   /**
    * Get Gadget Definition with GadgetService Gadget Definition is google xml
    * gadget
-   * 
+   *
    * @param name
    * @return
    * @throws Exception
@@ -142,7 +142,7 @@ public class UrlBuilder {
   /**
    * Build a url format parameters with preferences of gadget Util for render
    * gadget into Shinding opensocial server
-   * 
+   *
    * @param prefs
    * @return String &up_key=value&up..
    */

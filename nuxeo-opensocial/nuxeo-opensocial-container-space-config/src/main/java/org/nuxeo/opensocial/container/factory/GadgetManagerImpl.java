@@ -34,6 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 public class GadgetManagerImpl implements GadgetManager {
 
   private static final Log log = LogFactory.getLog(GadgetManagerImpl.class);
+  private static final Object NX_BASE_URL = "nxBaseUrl";
 
   protected SpaceManager spaceManager() throws Exception {
     return Framework.getService(SpaceManager.class);
@@ -41,7 +42,7 @@ public class GadgetManagerImpl implements GadgetManager {
 
   /**
    * Remove gadget to container
-   * 
+   *
    * @param bean
    *          : Gadget to delete
    * @param gwtParams
@@ -85,25 +86,30 @@ public class GadgetManagerImpl implements GadgetManager {
 
   /**
    * Save gadget preferences and update render url of gadget
-   * 
+   *
    */
   public GadgetBean savePreferences(GadgetBean bean,
       Map<String, String> updatePrefs, Map<String, String> gwtParams)
       throws Exception {
     try {
       Space space = getCurrentSpace(gwtParams);
+      String serverBase = getServerBase(gwtParams);
       Gadget gadget = GadgetFactory.getGadget(bean);
       if (updatePrefs != null)
         gadget.setPreferences(updatePrefs);
       space.save(gadget);
       return GadgetFactory.getGadgetBean(space.getGadget(gadget.getId()),
           ContainerManagerImpl.getPermissions(space),
-          ContainerManagerImpl.getLocale(gwtParams));
+          ContainerManagerImpl.getLocale(gwtParams), serverBase);
     } catch (Exception e) {
       log.error("GadgetManagerImpl - savePreferences : " + e.fillInStackTrace());
     }
     return bean;
 
+  }
+
+  private String getServerBase(Map<String, String> gwtParams) {
+    return gwtParams.get(NX_BASE_URL);
   }
 
   private Space getCurrentSpace(Map<String, String> gwtParams) throws Exception {
