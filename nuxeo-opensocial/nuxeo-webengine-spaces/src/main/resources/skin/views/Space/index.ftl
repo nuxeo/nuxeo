@@ -13,7 +13,7 @@
     <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/gadgets/js/rpc.js?c=1"></script>
     <script type="text/javascript">
      function getGwtParams(){
-       return "{docRef:'<#if This.space>${This.space.id}</#if>',sessionId:'${Session.getSessionId()}'}";
+       return "{docRef:'<#if This.space>${This.space.id}</#if>', nxBaseUrl: '${This.baseUrl}'}";
      }
   </script>
   <script type="text/javascript" language="javascript" src="/nuxeo/org.nuxeo.opensocial.container.ContainerEntryPoint/org.nuxeo.opensocial.container.ContainerEntryPoint.nocache.js"></script>
