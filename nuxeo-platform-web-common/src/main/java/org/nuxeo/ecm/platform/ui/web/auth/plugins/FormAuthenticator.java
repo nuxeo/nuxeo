@@ -66,6 +66,9 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
                     parameters.put(NXAuthConstants.LOGIN_FAILED, "true");
                 }
             }
+
+            // avoid resending the password in clear !!!
+            parameters.remove(passwordKey);
             redirectUrl = URIUtils.addParametersToURIQuery(redirectUrl,
                     parameters);
             httpResponse.sendRedirect(redirectUrl);
