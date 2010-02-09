@@ -126,7 +126,7 @@ public class InputFactory {
       NXIDPreference nxIDPreference = new NXIDPreference(getPrefValue(bean));
 
       field.setValue(nxIDPreference.getName());
-      area.setValue(nxIDPreference.getId());
+      area.setValue(nxIDPreference.toString());
 
       area.hide();
 
