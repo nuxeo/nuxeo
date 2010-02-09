@@ -77,11 +77,21 @@ public class PreviewActionBean implements Serializable {
         if (currentDocument == null) {
             return null;
         }
-        return PreviewHelper.getPreviewURL(currentDocument, fieldXPathValue);
+        return getPreviewURL(currentDocument);
+    }
+
+    public String getPreviewURL(DocumentModel doc) {
+        return PreviewHelper.getPreviewURL(doc, fieldXPathValue);
     }
 
     public String getPreviewWithBlobPostProcessingURL() {
         String url = getPreviewURL();
+        url += "?blobPostProcessing=true";
+        return url;
+    }
+
+    public String getPreviewWithBlobPostProcessingURL(DocumentModel doc) {
+        String url = getPreviewURL(doc);
         url += "?blobPostProcessing=true";
         return url;
     }

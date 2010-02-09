@@ -54,6 +54,7 @@ public class AnnotationApplication {
                 0).cast();
         registerBaseHref(baseElement.getHref());
         registerAnnoteaServerUrl(annotationConfiguration.getAnnoteaServerUrl());
+        registerDocUrl(annotationConfiguration.getDocumentUrl());
         notifyAnnoteaServerUrlRegistered();
 
         applicationPanel.setStyleName("annotationApplicationPanel");
@@ -101,6 +102,10 @@ public class AnnotationApplication {
 
     private static native void notifyAnnoteaServerUrlRegistered() /*-{
         top['annoteaServerUrlRegistered'] = true;
+    }-*/;
+
+    private static native void registerDocUrl(String docUrl) /*-{
+        top['docUrl'] = docUrl;
     }-*/;
 
 }
