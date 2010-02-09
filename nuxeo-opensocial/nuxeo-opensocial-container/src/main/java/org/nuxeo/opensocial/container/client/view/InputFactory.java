@@ -7,6 +7,7 @@ import org.nuxeo.opensocial.container.client.ContainerConstants;
 import org.nuxeo.opensocial.container.client.ContainerMessages;
 import org.nuxeo.opensocial.container.client.bean.PreferencesBean;
 import org.nuxeo.opensocial.container.client.bean.ValuePair;
+import org.nuxeo.opensocial.container.client.view.rest.NXIDPreference;
 import org.nuxeo.opensocial.container.client.view.rest.NXRequestCallback;
 import org.nuxeo.opensocial.container.client.view.rest.NXRestAPI;
 
@@ -104,21 +105,38 @@ public class InputFactory {
   /****************************************************/
   /** Field NX ID **/
 
-  private class NXFieldId extends TextField {
+  private class NXFieldId extends Panel {
 
     public NXFieldId(GadgetPortlet gp, PreferencesBean bean) {
-      this.setLabel(bean.getDisplayName());
-      this.setName(bean.getName());
-      this.setWidth(PREF_WIDTH_FIELD);
-      this.setValue(getPrefValue(bean));
-      // TODO : split pref for check type
+      Label label = new Label(bean.getDisplayName());
+      label.addClass("x-form-item-label");
+      this.add(label);
+      TextField field = new TextField();
+      field.setLabel(bean.getDisplayName());
+      field.setWidth(PREF_WIDTH_FIELD);
+      field.addClass("x-form-fieldid");
+      this.add(field);
+      TextArea area = new TextArea();
+      area.setLabel(bean.getDisplayName());
+      String name = bean.getName();
+      area.setName(name);
 
-      final RequestCallback callback = new NXRequestCallback(this);
-      this.addListener(new FieldListenerAdapter() {
+      final String type = name.substring(5);
+
+      NXIDPreference nxIDPreference = new NXIDPreference(getPrefValue(bean));
+
+      field.setValue(nxIDPreference.getName());
+      area.setValue(nxIDPreference.getId());
+
+      area.hide();
+
+      final RequestCallback callback = new NXRequestCallback(field, area, type);
+      this.add(area);
+
+      field.addListener(new FieldListenerAdapter() {
         @Override
         public void onFocus(Field field) {
-          NXRestAPI.queryDocType("PictureBook", callback);
-
+          NXRestAPI.queryDocType(type, 0, callback);
         }
       });
     }

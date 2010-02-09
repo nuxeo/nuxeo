@@ -3,6 +3,31 @@
   color: #000000;
 }
 
+#footer-view > .x-panel-tl, #images-view > .x-panel-tl{
+  min-height:0px;
+}
+
+.x-column-footer .x-column{
+ min-height:0px;
+ text-align:center;
+ margin-left:13px;
+ margin-right:13px;
+ width:110px;
+}
+
+.x-form-fieldid{
+  margin-left:36px;
+  margin-bottom:5px;
+}
+
+
+.x-column-footer .gwt-Label {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 12px;
+  margin-top:8px;
+}
+
 .thumb-wrap {
   width:100px;
   padding:8px;

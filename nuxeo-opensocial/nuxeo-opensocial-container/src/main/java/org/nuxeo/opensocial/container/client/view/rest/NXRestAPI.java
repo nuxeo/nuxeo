@@ -14,15 +14,19 @@ public class NXRestAPI {
   private final static String NXPICS_PATH = "/nuxeo/nxpicsfile/default/";
 
   private final static String FORMAT_JSON = "&format=JSON";
+  private final static String PAGE = "&page=";
   private final static String MEDIUM_VIEW = "/Medium:content";
 
-  public static void queryDocType(String type, RequestCallback callback) {
+  public static void queryDocType(String type, double page,
+      RequestCallback callback) {
     StringBuilder sb = new StringBuilder(HTTP);
     sb.append(Window.Location.getHost());
     sb.append(QUERY_PATH);
     sb.append("TYPE_SEARCH?QP1=");
     sb.append(type);
     sb.append(FORMAT_JSON);
+    sb.append(PAGE);
+    sb.append(page);
     RequestBuilder rb = new RequestBuilder(RequestBuilder.GET, sb.toString());
     rb.setCallback(callback);
     try {

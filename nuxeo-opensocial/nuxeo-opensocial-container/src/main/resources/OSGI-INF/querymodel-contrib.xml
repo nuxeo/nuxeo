@@ -10,8 +10,6 @@
     <a href="mailto:guillaume.cusnieux@leroymerlin.fr">Guillaume Cusnieux</a>
   </documentation>
 
-
-
   <extension
     target="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService"
     point="model">
@@ -23,7 +21,7 @@
         ecm:isCheckedInVersion = 0 AND
         ecm:currentLifeCycleState != 'deleted'
       </pattern>
-      <max>10</max>
+      <max>16</max>
       <sortable value="true" />
     </queryModel>
     

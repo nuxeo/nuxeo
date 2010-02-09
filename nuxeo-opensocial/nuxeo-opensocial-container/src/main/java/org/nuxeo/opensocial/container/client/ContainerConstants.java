@@ -64,4 +64,10 @@ public interface ContainerConstants extends Constants {
   String createdBy();
 
   String select();
+
+  String previous();
+
+  String next();
+
+  String on();
 }
