@@ -464,6 +464,12 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         col = spi.query(query, false, null, null);
         assertEquals(1, col.size());
 
+        query = "SELECT cmis:objectId" //
+                + " FROM cmis:document" //
+                + " WHERE dc:title IN ('testfile1_Title', 'xyz')";
+        col = spi.query(query, false, null, null);
+        assertEquals(1, col.size());
+
         query = "SELECT cmis:objectId, dc:DESCRIPTION" //
                 + " FROM cmis:document" //
                 + " WHERE dc:title = 'testfile1_Title'"

@@ -254,6 +254,7 @@ predicate returns [String sql, List<Serializable> params]
     | ^(BIN_OP bin_op arg1=bin_arg arg2=bin_arg)
         {
             String op;
+            String arg2sql = $arg2.sql;
             int token = $bin_op.start.getType();
             switch (token) {
                 case EQ:
@@ -280,10 +281,18 @@ predicate returns [String sql, List<Serializable> params]
                 case NOT_LIKE:
                     op = "NOT LIKE";
                     break;
+                case IN:
+                    op = "IN";
+                    arg2sql = '(' + arg2sql + ')';
+                    break;
+                case NOT_IN:
+                    op = "NOT IN";
+                    arg2sql = '(' + arg2sql + ')';
+                    break;
                 default:
                     throw new UnwantedTokenException(token, input);
             }
-            $sql = "(" + $arg1.sql + " " + op + " " + $arg2.sql + ")";
+            $sql = "(" + $arg1.sql + " " + op + " " + arg2sql + ")";
             $params = $arg1.params;
             $params.addAll($arg2.params);
         }
@@ -367,7 +376,7 @@ un_arg returns [String sql, List<Serializable> params]:
     ;
 
 bin_op:
-    EQ | NEQ | LT | GT | LTEQ | GTEQ | LIKE | NOT_LIKE;
+    EQ | NEQ | LT | GT | LTEQ | GTEQ | LIKE | NOT_LIKE | IN | NOT_IN ;
 
 bin_op_any:
     EQ | NEQ | IN | NOT_IN;

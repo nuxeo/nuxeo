@@ -19,13 +19,11 @@ package org.nuxeo.ecm.core.chemistry.impl;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.storage.sql.CapturingQueryMaker;
-import org.nuxeo.ecm.core.storage.sql.QueryMaker;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.CapturingQueryMaker.Captured;
 import org.nuxeo.ecm.core.storage.sql.QueryMaker.Query;
@@ -73,6 +71,26 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 + "   AND ((DUBLINCORE.TITLE = ?) OR (DUBLINCORE.TITLE = ?))"
                 + " ORDER BY DUBLINCORE.DESCRIPTION DESC, HIERARCHY.PARENTID";
         expectedP = Arrays.<Serializable> asList(Long.valueOf(123), "xyz");
+        assertEquals(expected.replaceAll(" +", " "), sql);
+        assertEquals(doc_note_file, new HashSet<Serializable>(
+                q.selectParams.subList(0, 3)));
+        assertEquals(expectedP, q.selectParams.subList(3, 5));
+
+        // scalar IN
+
+        query = "SELECT cmis:ObjectId, dc:title" //
+                + " FROM cmis:document" //
+                + " WHERE dc:title IN ('xyz', 'abc')";
+        q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
+                captured.session, query, null);
+        assertNotNull(q);
+        sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        expected = "SELECT HIERARCHY.ID, DUBLINCORE.TITLE, HIERARCHY.PRIMARYTYPE"
+                + " FROM HIERARCHY"
+                + " LEFT JOIN DUBLINCORE ON DUBLINCORE.ID = HIERARCHY.ID"
+                + " WHERE HIERARCHY.PRIMARYTYPE IN (?, ?, ?)"
+                + "   AND ((DUBLINCORE.TITLE IN (?, ?)))";
+        expectedP = Arrays.<Serializable> asList("xyz", "abc");
         assertEquals(expected.replaceAll(" +", " "), sql);
         assertEquals(doc_note_file, new HashSet<Serializable>(
                 q.selectParams.subList(0, 3)));
