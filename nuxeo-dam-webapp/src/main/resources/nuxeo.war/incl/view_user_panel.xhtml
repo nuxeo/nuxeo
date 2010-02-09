@@ -26,8 +26,9 @@
       <a4j:commandLink styleClass="button"
                        action="#{userManagerActions.updateUserNoRedirect}"
                        rendered="#{userManagerActions.displayMode == 'edit'}"
-                       reRender="viewUserPanel"
-                       oncomplete="if (!data) { Richfaces.hideModalPanel('createUserFormPanel') };">
+                       reRender="userSearchResult, viewUserPanel"
+                       data="#{facesContext.maximumSeverity.ordinal ge 2}"
+                       oncomplete="if (!data) { Richfaces.hideModalPanel('viewUserFormPanel') };">
         <h:outputText value="#{messages['command.user.save']}"/>
       </a4j:commandLink>
       <a4j:commandLink styleClass="button"

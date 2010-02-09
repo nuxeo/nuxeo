@@ -53,10 +53,12 @@ public class DamUserManagerActions extends UserManagerActionsBean {
 
     public void createUserNoRedirect() throws ClientException {
         createUser();
+        resetUsers();
     }
 
     public void updateUserNoRedirect() throws ClientException {
         updateUser();
+        resetUsers();
     }
 
 }

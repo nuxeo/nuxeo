@@ -35,7 +35,7 @@ public class DamGroupManagerActions extends GroupManagerActionsBean {
         if (selectedGroupId == null) {
             deleteGroup();
         }
-        userManager.deleteUser(selectedGroupId);
+        userManager.deleteGroup(selectedGroupId);
         resetGroups();
     }
 

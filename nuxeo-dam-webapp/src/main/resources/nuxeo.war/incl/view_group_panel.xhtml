@@ -26,8 +26,9 @@
       <a4j:commandLink styleClass="button"
                        action="#{groupManagerActions.updateGroupNoRedirect}"
                        rendered="#{groupManagerActions.displayMode == 'edit'}"
-                       reRender="viewGroupPanel"
-                       oncomplete="if (!data) { Richfaces.hideModalPanel('createGroupFormPanel') };">
+                       reRender="groupSearchResult, viewGroupPanel"
+                       data="#{facesContext.maximumSeverity.ordinal ge 2}"
+                       oncomplete="if (!data) { Richfaces.hideModalPanel('viewGroupFormPanel') };">
         <h:outputText value="#{messages['command.save']}"/>
       </a4j:commandLink>
       <a4j:commandLink styleClass="button"

@@ -71,7 +71,7 @@
 
             <c:set var="userSchema" value="#{userManager.userSchemaName}" />
 
-            <a4j:form rendered="#{folderList.size() > 0}">
+            <a4j:form rendered="#{folderList.rowCount > 0}">
               <h:dataTable var="folder" value="#{folderList}"
                 rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
                 <h:column>
