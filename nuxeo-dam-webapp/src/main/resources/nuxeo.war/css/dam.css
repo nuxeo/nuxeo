@@ -1,5 +1,9 @@
 /* Thumbnail view */
 
+.dr-table {
+border-left:none;
+}
+
 .dr-table-cell {
   border:none;
 }
