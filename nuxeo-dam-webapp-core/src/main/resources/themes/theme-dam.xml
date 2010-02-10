@@ -842,12 +842,12 @@
     </style>
     <style element="page[1]/section[3]|page[3]/section[3]" inherit="common style">
       <selector path="" view="section frame">
-        <padding>10px</padding>
+        <padding>5px 10px</padding>
         <background preset="footer (DAM backgrounds)"/>
         <border-top preset="black (DAM borders)"/>
       </selector>
       <selector path="div" view="section frame">
-        <font preset="small (DAM fonts)"/>
+        <font preset="tiny (DAM fonts)"/>
         <color>#AFAFAF</color>
       </selector>
     </style>
