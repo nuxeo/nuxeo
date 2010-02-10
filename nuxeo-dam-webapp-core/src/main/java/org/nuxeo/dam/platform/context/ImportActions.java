@@ -39,8 +39,8 @@ import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.dam.platform.action.DamFolderAdminActions;
 import org.nuxeo.dam.webapp.filter.FilterActions;
+import org.nuxeo.dam.webapp.helper.DamEventNames;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -72,8 +72,6 @@ public class ImportActions implements Serializable {
 
     public static final String IMPORTSET_ROOT_PATH = "/default-domain/import-sets";
 
-    public static final String IMPORTSET_CREATED = "importSetCreated";
-
     protected DocumentModel newImportSet;
 
     @In(create = true)
@@ -96,9 +94,6 @@ public class ImportActions implements Serializable {
 
     @In(create = true)
     protected transient FilterActions filterActions;
-
-    @In(create = true)
-    protected transient DamFolderAdminActions folderAdminActions;
 
     protected FileManager fileManagerService;
 
@@ -143,7 +138,7 @@ public class ImportActions implements Serializable {
         folder.setPropertyValue("dc:title", title);
         folder = documentManager.createDocument(folder);
         documentManager.save();
-        folderAdminActions.resetFolderList();
+        Events.instance().raiseEvent(DamEventNames.FOLDERLIST_CHANGED);
         return folder;
     }
 
@@ -200,7 +195,7 @@ public class ImportActions implements Serializable {
     }
 
     protected void sendImportSetCreationEvent() {
-        Events.instance().raiseEvent(IMPORTSET_CREATED);
+        Events.instance().raiseEvent(DamEventNames.IMPORTSET_CREATED);
 
         logDocumentWithTitle("document_saved", "Created the document: ",
                 newImportSet);

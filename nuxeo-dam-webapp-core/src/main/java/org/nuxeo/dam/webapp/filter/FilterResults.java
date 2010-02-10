@@ -20,24 +20,24 @@ package org.nuxeo.dam.webapp.filter;
 import java.io.Serializable;
 import java.util.List;
 
-import org.jboss.seam.contexts.Contexts;
-import org.nuxeo.dam.platform.context.ImportActions;
-import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
-import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
-import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
-import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
-import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
-import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.Factory;
-import org.jboss.seam.ScopeType;
+import org.jboss.seam.contexts.Contexts;
+import org.nuxeo.dam.webapp.helper.DamEventNames;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
+import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
+import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
+import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
+import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
+import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 
 @Name("filterResults")
 @Scope(ScopeType.CONVERSATION)
@@ -105,7 +105,7 @@ public class FilterResults implements SelectDataModelListener, Serializable {
         }
     }
 
-    @Observer(ImportActions.IMPORTSET_CREATED)
+    @Observer(DamEventNames.IMPORTSET_CREATED)
     public void invalidateFilterResult() {
         documentsListsManager.resetWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         resultsProvidersCache.invalidate(FILTERED_DOCUMENT_PROVIDER_NAME);

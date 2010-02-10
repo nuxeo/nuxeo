@@ -24,6 +24,7 @@ import org.nuxeo.dam.platform.context.ImportActions;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryJUnit4;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -146,6 +147,9 @@ public class TestZipImporter extends SQLRepositoryJUnit4 {
         String defaultTitle = (String) importSet.getProperty("dublincore", "title");
         assertNotNull(defaultTitle);
         assertTrue(defaultTitle.startsWith("Administrator"));
+
+        DocumentModel importSetRoot = session.getDocument(new PathRef(ImportActions.IMPORTSET_ROOT_PATH));
+        importActions.setImportFolder(importSetRoot.getId());
 
         File file = getTestFile("test-data/test.zip");
         UploadEvent event = UploadItemMock.getUploadEvent(file);

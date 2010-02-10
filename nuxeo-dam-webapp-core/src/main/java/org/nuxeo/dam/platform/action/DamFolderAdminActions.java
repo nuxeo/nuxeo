@@ -31,9 +31,11 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.dam.webapp.helper.DamEventNames;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -107,6 +109,7 @@ public class DamFolderAdminActions implements Serializable {
         resetFolderList();
     }
 
+    @Observer(DamEventNames.FOLDERLIST_CHANGED)
     public void resetFolderList() {
         folders = null;
     }
