@@ -28,6 +28,7 @@ import org.nuxeo.ecm.webengine.security.PostfixExpression.Token;
 import org.nuxeo.ecm.webengine.security.guards.And;
 import org.nuxeo.ecm.webengine.security.guards.FacetGuard;
 import org.nuxeo.ecm.webengine.security.guards.GroupGuard;
+import org.nuxeo.ecm.webengine.security.guards.IsAdministratorGuard;
 import org.nuxeo.ecm.webengine.security.guards.Not;
 import org.nuxeo.ecm.webengine.security.guards.Or;
 import org.nuxeo.ecm.webengine.security.guards.PermissionGuard;
@@ -108,6 +109,8 @@ public class PermissionService implements PostfixExpression.Visitor {
                 return new UserGuard(value);
             } else if ("group".equals(key)) {
                 return new GroupGuard(value);
+            } else if ("isAdministrator".equals(key)) {
+                return new IsAdministratorGuard(value);
             } else if ("type".equals(key)) {
                 return new TypeGuard(value);
             } else if ("facet".equals(key)) {

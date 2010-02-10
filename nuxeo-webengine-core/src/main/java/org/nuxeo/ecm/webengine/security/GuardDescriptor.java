@@ -29,6 +29,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.security.guards.And;
 import org.nuxeo.ecm.webengine.security.guards.FacetGuard;
 import org.nuxeo.ecm.webengine.security.guards.GroupGuard;
+import org.nuxeo.ecm.webengine.security.guards.IsAdministratorGuard;
 import org.nuxeo.ecm.webengine.security.guards.PermissionGuard;
 import org.nuxeo.ecm.webengine.security.guards.SchemaGuard;
 import org.nuxeo.ecm.webengine.security.guards.ScriptGuard;
@@ -106,6 +107,9 @@ public class GuardDescriptor {
                     if ("permission".equals(type)) {
                         String value = node.getTextContent().trim();
                         guards.put(id, new PermissionGuard(value));
+                    } else if ("isAdministrator".equals(type)) {
+                        String value = node.getTextContent().trim();
+                        guards.put(id, new IsAdministratorGuard(value));                        
                     } else if ("facet".equals(type)) {
                         String value = node.getTextContent().trim();
                         guards.put(id, new FacetGuard(value));

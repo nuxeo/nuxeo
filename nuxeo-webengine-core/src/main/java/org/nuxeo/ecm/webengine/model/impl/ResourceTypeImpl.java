@@ -26,8 +26,11 @@ import java.util.HashSet;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
+import org.nuxeo.ecm.webengine.model.Access;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.security.PermissionService;
+import org.nuxeo.ecm.webengine.security.guards.And;
+import org.nuxeo.ecm.webengine.security.guards.IsAdministratorGuard;
 import org.nuxeo.runtime.annotations.AnnotationManager;
 
 /**
@@ -46,7 +49,7 @@ public class ResourceTypeImpl extends AbstractResourceType {
         WebObject wo = c.getAnnotation(WebObject.class);
         if (wo == null) {
             return;
-        }
+        }        
         String g = wo.guard();
         if (g != null && g.length() > 0) {
             try {
@@ -56,6 +59,14 @@ public class ResourceTypeImpl extends AbstractResourceType {
             }
         } else {
             loadGuardFromAnnoation(c);
+        }
+        Access requireAdministrators = wo.administrator();
+        if (requireAdministrators != Access.NULL) {
+            if (guard != null) {
+                guard = new And(new IsAdministratorGuard(requireAdministrators), guard);
+            } else {
+                guard = new IsAdministratorGuard(requireAdministrators);
+            }
         }
         String[] facets = wo.facets();
         if (facets != null && facets.length > 0) {

@@ -39,6 +39,7 @@ public @interface WebObject {
     String type(); // the type name
     String superType() default ResourceTypeImpl.ROOT_TYPE_NAME; // the super type name
     String guard() default ""; // a security guard if any
+    Access administrator() default Access.NULL; // if true only administrators can access this object
     String[] facets() default {};
 
 }
