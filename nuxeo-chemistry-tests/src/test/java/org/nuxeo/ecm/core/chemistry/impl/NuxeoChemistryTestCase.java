@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ConstraintViolationException;
@@ -501,6 +502,32 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
                 false);
         assertEquals(1, res.size());
 
+    }
+
+    public void testQueryStar() throws Exception {
+        String query;
+        Collection<ObjectEntry> col;
+
+        query = "SELECT * FROM File WHERE dc:title = 'testfile1_Title'";
+        col = spi.query(query, false, null, null);
+        assertEquals(1, col.size());
+        ObjectEntry entry = col.iterator().next();
+
+        assertEquals("testfile1", entry.getValue(Property.NAME));
+        assertEquals("File", entry.getValue(Property.TYPE_ID));
+        assertEquals(BaseType.DOCUMENT.getId(),
+                entry.getValue(Property.BASE_TYPE_ID));
+        assertNotNull(entry.getValue(Property.ID));
+        assertNotNull(entry.getValue(Property.CREATION_DATE));
+
+        assertEquals("testfile1_Title", entry.getValue("dc:title"));
+        assertEquals("testfile1_description", entry.getValue("dc:description"));
+        assertEquals("foo/bar", entry.getValue("dc:coverage"));
+
+        // XXX TODO the following properties are problematic still...
+        // assertEquals("XXX", entry.getValue(Property.CONTENT_STREAM_LENGTH));
+        // assertEquals("XXX",
+        // entry.getValue(Property.CONTENT_STREAM_FILE_NAME));
     }
 
     public void testQueryAny() throws Exception {

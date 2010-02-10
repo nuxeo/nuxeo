@@ -40,6 +40,8 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Property;
+import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.Type;
 import org.apache.chemistry.cmissql.CmisSqlLexer;
 import org.apache.chemistry.cmissql.CmisSqlParser;
 import org.nuxeo.common.utils.StringUtils;
@@ -80,6 +82,8 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     public static final String DC_MODIFIED_KEY = "modified";
 
+    private static final String STAR_PREFIX = "\0STAR\0";
+
     protected Database database;
 
     protected Dialect dialect;
@@ -114,10 +118,13 @@ public class CMISQLQueryMaker implements QueryMaker {
     public List<String> errorMessages = new LinkedList<String>();
 
     protected static class Join {
+        /** INNER / LEFT / RIGHT */
         String kind;
 
+        /** Table name. */
         String table;
 
+        /** Correlation name (qualifier), or null. */
         String corr;
 
         String on1;
@@ -144,6 +151,7 @@ public class CMISQLQueryMaker implements QueryMaker {
     public Query buildQuery(SQLInfo sqlInfo, Model model, Session session,
             String query, QueryFilter queryFilter, Object... params)
             throws StorageException {
+        NuxeoConnection conn = (NuxeoConnection) params[0];
         database = sqlInfo.database;
         dialect = sqlInfo.dialect;
         this.model = model;
@@ -179,6 +187,50 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
 
         /*
+         * Interpret * in SELECT now that tables are known.
+         */
+
+        /** The columns we'll return. */
+        List<String> columnsWhat = new ArrayList<String>();
+
+        for (String col : walker.select_what) {
+            if (!col.startsWith(STAR_PREFIX)) {
+                columnsWhat.add(col);
+                continue;
+            }
+            String qual = col.substring(STAR_PREFIX.length());
+            if (qual.isEmpty()) {
+                qual = null;
+            }
+            // find the joined table with this correlation qualifier and add all
+            // its columns to the select
+            for (Join j : walker.from_joins) {
+                if (!sameString(qual, j.corr)) {
+                    continue;
+                }
+                Type type = conn.getRepository().getType(j.table);
+                // TODO getTypeByQueryName
+                if (type == null) {
+                    type = conn.getRepository().getType(j.table.toLowerCase());
+                    if (type == null) {
+                        throw new QueryMakerException("Unknown type: "
+                                + j.table);
+                    }
+                }
+                for (PropertyDefinition pd : type.getPropertyDefinitions()) {
+                    if (pd.isMultiValued()) {
+                        continue;
+                    }
+                    try {
+                        columnsWhat.add(referToColumn(pd.getId(), qual));
+                    } catch (QueryMakerException e) {
+                        // ignore, non-mappable column
+                    }
+                }
+            }
+        }
+
+        /*
          * Find info about fragments needed.
          */
 
@@ -187,8 +239,8 @@ public class CMISQLQueryMaker implements QueryMaker {
             for (String propertyId : Arrays.asList(Property.ID,
                     Property.TYPE_ID)) {
                 String col = referToColumn(propertyId, qual);
-                if (!walker.select_what.contains(col)) {
-                    walker.select_what.add(col);
+                if (!columnsWhat.contains(col)) {
+                    columnsWhat.add(col);
                 }
             }
         }
@@ -416,11 +468,11 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         List<Column> whatColumns = new LinkedList<Column>();
         List<String> whatColumnsAliases = new LinkedList<String>();
-        for (String col : walker.select_what) {
+        for (String col : columnsWhat) {
             whatColumns.add(columns.get(col));
             whatColumnsAliases.add(columnsSpecified.get(col));
         }
-        String what = StringUtils.join(walker.select_what, ", ");
+        String what = StringUtils.join(columnsWhat, ", ");
 
         /*
          * Create the whole select.
@@ -439,6 +491,10 @@ public class CMISQLQueryMaker implements QueryMaker {
         q.selectParams = fromParams;
         q.selectParams.addAll(whereParams);
         return q;
+    }
+
+    public String referToAllColumns(String qual) {
+        return STAR_PREFIX + (qual == null ? "" : qual);
     }
 
     public String referToColumn(String c, String qual) {
@@ -494,11 +550,7 @@ public class CMISQLQueryMaker implements QueryMaker {
     }
 
     protected String getTableAlias(Table table, String qualifier) {
-        if (qualifier == null) {
-            return null;
-        } else {
-            return "_" + qualifier + "_" + table.getName();
-        }
+        return "_" + qualifier + "_" + table.getName();
     }
 
     protected static Map<String, String> systemPropNames = new HashMap<String, String>();
@@ -601,6 +653,10 @@ public class CMISQLQueryMaker implements QueryMaker {
         } else {
             return "_FT" + num;
         }
+    }
+
+    private boolean sameString(String s1, String s2) {
+        return s1 == null ? s2 == null : s1.equals(s2);
     }
 
 }

@@ -95,7 +95,7 @@ select_list
 }:
       STAR
         {
-            select_what.add(queryMaker.referToColumn(Property.ID, null)); // TODO
+            select_what.add(queryMaker.referToAllColumns(null));
         }
     | ^(LIST (select_sublist { select_what.add($select_sublist.sql); })+)
     ;
@@ -105,10 +105,11 @@ select_sublist returns [String sql, List<Serializable> params]:
         {
             $sql = $v.sql;
             $params = $v.params;
+            // TODO column_name
         }
     | qualifier DOT STAR
         {
-            $sql = queryMaker.referToColumn(Property.ID, $qualifier.qual); // TODO
+            $sql = queryMaker.referToAllColumns($qualifier.qual);
             $params = new LinkedList<Serializable>();
         }
     ;
