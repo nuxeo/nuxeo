@@ -16,6 +16,7 @@
  */
 package org.nuxeo.dam.platform.action;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.dam.platform.context.ImportActions.IMPORTSET_ROOT_PATH;
 
@@ -26,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -46,7 +46,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.security.SecurityService;
-import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 import org.nuxeo.runtime.api.Framework;
@@ -56,7 +55,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 @Name("folderAdminActions")
-@Scope(ScopeType.CONVERSATION)
+@Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
 public class DamFolderAdminActions implements Serializable {
 
@@ -83,8 +82,6 @@ public class DamFolderAdminActions implements Serializable {
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
-
-    protected String displayMode = BuiltinModes.VIEW;
 
     protected Map<String, List<String>> userPermissions = new HashMap<String, List<String>>();
 
@@ -117,7 +114,6 @@ public class DamFolderAdminActions implements Serializable {
     public void resetNewFolder() {
         newFolder = null;
         resetPermissions();
-        displayMode = BuiltinModes.EDIT;
     }
 
     public void resetPermissions() {
@@ -126,14 +122,6 @@ public class DamFolderAdminActions implements Serializable {
         for (String perm : visiblePermissions) {
             userPermissions.put(perm, new ArrayList<String>());
             groupPermissions.put(perm, new ArrayList<String>());
-        }
-    }
-
-    public void toggleDisplayMode() {
-        if (BuiltinModes.VIEW.equals(displayMode)) {
-            displayMode = BuiltinModes.EDIT;
-        } else {
-            displayMode = BuiltinModes.VIEW;
         }
     }
 
@@ -164,7 +152,6 @@ public class DamFolderAdminActions implements Serializable {
     public void setSelectedFolder(String id) throws ClientException {
         selectedFolder = documentManager.getDocument(new IdRef(id));
         loadPermissionMaps();
-        displayMode = BuiltinModes.VIEW;
     }
 
     protected void savePermissionMaps(DocumentModel doc) throws ClientException {
@@ -252,10 +239,6 @@ public class DamFolderAdminActions implements Serializable {
 
     public DocumentModel getSelectedFolder() {
         return selectedFolder;
-    }
-
-    public String getDisplayMode() {
-        return displayMode;
     }
 
 }

@@ -22,10 +22,7 @@
   <f:facet name="controls">
     <h:panelGroup>
       <h:graphicImage value="/img/close.png"
-          styleClass="hidelink" id="createGroupHidelink">
-        <a4j:support event="onclick" oncomplete="#{groupManagerActions.resetDisplayMode()}"/>
-      </h:graphicImage>
-
+          styleClass="hidelink" id="createGroupHidelink" />
       <rich:componentControl for="createGroupFormPanel" attachTo="createGroupHidelink"
         operation="hide" event="onclick" />
       </h:panelGroup>
@@ -37,16 +34,13 @@
    styleClass="ViewGroupFormPanel">
     <f:facet name="header">
       <h:panelGroup>
-        <h:outputText value="#{messages['title.viewGroup']}" rendered="#{groupManagerActions.displayMode == 'view'}"/>
-        <h:outputText value="#{messages['title.editGroup']}" rendered="#{groupManagerActions.displayMode == 'edit'}"/>
+        <h:outputText value="#{messages['title.editGroup']}" />
     </h:panelGroup>
   </f:facet>
   <f:facet name="controls">
     <h:panelGroup>
       <h:graphicImage value="/img/close.png"
-          styleClass="hidelink" id="viewGroupHidelink" onmouseup="#{groupManagerActions.toggleDisplayMode()}">
-        <a4j:support event="onclick" oncomplete="#{groupManagerActions.resetDisplayMode()}"/>
-      </h:graphicImage>
+          styleClass="hidelink" id="viewGroupHidelink" />
       <rich:componentControl for="viewGroupFormPanel" attachTo="viewGroupHidelink"
         operation="hide" event="onclick" />
       </h:panelGroup>

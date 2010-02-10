@@ -15,29 +15,15 @@
         errorClass="errorFeedback"/>
     </div>
 
-    <f:subview id="viewSubView" rendered="#{groupManagerActions.displayMode == 'view'}">
-      <nxl:layout name="group" mode="view" value="#{groupManagerActions.selectedGroup}" />
-    </f:subview>
-    <f:subview id="editSubView" rendered="#{groupManagerActions.displayMode == 'edit'}">
-      <nxl:layout name="group" mode="edit" value="#{groupManagerActions.selectedGroup}" />
-    </f:subview>
+    <nxl:layout name="group" mode="edit" value="#{groupManagerActions.selectedGroup}" />
 
     <p class="buttonsGadget">
       <a4j:commandLink styleClass="button"
                        action="#{groupManagerActions.updateGroupNoRedirect}"
-                       rendered="#{groupManagerActions.displayMode == 'edit'}"
                        reRender="groupSearchResult, viewGroupPanel"
                        data="#{facesContext.maximumSeverity.ordinal ge 2}"
                        oncomplete="if (!data) { Richfaces.hideModalPanel('viewGroupFormPanel') };">
         <h:outputText value="#{messages['command.save']}"/>
-      </a4j:commandLink>
-      <a4j:commandLink styleClass="button"
-                       action="#{groupManagerActions.toggleDisplayMode}"
-                       immediate="true" reRender="viewGroupPanel">
-        <h:outputText value="#{messages['command.group.cancel']}"
-                      rendered="#{groupManagerActions.displayMode == 'edit'}"/>
-        <h:outputText value="#{messages['command.group.edit']}"
-                      rendered="#{groupManagerActions.displayMode == 'view'}"/>
       </a4j:commandLink>
     </p>
   </a4j:form>

@@ -15,29 +15,15 @@
         errorClass="errorFeedback"/>
     </div>
 
-    <f:subview id="viewSubView" rendered="#{userManagerActions.displayMode == 'view'}">
-      <nxl:layout name="user" mode="view" value="#{userManagerActions.selectedUser}" />
-    </f:subview>
-    <f:subview id="editSubView" rendered="#{userManagerActions.displayMode == 'edit'}">
-      <nxl:layout name="user" mode="edit" value="#{userManagerActions.selectedUser}" />
-    </f:subview>
+    <nxl:layout name="user" mode="edit" value="#{userManagerActions.selectedUser}" />
 
     <p class="buttonsGadget">
       <a4j:commandLink styleClass="button"
                        action="#{userManagerActions.updateUserNoRedirect}"
-                       rendered="#{userManagerActions.displayMode == 'edit'}"
                        reRender="userSearchResult, viewUserPanel"
                        data="#{facesContext.maximumSeverity.ordinal ge 2}"
                        oncomplete="if (!data) { Richfaces.hideModalPanel('viewUserFormPanel') };">
         <h:outputText value="#{messages['command.user.save']}"/>
-      </a4j:commandLink>
-      <a4j:commandLink styleClass="button"
-                       action="#{userManagerActions.toggleDisplayMode}"
-                       immediate="true" reRender="viewUserPanel">
-        <h:outputText value="#{messages['command.user.cancel']}"
-                      rendered="#{userManagerActions.displayMode == 'edit'}"/>
-        <h:outputText value="#{messages['command.user.edit']}"
-                      rendered="#{userManagerActions.displayMode == 'view'}"/>
       </a4j:commandLink>
     </p>
   </a4j:form>
