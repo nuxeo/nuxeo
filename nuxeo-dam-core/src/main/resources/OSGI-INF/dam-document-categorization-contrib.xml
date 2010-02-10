@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.dam.topic.categorization">
+
+  <extension target="org.nuxeo.ecm.platform.categorization.service.DocumentCategorizationService"
+    point="categorizers">
+
+    <documentation>
+      Override the dc:subjects default categorizer to use the custom mono valued damc:topic field.
+    </documentation>
+
+    <categorizer name="dc:subjects" property="damc:topic" maxSuggestions="1" />
+
+  </extension>
+
+</component>
