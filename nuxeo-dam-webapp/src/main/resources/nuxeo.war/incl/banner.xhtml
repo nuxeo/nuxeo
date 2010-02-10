@@ -32,13 +32,18 @@
       <a4j:outputPanel id="administrationTable">
         <a4j:form><ul>
           <li>  
-            <h:outputText styleClass="separator" value="#{messages['label.loggedAsUser']}" />
+            <h:outputText styleClass="userName" value="#{messages['label.loggedAsUser']} #{documentActions.fullUserName}" />
           </li>
-          <li>  
-            &#160;
+          <li>
+            <h:outputText class="separator" value=" • " />
           </li>
-          <li>  
-            <h:outputText styleClass="separator" value="#{documentActions.fullUserName}" />
+          <li>
+            <h:commandLink action="#{logoutActions.logout}">
+              <h:outputText class="logOutButton" value="#{messages['command.logout']}" />
+            </h:commandLink>
+          </li>
+          <li>
+            <h:outputText class="separator" value=" | " />
           </li>
           <li>
             <a4j:commandLink action="#{importActions.invalidateImportContext}" onclick="javascript:Richfaces.showModalPanel('importSetFormPanel');"
@@ -57,14 +62,6 @@
               rendered="#{isInsideAdministration}" reRender="administrationTable">
               <h:outputText class="assetManagementButton" value="${messages['label.action.asset.management']}"/>
             </a4j:commandLink>
-          </li>
-          <li>
-            <h:outputText class="separator" value=" | " />
-          </li>
-          <li>
-            <h:commandLink action="#{logoutActions.logout}">
-              <h:outputText class="logOutButton" value="#{messages['command.logout']}" />
-            </h:commandLink>
           </li>
         </ul><div style="clear:both;"></div>
         </a4j:form>

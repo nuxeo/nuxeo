@@ -104,6 +104,7 @@
     </layout>
     <layout element="page[1]/section[2]/cell[1]">
       <width>210px</width>
+      <padding>0px</padding>
     </layout>
     <layout element="page[1]/section[2]/cell[2]">
       <height>100%</height>
@@ -305,15 +306,15 @@
         <line-height>normal</line-height>
       </selector>
       <selector path=".tabsBar">
-        <border-bottom preset="tabsbar (DAM borders)"/>
         <width>100%</width>
         <line-height>normal</line-height>
-        <border-bottom preset="grayneutral (DAM borders)"/>
       </selector>
       <selector path=".tabsBar ul">
         <margin>0</margin>
+        <height>20px</height>
         <padding>0px 10px 0 0</padding>
         <list-style>none</list-style>
+        <border-bottom preset="grayneutral (DAM borders)"/>
       </selector>
       <selector path=".tabsBar li">
         <margin>0</margin>
@@ -323,16 +324,19 @@
       <selector path=".tabsBar a, .tabsBar a:hover, .tabsBar a:visited">
         <color preset="blue.gray (DAM colors)"/>
         <border-right preset="grayneutral (DAM borders)"/>
+        <border-bottom preset="grayneutral (DAM borders)"/>
         <background preset="tabs (DAM backgrounds)"/>
         <text-decoration>none</text-decoration>
         <font-weight>normal</font-weight>
         <display>block</display>
-        <padding>3px 7px</padding>
+        <padding>3px 7px 0 7px</padding>
         <float>left</float>
+        <height>17px</height>
       </selector>
       <selector path=".tabsBar a.selected, .tabsBar a.selected:hover, .tabsBar a.selected:visited">
         <color>#000</color>
         <border-right preset="grayneutral (DAM borders)"/>
+        <border-bottom preset="white (DAM borders)"/>
         <background preset="white (DAM backgrounds)"/>
       </selector>
       <selector path=".tabsBar li a:hover">
@@ -430,11 +434,14 @@
         <background>transparent url(/nuxeo/img/asset_management_button.png) no-repeat top left</background>
       </selector>
       <selector path=".separator">
-        <padding>9px 0px 8px</padding>
+        <padding>9px 0px 8px 7px</padding>
         <display>block</display>
-        <height>30px</height>
       </selector>
-      <selector path=".logOutButton">
+      <selector path=".userName">
+        <padding>9px 4px 8px 0</padding>
+        <display>block</display>
+      </selector>
+      <selector path=".logOutButton, .userName">
         <color>#afafaf</color>
       </selector>
       <selector path="a:hover .logOutButton">
@@ -687,45 +694,27 @@
     </style>
     <style name="settings style" inherit="common style">
       <selector path=".tabsBar">
-        <width>100%</width>
-        <margin-top>5px</margin-top>
-        <line-height>normal</line-height>
-        <float>left</float>
-        <border-bottom>none</border-bottom>
       </selector>
       <selector path=".tabsBar ul">
-        <margin>0</margin>
-        <padding>0px 10px 0 0</padding>
-        <list-style>none</list-style>
-        <border-bottom preset="tabselected (DAM borders)"/>
-        <height>20px</height>
+        <height>21px</height>
       </selector>
       <selector path=".tabsBar li">
-        <margin-right>5px</margin-right>
-        <margin>0</margin>
-        <padding>0</padding>
-        <float>left</float>
+        <margin>0 3px 0px 0px</margin>
       </selector>
       <selector path=".tabsBar a, .tabsBar a:hover, .tabsBar a:visited">
-        <color>#ffffff</color>
         <border-right>none</border-right>
-        <background preset="tabnotselected (DAM backgrounds)"/>
-        <text-decoration>none</text-decoration>
-        <font-weight>normal</font-weight>
-        <display>block</display>
-        <padding>3px 7px</padding>
-        <float>left</float>
+        <background>#AFBBCC none</background>
+        <border-top>1px solid #AFBBCC</border-top>
+        <color>#f6f6f6</color>
       </selector>
-      <selector path=".tabsBar li.selected a, .tabsBar li.selected a:hover, .tabsBar li.selected a:visited">
-        <color>#333333</color>
-        <border-top preset="tabselected (DAM borders)"/>
-        <border-left preset="tabselected (DAM borders)"/>
-        <border-right preset="tabselected (DAM borders)"/>
-        <background preset="tabselected (DAM backgrounds)"/>
+      <selector path=".tabsBar a:hover">
+        <border-top>1px solid #fff</border-top>
+      </selector>
+      <selector path=".tabsBar a.selected, .tabsBar a.selected:hover, .tabsBar a.selected:visited">
+        <border-top preset="grayneutral (DAM borders)"/>
+        <border-left preset="grayneutral (DAM borders)"/>
       </selector>
       <selector path=".tabsBar li a:hover">
-        <color>#333</color>
-        <background preset="tabselected (DAM backgrounds)"/>
       </selector>
       <selector path=".tabsContent">
         <background preset="white (DAM backgrounds)"/>
