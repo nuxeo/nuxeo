@@ -39,17 +39,17 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
     protected List<ACEDescriptor> acl;
 
     protected boolean isTargetEmpty(DocumentModel eventDoc) throws ClientException  {
-        // If we already have children : exit !!!
-        if (!session.getChildren(eventDoc.getRef()).isEmpty()) {
-            return false;
-        }
-        else {
-            return true;
-        }
+        return session.getChildren(eventDoc.getRef()).isEmpty();
     }
     
     protected boolean accept(DocumentModel eventDoc) throws ClientException {
-       return isTargetEmpty(eventDoc);
+       if (eventDoc.isProxy()) {
+           return false;
+       }
+       if (!isTargetEmpty(eventDoc)) {
+           return false;
+       }
+       return true;
     }
     
     protected void contentCreated(DocumentModel template) {
