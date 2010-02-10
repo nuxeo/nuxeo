@@ -24,13 +24,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.auth.SecurityToken;
 import org.apache.shindig.common.util.ImmediateFuture;
-import org.apache.shindig.social.ResponseError;
+import org.apache.shindig.protocol.ProtocolException;
+import org.apache.shindig.protocol.RestfulCollection;
 import org.apache.shindig.social.opensocial.model.Person;
 import org.apache.shindig.social.opensocial.spi.CollectionOptions;
 import org.apache.shindig.social.opensocial.spi.GroupId;
 import org.apache.shindig.social.opensocial.spi.PersonService;
-import org.apache.shindig.social.opensocial.spi.RestfulCollection;
-import org.apache.shindig.social.opensocial.spi.SocialSpiException;
 import org.apache.shindig.social.opensocial.spi.UserId;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -45,6 +44,8 @@ public class PersonServiceImpl extends DefaultComponent implements
     private PrincipalConverter converter = new DefaultPrincipalConverter();
 
     private static final Log LOG = LogFactory.getLog(PersonServiceImpl.class);
+
+    private static final String NOT_IMPLEMENTED = "Not implemented";
 
     @Override
     public void registerContribution(Object contribution,
@@ -72,12 +73,6 @@ public class PersonServiceImpl extends DefaultComponent implements
 
     }
 
-    public Future<RestfulCollection<Person>> getPeople(Set<UserId> userIds,
-            GroupId groupId, CollectionOptions collectionOptions,
-            Set<String> fields, SecurityToken token)  {
-        System.err.println("getPeople for " + userIds);
-        return null;
-    }
 
     private String realUid(UserId id, SecurityToken token) {
         return id.getUserId() == null ? id.getUserId(token) : id.getUserId();
@@ -92,8 +87,14 @@ public class PersonServiceImpl extends DefaultComponent implements
             NuxeoPrincipal principal = um.getPrincipal(userId);
             return ImmediateFuture.newInstance(converter.convert(principal));
         } catch (Exception e) {
-            throw new SocialSpiException(ResponseError.INTERNAL_ERROR,
+            throw new ProtocolException(500,
                     "Unable to get user : " + e.getMessage(),e);
         }
+    }
+
+    public Future<RestfulCollection<Person>> getPeople(Set<UserId> userIds,
+        GroupId groupId, CollectionOptions collectionOptions,
+        Set<String> fields, SecurityToken token) throws ProtocolException {
+      throw new ProtocolException(500, NOT_IMPLEMENTED);
     }
 }

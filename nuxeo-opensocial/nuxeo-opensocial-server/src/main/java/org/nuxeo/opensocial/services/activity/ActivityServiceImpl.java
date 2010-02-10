@@ -21,10 +21,11 @@ import java.util.Set;
 import java.util.concurrent.Future;
 
 import org.apache.shindig.auth.SecurityToken;
+import org.apache.shindig.protocol.ProtocolException;
 import org.apache.shindig.social.opensocial.model.Activity;
 import org.apache.shindig.social.opensocial.spi.ActivityService;
+import org.apache.shindig.social.opensocial.spi.CollectionOptions;
 import org.apache.shindig.social.opensocial.spi.GroupId;
-import org.apache.shindig.social.opensocial.spi.RestfulCollection;
 import org.apache.shindig.social.opensocial.spi.SocialSpiException;
 import org.apache.shindig.social.opensocial.spi.UserId;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -34,33 +35,37 @@ public class ActivityServiceImpl extends DefaultComponent implements
 
     private static final String NOT_IMPLEMENTED = "Not implemented";
 
-    public Future<Void> createActivity(UserId userId, GroupId groupId,
-            String appId, Set<String> fields, Activity activity,
-            SecurityToken token) {
-        throw new SocialSpiException(null, NOT_IMPLEMENTED);
+    public Future<Void> createActivity(UserId arg0, GroupId arg1, String arg2,
+        Set<String> arg3, Activity arg4, SecurityToken arg5)
+        throws ProtocolException {
+      throw new ProtocolException(500, NOT_IMPLEMENTED);
     }
 
-    public Future<Void> deleteActivities(UserId userId, GroupId groupId,
-            String appId, Set<String> activityIds, SecurityToken token) {
-        throw new SocialSpiException(null, NOT_IMPLEMENTED);
+    public Future<Void> deleteActivities(UserId arg0, GroupId arg1,
+        String arg2, Set<String> arg3, SecurityToken arg4)
+        throws ProtocolException {
+      throw new ProtocolException(500, NOT_IMPLEMENTED);
     }
 
-    public Future<RestfulCollection<Activity>> getActivities(
-            Set<UserId> userIds, GroupId groupId, String appId,
-            Set<String> fields, SecurityToken token) {
-        throw new SocialSpiException(null, NOT_IMPLEMENTED);
+    public Future<org.apache.shindig.protocol.RestfulCollection<Activity>> getActivities(
+        Set<UserId> arg0, GroupId arg1, String arg2, Set<String> arg3,
+        CollectionOptions arg4, SecurityToken arg5) throws ProtocolException {
+      throw new ProtocolException(500, NOT_IMPLEMENTED);
     }
 
-    public Future<RestfulCollection<Activity>> getActivities(UserId userId,
-            GroupId groupId, String appId, Set<String> fields,
-            Set<String> activityIds, SecurityToken token) {
-        throw new SocialSpiException(null, NOT_IMPLEMENTED);
+    public Future<org.apache.shindig.protocol.RestfulCollection<Activity>> getActivities(
+        UserId arg0, GroupId arg1, String arg2, Set<String> arg3,
+        CollectionOptions arg4, Set<String> arg5, SecurityToken arg6)
+        throws ProtocolException {
+      throw new ProtocolException(500, NOT_IMPLEMENTED);
     }
 
-    public Future<Activity> getActivity(UserId userId, GroupId groupId,
-            String appId, Set<String> fields, String activityId,
-            SecurityToken token) {
-        throw new SocialSpiException(null, NOT_IMPLEMENTED);
+    public Future<Activity> getActivity(UserId arg0, GroupId arg1, String arg2,
+        Set<String> arg3, String arg4, SecurityToken arg5)
+        throws ProtocolException {
+      throw new ProtocolException(500, NOT_IMPLEMENTED);
     }
+
+
 
 }
