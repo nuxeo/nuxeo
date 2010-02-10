@@ -39,6 +39,7 @@ import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.dam.platform.action.DamFolderAdminActions;
 import org.nuxeo.dam.webapp.filter.FilterActions;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -96,6 +97,9 @@ public class ImportActions implements Serializable {
     @In(create = true)
     protected transient FilterActions filterActions;
 
+    @In(create = true)
+    protected transient DamFolderAdminActions folderAdminActions;
+
     protected FileManager fileManagerService;
 
     protected Blob blob;
@@ -139,6 +143,7 @@ public class ImportActions implements Serializable {
         folder.setPropertyValue("dc:title", title);
         folder = documentManager.createDocument(folder);
         documentManager.save();
+        folderAdminActions.resetFolderList();
         return folder;
     }
 
