@@ -70,16 +70,21 @@ gadgets.nuxeo.hasPermission = function(permissionName) {
   var perms = tmp.substring(1, tmp.length-1).split(",");
   var b = false;
   jQuery.each(perms, function(i, p){
-  	if(jQuery.trim(p) == jQuery.trim(permissionName)) {
-  		b = true;
-  		return;
-  	}
+    if(jQuery.trim(p) == jQuery.trim(permissionName)) {
+      b = true;
+      return;
+    }
   });
   return b;
 };
 
 gadgets.nuxeo.isEditable = function() {
-	return gadgets.nuxeo.hasPermission("Everything") || gadgets.nuxeo.hasPermission("SpaceContributeur");
+  return gadgets.nuxeo.hasPermission("Everything") || gadgets.nuxeo.hasPermission("SpaceContributeur");
 };
+
+gadgets.nuxeo.getNXIDPreference = function(name, id) {
+  return {"NXID": id, "NXNAME":name};
+};
+}
 
 
