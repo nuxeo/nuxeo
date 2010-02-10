@@ -511,7 +511,7 @@ class FolderPage(BasePage):
         state = fl.getLastJsfState()
         params = [
             ['AJAXREQUEST', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_ajax_region'],
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest', ''],
+            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest', user],
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', '0'],
             ['add_rights_form:rights_grant_select', 'Grant'],
             ['add_rights_form:rights_permission_select', 'Read'],
@@ -524,7 +524,6 @@ class FolderPage(BasePage):
                   description="Grant perm select user " + user)
 
         params = [
-            ['add_rights_form', 'add_rights_form'],
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest', ''],
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', ''],
             ['add_rights_form:rights_grant_select', 'Grant'],
@@ -537,7 +536,6 @@ class FolderPage(BasePage):
         fl.assert_('Save local rights' in fl.getBody())
 
         params = [
-            ['validate_rights', 'validate_rights'],
             ['validate_rights:document_rights_validate_button', 'Save local rights'],
             ['validate_rights_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()]]
