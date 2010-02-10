@@ -46,6 +46,9 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
        if (eventDoc.isProxy()) {
            return false;
        }
+       if (eventDoc.isVersion()) {
+           return false;
+       }
        if (!isTargetEmpty(eventDoc)) {
            return false;
        }
