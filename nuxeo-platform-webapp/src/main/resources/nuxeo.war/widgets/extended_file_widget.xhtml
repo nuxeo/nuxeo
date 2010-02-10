@@ -46,6 +46,8 @@
       <h:commandLink action="#{previewActions.doSetFieldXPath}">
         <f:param name="fieldXPath"
           value="#{widget.fieldDefinitions[0].propertyName}" />
+        <f:param name="previewTabId"
+          value="#{nxu:test(!empty widget.properties.previewTabId, widget.properties.previewTabId, 'TAB_PREVIEW')}" />
         <h:outputText value=" | #{messages['command.preview.file']}" />
       </h:commandLink>
     </c:if>
