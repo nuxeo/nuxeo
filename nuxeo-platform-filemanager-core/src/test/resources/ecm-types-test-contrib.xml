@@ -6,9 +6,7 @@
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
-    <!-- XXX AT: currently coretype and type *must* have the same name -->
-
-    <type id="Root" coretype="Root">
+    <type id="Root">
       <label>Server Root</label>
       <icon>/icons/folder.gif</icon>
       <default-view>view_domains</default-view>
@@ -29,7 +27,7 @@
       </layout>
     </type>
 
-    <type id="Domain" coretype="Domain">
+    <type id="Domain">
       <label>Domain</label>
       <icon>/icons/domain.gif</icon>
       <default-view>view_documents</default-view>
@@ -55,7 +53,7 @@
       </layout>
     </type>
 
-    <type id="WorkspaceRoot" coretype="WorkspaceRoot">
+    <type id="WorkspaceRoot">
       <label>WorkspaceRoot</label>
       <icon>/icons/workspace.gif</icon>
       <icon-expanded>/icons/workspace_open.gif</icon-expanded>
@@ -76,7 +74,7 @@
       </layout>
     </type>
 
-    <type id="TemplateRoot" coretype="TemplateRoot">
+    <type id="TemplateRoot">
       <label>TemplateRoot</label>
       <icon>/icons/folder_template.gif</icon>
       <icon-expanded>/icons/folder_template_open.gif</icon-expanded>
@@ -97,7 +95,7 @@
       </layout>
     </type>
 
-    <type id="Workspace" coretype="Workspace">
+    <type id="Workspace">
       <label>Workspace</label>
       <icon>/icons/workspace.gif</icon>
       <icon-expanded>/icons/workspace_open.gif</icon-expanded>
@@ -125,7 +123,7 @@
       </layout>
     </type>
 
-    <type id="SectionRoot" coretype="SectionRoot">
+    <type id="SectionRoot">
       <label>SectionRoot</label>
       <icon>/icons/folder.gif</icon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
@@ -146,7 +144,7 @@
       </layout>
     </type>
 
-    <type id="Section" coretype="Section">
+    <type id="Section">
       <label>Section</label>
       <icon>/icons/folder.gif</icon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
@@ -167,7 +165,7 @@
       </layout>
     </type>
 
-    <type id="Folder" coretype="Folder">
+    <type id="Folder">
       <label>Folder</label>
       <icon>/icons/folder.gif</icon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
@@ -190,7 +188,7 @@
       </layout>
     </type>
 
-    <type id="File" coretype="File">
+    <type id="File">
       <label>File</label>
       <icon>/icons/file.gif</icon>
       <!-- dummy default infos as an example -->
@@ -211,7 +209,7 @@
       </layout>
     </type>
 
-    <type id="Note" coretype="Note">
+    <type id="Note">
       <label>Note</label>
       <icon>/icons/note.gif</icon>
       <default-view>view_documents</default-view>
@@ -230,7 +228,7 @@
       </layout>
     </type>
 
-    <type id="User" coretype="User">
+    <type id="User">
       <label>User</label>
       <icon>/icons/user.gif</icon>
       <default-view>view_user</default-view>
@@ -253,7 +251,7 @@
       </layout>
     </type>
 
-    <type id="UserCreate" coretype="UserCreate">
+    <type id="UserCreate">
       <label>UserCreate</label>
       <icon>/icons/user.gif</icon>
       <default-view>create_user</default-view>
@@ -274,7 +272,7 @@
       </layout>
     </type>
 
-    <type id="AdvancedSearch" coretype="AdvancedSearch">
+    <type id="AdvancedSearch">
       <label>Advanced Search</label>
       <icon>/icons/advanced_search.gif</icon>
       <default-view>view_user</default-view>
