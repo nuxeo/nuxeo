@@ -20,7 +20,8 @@
   <div class="breadcrumbs">
   
     <h:form>
-      <h:commandLink action="#{breadcrumbActions.navigateToParent}">
+      <h:commandLink action="#{breadcrumbActions.navigateToParent}"
+        rendered="#{facesContext.viewRoot.viewId != '/view_servers.xhtml'}">
         <nxu:graphicImage value="/img/UpFolder_icon.gif"
           style="vertical-align:middle"/>
       </h:commandLink>

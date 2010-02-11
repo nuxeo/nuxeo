@@ -96,8 +96,8 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
     public String navigateToParent() throws ClientException {
         List<PathElement> documentsFormingPath = getBackendPath();
         int nbDocInList = documentsFormingPath.size();
-        // if there is the case, remove the starting ....
-        if (nbDocInList >= 0
+        // if there is the case, remove the starting
+        if (nbDocInList > 0
                 && documentsFormingPath.get(0).getName().equals(PATH_SHORTCUT)) {
             documentsFormingPath.remove(0);
         }
