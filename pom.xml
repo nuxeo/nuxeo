@@ -18,7 +18,10 @@
   <modules>
     <module>nuxeo-platform-audio</module>
     <module>nuxeo-platform-audit-web-access</module>
-    <module>nuxeo-platform-document-categorization</module>
+    <module>nuxeo-platform-categorization-language</module>
+    <module>nuxeo-platform-categorization-coverage</module>
+    <module>nuxeo-platform-categorization-subjects</module>
+    <module>nuxeo-platform-categorization</module>
     <!-- <module>nuxeo-platform-error-web</module> -->
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-platform-login</module>
