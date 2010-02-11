@@ -8,13 +8,13 @@
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
       point="types">
-    <type id="Domain" coretype="Domain">
+    <type id="Domain">
       <subtypes>
         <type>CommentRoot</type>
       </subtypes>
     </type>
 
-    <type id="CommentRoot" coretype="CommentRoot">
+    <type id="CommentRoot">
       <label>CommentRoot</label>
       <icon>/icons/folder.gif</icon>
       <default-view>view_documents</default-view>
@@ -30,7 +30,7 @@
       </layout>
     </type>
 
-    <type id="Comment" coreType="Comment">
+    <type id="Comment">
       <label>label.document.comment</label>
       <icon>/img/icons/comment.gif</icon>
       <default-view>comment_view</default-view>

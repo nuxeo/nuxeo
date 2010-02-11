@@ -8,7 +8,7 @@
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
     point="types">
 
-    <type id="Space" coretype="Space">
+    <type id="Space">
       <label>Space: Not Seen By User</label>
       <description>Not seen by user</description>
       <icon>/icons/space.png</icon>

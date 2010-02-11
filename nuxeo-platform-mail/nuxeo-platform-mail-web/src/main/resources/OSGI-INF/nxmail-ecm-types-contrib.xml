@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
-    <type id="MailMessage" coretype="MailMessage">
+    <type id="MailMessage">
       <label>MailMessage</label>
       <icon>/icons/mail.png</icon>
       <bigIcon>/icons/mail_100.png</bigIcon>
@@ -24,7 +24,7 @@
       </layouts>
     </type>
 
-    <type id="MailFolder" coretype="MailFolder">
+    <type id="MailFolder">
       <label>MailFolder</label>
       <icon>/icons/mail_folder.png</icon>
       <bigIcon>/icons/mailfolder_100.png</bigIcon>

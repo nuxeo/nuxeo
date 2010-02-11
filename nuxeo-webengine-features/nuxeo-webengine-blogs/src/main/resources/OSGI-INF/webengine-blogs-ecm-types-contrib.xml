@@ -12,7 +12,8 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
-    <type id="BlogSite" coretype="BlogSite">
+
+    <type id="BlogSite">
       <label>Blog Site</label>
       <icon>/icons/blog_folder.png</icon>
       <bigIcon>/icons/blogsite_100.png</bigIcon>
@@ -36,7 +37,7 @@
       </layouts>
     </type>
 
-    <type id="BlogPost" coretype="BlogPost">
+    <type id="BlogPost">
       <label>Blog Post</label>
       <icon>/icons/blogpage.png</icon>
       <bigIcon>/icons/blogpage_100.png</bigIcon>
@@ -59,13 +60,13 @@
       </layouts>
     </type>
 
-    <type id="Workspace" coretype="Workspace">
+    <type id="Workspace">
       <subtypes>
         <type>BlogSite</type>
       </subtypes>
     </type>
 
-    <type id="Folder" coretype="Folder">
+    <type id="Folder">
       <subtypes>
         <type>BlogSite</type>
       </subtypes>

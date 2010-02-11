@@ -2,43 +2,10 @@
 
 <component name="org.nuxeo.webengine.document.types">
 
-  <require>org.nuxeo.ecm.platform.types.TypeService</require>
-
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
              point="types">
 
-<!--
-    <type id="Blog" coretype="Blog">
-      <label>BlogSite</label>
-      <icon>/icons/folder.gif</icon>
-      <icon-expanded>/icons/folder_open.gif</icon-expanded>
-      <bigIcon>/icons/folder_100.gif</bigIcon>
-      <category>WebObject</category>
-      <description>Blog.description</description>
-      <default-view>view_documents</default-view>
-      <subtypes>
-        <type>BlogPost</type>
-        <type>File</type>
-      </subtypes>
-      <layouts mode="any">
-        <layout>heading</layout>
-      </layouts>
-    </type>
-
-    <type id="BlogPost" coretype="BlogPost">
-      <label>Blog Entry</label>
-      <icon>/icons/file.gif</icon>
-      <bigIcon>/icons/file_100.gif</bigIcon>
-      <category>WebObject</category>
-      <description>BlogPost.description</description>
-      <default-view>view_documents</default-view>
-      <layouts mode="any">
-        <layout>heading</layout>
-        <layout>files</layout>
-      </layouts>
-    </type>
--->
-    <type id="Wiki" coretype="Wiki">
+    <type id="Wiki">
       <label>Wiki Site</label>
       <icon>/icons/folder.gif</icon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
@@ -50,13 +17,12 @@
         <type>WikiPage</type>
         <type>File</type>
       </subtypes>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
     </type>
 
-    <type id="WikiPage" coretype="WikiPage">
+    <type id="WikiPage">
       <label>Wiki Page</label>
       <icon>/icons/file.gif</icon>
       <bigIcon>/icons/wikipage_100.png</bigIcon>
@@ -64,16 +30,14 @@
       <description>WikiPage.description</description>
       <!-- dummy default infos as an example -->
       <default-view>view_documents</default-view>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
         <layout>files</layout>
       </layouts>
     </type>
 
-    <type id="Workspace" coretype="Workspace">
+    <type id="Workspace">
       <subtypes>
-        <!--<type>Blog</type>-->
         <type>Wiki</type>
       </subtypes>
     </type>
