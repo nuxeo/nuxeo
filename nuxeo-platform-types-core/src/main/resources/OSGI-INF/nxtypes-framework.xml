@@ -76,7 +76,7 @@
       Example:
 
       <code>
-        <type id="Domain" coretype="Domain">
+        <type id="Domain">
           <label>Domain</label>
           <icon>/icons/folder.gif</icon>
           <default-view>view_documents</default-view>
