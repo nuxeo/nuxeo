@@ -16,8 +16,15 @@
  */
 package org.nuxeo.ecm.platform.test;
 
-import org.nuxeo.ecm.core.test.CoreDeployment;
+import javax.sql.DataSource;
+
+import org.hsqldb.jdbc.jdbcDataSource;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.NuxeoRunner;
+import org.nuxeo.runtime.test.runner.SimpleFeature;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -35,6 +42,22 @@ import org.nuxeo.runtime.test.runner.Deploy;
     "org.nuxeo.ecm.platform.test:test-usermanagerimpl/schemas-config.xml",
     "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml"
 })
-public interface PlatformDeployment extends CoreDeployment {
+@Features(CoreFeature.class)
+public class PlatformFeature extends SimpleFeature {
 
+    @Override
+    public void initialize(NuxeoRunner runner, Class<?> testClass)
+            throws Exception {
+        NuxeoRunner.bindDatasource("nxsqldirectory", createDataSource("jdbc:hsqldb:mem:directories"));
+    }
+    
+    public static DataSource createDataSource(String dbName) {
+        jdbcDataSource datasource = new jdbcDataSource();
+        datasource.setDatabase(dbName);
+        datasource.setUser("sa");
+        datasource.setPassword("");
+        return datasource;
+    }
+
+    
 }

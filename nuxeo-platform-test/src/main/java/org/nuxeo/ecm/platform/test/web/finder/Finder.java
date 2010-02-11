@@ -14,28 +14,12 @@
  * Contributors:
  *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
-package org.nuxeo.ecm.platform.test;
+package org.nuxeo.ecm.platform.test.web.finder;
 
-import static org.junit.Assert.assertNotNull;
+import java.util.NoSuchElementException;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.NuxeoRunner;
+public interface Finder<T> {
 
-import com.google.inject.Inject;
-
-@RunWith(NuxeoRunner.class)
-@Features(PlatformFeature.class)
-public class DirectoryServiceTest {
-
-    @Inject
-    DirectoryService ds;
-
-    @Test
-    public void theDirectoryServiceIsProvided() throws Exception {
-        assertNotNull(ds);
-    }
+    T find() throws NoSuchElementException;
 
 }

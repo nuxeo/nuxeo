@@ -23,10 +23,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.NuxeoRunner;
 
 import com.google.inject.Inject;
 
-@RunWith(NuxeoPlatformRunner.class)
+@RunWith(NuxeoRunner.class)
+@Features(PlatformFeature.class)
 public class UserManagerTest {
 
     @Inject

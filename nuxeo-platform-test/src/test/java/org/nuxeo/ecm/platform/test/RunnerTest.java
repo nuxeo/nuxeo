@@ -28,7 +28,9 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.DataSourceHelper;
+import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.NuxeoRunner;
 
 import com.google.inject.Inject;
 
@@ -38,7 +40,8 @@ import com.google.inject.Inject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@RunWith(NuxeoPlatformRunner.class)
+@RunWith(NuxeoRunner.class)
+@Features(PlatformFeature.class)
 @LocalDeploy("org.nuxeo.ecm.core:local-resource-test.xml")
 public class RunnerTest {
 

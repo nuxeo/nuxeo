@@ -14,28 +14,17 @@
  * Contributors:
  *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
-package org.nuxeo.ecm.platform.test;
+package org.nuxeo.ecm.platform.test.web;
 
-import static org.junit.Assert.assertNotNull;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.NuxeoRunner;
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface SkipBrowser {
 
-import com.google.inject.Inject;
-
-@RunWith(NuxeoRunner.class)
-@Features(PlatformFeature.class)
-public class DirectoryServiceTest {
-
-    @Inject
-    DirectoryService ds;
-
-    @Test
-    public void theDirectoryServiceIsProvided() throws Exception {
-        assertNotNull(ds);
-    }
+    BrowserFamily[] value();
 
 }

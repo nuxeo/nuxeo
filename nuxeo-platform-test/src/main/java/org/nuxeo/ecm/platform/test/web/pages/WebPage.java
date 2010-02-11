@@ -14,28 +14,15 @@
  * Contributors:
  *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
-package org.nuxeo.ecm.platform.test;
+package org.nuxeo.ecm.platform.test.web.pages;
 
-import static org.junit.Assert.assertNotNull;
+import org.openqa.selenium.WebDriver;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.NuxeoRunner;
+public interface WebPage {
 
-import com.google.inject.Inject;
+    void setPort(String port);
 
-@RunWith(NuxeoRunner.class)
-@Features(PlatformFeature.class)
-public class DirectoryServiceTest {
+    void setHost(String host);
 
-    @Inject
-    DirectoryService ds;
-
-    @Test
-    public void theDirectoryServiceIsProvided() throws Exception {
-        assertNotNull(ds);
-    }
-
+    void setDriver(WebDriver driver);
 }

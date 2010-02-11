@@ -14,28 +14,32 @@
  * Contributors:
  *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
-package org.nuxeo.ecm.platform.test;
+package org.nuxeo.ecm.platform.test.web.finder;
 
-import static org.junit.Assert.assertNotNull;
+import java.util.NoSuchElementException;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.NuxeoRunner;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
-import com.google.inject.Inject;
+public class XPathFinder implements Finder<WebElement> {
 
-@RunWith(NuxeoRunner.class)
-@Features(PlatformFeature.class)
-public class DirectoryServiceTest {
+    private final String xpath;
 
-    @Inject
-    DirectoryService ds;
+    private final WebDriver webDriver;
 
-    @Test
-    public void theDirectoryServiceIsProvided() throws Exception {
-        assertNotNull(ds);
+    public XPathFinder(String xpath, WebDriver webDriver) {
+        this.xpath = xpath;
+        this.webDriver = webDriver;
+    }
+
+    public WebElement find() throws NoSuchElementException {
+        return webDriver.findElement(By.xpath(xpath));
+    }
+
+    @Override
+    public String toString() {
+        return xpath.toString();
     }
 
 }
