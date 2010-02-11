@@ -8,7 +8,7 @@
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
-    <type id="search_results" coretype="search_results">
+    <type id="search_results">
       <label>label.document.searchResults</label>
       <icon>/icons/file.gif</icon>
       <layout>
