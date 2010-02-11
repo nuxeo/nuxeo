@@ -138,4 +138,6 @@ public interface RuntimeHarness {
     public void stop() throws Exception;
 
     public boolean isStarted();
+    
+    public void deployFolder(File folder, ClassLoader loader) throws Exception;
 }

@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jmock.MockObjectTestCase;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.osgi.BundleFile;
+import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.osgi.DirectoryBundleFile;
 import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
@@ -551,4 +552,10 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
         return bundleFile;
     }
 
+    
+    public void deployFolder(File folder, ClassLoader loader) throws Exception {
+        DirectoryBundleFile bf = new DirectoryBundleFile(folder);
+        BundleImpl bundle = new BundleImpl(osgi, bf, loader);
+        osgi.install(bundle);
+    }
 }

@@ -32,6 +32,12 @@ import com.google.inject.Scopes;
  */
 public class RuntimeModule extends AbstractModule {
 
+    protected NuxeoRunner runner;
+    
+    public RuntimeModule(NuxeoRunner runner) {
+        this.runner = runner;
+    }
+    
     @Override
     protected void configure() {
         for (String svc : Framework.getRuntime().getComponentManager().getServices()) {
@@ -42,7 +48,8 @@ public class RuntimeModule extends AbstractModule {
                 throw new RuntimeException("Failed to bind service: "+svc, e);
             }
         }
-        bind(RuntimeHarness.class).toInstance(NuxeoRunner.getRuntimeHarness());
+        bind(NuxeoRunner.class).toInstance(runner);
+        bind(RuntimeHarness.class).toInstance(runner.getHarness());
     }
 
     protected <T> void bind0(Class<T> type) {
