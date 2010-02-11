@@ -38,6 +38,14 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import com.google.inject.Provider;
 
+/**
+ * Repository configuration that can be set using {@link RepositoryConfig} annotations.
+ * 
+ * If you are modifying fields in this class do not forget to update the {@link RepositorySettings#importSettings(RepositorySettings) method 
+ * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ */
 public class RepositorySettings implements Provider<CoreSession> {
 
     private static final Log log = LogFactory.getLog(RepositorySettings.class);
@@ -51,6 +59,17 @@ public class RepositorySettings implements Provider<CoreSession> {
     protected TestRepositoryHandler repo;
     protected CoreSession session;
     
+    /**
+     * Do not use this ctor - it will be used by {@link MultiNuxeoCoreRunner}
+     */
+    protected RepositorySettings() {
+        importAnnotations(Defaults.of(RepositoryConfig.class));
+    }
+
+    protected RepositorySettings(RepositoryConfig config) {
+        importAnnotations(config);
+    }
+
     public RepositorySettings(NuxeoRunner runner) {
         this.runner = runner;
         Description description = runner.getDescription();
@@ -58,6 +77,10 @@ public class RepositorySettings implements Provider<CoreSession> {
         if (repo == null) {
             repo = Defaults.of(RepositoryConfig.class);
         }
+        importAnnotations(repo);
+    }
+    
+    public void importAnnotations(RepositoryConfig repo) {
         type = repo.type();        
         username = repo.user();
         granularity = repo.cleanup(); 
@@ -68,8 +91,20 @@ public class RepositorySettings implements Provider<CoreSession> {
             } catch (Exception e) {
                 e.printStackTrace();
             }            
-        }
+        }        
     }
+    
+    public void importSettings(RepositorySettings settings) {
+        shutdown();
+        // override only the user name and the type.
+        // overriding initializer and granularity may broke tests that are using specific initializers
+        RepositoryConfig defaultConfig = Defaults.of(RepositoryConfig.class);
+        if (defaultConfig.type() != settings.type) {
+            type = settings.type;
+        }
+        username = settings.username;        
+    }
+
 
     public BackendType getBackendType() {
         return type;

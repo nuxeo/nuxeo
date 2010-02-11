@@ -26,8 +26,8 @@ import org.junit.runners.ParentRunner;
 import org.junit.runners.Suite.SuiteClasses;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.RunnerBuilder;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
-import org.nuxeo.ecm.core.test.annotations.RepositoryBackends;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfigs;
 import org.nuxeo.runtime.test.runner.NuxeoRunner;
 
 /**
@@ -46,41 +46,45 @@ import org.nuxeo.runtime.test.runner.NuxeoRunner;
  *
  * With SimpleSession.class being a class to be run with NuxeoCoreRunner
  */
-@RepositoryBackends
 // annotation present to provide an accessible default
 public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoRunner> {
 
     private final List<NuxeoRunner> runners = new ArrayList<NuxeoRunner>();
 
-    private BackendType[] types;
+    private RepositorySettings[] configs;
 
     public MultiNuxeoCoreRunner(Class<?> testClass, RunnerBuilder builder)
             throws InitializationError {
         this(builder, testClass, getSuiteClasses(testClass),
-                getBackendTypes(testClass));
+                getRepositorySettings(testClass));
     }
 
     public MultiNuxeoCoreRunner(RunnerBuilder builder, Class<?> testClass,
-            Class<?>[] classes, BackendType[] repoTypes)
+            Class<?>[] classes, RepositorySettings[] repoTypes)
             throws InitializationError {
         this(null, builder.runners(null, classes), repoTypes);
     }
 
     protected MultiNuxeoCoreRunner(Class<?> klass, List<Runner> runners,
-            BackendType[] types) throws InitializationError {
+            RepositorySettings[] configs) throws InitializationError {
         super(klass);
         for (Runner runner : runners) {
             this.runners.add((NuxeoRunner) runner);
         }
-        this.types = types;
+        this.configs = configs;
     }
 
-    protected static BackendType[] getBackendTypes(Class<?> testClass) {
-        RepositoryBackends annotation = testClass.getAnnotation(RepositoryBackends.class);
+    protected static RepositorySettings[] getRepositorySettings(Class<?> testClass) {
+        RepositoryConfigs annotation = testClass.getAnnotation(RepositoryConfigs.class);
         if (annotation == null) {
-            return MultiNuxeoCoreRunner.class.getAnnotation(RepositoryBackends.class).value();
+            return new RepositorySettings[] { new RepositorySettings() };
         } else {
-            return annotation.value();
+            RepositoryConfig[] annos = annotation.value();
+            RepositorySettings[] result = new RepositorySettings[annos.length];
+            for (int i=0; i<annos.length; i++) {
+                result[i] = new RepositorySettings(annos[i]);
+            }
+            return result;
         }
     }
 
@@ -116,10 +120,10 @@ public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoRunner> {
     
     @Override
     protected void runChild(NuxeoRunner child, RunNotifier notifier) {
-        for (BackendType type : types) {
+        for (RepositorySettings config : configs) {
             CoreFeature cf = child.getFeature(CoreFeature.class);
             if (cf != null) {
-                cf.setBackendType(type);
+                cf.setRepositorySettings(config);
             }
 //TODO            child.resetInjector();
             child.run(notifier);

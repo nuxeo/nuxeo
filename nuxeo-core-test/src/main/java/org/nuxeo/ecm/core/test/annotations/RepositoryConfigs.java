@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,20 +12,30 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
+ *     bstefanescu
  */
 package org.nuxeo.ecm.core.test.annotations;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
- * Defines the multiple repository types used by the tests.
+ * Useful to make suites using different configurations
+ * Usage:
+ * <pre>
+ * @RepositoryConfigs({
+ *   @RepositoryConfig(type=BackendType.H2),
+ *   @RepositoryConfig(type=BackendType.JCR)
+ * })
+ * @SuiteClasses( { Test1.class, Test2.class } )
+ * @RunWith(MultiNuxeoCoreRunner.class)
+ * public class MySuite {
+ * }
+ * </pre> 
+ * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.TYPE })
-public @interface RepositoryBackends {
-    BackendType[] value() default { BackendType.JCR, BackendType.H2 };
+public @interface RepositoryConfigs {
+
+    RepositoryConfig[] value() default { @RepositoryConfig };
+    
 }

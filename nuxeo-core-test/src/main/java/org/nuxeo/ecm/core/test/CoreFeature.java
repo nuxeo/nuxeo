@@ -130,10 +130,9 @@ public class CoreFeature extends SimpleFeature {
         }        
     }
     
-    public void setBackendType(BackendType backendType) {
-        this.repository.setBackendType(backendType);
+    public void setRepositorySettings(RepositorySettings settings) {
+        repository.importSettings(settings);
     }
-
 
 }
 

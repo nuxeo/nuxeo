@@ -19,10 +19,16 @@ package org.nuxeo.ecm.core.test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
-import org.nuxeo.ecm.core.test.annotations.RepositoryBackends;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfigs;
 
 @RunWith(MultiNuxeoCoreRunner.class)
 @SuiteClasses( { SimpleSession.class })
-@RepositoryBackends( { BackendType.H2, BackendType.JCR, BackendType.POSTGRES })
+//@RepositoryBackends( { BackendType.H2, BackendType.JCR, BackendType.POSTGRES })
+@RepositoryConfigs( {
+    @RepositoryConfig(type=BackendType.H2),
+    @RepositoryConfig(type=BackendType.JCR),
+    @RepositoryConfig(type=BackendType.POSTGRES)
+})
 public class NuxeoSuiteTest {
 }
