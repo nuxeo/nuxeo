@@ -90,8 +90,7 @@ public class TaggingHelper {
      * Removes tagging from a document.
      *
      * @param session the Nuxeo core session
-     * @param document the document model from which the tagging will be
-     *            removed
+     * @param document the document model from which the tagging will be removed
      * @param taggingId the id of the tagging that will be removed
      * @throws ClientException
      */
@@ -154,11 +153,10 @@ public class TaggingHelper {
         return getTagService().getPopularCloud(session, document);
     }
 
-
-    public List<WeightedTag> getPopularCloudOnAllDocuments(CoreSession session) throws ClientException {
+    public List<WeightedTag> getPopularCloudOnAllDocuments(CoreSession session)
+            throws ClientException {
         return getTagService().getPopularCloudOnAllDocuments(session);
     }
-
 
     /**
      * Returns the list with documents which are tagged with a particular tag
@@ -197,17 +195,20 @@ public class TaggingHelper {
      */
     public boolean canModifyTag(CoreSession session, DocumentModel document,
             Tag tag) throws ClientException {
+        if (document == null || tag == null || session == null) {
+            return false;
+        }
         NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        if (principal == null) {
+            return false;
+        }
         if (principal.isAdministrator()
                 || session.hasPermission(document.getRef(),
                         SecurityConstants.WRITE)) {
             return true;
         }
-        if (document == null || tag == null) {
-            return false;
-        }
-        return getTagService().getTaggingId(session, document.getId(), tag.tagLabel,
-                principal.getName()) != null;
+        return getTagService().getTaggingId(session, document.getId(),
+                tag.tagLabel, principal.getName()) != null;
     }
 
     /**
