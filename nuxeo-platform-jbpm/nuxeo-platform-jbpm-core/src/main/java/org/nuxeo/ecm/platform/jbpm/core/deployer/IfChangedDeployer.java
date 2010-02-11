@@ -34,8 +34,9 @@ import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
+ * @deprecated see https://jira.nuxeo.org/browse/NXP-4650 , use nuxeoProperties deployer instead.
  */
+@Deprecated
 public class IfChangedDeployer extends AbstractProcessDefinitionDeployer implements Serializable {
 
     private static final long serialVersionUID = 1L;

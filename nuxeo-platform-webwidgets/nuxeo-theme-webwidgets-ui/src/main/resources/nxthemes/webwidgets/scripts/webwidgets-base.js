@@ -100,27 +100,7 @@ NXThemesWebWidgets.WebWidget.prototype = {
       widget.decorate(template, widget_mode);
       widget.draw();
     } else {
-      var url = nxthemesBasePath + "/nxthemes-webwidgets/get_widget_decoration/?decoration=" + encodeURIComponent(decoration);
-      var options = {
-        method: 'get',
-        asynchronous: false,
-        onSuccess: function(r) {
-          var widget_decoration = r.responseText.evalJSON(true);
-          widget.setDecoration(decoration, widget_decoration)
-          var template = widget_decoration[widget_mode];
-          if (template === null) {
-            var default_state_mode = widget_mode.split('/')[0] + '/*';
-            template = widget_decoration[default_state_mode];
-          }
-          widget.decorate(template, widget_mode);
-          widget.draw();
-        },
-        onFailure: function(r) {
-          var text = r.responseText;
-          window.alert(text);
-        }
-      };
-      new Ajax.Request(url, options);
+      alert("Widget decoration not found: " + decoration);
     }
   },
 
@@ -178,6 +158,9 @@ NXThemesWebWidgets.renderPanel = function(panel, data) {
   var mode = data.mode;
   var provider = data.provider;
   var decoration = data.decoration;
+  var widget_decoration = data.widget_decoration;
+  NXThemesWebWidgets.decorations.set(decoration, widget_decoration)
+    
   var widget_types = data.widget_types;
   
   $A(data.widget_items).each(function(item) {
@@ -191,7 +174,7 @@ NXThemesWebWidgets.renderPanel = function(panel, data) {
     widget._name = name;
     widget._provider = provider;
     widget._decoration = decoration;
-    
+
     // Inline styles
     var styles = widget_type.styles;
     var styles_id = "webwidget_style_" + name.toLowerCase().replace(/ /g, '_');

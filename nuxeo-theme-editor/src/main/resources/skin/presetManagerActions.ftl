@@ -6,7 +6,7 @@
 <@nxthemes_button identifier="show_presets"
   controlledBy="theme buttons"
   link="javascript:NXThemesPresetManager.setEditMode('theme presets')"
-  label="List by category" />
+  label="Show theme presets" />
 
 <@nxthemes_button identifier="application_presets"
   controlledBy="theme buttons"

@@ -32,6 +32,8 @@ public class AnnotationConfiguration {
 
     private static final String PREVIEW_URL = "previewUrl";
 
+    private static final String DOCUMENT_URL = "documentUrl";
+
     private static final String ANNOTATION_CONFIGURATION = "annotationConfiguration";
 
     private static final AnnotationConfiguration INSTANCE;
@@ -41,6 +43,8 @@ public class AnnotationConfiguration {
     private String annotationCssUrl;
 
     private String previewUrl;
+
+    private String documentUrl;
 
     static {
         INSTANCE = new AnnotationConfiguration();
@@ -71,10 +75,15 @@ public class AnnotationConfiguration {
         return previewUrl;
     }
 
+    public String getDocumentUrl() {
+        return documentUrl;
+    }
+
     private void loadConfiguration() {
         Dictionary dictionary = Dictionary.getDictionary(ANNOTATION_CONFIGURATION);
         annoteaServerUrl = dictionary.get(ANNOTEA_SERVER_URL);
         annotationCssUrl = dictionary.get(ANNOTATION_CSS_URL);
         previewUrl = dictionary.get(PREVIEW_URL);
+        documentUrl = dictionary.get(DOCUMENT_URL);
     }
 }

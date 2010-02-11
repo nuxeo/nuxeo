@@ -5,7 +5,7 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
-  
+
 <h:form id="document_view">
 
   <script type="text/javascript">
@@ -13,12 +13,14 @@
     var annotationConfiguration = {
       annoteaServerUrl : "#{baseURL}Annotations",
       annotationCssUrl : "/nuxeo/org.nuxeo.ecm.platform.annotations.gwt.AnnotationPanel/annotation-style.css",
-      previewUrl: "#{previewActions.previewWithBlobPostProcessingURL}"
+      previewUrl: "#{previewActions.getPreviewWithBlobPostProcessingURL(previewDoc)}",
+      documentUrl: "#{nxd:documentUrl(previewDoc)}"
+      
     };
 
     var serverSettings = {
-      repositoryName : "#{currentDocument.repositoryName}",
-      documentId : "#{currentDocument.id}"
+      repositoryName : "#{previewDoc.repositoryName}",
+      documentId : "#{previewDoc.id}"
     };
     -->
   </script>
@@ -26,13 +28,13 @@
   <script type="text/javascript"
     src='/nuxeo/org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule/org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule.nocache.js'></script>
     
-  <f:subview rendered="#{currentDocument.hasSchema('file')}"
+  <f:subview rendered="#{previewDoc.hasSchema('file')}"
     id="document_file_view">
-    <nxl:layout name="file" mode="preview" value="#{currentDocument}" />  
+    <nxl:layout name="file" mode="preview" value="#{previewDoc}" />  
   </f:subview>
-  <f:subview rendered="#{currentDocument.hasSchema('files')}"
+  <f:subview rendered="#{previewDoc.hasSchema('files')}"
     id="document_files_view">
-    <nxl:layout name="files" mode="preview" value="#{currentDocument}" />  
+    <nxl:layout name="files" mode="preview" value="#{previewDoc}" />  
   </f:subview>
   
   <iframe src="javascript:''" id="__gwt_historyFrame"
@@ -40,4 +42,6 @@
 
   <div id="display" style="height: 600px"/>
 
-</h:form></div>
+</h:form>
+
+</div>

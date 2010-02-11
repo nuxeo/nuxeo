@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.jbpm.core.hibernatequeries;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -40,11 +41,18 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService;
 public class HibernateQueriesTest extends TestCase {
 
     private static final String DEMO = "demo";
+
     private static final String _1 = "1";
+
     private static final String GET_TI = JbpmService.HibernateQueries.NuxeoHibernateQueries_getTaskInstancesForDoc.name();
+
     private static final String DOC_ID = JbpmService.VariableName.documentId.name();
+
     private static final String REP_ID = JbpmService.VariableName.documentRepositoryName.name();
+
     private static final String GET_PI = JbpmService.HibernateQueries.NuxeoHibernateQueries_getProcessInstancesForDoc.name();
+
+    private static final String GET_PII = JbpmService.HibernateQueries.NuxeoHibernateQueries_getProcessInstancesForInitiator.name();
 
     private static SessionFactory factory;
 
@@ -100,6 +108,41 @@ public class HibernateQueriesTest extends TestCase {
                 "repoId", DEMO).list();
         assertNotNull(pi.getEnd());
         assertEquals(0, list.size());
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testGetProcessInstancesForInitiator() {
+        List<String> initiators = Arrays.asList("bob", "jef");
+        ProcessDefinition pd = new ProcessDefinition();
+        List<ProcessInstance> list = session.getNamedQuery(GET_PII).setParameterList(
+                "initiators", initiators).list();
+        assertNotNull(list);
+        assertTrue(list.isEmpty());
+
+        ProcessInstance pi = new ProcessInstance();
+        pi.setProcessDefinition(pd);
+        Token token = new Token();
+        pi.setRootToken(token);
+        token.setProcessInstance(pi);
+        pi.getContextInstance().setVariable(
+                JbpmService.VariableName.initiator.name(), "bob");
+        session.save(pi.getContextInstance());
+        session.save(token);
+        session.save(pi);
+        session.save(pd);
+        session.flush();
+        list = session.getNamedQuery(GET_PII).setParameterList("initiators", initiators).list();
+        assertEquals(1, list.size());
+        // pi.end();
+        pi.setEnd(new Date());
+        session.save(pi.getContextInstance());
+        session.save(token);
+        session.save(pi);
+        session.save(pd);
+        session.flush();
+        list = session.getNamedQuery(GET_PII).setParameterList("initiators", initiators).list();
+        assertNotNull(pi.getEnd());
+        assertEquals(1, list.size());
     }
 
     @SuppressWarnings("unchecked")

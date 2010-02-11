@@ -23,6 +23,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.platform.preview.adapter.factories.BlobHolderPreviewAdapterFactory;
 import org.nuxeo.ecm.platform.preview.adapter.factories.FileBasedPreviewAdapterFactory;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -112,6 +114,14 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements
         if (factoryRegistry.containsKey(docType)) {
             log.debug("dedicated HTMLPreviewAdapter factory found");
             return factoryRegistry.get(docType).getAdapter(doc);
+        }
+
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        if (bh != null) {
+            log.debug("using Blob Holder based HtmlPreviewAdapter factory");
+            PreviewAdapterFactory factory = new BlobHolderPreviewAdapterFactory();
+            return factory.getAdapter(doc);
+
         }
 
         if (doc.hasSchema("file") || doc.hasSchema("files")) {

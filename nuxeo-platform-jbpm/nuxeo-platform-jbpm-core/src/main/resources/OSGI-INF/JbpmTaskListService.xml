@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.jbpm.jbpmTaskListService">
+
+  <documentation>
+    The JbpmTaskListService save, load and delete
+    lists of tasks used in workflows.
+
+    @author
+    <a href="mailto:nulrich@nuxeo.com">Nicolas Ulrich</a>
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.jbpm.core.service.JbpmTaskListServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.jbpm.JbpmTaskListService" />
+  </service>
+
+</component>

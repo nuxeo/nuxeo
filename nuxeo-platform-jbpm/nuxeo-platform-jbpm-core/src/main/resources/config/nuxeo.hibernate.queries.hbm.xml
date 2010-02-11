@@ -19,6 +19,15 @@
     ]]>
   </query>
 
+  <query name="NuxeoHibernateQueries_getProcessInstancesForInitiator">
+    <![CDATA[
+      select si.token.processInstance
+      from org.jbpm.context.exe.variableinstance.StringInstance si
+      where si.value in (:initiators)
+      and si.name = 'initiator'
+    ]]>
+  </query>
+
   <query name="NuxeoHibernateQueries_getTaskInstancesForDoc">
     <![CDATA[
       select t

@@ -47,7 +47,8 @@
   widget.onLoad = function() {
     widget.log('LastDocuments.onLoad');
     var nb_docs = widget.getValue('nb_docs');
-    var url = '/nuxeo/site/nxthemes-webwidgets/lastdocuments?nb_docs=' + nb_docs;
+    var url = nxthemesBasePath + '/nxthemes-webwidgets-samples/lastdocuments?nb_docs=' + nb_docs + 
+                                 '&path=' + nxthemesPath;
     UWA.Data.getJson(url, LastDocuments.display);
   }
 

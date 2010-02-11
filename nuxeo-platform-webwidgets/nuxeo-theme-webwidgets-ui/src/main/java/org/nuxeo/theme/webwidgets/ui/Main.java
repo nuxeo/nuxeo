@@ -172,13 +172,6 @@ public class Main extends ModuleRoot {
     }
 
     @GET
-    @Path("get_widget_decoration")
-    public String getWidgetDecoration(
-            @QueryParam("decoration") String decorationName) {
-        return Manager.getWidgetDecoration(decorationName);
-    }
-
-    @GET
     @Path("render_widget_icon")
     public Response renderWidgetIcon(@QueryParam("name") String widgetTypeName) {
         byte[] content = Manager.getWidgetIconContent(widgetTypeName);
