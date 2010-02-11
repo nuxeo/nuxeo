@@ -57,11 +57,11 @@ public abstract class AbstractSelector implements FactorySelector {
         if (key == null) {
             return null;
         }
-        Entry entry = new Entry(desc, binding, factory);
         if (entries.containsKey(key)) {
             log.warn(key + " already registered");
             return null;
         }
+        Entry entry = new Entry(desc, binding, factory);
         entries.put(key, entry);
         return key;
     }

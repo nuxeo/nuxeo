@@ -100,6 +100,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
             String key = selector.register(desc,binding,factory);
             if (key != null) {
                 factoryBindings.put(key, binding);
+                break;  // avoid registering a binding with another selector
             }
         }
     }
