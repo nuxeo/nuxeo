@@ -21,10 +21,13 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.NuxeoRunner;
 
 import com.google.inject.Inject;
 
-@RunWith(NuxeoCoreRunner.class)
+@RunWith(NuxeoRunner.class)
+@Features(CoreFeature.class)
 public class CoreSessionInjectionTest {
 
     @Inject

@@ -23,10 +23,13 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.NuxeoRunner;
 
 import com.google.inject.Inject;
 
-@RunWith(NuxeoCoreRunner.class)
+@RunWith(NuxeoRunner.class)
+@Features(CoreFeature.class)
 public class CleanupLevelClassTest {
 
     @Inject

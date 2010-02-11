@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.runner.Description;
-import org.junit.runner.RunWith;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.ParentRunner;
@@ -29,6 +28,7 @@ import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.RunnerBuilder;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryBackends;
+import org.nuxeo.runtime.test.runner.NuxeoRunner;
 
 /**
  * JUnit4 ParentRunner that knows how to run a test class on multiple backend
@@ -48,9 +48,9 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryBackends;
  */
 @RepositoryBackends
 // annotation present to provide an accessible default
-public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoCoreRunner> {
+public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoRunner> {
 
-    private final List<NuxeoCoreRunner> runners = new ArrayList<NuxeoCoreRunner>();
+    private final List<NuxeoRunner> runners = new ArrayList<NuxeoRunner>();
 
     private BackendType[] types;
 
@@ -70,7 +70,7 @@ public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoCoreRunner> {
             BackendType[] types) throws InitializationError {
         super(klass);
         for (Runner runner : runners) {
-            this.runners.add((NuxeoCoreRunner) runner);
+            this.runners.add((NuxeoRunner) runner);
         }
         this.types = types;
     }
@@ -92,24 +92,16 @@ public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoCoreRunner> {
                     "class '%s' must have a SuiteClasses annotation",
                     klass.getName()));
         }
-        for (Class<?> testClass : annotation.value()) {
-            if (!testClass.getAnnotation(RunWith.class).value().isAssignableFrom(
-                    NuxeoCoreRunner.class)) {
-                throw new InitializationError(String.format(
-                        "class '%s' must be RunWith a NuxeoCoreRunner",
-                        klass.getName()));
-            }
-        }
         return annotation.value();
     }
 
     @Override
-    protected Description describeChild(NuxeoCoreRunner child) {
+    protected Description describeChild(NuxeoRunner child) {
         return child.getDescription();
     }
 
     @Override
-    protected List<NuxeoCoreRunner> getChildren() {
+    protected List<NuxeoRunner> getChildren() {
         return runners;
     }
 
@@ -123,10 +115,13 @@ public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoCoreRunner> {
     }
     
     @Override
-    protected void runChild(NuxeoCoreRunner child, RunNotifier notifier) {
+    protected void runChild(NuxeoRunner child, RunNotifier notifier) {
         for (BackendType type : types) {
-            child.setBackendType(type);
-//            child.resetInjector();
+            CoreFeature cf = child.getFeature(CoreFeature.class);
+            if (cf != null) {
+                cf.setBackendType(type);
+            }
+//TODO            child.resetInjector();
             child.run(notifier);
         }
     }

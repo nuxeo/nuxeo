@@ -22,13 +22,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
 /**
- * Defines the repository type used by the tests.
+ * Defines the session parameters to use.
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target( { ElementType.TYPE })
-public @interface RepositoryBackend {
-    BackendType value() default BackendType.H2;
+public @interface RepositoryConfig {
+    
+    BackendType type() default BackendType.H2;
+    
+    Class<? extends RepositoryInit> init() default RepositoryInit.class;
+    
+    Granularity cleanup() default Granularity.CLASS;
+    
+    String user() default "Administrator";    
 }
