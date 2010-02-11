@@ -24,16 +24,19 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.platform.test.web.BrowserConfig;
+import org.nuxeo.ecm.platform.test.web.WebDriverFeature;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.test.web.BrowserConfig;
-import org.nuxeo.ecm.webengine.test.web.BrowserRunner;
 import org.nuxeo.ecm.webengine.test.web.pages.WebEngineHomePage;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.NuxeoRunner;
 import org.openqa.selenium.WebDriver;
 
 import com.google.inject.Inject;
 
 @Ignore("failing for now...")
-@RunWith(BrowserRunner.class)
+@RunWith(NuxeoRunner.class)
+@Features({WebEngineFeature.class, WebDriverFeature.class})
 public class WebEngineTest {
 
     @Inject
@@ -51,7 +54,7 @@ public class WebEngineTest {
 
     @Before
     public void login() {
-        webDriver = browserConfig.getTestDriver();
+        webDriver = browserConfig.getDriver();
         home = new WebEngineHomePage(webDriver, "localhost", "11111");
         home.reload();
     }

@@ -22,32 +22,45 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.junit.runners.model.InitializationError;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.platform.test.NuxeoPlatformRunner;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.impl.ModuleManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.NuxeoRunner;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-public class NuxeoWebengineRunner extends NuxeoPlatformRunner {
+@Deploy({
+    "org.nuxeo.ecm.platform.login",
+    "org.nuxeo.ecm.platform.web.common",
+    "org.nuxeo.ecm.webengine.admin",
+    "org.nuxeo.ecm.webengine.base",
+    "org.nuxeo.ecm.webengine.core",
+    "org.nuxeo.ecm.webengine.resteasy.adapter",
+    "org.nuxeo.runtime.jetty",
+    "org.nuxeo.ecm.webengine.ui",
+    "org.nuxeo.theme.core",
+    "org.nuxeo.theme.html",
+    "org.nuxeo.theme.fragments",
+    "org.nuxeo.theme.webengine",
+    "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
+    "org.nuxeo.ecm.webengine.test:authentication-config.xml",
+    "org.nuxeo.ecm.webengine.test:login-anonymous-config.xml",
+    "org.nuxeo.ecm.webengine.test:login-config.xml",    
+    "org.nuxeo.ecm.webengine.test:runtimeserver-contrib.xml"
+})
+@Features(PlatformFeature.class)
+public class WebEngineFeature extends SimpleFeature {
 
-    public NuxeoWebengineRunner(Class<?> classToRun)
-            throws InitializationError {
-        super(classToRun);
-    }
-    
     @Override
-    protected void deploy() throws Exception {        
-        scanDeployments(WebEngineDeployment.class);
+    public void initialize(NuxeoRunner runner, Class<?> testClass) throws Exception {
+        setupWorkingDir(runner.getHarness());
     }
     
-    @Override
-    protected void initialize() throws Exception {
-        super.initialize();
-        setupWorkingDir();
-    }
-    
-    private void setupWorkingDir() throws IOException {
+    private void setupWorkingDir(RuntimeHarness harness) throws IOException {
         File dest = new File(harness.getWorkingDir(), "config");
         dest.mkdir();
 

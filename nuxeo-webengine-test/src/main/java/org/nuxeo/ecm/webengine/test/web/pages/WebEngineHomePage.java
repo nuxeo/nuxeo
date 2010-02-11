@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.webengine.test.web.pages;
 
+import org.nuxeo.ecm.platform.test.web.pages.AbstractPage;
+import org.nuxeo.ecm.platform.test.web.pages.WebPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
