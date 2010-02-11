@@ -19,65 +19,18 @@
 
 package org.nuxeo.ecm.platform.content.template.tests;
 
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
-import org.nuxeo.ecm.platform.content.template.service.ContentFactory;
 import org.nuxeo.ecm.platform.content.template.service.ContentFactoryDescriptor;
-import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateServiceImpl;
 import org.nuxeo.ecm.platform.content.template.service.FactoryBindingDescriptor;
-import org.nuxeo.runtime.api.Framework;
 
-public class TestContentTemplateFactory extends RepositoryTestCase {
-
-    protected CoreSession session;
-
-    protected ContentTemplateService service;
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
-        deployBundle("org.nuxeo.ecm.core.event");
-
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "RepositoryManager.xml");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "CoreTestExtensions.xml");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "DemoRepository.xml");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "LifeCycleService.xml");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "DefaultPlatform.xml");
-
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "test-content-template-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "test-content-template-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "test-content-template-listener.xml");
-
-        // Framework.login();
-        RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-        assertNotNull(mgr);
-        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
-        ctx.put("username", "Administrator");
-        session = mgr.getDefaultRepository().open(ctx);
-        assertNotNull(session);
-        service = Framework.getLocalService(ContentTemplateService.class);
-        assertNotNull(service);
-    }
+public class TestContentTemplateFactory extends ContentTemplateFactoryTestCase {
 
     public void testServiceFactoryContribs() {
         ContentTemplateServiceImpl serviceImpl = (ContentTemplateServiceImpl) service;
@@ -92,7 +45,7 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
         ContentTemplateServiceImpl serviceImpl = (ContentTemplateServiceImpl) service;
         assertNotNull(serviceImpl);
         Map<String, FactoryBindingDescriptor> factoryBindings = serviceImpl.getFactoryBindings();
-        assertEquals(4, factoryBindings.size());
+        assertEquals(5, factoryBindings.size());
         assertTrue(factoryBindings.containsKey("Root"));
         assertTrue(factoryBindings.containsKey("Domain"));
 
@@ -118,15 +71,6 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
         assertNotNull(factory);
         assertNotNull(factory.getRootAcl());
         assertEquals(3, factory.getRootAcl().size());
-    }
-
-    public void testServiceFactoryInstancesContribs() {
-        ContentTemplateServiceImpl serviceImpl = (ContentTemplateServiceImpl) service;
-        assertNotNull(serviceImpl);
-        Map<String, ContentFactory> factoryInstances = serviceImpl.getFactoryInstancesByType();
-        assertEquals(3, factoryInstances.size());
-        assertTrue(factoryInstances.containsKey("Root"));
-        assertTrue(factoryInstances.containsKey("Domain"));
     }
 
     public void testRootFactory() throws ClientException {
@@ -254,6 +198,21 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
                 "SectionRoot").get(0);
         facetFolder = session.getChild(sectionRoot.getRef(), "FacetFolder");
         assertNotNull(facetFolder);
+    }
+    
+    public void testPropertyFactories() throws ClientException {
+        DocumentModel root = session.getRootDocument();
+        service.executeFactoryForType(root);
+        DocumentModel firstDomain = session.getChildren(root.getRef()).get(0);
+        DocumentModel wsRoot = session.getChildren(firstDomain.getRef(), "WorkspaceRoot").get(0);
+        DocumentModel testWS = session.createDocumentModel(wsRoot.getPathAsString(), "TestWS", "Workspace");
+        testWS.setProperty("dublincore", "title", "MyTestWorkspace");
+        testWS.setProperty("dublincore", "source", "test");
+        testWS = session.createDocument(testWS);
+        session.save();
+        DocumentModel doc = session.getChild(testWS.getRef(), "SourceFactoryPropertyTest");
+        assertNotNull(doc);
+        assertEquals("dc:source is ", doc.getProperty("dc:source").getValue(String.class), "test");
     }
 
 }

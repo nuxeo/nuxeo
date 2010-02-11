@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface ContentTemplateService {
 
+    @Deprecated
     ContentFactory getFactoryForType(String documentType);
 
     void executeFactoryForType(DocumentModel createdDocument) throws ClientException;

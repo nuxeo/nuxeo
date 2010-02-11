@@ -36,26 +36,26 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class FactoryBindingDescriptor {
 
     @XNode("@name")
-    private String name;
+    protected String name;
 
     @XNode("@factoryName")
-    private String factoryName;
+    protected String factoryName;
 
     @XNode("@targetType")
-    private String targetType;
+    protected String targetType;
 
     @XNode("@targetFacet")
-    private String targetFacet;
+    protected String targetFacet;
 
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
-    private Map<String, String> options;
+    protected Map<String, String> options = new HashMap<String,String>();
 
-    @XNodeList(value = "template/templateItem", type = ArrayList.class, componentType = TemplateItemDescriptor.class)
-    private List<TemplateItemDescriptor> template;
-
+    @XNodeList(value = "template/templateItem", type=ArrayList.class, componentType = TemplateItemDescriptor.class)
+    protected List<TemplateItemDescriptor> template = new ArrayList<TemplateItemDescriptor>();
+    
     // Declared as ArrayList to be serializable.
     @XNodeList(value = "acl/ace", type = ArrayList.class, componentType = ACEDescriptor.class)
-    private List<ACEDescriptor> rootAcl;
+    protected List<ACEDescriptor> rootAcl = new ArrayList<ACEDescriptor>();
 
     public String getFactoryName() {
         return factoryName;
@@ -68,7 +68,7 @@ public class FactoryBindingDescriptor {
     public Map<String, String> getOptions() {
         return options;
     }
-
+    
     public String getTargetType() {
         return targetType;
     }
@@ -83,6 +83,18 @@ public class FactoryBindingDescriptor {
 
     public List<ACEDescriptor> getRootAcl() {
         return rootAcl;
+    }
+
+    public String getTarget() {
+       return isTargetFacet() ? targetFacet : targetType;
+    }
+    
+    public boolean isTargetType() {
+        return targetType != null;
+    }
+    
+    public boolean isTargetFacet() {
+        return targetType == null;
     }
 
 }

@@ -15,6 +15,16 @@
         class="org.nuxeo.ecm.platform.content.template.factories.ImportBasedFactory"/>
 
   </extension>
+  
+  <extension
+      target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
+      point="factorySelector">
+      
+      <factorySelector name="00-property" class="org.nuxeo.ecm.platform.content.template.selectors.PropertySelector"/>
+      <factorySelector name="10-type" class="org.nuxeo.ecm.platform.content.template.selectors.TypeSelector"/>
+      <factorySelector name="20-facet" class="org.nuxeo.ecm.platform.content.template.selectors.FacetSelector"/>
+
+   </extension>
 
   <extension
       target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
@@ -26,14 +36,14 @@
         <ace granted="true" permission="Dream" principal="Danny"/>
         <ace granted="false" permission="RedRum" principal="DannysImaginaryFriend"/>
       </acl>
-      <template>
+      <template name="default">
         <templateItem typeName="Domain" id="default" title="defaut domain"
                       description="Nuxeo5 default domain"/>
       </template>
     </factoryBinding>
 
     <factoryBinding name="DomainFactory" factoryName="SimpleTemplateFactory" targetType="Domain">
-      <template>
+      <template name="default">
         <templateItem typeName="WorkspaceRoot" id="Workspaces" title="Workspaces"
                       description="Workspaces"/>
         <templateItem typeName="SectionRoot" id="Sections" title="Sections" description="Sections"/>
@@ -46,7 +56,7 @@
 
     <factoryBinding name="WorkspaceFactory" factoryName="SimpleTemplateFactory"
                      targetType="Workspace">
-      <template>
+      <template name="default">
         <templateItem typeName="Folder" id="Folder1" title="Folder1" description="First Folder">
           <properties>
             <property xpath="dublincore:creator" value="Administrator"/>
@@ -63,20 +73,32 @@
         <templateItem typeName="Folder" id="Folder2" title="Folder2" description="Second Folder"/>
       </template>
     </factoryBinding>
-
+   
    <factoryBinding name="SuperSpaceFactory" factoryName="SimpleTemplateFactory" targetFacet="SuperSpace">
       <acl>
         <ace granted="true" permission="Everything" principal="Administrator"/>
         <ace granted="true" permission="Dream" principal="Danny"/>
         <ace granted="false" permission="RedRum" principal="DannysImaginaryFriend"/>
       </acl>
-      <template>
+      <template name="default">
         <templateItem typeName="Folder" id="FacetFolder" title="FacetFolder"
                       description="folder created by facetFactories"/>
       </template>
     </factoryBinding>
 
-
+   <factoryBinding name="SourceFactory" factoryName="SimpleTemplateFactory" targetType="Workspace">
+     <option name="filter-property">dc:source</option>
+     <option name="filter-value">test</option>
+     <template name="default">
+        <templateItem typeName="Note" id="SourceFactoryPropertyTest" title="Source Factory Property Test" description="Test Note">
+          <properties>
+            <property xpath="dc:creator" value="Administrator"/>
+            <property xpath="dc:coverage" value="coverage"/>
+            <property xpath="dc:source" value="test"/>
+          </properties>
+        </templateItem>
+      </template>
+   </factoryBinding>
 
 
   </extension>

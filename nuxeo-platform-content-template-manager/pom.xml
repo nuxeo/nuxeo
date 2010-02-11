@@ -11,6 +11,7 @@
   <artifactId>nuxeo-platform-content-template-manager</artifactId>
   <name>Nuxeo Content Template Managager</name>
   <description>Nuxeo Enterprise Platform: Template manager for content structure.</description>
+  <version>5.3.1-NXP-4680-SNAPSHOT</version>
 
   <dependencies>
     <dependency>

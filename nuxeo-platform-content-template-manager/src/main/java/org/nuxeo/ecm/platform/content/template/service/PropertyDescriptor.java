@@ -26,10 +26,10 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class PropertyDescriptor {
 
     @XNode("@xpath")
-    private String xpath;
+    protected String xpath;
 
     @XNode("@value")
-    private String value;
+    protected String value;
 
     public String getXpath() {
         return xpath;

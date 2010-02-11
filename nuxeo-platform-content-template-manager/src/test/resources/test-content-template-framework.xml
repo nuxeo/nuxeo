@@ -20,7 +20,15 @@
     <object
       class="org.nuxeo.ecm.platform.content.template.service.ContentFactoryDescriptor" />
   </extension-point>
+  
+  <extension-point name="factorySelector">
+    <documentation>
+       Select a factory giving a document. Selectors are ordered by name. 
+    </documentation>
 
+    <object
+        class="org.nuxeo.ecm.platform.content.template.service.FactorySelectorDescriptor"/>
+  </extension-point>
 
   <extension-point name="factoryBinding">
   <documentation>
@@ -29,6 +37,15 @@
 
     <object
       class="org.nuxeo.ecm.platform.content.template.service.FactoryBindingDescriptor" />
+  </extension-point>
+  
+  <extension-point name="factoryBindingMultiTemplates">
+    <documentation>
+       Binding that enables registering of one or more templates for a type
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.platform.content.template.service.FactoryBindingMultiTemplatesDescriptor"/>
   </extension-point>
 
 </component>

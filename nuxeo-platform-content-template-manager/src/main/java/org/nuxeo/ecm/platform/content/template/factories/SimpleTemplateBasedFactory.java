@@ -39,21 +39,31 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
     protected List<ACEDescriptor> acl;
 
     protected boolean isTargetEmpty(DocumentModel eventDoc) throws ClientException  {
-        // If we already have children : exit !!!
-        if (!session.getChildren(eventDoc.getRef()).isEmpty()) {
-            return false;
-        }
-        else {
-            return true;
-        }
-
+        return session.getChildren(eventDoc.getRef()).isEmpty();
+    }
+    
+    protected boolean accept(DocumentModel eventDoc) throws ClientException {
+       if (eventDoc.isProxy()) {
+           return false;
+       }
+       if (eventDoc.isVersion()) {
+           return false;
+       }
+       if (!isTargetEmpty(eventDoc)) {
+           return false;
+       }
+       return true;
+    }
+    
+    protected void contentCreated(DocumentModel template) {
+        
     }
 
     public void createContentStructure(DocumentModel eventDoc)
             throws ClientException {
         super.initSession(eventDoc);
 
-        if (!isTargetEmpty(eventDoc)) {
+        if (!accept(eventDoc)) {
             return;
         }
 
@@ -70,6 +80,7 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
             newChild.setProperty("dublincore", "description",
                     item.getDescription());
             setProperties(item.getProperties(), newChild);
+            contentCreated(newChild);
             newChild = session.createDocument(newChild);
             setAcl(item.getAcl(), newChild.getRef());
         }

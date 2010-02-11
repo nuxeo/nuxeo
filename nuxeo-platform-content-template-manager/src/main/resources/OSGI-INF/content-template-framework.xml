@@ -23,6 +23,15 @@
         class="org.nuxeo.ecm.platform.content.template.service.ContentFactoryDescriptor"/>
   </extension-point>
 
+  <extension-point name="factorySelector">
+    <documentation>
+       Select a factory giving a document. Selectors are ordered by name. 
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.platform.content.template.service.FactorySelectorDescriptor"/>
+  </extension-point>
+  
   <extension-point name="factoryBinding">
     <documentation>
 		  Define a new factory binding.
@@ -68,5 +77,6 @@
     <object
         class="org.nuxeo.ecm.platform.content.template.service.FactoryBindingDescriptor"/>
   </extension-point>
+
 
 </component>
