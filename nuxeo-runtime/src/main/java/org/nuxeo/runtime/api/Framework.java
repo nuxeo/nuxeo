@@ -412,6 +412,7 @@ public final class Framework {
     public static void handleDevError(Throwable t) {
         if (isDevModeSet()) {
             System.err.println("Fatal error caught in dev. mode: exiting.");
+            t.printStackTrace();
             System.exit(1);
         }
     }

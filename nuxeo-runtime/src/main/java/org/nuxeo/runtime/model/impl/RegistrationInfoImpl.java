@@ -277,6 +277,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
         // register contributed extensions if any
         if (extensions != null) {
+            checkExtensions();
             for (Extension xt : extensions) {
                 xt.setComponent(component);
                 try {
@@ -381,4 +382,21 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return serviceDescriptor;
     }
 
+    public void checkExtensions() {
+        if (extensions == null) {
+            return;
+        }
+        HashSet<String> targets = new HashSet<String>();
+        for (ExtensionImpl xt : extensions) {
+            String key = xt.target.getName()+"#"+xt.getExtensionPoint();
+            if (targets.contains(key)) { // multiple extensions to same target point declared in same component
+                String message = "Component "+getName()+" contains multiple extensions to "+key;
+                Framework.getRuntime().getWarnings().add(message);
+                //TODO: un-comment the following line if you want to treat this as a dev. error
+                //Framework.handleDevError(new Error(message));
+            } else {
+                targets.add(key);
+            }
+        }
+    }
 }
