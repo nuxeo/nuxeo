@@ -63,9 +63,7 @@
     <notifiers>
       <notifier>
         <type>mail</type>
-        <configuration>
-          <address>ecm-qa@lists.nuxeo.com</address>
-        </configuration>
+        <address>ecm-qa@lists.nuxeo.com</address>
       </notifier>
     </notifiers>
   </ciManagement>
