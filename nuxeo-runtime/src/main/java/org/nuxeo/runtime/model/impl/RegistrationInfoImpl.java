@@ -388,6 +388,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
         HashSet<String> targets = new HashSet<String>();
         for (ExtensionImpl xt : extensions) {
+            if (xt.target == null) {
+                Framework.getRuntime().getWarnings().add("Bad extension declaration (no target attribute specified). Component: "+getName());
+                continue;
+            }
             String key = xt.target.getName()+"#"+xt.getExtensionPoint();
             if (targets.contains(key)) { // multiple extensions to same target point declared in same component
                 String message = "Component "+getName()+" contains multiple extensions to "+key;
