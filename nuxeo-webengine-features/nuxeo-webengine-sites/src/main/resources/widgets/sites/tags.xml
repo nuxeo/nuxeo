@@ -33,7 +33,7 @@
 		<#if (!item.isPrivate)>
     	  <div class="contextualLinkText">
             <img src="${skinPath}/images/tag_blue.png" alt="${item.label}" />
-            ${item.label}
+            ${item.label?xml}
             <#if (item.canModify)>
              [<a href='${This.path}/@tag/removeTagging?taggingId=${item.id}' onclick="return rUSureToDelete();">X</a>]
             </#if>

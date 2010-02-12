@@ -18,6 +18,7 @@
   <modules>
     <module>nuxeo-theme-webwidgets</module>
     <module>nuxeo-theme-webwidgets-ui</module>
+    <module>nuxeo-theme-webwidgets-samples</module>
   </modules>
 
   <dependencyManagement>

@@ -8,6 +8,7 @@
               class="org.nuxeo.ecm.platform.publisher.listeners.DomainEventsListener"
               priority="140">
       <event>documentCreated</event>
+      <event>documentModified</event>
       <event>documentRemoved</event>
       <event>lifecycle_transition_event</event>
     </listener>

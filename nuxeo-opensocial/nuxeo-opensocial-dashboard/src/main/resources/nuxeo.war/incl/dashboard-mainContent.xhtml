@@ -9,7 +9,7 @@
 
    function getGwtParams(){
      var w = document.documentElement.clientWidth;
-      return "{docRef:'#{personalDashboardContainerIdRef}', clientUrl: top.nxBaseUrl, windowWidth: "+w+" }";
+      return "{docRef:'#{personalDashboardContainerIdRef}', clientUrl: top.nxBaseUrl, windowWidth: "+w+", nxBaseUrl: top.nxBaseUrl }";
    }
 
     function loading_show(){}

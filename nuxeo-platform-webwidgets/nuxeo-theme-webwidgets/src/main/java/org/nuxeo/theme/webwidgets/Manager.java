@@ -81,7 +81,7 @@ public class Manager {
         return getService().getWidgetType(widgetTypeName);
     }
 
-    public static String getWidgetDecoration(String decorationName) {
+    public static Map<String, String> getWidgetDecoration(String decorationName) {
         final Map<String, String> data = new HashMap<String, String>();
         final DecorationType decorationType = Manager.getDecorationType(decorationName);
         if (decorationType != null) {
@@ -92,7 +92,7 @@ public class Manager {
         } else {
             log.error("Decoration not found: " + decorationName);
         }
-        return org.nuxeo.theme.html.Utils.toJson(data);
+        return data;
     }
 
     public static String addPanelDecoration(String decorationName, String mode,
@@ -481,6 +481,7 @@ public class Manager {
         data.put("provider", providerName);
         data.put("region", regionName);
         data.put("decoration", decoration);
+        data.put("widget_decoration", Manager.getWidgetDecoration(decoration));
         data.put("widget_types", types);
         data.put("widget_items", items);
         return org.nuxeo.theme.html.Utils.toJson(data);

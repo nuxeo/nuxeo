@@ -71,7 +71,7 @@ public class AnnotationController {
 
     private boolean creationPopupOpened = false;
 
-    private boolean onFrame;
+    private final boolean onFrame;
 
     public AnnotationController(WebConfiguration webConfiguration, boolean onFrame) {
         this.onFrame = onFrame;
@@ -207,8 +207,9 @@ public class AnnotationController {
     }
 
     public void createNewAnnotation(String pointer) {
-        String href = getTopWindowUrl();
-        String xpointerURI = href.substring(0, href.lastIndexOf("/") + 1)
+        String href = getDocumentUrl();
+        // Hardcoded url codec....
+        String xpointerURI = href.substring(0, href.lastIndexOf("@") + 1)
                 + pointer;
         Annotation newAnnotation = new Annotation(
                 XPointerFactory.getXPointer(xpointerURI));
@@ -233,23 +234,11 @@ public class AnnotationController {
                 annotatedDocument.preDecorateDocument();
             }
         }
-        annoteaClient.getAnnotationList(getTopWindowUrl());
+        annoteaClient.getAnnotationList(getDocumentUrl());
     }
 
-    public String getTopWindowUrl() {
-        if (onFrame) {
-            return getParentWindowUrl();
-        } else {
-            return getCurrentWindowUrl();
-        }
-    };
-
-    protected native String getParentWindowUrl() /*-{
-        return $wnd.parent.location.href;
-    }-*/;
-
-    protected native String getCurrentWindowUrl() /*-{
-        return $wnd.location.href;
+    public native String getDocumentUrl() /*-{
+        return top['docUrl'];
     }-*/;
 
     public void decorateDocument() {

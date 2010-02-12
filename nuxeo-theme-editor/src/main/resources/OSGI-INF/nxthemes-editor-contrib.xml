@@ -27,6 +27,8 @@
 
     <resource name="nxthemes-editor.js">
       <path>nxthemes/editor/scripts/nxthemes-editor.js</path>
+      <require>nxthemes.js</require>
+      <require>nxthemes-effects.js</require>
     </resource>
 
     <resource name="nxthemes-editor.css">

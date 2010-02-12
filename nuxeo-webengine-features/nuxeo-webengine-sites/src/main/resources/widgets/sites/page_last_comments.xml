@@ -37,7 +37,7 @@
       <div class="commentBlock">
         <#if (item.pendingComment!=true)>
           <div class="commentInfos">${item.creationDate} by ${item.author} </div>
-          <div class="commentContent">${item.commentText}</div>   
+          <div class="commentContent">${item.commentText?xml}</div>   
           <#if (canModerate)>
             <a href="${This.path}/@webcomments/delete?property=${item.ref}">Delete</a>
       	  </#if>

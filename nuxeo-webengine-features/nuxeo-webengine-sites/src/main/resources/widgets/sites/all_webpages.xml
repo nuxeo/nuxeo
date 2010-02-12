@@ -5,7 +5,7 @@
   <ul>  
     <#list nxthemesInfo.model.items as item>
       <div class="allWebPagesResume">
-        <div class="documentInfo"><a href="${This.path}/${item.path}"> ${item.name} </a></div>
+        <div class="documentInfo"><a href="${This.path}/${item.path}"> ${item.name?xml} </a></div>
         <div style="clear:both;"></div> 
       </div>
     </#list>

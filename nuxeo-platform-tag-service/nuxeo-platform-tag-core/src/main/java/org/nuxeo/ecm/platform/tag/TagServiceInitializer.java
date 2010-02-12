@@ -24,6 +24,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 
 /**
@@ -49,6 +55,14 @@ public class TagServiceInitializer extends RepositoryInitializationHandler {
             rootTag.setPropertyValue("dc:created", Calendar.getInstance());
             rootTag = session.createDocument(rootTag);
             rootTag = session.saveDocument(rootTag);
+
+            // Add default permission: Read for everybody
+            ACE ace = new ACE("Everyone", SecurityConstants.READ, true);
+            ACL acl = new ACLImpl();
+            acl.add(ace);
+            ACP acp = new ACPImpl();
+            acp.addACL(acl);
+            session.setACP(rootTag.getRef(), acp, true);
             session.save();
         }
     }

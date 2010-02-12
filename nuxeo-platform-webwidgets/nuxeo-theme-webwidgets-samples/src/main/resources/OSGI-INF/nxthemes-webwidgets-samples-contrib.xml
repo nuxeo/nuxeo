@@ -5,7 +5,7 @@
     @author Jean-Marc Orliaguet (jmo@chalmers.se)
   </documentation>
 
-  <require>org.nuxeo.theme.webwidgets</require>
+  <require>org.nuxeo.theme.webwidgets.ui</require>
 
   <!-- Sample widgets -->
   <extension target="org.nuxeo.theme.webwidgets.Service"

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.admin;
 
 import org.nuxeo.ecm.core.rest.DocumentRoot;
+import org.nuxeo.ecm.webengine.model.Access;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
@@ -31,7 +32,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-@WebObject(type = "Admin", guard = "group=administrators")
+@WebObject(type = "Admin", administrator=Access.GRANT)
 @Produces("text/html;charset=UTF-8")
 public class Main extends ModuleRoot {
 
