@@ -245,7 +245,7 @@
       <view>cell frame</view>
     </widget>
     <widget element="page[1]/section[1]/cell[1]/fragment[1]|page[3]/section[1]/cell[1]/fragment[1]">
-      <view>Nuxeo EP logo (Galaxy Theme)</view>
+      <view>Nuxeo DM logo (Galaxy Theme)</view>
     </widget>
     <widget element="page[1]/section[1]/cell[2]/fragment[1]|page[3]/section[1]/cell[2]/fragment[1]">
       <view>User services (Galaxy theme)</view>
@@ -275,7 +275,7 @@
       <view>facelet region</view>
     </widget>
     <widget element="page[1]/section[3]/cell[1]/fragment[1]|page[3]/section[4]/cell[1]/fragment[1]">
-      <view>Nuxeo EP footer (Galaxy Theme)</view>
+      <view>Nuxeo DM footer (Galaxy Theme)</view>
     </widget>
     <widget element="page[2]/section[1]/cell[2]/fragment[1]">
       <view>nuxeo5 includes</view>
@@ -1278,11 +1278,11 @@
     </style>
     <!-- Logo -->
     <style element="page[1]/section[1]/cell[1]/fragment[1]|page[3]/section[1]/cell[1]/fragment[1]">
-      <selector path="form" view="Nuxeo EP logo (Galaxy Theme)">
+      <selector path="form" view="Nuxeo DM logo (Galaxy Theme)">
         <margin>0</margin>
         <padding>0</padding>
       </selector>
-      <selector path="img, a" view="Nuxeo EP logo (Galaxy Theme)">
+      <selector path="img, a" view="Nuxeo DM logo (Galaxy Theme)">
         <outline>none</outline>
       </selector>
     </style>
@@ -1533,39 +1533,39 @@
     </style>
     <style
       element="page[1]/section[3]/cell[1]/fragment[1]|page[3]/section[4]/cell[1]/fragment[1]" inherit="default buttons">
-      <selector path="form, p" view="Nuxeo EP footer (Galaxy Theme)">
+      <selector path="form, p" view="Nuxeo DM footer (Galaxy Theme)">
         <margin>5px 0px 0px 0px</margin>
         <padding>0</padding>
       </selector>
-      <selector path="" view="Nuxeo EP footer (Galaxy Theme)">
+      <selector path="" view="Nuxeo DM footer (Galaxy Theme)">
         <font preset="small (Galaxy fonts)"/>
         <color preset="gray.dark (Galaxy colors)" />
         <padding>5px 15px 5px 5px</padding>
       </selector>
-      <selector path="div" view="Nuxeo EP footer (Galaxy Theme)">
+      <selector path="div" view="Nuxeo DM footer (Galaxy Theme)">
         <margin>0</margin>
         <line-height>1.25em</line-height>
         <padding>0</padding>
         <font-size preset="small (Galaxy fonts)"/>
       </selector>
-      <selector path="a" view="Nuxeo EP footer (Galaxy Theme)">
+      <selector path="a" view="Nuxeo DM footer (Galaxy Theme)">
         <color preset="blue.link (Galaxy colors)" />
         <text-decoration>none</text-decoration>
       </selector>
-      <selector path="a:visited" view="Nuxeo EP footer (Galaxy Theme)">
+      <selector path="a:visited" view="Nuxeo DM footer (Galaxy Theme)">
         <color preset="blue.night (Galaxy colors)" />
       </selector>
-      <selector path="a:active" view="Nuxeo EP footer (Galaxy Theme)">
+      <selector path="a:active" view="Nuxeo DM footer (Galaxy Theme)">
         <color preset="blue.link (Galaxy colors)" />
       </selector>
-      <selector path="a:hover" view="Nuxeo EP footer (Galaxy Theme)">
+      <selector path="a:hover" view="Nuxeo DM footer (Galaxy Theme)">
         <color preset="blue.link (Galaxy colors)" />
         <text-decoration>underline</text-decoration>
       </selector>
-      <selector path="select.langSelect" view="Nuxeo EP footer (Galaxy Theme)">
+      <selector path="select.langSelect" view="Nuxeo DM footer (Galaxy Theme)">
         <margin>9px 5px 0px 5px</margin>
       </selector>
-      <selector path="input.button" view="Nuxeo EP footer (Galaxy Theme)">
+      <selector path="input.button" view="Nuxeo DM footer (Galaxy Theme)">
         <margin>5px 0px 5px 10px</margin>
       </selector>
     </style>

@@ -45,12 +45,10 @@
   <!-- views -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="views">
 
-    <view name="Nuxeo EP logo (Galaxy Theme)" template-engine="jsf-facelets">
+    <view name="Nuxeo DM logo (Galaxy Theme)" template-engine="jsf-facelets">
       <format-type>widget</format-type>
-      <template>incl/logo_EP_galaxy.xhtml</template>
+      <template>incl/logo_DM_galaxy.xhtml</template>
     </view>
-
-
 
     <view name="nuxeo5 includes" template-engine="jsf-facelets">
       <format-type>widget</format-type>
@@ -76,13 +74,6 @@
       <!-- include JS for contextual menu -->
       <resource>jquery.js</resource>
       <resource>contextmenu.js</resource>
-    </view>
-
-
-
-    <view name="nuxeo5 user services" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/user_services.xhtml</template>
     </view>
 
     <view name="User services (Galaxy theme)" template-engine="jsf-facelets">
@@ -130,13 +121,7 @@
       <resource>dragdrop.js</resource>
     </view>
 
-    <view name="nuxeo5 footer" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/footer.xhtml</template>
-    </view>
-
-    <view name="Nuxeo EP footer (Galaxy Theme)"
-      template-engine="jsf-facelets">
+    <view name="Nuxeo DM footer (Galaxy Theme)" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/footer_galaxy.xhtml</template>
     </view>
@@ -241,7 +226,6 @@
     <resource name="calendar.css">
       <path>css/calendar.css</path>
     </resource>
-
 
     <resource name="window.js">
       <path>scripts/window.js</path>
