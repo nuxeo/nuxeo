@@ -17,14 +17,21 @@
     <f:facet name="header">
       <h:panelGroup>
         <h:outputText value="#{messages['title.createUser']}"/>
-    </h:panelGroup>
-  </f:facet>
-  <f:facet name="controls">
-    <h:panelGroup>
-      <h:graphicImage value="/img/close.png"
-          styleClass="hidelink" id="createUserHidelink" />
-        <rich:componentControl for="createUserFormPanel" attachTo="createUserHidelink"
-          operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
+    <f:facet name="controls">
+      <h:panelGroup>
+        <a4j:form id="createUserHideForm">
+          <a4j:commandLink
+            actionListener="#{editableListBean.resetAllListsCachedModels}"
+            id="createUserHideLink"
+            onclick="#{rich:component('createUserFormPanel')}.hide()"
+            immediate="true"
+            reRender="createUserPanel">
+            <h:graphicImage value="/img/close.png"
+              styleClass="hidelink" />
+          </a4j:commandLink>
+        </a4j:form>
       </h:panelGroup>
     </f:facet>
     <ui:include src="/incl/create_user_panel.xhtml" />
@@ -75,7 +82,7 @@
           <a4j:form id="userSearchForm">
             <a4j:commandLink
               onclick="Richfaces.showModalPanel('createUserFormPanel')"
-              id="user_creation_button" reRender="createUserPanel"
+              id="user_creation_button"
               rendered="#{userManagerActions.allowCreateUser and notReadOnly}">
               <h:outputText value="#{messages['command.createUser']}" />
             </a4j:commandLink>
