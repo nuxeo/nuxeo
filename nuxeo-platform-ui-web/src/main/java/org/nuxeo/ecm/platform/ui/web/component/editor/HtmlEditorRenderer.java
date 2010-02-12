@@ -49,6 +49,8 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
 
     private static Map<String, String> pluginsOptions;
 
+    private static Map<String, String> toolbarPluginsOptions;
+
     @Override
     public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
         if (!component.isRendered()) {
@@ -66,15 +68,21 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         // force the script tag to be opened and then closed to avoid IE bug.
         writer.write(" ");
         writer.endElement("script");
+
+        //Map<String, String> options = new HashMap<String, String>();
+        String editorSelector = editorComp.getEditorSelector();
+        //options.put("mode", "textareas");
+        //options.put("language", locale.getLanguage());
+        //options.put("editor_selector", editorSelector);
+        //options.put("width", editorComp.getWidth());
+        //options.put("height", editorComp.getHeight());
+
         writer.startElement("script", editorComp);
         writer.writeAttribute("type", "text/javascript", null);
-        Map<String, String> options = new HashMap<String, String>();
-        String editorSelector = editorComp.getEditorSelector();
-        options.put("mode", "textareas");
-        options.put("language", locale.getLanguage());
-        options.put("editor_selector", editorSelector);
-        options.put("width", editorComp.getWidth());
-        options.put("height", editorComp.getHeight());
+        writer.writeText(String.format("var lang = \"%s\";", locale.getLanguage()), null);
+        writer.writeText(String.format("var editorSelector = \"%s\";", editorSelector), null);
+        writer.writeText(String.format("var width = \"%s\";", editorComp.getWidth()), null);
+        writer.writeText(String.format("var height = \"%s\";", editorComp.getHeight()), null);
 
         // plugins registration
         if (pluginsOptions == null) {
@@ -82,13 +90,23 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
             pluginsOptions = new HashMap<String, String>();
             pluginsOptions.put("plugins",
                     pluginService.getFormattedPluginsNames());
-            pluginsOptions.putAll(pluginService.getToolbarsButtons());
+            toolbarPluginsOptions = pluginService.getToolbarsButtons();
         }
-        options.putAll(pluginsOptions);
+        //options.putAll(pluginsOptions);
+        writer.writeText(String.format("var plugins = \"%s\";", pluginsOptions.get("plugins")), null);
+        writer.writeText(generateToolbarOptions(toolbarPluginsOptions), null);
+        writer.endElement("script");
 
+        writer.startElement("script", editorComp);
+        writer.writeAttribute("type", "text/javascript", null);
+
+        /*
         String tinyMCESetup = String.format("tinyMCE.init(%s);",
                 generateOptions(options));
         writer.writeText(tinyMCESetup, null);
+        */
+        writer.writeAttribute("src", "tiny_mce/tiny_mce_init.js", null);
+        writer.write(" ");
         writer.endElement("script");
 
         // input text area
@@ -126,6 +144,15 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         res.append('{');
         res.append(StringUtils.join(strOptions.toArray(), ", "));
         res.append('}');
+        return res.toString();
+    }
+
+    protected static String generateToolbarOptions(Map<String, String> options) {
+        StringBuilder res = new StringBuilder();
+        res.append("var toolbarOptions = new Array();");
+        for (Map.Entry<String, String> option : options.entrySet()) {
+            res.append("toolbarOptions['" + option.getKey() + "'] = '" + option.getValue() + "';");
+        }
         return res.toString();
     }
 
