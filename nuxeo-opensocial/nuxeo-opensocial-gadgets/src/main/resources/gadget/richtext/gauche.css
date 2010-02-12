@@ -1,16 +1,11 @@
 #picture{
- width:100%;
+float:left;
+margin-right:9px;
 }
 
 #pictureContainer{
-width:49%;
+width:98%;
 padding:0 1%;
-float:left;
-}
-
-#text{
- float:left;
- width:49%;
 }
 
 #title{
