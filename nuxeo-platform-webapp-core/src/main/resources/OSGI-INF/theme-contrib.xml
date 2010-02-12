@@ -45,16 +45,6 @@
   <!-- views -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="views">
 
-    <view name="nuxeo5 logo" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/logo.xhtml</template>
-    </view>
-
-    <view name="nuxeo5 alternate logo" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/logo_alternate.xhtml</template>
-    </view>
-
     <view name="Nuxeo EP logo (Galaxy Theme)" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/logo_EP_galaxy.xhtml</template>
@@ -93,16 +83,12 @@
     <view name="nuxeo5 user services" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/user_services.xhtml</template>
-      <!-- TODO: remove later -->
-      <resource>screen.css</resource>
     </view>
 
     <view name="User services (Galaxy theme)" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/user_services_galaxy.xhtml</template>
-      <!-- TODO: remove later -->
-      <resource>screen.css</resource>
-    </view>
+    </view> 
 
     <view name="nuxeo5 breadcrumbs" template-engine="jsf-facelets">
       <format-type>widget</format-type>
@@ -233,10 +219,6 @@
 
   <!-- resources -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
-
-    <resource name="screen.css">
-      <path>css/screen.css</path>
-    </resource>
 
     <resource name="foldable-box.js">
       <path>scripts/foldable-box.js</path>
@@ -393,9 +375,6 @@
       category="color" />
 
   </extension>
-
-
-
 
 
 </component>

@@ -197,21 +197,21 @@ nxthemes css is not used in login.jsp */
     <tbody>
       <tr class="topBar">
         <td>
-          <img width="107" height="36" alt="Nuxeo EP" src="/nuxeo/img/theme_galaxy/nuxeo_5.2_logo.png"/>
+          <img width="116" height="36" alt="Nuxeo DM" src="/nuxeo/img/theme_galaxy/nuxeo_5.2_logo.png"/>
        </td>
        <td align="right" class="leftColumn">
        <div class="labelCorp">
        <ul>
-                    <li><a href="http://www.nuxeo.com/en">
+                    <li><a href="http://www.nuxeo.com/">
                       <fmt:message bundle="${messages}" key="label.login.visitNuxeoCom" />
                     </a></li>
-                    <li><a href="http://www.nuxeo.com/en/services/support">
+                    <li><a href="http://nuxeo.com/subscription/connect">
                       <fmt:message bundle="${messages}" key="label.login.getSupport" />
                     </a></li>
-                    <li><a href="http://www.nuxeo.org/sections/community/">
+                    <li><a href="http://www.nuxeo.org/">
                       <fmt:message bundle="${messages}" key="label.login.joinTheCommunity" />
                     </a></li>
-                    <li><a href="http://doc.nuxeo.org/xwiki/bin/view/Main/QuickStart/">
+                    <li><a href="http://www.nuxeo.org/xwiki/bin/view/Main/QuickStart/">
                       <fmt:message bundle="${messages}" key="label.login.quickStart" />
                     </a></li>
                 </ul>
