@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.el.ValueExpression;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -240,6 +241,31 @@ public final class ComponentUtils {
         FacesMessage msg = new FacesMessage(message);
         msg.setSeverity(FacesMessage.SEVERITY_ERROR);
         context.addMessage(component.getClientId(context), msg);
+    }
+
+    /**
+     * Gets the base naming container from anchor.
+     * <p>
+     * Gets out of suggestion box as it's a naming container and we can't get
+     * components out of it with a relative path => take above first found
+     * container.
+     *
+     * @since 5.3.1
+     */
+    public static UIComponent getBase(UIComponent anchor) {
+        UIComponent base = anchor;
+        boolean firstFound = false;
+        while (base.getParent() != null) {
+            if (base instanceof NamingContainer) {
+                if (firstFound) {
+                    break;
+                } else {
+                    firstFound = true;
+                }
+            }
+            base = base.getParent();
+        }
+        return base;
     }
 
 }

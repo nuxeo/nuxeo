@@ -24,7 +24,6 @@ import static org.jboss.seam.ScopeType.EVENT;
 import java.io.Serializable;
 
 import javax.faces.component.EditableValueHolder;
-import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 import javax.faces.event.ActionEvent;
@@ -106,21 +105,12 @@ public class SuggestionActionsBean implements Serializable {
      * Gets out of suggestion box as it's a naming container and we can't get
      * components out of it with a relative path => take above first found
      * container.
+     *
+     * @deprecated: use {@link ComponentUtils#getBase(UIComponent)} instead
      */
+    @Deprecated
     protected UIComponent getBase(UIComponent anchor) {
-        UIComponent base = anchor;
-        boolean firstFound = false;
-        while (base.getParent() != null) {
-            if (base instanceof NamingContainer) {
-                if (firstFound) {
-                    break;
-                } else {
-                    firstFound = true;
-                }
-            }
-            base = base.getParent();
-        }
-        return base;
+        return ComponentUtils.getBase(anchor);
     }
 
     @SuppressWarnings("unchecked")
@@ -163,7 +153,7 @@ public class SuggestionActionsBean implements Serializable {
         if (component == null) {
             return;
         }
-        UIComponent base = getBase(component);
+        UIComponent base = ComponentUtils.getBase(component);
         UIEditableList list = getComponent(base, suggestionSelectionListId,
                 UIEditableList.class);
 
@@ -191,7 +181,7 @@ public class SuggestionActionsBean implements Serializable {
         if (component == null) {
             return;
         }
-        UIComponent base = getBase(component);
+        UIComponent base = ComponentUtils.getBase(component);
         ValueHolder selector = getComponent(base, suggestionInputSelectorId,
                 ValueHolder.class);
         UIEditableList list = getComponent(base, suggestionSelectionListId,
@@ -219,7 +209,7 @@ public class SuggestionActionsBean implements Serializable {
         if (component == null) {
             return;
         }
-        UIComponent base = getBase(component);
+        UIComponent base = ComponentUtils.getBase(component);
         EditableValueHolder hiddenSelector = getComponent(base,
                 suggestionSelectionHiddenId, EditableValueHolder.class);
         ValueHolder output = getComponent(base, suggestionSelectionOutputId,
@@ -263,7 +253,7 @@ public class SuggestionActionsBean implements Serializable {
         if (component == null) {
             return;
         }
-        UIComponent base = getBase(component);
+        UIComponent base = ComponentUtils.getBase(component);
         ValueHolder selector = getComponent(base, suggestionInputSelectorId,
                 ValueHolder.class);
         EditableValueHolder hiddenSelector = getComponent(base,

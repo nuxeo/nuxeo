@@ -263,6 +263,21 @@ public class UIEditableList extends UIInput implements NamingContainer {
     }
 
     /**
+     * Resets the cache model
+     * <p>
+     * Can be useful when re-rendering a list with ajax and not wanting to keep
+     * cached values already submitted.
+     *
+     * @since 5.3.1
+     */
+    public void resetCachedModel() {
+        InternalState iState = getInternalState(true);
+        Object value = getValue();
+        iState._value = value;
+        iState._model = createEditableModel(iState._model, value);
+    }
+
+    /**
      * Prepares this component for a change in the rowData.
      * <p>
      * This method should be called right before the rowData changes. It saves
