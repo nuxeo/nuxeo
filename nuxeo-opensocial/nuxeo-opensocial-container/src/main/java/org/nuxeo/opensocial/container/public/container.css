@@ -373,7 +373,7 @@
 .x-panel-tl .x-panel-header {
   font-family:'Lucida Grande',Verdana,Arial,sans-serif;
   font-size:11px;
-  text-transform: capitalize;
+  text-transform: none;
   font-weight: bold;
  }
 

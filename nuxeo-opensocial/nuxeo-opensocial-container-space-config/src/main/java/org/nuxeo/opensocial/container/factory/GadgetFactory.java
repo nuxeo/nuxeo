@@ -43,7 +43,7 @@ public class GadgetFactory {
         .equals(""))
       return _getTitleWithoutKey(gadget.getTitle());
     else
-      return _getTitleWithoutKey(gadget.getName());
+      return "";
 
   }
 
