@@ -170,9 +170,9 @@ class BasePage:
 
         # TODO: NXBT-77 navigate to create user form
         fl.post(fl.server_url + '/view_users.faces', params=[
-            ['j_id176_SUBMIT', '1'],
+            ['j_id175_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id176:j_id178', 'j_id176:j_id178']],
+            ['j_id175:j_id177', 'j_id175:j_id177']],
                 description="View user creation form")
 
         jsfState = fl.getLastJsfState()
@@ -367,10 +367,9 @@ class FolderPage(BasePage):
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
             # TODO: NXBT-77 navigate to create workspace form
-            ['j_id232', 'j_id232'],
-            ['j_id232_SUBMIT', '1'],
+            ['j_id231_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id232:j_id233:j_id235:0:j_id236', 'j_id232:j_id233:j_id235:0:j_id236']],
+            ['j_id231:j_id232:j_id234:0:j_id235', 'j_id231:j_id232:j_id234:0:j_id235']],
             description="Create workspace form")
         fl.assert_('nxw_title' in fl.getBody(),
                    "Workspace creation form not found.")
@@ -390,10 +389,10 @@ class FolderPage(BasePage):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
             # TODO: NXBT-77 navigate to create folder form
-            ['j_id196:selectDocTypePanelOpenedState', ''],
-            ['j_id196_SUBMIT', '1'],
+            ['j_id195:selectDocTypePanelOpenedState', ''],
+            ['j_id195_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id196:j_id202:1:j_id206:0:j_id208:0:j_id212', 'j_id196:j_id202:1:j_id206:0:j_id208:0:j_id212']],
+            ['j_id195:j_id201:1:j_id205:0:j_id207:0:j_id209', 'j_id195:j_id201:1:j_id205:0:j_id207:0:j_id209']],
             description="Create folder: New Folder")
         fl.assert_('document_create' in fl.getBody(),
                    "Folder form not found")
@@ -413,10 +412,10 @@ class FolderPage(BasePage):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
             # TODO: NXBT-77 navigate to create file form
-            ['j_id196:selectDocTypePanelOpenedState', ''],
-            ['j_id196_SUBMIT', '1'],
+            ['j_id195:selectDocTypePanelOpenedState', ''],
+            ['j_id195_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id196:j_id202:0:j_id206:0:j_id208:1:j_id210', 'j_id196:j_id202:0:j_id206:0:j_id208:1:j_id210']],
+            ['j_id195:j_id201:0:j_id205:0:j_id207:1:j_id211', 'j_id195:j_id201:0:j_id205:0:j_id207:1:j_id211']],
             description="Create file: New document")
         fl.assert_('document_create' in fl.getBody(),
                    "File form not found")
@@ -466,7 +465,7 @@ class FolderPage(BasePage):
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['CHILDREN_DOCUMENT_LIST', 'CHILDREN_DOCUMENT_LIST'],
             ['CHILDREN_DOCUMENT_LIST:dataTable:0:document_checkbox_select', 'on'],
-            ['CHILDREN_DOCUMENT_LIST:j_id346:1:j_id348', 'Delete'],
+            ['CHILDREN_DOCUMENT_LIST:j_id345:1:j_id347', 'Delete'],
             ['CHILDREN_DOCUMENT_LIST_SUBMIT', '1'],
             ['javax.faces.ViewState', state]],
             description='Delete document "%s"' % title)
@@ -514,7 +513,7 @@ class FolderPage(BasePage):
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest', user],
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', '0'],
             ['add_rights_form:rights_grant_select', 'Grant'],
-            ['add_rights_form:rights_permission_select', 'Read'],
+            ['add_rights_form:rights_permission_select', permission],
             ['add_rights_form_SUBMIT', '1'],
             ['javax.faces.ViewState', state],
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:nxw_selection_listRegion_select', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:nxw_selection_listRegion_select'],
