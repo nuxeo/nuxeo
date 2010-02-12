@@ -1771,9 +1771,13 @@
       </modules>
     </profile>
     <profile>
-      <id>customer-release</id>
+      <id>release</id>
       <activation>
         <activeByDefault>false</activeByDefault>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
       </activation>
       <build>
         <plugins>
@@ -1789,7 +1793,7 @@
       </build>
     </profile>
     <profile>
-      <id>release</id>
+      <id>javadoc</id>
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
@@ -1807,14 +1811,6 @@
                 </goals>
               </execution>
             </executions>
-          </plugin>
-          <plugin>
-            <inherited>true</inherited>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-deploy-plugin</artifactId>
-            <configuration>
-              <updateReleaseInfo>true</updateReleaseInfo>
-            </configuration>
           </plugin>
         </plugins>
       </build>
