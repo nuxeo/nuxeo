@@ -56,6 +56,7 @@ import org.apache.chemistry.Rendition;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.StreamNotSupportedException;
+import org.apache.chemistry.Tree;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.Updatability;
@@ -65,6 +66,7 @@ import org.apache.chemistry.impl.simple.SimpleData;
 import org.apache.chemistry.impl.simple.SimpleListPage;
 import org.apache.chemistry.impl.simple.SimpleObjectEntry;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
+import org.apache.chemistry.impl.simple.SimpleTree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -236,37 +238,36 @@ public class NuxeoConnection implements Connection, SPI {
      * ----- Navigation Services -----
      */
 
-    /**
-     * Accumulates descendants into a list recursively.
-     */
-    // TODO optimized paging
-    protected void accumulate(ObjectId folder, int depth, Inclusion inclusion,
-            String orderBy, BaseType baseType, List<ObjectEntry> list) {
-        List<ObjectEntry> children = getChildren(folder, inclusion, orderBy,
-                null);
-        for (ObjectEntry child : children) {
+    protected List<Tree<ObjectEntry>> getTreeChildren(ObjectId entry,
+            int depth, Inclusion inclusion, String orderBy, BaseType baseType) {
+        List<Tree<ObjectEntry>> children = new ArrayList<Tree<ObjectEntry>>();
+        for (ObjectEntry child : getChildren(entry, inclusion, orderBy, null)) {
             BaseType childBaseType = child.getBaseType();
-            if (baseType == null || baseType == childBaseType) {
-                list.add(child);
+            if (baseType != null && baseType != childBaseType) {
+                continue;
             }
-            if (childBaseType == BaseType.FOLDER && depth != 1) {
-                accumulate(child, depth - 1, inclusion, orderBy, baseType, list);
+            List<Tree<ObjectEntry>> c;
+            if (childBaseType != BaseType.FOLDER || depth == 1) {
+                c = null;
+            } else {
+                c = getTreeChildren(child, depth - 1, inclusion, orderBy,
+                        baseType);
             }
+            children.add(new SimpleTree<ObjectEntry>(child, c));
         }
+        return children;
     }
 
-    public List<ObjectEntry> getFolderTree(ObjectId folder, int depth,
+    public Tree<ObjectEntry> getFolderTree(ObjectId folder, int depth,
             Inclusion inclusion) {
-        List<ObjectEntry> list = new ArrayList<ObjectEntry>();
-        accumulate(folder, depth, inclusion, null, BaseType.FOLDER, list);
-        return list;
+        return new SimpleTree<ObjectEntry>(null, getTreeChildren(folder, depth,
+                inclusion, null, BaseType.FOLDER));
     }
 
-    public List<ObjectEntry> getDescendants(ObjectId folder, int depth,
+    public Tree<ObjectEntry> getDescendants(ObjectId folder, int depth,
             String orderBy, Inclusion inclusion) {
-        List<ObjectEntry> list = new ArrayList<ObjectEntry>();
-        accumulate(folder, depth, inclusion, orderBy, null, list);
-        return list;
+        return new SimpleTree<ObjectEntry>(null, getTreeChildren(folder, depth,
+                inclusion, orderBy, null));
     }
 
     public ListPage<ObjectEntry> getChildren(ObjectId folder,

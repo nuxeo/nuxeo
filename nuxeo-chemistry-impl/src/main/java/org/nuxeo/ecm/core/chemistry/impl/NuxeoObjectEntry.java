@@ -70,6 +70,10 @@ public class NuxeoObjectEntry implements ObjectEntry, DocumentModelHolder {
         return null;
     }
 
+    public String getPathSegment() {
+        return doc.getName();
+    }
+
     public Serializable getValue(String id) {
         // TODO avoid constructing property object
         return NuxeoProperty.construct(id, type, this).getValue();

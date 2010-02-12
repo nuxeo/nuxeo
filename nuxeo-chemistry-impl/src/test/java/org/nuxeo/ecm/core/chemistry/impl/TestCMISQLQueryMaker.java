@@ -61,7 +61,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 + " WHERE dc:title = 123 OR dc:title = 'xyz'" //
                 + " ORDER BY dc:description DESC, cmis:parentid ASC";
         q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
-                captured.session, query, null);
+                captured.session, query, null, new Object[] { null });
         assertNotNull(q);
         sql = q.selectInfo.sql.replace("\"", ""); // more readable
         expected = "SELECT HIERARCHY.ID, DUBLINCORE.TITLE, HIERARCHY.PRIMARYTYPE"
@@ -82,7 +82,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 + " FROM cmis:document" //
                 + " WHERE dc:title IN ('xyz', 'abc')";
         q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
-                captured.session, query, null);
+                captured.session, query, null, new Object[] { null });
         assertNotNull(q);
         sql = q.selectInfo.sql.replace("\"", ""); // more readable
         expected = "SELECT HIERARCHY.ID, DUBLINCORE.TITLE, HIERARCHY.PRIMARYTYPE"
@@ -102,7 +102,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 + " FROM cmis:document" //
                 + " WHERE 'bob' = ANY dc:contributors";
         q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
-                captured.session, query, null);
+                captured.session, query, null, new Object[] { null });
         assertNotNull(q);
         sql = q.selectInfo.sql.replace("\"", ""); // more readable
         expected = "SELECT HIERARCHY.ID, HIERARCHY.PRIMARYTYPE" //
@@ -125,7 +125,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 + " JOIN cmis:Document B ON A.cmis:ObjectId = B.cmis:ParentId" //
                 + " WHERE A.dc:title = '123' OR B.dc:title = 'xyz'";
         q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
-                captured.session, query, null);
+                captured.session, query, null, new Object[] { null });
         assertNotNull(q);
         sql = q.selectInfo.sql.replace("\"", ""); // more readable
         expected = "SELECT _A_HIERARCHY.ID, _B_DUBLINCORE.TITLE,"
@@ -152,7 +152,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 + " JOIN cmis:document B ON A.cmis:objectId = B.cmis:parentId" //
                 + " WHERE A.dc:title = '123' OR 'bob' = ANY B.dc:contributors";
         q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
-                captured.session, query, null);
+                captured.session, query, null, new Object[] { null });
         assertNotNull(q);
         sql = q.selectInfo.sql.replace("\"", ""); // more readable
         expected = "SELECT _A_HIERARCHY.ID, _B_DUBLINCORE.TITLE,"
@@ -176,5 +176,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         assertEquals(doc_note_file, new HashSet<Serializable>(
                 q.selectParams.subList(3, 6)));
         assertEquals(expectedP, q.selectParams.subList(6, 8));
+
+        // TODO SELECT *
     }
 }
