@@ -8,7 +8,6 @@
     <Require feature="setprefs" />
     <Require feature="settitle" />
     <Require feature="jquery" />
-    <Require feature="json" />
     <Require feature="nuxeo" />
     <Require feature="datepicker" />
     <Require feature="tablesorter" />
@@ -40,13 +39,13 @@
   });
 
     _IG_RegisterOnloadHandler( function() {
-      var todoliststring = prefs.getString("todolist").replace(/&#34;/g, "\"");
+      var todoliststring = gadgets.util.unescapeString(prefs.getString("todolist"));
       if (todoliststring == "")
         todolist = {
           "array" : []
         };
       else
-        todolist = JSON.parse(todoliststring);
+        todolist = gadgets.json.parse(todoliststring);
       edited = false;
 
       createTable();
