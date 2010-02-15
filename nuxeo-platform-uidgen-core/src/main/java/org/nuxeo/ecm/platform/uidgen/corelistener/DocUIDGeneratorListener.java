@@ -40,15 +40,20 @@ public class DocUIDGeneratorListener implements EventListener {
 
     public void handleEvent(Event event) throws ClientException {
 
+        if (!DOCUMENT_CREATED.equals(event.getName())) {
+            return;
+        }
         EventContext ctx = event.getContext();
         if (ctx instanceof DocumentEventContext) {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
             DocumentModel doc = docCtx.getSourceDocument();
-            String eventId = event.getName();
-
-            if (!eventId.equals(DOCUMENT_CREATED)) {
+            if(doc.isProxy() || doc.isVersion()) {
+                // a proxy or version keeps the uid of the document
+                // being proxied or versioned => we're not allowed
+                // to modify its field.
                 return;
             }
+            String eventId = event.getName();
             log.debug("eventId : " + eventId);
             try {
                 addUIDtoDoc(doc);
