@@ -386,21 +386,22 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         if (extensions == null) {
             return;
         }
-        HashSet<String> targets = new HashSet<String>();
+//        HashSet<String> targets = new HashSet<String>();
         for (ExtensionImpl xt : extensions) {
             if (xt.target == null) {
                 Framework.getRuntime().getWarnings().add("Bad extension declaration (no target attribute specified). Component: "+getName());
                 continue;
             }
-            String key = xt.target.getName()+"#"+xt.getExtensionPoint();
-            if (targets.contains(key)) { // multiple extensions to same target point declared in same component
-                String message = "Component "+getName()+" contains multiple extensions to "+key;
-                Framework.getRuntime().getWarnings().add(message);
-                //TODO: un-comment the following line if you want to treat this as a dev. error
-                //Framework.handleDevError(new Error(message));
-            } else {
-                targets.add(key);
-            }
+          //TODO do nothing for now -> fix the faulty components and then activate these warnings            
+//            String key = xt.target.getName()+"#"+xt.getExtensionPoint();            
+//            if (targets.contains(key)) { // multiple extensions to same target point declared in same component                 
+//                String message = "Component "+getName()+" contains multiple extensions to "+key;
+//                Framework.getRuntime().getWarnings().add(message);
+//                //TODO: un-comment the following line if you want to treat this as a dev. error
+//                //Framework.handleDevError(new Error(message));
+//            } else {
+//                targets.add(key);
+//            }
         }
     }
 }
