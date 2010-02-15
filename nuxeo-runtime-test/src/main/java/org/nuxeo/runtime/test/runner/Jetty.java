@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,27 +12,26 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- * $Id$
+ *     bstefanescu
  */
 package org.nuxeo.runtime.test.runner;
 
-import static org.junit.Assert.assertNotNull;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.runtime.api.Framework;
+/**
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Jetty {
 
-
-@RunWith(FeaturesRunner.class)
-@Features(JettyFeature.class)
-@Jetty(port=9090)
-public class RunnerTest {
-
-
-    @Test
-    public void jettyComponentIsDeployed() throws Exception {
-        assertNotNull(Framework.getService(org.mortbay.jetty.Server.class));
-    }
-
+    String host() default "localhost";
+    
+    int port() default 8080;
+    
+    String config() default "";
 }

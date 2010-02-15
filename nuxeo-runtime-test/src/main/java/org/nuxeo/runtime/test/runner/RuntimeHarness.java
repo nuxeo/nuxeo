@@ -22,6 +22,7 @@ import java.net.URL;
 
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 
 /**
  * Move this to org.nuxeo.runtime package
@@ -140,4 +141,6 @@ public interface RuntimeHarness {
     public boolean isStarted();
     
     public void deployFolder(File folder, ClassLoader loader) throws Exception;
+    
+    public void addWorkingDirectoryConfigurator(WorkingDirectoryConfigurator config);
 }

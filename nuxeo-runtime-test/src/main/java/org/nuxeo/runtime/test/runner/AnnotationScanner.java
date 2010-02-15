@@ -45,6 +45,14 @@ public class AnnotationScanner {
         return classes.get(clazz);
     }
     
+    public <T extends Annotation> T getFirstAnnotation(Class<?> clazz, Class<T> annotationType) {
+        List<T> result = getAnnotations(clazz, annotationType);
+        if (result != null && !result.isEmpty()) {
+            return result.get(0);
+        }
+        return null;
+    }
+    
     @SuppressWarnings("unchecked")
     public <T extends Annotation> List<T> getAnnotations(Class<?> clazz, Class<T> annotationType) {
         List<Annotation> list = classes.get(clazz);
@@ -65,25 +73,29 @@ public class AnnotationScanner {
             return;
         }
         visitedClasses.add(clazz);
+        ArrayList<Annotation> partialResult = new ArrayList<Annotation>(); // collect only the annotation on this class
         List<Annotation> annos = classes.get(clazz);
         if (annos != null) {
-            result.addAll(annos);
+            partialResult.addAll(annos);
             return;
         }        
         // collect local annotations
         for (Annotation anno : clazz.getAnnotations()) {
-            result.add(anno);
+            partialResult.add(anno);
         }
         // first scan interfaces
         for (Class<?> itf : clazz.getInterfaces()) {
-            collectAnnotations(itf, result, visitedClasses);
+            collectAnnotations(itf, partialResult, visitedClasses);
         }
         // collect annotations from super classes
         Class<?> superClass = clazz.getSuperclass();
         if (superClass != null) {
-            collectAnnotations(superClass, result, visitedClasses);
+            collectAnnotations(superClass, partialResult, visitedClasses);
         }        
-        classes.put(clazz, new ArrayList<Annotation>(result));
+        if (!partialResult.isEmpty()) {
+            result.addAll(partialResult);
+        }
+        classes.put(clazz, partialResult);
     }
     
 }

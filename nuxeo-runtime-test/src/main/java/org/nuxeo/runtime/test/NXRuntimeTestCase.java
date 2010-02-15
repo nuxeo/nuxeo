@@ -23,8 +23,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
@@ -90,6 +92,8 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
 
     protected Bundle runtimeBundle;
 
+    protected List<WorkingDirectoryConfigurator> wdConfigs = new ArrayList<WorkingDirectoryConfigurator>();
+    
     public NXRuntimeTestCase() {
     }
 
@@ -97,6 +101,10 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
         super(name);
     }
 
+    public void addWorkingDirectoryConfigurator(WorkingDirectoryConfigurator config) {
+        wdConfigs.add(config);
+    }
+    
     public File getWorkingDir() {
         return workingDir;
     }
@@ -183,6 +191,10 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
                 NXRuntimeTestCase.class.getClassLoader());
         Thread.currentThread().setContextClassLoader(bundleLoader.getSharedClassLoader().getLoader());
 
+        for (WorkingDirectoryConfigurator cfg : wdConfigs) {
+            cfg.configure(this, workingDir);
+        }
+        
         bundleLoader.setScanForNestedJARs(false); // for now
         bundleLoader.setExtractNestedJARs(false);
 

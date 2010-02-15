@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,27 +12,29 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- * $Id$
+ *     bstefanescu
  */
 package org.nuxeo.runtime.test.runner;
 
-import static org.junit.Assert.assertNotNull;
-
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.distrib.DistributionFeature;
+import org.nuxeo.runtime.test.runner.distrib.NuxeoDistribution;
 
-
+/**
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ */
+@Ignore("distribution dependency is causing class loader pb.")
 @RunWith(FeaturesRunner.class)
-@Features(JettyFeature.class)
-@Jetty(port=9090)
-public class RunnerTest {
+@Features(DistributionFeature.class)
+@NuxeoDistribution(profile="core-5.3.1-SNAPSHOT")
+public class DistributionTest {
 
-
-    @Test
-    public void jettyComponentIsDeployed() throws Exception {
-        assertNotNull(Framework.getService(org.mortbay.jetty.Server.class));
+    @Test public void testAgainstDistribution() throws Exception {
+        System.out.println(Framework.getProperties());
     }
-
+    
 }
