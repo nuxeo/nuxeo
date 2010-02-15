@@ -55,7 +55,7 @@
         <h:panelGroup id="#{widget.id}_panelGroup">
           <span id="#{widget.id}_suggestDiv">
             <h:inputText id="#{widget.id}_suggest"
-              onkeydown="if (event.keyCode == 13 || event.keyCode == 9) {return false;}" />
+              onkeydown="if (event.keyCode == 13) {return false;}" />
           </span>
           <a4j:status>
             <f:facet name="start">
@@ -66,21 +66,22 @@
             for="#{widget.id}_suggest" tokens=""
             suggestionAction="#{userSuggestionActions.getSuggestions}"
             var="result"
-            fetchValue="#{result['prefixed_id']}"
+            fetchValue=""
             nothingLabel="#{messages['label.suggestion.noSearchResultsOrSearchOverflow']}"
             minChars="#{minChars}" frequency="#{frequency}" requestDelay="#{requestDelay}">
             <f:param name="userSuggestionSearchType" value="#{searchType}" />
             <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
             <a4j:support event="onselect"
-              actionListener="#{suggestionActions.addSelectionToList}"
-              onsubmit="if (event.keyCode == 9) {blankSuggestionInput($('#{widget.id}_suggestDiv'));return false;}"
-              oncomplete="javascript:blankSuggestionInput($('#{widget.id}_suggestDiv'));"
               focus="#{widget.id}_suggest"
               bypassUpdates="true"
               reRender="#{widget.id}_listRegion"
               id="#{widget.id}_listRegion_select">
-              <f:param name="suggestionInputSelectorId" value="#{widget.id}_suggest" />
+              <f:setPropertyActionListener value="#{result['prefixed_id']}"
+                target="#{suggestionActions.selectedValue}" />
+              <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}" /> 
               <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
+              <f:param name="userSuggestionSearchType" value="#{searchType}" />
+              <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
             </a4j:support>
             <h:column>
               <f:subview rendered="#{result.type == 'USER_TYPE'}" id="#{widget.id}_user_result">

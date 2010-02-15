@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webapp.security;
 
+import static org.jboss.seam.ScopeType.PAGE;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -54,6 +57,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  */
 @Name("userSuggestionActions")
 @SerializedConcurrentAccess
+@Scope(PAGE)
 public class UserSuggestionActionsBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -84,8 +88,16 @@ public class UserSuggestionActionsBean implements Serializable {
     @RequestParameter
     protected String userSuggestionSearchType;
 
+    protected String cachedUserSuggestionSearchType;
+
     @RequestParameter
     protected Integer userSuggestionMaxSearchResults;
+
+    protected Integer cachedUserSuggestionMaxSearchResults;
+
+    protected Object cachedInput;
+
+    protected Object cachedSuggestions;
 
     @RequestParameter
     protected String userSuggestionMessageId;
@@ -142,7 +154,24 @@ public class UserSuggestionActionsBean implements Serializable {
         }
     }
 
+    protected boolean equals(Object item1, Object item2) {
+        if (item1 == null && item2 == null) {
+            return true;
+        } else if (item1 == null) {
+            return false;
+        } else {
+            return item1.equals(item2);
+        }
+    }
+
     public Object getSuggestions(Object input) throws ClientException {
+        if (equals(cachedUserSuggestionSearchType, userSuggestionSearchType)
+                && equals(cachedUserSuggestionMaxSearchResults,
+                        userSuggestionMaxSearchResults)
+                && equals(cachedInput, input)) {
+            return cachedSuggestions;
+        }
+
         List<DocumentModel> users = Collections.emptyList();
         if (USER_TYPE.equals(userSuggestionSearchType)
                 || StringUtils.isEmpty(userSuggestionSearchType)) {
@@ -191,6 +220,11 @@ public class UserSuggestionActionsBean implements Serializable {
             entry.put(PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX + groupId);
             result.add(entry);
         }
+
+        cachedInput = input;
+        cachedUserSuggestionSearchType = userSuggestionSearchType;
+        cachedUserSuggestionMaxSearchResults = userSuggestionMaxSearchResults;
+        cachedSuggestions = result;
 
         return result;
     }
