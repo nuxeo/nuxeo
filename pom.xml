@@ -5,19 +5,19 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.3.1-SNAPSHOT</version>
+    <version>5.3.1-I20100215_0116</version>
   </parent>
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-parent</artifactId>
   <name>Nuxeo Runtime Parent</name>
-  <version>1.6.1-SNAPSHOT</version>
+  <version>1.6.1-I20100215_0116</version>
   <packaging>pom</packaging>
   <description>Nuxeo Runtime: Parent.</description>
 
   <properties>
-    <nuxeo.common.version>1.6.1-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>1.6.1-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.common.version>1.6.1-I20100215_0116</nuxeo.common.version>
+    <nuxeo.runtime.version>1.6.1-I20100215_0116</nuxeo.runtime.version>
   </properties>
 
   <modules>
