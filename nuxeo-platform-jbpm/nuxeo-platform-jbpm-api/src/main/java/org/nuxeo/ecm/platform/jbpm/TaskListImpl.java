@@ -81,7 +81,10 @@ public class TaskListImpl implements TaskList {
                     task.setActors((List<String>)participant.get("users"));
                     task.setDirective((String)participant.get("directive"));
                     task.setComment((String)participant.get("comment"));
-                    task.setDueDate(((GregorianCalendar)participant.get("dueDate")).getTime());
+                    GregorianCalendar calendar = (GregorianCalendar)participant.get("dueDate");
+                    if(calendar != null){
+                        task.setDueDate(calendar.getTime());
+                    }
                     mls.add(task);
                 }
             }
