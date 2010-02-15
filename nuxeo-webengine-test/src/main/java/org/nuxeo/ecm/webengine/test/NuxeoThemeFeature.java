@@ -28,7 +28,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
     "org.nuxeo.theme.core",
     "org.nuxeo.theme.html",
     "org.nuxeo.theme.fragments",
-    "org.nuxeo.theme.webengine",
+    "org.nuxeo.theme.webengine"
 })
 @Features(WebEngineFeature.class)
 public class NuxeoThemeFeature extends SimpleFeature {
