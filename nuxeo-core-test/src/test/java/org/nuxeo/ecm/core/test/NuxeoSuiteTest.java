@@ -24,7 +24,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfigs;
 
 @RunWith(MultiNuxeoCoreRunner.class)
 @SuiteClasses( { SimpleSession.class })
-//@RepositoryBackends( { BackendType.H2, BackendType.JCR, BackendType.POSTGRES })
 @RepositoryConfigs( {
     @RepositoryConfig(type=BackendType.H2),
     @RepositoryConfig(type=BackendType.JCR),

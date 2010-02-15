@@ -13,17 +13,6 @@
 
   <dependencies>
 
-    <!-- 
-    The guice dependency should be removed when opensocial server will be updatyed to use 
-    guice 2.0. This is overwritting the guice 1.0 from root pom
-    see NXP-4667
-    -->
-    <dependency>
-      <groupId>com.google.code.guice</groupId>
-      <artifactId>guice</artifactId>
-      <version>2.0</version>
-    </dependency>
-
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
@@ -33,6 +22,11 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert</artifactId>
     </dependency>
 
     <dependency>

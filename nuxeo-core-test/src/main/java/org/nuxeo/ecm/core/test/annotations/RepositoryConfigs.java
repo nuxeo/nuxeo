@@ -16,6 +16,11 @@
  */
 package org.nuxeo.ecm.core.test.annotations;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 
 /**
  * Useful to make suites using different configurations
@@ -34,6 +39,8 @@ package org.nuxeo.ecm.core.test.annotations;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface RepositoryConfigs {
 
     RepositoryConfig[] value() default { @RepositoryConfig };

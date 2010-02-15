@@ -28,7 +28,7 @@ import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.RunnerBuilder;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfigs;
-import org.nuxeo.runtime.test.runner.NuxeoRunner;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * JUnit4 ParentRunner that knows how to run a test class on multiple backend
@@ -47,9 +47,9 @@ import org.nuxeo.runtime.test.runner.NuxeoRunner;
  * With SimpleSession.class being a class to be run with NuxeoCoreRunner
  */
 // annotation present to provide an accessible default
-public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoRunner> {
+public class MultiNuxeoCoreRunner extends ParentRunner<FeaturesRunner> {
 
-    private final List<NuxeoRunner> runners = new ArrayList<NuxeoRunner>();
+    private final List<FeaturesRunner> runners = new ArrayList<FeaturesRunner>();
 
     private RepositorySettings[] configs;
 
@@ -69,9 +69,14 @@ public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoRunner> {
             RepositorySettings[] configs) throws InitializationError {
         super(klass);
         for (Runner runner : runners) {
-            this.runners.add((NuxeoRunner) runner);
+            this.runners.add((FeaturesRunner) runner);
         }
         this.configs = configs;
+    }
+    
+    @Override
+    protected String getName() {
+        return "Nuxeo Core Suite: "+getClass();
     }
 
     protected static RepositorySettings[] getRepositorySettings(Class<?> testClass) {
@@ -100,26 +105,18 @@ public class MultiNuxeoCoreRunner extends ParentRunner<NuxeoRunner> {
     }
 
     @Override
-    protected Description describeChild(NuxeoRunner child) {
+    protected Description describeChild(FeaturesRunner child) {
         return child.getDescription();
     }
 
     @Override
-    protected List<NuxeoRunner> getChildren() {
+    protected List<FeaturesRunner> getChildren() {
         return runners;
     }
 
-    /* (non-Javadoc)
-     * @see org.junit.runners.ParentRunner#run(org.junit.runner.notification.RunNotifier)
-     */
-    @Override
-    public void run(RunNotifier notifier) {
-        // TODO Auto-generated method stub
-        super.run(notifier);
-    }
     
     @Override
-    protected void runChild(NuxeoRunner child, RunNotifier notifier) {
+    protected void runChild(FeaturesRunner child, RunNotifier notifier) {
         for (RepositorySettings config : configs) {
             CoreFeature cf = child.getFeature(CoreFeature.class);
             if (cf != null) {

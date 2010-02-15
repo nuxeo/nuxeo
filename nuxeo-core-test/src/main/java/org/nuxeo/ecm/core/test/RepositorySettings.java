@@ -33,7 +33,8 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.runtime.test.runner.Defaults;
-import org.nuxeo.runtime.test.runner.NuxeoRunner;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import com.google.inject.Provider;
@@ -50,7 +51,7 @@ public class RepositorySettings implements Provider<CoreSession> {
 
     private static final Log log = LogFactory.getLog(RepositorySettings.class);
     
-    protected NuxeoRunner runner;
+    protected FeaturesRunner runner;
     protected BackendType type;
     protected String username;
     protected RepositoryInit initializer;
@@ -70,7 +71,7 @@ public class RepositorySettings implements Provider<CoreSession> {
         importAnnotations(config);
     }
 
-    public RepositorySettings(NuxeoRunner runner) {
+    public RepositorySettings(FeaturesRunner runner) {
         this.runner = runner;
         Description description = runner.getDescription();
         RepositoryConfig repo = description.getAnnotation(RepositoryConfig.class);
@@ -141,17 +142,20 @@ public class RepositorySettings implements Provider<CoreSession> {
     
     public void initialize() {
         try {
-            RuntimeHarness harness = runner.getHarness();
+            RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
             BackendType repoType = getBackendType();
             if (repoType == BackendType.JCR) {
                 log.info("Deploying a JCR repo implementation");
                 harness.deployBundle("org.nuxeo.ecm.core.jcr");
                 harness.deployBundle("org.nuxeo.ecm.core.jcr-connector");
+//                runner.deployments().addDeployment("org.nuxeo.ecm.core.jcr");
+//                runner.deployments().addDeployment("org.nuxeo.ecm.core.jcr-connector");
 
             } else {
                 log.info("Deploying a VCS repo implementation");
                 harness.deployBundle("org.nuxeo.ecm.core.storage.sql");
-
+//                runner.deployments().addDeployment("org.nuxeo.ecm.core.storage.sql");
+                
                 // TODO: should use a factory
                 DatabaseHelper dbHelper;
                 if (repoType == BackendType.H2) {
@@ -163,6 +167,8 @@ public class RepositorySettings implements Provider<CoreSession> {
                 }
                 harness.deployContrib("org.nuxeo.ecm.core.storage.sql.test",
                         dbHelper.getDeploymentContrib());
+//                runner.deployments().addDeployment("org.nuxeo.ecm.core.storage.sql.test:"
+//                        +dbHelper.getDeploymentContrib());
                 dbHelper.setUp();
 
                 if (dbHelper instanceof DatabasePostgreSQL) {

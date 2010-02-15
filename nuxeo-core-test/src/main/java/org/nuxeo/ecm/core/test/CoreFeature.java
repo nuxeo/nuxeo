@@ -26,11 +26,12 @@ import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.NuxeoRunner;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.google.inject.Binder;
-import com.google.inject.Scopes;
 
 /**
  * The core feature provides deployments needed to have a nuxeo core running.
@@ -48,8 +49,10 @@ import com.google.inject.Scopes;
     "org.nuxeo.ecm.core.query",
     "org.nuxeo.ecm.core.api",
     "org.nuxeo.ecm.core.event",
-    "org.nuxeo.ecm.core"    
+    "org.nuxeo.ecm.core"
+    //"org.nuxeo.ecm.core.convert"
 })
+@Features(RuntimeFeature.class)
 public class CoreFeature extends SimpleFeature {
 
 
@@ -66,37 +69,36 @@ public class CoreFeature extends SimpleFeature {
     }
     
     @Override
-    public void initialize(NuxeoRunner runner, Class<?> testClass)
+    public void initialize(FeaturesRunner runner)
             throws Exception {
         repository = new RepositorySettings(runner);
+        runner.getFeature(RuntimeFeature.class).addServiceProvider(CoreSession.class, repository);
+    }
+
+    @Override
+    public void start(FeaturesRunner runner) throws Exception {
+        repository.initialize();        
     }
     
     @Override
-    public void deploy(NuxeoRunner runner) throws Exception {
-        repository.initialize();
-    }
-    
-    @Override
-    public void configure(NuxeoRunner runner, Binder binder) {
+    public void configure(FeaturesRunner runner, Binder binder) {
         binder.bind(RepositorySettings.class).toInstance(repository);
-        binder.bind(CoreSession.class).toProvider(repository).in(
-                Scopes.SINGLETON);
     }
-    
+        
     @Override
-    public void beforeRun(NuxeoRunner runner) throws Exception {
+    public void beforeRun(FeaturesRunner runner) throws Exception {
         initializeSession(runner);
     }
     
     @Override
-    public void afterRun(NuxeoRunner runner) throws Exception {
+    public void afterRun(FeaturesRunner runner) throws Exception {
         //TODO cleanupSession(runner);
         repository.shutdown();
     }
     
     
     @Override
-    public void afterMethodRun(NuxeoRunner runner, FrameworkMethod method,
+    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
             Object test) throws Exception {
         if (repository.getGranularity() == Granularity.METHOD) {
             cleanupSession(runner);
@@ -104,7 +106,7 @@ public class CoreFeature extends SimpleFeature {
     }
     
 
-    protected void cleanupSession(NuxeoRunner runner) {
+    protected void cleanupSession(FeaturesRunner runner) {
         CoreSession session = runner.getInjector().getInstance(CoreSession.class);
 
         try {
@@ -116,7 +118,7 @@ public class CoreFeature extends SimpleFeature {
         initializeSession(runner);
     }
     
-    protected void initializeSession(NuxeoRunner runner) {
+    protected void initializeSession(FeaturesRunner runner) {
         CoreSession session = runner.getInjector().getInstance(CoreSession.class);
         
         RepositoryInit factory = repository.getInitializer();
