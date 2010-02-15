@@ -17,21 +17,21 @@
 package org.nuxeo.ecm.webengine.test;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.model.impl.ModuleManager;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.NuxeoRunner;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.JettyFeature;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
 
 @Deploy({
     "org.nuxeo.ecm.platform.login",
@@ -40,48 +40,33 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
     "org.nuxeo.ecm.webengine.base",
     "org.nuxeo.ecm.webengine.core",
     "org.nuxeo.ecm.webengine.resteasy.adapter",
-    "org.nuxeo.runtime.jetty",
     "org.nuxeo.ecm.webengine.ui",
-    "org.nuxeo.theme.core",
-    "org.nuxeo.theme.html",
-    "org.nuxeo.theme.fragments",
-    "org.nuxeo.theme.webengine",
+    "org.nuxeo.ecm.webengine.gwt",
     "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
     "org.nuxeo.ecm.webengine.test:authentication-config.xml",
     "org.nuxeo.ecm.webengine.test:login-anonymous-config.xml",
     "org.nuxeo.ecm.webengine.test:login-config.xml",    
     "org.nuxeo.ecm.webengine.test:runtimeserver-contrib.xml"
 })
-@Features(PlatformFeature.class)
-public class WebEngineFeature extends SimpleFeature {
+@Features({ JettyFeature.class, PlatformFeature.class, WebDriverFeature.class })
+public class WebEngineFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
 
     @Override
-    public void initialize(NuxeoRunner runner, Class<?> testClass) throws Exception {
-        setupWorkingDir(runner.getHarness());
+    public void initialize(FeaturesRunner runner) throws Exception {
+        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
     }
     
-    private void setupWorkingDir(RuntimeHarness harness) throws IOException {
-        File dest = new File(harness.getWorkingDir(), "config");
-        dest.mkdir();
-
-        InputStream in = getResource("webengine/config/default-web.xml").openStream();
-        dest = new File(harness.getWorkingDir() + "/config", "default-web.xml");
-        FileOutputStream out = new FileOutputStream(dest);
-        FileUtils.copy(in, out);
-
-        in = getResource("webengine/config/jetty.xml").openStream();
-        dest = new File(harness.getWorkingDir() + "/config", "jetty.xml");
-        out = new FileOutputStream(dest);
-        FileUtils.copy(in, out);
-
-        dest = new File(harness.getWorkingDir(), "web/root.war/WEB-INF/");
+    public void configure(RuntimeHarness harness, File workingDir) throws IOException {
+        File dest = new File(workingDir, "web/root.war/WEB-INF/");
         dest.mkdirs();
 
-        in = getResource("webengine/web/WEB-INF/web.xml").openStream();
-        dest = new File(harness.getWorkingDir() + "/web/root.war/WEB-INF/",
-                "web.xml");
-        out = new FileOutputStream(dest);
-        FileUtils.copy(in, out);
+        InputStream in = getResource("webengine/web/WEB-INF/web.xml").openStream();
+        dest = new File(workingDir + "/web/root.war/WEB-INF/", "web.xml");
+        try {
+            FileUtils.copyToFile(in, dest);
+        } finally {
+            in.close();
+        }   
     }
 
     private static URL getResource(String resource) {
@@ -89,10 +74,10 @@ public class WebEngineFeature extends SimpleFeature {
                 resource);
     }
 
-    public void deployTestModule() {
-        URL currentDir = Thread.currentThread().getContextClassLoader().getResource(
-                ".");
-        ModuleManager moduleManager = Framework.getLocalService(WebEngine.class).getModuleManager();
-        moduleManager.loadModuleFromDir(new File(currentDir.getFile()));
-    }
+//    public void deployTestModule() {
+//        URL currentDir = Thread.currentThread().getContextClassLoader().getResource(
+//                ".");
+//        ModuleManager moduleManager = Framework.getLocalService(WebEngine.class).getModuleManager();
+//        moduleManager.loadModuleFromDir(new File(currentDir.getFile()));
+//    }
 }

@@ -18,54 +18,47 @@ package org.nuxeo.ecm.webengine.test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import junit.framework.Assert;
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.platform.test.web.BrowserConfig;
-import org.nuxeo.ecm.platform.test.web.WebDriverFeature;
-import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.test.web.pages.WebEngineHomePage;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.NuxeoRunner;
-import org.openqa.selenium.WebDriver;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.web.Browser;
+import org.nuxeo.runtime.test.runner.web.BrowserFamily;
+import org.nuxeo.runtime.test.runner.web.HomePage;
 
 import com.google.inject.Inject;
 
-@Ignore("failing for now...")
-@RunWith(NuxeoRunner.class)
-@Features({WebEngineFeature.class, WebDriverFeature.class})
+// should fix in webengine web-types to add a dynamic mode
+@Ignore("This is working only if admin module is loaded from a jar -> otherwise webengine types are missing from META-INF")
+@RunWith(FeaturesRunner.class)
+@Features(WebEngineFeature.class)
+@Browser(type=BrowserFamily.FIREFOX)
+@HomePage(type=WebEngineHomePage.class, url="http://localhost:8082")
+@Jetty(port=8082)
+//@RepositoryConfig(type=BackendType.H2)
 public class WebEngineTest {
 
-    @Inject
-    protected CoreSession session;
+//    @Inject protected CoreSession session;
+//
+//    @Inject protected WebEngine we;
 
-    @Inject
-    protected WebEngine we;
+    @Inject private WebEngineHomePage home;
 
-    @Inject
-    private BrowserConfig browserConfig;
-
-    private WebDriver webDriver;
-
-    private WebEngineHomePage home;
-
-    @Before
-    public void login() {
-        webDriver = browserConfig.getDriver();
-        home = new WebEngineHomePage(webDriver, "localhost", "11111");
-        home.reload();
-    }
 
     @Test
     public void iCanRunWebEngine() throws Exception {
-        assertTrue(home.hasApplication("Admin"));
-        assertFalse(home.isLogged());
-
-        home.loginAs("Administrator", "Administrator");
-        assertTrue(home.isLogged());
+        LoginPage login = home.getLoginPage();
+        assertTrue(home.hasModule("Admin"));
+        assertFalse(login.isAuthenticated());
+        login.ensureLogin("Administrator", "Administrator");
+        assertTrue(login.isAuthenticated());
+        AdminModulePage admin = home.getModulePage("Admin", AdminModulePage.class);        
+        DocumentPage doc = admin.getDocumentPage("default-domain");
+        Assert.assertEquals("Default domain", doc.getTitle());
     }
 
 }

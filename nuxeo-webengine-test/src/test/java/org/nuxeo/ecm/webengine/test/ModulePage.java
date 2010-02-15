@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,14 +12,24 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
+ *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.test.web.finder;
+package org.nuxeo.ecm.webengine.test;
 
-import java.util.NoSuchElementException;
+import org.nuxeo.runtime.test.runner.web.WebPage;
 
-public interface Finder<T> {
+import com.google.inject.Inject;
 
-    T find() throws NoSuchElementException;
+/**
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ */
+public class ModulePage extends WebPage {
 
+    @Inject protected WebEngineHomePage home;
+    
+    public WebEngineHomePage getHome() {
+        return home;
+    }
+    
 }
