@@ -22,7 +22,7 @@ import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.NuxeoRunner;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 
@@ -46,9 +46,9 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 public class PlatformFeature extends SimpleFeature {
 
     @Override
-    public void initialize(NuxeoRunner runner, Class<?> testClass)
+    public void initialize(FeaturesRunner runner)
             throws Exception {
-        NuxeoRunner.bindDatasource("nxsqldirectory", createDataSource("jdbc:hsqldb:mem:directories"));
+        //NuxeoRunner.bindDatasource("nxsqldirectory", createDataSource("jdbc:hsqldb:mem:directories"));
     }
     
     public static DataSource createDataSource(String dbName) {
