@@ -90,7 +90,7 @@
      <option name="filter-property">dc:source</option>
      <option name="filter-value">test</option>
      <template name="default">
-        <templateItem typeName="Note" id="SourceFactoryPropertyTest" title="Source Factory Property Test" description="Test Note">
+        <templateItem typeName="Note" title="Source Factory Property Test" description="Test Note">
           <properties>
             <property xpath="dc:creator" value="Administrator"/>
             <property xpath="dc:coverage" value="coverage"/>

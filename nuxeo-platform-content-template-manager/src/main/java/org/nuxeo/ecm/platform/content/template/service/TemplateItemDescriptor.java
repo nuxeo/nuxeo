@@ -66,7 +66,7 @@ public class TemplateItemDescriptor  implements Serializable {
     }
 
     public String getId() {
-        return id;
+        return id != null ? id : title.replace(" ", "");
     }
 
     public String getTypeName() {

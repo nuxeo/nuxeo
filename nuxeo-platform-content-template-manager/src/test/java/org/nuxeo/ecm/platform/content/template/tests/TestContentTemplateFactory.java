@@ -212,7 +212,7 @@ public class TestContentTemplateFactory extends ContentTemplateFactoryTestCase {
         session.save();
         DocumentModel doc = session.getChild(testWS.getRef(), "SourceFactoryPropertyTest");
         assertNotNull(doc);
-        assertEquals("dc:source is ", doc.getProperty("dc:source").getValue(String.class), "test");
+        assertEquals("dc:source is ", null, doc.getProperty("dc:source").getValue(String.class));
     }
 
 }
