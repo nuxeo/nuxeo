@@ -79,7 +79,8 @@
     <view name="User services (Galaxy theme)" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/user_services_galaxy.xhtml</template>
-    </view> 
+      <resource>screen.css</resource>
+    </view>
 
     <view name="nuxeo5 breadcrumbs" template-engine="jsf-facelets">
       <format-type>widget</format-type>
@@ -121,7 +122,8 @@
       <resource>dragdrop.js</resource>
     </view>
 
-    <view name="Nuxeo DM footer (Galaxy Theme)" template-engine="jsf-facelets">
+    <view name="Nuxeo DM footer (Galaxy Theme)"
+      template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/footer_galaxy.xhtml</template>
     </view>
@@ -204,6 +206,10 @@
 
   <!-- resources -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+
+    <resource name="screen.css">
+      <path>css/screen.css</path>
+    </resource>
 
     <resource name="foldable-box.js">
       <path>scripts/foldable-box.js</path>
