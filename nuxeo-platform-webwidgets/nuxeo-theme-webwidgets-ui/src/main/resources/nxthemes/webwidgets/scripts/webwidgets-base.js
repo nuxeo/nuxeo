@@ -179,6 +179,7 @@ NXThemesWebWidgets.renderPanel = function(panel, data) {
     var styles = widget_type.styles;
     var styles_id = "webwidget_style_" + name.toLowerCase().replace(/ /g, '_');
     if (styles && !$(styles_id)) {
+        styles = styles.replace(/\${basePath}/g, nxthemesBasePath);
         var el = document.createElement('style');
         el.setAttribute("type", "text/css");
         el.setAttribute("id", styles_id);
