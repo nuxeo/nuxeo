@@ -132,3 +132,7 @@ h3 {
   height: 50%;
   margin: auto;
 }
+
+.hidelink {
+  border: none;
+}

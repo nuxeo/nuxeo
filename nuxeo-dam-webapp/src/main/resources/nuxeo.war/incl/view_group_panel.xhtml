@@ -20,6 +20,7 @@
     <p class="buttonsGadget">
       <a4j:commandLink styleClass="button"
                        action="#{groupManagerActions.updateGroupNoRedirect}"
+                       actionListener="#{editableListBean.resetAllListsCachedModels}"
                        reRender="groupSearchResult, viewGroupPanel"
                        data="#{facesContext.maximumSeverity.ordinal ge 2}"
                        oncomplete="if (!data) { Richfaces.hideModalPanel('viewGroupFormPanel') };">

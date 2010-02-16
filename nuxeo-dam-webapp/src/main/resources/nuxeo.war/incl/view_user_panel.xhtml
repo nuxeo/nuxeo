@@ -20,6 +20,7 @@
     <p class="buttonsGadget">
       <a4j:commandLink styleClass="button"
                        action="#{userManagerActions.updateUserNoRedirect}"
+                       actionListener="#{editableListBean.resetAllListsCachedModels}"
                        reRender="userSearchResult, viewUserPanel"
                        data="#{facesContext.maximumSeverity.ordinal ge 2}"
                        oncomplete="if (!data) { Richfaces.hideModalPanel('viewUserFormPanel') };">

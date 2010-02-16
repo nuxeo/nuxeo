@@ -7,7 +7,7 @@
 
   <a4j:region>
   <a4j:outputPanel id="viewFolderPanel">
-  <a4j:form id="viewUser" ajaxSingle="true">
+  <a4j:form id="viewFolder" ajaxSingle="true">
 
     <div id="facesStatusMessage" class="facesStatusMessage">
       <h:messages globalOnly="true"
@@ -24,6 +24,7 @@
     <p class="buttonsGadget">
       <a4j:commandLink styleClass="button"
                        action="#{folderAdminActions.updateFolderNoRedirect}"
+                       actionListener="#{editableListBean.resetAllListsCachedModels}"
                        reRender="folderSearchResult, viewFolderPanel"
                        data="#{facesContext.maximumSeverity.ordinal ge 2}"
                        oncomplete="if (!data) { Richfaces.hideModalPanel('viewFolderFormPanel') };">

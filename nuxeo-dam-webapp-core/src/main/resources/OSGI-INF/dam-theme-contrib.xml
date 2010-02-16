@@ -62,6 +62,7 @@
 
       <resource>jquery.js</resource>
       <resource>toggle-panel.js</resource>
+      <resource>utils.js</resource>
     </view>
 
     <view name="dam footer" template-engine="jsf-facelets">
@@ -115,6 +116,10 @@
 
     <resource name="importSetForm.js">
       <path>scripts/importSetForm.js</path>
+    </resource>
+
+    <resource name="utils.js">
+      <path>scripts/utils.js</path>
     </resource>
 
   </extension>

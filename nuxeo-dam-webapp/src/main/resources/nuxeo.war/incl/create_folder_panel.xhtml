@@ -21,6 +21,7 @@
     <p class="buttonsGadget">
       <a4j:commandButton styleClass="button"
         value="#{messages['command.folder.create']}" action="#{folderAdminActions.createFolderNoRedirect}"
+        actionListener="#{editableListBean.resetAllListsCachedModels}"
         data="#{facesContext.maximumSeverity.ordinal ge 2}"
         oncomplete="if (!data) { Richfaces.hideModalPanel('createFolderFormPanel') };"
         reRender="folderSearchResult, createFolder" />

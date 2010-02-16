@@ -13,7 +13,7 @@
   </script>
 
   <rich:modalPanel id="createUserFormPanel" autosized="true"
-   styleClass="CreateUserFormPanel">
+    styleClass="CreateUserFormPanel">
     <f:facet name="header">
       <h:panelGroup>
         <h:outputText value="#{messages['title.createUser']}"/>
@@ -25,11 +25,9 @@
           <a4j:commandLink
             actionListener="#{editableListBean.resetAllListsCachedModels}"
             id="createUserHideLink"
-            onclick="#{rich:component('createUserFormPanel')}.hide()"
-            immediate="true"
-            reRender="createUserPanel">
-            <h:graphicImage value="/img/close.png"
-              styleClass="hidelink" />
+            onclick="Richfaces.hideModalPanel('createUserFormPanel')"
+            immediate="true" reRender="createUserPanel">
+            <h:graphicImage value="/img/close.png" styleClass="hidelink" />
           </a4j:commandLink>
         </a4j:form>
       </h:panelGroup>
@@ -38,36 +36,46 @@
   </rich:modalPanel>
 
   <rich:modalPanel id="viewUserFormPanel" autosized="true"
-   styleClass="ViewUserFormPanel">
+    styleClass="ViewUserFormPanel">
     <f:facet name="header">
       <h:panelGroup>
         <h:outputText value="#{messages['title.editUser']}" />
-    </h:panelGroup>
-  </f:facet>
-  <f:facet name="controls">
-    <h:panelGroup>
-      <h:graphicImage value="/img/close.png"
-          styleClass="hidelink" id="viewUserHidelink" />
-        <rich:componentControl for="viewUserFormPanel" attachTo="viewUserHidelink"
-          operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
+    <f:facet name="controls">
+      <h:panelGroup>
+        <a4j:form id="viewUserHideForm">
+          <a4j:commandLink
+            actionListener="#{editableListBean.resetAllListsCachedModels}"
+            id="viewUserHideLink"
+            onclick="Richfaces.hideModalPanel('viewUserFormPanel')"
+            immediate="true" reRender="viewUserPanel">
+            <h:graphicImage value="/img/close.png" styleClass="hidelink" />
+          </a4j:commandLink>
+        </a4j:form>
       </h:panelGroup>
     </f:facet>
     <ui:include src="/incl/view_user_panel.xhtml" />
   </rich:modalPanel>
 
   <rich:modalPanel id="editPasswordFormPanel" autosized="true"
-   styleClass="EditPasswordFormPanel">
+    styleClass="EditPasswordFormPanel">
     <f:facet name="header">
       <h:panelGroup>
         <h:outputText value="#{messages['title.editPassword']}"/>
-    </h:panelGroup>
-  </f:facet>
-  <f:facet name="controls">
-    <h:panelGroup>
-      <h:graphicImage value="/img/close.png"
-          styleClass="hidelink" id="editPasswordHidelink" />
-        <rich:componentControl for="editPasswordFormPanel" attachTo="editPasswordHidelink"
-          operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
+    <f:facet name="controls">
+      <h:panelGroup>
+        <a4j:form id="editPasswordHideForm">
+          <a4j:commandLink
+            actionListener="#{editableListBean.resetAllListsCachedModels}"
+            id="editPasswordHideLink"
+            onclick="Richfaces.hideModalPanel('editPasswordFormPanel')"
+            immediate="true" reRender="editPasswordPanel">
+            <h:graphicImage value="/img/close.png" styleClass="hidelink" />
+          </a4j:commandLink>
+        </a4j:form>
       </h:panelGroup>
     </f:facet>
     change password
@@ -82,7 +90,7 @@
           <a4j:form id="userSearchForm">
             <a4j:commandLink
               onclick="Richfaces.showModalPanel('createUserFormPanel')"
-              id="user_creation_button"
+              id="user_creation_button" reRender="createUserPanel"
               rendered="#{userManagerActions.allowCreateUser and notReadOnly}">
               <h:outputText value="#{messages['command.createUser']}" />
             </a4j:commandLink>

@@ -19,6 +19,7 @@
     <p class="buttonsGadget">
       <a4j:commandButton styleClass="button"
         value="#{messages['command.user.create']}" action="#{userManagerActions.createUserNoRedirect}"
+        actionListener="#{editableListBean.resetAllListsCachedModels}"
         data="#{facesContext.maximumSeverity.ordinal ge 2}"
         oncomplete="if (!data) { Richfaces.hideModalPanel('createUserFormPanel'); }"
         reRender="userSearchResult, createUser" />

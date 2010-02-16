@@ -13,36 +13,46 @@
   </script>
 
   <rich:modalPanel id="createGroupFormPanel" autosized="true"
-   styleClass="CreateGroupFormPanel">
+    styleClass="CreateGroupFormPanel">
     <f:facet name="header">
       <h:panelGroup>
         <h:outputText value="#{messages['title.createGroup']}"/>
-    </h:panelGroup>
-  </f:facet>
-  <f:facet name="controls">
-    <h:panelGroup>
-      <h:graphicImage value="/img/close.png"
-          styleClass="hidelink" id="createGroupHidelink" />
-      <rich:componentControl for="createGroupFormPanel" attachTo="createGroupHidelink"
-        operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
+    <f:facet name="controls">
+      <h:panelGroup>
+        <a4j:form id="createGroupHideForm">
+          <a4j:commandLink
+            actionListener="#{editableListBean.resetAllListsCachedModels}"
+            id="createGroupHideLink"
+            onclick="Richfaces.hideModalPanel('createGroupFormPanel')"
+            immediate="true" reRender="createGroupPanel">
+            <h:graphicImage value="/img/close.png" styleClass="hidelink" />
+          </a4j:commandLink>
+        </a4j:form>
       </h:panelGroup>
     </f:facet>
     <ui:include src="/incl/create_group_panel.xhtml" />
   </rich:modalPanel>
 
   <rich:modalPanel id="viewGroupFormPanel" autosized="true"
-   styleClass="ViewGroupFormPanel">
+    styleClass="ViewGroupFormPanel">
     <f:facet name="header">
       <h:panelGroup>
         <h:outputText value="#{messages['title.editGroup']}" />
-    </h:panelGroup>
-  </f:facet>
-  <f:facet name="controls">
-    <h:panelGroup>
-      <h:graphicImage value="/img/close.png"
-          styleClass="hidelink" id="viewGroupHidelink" />
-      <rich:componentControl for="viewGroupFormPanel" attachTo="viewGroupHidelink"
-        operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
+    <f:facet name="controls">
+      <h:panelGroup>
+        <a4j:form id="viewGroupHideForm">
+          <a4j:commandLink
+            actionListener="#{editableListBean.resetAllListsCachedModels}"
+            id="viewGroupHideLink"
+            onclick="Richfaces.hideModalPanel('viewGroupFormPanel')"
+            immediate="true" reRender="viewGroupPanel">
+            <h:graphicImage value="/img/close.png" styleClass="hidelink" />
+          </a4j:commandLink>
+        </a4j:form>
       </h:panelGroup>
     </f:facet>
     <ui:include src="/incl/view_group_panel.xhtml" />
@@ -73,7 +83,7 @@
           <a4j:outputPanel id="groupSearchResult">
             <h:outputText
               value="#{messages['label.groupManager.emptyGroupList']}"
-              rendered="#{groupList.rowCount == 0 and groupManagerActions.searchOverflow == false and !empty userManagerActions.searchString}" />
+              rendered="#{groupList.rowCount == 0 and groupManagerActions.searchOverflow == false and !empty groupManagerActions.searchString}" />
 
             <h:outputText
               value="#{messages['label.security.searchOverFlow']}"
@@ -81,11 +91,11 @@
 
             <c:set var="groupSchema" value="#{userManager.groupSchemaName}" />
 
-            <a4j:form rendered="#{groupList.rowCount > 0}">
-              <h:dataTable var="groupModel" value="#{groupList}"
+            <a4j:form id="groupSearchFormTab" rendered="#{groupList.rowCount > 0}">
+              <h:dataTable id="GroupSearchTab" var="groupModel" value="#{groupList}"
                 rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
                 <h:column>
-                  <a4j:commandLink
+                  <a4j:commandLink id="delete-group"
                     action="#{groupManagerActions.deleteGroupNoRedirect(groupModel.id)}"
                     onclick="if (!confirmDeleteGroup()) { return false; }"
                     reRender="groupSearchResult"
