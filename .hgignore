@@ -1,0 +1,14 @@
+syntax:glob
+target
+*.class
+bin
+target
+.settings
+.classpath
+.project
+*~
+tomcat
+.gwt-tmp
+target
+bin/*
+atlassian-jira.log

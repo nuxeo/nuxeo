@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.apidoc.doctypeContrib">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+
+    <doctype name="NXDistribution" extends="Folder">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="file" />
+      <schema name="nxdistribution" />
+
+      <facet name="Commentable" />
+      <facet name="Versionable" />
+      <facet name="Indexable" />
+      <facet name="Folderish"/>
+    </doctype>
+
+
+    <doctype name="NXBundleGroup" extends="Folder">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="file" />
+      <schema name="nxbundlegroup" />
+
+      <facet name="Commentable" />
+      <facet name="Versionable" />
+      <facet name="Indexable" />
+      <facet name="Folderish"/>
+    </doctype>
+
+
+    <doctype name="NXBundle" extends="Folder">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="file" />
+      <schema name="nxbundle" />
+      <facet name="Commentable" />
+      <facet name="Versionable" />
+      <facet name="Indexable" />
+      <facet name="Folderish"/>
+    </doctype>
+
+    <doctype name="NXComponent" extends="Folder">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="file" />
+      <schema name="nxcomponent" />
+      <facet name="Commentable" />
+      <facet name="Versionable" />
+      <facet name="Indexable" />
+      <facet name="Folderish"/>
+    </doctype>
+
+    <doctype name="NXService" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="file" />
+      <facet name="Commentable" />
+      <facet name="Versionable" />
+      <facet name="Indexable" />
+    </doctype>
+
+    <doctype name="NXExtensionPoint" extends="Folder">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="file" />
+	  <schema name="nxextensionpoint" />
+	  
+      <facet name="Commentable" />
+      <facet name="Versionable" />
+      <facet name="Indexable" />
+      <facet name="Folderish"/>
+    </doctype>
+
+    <doctype name="NXContribution" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="file" />
+      <schema name="nxcontribution" />
+
+      <facet name="Commentable" />
+      <facet name="Versionable" />
+      <facet name="Indexable" />
+    </doctype>
+
+
+  </extension>
+
+</component>

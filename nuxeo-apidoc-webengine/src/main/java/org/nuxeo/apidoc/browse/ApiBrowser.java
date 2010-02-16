@@ -1,0 +1,160 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+package org.nuxeo.apidoc.browse;
+
+import java.util.List;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+
+import org.nuxeo.apidoc.api.BundleGroupFlatTree;
+import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
+import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.ecm.webengine.model.Resource;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+
+/**
+ * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
+ *
+ */
+@WebObject(type = "apibrowser")
+public class ApiBrowser extends DefaultObject {
+
+	String distributionId = null;
+	
+    @Override
+    protected void initialize(Object... args) {
+    	distributionId = (String) args[0];
+    }
+
+	
+    @GET
+    @Produces("text/html")
+    public Object doGet() {
+        return getView("index").arg("distId", ctx.getProperty("distId"));
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "listBundleGroups")
+    public Object getMavenGroups() {
+        BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()));
+        List<BundleGroupFlatTree> tree = bgth.getBundleGroupTree();
+        return getView("listBundleGroups").arg("tree", tree).arg("distId", ctx.getProperty("distId"));
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "listBundles")
+    public Object getBundles() {
+        List<String> bundleIds = SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()).getBundleIds();
+        return getView("listBundles").arg("bundleIds", bundleIds).arg("distId", ctx.getProperty("distId"));
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "listComponents")
+    public Object getComponents() {
+        List<String> componentIds = SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()).getComponentIds();
+        return getView("listComponents").arg("componentIds", componentIds).arg("distId", ctx.getProperty("distId"));
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "listServices")
+    public Object getServices() {
+        List<String> serviceIds = SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()).getServiceIds();
+        return getView("listServices").arg("serviceIds", serviceIds).arg("distId", ctx.getProperty("distId"));
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "listExtensionPoints")
+    public Object getExtensionPoints() {
+        List<String> epIds = SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()).getExtensionPointIds();
+        return getView("listExtensionPoints").arg("epIds", epIds).arg("distId", ctx.getProperty("distId"));
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "listContributions")
+    public Object getContributions() {
+        List<String> cIds = SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()).getContributionIds();
+        return getView("listContributions").arg("cIds", cIds).arg("distId", ctx.getProperty("distId"));
+    }
+
+    @Path(value = "viewBundle/{bundleId}")
+    public Resource viewBundle(@PathParam("bundleId") String bundleId) {
+        try {
+            return ctx.newObject("bundle", bundleId);
+        } catch (Exception e) {
+            throw new WebApplicationException(e);
+        }
+    }
+
+    @Path(value = "viewComponent/{componentId}")
+    public Resource viewComponent(@PathParam("componentId") String componentId) {
+        try {
+            return ctx.newObject("component", componentId);
+        } catch (Exception e) {
+            throw new WebApplicationException(e);
+        }
+    }
+
+    @Path(value = "viewService/{serviceId}")
+    public Resource viewService(@PathParam("serviceId") String serviceId) {
+        try {
+            return ctx.newObject("service", serviceId);
+        } catch (Exception e) {
+            throw new WebApplicationException(e);
+        }
+    }
+
+    @Path(value = "viewExtensionPoint/{epId}")
+    public Resource viewExtensionPoint(@PathParam("epId") String epId) {
+        try {
+            return ctx.newObject("extensionPoint", epId);
+        } catch (Exception e) {
+            throw new WebApplicationException(e);
+        }
+    }
+
+    @Path(value = "viewContribution/{cId}")
+    public Resource viewContribution(@PathParam("cId") String cId) {
+        try {
+            return ctx.newObject("contribution", cId);
+        } catch (Exception e) {
+            throw new WebApplicationException(e);
+        }
+    }
+
+    @Path(value = "viewBundleGroup/{gId}")
+    public Resource viewBundleGroup(@PathParam("gId") String gId) {
+        try {
+            return ctx.newObject("bundleGroup", gId);
+        } catch (Exception e) {
+            throw new WebApplicationException(e);
+        }
+    }           
+
+}

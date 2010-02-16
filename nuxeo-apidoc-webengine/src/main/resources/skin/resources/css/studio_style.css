@@ -1,0 +1,175 @@
+/* Studio Home pages - lk@nuxeo.com - 11/2009 */
+
+/* Global style */
+
+html, body {
+height:100%;
+}
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+border:0 none;
+font:normal 12px "Lucida Grande", Verdana, sans-serif;
+margin:0;
+padding:0;
+color:#333;
+}
+
+iframe {
+height:280px;  
+}
+
+h1 {
+font:normal 2.2em "Lucida Grande", Verdana, sans-serif;
+margin:10px 0 15px;
+color:black;
+}
+
+h2 {
+font:normal 1.7em "Lucida Grande", Verdana, sans-serif;
+margin:10px 0 15px;
+border-bottom:1px dotted #ccc;
+color:black;
+}
+
+h3{
+font:normal 17px "Lucida Grande", Verdana, sans-serif;
+margin:10px 0 15px;
+color:black;
+border-bottom:1px dotted #ccc;
+}
+
+p {
+margin:3px 0px 10px;  
+}
+
+a, a:link, a:active, a:visited {
+color:#0066CC;
+text-decoration:none;
+}
+
+a:hover {
+color:#014A93;
+text-decoration:underline;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+content:"";
+}
+
+blockquote, q {
+quotes:"" "";
+}
+
+ol {
+margin-left:2em;
+}
+
+ul {
+list-style-image:url(../images/bullet.png);
+margin-left:2em;
+}
+
+:focus {
+outline-style:none;
+}
+
+/* Header style */
+
+.header {
+background:black url(../images/small_gray_bar.png) repeat-x scroll left top;
+padding:5px 5px 5px 20px;
+}
+
+.logo {
+float:left;
+}
+
+.login {
+float:right;  
+}
+
+.login input{
+border: 1px solid #797979;
+background-color:#4D4D4D;
+color:#DEDEDE;
+padding: 1px 5px;
+margin: 0px 5px 0px 0px;
+width:100px;  
+}
+
+.login .button{
+font:normal 10px "Lucide Grande", Arial, Sans-serif;
+color:#cdcdcd;
+border:1px solid #797979;
+background:#cecfd1 url(../images/buttons.png) top left repeat-x;
+margin:3px 15px 4px 0px;
+padding:1px 5px;
+width:25px;
+cursor:pointer;
+}
+
+.login .button:hover{
+color:#DEDEDE;
+border-color:#92999e;
+}
+
+/* Main Content style */
+
+.homeBox {
+border:1px solid #ccc;
+padding:5px 15px 10px;
+margin:10px 5px;
+height:300px;
+}
+
+.home_button {
+background:transparent url(../images/bullet.png) no-repeat scroll left top;
+font-size:13px;
+margin:0px 10px 5px 0;
+padding:3px 5px 0px 18px;
+display:block;
+}
+
+/* Footer style */
+
+.footer {
+background:black url(../images/bottom_gray_bar.png) repeat-x scroll left top;
+padding:5px 5px 5px 20px;
+height:33px;
+border-top:1px solid #d6d6d6;
+}
+
+.footer a {
+color:#0066CC;
+font-size:10px;
+}
+
+.copyrights {
+color:#939393;
+display:inline;
+width:500px;
+font-size:10px;
+}
+
+.links {
+float:right;
+}
+
+.links span {
+color:#939393;
+padding:0px 10px;
+font-size:10px;
+}
+
+.logout {
+margin:5px 10px 0px 0px;
+color:#D0D0D0;
+}
+
+.logout span{
+color:#D0D0D0;
+}
+
+.logout a,.logout a:link,.logout a:active,.logout a:visited{
+color:#fff;
+}

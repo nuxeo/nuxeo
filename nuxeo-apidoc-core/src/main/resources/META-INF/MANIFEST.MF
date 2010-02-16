@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo api documentation server 
+Bundle-SymbolicName: org.nuxeo.apidoc.core;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Vendor: Nuxeo
+Nuxeo-Require: org.nuxeo.ecm.core
+Nuxeo-Component: OSGI-INF/schema-contrib.xml,
+ OSGI-INF/doctype-contrib.xml,
+ OSGI-INF/life-cycle-contrib.xml,
+ OSGI-INF/adapter-contrib.xml,
+ OSGI-INF/ui-contrib.xml

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://nuxeo.org/schemas/nxbundle"
+  xmlns:nxbundle="http://nuxeo.org/schemas/nxbundle">
+
+  <xs:complexType name="stringList">
+    <xs:sequence>
+      <xs:element name="item" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="artifactGroupId" type="xs:string"/>
+  <xs:element name="artifactId" type="xs:string"/>
+  <xs:element name="artifactVersion" type="xs:string"/>
+  <xs:element name="bundleId" type="xs:string"/>
+  <xs:element name="jarName" type="xs:string"/>
+
+  <xs:element name="requirements" type="nxbundle:stringList"/>
+
+</xs:schema>
