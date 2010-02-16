@@ -14,6 +14,7 @@
  */
 package org.nuxeo.ecm.platform.tag;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -22,8 +23,10 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
@@ -177,9 +180,16 @@ public class TaggingHelper {
 
         List<String> docsForTag = getTagService().listDocumentsForTag(session,
                 tagDocumentId, session.getPrincipal().getName());
+        List<String> deletedDocs = new ArrayList<String>();
         for (String docForTagId : docsForTag) {
-            documentsForTag.add(session.getDocument(new IdRef(docForTagId)));
-        }
+        	DocumentRef docRef = new IdRef(docForTagId);
+        	if (session.exists(docRef)) {
+        		documentsForTag.add(session.getDocument(docRef));
+        	} else {
+        		deletedDocs.add(docForTagId);
+        	}
+        }                        
+        // XXX should remove doc entry in the target tag !
         return documentsForTag;
     }
 
