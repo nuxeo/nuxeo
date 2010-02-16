@@ -182,7 +182,11 @@ NXThemesWebWidgets.renderPanel = function(panel, data) {
         var el = document.createElement('style');
         el.setAttribute("type", "text/css");
         el.setAttribute("id", styles_id);
-        el.innerHTML = styles;
+        if (el.styleSheet) {   // IE
+            el.styleSheet.cssText = styles;
+        } else {
+           el.appendChild(document.createTextNode(styles));
+        }
         var head = document.getElementsByTagName("head")[0];
         head.appendChild(el);
     }
