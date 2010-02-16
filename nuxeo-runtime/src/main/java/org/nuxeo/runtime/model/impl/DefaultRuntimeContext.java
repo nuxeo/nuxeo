@@ -89,6 +89,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
         log.debug("Deploying bundle from url " + url);
         RegistrationInfoImpl ri = createRegistrationInfo(url);
         ri.context = this;
+        ri.xmlFileUrl=url;
         runtime.getComponentManager().register(ri);
         deployedFiles.put(url.toString(), ri.getName());
         return ri;

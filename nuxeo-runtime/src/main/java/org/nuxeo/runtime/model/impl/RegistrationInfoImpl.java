@@ -19,6 +19,7 @@
 
 package org.nuxeo.runtime.model.impl;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -45,7 +46,7 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 @XObject("component")
@@ -101,29 +102,32 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     @XContent("documentation")
     String documentation;
 
+    URL xmlFileUrl;
 
     /**
-     * This is used by the component persistence service to identify registration that was
-     * dynamically created and persisted by users.
+     * This is used by the component persistence service to identify
+     * registration that was dynamically created and persisted by users.
      */
     boolean isPersistent;
-
 
     transient RuntimeContext context;
 
     // the managed component
     transient ComponentInstance component;
 
-    public RegistrationInfoImpl() {}
-    
+    public RegistrationInfoImpl() {
+    }
+
     /**
      * Useful when dynamically registering components
-     * @param name the component name
+     *
+     * @param name
+     *            the component name
      */
     public RegistrationInfoImpl(ComponentName name) {
         this.name = name;
     }
-    
+
     public void setContext(RuntimeContext rc) {
         this.context = rc;
     }
@@ -229,7 +233,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             return;
         }
         state = REGISTERED;
-        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_REGISTERED, this));
+        manager.sendEvent(new ComponentEvent(
+                ComponentEvent.COMPONENT_REGISTERED, this));
     }
 
     synchronized void unregister() throws Exception {
@@ -240,7 +245,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             unresolve();
         }
         state = UNREGISTERED;
-        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_UNREGISTERED, this));
+        manager.sendEvent(new ComponentEvent(
+                ComponentEvent.COMPONENT_UNREGISTERED, this));
         destroy();
     }
 
@@ -248,7 +254,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         try {
             return new ComponentInstanceImpl(this);
         } catch (Exception e) {
-            log.error("Failed to instantiate component: "+implementation, e);
+            log.error("Failed to instantiate component: " + implementation, e);
             Framework.handleDevError(e);
             throw e;
         }
@@ -267,13 +273,15 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         component = createComponentInstance();
 
         state = ACTIVATING;
-        manager.sendEvent(new ComponentEvent(ComponentEvent.ACTIVATING_COMPONENT, this));
+        manager.sendEvent(new ComponentEvent(
+                ComponentEvent.ACTIVATING_COMPONENT, this));
 
         // activate component
         component.activate();
 
         state = ACTIVATED;
-        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_ACTIVATED, this));
+        manager.sendEvent(new ComponentEvent(
+                ComponentEvent.COMPONENT_ACTIVATED, this));
 
         // register contributed extensions if any
         if (extensions != null) {
@@ -283,7 +291,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 try {
                     manager.registerExtension(xt);
                 } catch (Exception e) {
-                    log.error("Failed to register extension. Contributor: "+xt.getComponent()+" to "+xt.getTargetComponent()+"; xpoint: "+xt.getExtensionPoint(), e);
+                    log.error("Failed to register extension. Contributor: "
+                            + xt.getComponent() + " to "
+                            + xt.getTargetComponent() + "; xpoint: "
+                            + xt.getExtensionPoint(), e);
                     Framework.handleDevError(e);
                 }
             }
@@ -298,7 +309,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 try {
                     component.registerExtension(xt);
                 } catch (Exception e) {
-                    log.error("Failed to register extension. Contributor: "+xt.getComponent()+" to "+xt.getTargetComponent()+"; xpoint: "+xt.getExtensionPoint(), e);
+                    log.error("Failed to register extension. Contributor: "
+                            + xt.getComponent() + " to "
+                            + xt.getTargetComponent() + "; xpoint: "
+                            + xt.getExtensionPoint(), e);
                     Framework.handleDevError(e);
                 }
             }
@@ -312,7 +326,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
 
         state = DEACTIVATING;
-        manager.sendEvent(new ComponentEvent(ComponentEvent.DEACTIVATING_COMPONENT, this));
+        manager.sendEvent(new ComponentEvent(
+                ComponentEvent.DEACTIVATING_COMPONENT, this));
 
         // unregister contributed extensions if any
         if (extensions != null) {
@@ -320,7 +335,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 try {
                     manager.unregisterExtension(xt);
                 } catch (Exception e) {
-                    log.error("Failed to unregister extension. Contributor: "+xt.getComponent()+" to "+xt.getTargetComponent()+"; xpoint: "+xt.getExtensionPoint(), e);
+                    log.error("Failed to unregister extension. Contributor: "
+                            + xt.getComponent() + " to "
+                            + xt.getTargetComponent() + "; xpoint: "
+                            + xt.getExtensionPoint(), e);
                     Framework.handleDevError(e);
                 }
             }
@@ -331,7 +349,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         component = null;
 
         state = RESOLVED;
-        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_DEACTIVATED, this));
+        manager.sendEvent(new ComponentEvent(
+                ComponentEvent.COMPONENT_DEACTIVATED, this));
     }
 
     synchronized void resolve() throws Exception {
@@ -343,8 +362,9 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         manager.registerServices(this);
 
         state = RESOLVED;
-        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_RESOLVED, this));
-        //TODO lazy activation
+        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_RESOLVED,
+                this));
+        // TODO lazy activation
         activate();
     }
 
@@ -360,7 +380,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             deactivate();
         }
         state = REGISTERED;
-        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_UNRESOLVED, this));
+        manager.sendEvent(new ComponentEvent(
+                ComponentEvent.COMPONENT_UNRESOLVED, this));
     }
 
     public synchronized boolean isActivated() {
@@ -382,6 +403,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return serviceDescriptor;
     }
 
+    public String getImplementation() {
+        return implementation;
+    }
+
     public void checkExtensions() {
         if (extensions == null) {
             return;
@@ -389,7 +414,9 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 //        HashSet<String> targets = new HashSet<String>();
         for (ExtensionImpl xt : extensions) {
             if (xt.target == null) {
-                Framework.getRuntime().getWarnings().add("Bad extension declaration (no target attribute specified). Component: "+getName());
+                Framework.getRuntime().getWarnings().add(
+                        "Bad extension declaration (no target attribute specified). Component: "
+                                + getName());
                 continue;
             }
           //TODO do nothing for now -> fix the faulty components and then activate these warnings            
@@ -403,5 +430,11 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 //                targets.add(key);
 //            }
         }
+
+    }
+
+
+    public URL getXmlFileUrl() {
+        return xmlFileUrl;
     }
 }

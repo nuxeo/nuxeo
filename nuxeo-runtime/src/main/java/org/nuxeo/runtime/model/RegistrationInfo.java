@@ -20,6 +20,7 @@
 package org.nuxeo.runtime.model;
 
 import java.io.Serializable;
+import java.net.URL;
 import java.util.Map;
 import java.util.Set;
 
@@ -148,5 +149,21 @@ public interface RegistrationInfo extends Serializable {
      * @return true if persisted, false otherwise
      */
     boolean isPersistent();
+
+
+    /**
+     * Give the class name for the component implementation if this is a java component
+     *
+     * @return class name
+     */
+    String getImplementation();
+
+
+    /**
+     * Retrieve the URL of the XML file used to declare the component
+     *
+     * @return the XML file URL
+     */
+    URL getXmlFileUrl();
 
 }
