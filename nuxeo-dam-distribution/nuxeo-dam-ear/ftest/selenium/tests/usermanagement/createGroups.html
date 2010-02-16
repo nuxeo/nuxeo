@@ -43,6 +43,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
 	<td>click</td>
 	<td>link=Groups</td>
 	<td></td>
@@ -68,14 +73,14 @@
 	<td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
 	<td>type</td>
 	<td>createGroup:nxl_group:nxw_groupname</td>
 	<td>Johns</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
 </tr>
 <tr>
 	<td>typeKeys</td>
@@ -193,11 +198,26 @@
 	<td>John Smith</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//*[@value='command.group.create']</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='createGroup:createGroupAction']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <!--creation d'un groupe pour test unique id-->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
 <tr>
 	<td>click</td>
 	<td>link=Create a new group</td>
@@ -209,18 +229,23 @@
 	<td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
 	<td>type</td>
 	<td>createGroup:nxl_group:nxw_groupname</td>
 	<td>Johns</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//*[@value='command.group.create']</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='createGroup:createGroupAction']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
@@ -355,24 +380,18 @@
 	<td>Lucien Bramard</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//*[@value='command.group.create']</td>
+	<td>watchA4jRequests</td>
 	<td></td>
-</tr>
-<!--Verification de la redirection sur la fiche du groupe-->
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Group's members</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>link=View</td>
+	<td>click</td>
+	<td>//*[@id='createGroup:createGroupAction']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>link=Edit</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <!--Deconnexion-->

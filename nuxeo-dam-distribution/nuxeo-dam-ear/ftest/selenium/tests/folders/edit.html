@@ -4,15 +4,23 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="" />
-<title>modifyGroup</title>
+<title>edit</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">modifyGroup</td></tr>
+<tr><td rowspan="1" colspan="3">edit</td></tr>
 </thead><tbody>
-<!--@Test groups:ModifyGroup|depends:ManageRightsGroups-->
-<!--Identification-->
+<tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>retrieveTestFolderPath</td>
+	<td></td>
+	<td></td>
+</tr>
 <tr>
 	<td>open</td>
 	<td>/nuxeo/logout</td>
@@ -34,11 +42,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Nuxeo</td>
-	<td></td>
-</tr>
-<tr>
 	<td>clickAndWait</td>
 	<td>link=Administration</td>
 	<td></td>
@@ -50,29 +53,8 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>link=Groups</td>
+	<td>link=Folders</td>
 	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>3000</td>
-	<td></td>
-</tr>
-<!--Recherdhe du groupe à modifier-->
-<tr>
-	<td>waitForElementPresent</td>
-	<td>//*[@id=&quot;groupSearchForm:groupSearchInput&quot;]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>typeKeys</td>
-	<td>//*[@id=&quot;groupSearchForm:groupSearchInput&quot;]</td>
-	<td>Johns</td>
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
@@ -81,7 +63,7 @@
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
-	<td>link=Johns</td>
+	<td>link=TestFolder</td>
 	<td></td>
 </tr>
 <tr>
@@ -91,7 +73,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>link=Johns</td>
+	<td>link=TestFolder</td>
 	<td></td>
 </tr>
 <tr>
@@ -101,8 +83,33 @@
 </tr>
 <tr>
 	<td>waitForTextPresent</td>
-	<td>Bree Van de Kaamp</td>
+	<td>Folder properties</td>
 	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>viewFolder:nxl_folderAdmin_1:nxw_description_2</td>
+	<td>Edited Folder Description</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>viewFolder:nxl_select_users_3:nxw_selection_6_suggest</td>
+	<td>bre</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='viewFolder:nxl_select_users_3:nxw_selection_6_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Bree Van de Kaamp</td>
 </tr>
 <tr>
 	<td>watchA4jRequests</td>
@@ -111,18 +118,12 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//*[@id=&quot;viewGroup:nxl_group_1:nxw_members_1_list:0:nxw_members_1_delete&quot;]</td>
+	<td>//*[@id='viewFolder:nxl_select_users_3:nxw_selection_6_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
-	<td>3000</td>
-	<td></td>
-</tr>
-<!-- wait for table item to disappear -->
-<tr>
-	<td>verifyTextPresent</td>
-	<td>John Doe</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
@@ -141,11 +142,10 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextNotPresent</td>
-	<td>bree</td>
+	<td>waitForTextPresent</td>
+	<td>Edited Folder Description</td>
 	<td></td>
 </tr>
-<!--Déconnexion-->
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Log out</td>

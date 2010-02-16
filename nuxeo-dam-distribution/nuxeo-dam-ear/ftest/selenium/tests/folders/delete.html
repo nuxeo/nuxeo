@@ -4,14 +4,13 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="" />
-<title>modifyGroup</title>
+<title>delete</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">modifyGroup</td></tr>
+<tr><td rowspan="1" colspan="3">delete</td></tr>
 </thead><tbody>
-<!--@Test groups:ModifyGroup|depends:ManageRightsGroups-->
 <!--Identification-->
 <tr>
 	<td>open</td>
@@ -50,38 +49,12 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>link=Groups</td>
+	<td>link=Folders</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
 	<td>3000</td>
-	<td></td>
-</tr>
-<!--Recherdhe du groupe à modifier-->
-<tr>
-	<td>waitForElementPresent</td>
-	<td>//*[@id=&quot;groupSearchForm:groupSearchInput&quot;]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>typeKeys</td>
-	<td>//*[@id=&quot;groupSearchForm:groupSearchInput&quot;]</td>
-	<td>Johns</td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>3000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForElementPresent</td>
-	<td>link=Johns</td>
 	<td></td>
 </tr>
 <tr>
@@ -91,7 +64,12 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>link=Johns</td>
+	<td>//*[@id=&quot;folderSearchFormTab:FolderSearchTab:0:delete-folder&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Delete folder?</td>
 	<td></td>
 </tr>
 <tr>
@@ -100,52 +78,10 @@
 	<td></td>
 </tr>
 <tr>
-	<td>waitForTextPresent</td>
-	<td>Bree Van de Kaamp</td>
+	<td>waitForTextNotPresent</td>
+	<td>Description</td>
 	<td></td>
 </tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//*[@id=&quot;viewGroup:nxl_group_1:nxw_members_1_list:0:nxw_members_1_delete&quot;]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>3000</td>
-	<td></td>
-</tr>
-<!-- wait for table item to disappear -->
-<tr>
-	<td>verifyTextPresent</td>
-	<td>John Doe</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Save</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>3000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>bree</td>
-	<td></td>
-</tr>
-<!--Déconnexion-->
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Log out</td>

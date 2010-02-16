@@ -42,13 +42,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td>1000</td>
+	<td>clickAndWait</td>
+	<td>link=Administration</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Administration</td>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -57,8 +57,18 @@
 	<td></td>
 </tr>
 <tr>
-	<td>pause</td>
-	<td>1000</td>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//*[@id=&quot;folderForm:folder_creation_button&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -67,8 +77,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>pause</td>
-	<td>1000</td>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
 	<td></td>
 </tr>
 <tr>
@@ -82,13 +92,28 @@
 	<td>Test Folder Description</td>
 </tr>
 <tr>
-	<td>pause</td>
-	<td>2000</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@value='Create folder']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Test Folder Description</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value='Create']</td>
+	<td>link=Log out</td>
 	<td></td>
 </tr>
 

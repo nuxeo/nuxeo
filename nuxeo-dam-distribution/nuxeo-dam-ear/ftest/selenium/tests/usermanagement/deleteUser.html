@@ -48,59 +48,14 @@
 	<td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>link=Create a new user</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>3000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>createUser:nxl_user:nxw_username</td>
-	<td>carlos</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>createUser:nxl_user:nxw_firstname</td>
-	<td>Carlos</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>createUser:nxl_user:nxw_email</td>
-	<td>sg+carlos@nuxeo.com</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>createUser:nxl_user:nxw_firstPassword</td>
-	<td>carlos1</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>createUser:nxl_user:nxw_secondPassword</td>
-	<td>carlos1</td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
 	<td>watchA4jRequests</td>
 	<td></td>
 	<td></td>
 </tr>
 <tr>
 	<td>typeKeys</td>
-	<td>createUser:nxl_user:nxw_groups_suggest</td>
-	<td>members</td>
+	<td>//*[@id=&quot;userSearchForm:userSearchInput&quot;]</td>
+	<td>jsmith</td>
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
@@ -108,69 +63,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//*[@id='createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>members</td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//*[@value='Create user']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>3000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Log out</td>
-	<td></td>
-</tr>
-<!--Vérification de l'existence de carlos-->
-<tr>
-	<td>type</td>
-	<td>username</td>
-	<td>carlos</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>password</td>
-	<td>carlos1</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>Submit</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>Link=Administration</td>
-	<td></td>
-</tr>
-<tr>
-	<td>typeKeys</td>
-	<td>userSearchForm:userSearchInput</td>
-	<td>carlos</td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>3000</td>
+	<td>waitForTextPresent</td>
+	<td>John</td>
 	<td></td>
 </tr>
 <tr>
@@ -180,88 +74,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>link=carlos</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>3000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>members</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Log out</td>
-	<td></td>
-</tr>
-<!--Suppression de carlos-->
-<tr>
-	<td>type</td>
-	<td>username</td>
-	<td>Administrator</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>password</td>
-	<td>Administrator</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>Submit</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Nuxeo</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Administration</td>
-	<td></td>
-</tr>
-<tr>
-	<td>typeKeys</td>
-	<td>userSearchForm:userSearchInput</td>
-	<td>carlos</td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//*[@id='userSearchFormTab:UserSearchTab:0:delete-user']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Delete</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>userSearchForm:userSearchInput</td>
-	<td>jdoe</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>userSearchForm:userSearchInput</td>
-	<td>jsmi</td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>LOCATOR_DETECTION_FAILED</td>
+	<td>//*[@id=&quot;userSearchFormTab:UserSearchTab:0:delete-user&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -270,8 +83,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
 	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>No user matching the entered criteria</td>
 	<td></td>
 </tr>
 <tr>

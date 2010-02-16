@@ -48,6 +48,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
 	<td>click</td>
 	<td>link=Create a new user</td>
 	<td></td>
@@ -55,11 +60,6 @@
 <tr>
 	<td>waitForA4jRequest</td>
 	<td>1000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -84,6 +84,11 @@
 </tr>
 <tr>
 	<td>type</td>
+	<td>createUser:nxl_user:nxw_email</td>
+	<td>sg+jdoe@nuxeo.com</td>
+</tr>
+<tr>
+	<td>type</td>
 	<td>createUser:nxl_user:nxw_firstPassword</td>
 	<td>jdoe1</td>
 </tr>
@@ -91,23 +96,6 @@
 	<td>type</td>
 	<td>createUser:nxl_user:nxw_secondPassword</td>
 	<td>foo</td>
-</tr>
-<!--Strange behavior of Selenium (Username and first name cleared)-->
-<tr>
-	<td>type</td>
-	<td>createUser:nxl_user:nxw_username</td>
-	<td>jdoe</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>createUser:nxl_user:nxw_firstname</td>
-	<td>John</td>
-</tr>
-<!--End strange behavior of Selenium-->
-<tr>
-	<td>type</td>
-	<td>createUser:nxl_user:nxw_email</td>
-	<td>sg+jdoe@nuxeo.com</td>
 </tr>
 <tr>
 	<td>watchA4jRequests</td>
@@ -125,11 +113,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//*[@id='createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>members</td>
-</tr>
-<tr>
 	<td>watchA4jRequests</td>
 	<td></td>
 	<td></td>
@@ -142,6 +125,11 @@
 <tr>
 	<td>waitForA4jRequest</td>
 	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -152,11 +140,6 @@
 <tr>
 	<td>waitForA4jRequest</td>
 	<td>3000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -173,6 +156,11 @@
 	<td>type</td>
 	<td>createUser:nxl_user:nxw_secondPassword</td>
 	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
 </tr>
 <tr>
 	<td>click</td>
@@ -201,56 +189,16 @@
 	<td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
 	<td>verifyTextPresent</td>
 	<td>Doe</td>
 	<td></td>
 </tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=jdoe</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Edit</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>viewUserHidelink</td>
-	<td></td>
-</tr>
 <!-- test unique id -->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
 <tr>
 	<td>click</td>
 	<td>link=Create a new user</td>
@@ -259,11 +207,6 @@
 <tr>
 	<td>waitForA4jRequest</td>
 	<td>1000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -288,6 +231,11 @@
 </tr>
 <tr>
 	<td>type</td>
+	<td>createUser:nxl_user:nxw_email</td>
+	<td>sg+jdoe@nuxeo.com</td>
+</tr>
+<tr>
+	<td>type</td>
 	<td>createUser:nxl_user:nxw_firstPassword</td>
 	<td>jdoe1</td>
 </tr>
@@ -297,13 +245,28 @@
 	<td>jdoe1</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>createUser:nxl_user:nxw_email</td>
-	<td>sg+jdoe@nuxeo.com</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>createUser:nxl_user:nxw_groups_suggest</td>
+	<td>members</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//*[@value='Create user']</td>
+	<td>//*[@id='createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
 	<td></td>
 </tr>
 <tr>
@@ -314,6 +277,16 @@
 <tr>
 	<td>watchA4jRequests</td>
 	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@value='Create user']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>3000</td>
 	<td></td>
 </tr>
 <tr>
@@ -344,6 +317,11 @@
 </tr>
 <tr>
 	<td>type</td>
+	<td>createUser:nxl_user:nxw_email</td>
+	<td>sg+jsmith@nuxeo.com</td>
+</tr>
+<tr>
+	<td>type</td>
 	<td>createUser:nxl_user:nxw_firstPassword</td>
 	<td>jsmith1</td>
 </tr>
@@ -353,43 +331,8 @@
 	<td>jsmith1</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>createUser:nxl_user:nxw_email</td>
-	<td>sg+jsmith@nuxeo.com</td>
-</tr>
-<tr>
 	<td>watchA4jRequests</td>
 	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>typeKeys</td>
-	<td>createUser:nxl_user:nxw_groups_suggest</td>
-	<td>members</td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyText</td>
-	<td>//*[@id='createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>members</td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//*[@id='createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>3000</td>
 	<td></td>
 </tr>
 <tr>
@@ -402,15 +345,15 @@
 	<td>3000</td>
 	<td></td>
 </tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
 <!--Check John Smith created-->
 <tr>
 	<td>type</td>
 	<td>userSearchForm:userSearchInput</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -424,16 +367,16 @@
 	<td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
 	<td>verifyTextPresent</td>
 	<td>Smith</td>
 	<td></td>
 </tr>
 <!--Create Bree user-->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
 <tr>
 	<td>click</td>
 	<td>link=Create a new user</td>
@@ -442,11 +385,6 @@
 <tr>
 	<td>waitForA4jRequest</td>
 	<td>3000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -490,24 +428,14 @@
 	<td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
 	<td>typeKeys</td>
 	<td>createUser:nxl_user:nxw_groups_suggest</td>
 	<td>members</td>
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
-	<td>3000</td>
+	<td>10000</td>
 	<td></td>
-</tr>
-<tr>
-	<td>verifyText</td>
-	<td>//*[@id='createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>members</td>
 </tr>
 <tr>
 	<td>watchA4jRequests</td>
@@ -522,6 +450,11 @@
 <tr>
 	<td>waitForA4jRequest</td>
 	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -546,6 +479,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
 	<td>typeKeys</td>
 	<td>userSearchForm:userSearchInput</td>
 	<td>bree</td>
@@ -556,16 +494,16 @@
 	<td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
 	<td>verifyTextPresent</td>
 	<td>Van de Kaamp</td>
 	<td></td>
 </tr>
 <!--Create Lucien-->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
 <tr>
 	<td>click</td>
 	<td>link=Create a new user</td>
@@ -574,11 +512,6 @@
 <tr>
 	<td>waitForA4jRequest</td>
 	<td>3000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -622,24 +555,14 @@
 	<td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
 	<td>typeKeys</td>
 	<td>createUser:nxl_user:nxw_groups_suggest</td>
 	<td>members</td>
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
-	<td>3000</td>
+	<td>10000</td>
 	<td></td>
-</tr>
-<tr>
-	<td>verifyText</td>
-	<td>//*[@id='createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>members</td>
 </tr>
 <tr>
 	<td>watchA4jRequests</td>
@@ -654,6 +577,11 @@
 <tr>
 	<td>waitForA4jRequest</td>
 	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -678,6 +606,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
 	<td>typeKeys</td>
 	<td>userSearchForm:userSearchInput</td>
 	<td>lbramard</td>
@@ -688,16 +621,16 @@
 	<td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
 	<td>verifyTextPresent</td>
 	<td>Bramard</td>
 	<td></td>
 </tr>
 <!--Create Linnet-->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
 <tr>
 	<td>click</td>
 	<td>link=Create a new user</td>
@@ -706,11 +639,6 @@
 <tr>
 	<td>waitForA4jRequest</td>
 	<td>3000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -735,6 +663,11 @@
 </tr>
 <tr>
 	<td>type</td>
+	<td>createUser:nxl_user:nxw_email</td>
+	<td>sg+linnet@nuxeo.com</td>
+</tr>
+<tr>
+	<td>type</td>
 	<td>createUser:nxl_user:nxw_firstPassword</td>
 	<td>linnet1</td>
 </tr>
@@ -742,11 +675,6 @@
 	<td>type</td>
 	<td>createUser:nxl_user:nxw_secondPassword</td>
 	<td>linnet1</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>createUser:nxl_user:nxw_email</td>
-	<td>sg+linnet@nuxeo.com</td>
 </tr>
 <tr>
 	<td>watchA4jRequests</td>
@@ -760,13 +688,8 @@
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
-	<td>3000</td>
+	<td>10000</td>
 	<td></td>
-</tr>
-<tr>
-	<td>verifyText</td>
-	<td>//*[@id='createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>members</td>
 </tr>
 <tr>
 	<td>watchA4jRequests</td>
@@ -781,6 +704,11 @@
 <tr>
 	<td>waitForA4jRequest</td>
 	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -794,13 +722,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
+	<td>type</td>
+	<td>userSearchForm:userSearchInput</td>
 	<td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>userSearchForm:userSearchInput</td>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -811,11 +739,6 @@
 <tr>
 	<td>waitForA4jRequest</td>
 	<td>3000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
 	<td></td>
 </tr>
 <tr>
