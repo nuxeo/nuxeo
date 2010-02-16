@@ -188,8 +188,11 @@ public class TaggingHelper {
         	} else {
         		deletedDocs.add(docForTagId);
         	}
-        }                        
-        // XXX should remove doc entry in the target tag !
+        }           
+        for (String deletedDocId : deletedDocs) {
+        	DocumentModel deletedDoc = new IdDocumentModel(deletedDocId);
+        	getTagService().untagDocument(session, deletedDoc, tagDocumentId);
+        }
         return documentsForTag;
     }
 

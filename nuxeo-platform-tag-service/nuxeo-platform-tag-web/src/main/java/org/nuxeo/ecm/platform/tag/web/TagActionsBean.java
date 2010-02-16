@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.platform.tag.IdDocumentModel;
 import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TaggingHelper;
 import org.nuxeo.ecm.platform.tag.WeightedTag;
@@ -126,7 +127,8 @@ public class TagActionsBean implements Serializable {
             return new ArrayList<Tag>();
         } else {
             if (currentDocument.isProxy()) {
-                DocumentModel targetDocument = documentManager.getDocument(new IdRef(currentDocument.getSourceId()));
+            	DocumentModel targetDocument = new IdDocumentModel(currentDocument.getSourceId());
+                //DocumentModel targetDocument = documentManager.getDocument(new IdRef(currentDocument.getSourceId()));
                 return taggingHelper.listDocumentTags(documentManager,
                         targetDocument);
             } else {
