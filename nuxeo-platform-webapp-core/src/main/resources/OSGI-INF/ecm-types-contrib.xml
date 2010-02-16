@@ -14,7 +14,7 @@
       <category>SuperDocument</category>
       <default-view>view_domains</default-view>
       <subtypes>
-        <type>Domain</type>
+        <type hidden="create">Domain</type>
       </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
@@ -37,9 +37,9 @@
         <view id="user_dashboard" value="user_dashboard" />
       </views>
       <subtypes>
-        <type>WorkspaceRoot</type>
-        <type>SectionRoot</type>
-        <type>TemplateRoot</type>
+        <type hidden="create">WorkspaceRoot</type>
+        <type hidden="create">SectionRoot</type>
+        <type hidden="create">TemplateRoot</type>
       </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
