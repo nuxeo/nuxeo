@@ -25,12 +25,10 @@
                 </nxu:column>
 
                 <nxu:column>
-                    <c:if test="#{tagActions.canModifyTag(tag)}">
-                        <a4j:commandLink id="removeTag" action="#{tagActions.removeTagging(tag.tagId)}" immediate="true"
-                            reRender="documentViewPanel, MultiTreeView" >
-                            <h:graphicImage value="/icons/action_delete_mini.gif" />
-                        </a4j:commandLink>
-                    </c:if>
+                     <a4j:commandLink id="removeTag" action="#{tagActions.removeTagging(tag.tagId)}" immediate="true"
+                         reRender="documentViewPanel, MultiTreeView" rendered="#{tagActions.canModifyTag(tag)}">
+                         <h:graphicImage value="/icons/action_delete_mini.gif" />
+                     </a4j:commandLink>
                 </nxu:column>
 
             </nxu:dataTable>
@@ -61,9 +59,7 @@
                         </f:facet>
                     </a4j:status>
                 </div>
-            </c:if>
 
-            <c:if test="#{tagActions.addTag}">
                 <h:panelGroup id="tag_suggestGroup">
                     <rich:suggestionbox id="tag_suggestBox"
                         for="tagLabel" tokens=""
