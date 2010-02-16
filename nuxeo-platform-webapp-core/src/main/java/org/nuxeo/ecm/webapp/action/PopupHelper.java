@@ -83,7 +83,8 @@ public class PopupHelper implements Serializable {
 
     protected void computeUnfiltredPopupActions() {
         unfiltredActions = webActions.getAllActions(POPUP_CATEGORY);
-        //unfiltredActions = webActions.getUnfiltredActionsList(POPUP_CATEGORY);
+        // unfiltredActions =
+        // webActions.getUnfiltredActionsList(POPUP_CATEGORY);
     }
 
     /**
@@ -184,7 +185,6 @@ public class PopupHelper implements Serializable {
     @WebRemote
     public String getNavigationURLOnContainer(String tabId) {
         Map<String, String> params = new HashMap<String, String>();
-
         if (tabId != null) {
             params.put("tabId", tabId);
         }
@@ -201,47 +201,43 @@ public class PopupHelper implements Serializable {
     @WebRemote
     public String getNavigationURLOnPopupdoc2(String tabId, String subTabId) {
         Map<String, String> params = new HashMap<String, String>();
-
         if (tabId != null) {
             params.put("tabId", tabId);
         }
         if (subTabId != null) {
             params.put("subTabId", subTabId);
         }
-
         return DocumentModelFunctions.documentUrl(null, currentPopupDocument,
                 null, params, false);
     }
 
-
-    @WebRemote
-    public String getCurrentURL() {
+    protected Map<String, String> getCurrentTabParameters() {
         Map<String, String> params = new HashMap<String, String>();
-
         String tabId = webActions.getCurrentTabId();
-
         if (tabId != null) {
             params.put("tabId", tabId);
         }
+        String subTabId = webActions.getCurrentSubTabId();
+        if (subTabId != null) {
+            params.put("subTabId", subTabId);
+        }
+        return params;
+    }
 
+    @WebRemote
+    public String getCurrentURL() {
         return DocumentModelFunctions.documentUrl(null, currentContainer, null,
-                params, false);
+                getCurrentTabParameters(), false);
     }
 
     @WebRemote
     public String getCurrentURLAfterDelete() {
-        Map<String, String> params = new HashMap<String, String>();
-        String tabId = webActions.getCurrentTabId();
-        if (tabId != null) {
-            params.put("tabId", tabId);
-        }
         if (isDocumentDeleted(currentContainer) == false) {
             currentParent = currentContainer;
         }
         return DocumentModelFunctions.documentUrl(null, currentParent, null,
-                params, false);
+                getCurrentTabParameters(), false);
     }
-
 
     @WebRemote
     public String deleteDocument(String docId) throws ClientException {
@@ -280,8 +276,7 @@ public class PopupHelper implements Serializable {
             } else {
                 return false;
             }
-        }
-        else {
+        } else {
             return false;
         }
     }

@@ -1,13 +1,14 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:s="http://jboss.com/products/seam/taglib"><a4j:region
-  rendered="#{documents != null}">
+  xmlns:s="http://jboss.com/products/seam/taglib">
+
+<a4j:region rendered="#{documents != null}">
 
   <h:form id="#{documents.name}">
 
@@ -39,7 +40,7 @@
         <div id="docRefTarget:#{row.data.ref}">
           <div id="docRef:#{row.data.ref}" class="cell popupTarget" docRef="#{row.data.ref}">
             <nxu:graphicImage
-              value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}"/>
+              value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}" />
           </div>
         </div>
         <script type="text/javascript">
@@ -94,7 +95,6 @@
               title="#{row.data.file.filename}" />
           </nxh:outputLink>
         </div>
-
       </nxu:column>
 
       <!-- Locking Icon -->
@@ -172,7 +172,6 @@
             rendered="#{!provider.sortable}" />
           </h:panelGroup>
         </f:facet>
-
         <h:outputText value="#{messages[row.data.currentLifeCycleState]}" />
       </h:column>
 
@@ -195,22 +194,21 @@
     <ui:insert name="buttons" />
 
     <div class="syndicationContainer">
-    <ui:insert name="syndication_buttons">
-      <f:subview rendered="#{currentDocument.folder}">
-        <ui:include src="/incl/syndication_buttons.xhtml">
-          <ui:param name="type" value="document" />
-        </ui:include>
-      </f:subview>
-    </ui:insert>
-
+      <ui:insert name="syndication_buttons">
+        <f:subview rendered="#{currentDocument.folder}">
+          <ui:include src="/incl/syndication_buttons.xhtml">
+            <ui:param name="type" value="document" />
+          </ui:include>
+        </f:subview>
+      </ui:insert>
     </div>
+
   </h:form>
 
 </a4j:region>
+
 <ui:include src="/incl/popupMenu.xhtml"/>
 <script>
-// init menu
-//jQuery("table td div div.popupTarget").contextMenu("popupMenu");
 setupContextMenu("table td div div.popupTarget");
 </script>
 
