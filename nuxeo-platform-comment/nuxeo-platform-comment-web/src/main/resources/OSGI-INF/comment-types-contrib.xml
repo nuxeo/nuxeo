@@ -6,11 +6,10 @@
 
   <require>org.nuxeo.ecm.platform.types.TypeService</require>
 
-  <extension target="org.nuxeo.ecm.platform.types.TypeService"
-      point="types">
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
     <type id="Domain">
       <subtypes>
-        <type>CommentRoot</type>
+        <type hidden="create">CommentRoot</type>
       </subtypes>
     </type>
 
@@ -19,14 +18,14 @@
       <icon>/icons/folder.gif</icon>
       <default-view>view_documents</default-view>
       <subtypes>
-        <type>Folder</type>
-        <type>HiddenFolder</type>
+        <type hidden="create">Folder</type>
+        <type hidden="create">HiddenFolder</type>
       </subtypes>
       <layout>
         <widget jsfcomponent="h:inputText" schemaname="dublincore"
-            fieldname="title" required="true"/>
+          fieldname="title" required="true" />
         <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-            fieldname="description"/>
+          fieldname="description" />
       </layout>
     </type>
 
