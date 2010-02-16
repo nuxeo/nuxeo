@@ -18,6 +18,7 @@ package org.nuxeo.runtime.test.runner.web;
 
 import org.openqa.selenium.Speed;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
@@ -28,7 +29,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
  */
 public enum BrowserFamily {
 
-    FIREFOX, IE, HTML_UNIT, HTML_UNIT_JS; 
+    FIREFOX, IE, CHROME, HTML_UNIT, HTML_UNIT_JS; 
     
     
     public DriverFactory getDriverFactory() {
@@ -37,6 +38,8 @@ public enum BrowserFamily {
             return new FirefoxDriverFactory();
         case IE:
             return new IEDriverFactory();
+        case CHROME:
+            return new ChromeDriverFactory();
         case HTML_UNIT_JS:
             return new HtmlUnitJsDriverFactory();
         default:
@@ -48,6 +51,19 @@ public enum BrowserFamily {
     class FirefoxDriverFactory implements DriverFactory {
         public WebDriver createDriver() {
             FirefoxDriver ff = new FirefoxDriver();
+            ff.manage().setSpeed(Speed.FAST);
+            return ff;
+        }
+        public void disposeDriver(WebDriver driver) {
+        }
+        public BrowserFamily getBrowserFamily() {
+            return BrowserFamily.this;
+        }
+    }
+
+    class ChromeDriverFactory implements DriverFactory {
+        public WebDriver createDriver() {
+            ChromeDriver ff = new ChromeDriver();
             ff.manage().setSpeed(Speed.FAST);
             return ff;
         }
