@@ -68,13 +68,13 @@ public class DocumentsListDescriptor implements Serializable {
     // empty constructor needed for descriptor instantiation
     public DocumentsListDescriptor() {
         eventsName = new ArrayList<String>();
-        imageURL = "/nuxeo/img/clipboard.gif";
+        imageURL = "/nuxeo/icons/clipboard.gif";
     }
 
     public DocumentsListDescriptor(String listName) {
         this();
         eventsName = new ArrayList<String>();
-        imageURL = "/nuxeo/img/clipboard.gif";
+        imageURL = "/nuxeo/icons/clipboard.gif";
     }
 
     public String getCategory() {

@@ -74,7 +74,7 @@ public class ChainSelectMany extends ChainSelectBase {
         UICommand removeButton = (UICommand) context.getApplication().createComponent(
                 "org.ajax4jsf.ajax.CommandLink");
         UIGraphic image = new UIGraphic();
-        image.setValue("/img/toggle_minus.png");
+        image.setValue("/icons/toggle_minus.png");
         removeButton.getAttributes().put("id", "removeButton");
         removeButton.getChildren().add(image);
         getFacets().put(REMOVE_BUTTON, removeButton);
