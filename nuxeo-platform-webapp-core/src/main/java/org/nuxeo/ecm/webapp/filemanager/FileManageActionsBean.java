@@ -331,9 +331,9 @@ public class FileManageActionsBean extends InputController implements
             // TODO: use a PUBLICATION_TARGET facet instead of hardcoding the
             // Section type name
             if (!documentManager.hasPermission(containerRef,
-                    SecurityConstants.BROWSE)) {
-                // This should never append since user can only drop in visible
-                // sections
+                    SecurityConstants.ADD_CHILDREN)) {
+            	// only publish via D&D if this can be done directly (no wf)
+            	// => need to have write access
                 facesMessages.add(FacesMessage.SEVERITY_WARN, resourcesAccessor
                         .getMessages().get("move_insuffisant_rights"));
                 // TODO: this should be PUBLISH_IMPOSSIBLE
@@ -419,8 +419,18 @@ public class FileManageActionsBean extends InputController implements
             if (moveStatus.equals(MOVE_IMPOSSIBLE)) {
                 return debug;
             }
+            
+            String action = "document_moved";
 
-            documentManager.move(srcRef, dstRef, null);
+            if (moveStatus.equals(MOVE_PUBLISH)) {
+            	DocumentModel srcDoc = documentManager.getDocument(srcRef);
+            	DocumentModel dstDoc = documentManager.getDocument(dstRef);
+            	documentManager.publishDocument(srcDoc, dstDoc);
+            	action = "document_published";
+            } else {
+            	documentManager.move(srcRef, dstRef, null);	
+            }
+            
             // delCopyWithId(docId);
             documentManager.save();
             DocumentModel currentDocument = navigationContext
@@ -436,7 +446,7 @@ public class FileManageActionsBean extends InputController implements
                     otherContainer);
 
             facesMessages.add(FacesMessage.SEVERITY_INFO, resourcesAccessor
-                    .getMessages().get("document_moved"), resourcesAccessor
+                    .getMessages().get(action), resourcesAccessor
                     .getMessages().get(
                             documentManager.getDocument(srcRef).getType()));
 

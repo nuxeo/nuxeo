@@ -248,6 +248,8 @@ public class LockActionsBean implements LockActions {
 
                         new unrestrictedUnlocker(document.getRef()).runUnrestricted();
 
+                        documentManager.save(); // process invalidations from unrestricted session
+
                         message = "document.unlock";
                     } catch (Exception e) {
                         throw new ClientException(e.getMessage());
