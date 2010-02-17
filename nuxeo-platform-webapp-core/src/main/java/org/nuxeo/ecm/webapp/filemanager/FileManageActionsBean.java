@@ -34,7 +34,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -419,7 +418,7 @@ public class FileManageActionsBean extends InputController implements
             if (moveStatus.equals(MOVE_IMPOSSIBLE)) {
                 return debug;
             }
-            
+
             String action = "document_moved";
 
             if (moveStatus.equals(MOVE_PUBLISH)) {
@@ -428,9 +427,9 @@ public class FileManageActionsBean extends InputController implements
             	documentManager.publishDocument(srcDoc, dstDoc);
             	action = "document_published";
             } else {
-            	documentManager.move(srcRef, dstRef, null);	
+            	documentManager.move(srcRef, dstRef, null);
             }
-            
+
             // delCopyWithId(docId);
             documentManager.save();
             DocumentModel currentDocument = navigationContext
@@ -529,23 +528,30 @@ public class FileManageActionsBean extends InputController implements
         if (!current.hasSchema("files")) {
             return;
         }
-        Collection files = (Collection) current.getProperty("files", "files");
-        for (UploadItem file : getUploadedFiles()) {
-            String filename = FileUtils.getCleanFileName(file.getFileName());
-            Blob blob = FileUtils.createSerializableBlob(new FileInputStream(
-                    file.getFile()), filename, null);
+        try {
+            Collection files = (Collection) current.getProperty("files",
+                    "files");
+            for (UploadItem uploadItem : getUploadedFiles()) {
+                String filename = FileUtils.getCleanFileName(uploadItem.getFileName());
+                Blob blob = FileUtils.createSerializableBlob(
+                        new FileInputStream(uploadItem.getFile()), filename,
+                        null);
 
-            HashMap<String, Object> fileMap = new HashMap<String, Object>(2);
-            fileMap.put("file", blob);
-            fileMap.put("filename", filename);
-            if (!files.contains(fileMap)) {
-                files.add(fileMap);
+                HashMap<String, Object> fileMap = new HashMap<String, Object>(2);
+                fileMap.put("file", blob);
+                fileMap.put("filename", filename);
+                if (!files.contains(fileMap)) {
+                    files.add(fileMap);
+                }
+            }
+            current.setProperty("files", "files", files);
+            documentManager.saveDocument(current);
+            documentManager.save();
+        } finally {
+            for (UploadItem uploadItem : getUploadedFiles()) {
+                uploadItem.getFile().delete();
             }
         }
-        current.setProperty("files", "files", files);
-        documentManager.saveDocument(current);
-        documentManager.save();
-
         Contexts.getConversationContext().remove("fileUploadHolder");
     }
 
@@ -585,9 +591,9 @@ public class FileManageActionsBean extends InputController implements
                                 "fileImporter.error.unsupportedFile"));
                 return null;
             } finally {
-                if (stream != null) {
-                    IOUtils.closeQuietly(stream);
-                }
+                org.nuxeo.common.utils.FileUtils.close(stream);
+                // the content of the temporary blob has been
+                fileUploadHolder.getTempFile().delete();
             }
         } else {
             facesMessages.add(FacesMessage.SEVERITY_ERROR, resourcesAccessor
@@ -648,19 +654,23 @@ public class FileManageActionsBean extends InputController implements
     @WebRemote
     public String removeSingleUploadedFile() throws ClientException {
         if (fileUploadHolder != null) {
+            if (fileUploadHolder.getTempFile() != null) {
+                fileUploadHolder.getTempFile().delete();
+            }
             fileUploadHolder.setFileName(null);
             fileUploadHolder.setTempFile(null);
         }
-
         return "";
     }
 
     @WebRemote
     public String removeAllUploadedFile() throws ClientException {
         if (fileUploadHolder != null) {
+            for (UploadItem item : fileUploadHolder.getUploadedFiles()) {
+                item.getFile().delete();
+            }
             fileUploadHolder.getUploadedFiles().clear();
         }
-
         return "";
     }
 
@@ -675,11 +685,10 @@ public class FileManageActionsBean extends InputController implements
                 break;
             }
         }
-
         if (null != fileToDelete) {
+            fileToDelete.getFile().delete();
             getUploadedFiles().remove(fileToDelete);
         }
-
         return "";
     }
 
