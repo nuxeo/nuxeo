@@ -563,7 +563,7 @@
       <selector path=".errorMessage">
         <color>#000</color>
         <border>1px solid #666</border>
-        <background>url(/nuxeo/img/warning.gif) 2px 3px no-repeat #FFCC33</background>
+        <background>url(/nuxeo/icons/warning.gif) 2px 3px no-repeat #FFCC33</background>
         <width>480px</width>
         <margin>2px 0 2px 0</margin>
         <padding>3px 3px 3px 23px</padding>
@@ -574,11 +574,11 @@
         <font>bold 11px Verdana, sans-serif</font>
         <color>#000</color>
         <border>2px solid #666</border>
-        <background>url(/nuxeo/img/warning.gif) 4px 5px no-repeat #FFCC33</background>
+        <background>url(/nuxeo/icons/warning.gif) 4px 5px no-repeat #FFCC33</background>
         <padding>7px 7px 7px 24px</padding>
       </selector>
       <selector path=".warningMessage">
-        <background>url(/nuxeo/img/warning.gif) 2px 3px no-repeat #FFCC33</background>
+        <background>url(/nuxeo/icons/warning.gif) 2px 3px no-repeat #FFCC33</background>
         <width>500px</width>
         <margin>2px 0 2px 0</margin>
         <border>1px solid #666</border>
@@ -592,7 +592,7 @@
         <font>bold 11px Verdana, sans-serif</font>
         <color>#000</color>
         <border>2px solid #666</border>
-        <background>url(/nuxeo/img/warning.gif) 4px 5px no-repeat #FFCC33</background>
+        <background>url(/nuxeo/icons/warning.gif) 4px 5px no-repeat #FFCC33</background>
         <padding>7px 7px 7px 24px</padding>
       </selector>
       <selector path=".facesStatusMessage">
@@ -738,7 +738,7 @@
         <text-align>center</text-align>
       </selector>
       <selector path=".documentInfo">
-        <background>transparent url(/nuxeo/img/arrow_blue.gif) no-repeat scroll 4px 4px</background>
+        <background>transparent url(/nuxeo/icons/arrow_blue.gif) no-repeat scroll 4px 4px</background>
         <margin>2px 0px</margin>
         <padding>3px 3px 3px 20px</padding>
       </selector>
@@ -804,7 +804,7 @@
         <padding>4px 0</padding>
       </selector>
       <selector path=".required">
-        <background>url(/nuxeo/img/required.gif) top right no-repeat</background>
+        <background>url(/nuxeo/icons/required.gif) top right no-repeat</background>
         <padding-right>8px</padding-right>
       </selector>
       <selector path=".closedContent">
