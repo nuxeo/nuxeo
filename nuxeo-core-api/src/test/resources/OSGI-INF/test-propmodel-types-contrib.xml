@@ -7,7 +7,6 @@
     <schema name="simpleblob" src="schemas/simpleblob.xsd" />
       <schema name="simpleblob2" src="schemas/simpleblob2.xsd" />
       <schema name="simpleblob3" src="schemas/simpleblob3.xsd" />
-      <schema name="complexblob" prefix="cx" src="schemas/complexschema.xsd"/>
     <schema name="wihtoutpref" src="schemas/simpleblob.xsd" />
     <schema name="blobinlist" prefix="bil" src="schemas/blobinlist.xsd" />
   </extension>
@@ -19,10 +18,6 @@
 
     <doctype name="SimpleBlobDocument" extends="Document">
       <schema name="simpleblob" />
-    </doctype>
-    
-    <doctype name="ComplexBlobDocument" extends="Document">
-      <schema name="complexblob" />
     </doctype>
 
     <doctype name="WithoutPrefixDocument" extends="Document"> 

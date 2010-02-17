@@ -132,7 +132,7 @@ public class Children {
         }
         if (existing.contains(id) || (created != null && created.contains(id))) {
             // TODO remove sanity check if ok
-            log.warn("Adding already present id: " + id);
+            log.error("Adding already present id: " + id);
             return;
         }
         existing.add(id);
