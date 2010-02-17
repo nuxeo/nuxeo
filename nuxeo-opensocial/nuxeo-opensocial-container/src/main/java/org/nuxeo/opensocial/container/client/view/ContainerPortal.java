@@ -281,7 +281,7 @@ public class ContainerPortal extends Portal {
   public GadgetPortlet addGadget(GadgetBean bean) {
     bean.setPosition(new GadgetPosition(COLS[0], columns.get(COLS[0])
         .getItems().length));
-
+    bean.setHeight(-1);
     GadgetPortlet g = addGadget(bean, null);
     g.setVisible(true);
     columns.get(COLS[0])
