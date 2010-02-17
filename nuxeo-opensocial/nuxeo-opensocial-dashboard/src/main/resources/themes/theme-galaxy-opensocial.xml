@@ -167,7 +167,7 @@
       <view>cell frame</view>
     </widget>
     <widget element="page[1]/section[1]/cell[1]/fragment[1]">
-      <view>Nuxeo EP logo (Galaxy Theme)</view>
+      <view>Nuxeo DM logo (Galaxy Theme)</view>
     </widget>
     <widget element="page[1]/section[1]/cell[2]/fragment[1]">
       <view>User services (Galaxy theme)</view>
@@ -580,11 +580,11 @@
     <style element="page[1]/section[3]/cell[1]/fragment[2]" inherit="dashboardGadgetManager"/>
     <!-- Logo -->
     <style element="page[1]/section[1]/cell[1]/fragment[1]">
-      <selector path="form" view="Nuxeo EP logo (Galaxy Theme)">
+      <selector path="form" view="Nuxeo DM logo (Galaxy Theme)">
         <margin>0</margin>
         <padding>0</padding>
       </selector>
-      <selector path="img, a" view="Nuxeo EP logo (Galaxy Theme)">
+      <selector path="img, a" view="Nuxeo DM logo (Galaxy Theme)">
         <outline>none</outline>
       </selector>
     </style>

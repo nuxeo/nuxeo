@@ -19,8 +19,8 @@
   <h3>
     <h:form>
       <h:commandLink actionListener="#{relationActions.toggleCreateForm}">
-        <h:graphicImage url="/img/toggle_plus.png" rendered="#{!relationActions.showCreateForm}" />
-        <h:graphicImage url="/img/toggle_minus.png" rendered="#{relationActions.showCreateForm}" />
+        <h:graphicImage url="/icons/toggle_plus.png" rendered="#{!relationActions.showCreateForm}" />
+        <h:graphicImage url="/icons/toggle_minus.png" rendered="#{relationActions.showCreateForm}" />
         <h:outputText value="#{messages['title.create.relation']}" />
       </h:commandLink>
     </h:form>
