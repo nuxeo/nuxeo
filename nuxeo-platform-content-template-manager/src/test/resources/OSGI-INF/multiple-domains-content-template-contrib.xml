@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.content.template.multipleDomainsContrib">
+
+  <extension
+      target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
+      point="factoryBinding">
+
+    <factoryBinding name="RootFactory" factoryName="SimpleTemplateRootFactory" targetType="Root">
+      <acl>
+        <ace granted="true" permission="Everything" principal="Administrator"/>
+        <ace granted="true" permission="Dream" principal="Danny"/>
+        <ace granted="false" permission="RedRum" principal="DannysImaginaryFriend"/>
+      </acl>
+      <template>
+        <templateItem typeName="Domain" id="domain1" title="Domain1"
+                      description="Domain1"/>
+        <templateItem typeName="Domain" id="domain2" title="Domain2"
+                      description="Domain2"/>
+        <templateItem typeName="Domain" id="domain3" title="Domain3"
+                      description="Domain3"/>
+      </template>
+    </factoryBinding>
+
+    <factoryBinding name="DomainFactory" factoryName="SimpleTemplateFactory" targetType="Domain">
+
+    </factoryBinding>
+
+  </extension>
+
+</component>

@@ -7,8 +7,8 @@ import org.nuxeo.ecm.platform.content.template.listener.RepositoryInitialization
 import org.nuxeo.ecm.platform.content.template.service.TemplateItemDescriptor;
 
 /**
- * Specific factory for Root
- * Since some other {@link RepositoryInitializationListener} have run before, root won't be empty
+ * Specific factory for Root Since some other
+ * {@link RepositoryInitializationListener} have run before, root won't be empty
  * but we may still have to run this initializer.
  *
  * @author Thierry Delprat
@@ -16,36 +16,48 @@ import org.nuxeo.ecm.platform.content.template.service.TemplateItemDescriptor;
  */
 public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
 
-
     @Override
     public void createContentStructure(DocumentModel eventDoc)
             throws ClientException {
         super.initSession(eventDoc);
 
-        boolean containsAlreadyContent = false;
-        for (TemplateItemDescriptor item : template) {
-            DocumentModelList existingDocsOfTheSameType = session.getChildren(eventDoc.getRef(),item.getTypeName());
-            if (existingDocsOfTheSameType.size()==0) {
+        if (shouldCreateContent(eventDoc)) {
+            for (TemplateItemDescriptor item : template) {
                 String itemPath = eventDoc.getPathAsString();
                 if (item.getPath() != null) {
                     itemPath = itemPath + "/" + item.getPath();
                 }
-                DocumentModel newChild = session.createDocumentModel(itemPath, item
-                        .getId(), item.getTypeName());
+                DocumentModel newChild = session.createDocumentModel(itemPath,
+                        item.getId(), item.getTypeName());
                 newChild.setProperty("dublincore", "title", item.getTitle());
-                newChild.setProperty("dublincore", "description", item
-                        .getDescription());
+                newChild.setProperty("dublincore", "description",
+                        item.getDescription());
                 setProperties(item.getProperties(), newChild);
                 newChild = session.createDocument(newChild);
                 setAcl(item.getAcl(), newChild.getRef());
-            } else {
-                containsAlreadyContent = true;
             }
-        }
-        if (!containsAlreadyContent) {
             // init root ACL if really empty
             setAcl(acl, eventDoc.getRef());
         }
+    }
+
+    /**
+     * Returns {@code false} if the type of one of the children documents
+     * matches a template item type, {@code true} otherwise.
+     *
+     * @param eventDoc
+     * @throws ClientException
+     */
+    protected boolean shouldCreateContent(DocumentModel eventDoc)
+            throws ClientException {
+        for (TemplateItemDescriptor item : template) {
+            DocumentModelList existingDocsOfTheSameType = session.getChildren(
+                    eventDoc.getRef(), item.getTypeName());
+            if (!existingDocsOfTheSameType.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
