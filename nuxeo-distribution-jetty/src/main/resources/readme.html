@@ -16,9 +16,8 @@
     <li>Go to your installation directory</li>
 
     <li>Start the application
-      <ul><li>under Linux/Unix/MacOS, run "<tt>chmod u+x bin/*.sh bin/jbossctl</tt>" then &quot;./bin/jbossctl start&quot;.</li>
-      <li>under Windows if you installed Nuxeo from the .zip file, run &quot;bin/run.bat&quot;.</li>
-      <li>under Windows if you installed Nuxeo from the .exe file, either use "bin/run.bat" or start/stop using Windows services.</li>
+      <ul><li>under Linux/Unix/MacOS, run &quot;chmod u+x *.sh&quot; then &quot;./nxserverctl.sh start&quot;.</li>
+      <li>under Windows, run &quot;nxserver.cmd&quot;.</li>
       </ul>
     </li>
 
@@ -27,9 +26,6 @@
     <li>Log in using the "Administrator" login and the "Administrator" password (no quotes, of course, but capital &quot;A&quot;).</li>
 
   </ol>
-  <p>Copy jbossctl.conf.sample to jbossctl.conf and edit it if you want to change default values.<br/>
-  By default, JBoss is binded only on localhost. Edit bind.conf if you want to set a specific IP (set BINDHOST=0.0.0.0 to bind all available addresses).
-  </p>
 
   <h2>Complementary features</h2>
   <p>The following features depend on the environment where you installed Nuxeo DM.</p>
