@@ -22,9 +22,12 @@ package org.nuxeo.ecm.webapp.tree;
 import static org.jboss.seam.ScopeType.PAGE;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
+import java.util.List;
+
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Manages the tree for reduced utilization, like for popup. Performs additional
@@ -41,5 +44,10 @@ import org.jboss.seam.annotations.Scope;
 public class ReducedTreeActionsBean extends TreeActionsBean {
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public List<DocumentTreeNode> getTreeRoots() throws ClientException {
+    	return getTreeRoots(true);
+    }
 
 }

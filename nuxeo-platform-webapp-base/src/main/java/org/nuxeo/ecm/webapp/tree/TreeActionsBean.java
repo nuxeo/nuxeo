@@ -81,6 +81,10 @@ public class TreeActionsBean implements TreeActions, Serializable {
     protected String currentDocumentPath;
 
     public List<DocumentTreeNode> getTreeRoots() throws ClientException {
+    	return getTreeRoots(false);
+    }
+    
+    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot) throws ClientException {
         if (tree == null) {
             tree = new ArrayList<DocumentTreeNode>();
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -93,6 +97,11 @@ public class TreeActionsBean implements TreeActions, Serializable {
                         && currentDocument.isFolder()) {
                     // default on current doc
                     firstAccessibleParent = currentDocument;
+                } else {
+                	if (showRoot) {
+                		firstAccessibleParent = currentDocument;
+                		firstAccessibleParent.setPropertyValue("dc:title", "/");
+                	}
                 }
             }
             if (firstAccessibleParent != null) {
