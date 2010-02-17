@@ -27,9 +27,9 @@
         <h3>
           <h:commandLink
             actionListener="#{vocabularyActions.toggleAddEntryForm}">
-            <h:graphicImage url="/img/toggle_plus.png"
+            <h:graphicImage url="/icons/toggle_plus.png"
               rendered="#{!vocabularyActions.showAddEntryForm}" />
-            <h:graphicImage url="/img/toggle_minus.png"
+            <h:graphicImage url="/icons/toggle_minus.png"
               rendered="#{vocabularyActions.showAddEntryForm}" />
             <h:outputText
               value="#{messages['title.create.vocabulary.entry']}" />

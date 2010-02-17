@@ -180,7 +180,7 @@ nxthemes css is not used in login.jsp */
   color:#000;
   font:bold 10px "Lucida Grande", sans-serif;
   border:1px solid #666;
-  background: url(/nuxeo/img/warning.gif) 2px 3px no-repeat #FFCC33;
+  background: url(/nuxeo/icons/warning.gif) 2px 3px no-repeat #FFCC33;
   margin-bottom:12px;
   display:block;
   padding:5px 5px 5px 23px;

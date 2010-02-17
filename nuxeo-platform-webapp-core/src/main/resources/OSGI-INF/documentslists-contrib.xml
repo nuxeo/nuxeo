@@ -14,7 +14,7 @@
 
     <documentsList name="DEFAULT">
       <category>CLIPBOARD</category>
-      <imageURL>/img/file_actions.gif</imageURL>
+      <imageURL>/icons/file_actions.gif</imageURL>
       <title>workingList.default</title>
       <defaultInCategory>true</defaultInCategory>
       <persistent>true</persistent>
@@ -22,7 +22,7 @@
 
     <documentsList name="CLIPBOARD">
       <category>CLIPBOARD</category>
-      <imageURL>/img/clipboard.gif</imageURL>
+      <imageURL>/icons/clipboard.gif</imageURL>
       <title>workingList.clipboard</title>
       <defaultInCategory>false</defaultInCategory>
       <supportAppends>false</supportAppends>

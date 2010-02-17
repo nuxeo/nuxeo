@@ -94,7 +94,7 @@
 
 /* Default attributes of calendar body (weekday titles and numbers). */
 .jscalendar-DB-body-style {
-  background: #FFF url( /nuxeo/img/gray_gradient.gif ) top left repeat-x;
+  background-color: #FFF;
   font-family: Verdana, sans-serif;
   font-size: 11px;
 }
@@ -142,7 +142,7 @@
 .jscalendar-DB-today-style {
   padding: 0;
   color: #333;
-  background: #FFF url( /nuxeo/img/gray_gradient.gif ) top left repeat-x;
+  background-color: #FFF;
   text-align: center;
   text-decoration: none;
 }
@@ -249,7 +249,7 @@ div.schedule-detailed-default table.background td.header, div.schedule-detailed-
 }
 
 div.schedule-detailed-default table.background td.header {
-  background: url( '/nuxeo/img/table_header_background.gif' ) top left repeat-x #0069dc;
+  background-color:#0069dc;
 }
 
 div.schedule-detailed-default td.header span.date, div.schedule-detailed-default td.header span.holiday {
@@ -343,7 +343,7 @@ div.schedule-compact-default table.day {
 }
 
 div.schedule-compact-default table.day td.header {
-  background: url( '/nuxeo/img/table_header_background.gif') top left repeat-x #0069dc;
+  background-color:#0069dc;
   font: bold 11px Verdana, sans-serif;
   color: #FFF;
   text-align: left;
@@ -353,7 +353,7 @@ div.schedule-compact-default table.day td.header {
 }
 
 div.schedule-compact-default td.content div {
-  background: url( '/nuxeo/img/gray_gradient.gif' ) top left repeat-x;
+  background-color:#fff;
 }
 
 div.schedule-compact-default td.content td {
@@ -408,7 +408,7 @@ div.schedule-compact-default td.inactive-day td.content td.selected {
 }
 
 div.schedule-compact-default td.inactive-day td.header, div.schedule-compact-default td.weekend td.header {
-  background: url( '/nuxeo/img/table_header_gray_back.gif' ) top left repeat-x #767676;
+  background-color: #767676;
   visibility: visible;
 }
 
@@ -453,7 +453,7 @@ div.schedule-compact-default td.inactive-day td.header, div.schedule-compact-def
       cursor: default;
       padding: 3px;
       border-bottom: 1px solid #232323;
-      background:#282b2e url(/nuxeo/img/theme_galaxy/small_gray_bar.png) top left repeat-x;
+      background-color:#3a3d40;
 }
 .ctxMenuItemHoverStyle {
       margin: 0px;
@@ -531,7 +531,7 @@ input.button {
  font:11px 'Lucida Grande', Verdana, Arial, sans-serif;
  color:#333333;
  border:1px solid #bfc5cb;
- background:#cecfd1 url(/nuxeo/img/theme_galaxy/buttons.png) top left repeat-x;
+ background-color:#cecfd1;
  margin:5px 10px 10px 0px;
  padding:2px 5px 2px 5px;
  cursor:pointer;
