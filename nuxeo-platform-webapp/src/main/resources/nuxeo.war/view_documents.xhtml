@@ -30,7 +30,12 @@
       </h1>
     </h:panelGroup>
     <h:panelGroup rendered="#{! currentDocument.version}">
-      <h1><h:outputText value="#{nxd:titleOrId(currentDocument)}"/></h1>
+      <h1><h:outputText value="#{nxd:titleOrId(currentDocument)}"/>
+       <span style="font-size:7pt" title="uid: #{currentDocument.id}"> [ 
+          <nxd:restDocumentLink document="#{currentDocument}" pattern="id">&nbsp;#{messages['label.permalink']}</nxd:restDocumentLink>
+           ]
+       </span>      
+      </h1>
     </h:panelGroup>
       <ui:include src="/incl/message_banner.xhtml"/>
 
