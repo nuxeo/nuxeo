@@ -1244,7 +1244,7 @@
       <dependency>
         <groupId>org.eclipse.jdt</groupId>
         <artifactId>core</artifactId>
-        <version>3.1.1</version>
+        <version>3.1.1-NXP-4284</version>
       </dependency>
       <dependency>
         <groupId>rhino</groupId>
