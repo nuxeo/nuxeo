@@ -90,6 +90,10 @@
        color:#ffffff;
     }
 
+    #formUpload{
+     margin-bottom:0;
+    }
+
     #upload:hover,#fileuploadBtn:hover{
         text-decoration:underline;
     }
@@ -102,9 +106,7 @@
        launchGadget();
      });
     </script>
-    <div id="perm">
-        <div id="show"><a href="#">Modifier</a></div>
-    </div>
+
     <div id="mainContainer">
          <div id="title">
 
@@ -115,7 +117,9 @@
          </div>
          <div style="clear:both"></div>
     </div>
-
+  <div id="perm">
+        <div id="show"><a href="#">Modifier</a></div>
+    </div>
 
 
    <div style="margin:auto;display:none;" id="form">
@@ -132,7 +136,7 @@
         </table>
         <textarea name="gadget:htmlContent" id="richtext" cols="35" style="width:100%"></textarea>
         <table style="width:100%" class="form">
-               <tr>
+                <tr>
                   <td style="width:30%"><label for="link">Lien</label></td>
                     <td style="width:70%"><input type="text" name="link" id="link-field" /></td>
                 </tr>
@@ -146,7 +150,6 @@
                       <a href="" id="upload">Valider</a>
                   </td>
                 </tr>
-
         </table>
        </form>
 

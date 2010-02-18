@@ -281,10 +281,10 @@
     text-decoration:none;
     }
 
-#hide img {
-border:0 none;
-padding:5px 5px 0 0;
-}
+    #hide img {
+    border:0 none;
+    padding:5px 5px 0 0;
+    }
 
       </style>
 
@@ -316,7 +316,7 @@ padding:5px 5px 0 0;
                     <input id="newOwnerInput" type="text" style="width:100%; font-size: 11px;">
                   </td>
                </tr>
-         <tr>
+               <tr>
                 <td id="new_bookmark_td" >
                    <span class="label"  id="labelEcheance">Echéance&nbsp;:</span>
                 </td>
