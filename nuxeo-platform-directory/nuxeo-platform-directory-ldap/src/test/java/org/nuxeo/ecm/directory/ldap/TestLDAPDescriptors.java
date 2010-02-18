@@ -24,12 +24,11 @@ import java.util.Map;
 
 import javax.naming.directory.SearchControls;
 
-import junit.framework.TestCase;
-
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestLDAPDescriptors extends TestCase {
+public class TestLDAPDescriptors extends NXRuntimeTestCase {
 
     protected LDAPDirectoryDescriptor directory;
 
@@ -43,7 +42,7 @@ public class TestLDAPDescriptors extends TestCase {
     }
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         XMap xmap = new XMap();
         xmap.register(LDAPServerDescriptor.class);

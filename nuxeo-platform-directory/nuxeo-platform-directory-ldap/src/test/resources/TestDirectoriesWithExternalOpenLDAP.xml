@@ -17,11 +17,11 @@
       <ldapUrl/> tag for each replica of the cluster.
     -->
     <server name="default">
-
-      <ldapUrl>ldap://localhost:389</ldapUrl>
+      <ldapUrl>ldap://localhost:1389</ldapUrl>
       <!-- Optional servers from the same cluster
         <ldapUrl>ldap://server2:389</ldapUrl>
         <ldapUrl>ldap://server3:389</ldapUrl>
+        <ldapUrl srvPrefix="_ldaptest._tcp">ldap:///dc = in, DC= nuxeo,dc=com</ldapUrl>
       -->
 
       <!-- Credentials used by Nuxeo5 to browse the directory, create

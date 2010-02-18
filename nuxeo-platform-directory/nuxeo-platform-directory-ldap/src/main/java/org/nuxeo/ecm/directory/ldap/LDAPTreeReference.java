@@ -236,7 +236,6 @@ public class LDAPTreeReference extends AbstractReference {
      * @see org.nuxeo.ecm.directory.Reference#getTargetIdsForSource(String)
      */
     // TODO: optimize reusing the same ldap session (see LdapReference optim method)
-    @SuppressWarnings("unchecked")
     public List<String> getTargetIdsForSource(String sourceId)
             throws DirectoryException {
         Set<String> targetIds = new TreeSet<String>();

@@ -50,8 +50,11 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Implementation of the Directory interface for servers implementing the
+ * Lightweight Directory Access Protocol.
+ *
  * @author ogrisel
- * 
+ * @author Robert Browning
  */
 public class LDAPDirectory extends AbstractDirectory {
 
@@ -130,18 +133,25 @@ public class LDAPDirectory extends AbstractDirectory {
         props.put(Context.INITIAL_CONTEXT_FACTORY,
                 "com.sun.jndi.ldap.LdapCtxFactory");
 
+        /*
+         * Get inital connection URLs, dynamic URLs may cause the list to be
+         * updated when creating the session
+         */
         String ldapUrls = serverConfig.getLdapUrls();
         props.put(Context.PROVIDER_URL, ldapUrls);
         props.put(Context.REFERRAL, "follow");
 
         /*
-         * NOTE: Currently this directory service does not use SSL, however if
-         * it should then for SSL connections this value must not be set as this
-         * causes the connection to fail
+         * SSL Connections do not work with connection timeout property
          */
         if (serverConfig.getConnectionTimeout() > -1) {
-            props.put("com.sun.jndi.ldap.connect.timeout",
-                    Integer.toString(serverConfig.getConnectionTimeout()));
+            if (!serverConfig.useSsl()) {
+                props.put("com.sun.jndi.ldap.connect.timeout",
+                        Integer.toString(serverConfig.getConnectionTimeout()));
+            } else {
+                log.warn("SSL connections do not operate correctly"
+                        + " when used with the connection timeout parameter, disabling timout");
+            }
         }
 
         String bindDn = serverConfig.getBindDn();
@@ -170,7 +180,7 @@ public class LDAPDirectory extends AbstractDirectory {
 
     /**
      * Search controls that only fetch attributes defined by the schema
-     * 
+     *
      * @return common search controls to use for all LDAP search queries
      * @throws DirectoryException
      */
@@ -230,6 +240,15 @@ public class LDAPDirectory extends AbstractDirectory {
 
     protected DirContext createContext() throws DirectoryException {
         try {
+            /*
+             * Dynamic server list requires re-computation on each access
+             */
+            String serverName = config.getServerName();
+            LDAPServerDescriptor serverConfig = factory.getServer(serverName);
+            if (serverConfig.isDynamicServerList()) {
+                String ldapUrls = serverConfig.getLdapUrls();
+                contextProperties.put(Context.PROVIDER_URL, ldapUrls);
+            }
             return new InitialDirContext(contextProperties);
         } catch (NamingException e) {
             log.error(e);

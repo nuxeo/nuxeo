@@ -31,6 +31,12 @@
           <ldapUrl>ldap://localhost:389</ldapUrl>
           <ldapUrl>ldap://server2:389</ldapUrl>
           <ldapUrl>ldaps://server3:389</ldapUrl>
+          
+          <!-- LDAP SRV DNS resolution on _ldap._tcp.example.com -->
+          <ldapUrl>ldap:///dc=example,dc=com</ldapUrl>
+          
+          <!-- LDAP SRV DNS resolution on _gc._tcp.example.com -->
+          <ldapUrl srvPrefix="_gc._tcp">ldap:///dc=example,dc=com</ldapUrl>
 
           <bindDn>cn=nuxeo5,ou=applications,dc=example,dc=com</bindDn>
           <bindPassword>changeme</bindPassword>

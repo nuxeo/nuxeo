@@ -71,7 +71,7 @@ import org.nuxeo.ecm.directory.Reference;
 
 /**
  * This class represents a session against an LDAPDirectory.
- * 
+ *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
 public class LDAPSession extends BaseSession implements EntrySource {
@@ -848,7 +848,9 @@ public class LDAPSession extends BaseSession implements EntrySource {
             return false;
         } finally {
             try {
-                authenticationDirContext.close();
+                if (authenticationDirContext != null) {
+                    authenticationDirContext.close();
+                }
             } catch (NamingException e) {
                 log.error(
                         "Error closing authentication context when biding dn "
