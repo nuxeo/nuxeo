@@ -6,28 +6,28 @@
 
     <filterConfig name="BigFileDownloaderRequest" cached="true" private="true"
       transactional="true" synchonize="true">
-      <pattern>/nuxeo/nxbigfile/.*</pattern>
+      <pattern>${org.nuxeo.ecm.contextPath}/nxbigfile/.*</pattern>
     </filterConfig>
 
     <filterConfig name="nxfile" cached="true" private="true"
       transactional="false" synchonize="false">
-      <pattern>/nuxeo/nxfile.*</pattern>
+      <pattern>${org.nuxeo.ecm.contextPath}/nxfile.*</pattern>
     </filterConfig>
 
 		<filterConfig name="img" cached="true" cacheTime="3600">
-			<pattern>/nuxeo/img.*</pattern>
+			<pattern>${org.nuxeo.ecm.contextPath}/img.*</pattern>
 		</filterConfig>
 
 		<filterConfig name="icons" cached="true" cacheTime="3600">
-			<pattern>/nuxeo/icons.*</pattern>
+			<pattern>${org.nuxeo.ecm.contextPath}/icons.*</pattern>
 		</filterConfig>
 
     <filterConfig name="js" cached="true" cacheTime="3600">
-      <pattern>/nuxeo/js.*</pattern>
+      <pattern>${org.nuxeo.ecm.contextPath}/js.*</pattern>
     </filterConfig>
 
     <filterConfig name="waitdialog" cached="true" cacheTime="3600">
-      <pattern>/nuxeo//waitdialog.*</pattern>
+      <pattern>${org.nuxeo.ecm.contextPath}/waitdialog.*</pattern>
     </filterConfig>
 
 	</extension>

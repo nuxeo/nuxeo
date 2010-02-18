@@ -24,10 +24,11 @@ import java.util.regex.Pattern;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Descriptor for {@link RequestFilterConfig}
- * 
+ *
  * @author tiry
  * @author ldoguin
  */
@@ -59,7 +60,6 @@ public class FilterConfigDescriptor implements Serializable {
     @XNode("@grant")
     protected boolean grant = true;
 
-    @XNode("pattern")
     protected String pattern;
 
     protected Pattern compiledPattern;
@@ -70,7 +70,7 @@ public class FilterConfigDescriptor implements Serializable {
     public FilterConfigDescriptor(String name, String pattern, boolean grant,
             boolean tx, boolean sync, boolean cached, boolean isPrivate, String cacheTime) {
         this.name = name;
-        this.pattern = pattern;
+        this.pattern = Framework.expandVars(pattern);
         this.grant = grant;
         this.useSync = sync;
         this.useTx = tx;
@@ -122,6 +122,11 @@ public class FilterConfigDescriptor implements Serializable {
             compiledPattern = Pattern.compile(pattern);
         }
         return compiledPattern;
+    }
+
+    @XNode("pattern")
+    public void setPattern(String pattern) {
+        this.pattern = Framework.expandVars(pattern);
     }
 
 }

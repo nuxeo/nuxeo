@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
 
 public class VirtualHostHelper {
 
@@ -49,12 +50,7 @@ public class VirtualHostHelper {
      * @return WebApp name : ie : nuxeo
      */
     public static String getWebAppName(ServletRequest request) {
-        HttpServletRequest httpRequest = getHttpServletRequest(request);
-        if (httpRequest == null) {
-            return "nuxeo";
-        } else {
-            return httpRequest.getContextPath().replace("/", "");
-        }
+        return getContextPath(request).replace("/", "");
     }
 
     /**
@@ -134,6 +130,25 @@ public class VirtualHostHelper {
             log.error("Could not retrieve base url correctly");
         }
         return baseURL;
+    }
+
+    /**
+     * Returns the context path of the application. Try to get it from the {@code ServletRequest}
+     * and then from the {@code org.nuxeo.ecm.contextPath} system property.
+     * Fallback on default context path {@code /nuxeo}.
+     * @param request
+     */
+    public static String getContextPath(ServletRequest request) {
+        HttpServletRequest httpRequest = getHttpServletRequest(request);
+        String contextPath = null;
+        if (httpRequest != null) {
+            contextPath = httpRequest.getContextPath();
+        }
+        return contextPath != null ? contextPath : getContextPathProperty();
+    }
+
+    public static String getContextPathProperty() {
+        return Framework.getProperty("org.nuxeo.ecm.contextPath", "/nuxeo");
     }
 
 }

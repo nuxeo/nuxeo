@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.Framework;
 
 @XObject(value = "openUrl")
 public class OpenUrlDescriptor implements Serializable {
@@ -17,7 +18,6 @@ public class OpenUrlDescriptor implements Serializable {
     @XNode("@name")
     protected String name;
 
-    @XNode("grantPattern")
     protected String grantPattern;
     protected Pattern compiledGrantPattern;
 
@@ -30,6 +30,11 @@ public class OpenUrlDescriptor implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    @XNode("grantPattern")
+    public void setGrantPattern(String grantPattern) {
+        this.grantPattern = Framework.expandVars(grantPattern);
     }
 
     public String getGrantPattern() {

@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.utils.DocumentModelUtils;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -80,7 +81,7 @@ public class DownloadServlet extends HttpServlet {
         } catch (URISyntaxException e1) {
             requestURI = req.getRequestURI();
         }
-        String filePath = requestURI.replace("/nuxeo/nxbigfile/", "");
+        String filePath = requestURI.replace(VirtualHostHelper.getContextPath(req) + "/nxbigfile/", "");
         String[] pathParts = filePath.split("/");
 
         String repoName = pathParts[0];
