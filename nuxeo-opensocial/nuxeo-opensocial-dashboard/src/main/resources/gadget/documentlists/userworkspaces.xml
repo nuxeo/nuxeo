@@ -18,14 +18,14 @@
     <link rel="stylesheet" type="text/css" href="documentlists.css"/>
     <div id="nxDocumentList">
         <div class="pageNavigationControls">
-        <input type="image" src="/nuxeo/icons/action_page_rewind.gif" onclick="firstPage()"/>
-        <input type="image" src="/nuxeo/icons/action_page_previous.gif" onclick="prevPage()"/>
+        <input type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_rewind.gif" onclick="firstPage()"/>
+        <input type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_previous.gif" onclick="prevPage()"/>
         <span class="currentPageStatus" id="nxDocumentListPage"></span>
-        <input type="image" src="/nuxeo/icons/action_page_next.gif" onclick="nextPage()"/>
-        <input type="image" src="/nuxeo/icons/action_page_fastforward.gif"onclick="lastPage()"/>
+        <input type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_next.gif" onclick="nextPage()"/>
+        <input type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_fastforward.gif"onclick="lastPage()"/>
         </div>
         <div id="nxDocumentListData">
-          <img src="/nuxeo/img/standart_waiter.gif">
+          <img src="${org.nuxeo.ecm.contextPath}/img/standart_waiter.gif">
         </div>
     </div>
      ]]>

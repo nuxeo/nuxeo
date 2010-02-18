@@ -153,7 +153,7 @@
     <!-- widget compatibility with the rest of nuxeo5 -->
     <widget element="">
       <view>theme view</view>
-      <icon>/nuxeo/icons/favicon.png</icon>
+      <icon>${org.nuxeo.ecm.contextPath}/icons/favicon.png</icon>
       <charset>utf-8</charset>
     </widget>
     <!-- section 1 -->
@@ -210,7 +210,7 @@
       <selector path="#closeLayoutManager a">
         <color>#0066ff</color>
         <padding-left>18px</padding-left>
-        <background>transparent url(/nuxeo/opensocial/images/arrow_unfolded.gif) top left no-repeat</background>
+        <background>transparent url(${org.nuxeo.ecm.contextPath}/opensocial/images/arrow_unfolded.gif) top left no-repeat</background>
         <text-decoration>none</text-decoration>
         <display>block</display>
       </selector>
@@ -226,7 +226,7 @@
       <selector path="#getLayoutManager a">
         <color>#0066ff</color>
         <padding-left>18px</padding-left>
-        <background>transparent url(/nuxeo/opensocial/images/arrow_folded.gif) top left no-repeat</background>
+        <background>transparent url(${org.nuxeo.ecm.contextPath}/opensocial/images/arrow_folded.gif) top left no-repeat</background>
         <text-decoration>none</text-decoration>
         <display>block</display>
       </selector>
@@ -268,22 +268,22 @@
         <padding>5px</padding>
       </selector>
       <selector path="#x-1-default">
-        <background-image>url(/nuxeo/opensocial/images/x-1-default.png)</background-image>
+        <background-image>url(${org.nuxeo.ecm.contextPath}/opensocial/images/x-1-default.png)</background-image>
       </selector>
       <selector path="#x-2-default">
-        <background-image>url(/nuxeo/opensocial/images/x-2-default.png)</background-image>
+        <background-image>url(${org.nuxeo.ecm.contextPath}/opensocial/images/x-2-default.png)</background-image>
       </selector>
       <selector path="#x-3-default">
-        <background-image>url(/nuxeo/opensocial/images/x-3-default.png)</background-image>
+        <background-image>url(${org.nuxeo.ecm.contextPath}/opensocial/images/x-3-default.png)</background-image>
       </selector>
       <selector path="#x-3-header2cols">
-        <background-image>url(/nuxeo/opensocial/images/x-3-header2cols.png)</background-image>
+        <background-image>url(${org.nuxeo.ecm.contextPath}/opensocial/images/x-3-header2cols.png)</background-image>
       </selector>
       <selector path="#x-4-footer3cols">
-        <background-image>url(/nuxeo/opensocial/images/x-4-footer3cols.png)</background-image>
+        <background-image>url(${org.nuxeo.ecm.contextPath}/opensocial/images/x-4-footer3cols.png)</background-image>
       </selector>
       <selector path="#closeLinkLayoutManager">
-        <background-image>url(/nuxeo/opensocial/images/close.gif)</background-image>
+        <background-image>url(${org.nuxeo.ecm.contextPath}/opensocial/images/close.gif)</background-image>
         <color>rgb(0, 0, 0)</color>
         <margin-right>10px</margin-right>
         <padding-left>15px</padding-left>
@@ -367,7 +367,7 @@
       <selector path="#closeGadgetManager a">
         <color>#0066ff</color>
         <padding-left>18px</padding-left>
-        <background>transparent url(/nuxeo/opensocial/images/arrow_unfolded.gif) top left no-repeat</background>
+        <background>transparent url(${org.nuxeo.ecm.contextPath}/opensocial/images/arrow_unfolded.gif) top left no-repeat</background>
         <text-decoration>none</text-decoration>
         <display>block</display>
       </selector>
@@ -383,7 +383,7 @@
       <selector path="#getGadgetManager a">
         <color>#0066ff</color>
         <padding-left>18px</padding-left>
-        <background>transparent url(/nuxeo/opensocial/images/arrow_folded.gif) top left no-repeat</background>
+        <background>transparent url(${org.nuxeo.ecm.contextPath}/opensocial/images/arrow_folded.gif) top left no-repeat</background>
         <text-decoration>none</text-decoration>
         <display>block</display>
       </selector>
@@ -425,7 +425,7 @@
         <padding>5px</padding>
       </selector>
       <selector path="#closeLinkGadgetManager">
-        <background-image>url(/nuxeo/opensocial/images/close.gif)</background-image>
+        <background-image>url(${org.nuxeo.ecm.contextPath}/opensocial/images/close.gif)</background-image>
         <color>rgb(0, 0, 0)</color>
         <margin-right>10px</margin-right>
         <padding-left>15px</padding-left>
@@ -465,7 +465,7 @@
         <text-align>center</text-align>
       </selector>
       <selector path=".directAdd a">
-        <background>#CECFD1 url(/nuxeo/opensocial/images/buttons.png) repeat-x left top</background>
+        <background>#CECFD1 url(${org.nuxeo.ecm.contextPath}/opensocial/images/buttons.png) repeat-x left top</background>
         <text-decoration>none</text-decoration>
         <border>1px solid #BFC5CB</border>
         <color>#333333</color>
@@ -606,7 +606,7 @@
       </selector>
       <selector path=".directoryFilter, .searchField" view="User services (Galaxy theme)">
         <border>1px normal #666</border>
-        <background>url(/nuxeo/icons/search.gif) 2px 2px no-repeat #FFF</background>
+        <background>url(${org.nuxeo.ecm.contextPath}/icons/search.gif) 2px 2px no-repeat #FFF</background>
         <margin>0 5px 10px 0</margin>
         <padding>3px 3px 3px 20px</padding>
         <font-size>11px</font-size>

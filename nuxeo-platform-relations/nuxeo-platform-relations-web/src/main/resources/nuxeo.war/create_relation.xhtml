@@ -5,7 +5,6 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <!-- XXX: the /nuxeo/ prefix should be dynamically looked up -->
   <script language="javascript">
     function popupSearch(createFormId, url) {
       popup = window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=712, height=480');
@@ -76,7 +75,7 @@
               value="#{relationActions.objectDocumentUid}"
               binding="#{relationCreationBean.objectDocumentUidInput}"/>
             <nxu:methodResult name="url"
-              value="#{restHelper.addCurrentConversationParameters('/nuxeo/create_relation_search_document_popup.faces')}">
+              value="#{restHelper.addCurrentConversationParameters('#{contextPath}/create_relation_search_document_popup.faces')}">
               <input type="button" value="#{messages['command.search']}" class="button"
                 onclick="javascript:popupSearch(this.form.id, '#{url}');" />
             </nxu:methodResult>

@@ -11,18 +11,18 @@
 
     <td valign="top" id="nxthemesWebWidgetFactoryPanel" style="display: none">
       <nxthemes:panel identifier="web widget factory"
-        url="/nuxeo/site/nxthemes-webwidgets/webWidgetFactory"
+        url="#{contextPath}/site/nxthemes-webwidgets/webWidgetFactory"
         controlledBy="web widget perspectives,web widget inserter"
         visibleInPerspectives="default" />
     </td>
 
     <td class="nxthemesWebWidgetFactoryPanelStrip">
       <div id="nxthemesWebWidgetFactoryPanelStripOpen">
-        <img src="/nuxeo/site/skin/nxthemes-webwidgets/img/strip-open.png"
+        <img src="#{contextPath}/site/skin/nxthemes-webwidgets/img/strip-open.png"
                  onclick="NXThemesWebWidgets.openFactoryPanel()" />
       </div>
       <div id="nxthemesWebWidgetFactoryPanelStripClose" style="display: none">
-        <img src="/nuxeo/site/skin/nxthemes-webwidgets/img/strip-close.png"
+        <img src="#{contextPath}/site/skin/nxthemes-webwidgets/img/strip-close.png"
                 onclick="NXThemesWebWidgets.closeFactoryPanel()" />
       </div>
     </td>

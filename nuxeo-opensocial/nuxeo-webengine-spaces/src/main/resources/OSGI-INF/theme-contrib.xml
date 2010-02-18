@@ -55,7 +55,7 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="applications">
 
-    <application root="/nuxeo/site/spaces" template-engine="freemarker">
+    <application root="${org.nuxeo.ecm.contextPath}/site/spaces" template-engine="freemarker">
       <negotiation>
         <strategy>web</strategy>
         <default-engine>default</default-engine>

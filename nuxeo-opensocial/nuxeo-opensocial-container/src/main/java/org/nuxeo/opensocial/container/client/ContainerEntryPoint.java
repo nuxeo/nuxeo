@@ -42,12 +42,12 @@ import com.gwtext.client.widgets.layout.FitLayout;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public class ContainerEntryPoint implements EntryPoint {
 
-  private static final String SERVICE_ENTRY_POINT = "/nuxeo/gwtcontainer";
+  private static final String SERVICE_ENTRY_POINT = getContextPath() + "/gwtcontainer";
 
   private static final String GWT_WINDOW_WIDTH = "windowWidth";
   public static final int PANEL_WIDTH = 970;
@@ -200,17 +200,22 @@ public class ContainerEntryPoint implements EntryPoint {
      $wnd.jQuery("button[box='"+boxSelected+"']").addClass("selected");
      $wnd.jQuery("button[box='"+boxSelected+"']").parent().addClass("selected");
      $wnd.jQuery("#"+layout).addClass("selected");
-    
+
      //Choix du layout
      $wnd.jQuery(".typeLayout").click(function(){
        @org.nuxeo.opensocial.container.client.ContainerEntryPoint::chooseLayout(Ljava/lang/String;)($wnd.jQuery(this).attr("name"));
        return false
      });
-    
+
      $wnd.jQuery(".directAdd>a").click(function(){
        @org.nuxeo.opensocial.container.client.ContainerEntryPoint::addGadget(Ljava/lang/String;)($wnd.jQuery(this).attr("name"));
        return false
      });
+   }-*/;
+
+   private static native String getContextPath()
+   /*-{
+     return top.nxContextPath;
    }-*/;
 
 }

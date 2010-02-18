@@ -29,6 +29,7 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.DefaultMarshaler;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.basic.BasicPublicationNode;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePublisherMarshaler;
 import org.nuxeo.ecm.platform.publisher.remoting.restProxies.RemotePublicationTreeManagerRestProxy;
+import org.nuxeo.runtime.api.Framework;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -139,7 +140,7 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
 
         String userName = parameters.get(USERNAME_KEY);
         String password = parameters.get(PASSWORD_KEY);
-        String baseURL = parameters.get(BASEURL_KEY);
+        String baseURL = Framework.expandVars(parameters.get(BASEURL_KEY));
         String marshalerClassName = parameters.get(MARSHALER_KEY);
 
         targetTreeName = parameters.get(TARGETTREENAME_KEY);

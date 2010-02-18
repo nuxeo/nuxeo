@@ -19,7 +19,7 @@
     </perspective>
 
   </extension>
-  
+
   <!-- Views -->
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="views">
@@ -43,28 +43,28 @@
       <format-type>widget</format-type>
       <template>widgets/webpage_edit.ftl</template>
     </view>
-    
+
     <view name="Minisite Last Published" template-engine="freemarker">
-      <element-type>fragment</element-type> 
+      <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>webpage</model-type>
       <template>widgets/sites/last_published.xml</template>
-    </view>     
-        
+    </view>
+
     <view name="Minisite Last Comments" template-engine="freemarker">
-      <element-type>fragment</element-type> 
+      <element-type>fragment</element-type>
       <format-type>widget</format-type>
-    <model-type>webpage-comment</model-type>      
+    <model-type>webpage-comment</model-type>
       <template>widgets/sites/minisite_last_comments.xml</template>
     </view>
-    
+
     <view name="Minisite Contextual" template-engine="freemarker">
-      <element-type>fragment</element-type> 
+      <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>contextual-link</model-type>
       <template>widgets/sites/contextual.xml</template>
-    </view> 
-        
+    </view>
+
     <view name="Minisite Tree" template-engine="freemarker">
       <format-type>widget</format-type>
       <template>widgets/tree.ftl</template>
@@ -73,28 +73,28 @@
       <format-type>widget</format-type>
       <template>widgets/files.ftl</template>
     </view>
-    
+
     <view name="Page Last Comments" template-engine="freemarker">
-      <element-type>fragment</element-type> 
+      <element-type>fragment</element-type>
       <format-type>widget</format-type>
-    <model-type>comment</model-type>      
+    <model-type>comment</model-type>
       <template>widgets/sites/page_last_comments.xml</template>
-    </view>    
-    
+    </view>
+
     <view name="All WebPages" template-engine="freemarker">
-      <element-type>fragment</element-type> 
+      <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>webpage</model-type>
       <template>widgets/sites/all_webpages.xml</template>
-    </view>            
-    
+    </view>
+
     <view name="Search Results" template-engine="freemarker">
-      <element-type>fragment</element-type> 
+      <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>search</model-type>
       <template>widgets/sites/search_results.xml</template>
-    </view> 
-        
+    </view>
+
     <view name="Minisite Search" template-engine="freemarker">
       <format-type>widget</format-type>
       <template>widgets/search.ftl</template>
@@ -107,27 +107,27 @@
       <format-type>widget</format-type>
       <template>widgets/email.ftl</template>
     </view>
-    
+
     <view name="Tags" template-engine="freemarker">
-      <element-type>fragment</element-type> 
+      <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>tag</model-type>
       <template>widgets/sites/tags.xml</template>
-    </view> 
-    
+    </view>
+
     <view name="Tags Cloud" template-engine="freemarker">
-      <element-type>fragment</element-type> 
+      <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>tag cloud</model-type>
       <template>widgets/sites/tags_cloud.xml</template>
-    </view>        
-    
+    </view>
+
   </extension>
 
   <!-- application settings -->
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="applications">
-    <application root="/nuxeo/sites" template-engine="freemarker">
+    <application root="${org.nuxeo.ecm.contextPath}/sites" template-engine="freemarker">
       <negotiation>
         <strategy>web</strategy>
         <default-engine>default</default-engine>
@@ -138,7 +138,7 @@
       </negotiation>
     </application>
     <!--  temporary fix for jboss -->
-    <application root="/nuxeo/site/sites"
+    <application root="${org.nuxeo.ecm.contextPath}/site/sites"
       template-engine="freemarker">
       <negotiation>
         <strategy>web</strategy>
@@ -150,7 +150,7 @@
       </negotiation>
     </application>
 
-    <application root="/nuxeo/site"
+    <application root="${org.nuxeo.ecm.contextPath}/site"
       template-engine="freemarker">
       <negotiation>
         <strategy>web</strategy>
@@ -160,7 +160,7 @@
         <default-perspective>default
         </default-perspective>
       </negotiation>
-    </application>    
+    </application>
 
   </extension>
 
@@ -172,8 +172,8 @@
     </model>
     <model name="contextual-link item">
       <class>org.nuxeo.webengine.sites.models.ContextualLinkModel</class>
-    </model>  
-  
+    </model>
+
     <model name="webpage">
       <class>org.nuxeo.webengine.sites.models.WebpageListModel</class>
       <contains>webpage item</contains>
@@ -181,23 +181,23 @@
     <model name="webpage item">
       <class>org.nuxeo.webengine.sites.models.WebpageModel</class>
     </model>
-  
+
     <model name="webpage-comment">
       <class>org.nuxeo.webengine.sites.models.WebpageCommentListModel</class>
       <contains>webpage-comment item</contains>
     </model>
     <model name="webpage-comment item">
       <class>org.nuxeo.webengine.sites.models.WebpageCommentModel</class>
-    </model>  
-  
+    </model>
+
     <model name="comment">
       <class>org.nuxeo.webengine.sites.models.CommentListModel</class>
       <contains>comment item</contains>
     </model>
     <model name="comment item">
       <class>org.nuxeo.webengine.sites.models.CommentModel</class>
-    </model>  
-  
+    </model>
+
     <model name="search">
       <class>org.nuxeo.webengine.sites.models.SearchListModel</class>
       <contains>search item</contains>
@@ -212,15 +212,15 @@
     </model>
     <model name="tag item">
       <class>org.nuxeo.webengine.sites.models.TagModel</class>
-    </model>    
-    
+    </model>
+
     <model name="tag cloud">
       <class>org.nuxeo.webengine.sites.models.TagCloudListModel</class>
       <contains>tag cloud item</contains>
     </model>
     <model name="tag cloud item">
       <class>org.nuxeo.webengine.sites.models.TagCloudModel</class>
-    </model>    
+    </model>
   </extension>
 
   <extension target="org.nuxeo.theme.services.ThemeService"
@@ -230,36 +230,36 @@
     <model-type>contextual-link</model-type>
     <dynamic>true</dynamic>
   </fragment>
-  
+
   <fragment name="all webpages fragment">
     <class>org.nuxeo.webengine.sites.fragments.AllWebpageFragment</class>
     <model-type>webpage</model-type>
     <dynamic>true</dynamic>
-  </fragment>  
-  
+  </fragment>
+
   <fragment name="minisite last published fragment">
     <class>org.nuxeo.webengine.sites.fragments.MinisiteLastPublishedFragment</class>
     <model-type>webpage</model-type>
     <dynamic>true</dynamic>
-  </fragment>    
-  
+  </fragment>
+
   <fragment name="minisite last comments fragment">
     <class>org.nuxeo.webengine.sites.fragments.MinisiteLastCommentsFragment</class>
     <model-type>webpage-comment</model-type>
     <dynamic>true</dynamic>
-  </fragment>        
-  
+  </fragment>
+
   <fragment name="page last comments fragment">
     <class>org.nuxeo.webengine.sites.fragments.PageLastCommentsFragment</class>
     <model-type>comment</model-type>
     <dynamic>true</dynamic>
-  </fragment>    
-    
+  </fragment>
+
   <fragment name="search results fragment">
     <class>org.nuxeo.webengine.sites.fragments.SearchResultsFragment</class>
     <model-type>search</model-type>
     <dynamic>true</dynamic>
-  </fragment>        
+  </fragment>
   <fragment name="tags fragment">
     <class>org.nuxeo.webengine.sites.fragments.TagFragment</class>
     <model-type>tag</model-type>
@@ -269,9 +269,9 @@
     <class>org.nuxeo.webengine.sites.fragments.TagCloudFragment</class>
     <model-type>tag cloud</model-type>
     <dynamic>true</dynamic>
-  </fragment>  
-  </extension> 
-     
+  </fragment>
+  </extension>
+
   <!-- themes -->
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="themes">

@@ -15,12 +15,11 @@
       <param-value>
         org.nuxeo.opensocial.shindig.NuxeoPropertiesModule:
         org.nuxeo.opensocial.shindig.ProxyModule:
-        org.apache.shindig.gadgets.DefaultGuiceModule:
+        org.nuxeo.opensocial.shindig.gadgets.NXGuiceModule:
         org.apache.shindig.social.core.config.SocialApiGuiceModule:
         org.nuxeo.opensocial.services.NuxeoServiceModule:
         org.nuxeo.opensocial.services.NuxeoCryptoModule:
-        org.nuxeo.opensocial.shindig.gadgets.NXMakeRequestModule:
-        org.nuxeo.opensocial.shindig.gadgets.NXGadgetSpecFactoryModule:
+        org.nuxeo.opensocial.shindig.gadgets.NXGadgetModule:
         org.apache.shindig.gadgets.oauth.OAuthModule:
         org.apache.shindig.common.cache.ehcache.EhCacheModule
     </param-value>

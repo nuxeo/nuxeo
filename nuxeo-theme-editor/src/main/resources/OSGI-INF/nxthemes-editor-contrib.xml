@@ -9,15 +9,15 @@
 
   <require>org.nuxeo.theme.core</require>
   <require>org.nuxeo.theme.webengine</require>
-  
+
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="shortcuts">
 
-    <shortcut key="-" target="/nuxeo/nxthemes-select?engine=editor" />
+    <shortcut key="-" target="${org.nuxeo.ecm.contextPath}/nxthemes-select?engine=editor" />
 
-    <shortcut key="_" target="/nuxeo/nxthemes-select?engine=editor" />
+    <shortcut key="_" target="${org.nuxeo.ecm.contextPath}/nxthemes-select?engine=editor" />
 
-    <shortcut key="t" target="/nuxeo/nxthemes-select?engine=editor" />
+    <shortcut key="t" target="${org.nuxeo.ecm.contextPath}/nxthemes-select?engine=editor" />
 
   </extension>
 
@@ -69,7 +69,7 @@
       <path>
         nxthemes/editor/controllers/theme-buttons.json
       </path>
-    </resource>    
+    </resource>
 
     <resource name="fragment-inserter.json">
       <path>
@@ -105,7 +105,7 @@
       <path>
         nxthemes/editor/controllers/page-switcher.json
       </path>
-    </resource>    
+    </resource>
 
     <resource name="area-style-actions.json">
       <path>
@@ -242,9 +242,9 @@
 
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="views">
-        
+
     <!-- Freemarker Views -->
-  
+
     <view name="theme view" template-engine="freemarker">
       <engine>editor</engine>
       <element-type>theme</element-type>
@@ -374,7 +374,7 @@
       <format-type>widget</format-type>
       <class>org.nuxeo.theme.editor.views.UnregisteredWidget</class>
     </view>
-    
+
 
     <!--  JSF/Facelets views -->
 
@@ -400,7 +400,7 @@
         nxthemes/editor/widgets/jsf/page-frame.xml
       </template>
     </view>
-    
+
     <view name="page frame" template-engine="jsf-facelets">
       <engine>page-editor</engine>
       <mode>area-styles-section</mode>
@@ -429,7 +429,7 @@
         nxthemes/editor/widgets/jsf/section-frame.xml
       </template>
     </view>
-        
+
   </extension>
 
 

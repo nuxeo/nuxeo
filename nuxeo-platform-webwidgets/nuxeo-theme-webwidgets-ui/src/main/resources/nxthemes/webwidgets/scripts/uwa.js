@@ -215,12 +215,12 @@ UWA.Widget.prototype = {
 UWA.proxies = {
 };
 
-NV_PATH='/nuxeo';
-NV_MODULES='/nuxeo';
+NV_PATH=nxContextPath;
+NV_MODULES=nxContextPath;
 
 UWA.Data = {
 
-  AJAX_PROXY_URL:  '/nuxeo/ajaxProxy/',
+  AJAX_PROXY_URL:  nxContextPath + '/ajaxProxy/',
 
   needProxy: function(url) {
       if (url.indexOf("http")==0) {

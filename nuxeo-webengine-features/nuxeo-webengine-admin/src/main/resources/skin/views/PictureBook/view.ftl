@@ -33,8 +33,8 @@ ${Document.description}
   <ul>
   <p id="book_images">
   <#list Document.children as child>
-    <a href="/nuxeo/nxpicsfile/default/${child.id}/webengine:content/?inline=true" rel="book" title="${child.title}">
-        <img src="/nuxeo/nxpicsfile/default/${child.id}/Thumbnail:content/?inline=true"/>
+    <a href="${contextPath}/nxpicsfile/default/${child.id}/webengine:content/?inline=true" rel="book" title="${child.title}">
+        <img src="${contextPath}/nxpicsfile/default/${child.id}/Thumbnail:content/?inline=true"/>
     </a>
   </#list>
   </ul>

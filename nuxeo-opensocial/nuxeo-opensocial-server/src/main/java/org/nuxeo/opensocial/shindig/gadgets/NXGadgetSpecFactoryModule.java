@@ -26,11 +26,8 @@ public class NXGadgetSpecFactoryModule extends AbstractModule {
 
   @Override
   protected void configure() {
-    // TODO Auto-generated method stub
     bind(GadgetSpecFactory.class).to(NXGadgetSpecFactory.class)
     .in(Scopes.SINGLETON);
-
-
   }
 
 }

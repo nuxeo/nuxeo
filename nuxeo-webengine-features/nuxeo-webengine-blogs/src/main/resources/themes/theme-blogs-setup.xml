@@ -371,7 +371,7 @@
         <font preset="default (Sites fonts)"/>
         <color>#333333</color>
         <border preset="buttons (Sites borders)"/>
-        <background>transparent url(/nuxeo/site/skin/blogs/images/rss_button.jpg) no-repeat left top</background>
+        <background>transparent url(${org.nuxeo.ecm.contextPath}/site/skin/blogs/images/rss_button.jpg) no-repeat left top</background>
         <margin>5px</margin>
         <padding>2px 5px 2px 25px;</padding>
         <cursor>pointer</cursor>
@@ -544,7 +544,7 @@
       <selector path=".infoMessage">
         <color>#003399</color>
         <border>1px solid #0066cc</border>
-        <background>url(/nuxeo/icons/tip.gif) 2px 3px no-repeat #f2f7fc</background>
+        <background>url(${org.nuxeo.ecm.contextPath}/icons/tip.gif) 2px 3px no-repeat #f2f7fc</background>
         <margin-bottom>5px</margin-bottom>
         <padding>5px 5px 5px 23px</padding>
         <display>block</display>
@@ -553,7 +553,7 @@
         <font>bold 11px Verdana, sans-serif</font>
         <color>#003399</color>
         <border>2px solid #0066cc</border>
-        <background>url(/nuxeo/icons/info.gif) 4px 5px no-repeat #f2f7fc</background>
+        <background>url(${org.nuxeo.ecm.contextPath}/icons/info.gif) 4px 5px no-repeat #f2f7fc</background>
         <padding>7px 7px 7px 24px</padding>
       </selector>
       <selector path=".error">
@@ -563,7 +563,7 @@
       <selector path=".errorMessage">
         <color>#000</color>
         <border>1px solid #666</border>
-        <background>url(/nuxeo/icons/warning.gif) 2px 3px no-repeat #FFCC33</background>
+        <background>url(${org.nuxeo.ecm.contextPath}/icons/warning.gif) 2px 3px no-repeat #FFCC33</background>
         <width>480px</width>
         <margin>2px 0 2px 0</margin>
         <padding>3px 3px 3px 23px</padding>
@@ -574,11 +574,11 @@
         <font>bold 11px Verdana, sans-serif</font>
         <color>#000</color>
         <border>2px solid #666</border>
-        <background>url(/nuxeo/icons/warning.gif) 4px 5px no-repeat #FFCC33</background>
+        <background>url(${org.nuxeo.ecm.contextPath}/icons/warning.gif) 4px 5px no-repeat #FFCC33</background>
         <padding>7px 7px 7px 24px</padding>
       </selector>
       <selector path=".warningMessage">
-        <background>url(/nuxeo/icons/warning.gif) 2px 3px no-repeat #FFCC33</background>
+        <background>url(${org.nuxeo.ecm.contextPath}/icons/warning.gif) 2px 3px no-repeat #FFCC33</background>
         <width>500px</width>
         <margin>2px 0 2px 0</margin>
         <border>1px solid #666</border>
@@ -592,7 +592,7 @@
         <font>bold 11px Verdana, sans-serif</font>
         <color>#000</color>
         <border>2px solid #666</border>
-        <background>url(/nuxeo/icons/warning.gif) 4px 5px no-repeat #FFCC33</background>
+        <background>url(${org.nuxeo.ecm.contextPath}/icons/warning.gif) 4px 5px no-repeat #FFCC33</background>
         <padding>7px 7px 7px 24px</padding>
       </selector>
       <selector path=".facesStatusMessage">
@@ -738,7 +738,7 @@
         <text-align>center</text-align>
       </selector>
       <selector path=".documentInfo">
-        <background>transparent url(/nuxeo/icons/arrow_blue.gif) no-repeat scroll 4px 4px</background>
+        <background>transparent url(${org.nuxeo.ecm.contextPath}/icons/arrow_blue.gif) no-repeat scroll 4px 4px</background>
         <margin>2px 0px</margin>
         <padding>3px 3px 3px 20px</padding>
       </selector>
@@ -768,12 +768,12 @@
       </selector>
       <selector path=".commentInfos">
         <border-bottom>1px solid #dedede</border-bottom>
-        <background>transparent url(/nuxeo/icons/user.gif) no-repeat scroll 4px 4px</background>
+        <background>transparent url(${org.nuxeo.ecm.contextPath}/icons/user.gif) no-repeat scroll 4px 4px</background>
         <margin-bottom>5px</margin-bottom>
         <padding>5px 3px 3px 24px</padding>
       </selector>
       <selector path=".addComment">
-        <background>transparent url(/nuxeo/icons/action_add.gif) no-repeat scroll 4px 4px</background>
+        <background>transparent url(${org.nuxeo.ecm.contextPath}/icons/action_add.gif) no-repeat scroll 4px 4px</background>
         <margin-bottom>5px</margin-bottom>
         <font-weight>bold</font-weight>
         <padding>5px 3px 3px 24px</padding>
@@ -782,7 +782,7 @@
         <margin-bottom>10px</margin-bottom>
       </selector>
       <selector path=".contextualLink">
-        <background>transparent url(/nuxeo/icons/world_link.png) no-repeat scroll 4px 4px</background>
+        <background>transparent url(${org.nuxeo.ecm.contextPath}/icons/world_link.png) no-repeat scroll 4px 4px</background>
         <margin-bottom>3px</margin-bottom>
         <padding>5px 3px 3px 24px</padding>
       </selector>
@@ -804,7 +804,7 @@
         <padding>4px 0</padding>
       </selector>
       <selector path=".required">
-        <background>url(/nuxeo/icons/required.gif) top right no-repeat</background>
+        <background>url(${org.nuxeo.ecm.contextPath}/icons/required.gif) top right no-repeat</background>
         <padding-right>8px</padding-right>
       </selector>
       <selector path=".closedContent">
@@ -827,7 +827,7 @@
       </selector>
       <selector path=".directoryFilter, .searchField">
         <border>1px normal #666</border>
-        <background>url(/nuxeo/icons/search.gif) 2px 2px no-repeat #FFF</background>
+        <background>url(${org.nuxeo.ecm.contextPath}/icons/search.gif) 2px 2px no-repeat #FFF</background>
         <margin>0 5px 10px 0</margin>
         <padding>3px 3px 3px 20px</padding>
         <font-size>12px</font-size>
@@ -866,7 +866,7 @@
     <style element="page[1]/section[1]/cell[1]" inherit="common site style"/>
     <style element="page[2]" inherit="common site style">
       <selector path="" view="page frame">
-        <background>#3c84af url(/nuxeo/img/minisite_background.gif) top left repeat-x</background>
+        <background>#3c84af url(${org.nuxeo.ecm.contextPath}/img/minisite_background.gif) top left repeat-x</background>
       </selector>
     </style>
     <style element="page[2]/section[1]" inherit="common site style">
@@ -895,7 +895,7 @@
     <style element="page[2]/section[2]/cell[2]" inherit="common site style"/>
     <style element="page[3]" inherit="common site style">
       <selector path="" view="page frame">
-        <background>#3c84af url(/nuxeo/img/minisite_background.gif) top left repeat-x</background>
+        <background>#3c84af url(${org.nuxeo.ecm.contextPath}/img/minisite_background.gif) top left repeat-x</background>
       </selector>
     </style>
     <style element="page[3]/section[1]" inherit="common site style">
@@ -924,7 +924,7 @@
     <style element="page[3]/section[2]/cell[2]" inherit="common site style"/>
     <style element="page[4]" inherit="common site style">
       <selector path="" view="page frame">
-        <background>#3c84af url(/nuxeo/img/minisite_background.gif) top left repeat-x</background>
+        <background>#3c84af url(${org.nuxeo.ecm.contextPath}/img/minisite_background.gif) top left repeat-x</background>
       </selector>
     </style>
     <style element="page[4]/section[1]" inherit="common site style">

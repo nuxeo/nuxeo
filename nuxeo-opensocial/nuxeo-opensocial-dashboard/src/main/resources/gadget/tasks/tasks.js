@@ -223,12 +223,17 @@ function getUserLang() {
     return top.nxUserLang;
 }
 
+function getWebappName() {
+    return top.nxContextPath.substring(1);
+}
+
 function getRestletUrl() {
     var url = getNuxeoServerSideUrl();
     if (testMode) {
         url = 'http://localhost:8080/';
     }
-    url += "nuxeo/restAPI/workflowTasks/default?mytasks=true&format=JSON";
+    url += getWebappName();
+    url += "/restAPI/workflowTasks/default?mytasks=true&format=JSON";
     var ts = new Date().getTime() + "" + Math.random() * 11
     url += "&ts=" + ts;
 

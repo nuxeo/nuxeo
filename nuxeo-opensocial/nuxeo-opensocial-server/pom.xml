@@ -18,7 +18,7 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
     </dependency>
-    <!-- 
+    <!--
     <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-platform-login-oauth</artifactId>
@@ -152,6 +152,11 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-web-common</artifactId>
+      <version>5.3.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

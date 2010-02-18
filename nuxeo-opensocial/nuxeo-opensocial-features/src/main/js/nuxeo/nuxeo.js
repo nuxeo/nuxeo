@@ -19,7 +19,7 @@ var gadgets = gadgets || {};
 
 gadgets.nuxeo = gadgets.nuxeo || {};
 
-gadgets.nuxeo.URLBASE = "/nuxeo/site/gadgetDocumentAPI/";
+gadgets.nuxeo.URLBASE = top.nxContextPath + "/site/gadgetDocumentAPI/";
 gadgets.nuxeo.HTMLACTION = "/html";
 gadgets.nuxeo.FILEACTION =  "/file";
 

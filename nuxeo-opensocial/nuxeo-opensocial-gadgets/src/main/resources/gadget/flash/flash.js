@@ -1,7 +1,7 @@
 var firstTime = true;
 var action = "";
 var perm = gadgets.nuxeo.isEditable();
-var url = "/nuxeo/site/gadgetDocumentAPI/getFile/";
+var url = top.nxContextPath + "/site/gadgetDocumentAPI/getFile/";
 
 function launchGadget() {
 jQuery(document).ready(function(){

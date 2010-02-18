@@ -28,10 +28,11 @@ import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.platform.preview.adapter.BlobPostProcessor;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * 
+ *
  */
 public class AnnotationBlobPostProcessor implements BlobPostProcessor {
 
@@ -41,9 +42,9 @@ public class AnnotationBlobPostProcessor implements BlobPostProcessor {
 
     protected static final String GWT_LOCALE = "<meta name=\"gwt:property\" content=\"locale=%s\" />";
 
-    protected static final String ANNOTATION_MODULE_JS = "<script type=\"text/javascript\" src='/nuxeo/org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule/org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule.nocache.js'></script>";
+    protected static final String ANNOTATION_MODULE_JS = "<script type=\"text/javascript\" src='" + VirtualHostHelper.getContextPathProperty() + "/org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule/org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule.nocache.js'></script>";
 
-    protected static final String INTERNET_EXPLORER_RANGE_JS = "<script type=\"text/javascript\" src='/nuxeo/scripts/InternetExplorerRange.js'></script>";
+    protected static final String INTERNET_EXPLORER_RANGE_JS = "<script type=\"text/javascript\" src='" + VirtualHostHelper.getContextPathProperty() + "/scripts/InternetExplorerRange.js'></script>";
 
     protected Pattern headPattern = Pattern.compile("(.*)(<head>)(.*)",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);

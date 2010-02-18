@@ -144,7 +144,7 @@ function tableStart(jsonObject) {
   html += "    <tr>";
   html += "      <th>";
   if (path.length > 0)
-    html += "<a href=\"#\" onclick=\"upFolder();return false;\"<img border=\"0\" src=\"/nuxeo/icons/UpFolder_icon.gif\"></a>"
+    html += "<a href=\"#\" onclick=\"upFolder();return false;\"<img border=\"0\" src=\"" + top.nxContextPath + "/icons/UpFolder_icon.gif\"></a>"
   html += "      </th>";
   html += "      <th>" + title + "</th>";
   html += "      <th/>";

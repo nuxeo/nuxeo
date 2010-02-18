@@ -64,7 +64,7 @@ jQuery(document).ready(function(){
       return false;
     });
 
-  var myEditor = new nicEditor({iconsPath : '/nuxeo/site/gadgets/richtext/nicEditorIcons.gif'}).panelInstance('richtext');
+  var myEditor = new nicEditor({iconsPath : top.nxContextPath + '/site/gadgets/richtext/nicEditorIcons.gif'}).panelInstance('richtext');
   myEditor.addEvent("key", function() {
     gadgets.window.adjustHeight();
   });
@@ -72,9 +72,9 @@ jQuery(document).ready(function(){
 
   setWidthAndBindEvents();
   jQuery('#loader').remove();
-  
-  jQuery('.nicEdit-main').attr("style","min-height:60px;margin:4px;"); 
-  
+
+  jQuery('.nicEdit-main').attr("style","min-height:60px;margin:4px;");
+
   gadgets.window.adjustHeight();
 
 

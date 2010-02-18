@@ -122,7 +122,7 @@
 }
 
 .x-column-possible {
-  background-image: url(/nuxeo/opensocial/images/transparent.png);
+  background-image: url(../opensocial/images/transparent.png);
   background-repeat: repeat;
   height: 100%;
 }
