@@ -4,6 +4,7 @@ Setlocal Enabledelayedexpansion
 
 set JAVA_OPTS=-Djava.rmi.server.RMIClassLoaderSpi=org.nuxeo.runtime.launcher.NuxeoRMIClassLoader -Dsun.lang.ClassLoader.allowArraySyntax=true
 set JAVA_OPTS=%JAVA_OPTS% -Dderby.system.home=data/derby
+set JAVA_OPTS=%JAVA_OPTS% -Xmx512m -XX:MaxPermSize=256m
 
 set DEV_OPTS=""
 
