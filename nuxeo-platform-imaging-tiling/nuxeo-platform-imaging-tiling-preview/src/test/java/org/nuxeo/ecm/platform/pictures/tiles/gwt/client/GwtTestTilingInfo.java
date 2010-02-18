@@ -28,7 +28,7 @@ import com.google.gwt.junit.client.GWTTestCase;
  *
  */
 public class GwtTestTilingInfo extends GWTTestCase {
-    private TilingInfo info = new TilingInfo("docId", "repoId");
+    private TilingInfo info = new TilingInfo("docId", "repoId", "/nuxeo");
 
     @Override
     public String getModuleName() {
