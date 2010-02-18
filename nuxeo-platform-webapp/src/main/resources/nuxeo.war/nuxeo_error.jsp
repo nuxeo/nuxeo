@@ -11,7 +11,7 @@
   <style type="text/css">
 <!--
 body {
-  background: url( /nuxeo/img/fond_error.gif ) 0 0 repeat-x #ffffff;
+  background: url(<%=context%>/img/fond_error.gif ) 0 0 repeat-x #ffffff;
   margin: 0px;
 }
 
@@ -55,19 +55,19 @@ a:hover {
 
 .stacktrace {
   padding: 0 5px 0 20px;
-  background: url( /nuxeo/icons/page_text.gif ) no-repeat scroll 0%;
+  background: url(<%=context%>/icons/page_text.gif ) no-repeat scroll 0%;
   margin: 10px 0 0 0;
 }
 
 .back {
   padding: 0 5px 0 20px;
-  background: url( /nuxeo/icons/back.png ) no-repeat scroll 0%;
+  background: url(<%=context%>/icons/back.png ) no-repeat scroll 0%;
   margin: 10px 0;
 }
 
 .change {
   padding: 0 5px 0 20px;
-  background: url( /nuxeo/icons/user_go.png ) no-repeat scroll 0%;
+  background: url(<%=context%>/icons/user_go.png ) no-repeat scroll 0%;
 }
 
 #stackTrace {
@@ -108,7 +108,6 @@ a:hover {
   String user_message = (String) request.getAttribute("user_message");
   String exception_message = (String) request.getAttribute("exception_message");
   String stackTrace = (String) request.getAttribute("stackTrace");
-  String context = request.getContextPath();
   Boolean securityError = (Boolean) request.getAttribute("securityError");
   String request_dump = (String) request.getAttribute("request_dump");
 
@@ -125,7 +124,7 @@ a:hover {
   <tr>
     <td width="280" align="right" valign="top">
       <div class="logo">
-        <img src="/nuxeo/img/logo_error.gif" alt="">
+        <img src="<%=context%>/img/logo_error.gif" alt="">
       </div>
     </td>
     <td>

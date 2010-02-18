@@ -8,6 +8,7 @@
 <%
 String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
 String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
+String context = request.getContextPath();
 %>
 <html>
 
@@ -15,17 +16,17 @@ String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
 
 <head>
 <title><%=productName%></title>
-<link rel="icon" type="image/png" href="/nuxeo/icons/favicon.png" />
+<link rel="icon" type="image/png" href="<%=context%>/icons/favicon.png" />
 <style type="text/css">
 <!--
  body {
   font: normal 11px "Lucida Grande", sans-serif;
-  background: url(/nuxeo/img/theme_galaxy/boston8.jpg) 0 0 no-repeat #000;
+  background: url(<%=context%>/img/theme_galaxy/boston8.jpg) 0 0 no-repeat #000;
   color: #343434;
   }
 
 .topBar {
-  background:#212325 url(/nuxeo/img/theme_galaxy/small_gray_bar.png) repeat-x scroll left top;
+  background:#212325 url(<%=context%>/img/theme_galaxy/small_gray_bar.png) repeat-x scroll left top;
   width:100%;
   height:36px;
   border:0;
@@ -101,7 +102,7 @@ nxthemes css is not used in login.jsp */
   cursor:pointer;
   color: #454545;
   font-size: 10px;
-  background: #CECFD1 url(/nuxeo/img/theme_galaxy/buttons.png) repeat-x scroll left top;
+  background: #CECFD1 url(<%=context%>/img/theme_galaxy/buttons.png) repeat-x scroll left top;
   border:1px solid #BFC5CB;
   padding: 2px 5px 2px 5px;
   margin: 5px 10px 10px 0;
@@ -180,7 +181,7 @@ nxthemes css is not used in login.jsp */
   color:#000;
   font:bold 10px "Lucida Grande", sans-serif;
   border:1px solid #666;
-  background: url(/nuxeo/icons/warning.gif) 2px 3px no-repeat #FFCC33;
+  background: url(<%=context%>/icons/warning.gif) 2px 3px no-repeat #FFCC33;
   margin-bottom:12px;
   display:block;
   padding:5px 5px 5px 23px;
@@ -197,7 +198,7 @@ nxthemes css is not used in login.jsp */
     <tbody>
       <tr class="topBar">
         <td>
-          <img width="116" height="36" alt="Nuxeo DM" src="/nuxeo/img/theme_galaxy/nuxeo_5.2_logo.png"/>
+          <img width="116" height="36" alt="Nuxeo DM" src="<%=context%>/img/theme_galaxy/nuxeo_5.2_logo.png"/>
        </td>
        <td align="right" class="leftColumn">
        <div class="labelCorp">

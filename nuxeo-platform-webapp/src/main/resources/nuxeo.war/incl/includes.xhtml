@@ -9,6 +9,7 @@
     value="var currentDocURL='#{currentServerLocation.name}/#{currentDocument.id}';"/>
     // set the conversation id before doing any call
     Seam.Remoting.getContext().setConversationId(currentConversationId);
+    Seam.Remoting.contextPath = '#{contextPath}';
 </script>
 
 <div style="display:none">

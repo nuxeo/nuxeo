@@ -232,7 +232,7 @@
     <layout element="page[4]/section[1]/cell[1]"/>
     <widget element="">
       <view>theme view</view>
-      <icon>/nuxeo/icons/favicon.png</icon>
+      <icon>${org.nuxeo.ecm.contextPath}/icons/favicon.png</icon>
       <charset>utf-8</charset>
     </widget>
     <widget element="page[1]|page[2]|page[3]|page[4]">

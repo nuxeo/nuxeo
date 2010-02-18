@@ -248,9 +248,8 @@
       <td class="fieldColumn" colspan="3">
         <h:inputText value="#{doc.advanced_search.searchpath}"
           styleClass="dataInputText" id="searchscope" />
-        <!-- XXX: the /nuxeo/ prefix should be dynamically looked up -->
         <nxu:methodResult name="url"
-          value="#{restHelper.addCurrentConversationParameters('/nuxeo/search/choose_searchscope_popup.faces')}">
+          value="#{restHelper.addCurrentConversationParameters('#{contextPath}/search/choose_searchscope_popup.faces')}">
           <input type="button" value="#{messages['command.advancedsearch.browse']}"
             class="button" onclick="javascript:popupSearch(this.form.id, '#{url}');" />
         </nxu:methodResult>

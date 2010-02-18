@@ -261,7 +261,7 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="applications">
 
-    <application root="/nuxeo" template-engine="jsf-facelets">
+    <application root="${org.nuxeo.ecm.contextPath}" template-engine="jsf-facelets">
 
       <negotiation>
         <strategy>nuxeo5</strategy>

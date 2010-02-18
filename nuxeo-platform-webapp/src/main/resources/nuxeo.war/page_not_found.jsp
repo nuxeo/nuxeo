@@ -4,6 +4,9 @@
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.plugins.AnonymousAuthenticator"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%
+String context = request.getContextPath();
+%>
 <html>
 <fmt:setBundle basename="messages" var="messages"/>
 <head>
@@ -11,7 +14,7 @@
   <style type="text/css">
 <!--
 body {
-  background: url( /nuxeo/img/fond_error.gif ) 0 0 repeat-x #ffffff;
+  background: url(<%=context%>/img/fond_error.gif ) 0 0 repeat-x #ffffff;
   margin: 0px;
 }
 
@@ -55,19 +58,19 @@ a:hover {
 
 .stacktrace {
   padding: 0 5px 0 20px;
-  background: url( /nuxeo/icons/page_text.gif ) no-repeat scroll 0%;
+  background: url(<%=context%>/icons/page_text.gif ) no-repeat scroll 0%;
   margin: 10px 0 0 0;
 }
 
 .back {
   padding: 0 5px 0 20px;
-  background: url( /nuxeo/icons/back.png ) no-repeat scroll 0%;
+  background: url(<%=context%>/icons/back.png ) no-repeat scroll 0%;
   margin: 10px 0;
 }
 
 .change {
   padding: 0 5px 0 20px;
-  background: url( /nuxeo/icons/user_go.png ) no-repeat scroll 0%;
+  background: url(<%=context%>/icons/user_go.png ) no-repeat scroll 0%;
 }
 
 #stackTrace {
@@ -108,7 +111,7 @@ a:hover {
   <tr>
     <td width="280" align="right" valign="top">
       <div class="logo">
-        <img src="/nuxeo/img/logo_error.gif" alt="">
+        <img src="<%=context%>/img/logo_error.gif" alt="">
       </div>
     </td>
     <td>
@@ -116,9 +119,9 @@ a:hover {
       <h1>Page Not Found</h1>
 
       <div class="links">
-        <div class="back"><a href="<%=request.getContextPath() %>/">back</a>
+        <div class="back"><a href="<%=context%>/">back</a>
         </div>
-        <div class="change"><a href="<%=request.getContextPath()%>/logout">change username</a>
+        <div class="change"><a href="<%=context%>/logout">change username</a>
         </div>
       </div>
     </td>

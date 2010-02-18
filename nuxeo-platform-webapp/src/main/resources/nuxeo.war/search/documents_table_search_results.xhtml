@@ -8,7 +8,7 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-<script type="text/javascript" src="/nuxeo/scripts/utils.js"></script>
+<script type="text/javascript" src="#{contextPath}/scripts/utils.js"></script>
 <a4j:region rendered="#{documents != null}">
   <h:form id="#{documents.name}">
     <h:outputText value="#{messages['label.content.empty.search']}"
