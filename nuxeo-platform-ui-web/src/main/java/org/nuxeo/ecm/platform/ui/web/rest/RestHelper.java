@@ -178,4 +178,9 @@ public class RestHelper implements Serializable {
         return baseURL;
     }
 
+    @Factory(value = "contextPath", scope = ScopeType.CONVERSATION)
+    public String getContextPath() {
+        return BaseURL.getContextPath();
+    }
+
 }

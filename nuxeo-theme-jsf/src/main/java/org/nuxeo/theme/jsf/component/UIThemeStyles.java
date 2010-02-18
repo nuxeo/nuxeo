@@ -25,6 +25,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.servlet.http.HttpServletRequest;
 
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.html.ui.ThemeStyles;
 import org.nuxeo.theme.themes.ThemeManager;
@@ -62,13 +63,15 @@ public class UIThemeStyles extends UIOutput {
 
         Map<String, Object> requestMap = externalContext.getRequestMap();
         final URL themeUrl = (URL) requestMap.get("org.nuxeo.theme.url");
-        
+
         Map<String, String> params = new HashMap<String, String>();
 
         params.put("themeName", ThemeManager.getThemeNameByUrl(themeUrl));
         params.put("path", externalContext.getRequestContextPath());
         // FIXME: use configuration
-        params.put("basepath", "/nuxeo/site");
+        String basePath =  Framework.getProperty("org.nuxeo.ecm.contextPath" , "/nuxeo")
+                + "/site";
+        params.put("basepath", basePath);
 
         Boolean virtualHosting = Utils.isVirtualHosting((HttpServletRequest) externalContext.getRequest());
         writer.write(ThemeStyles.render(params, Boolean.parseBoolean(cache),

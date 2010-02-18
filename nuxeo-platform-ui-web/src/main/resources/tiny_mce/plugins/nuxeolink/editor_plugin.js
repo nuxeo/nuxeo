@@ -21,7 +21,7 @@ var TinyMCE_NuxeoLinkPlugin = {
       case "mceNuxeoLink":
         var template = new Array();
 
-        var url = '/nuxeo/editor_link_search_document.faces' + '?conversationId=' + currentConversationId + '&conversationIsLongRunning=true';
+        var url = nxContextPath + '/editor_link_search_document.faces' + '?conversationId=' + currentConversationId + '&conversationIsLongRunning=true';
         window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=800, height=480');
         return true;
     }

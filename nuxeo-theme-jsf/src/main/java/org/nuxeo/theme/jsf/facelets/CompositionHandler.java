@@ -31,6 +31,8 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
@@ -137,10 +139,12 @@ public final class CompositionHandler extends TagHandler implements
                 strategy = strategyAttribute.getValue(ctx);
             }
 
+            String contextPath =  BaseURL.getContextPath()
+                + "/site";
             if (strategy == null) {
                 log.error("Could not obtain the negotiation strategy for "
                         + root);
-                external.redirect("/nuxeo/nxthemes/error/negotiationStrategyNotSet.faces");
+                external.redirect(contextPath + "/nxthemes/error/negotiationStrategyNotSet.faces");
 
             } else {
                 try {
@@ -151,7 +155,7 @@ public final class CompositionHandler extends TagHandler implements
                     ctx.includeFacelet(parent, themeUrl);
                 } catch (NegotiationException e) {
                     log.error("Could not get default negotiation settings.", e);
-                    external.redirect("/nuxeo/nxthemes/error/negotiationDefaultValuesNotSet.faces");
+                    external.redirect(contextPath + "/nxthemes/error/negotiationDefaultValuesNotSet.faces");
                 }
             }
 

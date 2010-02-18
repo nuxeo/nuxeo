@@ -25,6 +25,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.servlet.http.HttpServletRequest;
 
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.html.ui.Resources;
 
@@ -41,12 +44,15 @@ public class UIResources extends UIOutput {
         URL themeUrl = (URL) requestMap.get("org.nuxeo.theme.url");
         final Map<String, Object> attributes = getAttributes();
 
+        String contextPath = BaseURL.getContextPath();
+        params.put("contextPath", contextPath);
         params.put("themeUrl", themeUrl.toString());
-        params.put("path", externalContext.getRequestContextPath());
+        params.put("path", contextPath);
         params.put("ignoreLocal", (String) attributes.get("ignoreLocal"));
 
-        // XXX
-        params.put("basepath", "/nuxeo/site");
+        String basePath =  contextPath + "/site";
+        params.put("basepath", basePath);
+
 
         Boolean virtualHosting = Utils.isVirtualHosting((HttpServletRequest) externalContext.getRequest());
         writer.write(Resources.render(params, virtualHosting));

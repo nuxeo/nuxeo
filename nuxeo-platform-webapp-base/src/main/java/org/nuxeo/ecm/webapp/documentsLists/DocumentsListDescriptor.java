@@ -26,6 +26,8 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
+import org.nuxeo.runtime.api.Framework;
 
 @XObject(value = "documentsList")
 public class DocumentsListDescriptor implements Serializable {
@@ -44,7 +46,6 @@ public class DocumentsListDescriptor implements Serializable {
     @XNodeList(value = "events/event", type = ArrayList.class, componentType = String.class)
     private List<String> eventsName;
 
-    @XNode("imageURL")
     private String imageURL;
 
     @XNode("supportAppends")
@@ -68,13 +69,11 @@ public class DocumentsListDescriptor implements Serializable {
     // empty constructor needed for descriptor instantiation
     public DocumentsListDescriptor() {
         eventsName = new ArrayList<String>();
-        imageURL = "/nuxeo/icons/clipboard.gif";
+        imageURL = VirtualHostHelper.getContextPathProperty() + "/icons/clipboard.gif";
     }
 
     public DocumentsListDescriptor(String listName) {
         this();
-        eventsName = new ArrayList<String>();
-        imageURL = "/nuxeo/icons/clipboard.gif";
     }
 
     public String getCategory() {
@@ -121,8 +120,9 @@ public class DocumentsListDescriptor implements Serializable {
         return imageURL;
     }
 
+    @XNode("imageURL")
     public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
+        this.imageURL = Framework.expandVars(imageURL);
     }
 
     public String getTitle() {

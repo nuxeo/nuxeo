@@ -33,6 +33,7 @@ import javax.faces.render.Renderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 
 /**
  * Renders many listboxes for the MultiListbox component
@@ -92,7 +93,7 @@ public class ChainSelectMultiListboxRenderer extends Renderer {
                 + id2
                 + "':'"
                 + id2
-                + "'},'actionUrl':'/nuxeo/documents/tabs/document_externe_edit.faces'})";
+                + "'},'actionUrl':'" + BaseURL.getContextPath() + "/documents/tabs/document_externe_edit.faces'})";
 
         boolean multiSelect = comp.getBooleanProperty("multiSelect", false);
         String size = comp.getStringProperty("size", null);

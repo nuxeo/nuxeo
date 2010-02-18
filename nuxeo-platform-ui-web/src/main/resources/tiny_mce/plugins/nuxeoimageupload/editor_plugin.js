@@ -21,7 +21,7 @@ var TinyMCE_NuxeoImageUploadPlugin = {
       case "mceNuxeoImageUpload":
         var template = new Array();
 
-        var url = '/nuxeo/editor_image_upload.faces' + '?conversationId=' + currentConversationId + '&conversationIsLongRunning=true';
+        var url = nxContextPath + '/editor_image_upload.faces' + '?conversationId=' + currentConversationId + '&conversationIsLongRunning=true';
         window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=350 , height=150');
         return true;
     }

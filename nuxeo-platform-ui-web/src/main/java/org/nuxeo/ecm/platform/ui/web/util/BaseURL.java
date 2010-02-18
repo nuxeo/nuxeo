@@ -25,6 +25,7 @@ import javax.servlet.ServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
+import org.nuxeo.runtime.api.Framework;
 
 public final class BaseURL {
 
@@ -57,19 +58,8 @@ public final class BaseURL {
      * @return WebApp name : ie : nuxeo
      */
     public static String getWebAppName() {
-        final FacesContext facesContext = FacesContext.getCurrentInstance();
-        if (facesContext != null) {
-            String baseURL = facesContext.getExternalContext().getRequestContextPath();
-
-            if (baseURL==null) {
-                return "nuxeo";
-            }
-
-            baseURL = baseURL.replace("/", "");
-            return baseURL;
-        } else {
-            return "nuxeo";
-        }
+        ServletRequest request = getRequest();
+        return VirtualHostHelper.getWebAppName(request);
     }
 
     /**
@@ -93,6 +83,10 @@ public final class BaseURL {
             log.error("Could not retrieve loacl url correctly");
         }
         return localURL;
+    }
+
+    public static String getContextPath() {
+        return VirtualHostHelper.getContextPath(getRequest());
     }
 
 }

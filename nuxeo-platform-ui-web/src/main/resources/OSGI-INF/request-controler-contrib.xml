@@ -5,7 +5,7 @@
     point="filterConfig">
 
     <filterConfig name="SeamRemoting" transactional="true" synchonize="false">
-      <pattern>/nuxeo/seam/resource/remoting/execute.*</pattern>
+      <pattern>${org.nuxeo.ecm.contextPath}/seam/resource/remoting/execute.*</pattern>
     </filterConfig>
 
   </extension>

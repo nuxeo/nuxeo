@@ -30,6 +30,7 @@ import javax.faces.el.ValueBinding;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 
 /**
  * @deprecated : component is useless (not declared correctly in
@@ -329,7 +330,7 @@ public class ChainSelectMultiListboxComponent extends UIInput {
                     + id2
                     + "':'"
                     + id2
-                    + "'},'actionUrl':'/nuxeo/documents/tabs/document_externe_edit.faces'})";
+                    + "'},'actionUrl':'" + BaseURL.getContextPath() + "/documents/tabs/document_externe_edit.faces'})";
 
             comp.setOnchange(onchange);
 

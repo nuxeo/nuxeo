@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.runtime.api.Framework;
 
 public final class URLUtils {
 
@@ -109,13 +111,7 @@ public final class URLUtils {
      * @return WebApp name : ie : nuxeo
      */
     public static String getWebAppName() {
-        final FacesContext facesContext = FacesContext.getCurrentInstance();
-        if (facesContext != null) {
-            String baseURL = facesContext.getExternalContext().getRequestContextPath();
-            baseURL = baseURL.replace("/", "");
-            return baseURL;
-        }
-        return "nuxeo";
+        return BaseURL.getWebAppName();
     }
 
     /**
