@@ -65,7 +65,7 @@ public class TestBrowse extends NXRuntimeTestCase {
         for (String cid : runtimeSnapshot.getComponentIds()) {
             System.out.println("component : " + cid);
             ComponentInfo ci = runtimeSnapshot.getComponent(cid);
-            System.out.println(ci.getXmlFileContent());
+            //System.out.println(ci.getXmlFileContent());
         }
 
         for (String sid : runtimeSnapshot.getServiceIds()) {
@@ -75,6 +75,12 @@ public class TestBrowse extends NXRuntimeTestCase {
         for (Class spi : runtimeSnapshot.getSpi()) {
             System.out.println("SPI : " + spi.getCanonicalName());
         }
+
+        for (String epid : runtimeSnapshot.getExtensionPointIds()) {
+            System.out.println("extensionPoint : " + epid);
+            //System.out.println(ci.getXmlFileContent());
+        }
+
     }
 
     protected void dumpBundleGroup(BundleGroup bGroup, int level) {

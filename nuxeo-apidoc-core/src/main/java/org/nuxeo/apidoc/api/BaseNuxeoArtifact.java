@@ -19,14 +19,16 @@
 
 package org.nuxeo.apidoc.api;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+
 /**
- *  
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
 public abstract class BaseNuxeoArtifact implements NuxeoArtifact {
 
-    public AssociatedDocuments getAssociatedDocuments() {
+    public AssociatedDocuments getAssociatedDocuments(CoreSession session) {
         // TODO Auto-generated method stub
         return null;
     }

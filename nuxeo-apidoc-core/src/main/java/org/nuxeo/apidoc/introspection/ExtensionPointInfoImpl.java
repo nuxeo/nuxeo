@@ -85,4 +85,12 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
     public String getId() {
         return getName();
     }
+
+    public String getVersion() {
+        return component.getVersion();
+    }
+
+    public String getArtifactType() {
+        return ExtensionPointInfo.TYPE_NAME;
+    }
 }

@@ -26,7 +26,7 @@ import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.BundleGroup;
 
 /**
- *  
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
@@ -36,14 +36,16 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup{
     protected String name;
     protected List<BundleGroup> subGroups = new ArrayList<BundleGroup>();
     protected List<String> bundleIds = new ArrayList<String>();
+    protected String version;
 
-    public BundleGroupImpl(String key) {
+    public BundleGroupImpl(String key, String version) {
         this.key=key;
         if (key.startsWith("grp:")) {
             name = key.substring(4);
         } else {
             name=key;
         }
+        this.version=version;
     }
 
     public String getKey() {
@@ -73,6 +75,14 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup{
     @Override
     public String getId() {
         return getKey();
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public String getArtifactType() {
+        return BundleGroup.TYPE_NAME;
     }
 
 }

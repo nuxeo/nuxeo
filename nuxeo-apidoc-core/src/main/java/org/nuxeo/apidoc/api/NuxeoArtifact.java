@@ -19,6 +19,8 @@
 
 package org.nuxeo.apidoc.api;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
@@ -27,6 +29,9 @@ public interface NuxeoArtifact {
 
     String getId();
 
-    AssociatedDocuments getAssociatedDocuments();
+    AssociatedDocuments getAssociatedDocuments(CoreSession session);
 
+    String getVersion();
+
+    String getArtifactType();
 }

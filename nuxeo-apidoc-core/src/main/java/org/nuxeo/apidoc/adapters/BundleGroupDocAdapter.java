@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
+import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -31,7 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 
 /**
- *  
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
@@ -40,22 +41,22 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     public static BundleGroupDocAdapter create(BundleGroup bundleGroup, CoreSession session, String containerPath) throws ClientException {
 
-        DocumentModel doc = session.createDocumentModel(TYPE_NAME);        
+        DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName(bundleGroup.getName());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {
-        	exist = true;
-        	doc = session.getDocument(new PathRef(targetPath));
+            exist = true;
+            doc = session.getDocument(new PathRef(targetPath));
         }
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", bundleGroup.getName());
         doc.setPropertyValue("nxbundlegroup:groupName", bundleGroup.getName());
         doc.setPropertyValue("nxbundlegroup:key", bundleGroup.getKey());
         if (exist) {
-        	doc = session.saveDocument(doc);
+            doc = session.saveDocument(doc);
         } else {
-        	doc = session.createDocument(doc);
+            doc = session.createDocument(doc);
         }
         return new BundleGroupDocAdapter(doc);
     }
@@ -126,6 +127,22 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
     @Override
     public String getId() {
         return getName();
+    }
+
+    public String getVersion() {
+
+        DistributionSnapshot parentSnapshot = getParentNuxeoArtifact(DistributionSnapshot.class);
+
+        if (parentSnapshot!=null) {
+            return parentSnapshot.getVersion();
+        }
+
+        log.error("Unable to determine version for bundleGroup " + getId());
+        return "?";
+    }
+
+    public String getArtifactType() {
+        return BundleGroup.TYPE_NAME;
     }
 
 }

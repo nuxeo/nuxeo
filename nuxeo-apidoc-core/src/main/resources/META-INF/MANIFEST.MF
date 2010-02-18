@@ -8,5 +8,8 @@ Nuxeo-Require: org.nuxeo.ecm.core
 Nuxeo-Component: OSGI-INF/schema-contrib.xml,
  OSGI-INF/doctype-contrib.xml,
  OSGI-INF/life-cycle-contrib.xml,
+ OSGI-INF/documentation-service-framework.xml,
  OSGI-INF/adapter-contrib.xml,
- OSGI-INF/ui-contrib.xml
+ OSGI-INF/ui-contrib.xml,
+ OSGI-INF/directories-contrib.xml,
+ OSGI-INF/directory-ui-contrib.xml

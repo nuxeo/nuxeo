@@ -120,4 +120,12 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         return getBundleId();
     }
 
+    public String getVersion() {
+        return getArtifactVersion();
+    }
+
+    public String getArtifactType() {
+        return BundleInfo.TYPE_NAME;
+    }
+
 }

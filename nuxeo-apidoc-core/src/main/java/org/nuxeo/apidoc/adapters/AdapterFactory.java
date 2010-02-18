@@ -21,17 +21,19 @@ package org.nuxeo.apidoc.adapters;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
+import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.documentation.DocumentationItemDocAdapter;
 import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
 /**
- * 
+ *
  * Factory for DocumentModelAdapters
- * 
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
@@ -76,6 +78,12 @@ public class AdapterFactory implements DocumentAdapterFactory {
         if (adapterClass.getSimpleName().equals(DistributionSnapshot.class.getSimpleName())) {
             if (doc.getType().equals(DistributionSnapshot.TYPE_NAME)) {
                 return new RepositoryDistributionSnapshot(doc);
+            }
+        }
+
+        if (adapterClass.getSimpleName().equals(DocumentationItem.class.getSimpleName())) {
+            if (doc.getType().equals(DocumentationItemDocAdapter.DOC_TYPE)) {
+                return new DocumentationItemDocAdapter(doc);
             }
         }
 

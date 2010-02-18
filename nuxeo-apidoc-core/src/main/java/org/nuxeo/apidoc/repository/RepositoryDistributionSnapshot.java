@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 
 /**
- *  
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
@@ -49,8 +49,8 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {
-        	exist = true;
-        	doc = session.getDocument(new PathRef(targetPath));
+            exist = true;
+            doc = session.getDocument(new PathRef(targetPath));
         }
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", distrib.getKey());
@@ -58,21 +58,21 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         doc.setPropertyValue("nxdistribution:version", distrib.getVersion());
         doc.setPropertyValue("nxdistribution:key", distrib.getKey());
         if (exist) {
-        	doc = session.saveDocument(doc);	
+            doc = session.saveDocument(doc);
         } else {
-        	doc = session.createDocument(doc);
+            doc = session.createDocument(doc);
         }
         return new RepositoryDistributionSnapshot(doc);
     }
 
     public static List<DistributionSnapshot> readPersistentSnapshots(CoreSession session) {
-    	List<DistributionSnapshot> result = new ArrayList<DistributionSnapshot>();
-        String query = "select * from " + TYPE_NAME ;        
+        List<DistributionSnapshot> result = new ArrayList<DistributionSnapshot>();
+        String query = "select * from " + TYPE_NAME ;
         try {
-        	
+
             DocumentModelList docs = session.query(query);
             for (DocumentModel child : docs) {
-            	DistributionSnapshot ob = child.getAdapter(DistributionSnapshot.class);
+                DistributionSnapshot ob = child.getAdapter(DistributionSnapshot.class);
                 if (ob!=null) {
                     result.add(ob);
                 }
@@ -83,7 +83,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         }
         return result;
     }
-    
+
     public RepositoryDistributionSnapshot(DocumentModel doc) {
         super(doc);
     }
@@ -274,4 +274,9 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public String getId() {
         return getKey();
     }
+
+    public String getArtifactType() {
+        return DistributionSnapshot.TYPE_NAME;
+    }
+
 }

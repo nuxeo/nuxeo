@@ -21,6 +21,7 @@ package org.nuxeo.apidoc.adapters;
 
 import java.io.Serializable;
 
+import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -31,7 +32,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.model.ComponentName;
 
 /**
- *  
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
@@ -40,16 +41,16 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     public static ExtensionInfoDocAdapter create(ExtensionInfo xi,
             CoreSession session, String containerPath) throws Exception {
-    	
+
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
         String name = computeDocumentName(xi.getId());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {
-        	exist = true;
-        	doc = session.getDocument(new PathRef(targetPath));
-        }                
+            exist = true;
+            doc = session.getDocument(new PathRef(targetPath));
+        }
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", xi.getId());
 
@@ -67,11 +68,11 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         doc.setPropertyValue("file:content", (Serializable) xmlBlob);
 
         if (exist) {
-        	doc = session.saveDocument(doc);
+            doc = session.saveDocument(doc);
         } else {
-        	doc = session.createDocument(doc);
+            doc = session.createDocument(doc);
         }
-        
+
 
         return new ExtensionInfoDocAdapter(doc);
     }
@@ -127,4 +128,21 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
             return null;
         }
     }
+
+    public String getVersion() {
+
+        BundleInfo parentBundle = getParentNuxeoArtifact(BundleInfo.class);
+
+        if (parentBundle!=null) {
+            return parentBundle.getVersion();
+        }
+
+        log.error("Unable to determine version for Contribution " + getId());
+        return "?";
+    }
+
+    public String getArtifactType() {
+        return ExtensionInfo.TYPE_NAME;
+    }
+
 }

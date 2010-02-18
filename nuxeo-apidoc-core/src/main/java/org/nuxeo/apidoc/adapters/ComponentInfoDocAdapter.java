@@ -29,6 +29,7 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -38,7 +39,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
- *  
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
@@ -47,14 +48,14 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     public static ComponentInfoDocAdapter create(ComponentInfo componentInfo, CoreSession session, String containerPath) throws Exception {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
-        
+
         String name = computeDocumentName(componentInfo.getName());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {
-        	exist = true;
-        	doc = session.getDocument(new PathRef(targetPath));
-        }                
+            exist = true;
+            doc = session.getDocument(new PathRef(targetPath));
+        }
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", componentInfo.getName());
         doc.setPropertyValue("nxcomponent:componentName", componentInfo.getName());
@@ -66,16 +67,16 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         Blob xmlBlob = new StringBlob(componentInfo.getXmlFileContent());
         String xmlFileName ="descriptor.xml";
         if (componentInfo.getXmlFileUrl()!=null) {
-        	xmlFileName = new Path(componentInfo.getXmlFileUrl().getFile()).lastSegment();
+            xmlFileName = new Path(componentInfo.getXmlFileUrl().getFile()).lastSegment();
         }
         xmlBlob.setFilename(xmlFileName);
         xmlBlob.setMimeType("text/xml");
         doc.setPropertyValue("file:content",(Serializable) xmlBlob);
 
         if (exist) {
-        	doc = session.saveDocument(doc);
+            doc = session.saveDocument(doc);
         } else {
-        	doc = session.createDocument(doc);
+            doc = session.createDocument(doc);
         }
         return new ComponentInfoDocAdapter(doc);
     }
@@ -203,6 +204,23 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     @Override
     public String getId() {
         return getName();
+    }
+
+    public String getVersion() {
+
+        BundleInfo parentBundle = getParentNuxeoArtifact(BundleInfo.class);
+
+        if (parentBundle!=null) {
+            return parentBundle.getVersion();
+        }
+
+        log.error("Unable to determine version for Component " + getId());
+        return "?";
+    }
+
+
+    public String getArtifactType() {
+        return ComponentInfo.TYPE_NAME;
     }
 
 }

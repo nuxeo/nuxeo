@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 
 /**
- *  
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
@@ -41,9 +41,9 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact{
      protected static Log log = LogFactory.getLog(BaseNuxeoArtifactDocAdapter.class);
 
      protected static String computeDocumentName(String name) {
-    	 return IdUtils.generateId(name,"-",true,500);
+         return IdUtils.generateId(name,"-",true,500);
      }
-     
+
      protected static String getRootPath(CoreSession session, String basePath, String suffix) throws ClientException {
          PathRef rootRef = new PathRef(basePath);
          if (session.exists(rootRef)) {
@@ -80,5 +80,25 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact{
          }
          return CoreInstance.getInstance().getSession(doc.getSessionId());
      }
+
+     protected <T> T getParentNuxeoArtifact(Class <T> artifactClass ) {
+
+         try {
+             for (DocumentModel parent : getCoreSession().getParentDocuments(doc.getRef())) {
+
+                 T result = parent.getAdapter(artifactClass);
+                 if (result!=null) {
+                     return result;
+                 }
+             }
+         }
+         catch (Exception e) {
+             log.error("Error while getting Parent artifact", e);
+             return null;
+         }
+         log.error("Parent artifact not found ");
+         return null;
+     }
+
 
 }

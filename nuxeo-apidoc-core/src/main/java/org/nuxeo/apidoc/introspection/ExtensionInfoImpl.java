@@ -90,4 +90,12 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
         this.xml = xml;
     }
 
+    public String getVersion() {
+        return component.getVersion();
+    }
+
+    public String getArtifactType() {
+        return ExtensionInfo.TYPE_NAME;
+    }
+
 }

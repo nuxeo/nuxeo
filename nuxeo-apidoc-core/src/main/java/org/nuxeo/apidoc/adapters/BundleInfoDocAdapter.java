@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
- *  
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
@@ -44,14 +44,14 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
 
     public static BundleInfoDocAdapter create(BundleInfo bundleInfo, CoreSession session, String containerPath) throws ClientException {
 
-        DocumentModel doc = session.createDocumentModel(TYPE_NAME);       
+        DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName(bundleInfo.getBundleId());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {
-        	exist = true;
-        	doc = session.getDocument(new PathRef(targetPath));
-        }        
+            exist = true;
+            doc = session.getDocument(new PathRef(targetPath));
+        }
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", bundleInfo.getBundleId());
         doc.setPropertyValue("nxbundle:artifactGroupId", bundleInfo.getArtifactGroupId());
@@ -65,9 +65,9 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         doc.setPropertyValue("file:content",(Serializable) manifestBlob);
 
         if (exist) {
-        	doc = session.saveDocument(doc);
+            doc = session.saveDocument(doc);
         } else {
-        	doc = session.createDocument(doc);
+            doc = session.createDocument(doc);
         }
 
         return new BundleInfoDocAdapter(doc);
@@ -160,4 +160,11 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         return getBundleId();
     }
 
+    public String getVersion() {
+        return getArtifactVersion();
+    }
+
+    public String getArtifactType() {
+        return BundleInfo.TYPE_NAME;
+    }
 }

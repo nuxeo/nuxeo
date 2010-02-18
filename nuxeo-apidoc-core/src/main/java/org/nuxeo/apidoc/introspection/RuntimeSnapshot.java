@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- *  
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
@@ -147,18 +147,18 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         }
 
         for (String grpId : mavenGroups.keySet()) {
-            BundleGroupImpl bGroup = buildBundleGroup(grpId);
+            BundleGroupImpl bGroup = buildBundleGroup(grpId, serverInfo.getVersion());
             bundleGroups.add(bGroup);
         }
         return serverInfo;
 
     }
 
-    protected BundleGroupImpl buildBundleGroup(String id) {
-        BundleGroupImpl bGroup = new BundleGroupImpl(id);
+    protected BundleGroupImpl buildBundleGroup(String id, String version) {
+        BundleGroupImpl bGroup = new BundleGroupImpl(id, version);
         for (String aid : getBundleGroupChildren(id)) {
             if (aid.startsWith("grp:")) {
-                bGroup.add(buildBundleGroup(aid));
+                bGroup.add(buildBundleGroup(aid, version));
             } else {
                 bGroup.add(aid);
             }
@@ -303,7 +303,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     public DistributionSnapshot persist(CoreSession session) throws ClientException {
         SnapshotPersister sp = new SnapshotPersister();
-        DistributionSnapshot snap =  sp.persist(this, session, this.getKey());      
+        DistributionSnapshot snap =  sp.persist(this, session, this.getKey());
         SnapshotManager.addPersistentSnapshot(snap.getKey(), snap);
         return snap;
     }
@@ -315,6 +315,10 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     @Override
     public String getId() {
         return getKey();
+    }
+
+    public String getArtifactType() {
+        return DistributionSnapshot.TYPE_NAME;
     }
 
 }

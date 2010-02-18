@@ -65,7 +65,7 @@
       <schema name="dublincore" />
       <schema name="file" />
 	  <schema name="nxextensionpoint" />
-	  
+
       <facet name="Commentable" />
       <facet name="Versionable" />
       <facet name="Indexable" />
@@ -83,6 +83,17 @@
       <facet name="Indexable" />
     </doctype>
 
+
+    <doctype name="NXDocumentation" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="file" />
+      <schema name="files" />
+      <schema name="nxdocumentation" />
+      <facet name="Commentable" />
+      <facet name="Versionable" />
+      <facet name="Indexable" />
+    </doctype>
 
   </extension>
 

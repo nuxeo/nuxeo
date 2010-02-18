@@ -22,7 +22,7 @@ package org.nuxeo.apidoc.api;
 import java.util.List;
 
 /**
- *  
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */

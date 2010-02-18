@@ -57,7 +57,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
     protected String documentation; //TODO
 
     protected static Log log = LogFactory.getLog(ComponentInfoImpl.class);
-    
+
     public ComponentInfoImpl(BundleInfoImpl binfo, String name) {
         this.bundle = binfo;
         this.name = name;
@@ -132,9 +132,9 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
 
     public String getXmlFileContent() {
 
-    	if (xmlFileUrl==null) {
-    		return "";
-    	}
+        if (xmlFileUrl==null) {
+            return "";
+        }
         String path = xmlFileUrl.getPath();
         String[] parts = path.split("!");
 
@@ -142,32 +142,40 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
         if (!jar.exists()) {
             return "Unable to locate Bundle :" +parts[0];
         }
-        
+
         try {
             if (jar.getAbsolutePath().endsWith(".xml")) {
-            	return FileUtils.read(new FileInputStream(jar));
+                return FileUtils.read(new FileInputStream(jar));
             }
 
-        	if (jar.isDirectory()) {
-	            File xml = new File(new Path(jar.getAbsolutePath()).append(parts[1]).toString());
-	            if (!xml.exists()) {
-	                return "Unable to locate file :" + xml.getAbsolutePath();
-	            }
-	            return FileUtils.readFile(xml);
-	        } else {
-	            ZipFile jarArchive = new ZipFile(jar);
-	            ZipEntry entry  = jarArchive.getEntry(parts[1].substring(1));
-	            return FileUtils.read(jarArchive.getInputStream(entry));
-	        }
+            if (jar.isDirectory()) {
+                File xml = new File(new Path(jar.getAbsolutePath()).append(parts[1]).toString());
+                if (!xml.exists()) {
+                    return "Unable to locate file :" + xml.getAbsolutePath();
+                }
+                return FileUtils.readFile(xml);
+            } else {
+                ZipFile jarArchive = new ZipFile(jar);
+                ZipEntry entry  = jarArchive.getEntry(parts[1].substring(1));
+                return FileUtils.read(jarArchive.getInputStream(entry));
+            }
         }
         catch (Exception e) {
-        	log.error("Error while getting XML file", e);
-			return "";
-		}
+            log.error("Error while getting XML file", e);
+            return "";
+        }
     }
 
     @Override
     public String getId() {
         return getName();
+    }
+
+    public String getVersion() {
+        return bundle.getVersion();
+    }
+
+    public String getArtifactType() {
+        return ComponentInfo.TYPE_NAME;
     }
 }

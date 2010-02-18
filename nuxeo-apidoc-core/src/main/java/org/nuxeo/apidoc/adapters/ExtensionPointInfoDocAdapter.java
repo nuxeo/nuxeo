@@ -22,6 +22,7 @@ package org.nuxeo.apidoc.adapters;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
@@ -31,7 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 
 /**
- *  
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
@@ -42,14 +43,14 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
             CoreSession session, String containerPath) throws Exception {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
-        
+
         String name = computeDocumentName(xpi.getId());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {
-        	exist = true;
-        	doc = session.getDocument(new PathRef(targetPath));
-        }                
+            exist = true;
+            doc = session.getDocument(new PathRef(targetPath));
+        }
         doc.setPathInfo(containerPath,name);
         doc.setPropertyValue("dc:title", xpi.getId());
 
@@ -58,9 +59,9 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         doc.setPropertyValue("nxextensionpoint:extensionPoint", xpi.getTypes());
 
         if (exist) {
-        	doc = session.saveDocument(doc);
+            doc = session.saveDocument(doc);
         } else {
-        	doc = session.createDocument(doc);
+            doc = session.createDocument(doc);
         }
         return new ExtensionPointInfoDocAdapter(doc);
     }
@@ -114,6 +115,23 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     @Override
     public String getId() {
         return getName();
+    }
+
+    public String getVersion() {
+
+        BundleInfo parentBundle = getParentNuxeoArtifact(BundleInfo.class);
+
+        if (parentBundle!=null) {
+            return parentBundle.getVersion();
+        }
+
+        log.error("Unable to determine version for ExtensionPoint " + getId());
+        return "?";
+    }
+
+
+    public String getArtifactType() {
+        return ExtensionPointInfo.TYPE_NAME;
     }
 
 }
