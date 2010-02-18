@@ -19,40 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.component.list;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import javax.el.ELException;
-import javax.el.ValueExpression;
-import javax.faces.FacesException;
-import javax.faces.component.ContextCallback;
-import javax.faces.component.NamingContainer;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIInput;
-import javax.faces.context.FacesContext;
-import javax.faces.event.FacesEvent;
-import javax.faces.event.PhaseId;
-
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.api.model.impl.ListProperty;
-import org.nuxeo.ecm.platform.el.FieldAdapterManager;
-import org.nuxeo.ecm.platform.ui.web.model.EditableModel;
-import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelImpl;
-import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelRowEvent;
-import org.nuxeo.ecm.platform.ui.web.model.impl.ProtectedEditableModelImpl;
-
-import com.sun.facelets.tag.jsf.ComponentSupport;
 
 /**
  * Editable table component.
@@ -375,7 +341,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
     /**
      * Gets the EditableModel to use with this component.
      */
-    protected final EditableModel getEditableModel() {
+    public final EditableModel getEditableModel() {
         InternalState iState = getInternalState(true);
         if (iState._model == null) {
             initializeState(false);
