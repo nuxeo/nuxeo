@@ -20,6 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.nuxeo.runtime.api.Framework;
+
 public class PropertiesPaletteParser extends PaletteParser {
 
     public static boolean checkSanity(byte[] bytes) {
@@ -37,7 +39,7 @@ public class PropertiesPaletteParser extends PaletteParser {
         Properties properties =getProperties(bytes);
         for (Object propertyName : properties.keySet()) {
             String key = (String) propertyName;
-            entries.put(key, (String) properties.get(key));
+            entries.put(key, Framework.expandVars((String) properties.get(key)));
         }
         return entries;
     }

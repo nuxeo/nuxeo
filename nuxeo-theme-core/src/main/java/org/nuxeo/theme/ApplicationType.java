@@ -21,13 +21,14 @@ import java.util.Set;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 
 @XObject("application")
 public final class ApplicationType implements Type {
 
-    @XNode("@root")
+
     private String root;
 
     @XNode("@template-engine")
@@ -77,8 +78,9 @@ public final class ApplicationType implements Type {
         return root;
     }
 
+    @XNode("@root")
     public void setRoot(final String root) {
-        this.root = root;
+        this.root = Framework.expandVars(root);
     }
 
     public Map<String, ViewDef> getViewDefs() {

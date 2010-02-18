@@ -77,6 +77,11 @@
         <artifactId>nuxeo-platform-rendering</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-web-common</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.nuxeo.theme</groupId>

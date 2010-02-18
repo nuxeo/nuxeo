@@ -16,6 +16,7 @@ package org.nuxeo.theme;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 
@@ -25,7 +26,7 @@ public final class ShortcutType implements Type {
     @XNode("@key")
     private String key;
 
-    @XNode("@target")
+
     private String target;
 
 
@@ -49,8 +50,9 @@ public final class ShortcutType implements Type {
         this.key = key;
     }
 
+    @XNode("@target")
     public void setTarget(final String target) {
-        this.target = target;
+        this.target = Framework.expandVars(target);
     }
 
 }

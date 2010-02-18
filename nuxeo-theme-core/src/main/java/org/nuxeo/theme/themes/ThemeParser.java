@@ -39,6 +39,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
@@ -521,7 +522,7 @@ public class ThemeParser {
                     textContent = String.format("\"%s\"", presetName);
                 }
             }
-            properties.setProperty(n.getNodeName(), textContent);
+            properties.setProperty(n.getNodeName(), Framework.expandVars(textContent));
         }
         return properties;
     }
