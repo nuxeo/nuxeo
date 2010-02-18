@@ -2183,13 +2183,7 @@ public class Mapper {
         }
 
         protected Map<String, Serializable> fetchCurrent() throws SQLException {
-            Map<String, Serializable> map = new HashMap<String, Serializable>();
-            int i = 1;
-            for (Column column : q.selectInfo.whatColumns) {
-                String key = q.selectInfo.whatColumnsAliases == null ? column.getKey()
-                        : q.selectInfo.whatColumnsAliases.get(i - 1);
-                map.put(key, column.getFromResultSet(rs, i++));
-            }
+            Map<String, Serializable> map = q.selectInfo.mapMaker.makeMap(rs);
             if (isLogEnabled()) {
                 logResultSet(rs, q.selectInfo.whatColumns);
             }
