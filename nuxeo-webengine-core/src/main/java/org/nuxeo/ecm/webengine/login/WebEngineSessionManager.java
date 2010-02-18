@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.plugins.DefaultSessionManager;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.session.StatefulUserSession;
 import org.nuxeo.ecm.webengine.session.StatelessUserSession;
 import org.nuxeo.ecm.webengine.session.UserSession;
@@ -34,7 +35,7 @@ import org.nuxeo.ecm.webengine.session.UserSession;
 public class WebEngineSessionManager extends DefaultSessionManager {
 
     // TODO work on skin request to avoid hardcoding paths
-    private static final String RESOURCES_PATH = "/nuxeo/site/files/";
+    private static final String RESOURCES_PATH = VirtualHostHelper.getContextPathProperty() + "/site/files/";
     private static final Log log = LogFactory
             .getLog(WebEngineSessionManager.class);
 

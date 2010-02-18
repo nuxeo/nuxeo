@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -61,12 +62,13 @@ public class TemplateView {
         bindings.put("Context", ctx);
         bindings.put("Engine", ctx.getEngine());
         bindings.put("basePath", ctx.getBasePath());
+        bindings.put("contextPath", VirtualHostHelper.getContextPathProperty());
     }
 
     public WebContext getContext() {
         return ctx;
     }
-    
+
     public TemplateView arg(String key, Object value) {
         bindings.put(key, value);
         return this;

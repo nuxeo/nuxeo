@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.html.ui.Resources;
@@ -65,6 +66,7 @@ public class NXThemesResourcesDirective implements TemplateDirectiveModel {
         attributes.put("themeUrl", themeUrl.toString());
         attributes.put("path", context.getModulePath());
         attributes.put("basepath", context.getBasePath());
+        attributes.put("contextPath", VirtualHostHelper.getContextPath(request));
 
         Boolean virtualHosting = org.nuxeo.theme.html.Utils.isVirtualHosting(request);
         writer.write(Resources.render(attributes, virtualHosting));
