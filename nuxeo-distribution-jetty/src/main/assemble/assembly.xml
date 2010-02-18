@@ -141,6 +141,7 @@
       <artifact:resolveFile key="jotm:jotm" />
       <artifact:resolveFile key="javax.ejb:ejb-api" />
       <artifact:resolveFile key="javax.transaction:jta" />
+      <artifact:resolveFile key="javax.annotation:jsr250-api" />
 
       <artifact:resolveFile key="org.apache.ant:ant" />
       <artifact:resolveFile key="bsh:bsh" />
