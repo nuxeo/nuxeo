@@ -19,6 +19,7 @@
 
 package org.nuxeo.apidoc.adapters;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,19 +80,11 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     }
 
     public String getArtifactId() {
-        try {
-            return (String) doc.getPropertyValue("nxbundle:artifactId");
-        } catch (Exception e) {
-            return null;
-        }
+        return safeGet("nxbundle:artifactId");
     }
 
     public String getBundleId() {
-        try {
-            return (String) doc.getPropertyValue("nxbundle:bundleId");
-        } catch (Exception e) {
-            return null;
-        }
+        return safeGet("nxbundle:bundleId");
     }
 
     public Collection<ComponentInfo> getComponents() {
@@ -114,19 +107,11 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     }
 
     public String getFileName() {
-        try {
-            return (String) doc.getPropertyValue("nxbundle:jarName");
-        } catch (Exception e) {
-            return null;
-        }
+        return safeGet("nxbundle:jarName");
     }
 
     public String getArtifactGroupId() {
-        try {
-            return (String) doc.getPropertyValue("nxbundle:artifactGroupId");
-        } catch (Exception e) {
-            return null;
-        }
+        return safeGet("nxbundle:artifactGroupId");
     }
 
     public String getLocation() {
@@ -136,10 +121,11 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
 
     public String getManifest() {
         try {
-            Blob mf = (Blob) doc.getPropertyValue("file:content");
+            Blob mf = safeGet(Blob.class, "file:content", new StringBlob("No MANIFEST"));
             return mf.getString();
-        } catch (Exception e) {
-            return null;
+        } catch (IOException e) {
+            log.error("Error while reading blob", e);
+            return "";
         }
     }
 
@@ -148,11 +134,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     }
 
     public String getArtifactVersion() {
-        try {
-            return (String) doc.getPropertyValue("nxbundle:artifactVersion");
-        } catch (Exception e) {
-            return null;
-        }
+        return safeGet("nxbundle:artifactVersion", null);
     }
 
     @Override

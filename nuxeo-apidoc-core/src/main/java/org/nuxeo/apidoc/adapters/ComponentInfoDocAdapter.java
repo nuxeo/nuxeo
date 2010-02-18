@@ -29,7 +29,6 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
-import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -98,23 +97,11 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     }
 
     public String getComponentClass() {
-        try {
-            return (String) doc.getPropertyValue("nxcomponent:componentClass");
-        }
-        catch (Exception e) {
-            // TODO: handle exception
-        }
-        return null;
+        return safeGet("nxcomponent:componentClass");
     }
 
     public String getDocumentation() {
-        try {
-            return (String) doc.getPropertyValue("nxcomponent:builtInDocumentation");
-        }
-        catch (Exception e) {
-            // TODO: handle exception
-        }
-        return null;
+        return safeGet("nxcomponent:builtInDocumentation");
     }
 
     public ExtensionPointInfo getExtensionPoint(String name) {
@@ -159,13 +146,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     }
 
     public String getName() {
-        try {
-            return (String) doc.getPropertyValue("nxcomponent:componentName");
-        }
-        catch (Exception e) {
-            // TODO: handle exception
-        }
-        return null;
+        return safeGet("nxcomponent:componentName");
     }
 
     public List<String> getServiceNames() {
@@ -173,18 +154,19 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
             return (List<String>) doc.getPropertyValue("nxcomponent:services");
         }
         catch (Exception e) {
-            // TODO: handle exception
+            log.error("Error while getting service names", e);
         }
         return null;
     }
 
     public String getXmlFileContent() throws IOException {
-         try {
-             Blob xml = (Blob) doc.getPropertyValue("file:content");
-             return xml.getString();
-         } catch (Exception e) {
-             return null;
-         }
+        try {
+            Blob xml = safeGet(Blob.class, "file:content", null);
+            return xml.getString();
+        } catch (IOException e) {
+            log.error("Error while reading blob", e);
+            return "";
+        }
     }
 
     public URL getXmlFileUrl() {
@@ -192,13 +174,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     }
 
     public boolean isXmlPureComponent() {
-        try {
-            return (Boolean) doc.getPropertyValue("nxcomponent:isXML");
-        }
-        catch (Exception e) {
-            // TODO: handle exception
-        }
-        return false;
+        return safeGet(Boolean.class,"nxcomponent:isXML", new Boolean(true));
     }
 
     @Override

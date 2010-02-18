@@ -77,13 +77,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     }
 
     public String getDocumentation() {
-        try {
-            return (String) doc
-                    .getPropertyValue("nxextensionpoint:documentation");
-        } catch (Exception e) {
-            log.error("Unable to get documentation field", e);
-        }
-        return null;
+        return safeGet("nxextensionpoint:documentation");
     }
 
     public Collection<ExtensionInfo> getExtensions() {
@@ -92,14 +86,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     }
 
     public String getName() {
-        try {
-            return (String) doc
-                    .getPropertyValue("nxextensionpoint:name");
-        } catch (Exception e) {
-            log.error("Unable to get documentation field", e);
-        }
-        return null;
-
+        return safeGet("nxextensionpoint:name");
     }
 
     public String[] getTypes() {

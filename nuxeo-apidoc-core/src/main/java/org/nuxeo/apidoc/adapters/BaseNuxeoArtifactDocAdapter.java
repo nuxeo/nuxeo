@@ -28,77 +28,102 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
-public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact{
+public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
 
-     protected DocumentModel doc;
+    protected DocumentModel doc;
 
-     protected static Log log = LogFactory.getLog(BaseNuxeoArtifactDocAdapter.class);
+    protected static Log log = LogFactory
+            .getLog(BaseNuxeoArtifactDocAdapter.class);
 
-     protected static String computeDocumentName(String name) {
-         return IdUtils.generateId(name,"-",true,500);
-     }
+    protected static String computeDocumentName(String name) {
+        return IdUtils.generateId(name, "-", true, 500);
+    }
 
-     protected static String getRootPath(CoreSession session, String basePath, String suffix) throws ClientException {
-         PathRef rootRef = new PathRef(basePath);
-         if (session.exists(rootRef)) {
-             Path path = new Path(basePath).append(suffix);
-             rootRef = new PathRef(path.toString());
-             if (session.exists(rootRef)) {
-                 return path.toString();
-             } else {
-                 DocumentModel root = session.createDocumentModel("Folder");
-                 root.setPathInfo(basePath, suffix);
-                 root = session.createDocument(root);
-                 return root.getPathAsString();
-             }
-         }
-         return null;
-     }
+    protected static String getRootPath(CoreSession session, String basePath,
+            String suffix) throws ClientException {
+        PathRef rootRef = new PathRef(basePath);
+        if (session.exists(rootRef)) {
+            Path path = new Path(basePath).append(suffix);
+            rootRef = new PathRef(path.toString());
+            if (session.exists(rootRef)) {
+                return path.toString();
+            } else {
+                DocumentModel root = session.createDocumentModel("Folder");
+                root.setPathInfo(basePath, suffix);
+                root = session.createDocument(root);
+                return root.getPathAsString();
+            }
+        }
+        return null;
+    }
 
-     public BaseNuxeoArtifactDocAdapter(DocumentModel doc) {
-         this.doc=doc;
-     }
+    public BaseNuxeoArtifactDocAdapter(DocumentModel doc) {
+        this.doc = doc;
+    }
 
-     @Override
-     public int hashCode() {
-         return doc.getId().hashCode();
-     }
+    @Override
+    public int hashCode() {
+        return doc.getId().hashCode();
+    }
 
-     public DocumentModel getDoc() {
-         return doc;
-     }
+    public DocumentModel getDoc() {
+        return doc;
+    }
 
-     protected CoreSession getCoreSession() {
-         if (doc == null) {
-             return null;
-         }
-         return CoreInstance.getInstance().getSession(doc.getSessionId());
-     }
+    protected CoreSession getCoreSession() {
+        if (doc == null) {
+            return null;
+        }
+        return doc.getCoreSession();
+    }
 
-     protected <T> T getParentNuxeoArtifact(Class <T> artifactClass ) {
+    protected <T> T getParentNuxeoArtifact(Class<T> artifactClass) {
 
-         try {
-             for (DocumentModel parent : getCoreSession().getParentDocuments(doc.getRef())) {
+        try {
+            for (DocumentModel parent : getCoreSession().getParentDocuments(
+                    doc.getRef())) {
 
-                 T result = parent.getAdapter(artifactClass);
-                 if (result!=null) {
-                     return result;
-                 }
-             }
-         }
-         catch (Exception e) {
-             log.error("Error while getting Parent artifact", e);
-             return null;
-         }
-         log.error("Parent artifact not found ");
-         return null;
-     }
+                T result = parent.getAdapter(artifactClass);
+                if (result != null) {
+                    return result;
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error while getting Parent artifact", e);
+            return null;
+        }
+        log.error("Parent artifact not found ");
+        return null;
+    }
 
+    protected String safeGet(String xPath) {
+        return safeGet(String.class, xPath, null);
+    }
+
+    protected String safeGet(String xPath, String defaultValue) {
+        return safeGet(String.class, xPath, defaultValue);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T> T safeGet(Class<T> typ, String xPath, Object defaultValue) {
+
+        try {
+            T value = (T) doc.getPropertyValue(xPath);
+            return value;
+        } catch (Exception e) {
+            log.error("Error while getting property " + xPath, e);
+            if (defaultValue==null) {
+                return null;
+            }
+            return (T) defaultValue;
+        }
+    }
 
 }

@@ -85,23 +85,11 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
     }
 
     public String getKey() {
-        try {
-            return (String) doc.getPropertyValue("nxbundlegroup:key");
-        }
-        catch (Exception e) {
-            log.error("Error while reading nxbundlegroup:key",e);
-            return "!unknown!";
-        }
+        return safeGet("nxbundlegroup:key", "unknown_bundle_group");
     }
 
     public String getName() {
-        try {
-            return (String) doc.getPropertyValue("nxbundlegroup:groupName");
-        }
-        catch (Exception e) {
-            log.error("Error while reading nxbundlegroup:groupName",e);
-            return "!unknown!";
-        }
+        return safeGet("nxbundlegroup:groupName", "unknow_bundle_group");
     }
 
     public List<BundleGroup> getSubGroups() {

@@ -19,6 +19,7 @@
 
 package org.nuxeo.apidoc.adapters;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import org.nuxeo.apidoc.api.BundleInfo;
@@ -82,50 +83,28 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     }
 
     public String getDocumentation() {
-        try {
-            return (String) doc
-                    .getPropertyValue("nxcontribution:documentation");
-        } catch (Exception e) {
-            log.error("Unable to get documentation field", e);
-        }
-        return null;
+        return safeGet("nxcontribution:documentation");
     }
 
     public String getExtensionPoint() {
-        try {
-            return (String) doc
-                    .getPropertyValue("nxcontribution:extensionPoint");
-        } catch (Exception e) {
-            log.error("Unable to get extensionPoint field", e);
-        }
-        return null;
+        return safeGet("nxcontribution:extensionPoint");
     }
 
     public String getId() {
-        try {
-            return (String) doc.getPropertyValue("nxcontribution:contribId");
-        } catch (Exception e) {
-            log.error("Unable to get id field", e);
-        }
-        return null;
+        return safeGet("nxcontribution:contribId");
     }
 
     public ComponentName getTargetComponentName() {
-        try {
-            return new ComponentName((String) doc
-                    .getPropertyValue("nxcontribution:targetComponentName"));
-        } catch (Exception e) {
-            log.error("Unable to get targetComponentName field", e);
-        }
-        return null;
+        return new ComponentName(safeGet("nxcontribution:targetComponentName"));
     }
 
     public String getXml() {
         try {
-            Blob xml = (Blob) doc.getPropertyValue("file:content");
+            Blob xml = safeGet(Blob.class, "file:content", new StringBlob(""));
             return xml.getString();
-        } catch (Exception e) {
-            return null;
+        } catch (IOException e) {
+            log.error("Error while reading blob", e);
+            return "";
         }
     }
 
