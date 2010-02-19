@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.chemistry.Connection;
 import org.nuxeo.ecm.core.storage.sql.CapturingQueryMaker;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.CapturingQueryMaker.Captured;
@@ -30,14 +31,21 @@ import org.nuxeo.ecm.core.storage.sql.QueryMaker.Query;
 
 public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
 
+    public NuxeoRepository repo;
+
+    public Connection conn;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
         openSession();
+        repo = new NuxeoRepository(session.getRepositoryName());
+        conn = repo.getConnection(null);
     }
 
     @Override
     public void tearDown() throws Exception {
+        conn.close();
         session.cancel();
         closeSession();
         super.tearDown();
@@ -177,6 +185,24 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 q.selectParams.subList(3, 6)));
         assertEquals(expectedP, q.selectParams.subList(6, 8));
 
-        // TODO SELECT *
+        // SELECT *
+
+        query = "SELECT * FROM cmis:document WHERE dc:title = 123";
+        q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
+                captured.session, query, null, conn);
+        assertNotNull(q);
+        sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        expected = "SELECT HIERARCHY.ID, HIERARCHY.PRIMARYTYPE, HIERARCHY.NAME,"
+                + "   DUBLINCORE.CREATOR, DUBLINCORE.CREATED, DUBLINCORE.MODIFIED"
+                + " FROM HIERARCHY"
+                + " LEFT JOIN DUBLINCORE ON DUBLINCORE.ID = HIERARCHY.ID"
+                + " WHERE HIERARCHY.PRIMARYTYPE IN (?, ?, ?)"
+                + "   AND ((DUBLINCORE.TITLE = ?))";
+        expectedP = Arrays.<Serializable> asList(Long.valueOf(123));
+        assertEquals(expected.replaceAll(" +", " "), sql);
+        assertEquals(doc_note_file, new HashSet<Serializable>(
+                q.selectParams.subList(0, 3)));
+        assertEquals(expectedP, q.selectParams.subList(3, 4));
     }
+
 }

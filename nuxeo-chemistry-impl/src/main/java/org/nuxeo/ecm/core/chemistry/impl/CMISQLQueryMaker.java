@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.chemistry.impl;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -44,7 +46,13 @@ import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.cmissql.CmisSqlLexer;
 import org.apache.chemistry.cmissql.CmisSqlParser;
+import org.apache.chemistry.impl.simple.SimpleType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.TypeConstants;
@@ -54,6 +62,7 @@ import org.nuxeo.ecm.core.storage.sql.QueryMaker;
 import org.nuxeo.ecm.core.storage.sql.SQLInfo;
 import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
+import org.nuxeo.ecm.core.storage.sql.SQLInfo.MapMaker;
 import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
@@ -70,6 +79,8 @@ import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
  */
 public class CMISQLQueryMaker implements QueryMaker {
 
+    private static final Log log = LogFactory.getLog(CMISQLQueryMaker.class);
+
     public static final String TYPE = "CMISQL";
 
     private static final String CMIS_PREFIX = "cmis:";
@@ -82,7 +93,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     public static final String DC_MODIFIED_KEY = "modified";
 
-    private static final String STAR_PREFIX = "\0STAR\0";
+    private static final String STAR = "\0STAR\0";
 
     protected Database database;
 
@@ -103,11 +114,8 @@ public class CMISQLQueryMaker implements QueryMaker {
     /** columns referenced, keyed by full quoted name (includes alias name) */
     public Map<String, Column> columns = new HashMap<String, Column>();
 
-    /** qualifier to set of columns full quoted names */
+    /** qualifier to set of columns full quoted names, used to identify joins */
     public Map<String, Set<String>> columnsPerQual = new HashMap<String, Set<String>>();
-
-    /** original column names as specified in query */
-    public Map<String, String> columnsSpecified = new HashMap<String, String>();
 
     /** joins added by fulltext match */
     public final List<String> fulltextJoins = new LinkedList<String>();
@@ -161,7 +169,10 @@ public class CMISQLQueryMaker implements QueryMaker {
             propertyInfoNames.put(name.toUpperCase(), name);
         }
         allPropNames = new HashMap<String, String>(propertyInfoNames);
-        allPropNames.putAll(systemPropNames);
+        for (PropertyDefinition pd : SimpleType.PROPS_MAP.values()) {
+            String name = pd.getId();
+            allPropNames.put(name.toUpperCase(), name);
+        }
 
         hierTable = database.getTable(model.hierTableName);
 
@@ -186,22 +197,19 @@ public class CMISQLQueryMaker implements QueryMaker {
                     + StringUtils.join(errorMessages, ", ") + ")");
         }
 
+        /** The columns we'll return. */
+        List<SelectedColumn> columnsWhat = new ArrayList<SelectedColumn>();
+
         /*
          * Interpret * in SELECT now that tables are known.
          */
 
-        /** The columns we'll return. */
-        List<String> columnsWhat = new ArrayList<String>();
-
-        for (String col : walker.select_what) {
-            if (!col.startsWith(STAR_PREFIX)) {
-                columnsWhat.add(col);
+        for (SelectedColumn sc : walker.select_what) {
+            if (!STAR.equals(sc.name)) {
+                columnsWhat.add(sc);
                 continue;
             }
-            String qual = col.substring(STAR_PREFIX.length());
-            if (qual.isEmpty()) {
-                qual = null;
-            }
+            String qual = sc.qual;
             // find the joined table with this correlation qualifier and add all
             // its columns to the select
             for (Join j : walker.from_joins) {
@@ -222,7 +230,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                         continue;
                     }
                     try {
-                        columnsWhat.add(referToColumn(pd.getId(), qual));
+                        columnsWhat.add(referToColumnInSelect(pd.getId(), qual));
                     } catch (QueryMakerException e) {
                         // ignore, non-mappable column
                     }
@@ -234,13 +242,16 @@ public class CMISQLQueryMaker implements QueryMaker {
          * Find info about fragments needed.
          */
 
-        // add main id to all qualifiers
-        for (String qual : new ArrayList<String>(columnsPerQual.keySet())) {
+        // always add main id and type to all qualifiers
+        for (Entry<String, Set<String>> entry : columnsPerQual.entrySet()) {
+            String qual = entry.getKey();
+            Set<String> fqns = new HashSet<String>(entry.getValue());
             for (String propertyId : Arrays.asList(Property.ID,
                     Property.TYPE_ID)) {
-                String col = referToColumn(propertyId, qual);
-                if (!columnsWhat.contains(col)) {
-                    columnsWhat.add(col);
+                SelectedColumn sc = referToColumnInSelect(propertyId, qual);
+                String fqn = sc.column.getFullQuotedName();
+                if (!fqns.contains(fqn)) {
+                    columnsWhat.add(sc);
                 }
             }
         }
@@ -466,13 +477,8 @@ public class CMISQLQueryMaker implements QueryMaker {
          * What we select.
          */
 
-        List<Column> whatColumns = new LinkedList<Column>();
-        List<String> whatColumnsAliases = new LinkedList<String>();
-        for (String col : columnsWhat) {
-            whatColumns.add(columns.get(col));
-            whatColumnsAliases.add(columnsSpecified.get(col));
-        }
-        String what = StringUtils.join(columnsWhat, ", ");
+        CMISQLMapMaker mapMaker = new CMISQLMapMaker(columnsWhat, conn);
+        String what = StringUtils.join(mapMaker.columnNames, ", ");
 
         /*
          * Create the whole select.
@@ -486,71 +492,227 @@ public class CMISQLQueryMaker implements QueryMaker {
         select.setOrderBy(StringUtils.join(walker.select_orderby, ", "));
 
         Query q = new Query();
-        q.selectInfo = new SQLInfoSelect(select.getStatement(), whatColumns,
-                whatColumnsAliases, null, null);
+        q.selectInfo = new SQLInfoSelect(select.getStatement(), mapMaker);
         q.selectParams = fromParams;
         q.selectParams.addAll(whereParams);
         return q;
     }
 
-    public String referToAllColumns(String qual) {
-        return STAR_PREFIX + (qual == null ? "" : qual);
+    /**
+     * Map maker that can deal with aliased column names and computed values.
+     */
+    public class CMISQLMapMaker implements MapMaker {
+        /** result set columns */
+        public final List<Column> columns;
+
+        /** result set columns names for select */
+        public final List<String> columnNames;
+
+        /** result set keys in map */
+        public final List<String> keys;
+
+        /** computed columns */
+        public final List<SelectedColumn> computed;
+
+        public final NuxeoConnection conn;
+
+        public CMISQLMapMaker(List<SelectedColumn> columnsWhat,
+                NuxeoConnection conn) {
+            this.conn = conn;
+            columns = new ArrayList<Column>(columnsWhat.size());
+            columnNames = new ArrayList<String>(columnsWhat.size());
+            keys = new ArrayList<String>(columnsWhat.size());
+            computed = new ArrayList<SelectedColumn>(columnsWhat.size());
+            for (SelectedColumn sc : columnsWhat) {
+                Column col = sc.column;
+                if (col == null) {
+                    computed.add(sc);
+                } else {
+                    columns.add(col);
+                    columnNames.add(col.getFullQuotedName());
+                    keys.add(getColumnName(sc));
+                }
+            }
+        }
+
+        public Map<String, Serializable> makeMap(ResultSet rs)
+                throws SQLException {
+            // compute map from result set
+            Map<String, Serializable> map = new HashMap<String, Serializable>();
+            int i = 1;
+            for (Column column : columns) {
+                String key = keys.get(i - 1);
+                Serializable value = column.getFromResultSet(rs, i++);
+                map.put(key, value);
+            }
+
+            // computed values
+            Map<String, DocumentModel> docs = null;
+            for (SelectedColumn sc : computed) {
+                String qual = sc.qual;
+                if (docs == null) {
+                    docs = new HashMap<String, DocumentModel>(2);
+                }
+                DocumentModel doc = docs.get(qual);
+                if (doc == null) {
+                    // find main id for this qualifier in the result set
+                    // (main id always included in joins)
+                    SelectedColumn idsc = getSpecialColumn(Property.ID, qual);
+                    String id = (String) map.get(getColumnName(idsc));
+                    try {
+                        // reentrant call to the same session, but the MapMaker
+                        // is only called from the IterableQueryResult in
+                        // queryAndFetch which manipulates no session state
+                        doc = conn.session.getDocument(new IdRef(id));
+                    } catch (ClientException e) {
+                        log.error("Cannot get document: " + id, e);
+                    }
+                    docs.put(qual, doc);
+                }
+                Serializable v;
+                if (doc == null) {
+                    // could not fetch
+                    v = null;
+                } else {
+                    // TODO avoid fecthing doc and using a NuxeoProperty to
+                    // compute things like cmis:baseTypeId
+                    PropertyDefinition pd = SimpleType.PROPS_MAP.get(sc.name);
+                    Property p = NuxeoProperty.construct(sc.name, pd,
+                            new DocHolder(doc));
+                    v = p.getValue();
+                }
+                map.put(getColumnName(sc), v);
+            }
+
+            return map;
+        }
+
     }
 
-    public String referToColumn(String c, String qual) {
-        Column col = findColumn(c, qual, false);
+    public static class DocHolder implements DocumentModelHolder {
+        public DocumentModel doc;
+
+        public DocHolder(DocumentModel doc) {
+            this.doc = doc;
+        }
+
+        public DocumentModel getDocumentModel() {
+            return doc;
+        }
+
+        public void setDocumentModel(DocumentModel doc) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    /**
+     * A selected column can be either an explicit column or an expression that
+     * will be computed in Java after the SELECT is done.
+     */
+    public static class SelectedColumn {
+        /** Column specified, for resultset keys and for computed columns. */
+        public final String name;
+
+        public final String qual;
+
+        /** Explicit column to use. May be from an aliased table. */
+        public final Column column;
+
+        public SelectedColumn(String name, String qual, Column column) {
+            this.name = name;
+            this.qual = qual;
+            this.column = column;
+        }
+
+        public SelectedColumn(String name, String qual) {
+            this.name = name;
+            this.qual = qual;
+            column = null;
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + '('
+                    + (qual == null ? name : qual + '.' + name) + ')';
+        }
+    }
+
+    // called from parser
+    public SelectedColumn referToAllColumns(String qual) {
+        return new SelectedColumn(STAR, qual);
+    }
+
+    // called from parser
+    public SelectedColumn referToColumnInSelect(String c, String qual) {
+        SelectedColumn sc = findColumn(c, qual, false);
+        Column col = sc.column;
+        if (col != null) {
+            recordCol(c, qual, col);
+        }
+        return sc;
+    }
+
+    // called from parser
+    public String referToColumnInWhere(String c, String qual) {
+        SelectedColumn sc = findColumn(c, qual, false);
+        Column col = sc.column;
+        if (col == null) {
+            throw new QueryMakerException("Column " + c + " is not queryable");
+        }
+        recordCol(c, qual, col);
+        return col.getFullQuotedName();
+    }
+
+    protected void recordCol(String c, String qual, Column col) {
         String fqn = col.getFullQuotedName();
         columns.put(fqn, col);
-        columnsSpecified.put(fqn, getCanonicalColumnName(c, qual));
-        Set<String> set = columnsPerQual.get(qual);
-        if (set == null) {
-            columnsPerQual.put(qual, set = new HashSet<String>());
+        Set<String> cpq = columnsPerQual.get(qual);
+        if (cpq == null) {
+            columnsPerQual.put(qual, cpq = new HashSet<String>());
         }
-        set.add(fqn);
-        return fqn;
+        cpq.add(fqn);
     }
 
-    protected Column findColumn(String name, String qualifier, boolean multi) {
-        Column column;
-        name = name.toUpperCase();
-        if (name.startsWith(CMIS_PREFIX.toUpperCase())) {
-            column = getSpecialColumn(name);
+    // finds a multi-valued column, assumed to not be a cmis: one
+    // called from parser
+    public Column findMultiColumn(String name, String qual) {
+        return findColumn(name, qual, true).column;
+    }
+
+    protected SelectedColumn findColumn(String name, String qual, boolean multi) {
+        String ucname = name.toUpperCase();
+        if (ucname.startsWith(CMIS_PREFIX.toUpperCase())) {
+            return getSpecialColumn(name, qual);
         } else {
-            String propertyName = propertyInfoNames.get(name);
+            String propertyName = propertyInfoNames.get(ucname);
             if (propertyName == null) {
                 throw new QueryMakerException("Unknown field: " + name);
             }
             PropertyInfo propertyInfo = model.getPropertyInfo(propertyName);
-            Table table = database.getTable(propertyInfo.fragmentName);
             if (multi != propertyInfo.propertyType.isArray()) {
                 String msg = multi ? "Must use multi-valued property instead of %s"
                         : "Cannot use multi-valued property %s";
                 throw new QueryMakerException(String.format(msg, name));
             }
-            if (multi) {
-                column = table.getColumn(model.COLL_TABLE_VALUE_KEY);
-            } else {
-                column = table.getColumn(propertyInfo.fragmentKey);
-            }
+            Table table = getTable(
+                    database.getTable(propertyInfo.fragmentName), qual);
+            Column col = table.getColumn(multi ? model.COLL_TABLE_VALUE_KEY
+                    : propertyInfo.fragmentKey);
+            String cname = allPropNames.get(ucname);
+            return new SelectedColumn(cname, qual, col);
         }
-        if (qualifier != null) {
-            column = getTable(column.getTable(), qualifier).getColumn(
-                    column.getKey());
-            // TODO ensure key == name, or add getName()
-        }
-        return column;
     }
 
-    protected Table getTable(Table table, String qualifier) {
-        if (qualifier == null) {
+    protected Table getTable(Table table, String qual) {
+        if (qual == null) {
             return table;
         } else {
-            return new TableAlias(table, getTableAlias(table, qualifier));
+            return new TableAlias(table, getTableAlias(table, qual));
         }
     }
 
-    protected String getTableAlias(Table table, String qualifier) {
-        return "_" + qualifier + "_" + table.getName();
+    protected String getTableAlias(Table table, String qual) {
+        return "_" + qual + "_" + table.getName();
     }
 
     protected static Map<String, String> systemPropNames = new HashMap<String, String>();
@@ -568,57 +730,82 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
     }
 
+    /**
+     * Returns either a column if there is a direct mapping, or a string for
+     * things that will need to be post-computed.
+     */
+    protected SelectedColumn getSpecialColumn(String name, String qual) {
+        String cname = allPropNames.get(name.toUpperCase());
+        if (cname == null) {
+            throw new QueryMakerException("Unknown field: " + name);
+        }
+        Column col = getSpecialColumn(cname);
+        if (col != null) {
+            // alias table according to qualifier
+            if (qual != null) {
+                col = getTable(col.getTable(), qual).getColumn(col.getKey());
+                // TODO ensure key == name, or add getName()
+            }
+            return new SelectedColumn(cname, qual, col);
+
+        }
+        // Use computed values for the rest.
+        return new SelectedColumn(cname, qual);
+    }
+
+    // called with canonicalized name
     protected Column getSpecialColumn(String name) {
-        // TODO precompute uppercased versions
-        if (name.equals(Property.ID.toUpperCase())) {
+        if (name.equals(Property.ID)) {
             return hierTable.getColumn(model.MAIN_KEY);
         }
-        if (name.equals(Property.TYPE_ID.toUpperCase())) {
+        if (name.equals(Property.TYPE_ID)) {
             // joinedHierTable
             return hierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
         }
-        if (name.equals(Property.PARENT_ID.toUpperCase())) {
+        if (name.equals(Property.PARENT_ID)) {
             return hierTable.getColumn(model.HIER_PARENT_KEY);
         }
-        if (name.equals(Property.NAME.toUpperCase())) {
+        if (name.equals(Property.NAME)) {
             return hierTable.getColumn(model.HIER_CHILD_NAME_KEY);
         }
-        if (name.equals(Property.CREATED_BY.toUpperCase())) {
+        if (name.equals(Property.CREATED_BY)) {
             return database.getTable(DC_FRAGMENT_NAME).getColumn(DC_CREATOR_KEY);
         }
-        if (name.equals(Property.CREATION_DATE.toUpperCase())) {
+        if (name.equals(Property.CREATION_DATE)) {
             return database.getTable(DC_FRAGMENT_NAME).getColumn(DC_CREATED_KEY);
         }
-        if (name.equals(Property.LAST_MODIFICATION_DATE.toUpperCase())) {
+        if (name.equals(Property.LAST_MODIFICATION_DATE)) {
             return database.getTable(DC_FRAGMENT_NAME).getColumn(
                     DC_MODIFIED_KEY);
         }
-        // map.put(Property.LAST_MODIFIED_BY, "dc:contributors");
-        throw new QueryMakerException("Unknown field: " + name);
+        return null;
     }
 
-    protected String getCanonicalColumnName(String name, String qual) {
-        name = allPropNames.get(name.toUpperCase());
-        return qual == null ? name : qual + '.' + name;
+    protected static String getColumnName(SelectedColumn sc) {
+        String key = sc.name;
+        if (sc.qual != null) {
+            key = sc.qual + '.' + key;
+        }
+        return key;
     }
 
     protected String getInFolderSql(String qual, String arg,
             List<Serializable> params) {
-        String idCol = referToColumn(Property.PARENT_ID, qual);
+        String idCol = referToColumnInWhere(Property.PARENT_ID, qual);
         params.add(arg);
         return idCol + " = ?";
     }
 
     protected String getInTreeSql(String qual, String arg,
             List<Serializable> params) {
-        String idCol = referToColumn(Property.ID, qual);
+        String idCol = referToColumnInWhere(Property.ID, qual);
         params.add(arg);
         return dialect.getInTreeSql(idCol);
     }
 
     protected String getContainsSql(String qual, String arg,
             List<Serializable> params) {
-        Column mainCol = findColumn(Property.ID, qual, false);
+        Column mainCol = getSpecialColumn(Property.ID, qual).column;
         String[] info = dialect.getFulltextMatch(Model.FULLTEXT_DEFAULT_INDEX,
                 arg, mainCol, model, database);
         String joinExpr = info[0];

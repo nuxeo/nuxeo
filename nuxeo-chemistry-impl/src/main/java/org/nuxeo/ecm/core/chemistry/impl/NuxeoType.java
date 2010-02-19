@@ -23,7 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -91,7 +91,7 @@ public class NuxeoType implements Type {
             parentId = pid;
         }
 
-        Map<String, PropertyDefinition> map = new HashMap<String, PropertyDefinition>();
+        Map<String, PropertyDefinition> map = new LinkedHashMap<String, PropertyDefinition>();
         for (PropertyDefinition def : SimpleType.getBasePropertyDefinitions(getBaseType())) {
             map.put(def.getId(), def);
         }

@@ -101,7 +101,11 @@ public class NuxeoProperty extends NuxeoPropertyBase {
      */
     protected static Property construct(String name, Type type,
             DocumentModelHolder docHolder) {
-        PropertyDefinition pd = type.getPropertyDefinition(name);
+        return construct(name, type.getPropertyDefinition(name), docHolder);
+    }
+
+    protected static Property construct(String name, PropertyDefinition pd,
+            DocumentModelHolder docHolder) {
         if (pd == null) {
             throw new IllegalArgumentException(name);
         }

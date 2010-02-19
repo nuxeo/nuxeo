@@ -54,6 +54,7 @@ import java.util.LinkedList;
 
 import org.apache.chemistry.Property;
 import org.nuxeo.ecm.core.chemistry.impl.CMISQLQueryMaker.Join;
+import org.nuxeo.ecm.core.chemistry.impl.CMISQLQueryMaker.SelectedColumn;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
@@ -62,7 +63,7 @@ import org.nuxeo.ecm.core.storage.sql.db.Table;
 @members {
     public CMISQLQueryMaker queryMaker;
 
-    public List<String> select_what = new LinkedList<String>();
+    public List<SelectedColumn> select_what = new LinkedList<SelectedColumn>();
 
     /** without kind or on */
     public List<Join> from_joins = new LinkedList<Join>();
@@ -97,47 +98,33 @@ select_list
         {
             select_what.add(queryMaker.referToAllColumns(null));
         }
-    | ^(LIST (select_sublist { select_what.add($select_sublist.sql); })+)
+    | ^(LIST (s=select_sublist { select_what.add($s.selcol); })+)
     ;
 
-select_sublist returns [String sql, List<Serializable> params]:
-      v=value_expression column_name?
+select_sublist returns [SelectedColumn selcol]:
+      v=select_value_expression column_name?
         {
-            $sql = $v.sql;
-            $params = $v.params;
+            $selcol = $v.selcol;
             // TODO column_name
         }
     | qualifier DOT STAR
         {
-            $sql = queryMaker.referToAllColumns($qualifier.qual);
-            $params = new LinkedList<Serializable>();
+            $selcol = queryMaker.referToAllColumns($qualifier.qual);
         }
+//    | select_multi_valued_column_reference
     ;
 
-value_expression returns [String sql, List<Serializable> params]:
-      c=column_reference { $sql = $c.sql; $params = $c.params; }
-//    | string_value_function
+select_value_expression returns [SelectedColumn selcol]:
+      c=select_column_reference { $selcol = $c.selcol; }
 //    | numeric_value_function
     ;
 
-column_reference returns [String sql, List<Serializable> params]:
+select_column_reference returns [SelectedColumn selcol]:
     ^(COL qualifier? column_name)
       {
           String c = $column_name.start.getText();
           String qual = $qualifier.qual;
-          $sql = queryMaker.referToColumn(c, qual);
-          $params = new LinkedList<Serializable>();
-      }
-    ;
-
-multi_valued_column_reference returns [Column col, String qual, String mqual]:
-    ^(COL qualifier? column_name)
-      {
-          String c = $column_name.start.getText();
-          String mqual = "nxm" + multiref++;
-          $col = queryMaker.findColumn(c, mqual, true);
-          $qual = $qualifier.qual; // qualifier in original query, for join with hier
-          $mqual = mqual; // qualifier generated internally for subselect table
+          $selcol = queryMaker.referToColumnInSelect(c, qual);
       }
     ;
 
@@ -417,6 +404,32 @@ literal returns [Serializable value]:
             String s = $STRING_LIT.text;
             $value = s.substring(1, s.length() - 1);
         }
+    ;
+
+value_expression returns [String sql, List<Serializable> params]:
+      c=column_reference { $sql = $c.sql; $params = $c.params; }
+//    | numeric_value_function
+    ;
+
+column_reference returns [String sql, List<Serializable> params]:
+    ^(COL qualifier? column_name)
+      {
+          String c = $column_name.start.getText();
+          String qual = $qualifier.qual;
+          $sql = queryMaker.referToColumnInWhere(c, qual);
+          $params = new LinkedList<Serializable>();
+      }
+    ;
+
+multi_valued_column_reference returns [Column col, String qual, String mqual]:
+    ^(COL qualifier? column_name)
+      {
+          String c = $column_name.start.getText();
+          String mqual = "nxm" + multiref++;
+          $col = queryMaker.findMultiColumn(c, mqual);
+          $qual = $qualifier.qual; // qualifier in original query, for join with hier
+          $mqual = mqual; // qualifier generated internally for subselect table
+      }
     ;
 
 order_by_clause:

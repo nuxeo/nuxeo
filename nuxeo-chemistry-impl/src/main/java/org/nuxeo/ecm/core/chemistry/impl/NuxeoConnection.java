@@ -305,14 +305,30 @@ public class NuxeoConnection implements Connection, SPI {
     }
 
     public ObjectEntry getFolderParent(ObjectId folder, String filter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getParent(folder, filter);
     }
 
     public Collection<ObjectEntry> getObjectParents(ObjectId object,
             String filter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return Collections.singleton(getParent(object, filter));
+    }
+
+    protected ObjectEntry getParent(ObjectId object, String filter) {
+        // TODO filter
+        String objectId = object.getId();
+        if (repository.getInfo().getRootFolderId().getId().equals(objectId)) {
+            return null;
+        }
+        try {
+            DocumentRef docRef = new IdRef(objectId);
+            if (!session.exists(docRef)) {
+                throw new ObjectNotFoundException(objectId);
+            }
+            DocumentModel parent = session.getParentDocument(docRef);
+            return new NuxeoObjectEntry(parent, this);
+        } catch (ClientException e) {
+            throw new CMISRuntimeException(e.toString(), e);
+        }
     }
 
     public ListPage<ObjectEntry> getCheckedOutDocuments(ObjectId folder,
@@ -480,9 +496,10 @@ public class NuxeoConnection implements Connection, SPI {
         // TODO contentStreamId
         DocumentModel doc;
         try {
-            DocumentRef docRef = new IdRef(object.getId());
+            String objectId = object.getId();
+            DocumentRef docRef = new IdRef(objectId);
             if (!session.exists(docRef)) {
-                throw new ObjectNotFoundException(object.getId());
+                throw new ObjectNotFoundException(objectId);
             }
             doc = session.getDocument(docRef);
         } catch (ClientException e) {
@@ -496,9 +513,10 @@ public class NuxeoConnection implements Connection, SPI {
             ContentAlreadyExistsException {
         DocumentModel doc;
         try {
-            DocumentRef docRef = new IdRef(document.getId());
+            String documentId = document.getId();
+            DocumentRef docRef = new IdRef(documentId);
             if (!session.exists(docRef)) {
-                throw new ObjectNotFoundException(document.getId());
+                throw new ObjectNotFoundException(documentId);
             }
             doc = session.getDocument(docRef);
             NuxeoProperty.setContentStream(doc, contentStream, overwrite);
@@ -611,14 +629,14 @@ public class NuxeoConnection implements Connection, SPI {
     }
 
     public void deleteObject(ObjectId object, boolean allVersions) {
-        if (repository.getInfo().getRootFolderId().getId().equals(
-                object.getId())) {
+        String objectId = object.getId();
+        if (repository.getInfo().getRootFolderId().getId().equals(objectId)) {
             throw new IllegalArgumentException("Cannot delete root");
         }
         try {
-            DocumentRef docRef = new IdRef(object.getId());
+            DocumentRef docRef = new IdRef(objectId);
             if (!session.exists(docRef)) {
-                throw new ObjectNotFoundException(object.getId());
+                throw new ObjectNotFoundException(objectId);
             }
             NuxeoObjectEntry entry = getObjectEntry(object);
             if (entry.getBaseType() == BaseType.FOLDER) {
@@ -627,7 +645,7 @@ public class NuxeoConnection implements Connection, SPI {
                         getChildrenFilter(), null);
                 if (docs.size() > 0) {
                     throw new ConstraintViolationException(
-                            "Cannot delete non-empty folder: " + object.getId());
+                            "Cannot delete non-empty folder: " + objectId);
                 }
             }
             session.removeDocument(docRef);
@@ -642,19 +660,18 @@ public class NuxeoConnection implements Connection, SPI {
         if (unfiling == Unfiling.UNFILE) {
             throw new ConstraintViolationException("Unfiling not supported");
         }
-        if (repository.getInfo().getRootFolderId().getId().equals(
-                folder.getId())) {
+        String folderId = folder.getId();
+        if (repository.getInfo().getRootFolderId().getId().equals(folderId)) {
             throw new IllegalArgumentException("Cannot delete root");
         }
         try {
-            DocumentRef docRef = new IdRef(folder.getId());
+            DocumentRef docRef = new IdRef(folderId);
             if (!session.exists(docRef)) {
-                throw new ObjectNotFoundException(folder.getId());
+                throw new ObjectNotFoundException(folderId);
             }
             NuxeoObjectEntry entry = getObjectEntry(folder);
             if (entry.getBaseType() != BaseType.FOLDER) {
-                throw new IllegalArgumentException("Not a folder: "
-                        + folder.getId());
+                throw new IllegalArgumentException("Not a folder: " + folderId);
             }
             session.removeDocument(docRef);
             session.save();

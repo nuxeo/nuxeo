@@ -502,7 +502,28 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
                 "SELECT * FROM CMIS:DOCUMENT WHERE DC:TITLE = 'testfile1_Title'",
                 false);
         assertEquals(1, res.size());
+    }
 
+    // computed properties, not directly fetchable from SQL
+    public void testQueryComputed() throws Exception {
+        String query;
+        Collection<ObjectEntry> col;
+
+        query = "SELECT cmis:objectId," //
+                + "     cmis:baseTypeId," //
+                + "     cmis:contentStreamLength" //
+                + " FROM cmis:document";
+        col = spi.query(query, false, null, null);
+        assertEquals(4, col.size());
+        boolean gotLength = false;
+        for (ObjectEntry entry : col) {
+            Integer l = (Integer) entry.getValue("cmis:contentStreamLength");
+            if (l != null) {
+                assertEquals(Integer.valueOf(17), l);
+                gotLength = true;
+            }
+        }
+        assertTrue(gotLength);
     }
 
     public void testQueryStar() throws Exception {
@@ -525,10 +546,11 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         assertEquals("testfile1_description", entry.getValue("dc:description"));
         assertEquals("foo/bar", entry.getValue("dc:coverage"));
 
-        // XXX TODO the following properties are problematic still...
-        // assertEquals("XXX", entry.getValue(Property.CONTENT_STREAM_LENGTH));
-        // assertEquals("XXX",
-        // entry.getValue(Property.CONTENT_STREAM_FILE_NAME));
+        // these are computed properties, not directly fetched from SQL
+        assertEquals(Integer.valueOf(17),
+                entry.getValue(Property.CONTENT_STREAM_LENGTH));
+        assertEquals("testfile.txt",
+                entry.getValue(Property.CONTENT_STREAM_FILE_NAME));
     }
 
     public void testQueryAny() throws Exception {
