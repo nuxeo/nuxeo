@@ -132,10 +132,10 @@ public class SQLSession extends BaseSession implements EntrySource {
         String id = String.valueOf(fieldMap.get(getIdField()));
         try {
             DocumentModel docModel = BaseSession.createEntryModel(sid,
-                    schemaName, id, fieldMap);
+                    schemaName, id, fieldMap, isReadOnly());
             return docModel;
         } catch (PropertyException e) {
-            log.error(e);
+            log.error(e, e);
             return null;
         }
     }

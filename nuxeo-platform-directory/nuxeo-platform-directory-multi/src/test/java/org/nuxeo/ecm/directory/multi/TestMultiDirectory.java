@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -492,6 +493,110 @@ public class TestMultiDirectory extends NXRuntimeTestCase {
     public void testHasEntry() throws Exception {
         assertTrue(dir.hasEntry("1"));
         assertFalse(dir.hasEntry("foo"));
+    }
+
+    public void testReadOnlyEntryFromGetEntry() throws Exception {
+
+        // by default no backing dir is readonly
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("1")));
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("2")));
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("3")));
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("4")));
+
+        memdir1.setReadOnly(true);
+        memdir2.setReadOnly(false);
+        memdir3.setReadOnly(false);
+        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("1")));
+        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("2")));
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("3")));
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("4")));
+
+        memdir1.setReadOnly(false);
+        memdir2.setReadOnly(true);
+        memdir3.setReadOnly(true);
+        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("1")));
+        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("2")));
+        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("3")));
+        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("4")));
+
+        memdir1.setReadOnly(false);
+        memdir2.setReadOnly(false);
+        memdir3.setReadOnly(true);
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("1")));
+        assertFalse(BaseSession.isReadOnlyEntry(dir.getEntry("2")));
+        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("3")));
+        assertTrue(BaseSession.isReadOnlyEntry(dir.getEntry("4")));
+    }
+
+    public void testReadOnlyEntryInQueryResults() throws Exception {
+        Map<String, String> orderBy = new HashMap<String, String>();
+        orderBy.put("schema3:uid", "asc");
+        DocumentModelComparator comp  = new DocumentModelComparator(orderBy);
+
+        Map<String, Serializable> filter = new HashMap<String, Serializable>();
+        DocumentModelList results = dir.query(filter);
+        Collections.sort(results, comp);
+
+        // by default no backing dir is readonly
+        assertFalse(BaseSession.isReadOnlyEntry(results.get(0)));
+        assertFalse(BaseSession.isReadOnlyEntry(results.get(1)));
+        assertFalse(BaseSession.isReadOnlyEntry(results.get(2)));
+        assertFalse(BaseSession.isReadOnlyEntry(results.get(3)));
+
+        memdir1.setReadOnly(true);
+        memdir2.setReadOnly(false);
+        memdir3.setReadOnly(false);
+        results = dir.query(filter);
+        Collections.sort(results, comp);
+        assertTrue(BaseSession.isReadOnlyEntry(results.get(0)));
+        assertTrue(BaseSession.isReadOnlyEntry(results.get(1)));
+        assertFalse(BaseSession.isReadOnlyEntry(results.get(2)));
+        assertFalse(BaseSession.isReadOnlyEntry(results.get(3)));
+
+        memdir1.setReadOnly(false);
+        memdir2.setReadOnly(false);
+        memdir3.setReadOnly(true);
+        results = dir.query(filter);
+        Collections.sort(results, comp);
+        assertFalse(BaseSession.isReadOnlyEntry(results.get(0)));
+        assertFalse(BaseSession.isReadOnlyEntry(results.get(1)));
+        assertTrue(BaseSession.isReadOnlyEntry(results.get(2)));
+        assertTrue(BaseSession.isReadOnlyEntry(results.get(3)));
+    }
+
+    public void testReadOnlyEntryInGetEntriesResults() throws Exception {
+        Map<String, String> orderBy = new HashMap<String, String>();
+        orderBy.put("schema3:uid", "asc");
+        DocumentModelComparator comp  = new DocumentModelComparator(orderBy);
+
+        DocumentModelList results = dir.getEntries();
+        Collections.sort(results, comp);
+
+        // by default no backing dir is readonly
+        assertFalse(BaseSession.isReadOnlyEntry(results.get(0)));
+        assertFalse(BaseSession.isReadOnlyEntry(results.get(1)));
+        assertFalse(BaseSession.isReadOnlyEntry(results.get(2)));
+        assertFalse(BaseSession.isReadOnlyEntry(results.get(3)));
+
+        memdir1.setReadOnly(true);
+        memdir2.setReadOnly(false);
+        memdir3.setReadOnly(false);
+        results = dir.getEntries();
+        Collections.sort(results, comp);
+        assertTrue(BaseSession.isReadOnlyEntry(results.get(0)));
+        assertTrue(BaseSession.isReadOnlyEntry(results.get(1)));
+        assertFalse(BaseSession.isReadOnlyEntry(results.get(2)));
+        assertFalse(BaseSession.isReadOnlyEntry(results.get(3)));
+
+        memdir1.setReadOnly(false);
+        memdir2.setReadOnly(false);
+        memdir3.setReadOnly(true);
+        results = dir.getEntries();
+        Collections.sort(results, comp);
+        assertFalse(BaseSession.isReadOnlyEntry(results.get(0)));
+        assertFalse(BaseSession.isReadOnlyEntry(results.get(1)));
+        assertTrue(BaseSession.isReadOnlyEntry(results.get(2)));
+        assertTrue(BaseSession.isReadOnlyEntry(results.get(3)));
     }
 
 }

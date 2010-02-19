@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.common.collections.ScopeType;
+import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
@@ -39,8 +41,10 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
  */
 public abstract class BaseSession implements Session {
 
+    protected static final String READONLY_ENTRY_FLAG = "READONLY_ENTRY";
+
     /**
-     * Returns a bare document model for this directory.
+     * Returns a bare document model suitable for directory implementations.
      * <p/>
      * Can be used for creation screen
      *
@@ -59,6 +63,24 @@ public abstract class BaseSession implements Session {
         return entry;
     }
 
+    /**
+     * Returns a bare document model suitable for directory implementations.
+     * <p/>
+     * Allow setting the readonly entry flag to {@code Boolean.TRUE}. See
+     * {@code Session#isReadOnlyEntry(DocumentModel)}
+     *
+     * @since 5.3.1
+     */
+    public static DocumentModel createEntryModel(String sessionId,
+            String schema, String id, Map<String, Object> values,
+            boolean readOnly) throws PropertyException {
+        DocumentModel entry = BaseSession.createEntryModel(sessionId, schema,
+                id, values);
+        if (readOnly) {
+            setReadOnlyEntry(entry);
+        }
+        return entry;
+    }
 
     protected static Map<String, Serializable> mkSerializableMap(Map<String, Object> map) {
         Map<String, Serializable> serializableMap = null;
@@ -80,6 +102,23 @@ public abstract class BaseSession implements Session {
             }
         }
         return objectMap;
+    }
+
+    /**
+     * Test whether entry comes from a read-only back-end directory.
+     *
+     * @since 5.3.1
+     */
+    public static boolean isReadOnlyEntry(DocumentModel entry) {
+        ScopedMap contextData = entry.getContextData();
+        return contextData.getScopedValue(ScopeType.REQUEST,
+                READONLY_ENTRY_FLAG) == Boolean.TRUE;
+    }
+
+    protected static void setReadOnlyEntry(DocumentModel entry) {
+        ScopedMap contextData = entry.getContextData();
+        contextData.putScopedValue(ScopeType.REQUEST, READONLY_ENTRY_FLAG,
+                Boolean.TRUE);
     }
 
 }

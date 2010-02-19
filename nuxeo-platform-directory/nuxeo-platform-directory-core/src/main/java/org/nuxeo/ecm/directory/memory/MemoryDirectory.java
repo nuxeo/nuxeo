@@ -53,6 +53,8 @@ public class MemoryDirectory extends AbstractDirectory {
 
     public MemoryDirectorySession session;
 
+    protected boolean isReadOnly = false;
+
     public MemoryDirectory(String name, String schema, String idField,
             String passwordField) throws DirectoryException {
         this(name, schema, new HashSet<String>(), idField, passwordField);
@@ -123,6 +125,14 @@ public class MemoryDirectory extends AbstractDirectory {
 
     public void shutdown() {
         session = null;
+    }
+
+    public boolean isReadOnly() {
+        return isReadOnly ;
+    }
+
+    public void setReadOnly(boolean isReadOnly) {
+        this.isReadOnly = isReadOnly;
     }
 
 }

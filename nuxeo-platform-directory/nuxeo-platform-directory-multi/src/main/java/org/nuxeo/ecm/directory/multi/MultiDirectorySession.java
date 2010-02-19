@@ -413,6 +413,7 @@ public class MultiDirectorySession extends BaseSession {
     public DocumentModel getEntry(String id, boolean fetchReferences)
             throws DirectoryException {
         init();
+        boolean isReadOnlyEntry = isReadOnly();
         source_loop: for (SourceInfo sourceInfo : sourceInfos) {
             final Map<String, Object> map = new HashMap<String, Object>();
 
@@ -423,6 +424,9 @@ public class MultiDirectorySession extends BaseSession {
                 if (entry == null && !isOptional) {
                     // not in this source
                     continue source_loop;
+                }
+                if (entry != null && isReadOnlyEntry(entry)) {
+                    isReadOnlyEntry = true;
                 }
                 for (Entry<String, String> e : dirInfo.toSource.entrySet()) {
                     if (entry != null) {
@@ -443,9 +447,8 @@ public class MultiDirectorySession extends BaseSession {
             }
             // ok we have the data
             try {
-                final DocumentModel entry = BaseSession.createEntryModel(null,
-                        schemaName, id, map);
-                return entry;
+                return BaseSession.createEntryModel(null, schemaName, id, map,
+                        isReadOnlyEntry);
             } catch (PropertyException e) {
                 throw new DirectoryException(e);
             }
@@ -461,6 +464,7 @@ public class MultiDirectorySession extends BaseSession {
         final DocumentModelList results = new DocumentModelListImpl();
         // entry ids already seen (mapped to the source name)
         final Map<String, String> seen = new HashMap<String, String>();
+        Set<String> readOnlyEntries = new HashSet<String>();
 
         for (SourceInfo sourceInfo : sourceInfos) {
             // accumulated map for each entry
@@ -484,6 +488,9 @@ public class MultiDirectorySession extends BaseSession {
                     for (Entry<String, String> e : dirInfo.toSource.entrySet()) {
                         map.put(e.getValue(), entry.getProperty(
                                 dirInfo.dirSchemaName, e.getKey()));
+                    }
+                    if (BaseSession.isReadOnlyEntry(entry)) {
+                        readOnlyEntries.add(id);
                     }
                 }
             }
@@ -545,7 +552,7 @@ public class MultiDirectorySession extends BaseSession {
                 }
                 seen.put(id, sourceInfo.source.name);
                 final DocumentModel entry = BaseSession.createEntryModel(null,
-                        schemaName, id, map);
+                        schemaName, id, map, readOnlyEntries.contains(id));
                 results.add(entry);
             }
         }
@@ -608,6 +615,9 @@ public class MultiDirectorySession extends BaseSession {
     private void updateSubDirectoryEntry(SubDirectoryInfo dirInfo,
             Map<String, Object> fieldMap, String id, boolean canCreateIfOptional)
             throws ClientException {
+        if (dirInfo.getSession().isReadOnly()) {
+            return;
+        }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put(dirInfo.idField, id);
         for (Entry<String, String> e : dirInfo.fromSource.entrySet()) {
@@ -676,6 +686,7 @@ public class MultiDirectorySession extends BaseSession {
         if (fulltext == null) {
             fulltext = Collections.emptySet();
         }
+        Set<String> readOnlyEntries = new HashSet<String>();
 
         for (SourceInfo sourceInfo : sourceInfos) {
             // accumulated map for each entry
@@ -737,6 +748,9 @@ public class MultiDirectorySession extends BaseSession {
                         map.put(e.getValue(), entry.getProperty(
                                 dirInfo.dirSchemaName, e.getKey()));
                     }
+                    if (BaseSession.isReadOnlyEntry(entry)) {
+                        readOnlyEntries.add(id);
+                    }
                 }
             }
             // add default entry values for optional dirs
@@ -784,7 +798,7 @@ public class MultiDirectorySession extends BaseSession {
                 final Map<String, Object> map = e.getValue();
                 seen.put(id, sourceInfo.source.name);
                 final DocumentModel entry = BaseSession.createEntryModel(null,
-                        schemaName, id, map);
+                        schemaName, id, map, readOnlyEntries.contains(id));
                 results.add(entry);
             }
         }

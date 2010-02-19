@@ -119,7 +119,7 @@ public class MemoryDirectorySession extends BaseSession {
         }
         try {
             DocumentModel entry = BaseSession.createEntryModel(null,
-                    directory.schemaName, id, map);
+                    directory.schemaName, id, map, isReadOnly());
             return entry;
         } catch (PropertyException e) {
             throw new DirectoryException(e);
@@ -196,7 +196,7 @@ public class MemoryDirectorySession extends BaseSession {
     }
 
     public boolean isReadOnly() {
-        return false;
+        return directory.isReadOnly();
     }
 
     public DocumentModelList query(Map<String, Serializable> filter)
