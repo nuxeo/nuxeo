@@ -27,7 +27,6 @@ import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
-import org.nuxeo.opensocial.service.impl.OpenSocialServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.inject.Guice;
@@ -89,9 +88,15 @@ public class GuiceContextListener implements ServletContextListener {
         try {
             return (Module) Class.forName(moduleName).newInstance();
         } catch (IllegalAccessException e) {
-            throw new InstantiationException();
+            InstantiationException ie = new InstantiationException(
+                    "IllegalAccessException: " + e.getMessage());
+            ie.setStackTrace(e.getStackTrace());
+            throw ie;
         } catch (ClassNotFoundException e) {
-            throw new InstantiationException();
+            InstantiationException ie = new InstantiationException(
+                    "ClassNotFoundException: " + e.getMessage());
+            ie.setStackTrace(e.getStackTrace());
+            throw ie;
         }
     }
 
