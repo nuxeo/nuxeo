@@ -30,6 +30,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
@@ -45,6 +46,8 @@ import org.nuxeo.theme.webwidgets.WidgetType;
 @WebObject(type = "nxthemes-webwidgets")
 @Produces("text/html")
 public class Main extends ModuleRoot {
+
+    final private int CACHE_MAX_AGE = 600;
 
     @GET
     @Path("webWidgetFactory")
@@ -80,11 +83,11 @@ public class Main extends ModuleRoot {
     @Path("move_widget")
     public String moveWidget() {
         FormData form = ctx.getForm();
-        int srcArea =  Integer.valueOf(form.getString("src_area"));
-        String srcUid =  form.getString("src_uid");
-        int destArea =  Integer.valueOf(form.getString("dest_area"));
+        int srcArea = Integer.valueOf(form.getString("src_area"));
+        String srcUid = form.getString("src_uid");
+        int destArea = Integer.valueOf(form.getString("dest_area"));
         int destOrder = Integer.valueOf(form.getString("dest_order"));
-        return Editor.moveWidget(srcArea,srcUid, destArea, destOrder);
+        return Editor.moveWidget(srcArea, srcUid, destArea, destOrder);
     }
 
     @POST
@@ -154,8 +157,12 @@ public class Main extends ModuleRoot {
         } catch (Exception e) {
             throw new WidgetEditorException(e.getMessage(), e);
         }
+
         ResponseBuilder builder = Response.ok(data.getContent());
         builder.type(data.getContentType());
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(CACHE_MAX_AGE);
+        builder.cacheControl(cc);
         return builder.build();
     }
 
@@ -176,16 +183,12 @@ public class Main extends ModuleRoot {
     public Response renderWidgetIcon(@QueryParam("name") String widgetTypeName) {
         byte[] content = Manager.getWidgetIconContent(widgetTypeName);
         ResponseBuilder builder = Response.ok(content);
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(CACHE_MAX_AGE);
+        builder.cacheControl(cc);
         // builder.type(???)
         return builder.build();
     }
-
-    /* Widget Sample */
-    @Path("lastdocuments")
-    public Object getModules() {
-        return newObject("lastdocuments");
-    }
-
 
     /* API */
 
