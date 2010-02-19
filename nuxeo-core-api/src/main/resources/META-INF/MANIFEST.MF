@@ -31,6 +31,9 @@ Export-Package: org.nuxeo.ecm.core,
  org.nuxeo.ecm.core.utils
 Bundle-ClassPath: .
 Require-Bundle: org.nuxeo.runtime;visibility:=reexport,
+ org.nuxeo.ecm.core.schema;visibility:=reexport,
+ org.apache.commons.collections
+Nuxeo-Require: org.nuxeo.runtime;visibility:=reexport,
  org.nuxeo.ecm.core.schema;visibility:=reexport
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/DocumentAdapterService.xml,
