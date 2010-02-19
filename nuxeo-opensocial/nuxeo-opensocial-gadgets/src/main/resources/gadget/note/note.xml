@@ -125,7 +125,10 @@
       _gel("txtareapostit").style.fontFamily = tfont;
 
     var perm = gadgets.nuxeo.isEditable();
-
+	
+	setCols();
+	setRows(text);
+    
     if(perm == false) {
       var elt2 = _gel("txtareapostit");
      _gel("cacheText").style.top = _gel("txtareapostit").style.top;
@@ -136,7 +139,7 @@
      _gel("cacheText").style.fontSize = tsize;
      _gel("cacheText").style.fontFamily = tfont;
 
-     setCols();
+    
 	 
      jQuery("#formtxt").remove();
      jQuery("#cacheText").show();
@@ -151,9 +154,8 @@
 
      _gel("cacheText").innerHTML = temp_chaine;
 
-     } else {
-     	setRows(text);
      }
+     
     }
 
     function save() {
