@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -257,11 +258,11 @@ public class GroupManagerActionsBean implements GroupManagerActions {
     }
 
     public boolean getAllowDeleteGroup() throws ClientException {
-        return getCanEditGroups();
+        return getCanEditGroups() && !BaseSession.isReadOnlyEntry(selectedGroup);
     }
 
     public boolean getAllowEditGroup() throws ClientException {
-        return getCanEditGroups();
+        return getCanEditGroups() && !BaseSession.isReadOnlyEntry(selectedGroup);
     }
 
     public String getSearchString() {

@@ -57,6 +57,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -415,11 +416,11 @@ public class UserManagerActionsBean implements UserManagerActions {
     }
 
     public boolean getAllowEditUser() throws ClientException {
-        return getCanEditUsers(true);
+        return getCanEditUsers(true) && !BaseSession.isReadOnlyEntry(selectedUser);
     }
 
     public boolean getAllowChangePassword() throws ClientException {
-        return getCanEditUsers(true);
+        return getCanEditUsers(true) && !BaseSession.isReadOnlyEntry(selectedUser);
     }
 
     public boolean getAllowCreateUser() throws ClientException {
@@ -427,7 +428,7 @@ public class UserManagerActionsBean implements UserManagerActions {
     }
 
     public boolean getAllowDeleteUser() throws ClientException {
-        return getCanEditUsers(false);
+        return getCanEditUsers(false) && !BaseSession.isReadOnlyEntry(selectedUser);
     }
 
     public String clearSearch() throws ClientException {
