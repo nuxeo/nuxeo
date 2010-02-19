@@ -67,7 +67,7 @@ public class GadgetService {
   public static void setHeight(String frameId, int height) {
     if (saveAllGadgets != null)
       saveAllGadgets.cancel();
-    if (height < 30)
+    if (height < 10)
       return;
 
     ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
@@ -173,8 +173,6 @@ public class GadgetService {
 
         $wnd.jQuery.each(childs, function(index, child) {
            var a = $wnd.jQuery("<a></a>").attr('href',child.path.value+"@view/Original.jpg").attr('class','zoom').attr("id","inline").attr('rel','group');
-           var img = $wnd.jQuery("<img></img>").attr("src",child.path.value+"@view/Original");
-           a.append(img);
            container.append(a);
         });
 
