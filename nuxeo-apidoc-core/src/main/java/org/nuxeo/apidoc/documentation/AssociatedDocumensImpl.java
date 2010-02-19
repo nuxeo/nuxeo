@@ -1,6 +1,5 @@
 package org.nuxeo.apidoc.documentation;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,10 +22,12 @@ public class AssociatedDocumensImpl implements AssociatedDocuments {
 
     protected String id;
 
+    protected NuxeoArtifact item;
+
     protected CoreSession session;
 
     public AssociatedDocumensImpl(NuxeoArtifact item, CoreSession session) {
-        id = item.getId();
+        this.item = item;
         this.session = session;
     }
 
@@ -66,17 +67,32 @@ public class AssociatedDocumensImpl implements AssociatedDocuments {
         return categories;
     }
 
-    public DocumentationItem createDocumentationItem(NuxeoArtifact item, String title,String content, String type, List<String> applicableVersions, boolean approved, String renderingType) throws ClientException {
-        return Framework.getLocalService(DocumentationService.class).createDocumentationItem(session, item, title, content, type, applicableVersions, approved, renderingType);
-    }
+    public Map<String, List<DocumentationItem>> getDocumentationItems(CoreSession session) throws Exception {
 
-    public DocumentationItem updateDocumentationItem(String title,String content, List<String> applicableVersions, boolean approved, String renderingType) {
-        return null;
-    }
+        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
 
-    public List<DocumentationItem> getDocumentationInCategory(String categoryKey) {
-        return null;
-    }
+        List<DocumentationItem> docItems = ds.findDocumentItems(session, item);
 
+        Map<String, List<DocumentationItem>> result = new HashMap<String, List<DocumentationItem>>();
+
+        Map<String, String> categories = getCategories();
+
+        for (DocumentationItem docItem : docItems) {
+
+            String cat = docItem.getType();
+            String catLabel = categories.get(cat);
+
+            List<DocumentationItem> itemList = result.get(catLabel);
+
+            if (itemList!=null) {
+                itemList.add(docItem);
+            } else {
+                itemList = new ArrayList<DocumentationItem>();
+                itemList.add(docItem);
+                result.put(catLabel, itemList);
+            }
+        }
+        return result;
+    }
 
 }

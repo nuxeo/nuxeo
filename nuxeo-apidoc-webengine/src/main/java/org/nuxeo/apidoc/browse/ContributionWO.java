@@ -23,6 +23,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 
 import org.nuxeo.apidoc.api.ExtensionInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
@@ -31,21 +32,22 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  *
  */
 @WebObject(type = "contribution")
-public class ContributionWO extends BaseWebObject {
-
-    protected String id = null;
-
-    @Override
-    protected void initialize(Object... args) {
-        id = (String) args[0];
-    }
+public class ContributionWO extends NuxeoArtifactWebObject {
 
     @GET
     @Produces("text/html")
     public Object doGet() throws Exception {
-        ExtensionInfo ei = SnapshotManager.getSnapshot(getDistributionId(),ctx.getCoreSession()).getContribution(id);
+        ExtensionInfo ei = getTargetExtensionInfo();
+        return getView("view").arg("contribution", ei);
+    }
 
-        return getView("view").arg("contribution", ei).arg(DIST_ID, getDistributionId());
+    public ExtensionInfo getTargetExtensionInfo() {
+        return SnapshotManager.getSnapshot(getDistributionId(),ctx.getCoreSession()).getContribution(nxArtifactId);
+    }
+
+    @Override
+    protected NuxeoArtifact getNxArtifact() {
+        return getTargetExtensionInfo();
     }
 
 }

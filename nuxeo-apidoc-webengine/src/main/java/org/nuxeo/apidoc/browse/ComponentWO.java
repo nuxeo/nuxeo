@@ -23,6 +23,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 
 import org.nuxeo.apidoc.api.ComponentInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
@@ -31,21 +32,23 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  *
  */
 @WebObject(type = "component")
-public class ComponentWO  extends BaseWebObject {
-
-    protected String componentId = null;
-
-    @Override
-    protected void initialize(Object... args) {
-        componentId = (String) args[0];
-    }
+public class ComponentWO  extends NuxeoArtifactWebObject {
 
     @GET
     @Produces("text/html")
     public Object doGet() throws Exception {
-        ComponentInfo ci = SnapshotManager.getSnapshot(getDistributionId(),ctx.getCoreSession()).getComponent(componentId);
+        ComponentInfo ci = getTargetComponentInfo();
         String bundleId = ci.getBundle().getBundleId();
-        return getView("view").arg("bundleId", bundleId).arg("component", ci).arg(DIST_ID, getDistributionId());
+        return getView("view").arg("bundleId", bundleId).arg("component", ci);
+    }
+
+    public ComponentInfo getTargetComponentInfo() {
+        return SnapshotManager.getSnapshot(getDistributionId(),ctx.getCoreSession()).getComponent(nxArtifactId);
+    }
+
+    @Override
+    protected NuxeoArtifact getNxArtifact() {
+        return getTargetComponentInfo();
     }
 
 }

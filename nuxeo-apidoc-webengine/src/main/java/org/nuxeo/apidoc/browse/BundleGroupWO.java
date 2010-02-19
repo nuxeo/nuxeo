@@ -27,6 +27,7 @@ import javax.ws.rs.Produces;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
@@ -35,23 +36,25 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  *
  */
 @WebObject(type = "bundleGroup")
-public class BundleGroupWO extends BaseWebObject {
+public class BundleGroupWO extends NuxeoArtifactWebObject {
 
-    protected String gId = null;
-
-    @Override
-    protected void initialize(Object... args) {
-        gId = (String) args[0];
-    }
 
     @GET
     @Produces("text/html")
     public Object doGet() throws Exception {
-    	
-        BundleGroup group = SnapshotManager.getSnapshot(getDistributionId(), ctx.getCoreSession()).getBundleGroup(gId);
+        BundleGroup group = getTargetBundleGroup();
         BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(SnapshotManager.getSnapshot(getDistributionId(),ctx.getCoreSession()));
-        List<BundleGroupFlatTree> tree = bgth.getBundleGroupSubTree(gId);
-        return getView("view").arg("group", group).arg("groupId", gId).arg("tree", tree).arg(DIST_ID, getDistributionId());
+        List<BundleGroupFlatTree> tree = bgth.getBundleGroupSubTree(nxArtifactId);
+        return getView("view").arg("group", group).arg("groupId", nxArtifactId).arg("tree", tree);
+    }
+
+    public BundleGroup getTargetBundleGroup() {
+        return SnapshotManager.getSnapshot(getDistributionId(), ctx.getCoreSession()).getBundleGroup(nxArtifactId);
+    }
+
+    @Override
+    protected NuxeoArtifact getNxArtifact() {
+        return getTargetBundleGroup();
     }
 
 }

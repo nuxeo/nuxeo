@@ -19,6 +19,7 @@
 
 package org.nuxeo.apidoc.api;
 
+import org.nuxeo.apidoc.documentation.AssociatedDocumensImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
@@ -28,9 +29,14 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public abstract class BaseNuxeoArtifact implements NuxeoArtifact {
 
+    protected AssociatedDocuments associatedDocuments;
+
     public AssociatedDocuments getAssociatedDocuments(CoreSession session) {
-        // TODO Auto-generated method stub
-        return null;
+
+        if (associatedDocuments==null) {
+            associatedDocuments = new AssociatedDocumensImpl(this, session);
+        }
+        return associatedDocuments;
     }
 
     public abstract String getId();

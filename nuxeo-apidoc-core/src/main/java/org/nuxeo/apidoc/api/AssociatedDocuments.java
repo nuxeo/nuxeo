@@ -18,11 +18,22 @@
  */
 package org.nuxeo.apidoc.api;
 
+import java.util.List;
+import java.util.Map;
+
+import org.nuxeo.ecm.core.api.CoreSession;
+
 /**
- *  
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
 public interface AssociatedDocuments {
+
+    List<String> getCategoryKeys()  throws Exception;
+
+    Map<String, String> getCategories()  throws Exception;
+
+    Map<String, List<DocumentationItem>> getDocumentationItems(CoreSession session) throws Exception;
 
 }

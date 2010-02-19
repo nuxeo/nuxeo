@@ -23,6 +23,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
@@ -31,20 +32,22 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  *
  */
 @WebObject(type = "extensionPoint")
-public class ExtensionPointWO extends BaseWebObject {
+public class ExtensionPointWO extends NuxeoArtifactWebObject {
 
-    protected String id = null;
-
-    @Override
-    protected void initialize(Object... args) {
-        id = (String) args[0];
-    }
 
     @GET
     @Produces("text/html")
     public Object doGet() throws Exception {
-        ExtensionPointInfo epi = SnapshotManager.getSnapshot(getDistributionId(),ctx.getCoreSession()).getExtensionPoint(id);
-        return getView("view").arg("extensionPoint", epi).arg(DIST_ID, getDistributionId());
+        ExtensionPointInfo epi = getTargetExtensionPointInfo();
+        return getView("view").arg("extensionPoint", epi);
+    }
+
+    public ExtensionPointInfo getTargetExtensionPointInfo() {
+        return SnapshotManager.getSnapshot(getDistributionId(),ctx.getCoreSession()).getExtensionPoint(nxArtifactId);
+    }
+    @Override
+    protected NuxeoArtifact getNxArtifact() {
+        return getTargetExtensionPointInfo();
     }
 
 

@@ -22,6 +22,7 @@ package org.nuxeo.apidoc.browse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
@@ -29,18 +30,16 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  *
  */
 @WebObject(type = "service")
-public class ServiceWO  extends BaseWebObject {
-
-    protected String serviceId = null;
-
-    @Override
-    protected void initialize(Object... args) {
-        serviceId = (String) args[0];
-    }
+public class ServiceWO  extends NuxeoArtifactWebObject {
 
     @GET
     @Produces("text/html")
     public Object doGet() throws Exception {
-        return getView("view").arg("service", serviceId).arg(DIST_ID, getDistributionId());
+        return getView("view").arg("service", nxArtifactId);
+    }
+
+    @Override
+    protected NuxeoArtifact getNxArtifact() {
+        return null;
     }
 }

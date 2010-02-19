@@ -26,6 +26,7 @@ import javax.ws.rs.Produces;
 
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
@@ -34,21 +35,23 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  *
  */
 @WebObject(type = "bundle")
-public class BundleWO extends BaseWebObject {
-
-    protected String bundleId = null;
-
-    @Override
-    protected void initialize(Object... args) {
-        bundleId = (String) args[0];
-    }
+public class BundleWO extends NuxeoArtifactWebObject {
 
     @GET
     @Produces("text/html")
     public Object doGet() throws Exception {
-        BundleInfo bi = SnapshotManager.getSnapshot(getDistributionId(),ctx.getCoreSession()).getBundle(bundleId);
+        BundleInfo bi = getTargetBundleInfo();
         Collection<ComponentInfo> ci = bi.getComponents();
-        return getView("view").arg("bundle", bi).arg("components", ci).arg(DIST_ID, getDistributionId());
+        return getView("view").arg("bundle", bi).arg("components", ci);
+    }
+
+    public BundleInfo getTargetBundleInfo() {
+        return SnapshotManager.getSnapshot(getDistributionId(),ctx.getCoreSession()).getBundle(nxArtifactId);
+    }
+
+    @Override
+    protected NuxeoArtifact getNxArtifact() {
+        return getTargetBundleInfo();
     }
 
 

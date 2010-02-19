@@ -29,6 +29,10 @@ ${bundle.manifest}
     <li><A href="${Root.path}/${distId}/viewComponent/${component.name}"> ${component.name} </A></li>
 </#list>
 </ul>
+
 </@block>
+
+
+
 
 </@extends>
