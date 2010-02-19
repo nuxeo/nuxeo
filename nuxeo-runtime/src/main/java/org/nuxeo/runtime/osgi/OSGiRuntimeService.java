@@ -344,7 +344,21 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                     + file);
             loadProperties(file);
         }
-        // context.getLocalResource("OSGI-INF/RuntimeService.xml");
+
+        loadDefaultConfig();
+    }
+
+    /**
+     * Loads default properties.
+     * <p>
+     * Used for backward compatibility when adding new mandatory properties
+     * </p>
+     */
+    protected void loadDefaultConfig() {
+        String varName = "org.nuxeo.ecm.contextPath";
+        if (Framework.getProperty(varName) == null) {
+            properties.setProperty(varName, "/nuxeo");
+        }
     }
 
     public void loadProperties(File file) throws IOException {
@@ -509,8 +523,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                         + " for bundle: " + name + " as URI: " + location);
                 return null;
             }
-        } else { // may be a file path - this happens when using JarFileBundle
-            // (for ex. in nxshell)
+        } else { // may be a file path - this happens when using
+            // JarFileBundle (for ex. in nxshell)
             try {
                 file = new File(location);
             } catch (Exception e) {
