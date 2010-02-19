@@ -61,6 +61,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.DatabaseOracle;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
@@ -86,6 +87,9 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
     protected void deployRepositoryContrib() throws Exception {
         if (database instanceof DatabaseH2) {
             String contrib = "OSGI-INF/test-repo-repository-h2-contrib.xml";
+            deployContrib("org.nuxeo.ecm.core.chemistry.tests", contrib);
+        } else if (database instanceof DatabaseOracle) {
+            String contrib = "OSGI-INF/test-repo-repository-oracle-contrib.xml";
             deployContrib("org.nuxeo.ecm.core.chemistry.tests", contrib);
         } else {
             super.deployRepositoryContrib();
@@ -179,6 +183,7 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
 
         DocumentModel file3 = new DocumentModelImpl("/testfolder1",
                 "testfile3", "Note");
+        file3.setPropertyValue("note", "this is a note");
         file3.setPropertyValue("dc:title", "testfile3_Title");
         file3.setPropertyValue("dc:description",
                 "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
@@ -502,6 +507,18 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
                 "SELECT * FROM CMIS:DOCUMENT WHERE DC:TITLE = 'testfile1_Title'",
                 false);
         assertEquals(1, res.size());
+    }
+
+    // note is specified as largetext in the repo config
+    public void testQueryLargeTextField() throws Exception {
+        String query;
+        Collection<ObjectEntry> col;
+
+        query = "SELECT note FROM Note";
+        col = spi.query(query, false, null, null);
+        assertEquals(1, col.size());
+        ObjectEntry entry = col.iterator().next();
+        assertEquals("this is a note", entry.getValue("note"));
     }
 
     // computed properties, not directly fetchable from SQL
