@@ -61,19 +61,21 @@
     <description>
       <![CDATA[
       <p>
-      Facelet tag handler that exposes the result of a method binding as a variable.
+        Facelet tag handler that exposes the result of a method binding as a
+        variable. Note that this tag is <b>deprecated</b> since Seam 2.0 handles
+        method resolution natively.
       </p>
       <p>
-      This is helpful to avoid having to define a getter on a class to get some
-      rendering info. This is comparable to f:param or ui:param tags, but using
-      method bindings instead of value bindings.
+        This is helpful to avoid having to define a getter on a class to get
+        some rendering info. This is comparable to f:param or ui:param tags, but
+        using method bindings instead of value bindings.
       </p>
       <p>
-      <b>WARNING</b>: the variable is only exposed inside the tag: this is a
-      different behaviour than the c:set tag that can be closed immediately.
+        <b>WARNING</b> : the variable is only exposed inside the tag: this is a
+        different behaviour than the c:set tag that can be closed immediately.
       </p>
       <p>
-      <b>WARNING bis</b>: the method result should be Serializable.
+        <b>WARNING bis</b> : the method result should be Serializable.
       </p>
       ]]>
     </description>
@@ -112,6 +114,66 @@
 ...
   </nxu:dataList>
 </nxu:methodResult>
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>set</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>
+      Facelet tag handler that exposes an expression as a variable, and makes
+      it possible to cache it.
+      </p>
+      <p>
+      This is very close to the c:set tag, but allows caching, and the variable
+      is only exposed inside the tag. Note that this tga will not work as
+      expected when used with iteration variables inside a standard table, for
+      instance.
+      </p>
+      <p>
+      <b>WARNING</b>: the expression evaluation result should be Serializable.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+      <description>Name of the variable that will be set.</description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Expression that will be evaluated to set the attribute value.
+      </description>
+    </attribute>
+    <attribute>
+      <name>cache</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Boolean. Flag indicating if the expression should be evaluated when
+        constructing the JSF tree. If true, it is evaluated only once and not
+        called again when resolving other expressions using the result variable.
+        However, the tag will not work as expected when using request variables
+        in its expression (like table variable). Set to "false" by default.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxu:set var="actions" value="#{webActions.getActionsList('SUBVIEW_UPPER_LIST')}" cache="true">
+  <nxu:dataList var="action"
+                value="#{actions}">
+...
+  </nxu:dataList>
+</nxu:set>
       ]]>
     </example>
   </tag>

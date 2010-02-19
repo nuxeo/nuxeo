@@ -39,7 +39,10 @@ import com.sun.facelets.tag.TagConfig;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
+ * @deprecated since Seam 2.0 handles method results
+ * @see SetTagHandler for caching features using parameter immediate
  */
+@Deprecated
 public class MethodResultTagHandler extends MetaTagHandler {
 
     private static final Class[] DEFAULT_PARAM_TYPES_CLASSES = new Class[0];
