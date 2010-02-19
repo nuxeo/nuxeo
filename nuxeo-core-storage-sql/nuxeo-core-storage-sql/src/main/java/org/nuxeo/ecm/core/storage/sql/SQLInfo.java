@@ -17,6 +17,9 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1001,27 +1004,69 @@ public class SQLInfo {
 
         public final List<Column> whatColumns;
 
-        public final List<String> whatColumnsAliases;
+        public final MapMaker mapMaker;
 
         public final List<Column> whereColumns;
 
         public final List<Column> opaqueColumns;
 
+        /**
+         * Standard select for given columns.
+         */
         public SQLInfoSelect(String sql, List<Column> whatColumns,
                 List<Column> whereColumns, List<Column> opaqueColumns) {
-            this(sql, whatColumns, null, whereColumns, opaqueColumns);
+            this(sql, whatColumns, new ColumnMapMaker(whatColumns),
+                    whereColumns, opaqueColumns);
         }
 
-        public SQLInfoSelect(String sql, List<Column> whatColumns,
-                List<String> whatColumnsAliases, List<Column> whereColumns,
+        /**
+         * Select where some column keys may be aliased, and some columns may be
+         * computed.
+         */
+        public SQLInfoSelect(String sql, MapMaker mapMaker) {
+            this(sql, null, mapMaker, null, null);
+        }
+
+        protected SQLInfoSelect(String sql, List<Column> whatColumns,
+                MapMaker mapMaker, List<Column> whereColumns,
                 List<Column> opaqueColumns) {
             this.sql = sql;
-            this.whatColumns = new ArrayList<Column>(whatColumns);
-            this.whatColumnsAliases = whatColumnsAliases;
+            this.whatColumns = whatColumns;
+            this.mapMaker = mapMaker;
             this.whereColumns = whereColumns == null ? null
                     : new ArrayList<Column>(whereColumns);
             this.opaqueColumns = opaqueColumns == null ? null
                     : new ArrayList<Column>(opaqueColumns);
+        }
+    }
+
+    /**
+     * Knows how to build a result map for a row given a {@link ResultSet}. This
+     * abstraction may be used to compute some values on the fly.
+     */
+    public interface MapMaker {
+        Map<String, Serializable> makeMap(ResultSet rs) throws SQLException;
+    }
+
+    /**
+     * Builds the map from a result set given a {@link SQLInfoSelect} holding
+     * columns and column aliases.
+     */
+    public static class ColumnMapMaker implements MapMaker {
+        public final List<Column> columns;
+
+        public ColumnMapMaker(List<Column> columns) {
+            this.columns = columns;
+        }
+
+        public Map<String, Serializable> makeMap(ResultSet rs)
+                throws SQLException {
+            Map<String, Serializable> map = new HashMap<String, Serializable>();
+            int i = 1;
+            for (Column column : columns) {
+                map.put(column.getKey(), column.getFromResultSet(rs, i++));
+            }
+            return map;
         }
     }
 
