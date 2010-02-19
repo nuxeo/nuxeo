@@ -85,7 +85,9 @@ public class LDAPDirectoryProxy implements Directory {
     }
 
     public void shutdown() throws DirectoryException {
-        getDirectory().shutdown();
+        if (directory != null) {
+            directory.shutdown();
+        }
     }
 
     public Reference getReference(String referenceFieldName) {
