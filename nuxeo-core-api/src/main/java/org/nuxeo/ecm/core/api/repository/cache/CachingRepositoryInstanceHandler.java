@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
+import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
@@ -48,14 +48,16 @@ import org.nuxeo.ecm.core.api.repository.RepositoryInstanceHandler;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+@SuppressWarnings("unchecked")
 public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
         implements DocumentModelCache {
 
     protected Principal principal;
     protected String sessionId;
 
-    protected final ConcurrentMap<String, DocumentModel> cache = new ConcurrentHashMap<String, DocumentModel>();
-    protected final ConcurrentMap<String, String> path2Ids = new ConcurrentHashMap<String, String>();
+    // access to cache map should be synchronized
+    protected final Map<String, DocumentModel> cache = (Map<String,DocumentModel>)new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
+    protected final Map<String, String> path2Ids = new ConcurrentHashMap<String, String>();
 
     /** Children Cache: parentId -> list of child Ids  */
     protected final Map<String, List<DocumentRef>> childrenCache = new HashMap<String, List<DocumentRef>>();
@@ -97,6 +99,13 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
 
     // --------------------------- Document Provider API --------------------------------
 
+    protected DocumentModel putIfAbsent(String id, DocumentModel doc) {
+        if (!cache.containsKey(id)) {
+            cache.put(id, doc);
+        }
+        return cache.get(id);
+    }
+    
     /**
      * The doc
      * cache should be always updated first (before paths cache). It is not a blocking issue if we
@@ -104,10 +113,10 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
      * the doc cache)
      */
 
-    public DocumentModel cacheDocument(DocumentModel doc) {
+    public synchronized DocumentModel cacheDocument(DocumentModel doc) {
         String id = doc.getId();
         if (id != null) {
-            DocumentModel cachedDoc = cache.putIfAbsent(id, doc);
+            DocumentModel cachedDoc = putIfAbsent(id, doc);
             if (cachedDoc == null) { // here we may end up with id and paths being unsync - but it is not a pb.
                 path2Ids.put(doc.getPathAsString(), id);
                 return doc;
@@ -117,7 +126,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
         return doc;
     }
 
-    public DocumentModel uncacheDocument(DocumentRef ref) {
+    public synchronized DocumentModel uncacheDocument(DocumentRef ref) {
         if (ref.type() == DocumentRef.ID) {
             String id = ((IdRef) ref).value;
             DocumentModel doc = cache.remove(id);
@@ -135,7 +144,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
         return null;
     }
 
-    public DocumentModel getCachedDocument(DocumentRef ref) {
+    public synchronized DocumentModel getCachedDocument(DocumentRef ref) {
         if (ref.type() == DocumentRef.ID) {
             return cache.get(((IdRef) ref).value);
         } // else assume a path
@@ -146,7 +155,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
         return null;
     }
 
-    public void flushDocumentCache() {
+    public synchronized void flushDocumentCache() {
         // Race condition: try to clean until we succeed - this may not work from first time
         // because we are not in a synchronized block
         while (path2Ids.isEmpty() && cache.isEmpty()) {
@@ -164,7 +173,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
         return cacheDocument(session.getDocument(ref));
     }
 
-    public DocumentModel getChild(DocumentRef parent, String name) throws ClientException {
+    public synchronized DocumentModel getChild(DocumentRef parent, String name) throws ClientException {
         DocumentModel doc = getCachedDocument(parent);
         if (doc != null) {
             String path = doc.getPathAsString();
@@ -177,11 +186,11 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
                     return doc;
                 }
             }
-        } // document not in cache
+        } 
         return cacheDocument(session.getChild(parent, name));
     }
 
-    public DocumentModel getRootDocument() throws ClientException {
+    public synchronized DocumentModel getRootDocument() throws ClientException {
         String id = path2Ids.get("/");
         if (id != null) {
             DocumentModel doc = cache.get(id);

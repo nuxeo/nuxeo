@@ -12,10 +12,12 @@
   <description>Nuxeo Core: API.</description>
 
   <dependencies>
+
     <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
@@ -29,6 +31,11 @@
     <dependency>
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
     </dependency>
 
     <!-- test scope -->
