@@ -62,9 +62,10 @@ public class TestModificationSet extends TestCase {
         Iterator<Modification> it2 = set.iterator();
         assertEquals("a [8]", it2.next().toString());
         assertEquals("b [16]", it2.next().toString());
-        assertEquals("c [448]", it2.next().toString());
+        assertEquals("c [64]", it2.next().toString());
         assertEquals("e [128]", it2.next().toString());
         assertEquals("d [256]", it2.next().toString());
+        assertEquals("c [384]", it2.next().toString());
         assertFalse(it2.hasNext());
 
         set.remove(2);
@@ -73,6 +74,7 @@ public class TestModificationSet extends TestCase {
         assertEquals("b [16]", it3.next().toString());
         assertEquals("e [128]", it3.next().toString());
         assertEquals("d [256]", it3.next().toString());
+        assertEquals("c [384]", it3.next().toString());
         assertFalse(it3.hasNext());
     }
 

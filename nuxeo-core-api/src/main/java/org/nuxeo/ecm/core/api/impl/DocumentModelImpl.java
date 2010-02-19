@@ -565,6 +565,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                     return value == Null.VALUE ? null : value;
                 }
             }
+            if(log.isTraceEnabled()) {
+                log.trace("Property not in prefetch: " + schemaName + '.' + name);
+            }
             dm = getDataModel(schemaName);
         }
         return dm == null ? null : dm.getData(name);
