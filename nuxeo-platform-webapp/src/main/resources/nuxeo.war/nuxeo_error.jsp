@@ -4,6 +4,9 @@
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.plugins.AnonymousAuthenticator"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%
+String context = request.getContextPath();
+%>
 <html>
 <fmt:setBundle basename="messages" var="messages"/>
 <head>
