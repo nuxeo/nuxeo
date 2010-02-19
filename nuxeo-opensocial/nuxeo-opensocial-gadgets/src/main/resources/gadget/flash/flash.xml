@@ -105,12 +105,17 @@
   });
    </script>
    <div id="title"></div>
+
+
+   <div style="text-align:center;margin:auto;">
+       <img id="loader" src="/nuxeo/img/standart_waiter.gif"/>
+       <div id="flash"></div>
+   </div>
    <div id="perm">
      <div id="show">
         <a href="#">Modifier</a>
      </div>
-
-     <div style="display:none;margin:auto" id="form">
+      <div style="display:none;margin:auto" id="form">
 
        <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a></div>
        <table style="width:100%" id="formFlash">
@@ -134,10 +139,6 @@
         </tr>
        </table>
      </div>
-   </div>
-   <div style="text-align:center;margin:auto;">
-       <img id="loader" src="/nuxeo/img/standart_waiter.gif"/>
-       <div id="flash"></div>
    </div>
 
   ]]>
