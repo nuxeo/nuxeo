@@ -20,6 +20,5 @@ nuxeo-theme-editor/bin-groovy
 .svn
 .svn2hg_currev
 .svn2hg_curlog
-shindig
 derby.log
 *.launch
