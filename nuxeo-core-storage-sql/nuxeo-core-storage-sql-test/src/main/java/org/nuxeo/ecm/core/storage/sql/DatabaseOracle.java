@@ -29,11 +29,11 @@ public class DatabaseOracle extends DatabaseHelper {
 
     public static DatabaseHelper INSTANCE = new DatabaseOracle();
 
-    private static final String DEF_URL = "jdbc:oracle:thin:@127.0.0.1:1521:XE";
+    private static final String DEF_URL = "jdbc:oracle:thin:@192.168.133.149:1521:XE";
 
-    private static final String DEF_USER = "NUXEO";
+    private static final String DEF_USER = "nuxeo";
 
-    private static final String DEF_PASSWORD = "NUXEO";
+    private static final String DEF_PASSWORD = "nuxeo";
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-oracle-contrib.xml";
 

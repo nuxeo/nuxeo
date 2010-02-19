@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.core.storage.sql.db.dialect;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -224,13 +226,31 @@ public class DialectOracle extends Dialect {
             throws SQLException {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
-        case Types.CLOB:
             String string = rs.getString(index);
             if (column.getType() == ColumnType.BLOBID && string != null) {
                 return column.getModel().getBinary(string);
             } else {
                 return string;
             }
+        case Types.CLOB:
+            // Oracle cannot read CLOBs using rs.getString when the ResultSet is
+            // a ScrollableResultSet (the standard OracleResultSetImpl works
+            // fine).
+            Reader r = rs.getCharacterStream(index);
+            if (r == null) {
+                return null;
+            }
+            StringBuilder sb = new StringBuilder();
+            char[] buffer = new char[4096];
+            try {
+                int n;
+                while ((n = r.read(buffer)) != -1) {
+                    sb.append(new String(buffer, 0, n));
+                }
+            } catch (IOException e) {
+                log.error("Cannot read CLOB", e);
+            }
+            return sb.toString();
         case Types.BIT:
             return rs.getBoolean(index);
         case Types.SMALLINT:

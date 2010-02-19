@@ -9,6 +9,9 @@
     <repository name="test"
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository>
+        <schema>
+          <field type="largetext">note</field>
+        </schema>
         <indexing>
           <fulltext analyzer="french">
             <index> <!-- name="default" implied -->
