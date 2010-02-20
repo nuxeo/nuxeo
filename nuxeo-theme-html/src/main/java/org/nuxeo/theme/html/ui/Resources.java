@@ -27,7 +27,7 @@ public class Resources {
             boolean virtualHosting) {
         StringBuilder sb = new StringBuilder();
 
-        String resourcePath =  VirtualHostHelper.getContextPathProperty()
+        String resourcePath = VirtualHostHelper.getContextPathProperty()
                 + "/nxthemes-lib/";
         final String themeUrl = params.get("themeUrl");
         final String path = params.get("path");
@@ -87,13 +87,11 @@ public class Resources {
 
         final String contextPath = params.get("contextPath");
         // scripts
-        sb.append(String.format(
-                "<script type=\"text/javascript\">" +
-		  "<!--\n var nxthemesPath = \"%s\";\n //-->" +
-		  "<!--\n var nxthemesBasePath = \"%s\";\n //-->" +
-          "<!--\n var nxContextPath = \"%s\";\n //-->" +
-                "</script>\n",
-                path, nxthemeBasePath, contextPath));
+        sb.append(String.format("<script type=\"text/javascript\"><!--\n"
+                + "var nxthemesPath = \"%s\";\n"
+                + "var nxthemesBasePath = \"%s\";\n"
+                + "var nxContextPath = \"%s\";\n" + "//--></script>\n", path,
+                nxthemeBasePath, contextPath));
         if (hasScripts) {
             sb.append(String.format(
                     "<script type=\"text/javascript\" src=\"%s\"></script>",

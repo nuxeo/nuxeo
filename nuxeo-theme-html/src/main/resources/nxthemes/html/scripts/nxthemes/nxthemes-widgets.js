@@ -672,7 +672,7 @@ NXThemes.Button.prototype = Object.extend(new NXThemes.View(), {
     }
     var icon = this.def.icon;
     if (icon) {
-        icon = icon.replace('%{contextPath}', nxthemesPath);
+        icon = icon.replace('%{contextPath}', nxContextPath);
     }
     var icon_str = icon ? '<img src="' + icon + '" width="14" height="14" alt="' + label + '" />' : '';
     widget.innerHTML = '<b>&nbsp;' + icon_str + '</b><a href="' + link + '">' + label + '</a>';
