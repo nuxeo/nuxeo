@@ -31,6 +31,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
@@ -46,8 +47,6 @@ import org.nuxeo.theme.webwidgets.WidgetType;
 @WebObject(type = "nxthemes-webwidgets")
 @Produces("text/html")
 public class Main extends ModuleRoot {
-
-    final private int CACHE_MAX_AGE = 600;
 
     @GET
     @Path("webWidgetFactory")
@@ -150,19 +149,24 @@ public class Main extends ModuleRoot {
     public Response renderWidgetData(
             @QueryParam("widget_uid") String widgetUid,
             @QueryParam("data") String dataName,
-            @QueryParam("provider") String providerName) {
+            @QueryParam("provider") String providerName,
+            @QueryParam("timestamp") String timestamp) {
+        
+        HttpServletRequest request = ctx.getRequest();
+        String etag = request.getHeader("If-None-Match");
+        if (timestamp.equals(etag)) {
+            return Response.notModified().build();
+        }
+        
         WidgetData data = null;
         try {
             data = Manager.getWidgetData(providerName, widgetUid, dataName);
         } catch (Exception e) {
             throw new WidgetEditorException(e.getMessage(), e);
         }
-
         ResponseBuilder builder = Response.ok(data.getContent());
+        builder.tag(timestamp);
         builder.type(data.getContentType());
-        CacheControl cc = new CacheControl();
-        cc.setMaxAge(CACHE_MAX_AGE);
-        builder.cacheControl(cc);
         return builder.build();
     }
 
@@ -184,7 +188,8 @@ public class Main extends ModuleRoot {
         byte[] content = Manager.getWidgetIconContent(widgetTypeName);
         ResponseBuilder builder = Response.ok(content);
         CacheControl cc = new CacheControl();
-        cc.setMaxAge(CACHE_MAX_AGE);
+        // Set a default max-age of 1 day.
+        cc.setMaxAge(86400);
         builder.cacheControl(cc);
         // builder.type(???)
         return builder.build();
