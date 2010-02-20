@@ -275,10 +275,4 @@ public class TestUtils extends NXRuntimeTestCase {
         assertEquals("", Utils.toUpperCamelCase(""));
     }
 
-    public void testJSCompress1() {
-        assertEquals(
-                "var global_variable=10;\nfunction test(){\nvar _1=0;\n};\n",
-                JSUtils.compressSource("var global_variable = 10;  \n  function test() { var local_variable = 0 }"));
-    }
-
 }
