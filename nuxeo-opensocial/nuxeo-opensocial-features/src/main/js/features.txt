@@ -26,7 +26,11 @@
 
 #features/analytics/feature.xml
 features/auth-refresh/feature.xml
+
+#Replace with our own (Nuxeo) that doesn't have the valija.co.js problem
 #features/caja/feature.xml
+nxfeatures/caja/feature.xml
+
 features/content-rewrite/feature.xml
 features/core.auth/feature.xml
 features/core.config/feature.xml
