@@ -85,6 +85,6 @@ gadgets.nuxeo.isEditable = function() {
 gadgets.nuxeo.getNXIDPreference = function(name, id) {
   return {"NXID": id, "NXNAME":name};
 };
-}
+
 
 

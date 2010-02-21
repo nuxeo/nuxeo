@@ -27,7 +27,6 @@ import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
-import org.nuxeo.opensocial.service.impl.OpenSocialServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.inject.Guice;

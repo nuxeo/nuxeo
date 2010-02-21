@@ -33,6 +33,7 @@ import org.apache.shindig.gadgets.rewrite.RequestRewriterRegistry;
 import org.apache.shindig.gadgets.servlet.MakeRequestHandler;
 import org.apache.shindig.gadgets.servlet.ProxyBase;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 /**
@@ -46,6 +47,7 @@ import com.google.inject.Singleton;
 public class NXMakeRequestHandler extends MakeRequestHandler {
   public static String AUTH_SESSION_HEADER = "X-NUXEO-INTEGRATED-AUTH";
 
+  @Inject
   public NXMakeRequestHandler(RequestPipeline requestPipeline,
       RequestRewriterRegistry contentRewriterRegistry) {
     super(requestPipeline, contentRewriterRegistry);

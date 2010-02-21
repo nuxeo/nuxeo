@@ -77,4 +77,19 @@ public class NxSecurityToken implements SecurityToken {
     return false;
   }
 
+  public String getActiveUrl() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public String getAuthenticationMode() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public String getContainer() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }

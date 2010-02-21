@@ -18,9 +18,7 @@
         org.apache.shindig.gadgets.DefaultGuiceModule:
         org.apache.shindig.social.core.config.SocialApiGuiceModule:
         org.nuxeo.opensocial.services.NuxeoServiceModule:
-        org.nuxeo.opensocial.services.NuxeoCryptoModule:
         org.nuxeo.opensocial.shindig.gadgets.NXMakeRequestModule:
-        org.nuxeo.opensocial.shindig.gadgets.NXGadgetSpecFactoryModule:
         org.apache.shindig.gadgets.oauth.OAuthModule:
         org.apache.shindig.common.cache.ehcache.EhCacheModule
     </param-value>
@@ -77,6 +75,14 @@
     </servlet-class>
     </servlet>
 
+    <servlet>
+      <servlet-name>concat</servlet-name>
+      <servlet-class>
+        org.apache.shindig.gadgets.servlet.ConcatProxyServlet
+    </servlet-class>
+    </servlet>
+
+
     <!-- makeRequest -->
     <servlet>
       <servlet-name>makeRequest</servlet-name>
@@ -85,12 +91,6 @@
     </servlet-class>
     </servlet>
 
-    <servlet>
-      <servlet-name>concat</servlet-name>
-      <servlet-class>
-        org.apache.shindig.gadgets.servlet.ConcatProxyServlet
-    </servlet-class>
-    </servlet>
 
     <!-- OAuth callback -->
     <servlet>
@@ -108,27 +108,35 @@
     </servlet-class>
     </servlet>
 
+    <!-- Serve gadgets RPC api -->
+    <servlet>
+      <servlet-name>gadgetsJsonRpcServlet</servlet-name>
+      <servlet-class>
+        org.apache.shindig.protocol.JsonRpcServlet
+      </servlet-class>
+      <init-param>
+        <param-name>handlers</param-name>
+        <param-value>org.apache.shindig.gadgets.handlers</param-value>
+      </init-param>
+    </servlet>
+
+    <servlet>
+      <servlet-name>gadgetsRestapiServlet</servlet-name>
+      <servlet-class>
+        org.apache.shindig.protocol.DataServiceServlet
+      </servlet-class>
+      <init-param>
+        <param-name>handlers</param-name>
+        <param-value>org.apache.shindig.gadgets.handlers</param-value>
+      </init-param>
+    </servlet>
+
+
     <!-- javascript serving -->
     <servlet>
       <servlet-name>js</servlet-name>
       <servlet-class>org.apache.shindig.gadgets.servlet.JsServlet
       </servlet-class>
-    </servlet>
-
-    <!-- Serve REST api -->
-    <servlet>
-      <servlet-name>restapiServlet</servlet-name>
-      <servlet-class>
-        org.apache.shindig.social.opensocial.service.DataServiceServlet
-      </servlet-class>
-    </servlet>
-
-    <!-- Serve RPC api -->
-    <servlet>
-      <servlet-name>jsonRpcServlet</servlet-name>
-      <servlet-class>
-        org.apache.shindig.social.opensocial.service.JsonRpcServlet
-    </servlet-class>
     </servlet>
 
   </extension>
@@ -170,12 +178,12 @@
     </servlet-mapping>
 
     <servlet-mapping>
-      <servlet-name>restapiServlet</servlet-name>
+      <servlet-name>gadgetsRestapiServlet</servlet-name>
       <url-pattern>/opensocial/social/rest/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-      <servlet-name>jsonRpcServlet</servlet-name>
+      <servlet-name>gadgetsJsonRpcServlet</servlet-name>
       <url-pattern>/opensocial/social/rpc/*</url-pattern>
     </servlet-mapping>
   </extension>

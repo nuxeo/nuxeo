@@ -19,6 +19,7 @@ package org.nuxeo.opensocial.services;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.shindig.social.opensocial.oauth.OAuthDataStore;
 import org.apache.shindig.social.opensocial.spi.ActivityService;
 import org.apache.shindig.social.opensocial.spi.AppDataService;
 import org.apache.shindig.social.opensocial.spi.PersonService;
@@ -40,6 +41,8 @@ public class NuxeoServiceModule extends AbstractModule {
                     Framework.getService(ActivityService.class));
             bind(AppDataService.class).toInstance(
                     Framework.getService(AppDataService.class));
+
+            bind(OAuthDataStore.class).to(NXOAuthDataStore.class);
 
         } catch (Exception e) {
             LOG.error("Unable to bind Shindig services to Nuxeo components");
