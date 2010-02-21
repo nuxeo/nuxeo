@@ -18,6 +18,7 @@
         org.apache.shindig.gadgets.DefaultGuiceModule:
         org.apache.shindig.social.core.config.SocialApiGuiceModule:
         org.nuxeo.opensocial.services.NuxeoServiceModule:
+        org.nuxeo.opensocial.services.NuxeoCryptoModule:
         org.nuxeo.opensocial.shindig.gadgets.NXMakeRequestModule:
         org.apache.shindig.gadgets.oauth.OAuthModule:
         org.apache.shindig.common.cache.ehcache.EhCacheModule
