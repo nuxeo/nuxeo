@@ -16,6 +16,7 @@
   </ModulePrefs>
 
     <UserPref name="height" display_name="Hauteur (en px)" default_value="400"/>
+    <UserPref name="title-flash" default_value="" datatype="hidden"/>
 
   <Content type="html" view="default">
 <![CDATA[
@@ -54,7 +55,7 @@
     }
 
 
-    #title{
+    #title-flash{
     font-size:14px;
     color:#13506B;
     text-align:center;
@@ -104,7 +105,7 @@
     launchGadget();
   });
    </script>
-   <div id="title"></div>
+   <div id="title-flash"></div>
 
 
    <div style="text-align:center;margin:auto;">
