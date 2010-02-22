@@ -55,7 +55,7 @@ public class TaskListImpl implements TaskList {
             }
 
             Map<String, Object> persone = new HashMap<String, Object>();
-            persone.put("users", task.getActors());
+            persone.put("taskUsers", task.getActors());
             persone.put("directive", task.getDirective());
             persone.put("comment", task.getComment());
             persone.put("dueDate", task.getDueDate());
@@ -78,7 +78,7 @@ public class TaskListImpl implements TaskList {
             if (participants != null) {
                 for (Map<String, Object> participant : participants) {
                     VirtualTaskInstance task = new VirtualTaskInstance();
-                    task.setActors((List<String>)participant.get("users"));
+                    task.setActors((List<String>)participant.get("taskUsers"));
                     task.setDirective((String)participant.get("directive"));
                     task.setComment((String)participant.get("comment"));
                     GregorianCalendar calendar = (GregorianCalendar)participant.get("dueDate");
