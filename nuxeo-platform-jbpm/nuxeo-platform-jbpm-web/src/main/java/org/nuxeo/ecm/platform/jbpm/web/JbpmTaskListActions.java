@@ -18,6 +18,7 @@
 
 package org.nuxeo.ecm.platform.jbpm.web;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +41,9 @@ import org.nuxeo.runtime.api.Framework;
 
 @Name("jbpmTaskListActions")
 @Scope(ScopeType.CONVERSATION)
-public class JbpmTaskListActions {
+public class JbpmTaskListActions implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @In(create = true)
     protected transient JbpmActions jbpmActions;
