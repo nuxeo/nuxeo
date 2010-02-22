@@ -1,6 +1,7 @@
 package org.nuxeo.apidoc.documentation;
 
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
@@ -16,4 +17,8 @@ public interface DocumentationService {
      List<DocumentationItem> findDocumentItems(CoreSession session,NuxeoArtifact nxItem) throws ClientException;
 
      List<DocumentationItem> findDocumentationItemVariants(CoreSession session, DocumentationItem item) throws ClientException;
+
+     Map<String, String> getCategories()  throws Exception;
+
+     List<String> getCategoryKeys()  throws Exception;
 }

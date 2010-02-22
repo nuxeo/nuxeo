@@ -15,7 +15,7 @@ color:#333;
 }
 
 iframe {
-height:280px;  
+height:280px;
 }
 
 h1 {
@@ -39,7 +39,7 @@ border-bottom:1px dotted #ccc;
 }
 
 p {
-margin:3px 0px 10px;  
+margin:3px 0px 10px;
 }
 
 a, a:link, a:active, a:visited {
@@ -85,7 +85,7 @@ float:left;
 }
 
 .login {
-float:right;  
+float:right;
 }
 
 .login input{
@@ -94,7 +94,7 @@ background-color:#4D4D4D;
 color:#DEDEDE;
 padding: 1px 5px;
 margin: 0px 5px 0px 0px;
-width:100px;  
+width:100px;
 }
 
 .login .button{
@@ -173,3 +173,18 @@ color:#D0D0D0;
 .logout a,.logout a:link,.logout a:active,.logout a:visited{
 color:#fff;
 }
+
+.tabs  {
+  background-color:#CCCCCC; border-style:solid; border-width:1 1 0 1; border-color:#888888; font-size:12pt; text-align:center;cursor:pointer;padding-top:2px;padding-bottom:2px;
+}
+.tabselected  {
+  background-color:white; font-weight:bold;cursor:default;text-decoration:none;
+}
+
+.tabselected a, .tabselected a:hover, .tabselected a:link , .tabselected a:visited , .tabselected a:active{
+  text-decoration:none;
+  color:black;
+  cursor:default;
+}
+
+

@@ -1,6 +1,14 @@
 <table width="90%">
 <tr>
-  <td> ${docItem.content?html}"</td>
+  <td width="70%">
+<#if docItem.renderingType=='html'>
+    ${docItem.content}
+</#if>
+<#if docItem.renderingType=='wiki'>
+    <@wiki>${docItem.content}</@wiki>
+</#if>
+
+</td>
   <td>
     <table>
       <tr>

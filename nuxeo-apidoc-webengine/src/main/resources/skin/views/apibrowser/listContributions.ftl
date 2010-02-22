@@ -1,5 +1,5 @@
+<#setting url_escaping_charset="ISO-8859-1">
 <@extends src="base.ftl">
-<#setting url_escaping_charset="UTF-8">
 
 <@block name="stylesheets">
 </@block>

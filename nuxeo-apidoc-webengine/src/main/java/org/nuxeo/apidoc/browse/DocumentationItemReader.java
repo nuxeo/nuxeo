@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.URLDecoder;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -52,37 +53,40 @@ public class DocumentationItemReader implements MessageBodyReader<DocumentationI
             String[] subParts=part.split("=");
 
             if (subParts.length==2) {
+
+                String dataStr = URLDecoder.decode(subParts[1], "utf-8");
+
                 if ("content".equals(subParts[0])) {
-                    item.content = subParts[1];
+                    item.content = dataStr;
                 }
                 else if ("id".equals(subParts[0])) {
-                    item.id = subParts[1];
+                    item.id = dataStr;
                 }
                 else if ("renderingType".equals(subParts[0])) {
-                    item.renderingType = subParts[1];
+                    item.renderingType = dataStr;
                 }
                 else if ("target".equals(subParts[0])) {
-                    item.target = subParts[1];
+                    item.target = dataStr;
                 }
                 else if ("targetType".equals(subParts[0])) {
-                    item.targetType = subParts[1];
+                    item.targetType = dataStr;
                 }
                 else if ("title".equals(subParts[0])) {
-                    item.title = subParts[1];
+                    item.title = dataStr;
                 }
                 else if ("type".equals(subParts[0])) {
-                    item.type = subParts[1];
+                    item.type = dataStr;
                 }
                 else if ("uuid".equals(subParts[0])) {
-                    item.uuid = subParts[1];
+                    item.uuid = dataStr;
                 }
                 else if ("approved".equals(subParts[0])) {
-                    if ("on".equals(subParts[1])) {
+                    if ("on".equals(dataStr)) {
                         item.approved = true;
                     }
                 }
                 else if ("versions".equals(subParts[0])) {
-                    item.applicableVersion.add(subParts[1]);
+                    item.applicableVersion.add(dataStr);
                 }
             }
         }

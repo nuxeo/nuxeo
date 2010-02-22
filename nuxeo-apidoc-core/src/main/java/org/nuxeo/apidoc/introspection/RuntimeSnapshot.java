@@ -281,22 +281,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         }
     }
 
-/*    public List<BundleInfo> getBundlesForBundleGroup(String groupId) {
-
-        List<BundleInfo> bundles = new ArrayList<BundleInfo>();
-        List<String> bIds = mavenGroups.get(groupId);
-        if (bIds!=null) {
-            for (String bId : bIds) {
-                BundleInfoImpl bInfo = getBundle(bId);
-                if (bInfo!=null) {
-                    bundles.add(bInfo);
-                }
-            }
-        }
-        return bundles;
-    }*/
-
-
     public String getKey() {
         return getName() + "-" + getVersion();
     }

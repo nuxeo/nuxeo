@@ -20,6 +20,10 @@
 package org.nuxeo.apidoc.browse;
 
 import java.net.URI;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -32,6 +36,9 @@ import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.documentation.DocumentationService;
+import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -63,7 +70,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @Override
     public Template getView(String viewId) {
-        return super.getView(viewId).arg(DIST_ID, getDistributionId());
+        return super.getView(viewId).arg(DIST_ID, getDistributionId()).arg("enableDocumentationView", true);
     }
 
     protected abstract NuxeoArtifact getNxArtifact();
@@ -88,11 +95,19 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
         ds.updateDocumentationItem(ctx.getCoreSession(), docItem);
 
-        String targetUrl = ctx.getUrlPath();
-        targetUrl= targetUrl.replace(ctx.getBasePath(), "");
-        targetUrl= targetUrl.replace("/updateDocumentation", "/doc");
+        String targetUrl = computeUrl("/updateDocumentation");
         return Response.seeOther(new URI(targetUrl)).build();
     }
+
+    protected String computeUrl(String suffix) throws Exception {
+        String targetUrl = ctx.getUrlPath();
+        targetUrl = URLDecoder.decode(targetUrl, "ISO-8859-1");
+        targetUrl= targetUrl.replace(ctx.getBasePath(), "");
+        targetUrl= targetUrl.replace(suffix, "/doc");
+        targetUrl = URLEncoder.encode(targetUrl, "ISO-8859-1");
+        return targetUrl;
+    }
+
 
     @POST
     @Produces("text/html")
@@ -103,9 +118,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
         ds.createDocumentationItem(ctx.getCoreSession(), getNxArtifact(), docItem.getTitle(), docItem.getContent(), docItem.getType(), docItem.getApplicableVersion(), docItem.isApproved(), docItem.getRenderingType());
 
-        String targetUrl = ctx.getUrlPath();
-        targetUrl= targetUrl.replace(ctx.getBasePath(), "");
-        targetUrl= targetUrl.replace("/createDocumentation", "/doc");
+        String targetUrl = computeUrl("/createDocumentation");
         return Response.seeOther(new URI(targetUrl)).build();
     }
 
@@ -115,7 +128,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     public Object doViewDoc() throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
-        return getView("../documentation").arg("nxItem", nxItem).arg("docs", docs);
+        return getView("../documentation").arg("nxItem", nxItem).arg("docs", docs).arg("docView", true);
     }
 
     @GET
@@ -123,8 +136,9 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @Path(value = "createForm")
     public Object doAddDoc() throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
+        List<String> versions = SnapshotManager.getAvailableVersions(ctx.getCoreSession(), nxItem);
         DocumentationItem docItem = new SimpleDocumentationItem(nxItem);
-        return getView("../docForm").arg("nxItem", nxItem).arg("mode","create").arg("docItem", docItem);
+        return getView("../docForm").arg("nxItem", nxItem).arg("mode","create").arg("docItem", docItem).arg("versions", versions).arg("docView", true);
     }
 
     @GET
@@ -132,11 +146,17 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @Path(value = "editForm/{uuid}")
     public Object doEditDoc(@PathParam("uuid") String uuid) throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
-        DocumentationItem docItem = new SimpleDocumentationItem(nxItem);
-        return getView("../docForm").arg("nxItem", nxItem).arg("mode","edit").arg("docItem", docItem);
+        List<String> versions = SnapshotManager.getAvailableVersions(ctx.getCoreSession(), nxItem);
+        DocumentModel existingDoc = ctx.getCoreSession().getDocument(new IdRef(uuid));
+        DocumentationItem docItem = existingDoc.getAdapter(DocumentationItem.class);
+        return getView("../docForm").arg("nxItem", nxItem).arg("mode","edit").arg("docItem", docItem).arg("versions", versions).arg("docView", true);
     }
 
 
+    public Map<String, String> getCategories() throws Exception {
+        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        return ds.getCategories();
+    }
 
 
 }

@@ -1,5 +1,5 @@
+<#setting url_escaping_charset="ISO-8859-1">
 <@extends src="base.ftl">
-
 <@block name="stylesheets">
 </@block>
 
@@ -30,7 +30,7 @@
  <h2>${category}</h2>
 
  <#list docsByCat2[category] as docItem>
-    <A name="${docItem.id}"> ${docItem.title} </A> &nbsp;[ <A href="${This.path}/editForm/${docItem.id}">Edit</A> ]
+    <A name="${docItem.id}"> ${docItem.title} </A> &nbsp;[ <A href="${This.path}/editForm/${docItem.getUUID()}">Edit</A> ]
     <#include "docItemView.ftl">
  </#list>
 </#list>

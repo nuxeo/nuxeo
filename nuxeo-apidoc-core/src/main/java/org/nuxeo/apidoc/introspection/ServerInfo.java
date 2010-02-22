@@ -281,7 +281,7 @@ public class ServerInfo {
 
             if (ri.getExtensions()!=null) {
                 for (Extension xt : ri.getExtensions()) {
-                    ExtensionInfoImpl xtinfo = new ExtensionInfoImpl(xt.getId(), component, xt.getExtensionPoint());
+                    ExtensionInfoImpl xtinfo = new ExtensionInfoImpl(component, xt.getExtensionPoint());
                     xtinfo.setTargetComponentName(xt.getTargetComponent());
                     xtinfo.setContribution(xt.getContributions());
                     xtinfo.setDocumentation(xt.getDocumentation());

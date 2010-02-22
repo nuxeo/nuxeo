@@ -40,8 +40,8 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
 
     protected Object[] contribution;
 
-    public ExtensionInfoImpl(String id, ComponentInfoImpl component, String xpoint) {
-        this.id = id;
+    public ExtensionInfoImpl(ComponentInfoImpl component, String xpoint) {
+        this.id = component.getName() + "--" + xpoint;
         this.component = component;
         this.extensionPoint = xpoint;
     }

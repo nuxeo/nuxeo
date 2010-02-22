@@ -95,7 +95,7 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
         Session session = null;
         try {
             DirectoryService dm = Framework.getService(DirectoryService.class);
-            session = dm.open(AssociatedDocumensImpl.DIRECTORY_NAME);
+            session = dm.open(DocumentationComponent.DIRECTORY_NAME);
             DocumentModel entry = session.getEntry(type);
             return (String) entry.getProperty("vocabulary", "label");
         } catch (Exception e) {

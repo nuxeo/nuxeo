@@ -14,12 +14,18 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class DocumentationComponent extends DefaultComponent implements
         DocumentationService {
+
+    public static final String DIRECTORY_NAME = "documentationTypes";
 
     protected DocumentModel getDocumentationRoot(CoreSession session)
             throws ClientException {
@@ -176,4 +182,43 @@ public class DocumentationComponent extends DefaultComponent implements
         return existingDoc.getAdapter(DocumentationItem.class);
 
       }
+
+
+    public List<String> getCategoryKeys()  throws Exception {
+
+        List<String> categories = new ArrayList<String>();
+
+        DirectoryService dm = Framework.getService(DirectoryService.class);
+        Session session = dm.open(DIRECTORY_NAME);
+        try {
+            DocumentModelList entries = session.getEntries();
+            for (DocumentModel entry : entries) {
+                categories.add(entry.getId());
+            }
+        } finally {
+            session.close();
+        }
+        return categories;
+    }
+
+    public Map<String, String> getCategories()  throws Exception {
+
+        Map<String, String> categories = new HashMap<String, String>();
+
+        DirectoryService dm = Framework.getService(DirectoryService.class);
+        Session session = dm.open(DIRECTORY_NAME);
+        try {
+            DocumentModelList entries = session.getEntries();
+            for (DocumentModel entry : entries) {
+
+                String value = (String) entry.getProperty("vocabulary", "label");
+                categories.put(entry.getId(), value);
+            }
+        } finally {
+            session.close();
+        }
+        return categories;
+    }
+
+
 }

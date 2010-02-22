@@ -7,7 +7,7 @@
 
   <!--link rel="stylesheet" href="${skinPath}/css/webengine.css" type="text/css" media="screen" charset="utf-8"-->
   <link rel="shortcut icon" href="${skinPath}/images/favicon.png" />
-  <link rel="stylesheet" href="${skinPath}/css/studio_style.css" type="text/css" media="screen" charset="utf-8">
+  <link rel="stylesheet" href="${skinPath}/css/apidoc_style.css" type="text/css" media="screen" charset="utf-8">
 
   <@block name="stylesheets" />
 
@@ -50,6 +50,26 @@
           </@block>
           </td>
           <td style="padding:10px 20px 20px 10px;">
+     <#if enableDocumentationView>
+            <table width="100% class="tabs" id="tabbox">
+            <tr>
+            <td width="50%">
+            <div class="tabs
+            <#if !docView>
+        tabselected
+            </#if>
+            ">
+             <A href="${This.path}">Introspection view</A>
+            </div> </td>
+            <td width="50%" >
+            <div class="tabs
+            <#if docView>
+            tabselected
+            </#if>
+            "> <A href="${This.path}/doc">Documentation view</A></div></td>
+            </tr>
+            </table>
+       </#if>
           <@block name="right">
             Content
           </@block>
