@@ -44,6 +44,7 @@ import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.Inclusion;
 import org.apache.chemistry.ListPage;
+import org.apache.chemistry.NameConstraintViolationException;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.ObjectNotFoundException;
@@ -353,6 +354,38 @@ public class NuxeoConnection implements Connection, SPI {
             return new NuxeoObjectEntry(session.getDocument(docRef), this);
         } catch (ClientException e) {
             throw new CMISRuntimeException(e);
+        }
+    }
+
+    public ObjectId createDocumentFromSource(ObjectId source, ObjectId folder,
+            Map<String, Serializable> properties,
+            VersioningState versioningState)
+            throws NameConstraintViolationException {
+        // TODO versioningState
+        if (folder == null) {
+            throw new ConstraintViolationException("Unfiling not supported");
+        }
+        try {
+            String id = source.getId();
+            DocumentRef docRef = new IdRef(id);
+            if (!session.exists(docRef)) {
+                throw new ObjectNotFoundException(id);
+            }
+            String folderId = folder.getId();
+            IdRef folderRef = new IdRef(folderId);
+            if (!session.exists(folderRef)) {
+                throw new ObjectNotFoundException(folderId);
+            }
+            DocumentModel doc = session.copy(docRef, folderRef, null);
+            NuxeoObjectEntry entry = new NuxeoObjectEntry(doc, this);
+            if (properties != null) {
+                entry = updateProperties(entry, null, properties, true);
+                entry.save();
+            }
+            session.save();
+            return entry;
+        } catch (ClientException e) {
+            throw new CMISRuntimeException(e.toString(), e);
         }
     }
 

@@ -29,6 +29,7 @@ import java.util.TimeZone;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ConstraintViolationException;
 import org.apache.chemistry.ContentStream;
@@ -310,6 +311,43 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         assertEquals("Note", entry.getTypeId());
     }
 
+    public void testCopySPI() throws Exception {
+        ObjectEntry ob = spi.getObjectByPath("/testfolder1/testfile1", null);
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put("dc:title", "new title");
+        try {
+            ObjectId id = spi.createDocumentFromSource(ob,
+                    repository.getInfo().getRootFolderId(), properties, null);
+            assertNotNull(id);
+            assertNotSame(id, ob.getId());
+        } catch (CMISRuntimeException e) {
+            assertTrue(e.getMessage().contains(
+                    "AtomPub bindings do not support"));
+            return;
+        }
+        // fetch
+        ObjectEntry doc = spi.getObjectByPath("/testfile1", null);
+        assertNotNull(doc);
+        assertEquals("new title", doc.getValue("dc:title"));
+    }
+
+    public void testCopy() throws Exception {
+        ObjectEntry foldid = spi.getObjectByPath("/", null);
+        Folder fold = (Folder) conn.getObject(foldid);
+        ObjectEntry ob = spi.getObjectByPath("/testfolder1/testfile1", null);
+        Document doc = (Document) conn.getObject(ob);
+        try {
+            Document newdoc = doc.copy(fold);
+            assertNotNull(newdoc);
+            assertNotSame(newdoc.getId(), doc.getId());
+            assertEquals("testfile1_Title", newdoc.getValue("dc:title"));
+        } catch (CMISRuntimeException e) {
+            assertTrue(e.getMessage().contains(
+                    "AtomPub bindings do not support"));
+            return;
+        }
+    }
+
     public void testUpdate() throws Exception {
         byte[] blobBytes = "A file...\n".getBytes("UTF-8");
         String filename = "doc.txt";
@@ -536,8 +574,11 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         for (ObjectEntry entry : col) {
             Integer l = (Integer) entry.getValue("cmis:contentStreamLength");
             if (l != null) {
-                assertEquals(Integer.valueOf(17), l);
-                gotLength = true;
+                if (l.intValue() == 14 || l.intValue() == 17) {
+                    gotLength = true;
+                } else {
+                    fail(l.toString());
+                }
             }
         }
         assertTrue(gotLength);

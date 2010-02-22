@@ -27,7 +27,10 @@ import org.apache.chemistry.ContentAlreadyExistsException;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.Document;
+import org.apache.chemistry.Folder;
+import org.apache.chemistry.NameConstraintViolationException;
 import org.apache.chemistry.StreamNotSupportedException;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public class NuxeoDocument extends NuxeoObject implements Document {
@@ -95,6 +98,20 @@ public class NuxeoDocument extends NuxeoObject implements Document {
             NuxeoProperty.setContentStream(doc, contentStream, true);
         } catch (ContentAlreadyExistsException e) {
             // cannot happen, overwrite = true
+        }
+    }
+
+    public Document copy(Folder folder) throws NameConstraintViolationException {
+        if (folder == null) {
+            throw new ConstraintViolationException("Unfiling not supported");
+        }
+        try {
+            DocumentModel newdoc = connection.session.copy(doc.getRef(),
+                    ((NuxeoFolder) folder).doc.getRef(), null);
+            connection.session.save();
+            return new NuxeoDocument(newdoc, connection);
+        } catch (ClientException e) {
+            throw new CMISRuntimeException(e.toString(), e);
         }
     }
 
