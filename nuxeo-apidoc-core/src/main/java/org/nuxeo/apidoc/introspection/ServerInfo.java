@@ -127,12 +127,12 @@ public class ServerInfo {
     }
 
     public void addBundle(BundleInfoImpl bundle) {
-        this.bundles.put(bundle.getBundleId(), bundle);
+        this.bundles.put(bundle.getId(), bundle);
     }
 
     public void addBundle(Collection<BundleInfoImpl> bundles) {
         for (BundleInfoImpl bundle : bundles) {
-            this.bundles.put(bundle.getBundleId(), bundle);
+            this.bundles.put(bundle.getId(), bundle);
         }
     }
 
@@ -265,7 +265,7 @@ public class ServerInfo {
                     }
                     xpinfo.setTypes(descriptors);
                     xpinfo.setDocumentation(xp.getDocumentation());
-                    xpRegistry.put(xpinfo.getName(), xpinfo);
+                    xpRegistry.put(xpinfo.getId(), xpinfo);
                     component.addExtensionPoint(xpinfo);
                 }
             }
@@ -330,7 +330,7 @@ public class ServerInfo {
             xw.element("fileName").content(bundle.fileName);
             //TODO requirements
             for (ComponentInfo component : bundle.getComponents()) {
-                xw.element("component").attr("id", component.getName()).start();
+                xw.element("component").attr("id", component.getId()).start();
                 for (ExtensionPointInfo xp : component.getExtensionPoints()) {
 
                 }

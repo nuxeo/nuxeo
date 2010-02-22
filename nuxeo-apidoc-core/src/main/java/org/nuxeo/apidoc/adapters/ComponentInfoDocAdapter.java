@@ -57,6 +57,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         }
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", componentInfo.getName());
+        doc.setPropertyValue("nxcomponent:componentId", componentInfo.getId());
         doc.setPropertyValue("nxcomponent:componentName", componentInfo.getName());
         doc.setPropertyValue("nxcomponent:componentClass", componentInfo.getComponentClass());
         doc.setPropertyValue("nxcomponent:builtInDocumentation", componentInfo.getDocumentation());

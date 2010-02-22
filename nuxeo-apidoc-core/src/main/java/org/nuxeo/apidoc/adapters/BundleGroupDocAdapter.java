@@ -52,7 +52,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", bundleGroup.getName());
         doc.setPropertyValue("nxbundlegroup:groupName", bundleGroup.getName());
-        doc.setPropertyValue("nxbundlegroup:key", bundleGroup.getKey());
+        doc.setPropertyValue("nxbundlegroup:key", bundleGroup.getId());
         if (exist) {
             doc = session.saveDocument(doc);
         } else {
@@ -74,7 +74,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
              for(DocumentModel child : docs) {
                  BundleInfo bi = child.getAdapter(BundleInfo.class);
                  if (bi!=null) {
-                     bundles.add(bi.getBundleId());
+                     bundles.add(bi.getId());
                  }
                  }
          }
@@ -84,7 +84,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
         return bundles;
     }
 
-    public String getKey() {
+    private String getKey() {
         return safeGet("nxbundlegroup:key", "unknown_bundle_group");
     }
 
@@ -114,7 +114,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public String getId() {
-        return getName();
+        return getKey();
     }
 
     public String getVersion() {

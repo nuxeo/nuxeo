@@ -17,7 +17,7 @@ ${extensionPoint.documentation?html}
 <h2> Contributions </h2>
 <ul>
 <#list extensionPoint.extensions as contrib>
-    <li>From <A href="${Root.path}/${distId}/viewComponent/${contrib.component.name}"> ${contrib.component.name}</A> contribution : <A href="${Root.path}/${distId}/viewContribution/${contrib.id}"> ${contrib.id} </A></li>
+    <li>From <A href="${Root.path}/${distId}/viewComponent/${contrib.targetComponentName.name}"> ${contrib.targetComponentName.name}</A> contribution : <A href="${Root.path}/${distId}/viewContribution/${contrib.id}"> ${contrib.id} </A></li>
 </#list>
 </ul>
 

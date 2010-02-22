@@ -21,6 +21,7 @@ package org.nuxeo.apidoc.adapters;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
@@ -29,6 +30,7 @@ import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 
 /**
@@ -55,6 +57,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         doc.setPropertyValue("dc:title", xpi.getId());
 
         doc.setPropertyValue("nxextensionpoint:name", xpi.getName());
+        doc.setPropertyValue("nxextensionpoint:epId", xpi.getId());
         doc.setPropertyValue("nxextensionpoint:documentation", xpi.getDocumentation());
         doc.setPropertyValue("nxextensionpoint:extensionPoint", xpi.getTypes());
 
@@ -82,7 +85,24 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     public Collection<ExtensionInfo> getExtensions() {
         log.error("getExtensions Not implemented");
-        return new ArrayList<ExtensionInfo>();
+
+        List<ExtensionInfo> result = new ArrayList<ExtensionInfo>();
+        try {
+        String query = "select * from " + ExtensionInfo.TYPE_NAME + " where nxcontribution:extensionPoint='" + this.getId() + "'";
+
+        DocumentModelList docs = getCoreSession().query(query);
+
+        for (DocumentModel contribDoc : docs) {
+            ExtensionInfo contrib = contribDoc.getAdapter(ExtensionInfo.class);
+            if (contrib!=null) {
+                result.add(contrib);
+            }
+        }
+        }
+        catch (Exception e) {
+            log.error("Error while fetching contributions", e);
+        }
+        return result;
     }
 
     public String getName() {

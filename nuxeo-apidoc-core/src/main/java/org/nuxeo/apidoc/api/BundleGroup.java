@@ -30,8 +30,6 @@ public interface BundleGroup extends NuxeoArtifact {
 
     public static final String TYPE_NAME ="NXBundleGroup";
 
-    public String getKey();
-
     public String getName();
 
     public List<BundleGroup> getSubGroups();

@@ -46,7 +46,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     public static BundleInfoDocAdapter create(BundleInfo bundleInfo, CoreSession session, String containerPath) throws ClientException {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
-        String name = computeDocumentName(bundleInfo.getBundleId());
+        String name = computeDocumentName(bundleInfo.getId());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {
@@ -58,7 +58,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         doc.setPropertyValue("nxbundle:artifactGroupId", bundleInfo.getArtifactGroupId());
         doc.setPropertyValue("nxbundle:artifactId", bundleInfo.getArtifactId());
         doc.setPropertyValue("nxbundle:artifactVersion", bundleInfo.getArtifactVersion());
-        doc.setPropertyValue("nxbundle:bundleId", bundleInfo.getBundleId());
+        doc.setPropertyValue("nxbundle:bundleId", bundleInfo.getId());
         doc.setPropertyValue("nxbundle:jarName", bundleInfo.getFileName());
         Blob manifestBlob = new StringBlob(bundleInfo.getManifest());
         manifestBlob.setFilename("MANIFEST.MF");

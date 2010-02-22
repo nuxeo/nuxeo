@@ -10,6 +10,7 @@
   </xs:complexType>
 
 
+  <xs:element name="componentId" type="xs:string"/>
   <xs:element name="componentName" type="xs:string"/>
   <xs:element name="componentClass" type="xs:string"/>
   <xs:element name="builtInDocumentation" type="xs:string"/>

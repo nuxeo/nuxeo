@@ -19,7 +19,7 @@
   <ul><li>
   </#if>
 
-  <A href="${Root.path}/${distId}/viewBundleGroup/${bundleGroup.group.key}">${bundleGroup.group.name}</A><br/>
+  <A href="${Root.path}/${distId}/viewBundleGroup/${bundleGroup.group.id}">${bundleGroup.group.name}</A><br/>
   <#if bundleGroup.level==1>
   </li></ul>
   </#if>

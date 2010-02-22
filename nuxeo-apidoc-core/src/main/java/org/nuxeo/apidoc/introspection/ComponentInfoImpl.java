@@ -82,7 +82,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
     }
 
     public void addExtensionPoint(ExtensionPointInfoImpl xp) {
-        extensionPoints.put(xp.getName(), xp);
+        extensionPoints.put(xp.getId(), xp);
     }
 
     public ExtensionPointInfo getExtensionPoint(String name) {

@@ -158,19 +158,19 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public List<String> getBundleIds() {
         List<String> ids = new ArrayList<String>();
         for (BundleInfo bi : getChildren(BundleInfo.class, BundleInfo.TYPE_NAME)) {
-            ids.add(bi.getBundleId());
+            ids.add(bi.getId());
         }
         return ids;
     }
 
     public ComponentInfo getComponent(String id) {
-        return getChild(ComponentInfo.class, ComponentInfo.TYPE_NAME, "nxcomponent:componentName", id);
+        return getChild(ComponentInfo.class, ComponentInfo.TYPE_NAME, "nxcomponent:componentId", id);
     }
 
     public List<String> getComponentIds() {
         List<String> ids = new ArrayList<String>();
         for (ComponentInfo ci : getChildren(ComponentInfo.class, ComponentInfo.TYPE_NAME)) {
-            ids.add(ci.getName());
+            ids.add(ci.getId());
         }
         return ids;
     }
@@ -188,13 +188,13 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     }
 
     public ExtensionPointInfo getExtensionPoint(String id) {
-        return getChild(ExtensionPointInfo.class, ExtensionPointInfo.TYPE_NAME, "nxextensionpoint:name", id);
+        return getChild(ExtensionPointInfo.class, ExtensionPointInfo.TYPE_NAME, "nxextensionpoint:epId", id);
     }
 
     public List<String> getExtensionPointIds() {
         List<String> ids = new ArrayList<String>();
         for (ExtensionPointInfo xpi : getChildren(ExtensionPointInfo.class, ExtensionPointInfo.TYPE_NAME)) {
-            ids.add(xpi.getName());
+            ids.add(xpi.getId());
         }
         return ids;
     }

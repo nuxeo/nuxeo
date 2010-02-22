@@ -12,5 +12,6 @@
   <xs:element name="name" type="xs:string"/>
   <xs:element name="documentation" type="xs:string"/>
   <xs:element name="extensionPoint" type="nxextensionpoint:stringList"/>
+  <xs:element name="epId" type="xs:string"/>
 
 </xs:schema>

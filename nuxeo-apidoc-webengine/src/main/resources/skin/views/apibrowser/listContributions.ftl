@@ -14,7 +14,7 @@
 
 <#list cIds as cId>
 
-  <A href="${Root.path}/${distId}/viewContribution/${cId?url}">${cId}</A><br/>
+  <A href="${Root.path}/${distId}/viewContribution/${cId}">${cId}</A><br/>
 
 </#list>
 

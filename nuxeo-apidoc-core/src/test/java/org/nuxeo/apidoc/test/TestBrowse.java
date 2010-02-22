@@ -55,7 +55,7 @@ public class TestBrowse extends NXRuntimeTestCase {
             for (int i = 0 ; i<=info.getLevel(); i++) {
                 pad = pad+ " ";
             }
-            System.out.println(pad + "- " + info.getGroup().getName() + "("+ info.getGroup().getKey()+")");
+            System.out.println(pad + "- " + info.getGroup().getName() + "("+ info.getGroup().getId()+")");
         }
 
         for (String bid : runtimeSnapshot.getBundleIds()) {
@@ -90,7 +90,7 @@ public class TestBrowse extends NXRuntimeTestCase {
             pad = pad+ " ";
         }
 
-        System.out.println(pad + "- " + bGroup.getName() + "("+ bGroup.getKey()+")");
+        System.out.println(pad + "- " + bGroup.getName() + "("+ bGroup.getId()+")");
 
         for (BundleGroup subGroup : bGroup.getSubGroups()) {
             dumpBundleGroup(subGroup, level+1);
