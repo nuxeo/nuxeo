@@ -32,6 +32,7 @@ import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.repository.SnapshotPersister;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
@@ -310,6 +311,21 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     public String getArtifactType() {
         return DistributionSnapshot.TYPE_NAME;
+    }
+
+    public ServiceInfo getService(String id) {
+
+        String cId = services2Components.get(id);
+        if (cId==null) {
+            return null;
+        }
+
+        for (ServiceInfo si : getComponent(cId).getServices()) {
+            if (id.equals(id)) {
+                return si;
+            }
+        }
+        return null;
     }
 
 }

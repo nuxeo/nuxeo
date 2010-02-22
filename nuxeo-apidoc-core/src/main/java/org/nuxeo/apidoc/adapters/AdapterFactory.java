@@ -24,6 +24,7 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.DocumentationItemDocAdapter;
 import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -84,6 +85,12 @@ public class AdapterFactory implements DocumentAdapterFactory {
         if (adapterClass.getSimpleName().equals(DocumentationItem.class.getSimpleName())) {
             if (doc.getType().equals(DocumentationItemDocAdapter.DOC_TYPE)) {
                 return new DocumentationItemDocAdapter(doc);
+            }
+        }
+
+        if (adapterClass.getSimpleName().equals(ServiceInfo.class.getSimpleName())) {
+            if (doc.getType().equals(ServiceInfo.TYPE_NAME)) {
+                return new ServiceInfoDocAdapter(doc);
             }
         }
 

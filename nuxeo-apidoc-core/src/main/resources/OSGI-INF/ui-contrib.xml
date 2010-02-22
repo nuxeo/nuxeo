@@ -4,8 +4,8 @@
 
     <type id="NXDistribution">
       <label>Nuxeo EP Distribution</label>
-		<icon>/icons/file.gif</icon>
-      	<bigIcon>/icons/file_100.png</bigIcon>      
+    <icon>/icons/file.gif</icon>
+        <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <category>Nuxeo EP</category>
       <layouts mode="any">
@@ -15,8 +15,8 @@
 
     <type id="NXBundleGroup">
       <label>Nuxeo EP Bundle Group</label>
-		<icon>/icons/file.gif</icon>
-      	<bigIcon>/icons/file_100.png</bigIcon>      
+    <icon>/icons/file.gif</icon>
+        <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <category>Nuxeo EP</category>
       <layouts mode="any">
@@ -26,8 +26,8 @@
 
     <type id="NXBundle">
       <label>Nuxeo EP Bundle</label>
-		<icon>/icons/file.gif</icon>
-      	<bigIcon>/icons/file_100.png</bigIcon>      
+    <icon>/icons/file.gif</icon>
+        <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <category>Nuxeo EP</category>
       <layouts mode="any">
@@ -37,8 +37,8 @@
 
     <type id="NXComponent">
       <label>Nuxeo EP Component</label>
-		<icon>/icons/file.gif</icon>
-      	<bigIcon>/icons/file_100.png</bigIcon>      
+    <icon>/icons/file.gif</icon>
+        <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <category>Nuxeo EP</category>
       <layouts mode="any">
@@ -48,8 +48,8 @@
 
     <type id="NXService">
       <label>Nuxeo EP Service</label>
-		<icon>/icons/file.gif</icon>
-      	<bigIcon>/icons/file_100.png</bigIcon>      
+    <icon>/icons/file.gif</icon>
+        <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <category>Nuxeo EP</category>
       <layouts mode="any">
@@ -59,8 +59,8 @@
 
     <type id="NXExtensionPoint">
       <label>Nuxeo EP Extension Point</label>
-		<icon>/icons/file.gif</icon>
-      	<bigIcon>/icons/file_100.png</bigIcon>      
+    <icon>/icons/file.gif</icon>
+        <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <category>Nuxeo EP</category>
       <layouts mode="any">
@@ -70,8 +70,8 @@
 
     <type id="NXContribution">
       <label>Nuxeo EP Contribution</label>
-		<icon>/icons/file.gif</icon>
-      	<bigIcon>/icons/file_100.png</bigIcon>      
+    <icon>/icons/file.gif</icon>
+        <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <category>Nuxeo EP</category>
       <layouts mode="any">
@@ -79,6 +79,16 @@
       </layouts>
     </type>
 
+    <type id="NXDocumentation">
+      <label>Nuxeo EP Documentation</label>
+      <icon>/icons/file.gif</icon>
+        <bigIcon>/icons/file_100.png</bigIcon>
+      <default-view>view_documents</default-view>
+      <category>Nuxeo EP</category>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+    </type>
 
   </extension>
 </component>

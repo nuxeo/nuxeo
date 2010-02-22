@@ -5,9 +5,8 @@
   </title>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 
-  <!--link rel="stylesheet" href="${skinPath}/css/webengine.css" type="text/css" media="screen" charset="utf-8"-->
   <link rel="shortcut icon" href="${skinPath}/images/favicon.png" />
-  <link rel="stylesheet" href="${skinPath}/css/apidoc_style.css" type="text/css" media="screen" charset="utf-8">
+  <link rel="stylesheet" href="${skinPath}/css/apidoc_style.css" type="text/css" media="screen" charset="utf-8" />
 
   <@block name="stylesheets" />
 

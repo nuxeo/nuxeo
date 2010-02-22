@@ -14,6 +14,8 @@
       class="org.nuxeo.apidoc.api.ExtensionPointInfo" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
     <adapter type="NXContribution"
       class="org.nuxeo.apidoc.api.ExtensionInfo" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
+    <adapter type="NXService"
+      class="org.nuxeo.apidoc.api.ServiceInfo" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
     <adapter type="NXDistribution"
       class="org.nuxeo.apidoc.snapshot.DistributionSnapshot" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
     <adapter type="NXDocumentation"

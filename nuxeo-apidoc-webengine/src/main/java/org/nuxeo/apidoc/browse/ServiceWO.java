@@ -23,6 +23,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
@@ -35,11 +37,17 @@ public class ServiceWO  extends NuxeoArtifactWebObject {
     @GET
     @Produces("text/html")
     public Object doGet() throws Exception {
-        return getView("view").arg("service", nxArtifactId);
+        ServiceInfo si = getServiceInfo();
+        return getView("view").arg("service", si);
+    }
+
+    public ServiceInfo getServiceInfo() {
+        return SnapshotManager.getSnapshot(getDistributionId(),ctx.getCoreSession()).getService(nxArtifactId);
     }
 
     @Override
     protected NuxeoArtifact getNxArtifact() {
-        return null;
+        return getServiceInfo();
     }
+
 }

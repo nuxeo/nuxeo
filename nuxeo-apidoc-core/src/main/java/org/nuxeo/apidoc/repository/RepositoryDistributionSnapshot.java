@@ -27,6 +27,8 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.introspection.ServiceInfoImpl;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -277,6 +279,27 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
     public String getArtifactType() {
         return DistributionSnapshot.TYPE_NAME;
+    }
+
+    public ServiceInfo getService(String id) {
+
+        String startPath = getDoc().getPathAsString();
+
+        String query = "select * from NXService where nxservice:className='" + id + "' AND ecm:path STARTSWITH '" + startPath + "/'";
+
+        try {
+            DocumentModelList docs = getCoreSession().query(query);
+            if (docs.size()==1) {
+                return docs.get(0).getAdapter(ServiceInfo.class);
+            } else {
+                log.error("Multiple services found");
+                return null;
+            }
+        }
+        catch (Exception e) {
+            log.error("Unable to fetch NXService",e);
+        }
+        return null;
     }
 
 }

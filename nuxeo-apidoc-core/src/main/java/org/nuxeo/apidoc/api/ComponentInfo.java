@@ -47,6 +47,8 @@ public interface ComponentInfo extends NuxeoArtifact {
 
     public List<String> getServiceNames();
 
+    public List<ServiceInfo> getServices();
+
     public String getComponentClass();
 
     public boolean isXmlPureComponent();

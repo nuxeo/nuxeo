@@ -26,11 +26,12 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- *  
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
@@ -57,6 +58,8 @@ public interface DistributionSnapshot {
     ComponentInfo getComponent(String id);
 
     List<String> getServiceIds();
+
+    ServiceInfo getService(String id);
 
     List<String> getExtensionPointIds();
 

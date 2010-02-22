@@ -28,25 +28,27 @@ import org.nuxeo.apidoc.adapters.BundleInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ComponentInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ExtensionInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ExtensionPointInfoDocAdapter;
+import org.nuxeo.apidoc.adapters.ServiceInfoDocAdapter;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- *  
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
 public class SnapshotPersister {
 
-	protected static Log log = LogFactory.getLog(SnapshotPersister.class);
-	
+    protected static Log log = LogFactory.getLog(SnapshotPersister.class);
+
     public DistributionSnapshot persist(DistributionSnapshot snapshot, CoreSession session, String label) throws ClientException {
 
         if (label==null)  {
@@ -59,7 +61,7 @@ public class SnapshotPersister {
         for (BundleGroup bundleGroup : bundleGroups) {
             persistBundleGroup(snapshot,bundleGroup, session, label, distribContainer.getDoc());
         }
-        
+
         return distribContainer;
     }
 
@@ -73,7 +75,7 @@ public class SnapshotPersister {
            BundleInfo bi = snapshot.getBundle(bundleId);
            persistBundle(snapshot, bi, session, label, bundleGroupDoc);
        }
-       
+
        for (BundleGroup subGroup : bundleGroup.getSubGroups()) {
            persistBundleGroup(snapshot, subGroup, session, label, bundleGroupDoc);
        }
@@ -82,9 +84,9 @@ public class SnapshotPersister {
 
 
     public void persistBundle(DistributionSnapshot snapshot, BundleInfo bundleInfo, CoreSession session, String label, DocumentModel parent) throws ClientException {
-    	
-    	log.info("Persit bundle " + bundleInfo.getId());
-    	
+
+        log.info("Persit bundle " + bundleInfo.getId());
+
         DocumentModel bundleDoc = createBundleDoc(snapshot, session, label, bundleInfo, parent);
 
         for (ComponentInfo ci : bundleInfo.getComponents()) {
@@ -103,11 +105,24 @@ public class SnapshotPersister {
         for (ExtensionInfo ei : ci.getExtensions() ) {
             createContributionDoc(snapshot, session, label, ei, componentDoc);
         }
+
+        for (ServiceInfo si : ci.getServices()) {
+            createServiceDoc(snapshot, session, label, si, componentDoc);
+        }
     }
 
     protected DocumentModel createContributionDoc(DistributionSnapshot snapshot, CoreSession session, String label, ExtensionInfo ei, DocumentModel parent) throws ClientException{
         try {
             return ExtensionInfoDocAdapter.create(ei, session, parent.getPathAsString()).getDoc();
+        }
+        catch (Exception e) {
+            throw new ClientException("Unable to create Contribution Document", e);
+        }
+    }
+
+    protected DocumentModel createServiceDoc(DistributionSnapshot snapshot, CoreSession session, String label, ServiceInfo si, DocumentModel parent) throws ClientException{
+        try {
+            return ServiceInfoDocAdapter.create(si, session, parent.getPathAsString()).getDoc();
         }
         catch (Exception e) {
             throw new ClientException("Unable to create Contribution Document", e);

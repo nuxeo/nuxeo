@@ -8,6 +8,7 @@
     <schema name="nxcontribution" src="schemas/nxcontribution.xsd" prefix="nxcontribution"/>
     <schema name="nxdistribution" src="schemas/nxdistribution.xsd" prefix="nxdistribution"/>
     <schema name="nxextensionpoint" src="schemas/nxextensionpoint.xsd" prefix="nxextensionpoint"/>
+    <schema name="nxservice" src="schemas/nxservice.xsd" prefix="nxservice"/>
 
     <schema name="nxdocumentation" src="schemas/nxdocumentation.xsd" prefix="nxdoc"/>
   </extension>

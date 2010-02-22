@@ -8,7 +8,7 @@
 </@block>
 
 <@block name="right">
-<h1> view service ${service}</h1>
+<h1> view service ${service.id}</h1>
 
 </@block>
 

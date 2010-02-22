@@ -33,6 +33,7 @@ import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 
@@ -49,6 +50,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
     protected Map<String, ExtensionPointInfo> extensionPoints;
     protected Collection<ExtensionInfo> extensions;
     protected List<String> serviceNames = new ArrayList<String>();
+    protected List<ServiceInfo> services = new ArrayList<ServiceInfo>();
 
     protected URL xmlFileUrl;
 
@@ -103,6 +105,8 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
 
     public void addService(String serviceName) {
         this.serviceNames.add(serviceName);
+        ServiceInfo si = new ServiceInfoImpl(serviceName, this);
+        this.services.add(si);
     }
 
     public List<String> getServiceNames() {
@@ -177,5 +181,9 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
 
     public String getArtifactType() {
         return ComponentInfo.TYPE_NAME;
+    }
+
+    public List<ServiceInfo> getServices() {
+        return services;
     }
 }

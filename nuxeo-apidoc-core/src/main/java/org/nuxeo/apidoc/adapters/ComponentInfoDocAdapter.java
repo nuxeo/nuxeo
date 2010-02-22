@@ -25,10 +25,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.introspection.ServiceInfoImpl;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -198,6 +201,30 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
 
     public String getArtifactType() {
         return ComponentInfo.TYPE_NAME;
+    }
+
+
+    public List<ServiceInfo> getServices() {
+
+        List<ServiceInfo> result = new ArrayList<ServiceInfo>();
+
+        String query = "select * from NXService where ecm:path STARTSWITH '" + getDoc().getPathAsString() + "/'";
+
+        try {
+            DocumentModelList docs = getCoreSession().query(query);
+
+            for (DocumentModel siDoc : docs) {
+
+                ServiceInfo si = siDoc.getAdapter(ServiceInfo.class);
+                if (si!=null) {
+                    result.add(si);
+                }
+            }
+        }
+        catch (Exception e) {
+            log.error("Unable to fetch NXService",e);
+        }
+        return result;
     }
 
 }
