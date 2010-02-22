@@ -164,27 +164,23 @@ public class GadgetService {
   public static native void showFancyBox(JsArray<JavaScriptObject> childs,
       int current)
   /*-{
-        var container = $wnd.jQuery("#gadget-fancy");
-        if(container.length == 0){
-          container = $wnd.jQuery("<div></div>").attr("id","gadget-fancy").attr("style","display:none");
-          $wnd.jQuery($wnd.document.body).append(container);
-        }
-        container.html("");
+      if($wnd.jQuery.fancybox){
+          var items = [];
 
-        $wnd.jQuery.each(childs, function(index, child) {
-           var a = $wnd.jQuery("<a></a>").attr('href',child.path.value+"@view/Original.jpg").attr('class','zoom').attr("id","inline").attr('rel','group');
-           container.append(a);
-        });
+          $wnd.jQuery.each(childs, function(index, child) {
+             items.push({href:[child.path.value,"@view/Original.jpg"].join("")});
+          });
 
-        $wnd.jQuery($wnd.jQuery("a.zoom")).fancybox({
-         'zoomSpeedIn': 500,
-         'zoomSpeedOut': 500,
-         'overlayShow': false,
-         'forceImage': true,
-         'hideOnContentClick': false
-        });
-
-        $wnd.jQuery($wnd.jQuery("a.zoom")[current]).click();
+          $wnd.jQuery.fancybox(items, {
+           'zoomSpeedIn': 500,
+           'zoomSpeedOut': 500,
+           'overlayShow': false,
+           'forceImage': true,
+           'hideOnContentClick': false
+          }, current);
+      } else if($wnd.console) {
+        $wnd.console.error("Add FancyBox plugin v1.3.0");
+      }
   }-*/;
 
   /**
