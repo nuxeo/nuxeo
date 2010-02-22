@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.core.chemistry.ws;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
@@ -77,7 +76,7 @@ public class RepositoryServicePortImpl implements RepositoryServicePort {
         repositoryInfo.setVendorName("Nuxeo");
         repositoryInfo.setProductName("Nuxeo");
         repositoryInfo.setProductVersion("5.3.1-SNAPSHOT");
-        repositoryInfo.setCmisVersionSupported(BigDecimal.valueOf(1.0));
+        repositoryInfo.setCmisVersionSupported("1.0");
 
         CmisRepositoryCapabilitiesType capabilities = new CmisRepositoryCapabilitiesType();
         capabilities.setCapabilityMultifiling(false);
