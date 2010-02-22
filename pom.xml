@@ -1762,15 +1762,6 @@
 
   <profiles>
     <profile>
-      <id>all-distributions</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <modules>
-        <module>nuxeo-distribution</module>
-      </modules>
-    </profile>
-    <profile>
       <id>release</id>
       <activation>
         <activeByDefault>false</activeByDefault>
@@ -1810,6 +1801,13 @@
                   <goal>jar</goal>
                 </goals>
               </execution>
+              <execution>
+                <id>aggregate</id>
+                <goals>
+                  <goal>aggregate</goal>
+                </goals>
+                <phase>site</phase>
+              </execution>
             </executions>
           </plugin>
         </plugins>
@@ -1820,6 +1818,10 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
+              <!--
+                aggregate parameter is deprecated since 2.5. use the aggregate
+                goal instead of
+              -->
               <aggregate>true</aggregate>
               <maxmemory>512m</maxmemory>
               <!--

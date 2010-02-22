@@ -11,5 +11,7 @@ hg clone -r 5.3 http://hg.nuxeo.org/nuxeo/nuxeo-jsf
 hg clone -r 5.3 http://hg.nuxeo.org/nuxeo/nuxeo-gwt
 hg clone -r 5.3 http://hg.nuxeo.org/nuxeo/nuxeo-features
 hg clone -r 5.3 http://hg.nuxeo.org/nuxeo/nuxeo-dm
+
 hg clone -r 5.3 http://hg.nuxeo.org/nuxeo/nuxeo-distribution
 
+hg clone -r 5.3 http://hg.nuxeo.org/addons ../nuxeo-addons

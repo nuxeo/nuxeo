@@ -1,26 +1,8 @@
 <?xml version="1.0"?>
-<project name="Nuxeo EP" default="deploy" basedir=".">
+<project name="Nuxeo EP" default="install" basedir=".">
 
   <property file="build.properties" />
   <property name="mvn.opts" value="" />
-  <property name="jboss.config" value="default" />
-  <property name="jboss.dir" value="/opt/jboss" />
-  <property name="nuxeo.ear.root" value="${basedir}/nuxeo-distribution/nuxeo-distribution-dm/" />
-  <!--the default pom file to use for jboss-patch  -->
-  <property name="pom.file" value="${basedir}/nuxeo-distribution/nuxeo-distribution-jboss/jboss-patch/pom.xml" />
-
-  <!-- set default root properties if not set -->
-  <target name="set.jboss.home" unless="jboss.home">
-    <property name="jboss.home" value="${jboss.dir}" />
-  </target>
-  <!-- set default properties if not set -->
-  <target name="setproperties" unless="jboss.server" depends="set.jboss.home">
-    <property name="jboss.server" value="${jboss.home}/server/${jboss.config}" />
-    <property name="jboss.deploy" value="${jboss.server}/deploy" />
-    <property name="jboss.lib" value="${jboss.server}/lib" />
-    <property name="jboss.nuxeo.ear" value="${jboss.deploy}/nuxeo.ear" />
-    <property name="nuxeo.ear.build" value="${nuxeo.ear.root}/target/nuxeo.ear" />
-  </target>
 
   <condition property="osfamily-unix">
     <os family="unix" />
@@ -28,10 +10,6 @@
   <condition property="osfamily-windows">
     <os family="windows" />
   </condition>
-
-  <target name="deploy" depends="install,package,copy" description="Deploy Nuxeo-EP on jboss" />
-  <target name="deploy-2parts" depends="install,package-2parts,copy-2parts" description="Deploy Nuxeo-EP on two jboss" />
-  <target name="deploy-3parts" depends="install,package-3parts,copy-3parts" description="Deploy Nuxeo-EP on three jboss" />
 
   <target name="clean" depends="clean-unix,clean-windows" description="Delete target directories" />
   <target name="clean-unix" if="osfamily-unix">
@@ -48,9 +26,6 @@
       <arg value="${mvn.opts}" />
     </exec>
   </target>
-
-  <!-- backward compatibility -->
-  <target name="undeploy" depends="jboss-clean" description="Undeploy Nuxeo-EP (deprecated : use jboss-clean instead)" />
 
   <target name="install" depends="clean,install-unix,install-windows" description="Run mvn install" />
   <target name="install-unix" if="osfamily-unix">
@@ -69,102 +44,6 @@
       <arg value="-Dmaven.test.skip=true" />
       <arg value="${mvn.opts}" />
     </exec>
-  </target>
-
-  <target name="package-2parts" description="Package Nuxeo-EP in two parts">
-    <echo>DEPRECATED - please update your scripts to not call this target anymore</echo>
-    <antcall target="package">
-      <param name="jboss.home" value="${jboss1.dir}" />
-    </antcall>
-    <antcall target="package">
-      <param name="jboss.home" value="${jboss2.dir}" />
-    </antcall>
-  </target>
-  <target name="package-3parts" description="Package Nuxeo-EP in three parts">
-    <echo>DEPRECATED - please update your scripts to not call this target anymore</echo>
-    <antcall target="package">
-      <param name="jboss.home" value="${jboss1.dir}" />
-    </antcall>
-    <antcall target="package">
-      <param name="jboss.home" value="${jboss2.dir}" />
-    </antcall>
-    <antcall target="package">
-      <param name="jboss.home" value="${jboss3.dir}" />
-    </antcall>
-  </target>
-  <target name="package" depends="setproperties,package-unix,package-windows" description="Package Nuxeo-EP" />
-  <target name="package-unix" if="osfamily-unix">
-    <exec executable="mvn" failonerror="true">
-      <arg value="package" />
-      <arg value="-Dmaven.test.skip=true" />
-      <arg value="-f" />
-      <arg value="${nuxeo.ear.root}/pom.xml" />
-      <arg value="-N" />
-      <arg value="${mvn.opts}" />
-    </exec>
-  </target>
-  <target name="package-windows" if="osfamily-windows">
-    <exec executable="cmd" failonerror="true">
-      <arg value="/c" />
-      <arg value="mvn.bat" />
-      <arg value="package" />
-      <arg value="-Dmaven.test.skip=true" />
-      <arg value="-f" />
-      <arg value="${nuxeo.ear.root}/pom.xml" />
-      <arg value="-N" />
-      <arg value="${mvn.opts}" />
-    </exec>
-  </target>
-
-  <target name="jboss-clean" description="Remove Nuxeo-EP from jboss">
-    <ant target="jboss-clean" dir="nuxeo-distribution" />
-  </target>
-
-  <target name="jboss-clean-plugins" description="Delete plugins deployed in JBoss">
-    <ant target="jboss-clean-plugins" dir="nuxeo-distribution" />
-  </target>
-
-  <target name="jboss-clean-data" description="Delete data from JBoss">
-    <ant target="jboss-clean-data" dir="nuxeo-distribution" />
-  </target>
-
-  <target name="patch405" description="Patch a JBoss 4.0.5 for use by Nuxeo-EP (deprecated : no more 4.0.5 compatibility)">
-    <echo>Jboss 4.0.5 is not supported anymore, user Jboss >= 4.2.2</echo>
-  </target>
-  <target name="patch404" description="Patch a JBoss 4.0.4 for use by Nuxeo-EP (deprecated : no more 4.0.4 compatibility)">
-    <echo>Jboss 4.0.4 is not supported anymore, user Jboss >= 4.2.2</echo>
-  </target>
-
-  <target name="patch" description="Patch a JBoss 4.2.x for use by Nuxeo-EP">
-    <ant target="patch" dir="nuxeo-distribution/nuxeo-distribution-jboss" />
-  </target>
-
-  <target name="copy-2parts" description="Copy Nuxeo-EP in two parts">
-    <ant target="copy-2parts" dir="nuxeo-distribution" />
-  </target>
-  <target name="copy-3parts" description="Copy Nuxeo-EP in three parts">
-    <ant target="copy-3parts" dir="nuxeo-distribution" />
-  </target>
-  <target name="copy" description="Replace ear and copy libs to jboss" >
-    <ant target="copy" dir="nuxeo-distribution" />
-  </target>
-  <target name="copy-lib" description="Copy Nuxeo libs in jboss" >
-    <ant target="copy-lib" dir="nuxeo-distribution" />
-  </target>
-
-  <!-- Deprecated. TODO: JC. Removed when NXBT-57 is resolved -->
-  <target name="copy-postgresql" description="Deprecated. Deploy default postresql config">
-    <ant target="copy-postgresql" dir="nuxeo-distribution" />
-  </target>
-
-  <!-- Deprecated. TODO: JC. Removed when NXBT-57 is resolved -->
-  <target name="copy-oracle" description="Deprecated.">
-    <ant target="copy-oracle" dir="nuxeo-distribution" />
-  </target>
-
-  <!-- Deprecated. TODO: JC. Removed when NXBT-57 is resolved -->
-  <target name="copy-derby" description="Deprecated. Deploy default derby config">
-    <ant target="copy-derby" dir="nuxeo-distribution" />
   </target>
 
   <target name="test" depends="test-unix,test-windows" description="Run tests" />

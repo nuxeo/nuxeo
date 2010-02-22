@@ -1,4 +1,4 @@
-How to build Nuxeo EP from these sources
+How to compile Nuxeo EP sources
 ========================================
 
 Short story
@@ -10,7 +10,6 @@ notably:
 
 - nuxeo-common
 - nuxeo-core
-- nuxeo-distribution
 - nuxeo-dm
 - nuxeo-features
 - nuxeo-gwt
@@ -19,6 +18,7 @@ notably:
 - nuxeo-services
 - nuxeo-theme
 - nuxeo-webengine
+- nuxeo-distribution
 
 Under Linux/Unix/MacOS: run ./clone.sh
 
@@ -27,39 +27,23 @@ Under Windows: run clone.bat
 See http://doc.nuxeo.org/xwiki/bin/view/FAQ/DownloadingNuxeoSources for more
 information if needed.
 
-2. Have JBoss 4.2.3 installed somewhere on your system (we like /opt/jboss, but
-YMMV).
+2. Compile:
 
-3. Copy build.properties.sample to build.properties and edit it to match the
-location of your JBoss instance (not needed if your JBoss is in /opt/jboss).
+- Using Ant: "ant install" or using Maven: "mvn clean install -Dmaven.test.skip=true"
 
-4. Run:
-
-- "ant patch" (will "patch" your JBoss, modifying certain config files)
-
-- "ant deploy"
-
-NB: you only have to run "ant patch" once. You have to run "ant" or "ant
-deploy" each time you change the source code.
-
-5. Start JBoss and go to http://localhost:8080/nuxeo/
-
-6. You're done.
-
-Alternative distributions
+Packaging Nuxeo EP from sources
 -------------------------
 
-To target other application servers (Jetty, Glassfish) or other DB backends
-(PostgreSQL, MySQL, Oracle, ...) see nuxeo-distribution/README.txt
+Various pre-configured packages (various application servers and multiple backends) 
+are available for download from:
+- http://maven.nuxeo.org/
+- http://www.nuxeo.com/downloads/
+
+In order to locally build Nuxeo EP, see nuxeo-distribution/README.txt
 
 Long story
 ----------
 
-If the information above are not enough, please read the "Detailed Development
-Software Installation Instructions" annex:
-
+If the information above are not enough, please read from the Nuxeo Book the 
+"Detailed Development Software Installation Instructions" annexe:
 http://doc.nuxeo.org/current/books/nuxeo-book/html/dev-environment-installation.html
-
-in the Nuxeo Book:
-
-http://doc.nuxeo.org/current/books/nuxeo-book/html/

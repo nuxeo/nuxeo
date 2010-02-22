@@ -16,7 +16,7 @@ bugfixes on the mailing list.
 Third-party libraries
 ---------------------
 
-This release contains open source librairies developped by the JBoss Group, the
+This release contains open source libraries developed by the JBoss Group, the
 Apache Foundation, Sun Microsystems, HP, the OSGi Alliance, the JMock project,
 the JFlex project, the Cup project, etc.
 
