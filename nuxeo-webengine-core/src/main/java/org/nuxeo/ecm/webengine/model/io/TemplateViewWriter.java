@@ -28,6 +28,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.view.TemplateView;
@@ -36,6 +37,7 @@ import org.nuxeo.ecm.webengine.model.view.TemplateView;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+@Provider
 @Produces("*/*")
 public class TemplateViewWriter implements MessageBodyWriter<TemplateView> {
 

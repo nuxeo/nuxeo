@@ -28,6 +28,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.webengine.WebException;
@@ -36,6 +37,7 @@ import org.nuxeo.ecm.webengine.WebException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
+@Provider
 @Produces( { "*/*", "text/plain" })
 public class BlobWriter implements MessageBodyWriter<Blob> {
 
