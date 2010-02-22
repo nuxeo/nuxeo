@@ -6,7 +6,6 @@
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
     <version>5.3.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -1080,9 +1079,9 @@
   </dependencyManagement>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distribution</developerConnection>
-    <url>http://trac.nuxeo.org/nuxeo/browser/nuxeo_distribution</url>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distributionbution</connection>
+    <developerConnection>scm:hg:hthg.nuxeo.org/nuxeo/nuxeo-distributiondistribution</developerConnection>
+    hg.nuxeo.org/nuxeo/nuxeo-distributionnuxeo-distribution</url>
   </scm>
 
   <repositories>

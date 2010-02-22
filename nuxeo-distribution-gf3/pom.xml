@@ -149,9 +149,9 @@
   </build>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution/nuxeo-distribution-gf3</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distribution/nuxeo-distribution-gf3</developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo/nuxeo-distribution/nuxeo-distribution-gf3/</url>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distributiondistribution</developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo/nuxeo-distribution</url>
   </scm>
 
   <repositories>

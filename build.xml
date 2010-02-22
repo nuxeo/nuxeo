@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="Nuxeo Distribution" default="" basedir=".">
+<project name="Nuxeo Distribution" default="distrib" basedir=".">
 
   <property file="build.properties" />
   <property name="mvn.opts" value="" />
@@ -36,38 +36,33 @@
   <!-- backward compatibility -->
   <target name="undeploy" depends="jboss-clean" description="Undeploy Nuxeo-EP (deprecated : use jboss-clean instead)" />
 
-  <target name="package-2parts" description="Package Nuxeo-EP in two parts">
-    <antcall target="package">
-      <param name="jboss.home" value="${jboss1.dir}" />
-      <param name="assembly.name" value="nuxeo-platform-stateful" />
-    </antcall>
-    <antcall target="package">
-      <param name="jboss.home" value="${jboss2.dir}" />
-      <param name="assembly.name" value="nuxeo-web-stateless" />
-    </antcall>
+  <target name="package-2parts" depends="setproperties,package-2parts-unix,package-2parts-windows" description="Package Nuxeo-DM two parts" />
+  <target name="package-2parts-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="package" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-Pnuxeo-dm,nuxeo-2parts" />
+      <arg value="-N" />
+      <arg value="${mvn.opts}" />
+    </exec>
   </target>
-  <target name="package-3parts" description="Package Nuxeo-EP in three parts">
-    <antcall target="package">
-      <param name="jboss.home" value="${jboss1.dir}" />
-      <param name="assembly.name" value="nuxeo-core" />
-    </antcall>
-    <antcall target="package">
-      <param name="jboss.home" value="${jboss2.dir}" />
-      <param name="assembly.name" value="nuxeo-indexing" />
-    </antcall>
-    <antcall target="package">
-      <param name="jboss.home" value="${jboss3.dir}" />
-      <param name="assembly.name" value="nuxeo-webplatform" />
-    </antcall>
+  <target name="package-2parts-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="package" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-Pnuxeo-dm,nuxeo-2parts" />
+      <arg value="-N" />
+      <arg value="${mvn.opts}" />
+    </exec>
   </target>
-  <target name="package" depends="setproperties,package-unix,package-windows" description="Package Nuxeo-EP" />
+  <target name="package" depends="setproperties,package-unix,package-windows" description="Package Nuxeo-DM" />
   <target name="package-unix" if="osfamily-unix">
     <exec executable="mvn" failonerror="true">
       <arg value="package" />
       <arg value="-Dmaven.test.skip=true" />
-      <arg value="-f" />
-      <arg value="${nuxeo.ear.root}/pom.xml" />
-      <arg value="-Dnuxeo.ear.assembly=${assembly.name}" />
+      <arg value="-Pnuxeo-dm" />
       <arg value="-N" />
       <arg value="${mvn.opts}" />
     </exec>
@@ -78,9 +73,7 @@
       <arg value="mvn.bat" />
       <arg value="package" />
       <arg value="-Dmaven.test.skip=true" />
-      <arg value="-f" />
-      <arg value="${nuxeo.ear.root}/pom.xml" />
-      <arg value="-Dnuxeo.ear.assembly=${assembly.name}" />
+      <arg value="-Pnuxeo-dm" />
       <arg value="-N" />
       <arg value="${mvn.opts}" />
     </exec>
@@ -112,9 +105,6 @@
   <target name="patch-2parts" description="Package Nuxeo-EP in two parts">
     <ant target="patch-2parts" dir="nuxeo-distribution-jboss" />
   </target>
-  <target name="patch-3parts" description="Package Nuxeo-EP in three parts">
-    <ant target="patch-3parts" dir="nuxeo-distribution-jboss" />
-  </target>
 
   <target name="copy-2parts" description="Copy Nuxeo-EP in two parts">
     <antcall target="copy">
@@ -124,20 +114,6 @@
     <antcall target="copy">
       <param name="jboss.home" value="${jboss2.dir}" />
       <param name="assembly.name" value="nuxeo-web-stateless" />
-    </antcall>
-  </target>
-  <target name="copy-3parts" description="Copy Nuxeo-EP in three parts">
-    <antcall target="copy">
-      <param name="jboss.home" value="${jboss1.dir}" />
-      <param name="assembly.name" value="nuxeo-core" />
-    </antcall>
-    <antcall target="copy">
-      <param name="jboss.home" value="${jboss2.dir}" />
-      <param name="assembly.name" value="nuxeo-indexing" />
-    </antcall>
-    <antcall target="copy">
-      <param name="jboss.home" value="${jboss3.dir}" />
-      <param name="assembly.name" value="nuxeo-webplatform" />
     </antcall>
   </target>
   <target name="copy" depends="delete-ear,copy-ear,copy-lib" description="Replace ear and copy libs to jboss" />
