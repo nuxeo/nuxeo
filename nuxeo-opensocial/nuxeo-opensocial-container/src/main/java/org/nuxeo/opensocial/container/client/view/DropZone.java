@@ -27,6 +27,7 @@ import org.nuxeo.opensocial.container.client.bean.GadgetPosition;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.gwtext.client.core.EventObject;
 import com.gwtext.client.core.ExtElement;
@@ -155,8 +156,28 @@ public class DropZone extends PortalDropZone {
     });
   }-*/;
 
+  Timer t = null;
+
   @Override
-  public String notifyOver(DragSource source, EventObject e, DragData data) {
+  public String notifyOver(final DragSource source, final EventObject e,
+      DragData data) {
+    if (t != null) {
+      t.cancel();
+    }
+    t = new Timer() {
+
+      @Override
+      public void run() {
+        _notifyOver(source, e);
+      }
+    };
+
+    t.schedule(50);
+
+    return "x-dd-drop-ok";
+  }
+
+  private void _notifyOver(DragSource source, EventObject e) {
     int[] xy = e.getXY();
     PanelProxy proxy = new PanelProxy(source.getProxy()
         .getJsObj());
@@ -217,8 +238,6 @@ public class DropZone extends PortalDropZone {
       proxy.moveProxy(lastPosC.getEl()
           .getDOM(), null);
     }
-
-    return "x-dd-drop-ok";
   }
 
   @Override

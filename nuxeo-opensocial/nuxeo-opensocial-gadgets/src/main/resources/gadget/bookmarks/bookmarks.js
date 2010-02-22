@@ -4,7 +4,7 @@ var prefs;
 var permission = gadgets.nuxeo.isEditable();
 
 function saveBookmarks() {
-  prefs.set("bookmarks", JSON.stringify(bookmarks));
+  prefs.set("bookmarks", gadgets.util.escapeString(gadgets.json.stringify(bookmarks)));
   var ver = navigator.appVersion;
   if (ver.indexOf("MSIE") == -1)
     _gel("newNameInput").focus();

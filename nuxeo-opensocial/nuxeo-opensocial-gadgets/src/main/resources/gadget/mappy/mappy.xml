@@ -9,7 +9,11 @@
     <Locale lang="fr" country="fr" />
     <Require feature="dynamic-height" />
   </ModulePrefs>
-  <UserPref name="mappy_evt" display_name="Afficher les événements" default_value="true" datatype="bool" required="true" />
+  <UserPref name="evt" display_name="Afficher les événements"
+    datatype="enum" default_value="no">
+    <EnumValue value="yes" display_value="oui" />
+    <EnumValue value="no" display_value="non" />
+  </UserPref>
   <UserPref name="mappy_region" display_name="Région"
     default_value="idf_cg" datatype="enum" required="true">
     <EnumValue value="france_cg" display_value="France" />
@@ -69,7 +73,7 @@
     function do_evt()
     {
       var img = _gel("evt_img");
-    if (prefs.getBool("mappy_evt")) {
+    if (prefs.getString("evt") == "yes") {
         img.src = "http://x.mappy.net/x/static/infotrafic/__UP_mappy_region__evt.gif?when=" + s;
     img.style.visibility = "visible";
       }
