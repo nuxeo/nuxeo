@@ -140,6 +140,13 @@ public class SQLQueryResult implements QueryResult {
         public int compare(DocumentModel doc1, DocumentModel doc2) {
             String p1 = doc1.getPathAsString();
             String p2 = doc2.getPathAsString();
+            if (p1 == null && p2 == null) {
+                return sign * doc1.getId().compareTo(doc2.getId());
+            } else if (p1 == null) {
+                return sign;
+            } else if (p2 == null) {
+                return -1 * sign;
+            }
             return sign * p1.compareTo(p2);
         }
     }
