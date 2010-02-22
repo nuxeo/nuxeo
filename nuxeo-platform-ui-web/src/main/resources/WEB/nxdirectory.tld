@@ -635,6 +635,12 @@
         Boolean indicating whether to localize the labels or not.
       </description>
     </attribute>
+    <attribute>
+      <name>handleMultipleValues</name>
+      <description>
+        Boolean to treat multi-valued fields as seperate entries (multi-line rendering).
+      </description>
+    </attribute>
   </tag>
 
 </taglib>

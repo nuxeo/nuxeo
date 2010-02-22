@@ -45,32 +45,45 @@ public class ChainSelectOutputRenderer extends Renderer {
             return;
         }
 
-        String value;
-        if (rawValues instanceof Object[]) {
-            value = StringUtils.join((Object[]) rawValues, ',');
+        String[] values;
+        if (rawValues instanceof String[]) {
+            if (comp.getHandleMultipleValues()) {
+                // treat rawValues as separate entries (potentially holding
+                // several keys)
+                values = (String[]) rawValues;
+            } else {
+                // treat rawValues as labels to be concatenated on the same
+                // entry
+                String concat = StringUtils.join(((String[]) rawValues),
+                        comp.getKeySeparator());
+                values = new String[] { concat };
+            }
         } else {
-            value = (String) rawValues;
+            values = new String[] { rawValues.toString() };
         }
         String entrySeparator = comp.getEntrySeparator();
         String cssStyle = comp.getCssStyle();
         String cssStyleClass = comp.getCssStyleClass();
 
         ResponseWriter writer = context.getResponseWriter();
-        writer.startElement("div", comp);
-        if (cssStyle != null) {
-            writer.writeAttribute("style", cssStyle, "style");
-        }
-        if (cssStyleClass != null) {
-            writer.writeAttribute("class", cssStyleClass, "class");
-        }
 
-        Selection sel = comp.createSelection(value);
-        String[] labels = sel.getLabels();
-        String label = StringUtils.join(labels, comp.getKeySeparator());
-        writer.writeText(label, null);
-        writer.writeText(entrySeparator, null);
+        for (String value : values) {
+            writer.startElement("div", comp);
+            if (cssStyle != null) {
+                writer.writeAttribute("style", cssStyle, "style");
+            }
+            if (cssStyleClass != null) {
+                writer.writeAttribute("class", cssStyleClass, "class");
+            }
 
-        writer.endElement("div");
+            Selection sel = comp.createSelection(value);
+            String[] labels = sel.getLabels();
+            String label = StringUtils.join(labels, comp.getKeySeparator());
+            writer.writeText(label, null);
+            writer.writeText(entrySeparator, null);
+
+            writer.endElement("div");
+        }
         writer.flush();
     }
 

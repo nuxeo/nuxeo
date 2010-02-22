@@ -70,7 +70,7 @@ public class ChainSelectOutputComponent extends UIOutput {
 
     protected Boolean qualifiedParentKeys;
 
-    protected Boolean handleMultipleValues;
+    protected Boolean handleMultipleValues = false;
 
     private String entrySeparator;
 
@@ -145,6 +145,10 @@ public class ChainSelectOutputComponent extends UIOutput {
         return Boolean.TRUE.equals(ret);
     }
 
+    public void setHandleMultipleValues(boolean handleMultipleValues) {
+        this.handleMultipleValues = handleMultipleValues;
+    }
+
     public void setQualifiedParentKeys(boolean qualifiedParentKeys) {
         this.qualifiedParentKeys = qualifiedParentKeys;
     }
@@ -206,7 +210,7 @@ public class ChainSelectOutputComponent extends UIOutput {
 
     @Override
     public Object saveState(FacesContext context) {
-        Object[] values = new Object[11];
+        Object[] values = new Object[12];
         values[0] = super.saveState(context);
         values[1] = displayIdAndLabel;
         values[2] = localize;
@@ -218,6 +222,7 @@ public class ChainSelectOutputComponent extends UIOutput {
         values[8] = cssStyle;
         values[9] = cssStyleClass;
         values[10] = entrySeparator;
+        values[11] = handleMultipleValues;
         return values;
     }
 
@@ -235,6 +240,7 @@ public class ChainSelectOutputComponent extends UIOutput {
         cssStyle = (String) values[8];
         cssStyleClass = (String) values[9];
         entrySeparator = (String) values[10];
+        handleMultipleValues = (Boolean) values[11];
     }
 
     public boolean getDisplayObsoleteEntries() {
