@@ -59,16 +59,6 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        NamingContextFactory.setAsInitial();
-
-        jdbcDataSource ds = new jdbcDataSource();
-        ds.setDatabase("jdbc:hsqldb:mem:jena");
-        ds.setUser("sa");
-        ds.setPassword("");
-        Context context = new InitialContext();
-        context.rebind("java:comp/env/jdbc/nxrelations-default-jena", ds);
-        Framework.getProperties().setProperty(
-                "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
         Framework.getProperties().setProperty(
                 "org.nuxeo.ecm.sql.jena.databaseTransactionEnabled", "false");
 
@@ -84,8 +74,6 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
-        deployContrib("org.nuxeo.ecm.platform.publisher.jbpm.test",
-                "OSGI-INF/relations-default-jena-contrib.xml");
         deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
         deployBundle("org.nuxeo.ecm.platform.publisher.core");
         deployBundle("org.nuxeo.ecm.platform.publisher.jbpm");
@@ -313,6 +301,25 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
 
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         assertFalse(session.exists(proxy.getRef()));
+    }
+
+    public void testFirstPublicationByValidator() throws Exception {
+        changeUser("myuser2");
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(
+                0);
+        PublicationTree treeUser1 = publisherService.getPublicationTree(
+                defaultTreeName, session, null);
+
+        List<PublicationNode> nodes = treeUser1.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+
+        PublicationNode targetNode = nodes.get(0);
+        assertTrue(treeUser1.canPublishTo(targetNode));
+
+        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish,
+                targetNode);
+        assertFalse(publishedDocument.isPending());
     }
 
     private void changeUser(String userName) throws Exception {
