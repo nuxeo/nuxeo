@@ -145,9 +145,17 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public Resource getNext() {
         return next;
     }
+    
+    public void setNext(Resource next) {
+        this.next = (AbstractResource<?>)next;
+    }
 
     public Resource getPrevious() {
         return prev;
+    }
+    
+    public void setPrevious(Resource previous) {
+        this.prev = (AbstractResource<?>)previous;
     }
 
     public String getName() {

@@ -76,6 +76,11 @@ public interface WebContext extends Adaptable {
      * @return the root resource or null if no root was defined
      */
     Resource getRoot();
+    
+    /**
+     * Set the root resource of this context
+     */
+    void setRoot(Resource root);
 
     /**
      * Gets the i18n message for the given key.

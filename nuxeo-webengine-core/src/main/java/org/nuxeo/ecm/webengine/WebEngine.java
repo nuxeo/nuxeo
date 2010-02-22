@@ -112,6 +112,8 @@ public class WebEngine implements ResourceLocator {
 
     protected final File root;
 
+    protected ApplicationManager apps;
+    
     /**
      * moduleMgr use double-check idiom and needs to be volatile. See
      * http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
@@ -148,7 +150,7 @@ public class WebEngine implements ResourceLocator {
             reloadMgr = new ReloadManager(this);
         }
         webLoader = new WebLoader(this);
-
+        apps = new SimpleApplicationManager(this);
         scripting = new Scripting(webLoader);
         annoMgr = new AnnotationManager();
 
@@ -184,6 +186,14 @@ public class WebEngine implements ResourceLocator {
         registry.addMessageBodyWriter(new TemplateViewWriter());
     }
 
+    /**
+     * TODO: This is deprecating ModuleManager
+     * @return
+     */
+    public ApplicationManager getApplicationManager() {
+        return apps;
+    }
+    
     /**
      * JSP taglib support
      */
@@ -387,10 +397,19 @@ public class WebEngine implements ResourceLocator {
     }
 
     /**
+     * reload for we 2.
+     */
+    public synchronized void reload2() {
+        log.info("Reloading WebEngine");
+        webLoader.flushCache();
+        apps.reload();
+    }
+    /**
      * Reloads configuration.
      */
     public synchronized void reload() {
         log.info("Reloading WebEngine");
+        apps.reload();
         if (moduleMgr != null) { // avoid synchronizing if not needed
             for (ModuleConfiguration mc : moduleMgr.getModules()) {
                 if (mc.isLoaded()) {
@@ -406,6 +425,7 @@ public class WebEngine implements ResourceLocator {
             }
         }
         webLoader.flushCache();
+        apps.reload();
     }
 
     public synchronized void reloadModules() {

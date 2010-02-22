@@ -113,9 +113,9 @@ public class WebEngineComponent extends DefaultComponent { // implements
                                     deployModules(ctx, event.getBundle());
                                 }
                             }
-                        } catch (IOException e) {
+                        } catch (Throwable e) {
                             log.error("Failed to deploy web modules in bundle: "
-                                    + event.getBundle().getSymbolicName());
+                                    + event.getBundle().getSymbolicName(), e);
                         }
                     }
                 });
@@ -125,7 +125,12 @@ public class WebEngineComponent extends DefaultComponent { // implements
             // deploy bundles already installed
             for (Bundle b : bc.getBundles()) {
                 if (b.getState() == Bundle.ACTIVE) {
-                    deployModules(ctx, b);
+                    try {
+                        deployModules(ctx, b);
+                    } catch (Throwable t) {
+                        log.error("Failed to deploy web modules in bundle: "
+                                + b.getSymbolicName(), t);                        
+                    }
                 }
             }
         }
@@ -134,11 +139,17 @@ public class WebEngineComponent extends DefaultComponent { // implements
     }
 
     protected void deployModules(RuntimeContext ctx, Bundle b)
-            throws IOException {
+            throws Exception {
         String id = b.getSymbolicName();
         if (deployedBundles.contains(id)) {
             return; // already deployed
         }
+        if (engine.getApplicationManager().deployApplication(b)) {
+            // bundle contains a web module
+            deployedBundles.add(id);
+            return;
+        }
+        // the following is deprecated and should be removed when old webengine deployment is removed
         URL url = b.getEntry("module.xml");
         if (url == null) {// not a webengine module
             return;
@@ -152,7 +163,7 @@ public class WebEngineComponent extends DefaultComponent { // implements
         deployedBundles.add(id);
         deployModule(id, bf, url);
     }
-
+        
     protected void deployModule(String bundleId, File bundleFile,
             URL moduleConfig) throws IOException {
 

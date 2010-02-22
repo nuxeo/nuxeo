@@ -75,7 +75,7 @@ public abstract class AbstractWebContext implements WebContext {
 
     protected final WebEngine engine;
 
-    protected final UserSession us;
+    protected UserSession us;
 
     protected final LinkedList<File> scriptExecutionStack;
 
@@ -83,11 +83,11 @@ public abstract class AbstractWebContext implements WebContext {
 
     protected final Map<String, Object> vars;
 
-    protected AbstractResource<?> head;
+    protected Resource head;
 
-    protected AbstractResource<?> tail;
+    protected Resource tail;
 
-    protected AbstractResource<?> root;
+    protected Resource root;
 
     protected Module module;
 
@@ -96,7 +96,7 @@ public abstract class AbstractWebContext implements WebContext {
     protected String basePath;
 
     protected AbstractWebContext(HttpServletRequest request) {
-        us = UserSession.getCurrentSession(request);
+        us = UserSession.getCurrentSession(request); //TODO remove this since it is lazy loaded
         engine = Framework.getLocalService(WebEngine.class);
         scriptExecutionStack = new LinkedList<File>();
         this.request = request;
@@ -112,6 +112,10 @@ public abstract class AbstractWebContext implements WebContext {
 
     public Resource getRoot() {
         return root;
+    }
+    
+    public void setRoot(Resource root) {
+        this.root = root;
     }
 
     public <T> T getAdapter(Class<T> adapter) {
@@ -140,6 +144,9 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public UserSession getUserSession() {
+        if (us == null) {
+            us = UserSession.getCurrentSession(request); 
+        }
         return us;
     }
 
@@ -437,29 +444,28 @@ public abstract class AbstractWebContext implements WebContext {
 
     /* object stack API */
 
-    public Resource push(Resource obj) {
-        AbstractResource<?> rs = (AbstractResource<?>) obj;
+    public Resource push(Resource rs) {
         if (tail != null) {
-            tail.next = rs;
-            rs.prev = tail;
+            tail.setNext(rs);
+            rs.setPrevious(tail);
             tail = rs;
         } else {
-            rs.prev = tail;
+            rs.setPrevious(tail);
             head = tail = rs;
         }
-        return obj;
+        return rs;
     }
 
     public Resource pop() {
         if (tail == null) {
             return null;
         }
-        AbstractResource<?> rs = tail;
+        Resource rs = tail;
         if (tail == head) {
             head = tail = null;
         } else {
-            tail = rs.prev;
-            tail.next = null;
+            tail = rs.getPrevious();
+            tail.setNext(null);
         }
         rs.dispose();
         return rs;
