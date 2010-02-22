@@ -41,7 +41,7 @@ public final class BundleManifestReader {
     private static final Pattern PARAMS_PATTERN
             = Pattern.compile("\\s*([^:\\s]+)\\s*:=\\s*([^;\\s]+)\\s*;?");
 
-    public static String[] CUSTOM_HEADERS = {"Nuxeo-Component"};
+    public static String[] CUSTOM_HEADERS = {"Nuxeo-Component", "Nuxeo-WebModule"};
 
     static { // we can add dynamically new headers through system properties
         String h = System.getProperty("org.nuxeo.manifest.headers");
