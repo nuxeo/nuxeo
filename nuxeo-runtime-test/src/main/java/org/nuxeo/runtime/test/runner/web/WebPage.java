@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -39,6 +40,16 @@ import com.google.inject.Inject;
  */
 public abstract class WebPage {
     
+    /**
+     * Can be used by tests as default timeouts. This way you can change these values to 
+     * change all the timeout in the tests.
+     * DEFAULT_RIMEOUT is used for regular timeouts (loading an ajax page an ajax dialog etc.)
+     * while BIG_TIMEOUT should be used for pages that are slower (like the home of a GWT application)  
+     */
+    public static int DEFAULT_TIMEOUT = 5;
+    
+    public static int BIG_TIMEOUT = 15;
+    
     private final static Map<Class<?>, WebPage> pages = new HashMap<Class<?>, WebPage>();
     
     @Inject protected Configuration config;
@@ -46,7 +57,16 @@ public abstract class WebPage {
     @Inject protected WebDriver driver;
     
     @Inject protected FeaturesRunner runner;
-        
+    
+    
+    /**
+     * Should be overrided by dynamic page (using ajax) to wait until the page is completely loaded
+     * By default nothing is done (page is assumed to be loaded)
+     * @return the page itself
+     */
+    public WebPage ensureLoaded() {
+        return this; // do nothing by default
+    }
     
     public Configuration getConfiguration() {
         return config;
@@ -104,16 +124,39 @@ public abstract class WebPage {
     }
 
     public WebElement findElement(final By by, int timeOutInSeconds) {
+        return waitUntilElementFound(by, timeOutInSeconds);
+    }
+    
+    public WebElement waitUntilElementFound(final By by, int timeOutInSeconds) {
         try {
-            return findElement(by); // try now first
-        } catch (WebDriverException e) {
+            return findElement(by); // try once first
+        } catch (NotFoundException e) {
             return new WebDriverWait(driver, timeOutInSeconds).until(
                     new ExpectedCondition<WebElement>() {
                         public WebElement apply(WebDriver arg0) {
                             return driver.findElement(by);
                         }
                     });
-        }
+        }        
+    }
+
+    public void waitUntilElementNotFound(final By by, int timeOutInSeconds) {
+        try {
+            findElement(by); // try once first
+            new WebDriverWait(driver, timeOutInSeconds).until(
+                    new ExpectedCondition<Boolean>() {
+                        public Boolean apply(WebDriver arg0) {
+                            try {
+                                driver.findElement(by);
+                                return Boolean.FALSE;
+                            } catch (NotFoundException e) {
+                                return Boolean.TRUE;
+                            }
+                        }
+                    });
+        } catch (NotFoundException e) {
+            return;
+        }        
     }
 
     @SuppressWarnings("unchecked")
@@ -130,7 +173,7 @@ public abstract class WebPage {
                 pages.put(type, page);
             }
         }
-        return page;
+        return (T)page.ensureLoaded(); // this will block until page is loaded (if implementation needs this)
     }
     
     public static void flushPageCache() {
