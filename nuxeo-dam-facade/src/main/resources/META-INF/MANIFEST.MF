@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo DAM Facade
-Bundle-SymbolicName: org.nuxeo.dam.facade;singleton=true
-Bundle-Localization: plugin
-Bundle-Version: 1.0.0
-Bundle-Vendor: Nuxeo
-Bundle-Category: web
-Require-Bundle: org.nuxeo.dam.core

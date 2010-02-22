@@ -16,45 +16,40 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.nuxeo.dam</groupId>
-      <artifactId>nuxeo-dam-api</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-event</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-imaging-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-commandline-executor</artifactId>      
-    </dependency> 
+      <artifactId>nuxeo-platform-commandline-executor</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-imaging-core</artifactId>
     </dependency>
-      
-    
+
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert-api</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert</artifactId>
       <scope>test</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-imaging-convert</artifactId>
-      <scope>test</scope>      
-    </dependency>   
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.dam</groupId>
       <artifactId>nuxeo-dam-test</artifactId>
@@ -74,9 +69,9 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector-test</artifactId>
       <scope>test</scope>
-    </dependency>    
-    
-    
+    </dependency>
+
+
     <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>

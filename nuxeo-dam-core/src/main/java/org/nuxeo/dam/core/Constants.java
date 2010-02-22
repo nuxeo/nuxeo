@@ -15,7 +15,7 @@
  *     Nuxeo
  */
 
-package org.nuxeo.dam.api;
+package org.nuxeo.dam.core;
 
 public interface Constants {
 

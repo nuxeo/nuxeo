@@ -24,7 +24,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.dam.api.WatermarkService;
+import org.nuxeo.dam.core.watermark.WatermarkService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;

@@ -20,7 +20,7 @@ package org.nuxeo.dam.core.listener;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.nuxeo.dam.api.Constants;
+import org.nuxeo.dam.core.Constants;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryJUnit4;
 import org.junit.Before;

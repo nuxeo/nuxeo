@@ -4,7 +4,7 @@
     class="org.nuxeo.dam.core.watermark.WatermarkServiceImpl" />
 
   <service>
-    <provide interface="org.nuxeo.dam.api.WatermarkService" />
+    <provide interface="org.nuxeo.dam.core.watermark.WatermarkService" />
   </service>
 
   <documentation>

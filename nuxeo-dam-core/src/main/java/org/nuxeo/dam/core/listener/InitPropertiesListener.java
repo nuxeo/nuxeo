@@ -20,7 +20,7 @@ package org.nuxeo.dam.core.listener;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.dam.api.Constants;
+import org.nuxeo.dam.core.Constants;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;

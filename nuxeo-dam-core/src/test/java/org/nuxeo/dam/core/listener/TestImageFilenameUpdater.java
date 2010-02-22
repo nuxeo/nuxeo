@@ -18,7 +18,7 @@ package org.nuxeo.dam.core.listener;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.dam.api.Constants.PICTURE_SCHEMA;
+import static org.nuxeo.dam.core.Constants.PICTURE_SCHEMA;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.dam.api.Constants;
+import org.nuxeo.dam.core.Constants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;

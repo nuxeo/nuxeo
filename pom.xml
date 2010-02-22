@@ -19,9 +19,7 @@
   <description>Nuxeo DAM Parent</description>
 
   <modules>
-    <module>nuxeo-dam-api</module>
     <module>nuxeo-dam-core</module>
-    <module>nuxeo-dam-facade</module>
     <module>nuxeo-dam-webapp-core</module>
     <module>nuxeo-dam-webapp</module>
     <module>nuxeo-dam-webapp-override</module>
@@ -39,17 +37,7 @@
     <dependencies>
       <dependency>
         <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-api</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
         <artifactId>nuxeo-dam-core</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-facade</artifactId>
         <version>${nuxeo.dam.version}</version>
       </dependency>
       <dependency>

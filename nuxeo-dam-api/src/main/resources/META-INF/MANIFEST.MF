@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo DAM API
-Bundle-SymbolicName: org.nuxeo.dam.api;singleton=true
-Bundle-Localization: plugin
-Bundle-Version: 1.0.0
-Bundle-Vendor: Nuxeo
-Bundle-Category: web
-Require-Bundle: org.nuxeo.ecm.core.api

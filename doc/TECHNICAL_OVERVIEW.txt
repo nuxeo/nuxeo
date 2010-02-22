@@ -86,7 +86,7 @@ Source code
 
 The source code specific to the DAM project is located here:
 
-  https://hgpriv.nuxeo.org/nuxeo-dam/
+  http://hg.nuxeo.org/nuxeo-dam/
 
 The project layout is as follows:
 
@@ -103,29 +103,18 @@ The project layout is as follows:
 
   Webapp resources for the DAM UI
 
+- nuxeo-dam-webapp-override
+
+  Contains the web resources that need to override the default ones copied
+  in nuxeo.war.
+
 - nuxeo-dam-distribution
 
-  Assembly files to package the DAM application as a nuxeo.ear or
-  a Jetty application.  Also contains the functional test suite.
-  (Jetty distribution is not much tested - there might still have random
-  issues to be fixed, we should use it more as a developer environment
-  since much faster to start).
-
-- nuxeo-dam-api
-
-  Public API (interfaces and DTO implementations) for DAM specific
-  services. Currently not much used as all services are currently
-  generic. I am not sure we want to keep this package as I don't see
-  any DAM specific service yet.
-
-  The only real use at the moment is a Constants class for DAM specific
-  schema and type names that could be used by both CoreEvent listeners and
-  seam component, hence need be deployed on both stateless and stateful
-  machine in multi machines setup.
-
-- nuxeo-dam-facade
-
-  EJB3 remote API facade for DAM specific services. Same remark as above.
+  Assembly files to package the DAM application as:
+    - A nuxeo.ear
+    - A JBoss distribution
+    - A Jetty distribution
+    - A Tomcat distribution
 
 - nuxeo-dam-test
 
@@ -147,6 +136,11 @@ Jboss distribution:
 
 Jetty distribution:
   http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots/org/nuxeo/dam/distribution/nuxeo-dam-distribution-jetty/1.0-SNAPSHOT/
+
+
+
+
+
 
 
 Document types and schemas
@@ -185,7 +179,7 @@ Each ImportSet document contains the assets imported.
 
 Hierarchy example:
 /default-domain/import-sets-root
-                  |- folder1  
+                  |- folder1
                   |     |- import-set-1
                   |     |     |
                   |     |     |-file1
@@ -199,7 +193,7 @@ Hierarchy example:
                   |     |-file2
                   |     |-image4
                   |     `-audio_file2
-                  `- folder2  
+                  `- folder2
                         |- import-set-3
                         |     |
                         |     |-file3
@@ -439,6 +433,11 @@ parameters:
 - currently selected document
 - currently selected document tab
 
+
+
+==========================================
+To put in Video module specification
+==========================================
 
 Video streaming
 ===============
