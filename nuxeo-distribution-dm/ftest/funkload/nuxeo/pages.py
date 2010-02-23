@@ -366,10 +366,9 @@ class FolderPage(BasePage):
         fl = self.fl
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            # TODO: NXBT-77 navigate to create workspace form
-            ['j_id234_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id234:j_id235:j_id237:0:j_id238', 'j_id234:j_id235:j_id237:0:j_id238']],
+            ['documentActionSubviewUpperListForm:documentActionSubviewUpperListTable:0:documentActionSubviewUpperListLink', 'documentActionSubviewUpperListForm:documentActionSubviewUpperListTable:0:documentActionSubviewUpperListLink'],
+            ['documentActionSubviewUpperListForm', 'documentActionSubviewUpperListForm']],
             description="Create workspace form")
         fl.assert_('nxw_title' in fl.getBody(),
                    "Workspace creation form not found.")
@@ -388,12 +387,12 @@ class FolderPage(BasePage):
     def createFolder(self, title, description):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            # TODO: NXBT-77 navigate to create folder form
-            ['j_id198:selectDocTypePanelOpenedState', ''],
-            ['j_id198_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id198:j_id204:1:j_id208:0:j_id210:0:j_id214', 'j_id198:j_id204:1:j_id208:0:j_id210:0:j_id214']],
+            ['selectDocumentTypeForCreationForm', 'selectDocumentTypeForCreationForm'],
+            ['selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:3:selectDocumentTypeForCreationCategoryTitleLink', 'selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:3:selectDocumentTypeForCreationCategoryTitleLink'],
+            ['selectDocumentTypeForCreationForm:selectDocTypePanelOpenedState', '']],
             description="Create folder: New Folder")
+
         fl.assert_('document_create' in fl.getBody(),
                    "Folder form not found")
         fl.post(fl.server_url + "/create_document.faces", params=[
@@ -411,12 +410,12 @@ class FolderPage(BasePage):
     def createFile(self, title, description, file_path=None):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            # TODO: NXBT-77 navigate to create file form
-            ['j_id198:selectDocTypePanelOpenedState', ''],
-            ['j_id198_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id198:j_id204:0:j_id208:0:j_id210:1:j_id214', 'j_id198:j_id204:0:j_id208:0:j_id210:1:j_id214']],
+            ['selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:2:selectDocumentTypeForCreationCategoryTitleLink', 'selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:2:selectDocumentTypeForCreationCategoryTitleLink'],
+            ['selectDocumentTypeForCreationForm', 'selectDocumentTypeForCreationForm'],
+            ['selectDocumentTypeForCreationForm:selectDocTypePanelOpenedState', '']],
             description="Create file: New document")
+
         fl.assert_('document_create' in fl.getBody(),
                    "File form not found")
         fl.post(fl.server_url + "/create_document.faces", params=[
@@ -461,11 +460,10 @@ class FolderPage(BasePage):
         folder_uid = self.getDocUid()
         state = fl.getLastJsfState()
         self.selectItem(title)
-        # TODO: NXBT-77 delete action
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['CHILDREN_DOCUMENT_LIST', 'CHILDREN_DOCUMENT_LIST'],
-            ['CHILDREN_DOCUMENT_LIST:dataTable:0:document_checkbox_select', 'on'],
-            ['CHILDREN_DOCUMENT_LIST:j_id348:1:j_id350', 'Supprimer'],
+            ['CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document', 'on'],
+            ['CHILDREN_DOCUMENT_LIST:clipboardActionsTable:1:clipboardActionsButton', 'Supprimer'],
             ['CHILDREN_DOCUMENT_LIST_SUBMIT', '1'],
             ['javax.faces.ViewState', state]],
             description='Delete document "%s"' % title)

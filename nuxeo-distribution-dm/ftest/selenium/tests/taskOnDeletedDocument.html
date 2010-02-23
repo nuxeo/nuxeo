@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel="selenium.base" href="http://localhost:8080/" />
+<link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
 <title>taskOnDeletedDocument</title>
 </head>
 <body>
@@ -56,7 +56,7 @@
 	<td>verifyTextPresent</td>
 	<td>You are logged as jdoe</td>
 	<td></td>
-    </tr>
+</tr>
 <!--lancement de la revue en parallele-->
 <tr>
 	<td>clickAndWait</td>
@@ -369,7 +369,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//input[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable:1:document_checkbox_select&quot;]</td>
+	<td>//input[@id=&quot;CHILDREN_DOCUMENT_LIST:nxl_document_listing_1:nxw_listing_selection_box_with_current_document_1&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -533,34 +533,34 @@
 	<td></td>
 </tr>
 <tr>
-    <td>click</td>
-    <td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/tbody/tr[1]/td[1]//input</td>
-    <td></td>
+	<td>click</td>
+	<td>//input[@id=&quot;CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document&quot;]</td>
+	<td></td>
 </tr>
 <tr>
-    <td>verifyChecked</td>
-    <td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/tbody/tr[1]/td[1]//input</td>
-    <td></td>
+	<td>verifyChecked</td>
+	<td>//input[@id=&quot;CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document&quot;]</td>
+	<td></td>
 </tr>
 <tr>
-    <td>waitForEditable</td>
-    <td>//span[@id="CURRENT_SELECTION_UNDELETE"]/input</td>
-    <td>12000</td>
+	<td>waitForEditable</td>
+	<td>//span[@id=&quot;CURRENT_SELECTION_UNDELETE&quot;]/input</td>
+	<td>12000</td>
 </tr>
 <tr>
-    <td>clickAndWait</td>
-    <td>//input[@value="Restore"]</td>
-    <td></td>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Restore&quot;]</td>
+	<td></td>
 </tr>
 <tr>
-    <td>assertConfirmation</td>
-    <td>Undelete selected document(s)?</td>
-    <td></td>
+	<td>assertConfirmation</td>
+	<td>Undelete selected document(s)?</td>
+	<td></td>
 </tr>
 <tr>
-    <td>verifyTextPresent</td>
-    <td>1 Document(s) restored</td>
-    <td></td>
+	<td>verifyTextPresent</td>
+	<td>1 Document(s) restored</td>
+	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>

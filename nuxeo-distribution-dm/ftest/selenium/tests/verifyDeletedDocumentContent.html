@@ -1,6 +1,9 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
 <title>verifyDeletedDocumentContent</title>
 </head>
 <body>
@@ -45,38 +48,38 @@
 </tr>
 <tr>
 	<td>assertText</td>
-	<td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/tbody/tr[1]/td[3]//a</td>
+	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[3]//a</td>
 	<td>testFolder1</td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/tbody/tr[1]/td[1]//input</td>
+	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[1]//input</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyChecked</td>
-	<td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/tbody/tr[1]/td[1]//input</td>
+	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[1]//input</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForEditable</td>
-	<td>//span[@id="CURRENT_SELECTION_TRASH"]/input</td>
+	<td>//span[@id=&quot;CURRENT_SELECTION_TRASH&quot;]/input</td>
 	<td>12000</td>
 </tr>
 <tr>
 	<td>verifyEditable</td>
-	<td>//span[@id="CURRENT_SELECTION_TRASH"]/input</td>
+	<td>//span[@id=&quot;CURRENT_SELECTION_TRASH&quot;]/input</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyEditable</td>
-	<td>//span[@id="CURRENT_SELECTION_ADDTOLIST"]/input</td>
+	<td>//span[@id=&quot;CURRENT_SELECTION_ADDTOLIST&quot;]/input</td>
 	<td></td>
 </tr>
 <!--Validation de la suppression-->
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Delete"]</td>
+	<td>//input[@value=&quot;Delete&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -131,33 +134,33 @@
 </tr>
 <tr>
 	<td>assertText</td>
-	<td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/tbody/tr[1]/td[3]//a</td>
+	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[3]//a</td>
 	<td>Note to be modified</td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/tbody/tr[1]/td[1]//input</td>
+	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[1]//input</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyChecked</td>
-	<td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/tbody/tr[1]/td[1]//input</td>
+	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[1]//input</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForEditable</td>
-	<td>//span[@id="CURRENT_SELECTION_DELETE"]/input</td>
+	<td>//span[@id=&quot;CURRENT_SELECTION_DELETE&quot;]/input</td>
 	<td>12000</td>
 </tr>
 <tr>
 	<td>waitForEditable</td>
-	<td>//span[@id="CURRENT_SELECTION_UNDELETE"]/input</td>
+	<td>//span[@id=&quot;CURRENT_SELECTION_UNDELETE&quot;]/input</td>
 	<td>12000</td>
 </tr>
 <!--Validation de la suppression-->
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Restore"]</td>
+	<td>//input[@value=&quot;Restore&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -196,7 +199,7 @@
 	<td>link=Log out</td>
 	<td></td>
 </tr>
+
 </tbody></table>
 </body>
 </html>
-
