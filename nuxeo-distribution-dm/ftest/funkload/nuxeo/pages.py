@@ -367,8 +367,8 @@ class FolderPage(BasePage):
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['documentActionSubviewUpperListForm:documentActionSubviewUpperListTable:0:documentActionSubviewUpperListLink', 'documentActionSubviewUpperListForm:documentActionSubviewUpperListTable:0:documentActionSubviewUpperListLink'],
-            ['documentActionSubviewUpperListForm', 'documentActionSubviewUpperListForm']],
+            ['documentActionSubviewUpperListForm_SUBMIT', '1'],
+            ['documentActionSubviewUpperListForm:documentActionSubviewUpperListTable:0:documentActionSubviewUpperListLink', 'documentActionSubviewUpperListForm:documentActionSubviewUpperListTable:0:documentActionSubviewUpperListLink']],
             description="Create workspace form")
         fl.assert_('nxw_title' in fl.getBody(),
                    "Workspace creation form not found.")
@@ -387,9 +387,9 @@ class FolderPage(BasePage):
     def createFolder(self, title, description):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
+            ['selectDocumentTypeForCreationForm_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['selectDocumentTypeForCreationForm', 'selectDocumentTypeForCreationForm'],
-            ['selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:3:selectDocumentTypeForCreationCategoryTitleLink', 'selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:3:selectDocumentTypeForCreationCategoryTitleLink'],
+            ['selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:0:selectDocumentTypeForCreationCategoryTitleLink', 'selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:0:selectDocumentTypeForCreationCategoryTitleLink'],
             ['selectDocumentTypeForCreationForm:selectDocTypePanelOpenedState', '']],
             description="Create folder: New Folder")
 
@@ -410,9 +410,9 @@ class FolderPage(BasePage):
     def createFile(self, title, description, file_path=None):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
+            ['selectDocumentTypeForCreationForm_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:2:selectDocumentTypeForCreationCategoryTitleLink', 'selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:2:selectDocumentTypeForCreationCategoryTitleLink'],
-            ['selectDocumentTypeForCreationForm', 'selectDocumentTypeForCreationForm'],
+            ['selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink', 'selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink'],
             ['selectDocumentTypeForCreationForm:selectDocTypePanelOpenedState', '']],
             description="Create file: New document")
 
@@ -461,11 +461,10 @@ class FolderPage(BasePage):
         state = fl.getLastJsfState()
         self.selectItem(title)
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['CHILDREN_DOCUMENT_LIST', 'CHILDREN_DOCUMENT_LIST'],
             ['CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document', 'on'],
-            ['CHILDREN_DOCUMENT_LIST:clipboardActionsTable:1:clipboardActionsButton', 'Supprimer'],
-            ['CHILDREN_DOCUMENT_LIST_SUBMIT', '1'],
-            ['javax.faces.ViewState', state]],
+            ['javax.faces.ViewState', state],
+            ['CHILDREN_DOCUMENT_LIST:clipboardActionsTable:1:clipboardActionsButton', 'Delete'],
+            ['CHILDREN_DOCUMENT_LIST_SUBMIT', '1']],
             description='Delete document "%s"' % title)
         fl.assert_('Document(s) deleted' in fl.getBody())
         return self
