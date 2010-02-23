@@ -133,6 +133,7 @@ public class Type implements Serializable {
     public void setIcon(String icon) {
         this.icon = icon;
     }
+
     public String getBigIcon() {
         return bigIcon;
     }
@@ -199,11 +200,15 @@ public class Type implements Serializable {
      * Returns layout names given a mode.
      */
     public String[] getLayouts(String mode) {
+        // default to mode ANY
+        return getLayouts(mode, BuiltinModes.ANY);
+    }
+
+    public String[] getLayouts(String mode, String defaultMode) {
         if (layouts != null) {
             Layouts layouts = this.layouts.get(mode);
-            if (layouts == null) {
-                // default to mode ANY
-                layouts = this.layouts.get(BuiltinModes.ANY);
+            if (layouts == null && defaultMode != null) {
+                layouts = this.layouts.get(defaultMode);
             }
             if (layouts != null) {
                 return layouts.getLayouts();

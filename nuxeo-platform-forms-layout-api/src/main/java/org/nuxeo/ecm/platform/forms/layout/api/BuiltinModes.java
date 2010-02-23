@@ -37,6 +37,8 @@ public class BuiltinModes {
 
     public static final String SEARCH = "search";
 
+    public static final String LISTING = "listing";
+
     private BuiltinModes() {
     }
 

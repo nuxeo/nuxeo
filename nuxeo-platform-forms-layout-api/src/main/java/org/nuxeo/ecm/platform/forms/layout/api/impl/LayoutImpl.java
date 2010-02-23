@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,8 @@ public class LayoutImpl implements Layout {
 
     final int columns;
 
+    Map<String, Serializable> properties;
+
     private LayoutImpl(String name, String mode, String template, int columns) {
         this.name = name;
         this.mode = mode;
@@ -65,6 +68,13 @@ public class LayoutImpl implements Layout {
         this(name, mode, template, columns);
         this.rows = rows.toArray(new LayoutRow[] {});
         computeWidgetMap();
+    }
+
+    public LayoutImpl(String name, String mode, String template,
+            List<LayoutRow> rows, int columns,
+            Map<String, Serializable> properties) {
+        this(name, mode, template, rows, columns);
+        this.properties = properties;
     }
 
     protected void computeWidgetMap() {
@@ -118,6 +128,20 @@ public class LayoutImpl implements Layout {
 
     public Map<String, Widget> getWidgetMap() {
         return Collections.unmodifiableMap(widgetMap);
+    }
+
+    public Map<String, Serializable> getProperties() {
+        if (properties == null) {
+            return Collections.emptyMap();
+        }
+        return Collections.unmodifiableMap(properties);
+    }
+
+    public Serializable getProperty(String name) {
+        if (properties != null) {
+            return properties.get(name);
+        }
+        return null;
     }
 
 }

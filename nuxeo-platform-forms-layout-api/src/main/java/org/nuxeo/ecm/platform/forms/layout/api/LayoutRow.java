@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.forms.layout.api;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Layout row interface.
@@ -35,5 +36,24 @@ public interface LayoutRow extends Serializable {
     Widget[] getWidgets();
 
     int getSize();
+
+    /**
+     * Get properties to use in this mode.
+     * <p>
+     * The way that properties will be mapped to rendered components is managed
+     * by the widget type.
+     *
+     * @since 5.3.1
+     */
+    Map<String, Serializable> getProperties();
+
+    /**
+     * Returns property with given name in this mode.
+     *
+     * @param name the property name.
+     * @return the property value or null if not found.
+     * @since 5.3.1
+     */
+    Serializable getProperty(String name);
 
 }

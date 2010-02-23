@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.forms.layout.api;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Layout row definition interface.
@@ -42,4 +43,8 @@ public interface LayoutRowDefinition extends Serializable {
      */
     String[] getWidgets();
 
+    /**
+     * Returns a map of properties to use in a given mode.
+     */
+    Map<String, Serializable> getProperties(String layoutMode);
 }

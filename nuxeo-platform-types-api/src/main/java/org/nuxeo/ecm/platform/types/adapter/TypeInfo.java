@@ -50,16 +50,28 @@ public interface TypeInfo {
 
     /**
      * @deprecated use {@link #getLayouts(String)} instead, using mode
-     *             {@link BuiltinModes#ANY}.
-     * Not used. Remove in 5.2 => No ! still used from xhtml files.
+     *             {@link BuiltinModes#ANY}. Not used. Remove in 5.2 => No !
+     *             still used from xhtml files.
      */
     @Deprecated
     FieldWidget[] getLayout();
 
     /**
-     * Returns layout names for this mode.
+     * Returns layout names for this mode, defaulting to layouts defined for
+     * mode {@link BuiltinModes#ANY}
      */
     String[] getLayouts(String mode);
+
+    /**
+     * Returns layout names for this mode, defaulting to layouts defined for
+     * given default mode name.
+     * <p>
+     * If parameter "defaultMode" is null, returns only layout defined for given
+     * mode.
+     *
+     * @Since 5.3.1
+     */
+    String[] getLayouts(String mode, String defaultMode);
 
     String getDefaultView();
 

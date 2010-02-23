@@ -19,7 +19,10 @@
 
 package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
+import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -35,12 +38,22 @@ public class LayoutRowImpl implements LayoutRow {
 
     final Widget[] widgets;
 
+    final Map<String, Serializable> properties;
+
     public LayoutRowImpl(Widget[] widgets) {
         this.widgets = widgets;
+        this.properties = null;
     }
 
     public LayoutRowImpl(List<Widget> widgets) {
-        this.widgets = widgets.toArray(new Widget[]{});
+        this.widgets = widgets.toArray(new Widget[] {});
+        this.properties = null;
+    }
+
+    public LayoutRowImpl(List<Widget> widgets,
+            Map<String, Serializable> properties) {
+        this.widgets = widgets.toArray(new Widget[] {});
+        this.properties = properties;
     }
 
     public Widget[] getWidgets() {
@@ -52,6 +65,20 @@ public class LayoutRowImpl implements LayoutRow {
             return widgets.length;
         }
         return 0;
+    }
+
+    public Map<String, Serializable> getProperties() {
+        if (properties == null) {
+            return Collections.emptyMap();
+        }
+        return Collections.unmodifiableMap(properties);
+    }
+
+    public Serializable getProperty(String name) {
+        if (properties != null) {
+            return properties.get(name);
+        }
+        return null;
     }
 
 }
