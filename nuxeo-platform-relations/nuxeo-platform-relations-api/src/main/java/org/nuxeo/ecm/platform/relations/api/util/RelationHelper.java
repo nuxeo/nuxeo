@@ -48,7 +48,7 @@ public class RelationHelper {
         try {
             return Framework.getService(RelationManager.class);
         } catch (Exception e) {
-            log.error(e);
+            log.error(e, e);
         }
         return null;
     }
@@ -110,7 +110,7 @@ public class RelationHelper {
                 return docs;
             }
         } catch (ClientException e) {
-            log.error(e);
+            log.error(e, e);
         }
         return null;
     }
@@ -139,7 +139,7 @@ public class RelationHelper {
                 return docs;
             }
         } catch (ClientException e) {
-            log.error(e);
+            log.error(e, e);
         }
         return null;
     }
@@ -168,7 +168,7 @@ public class RelationHelper {
                 return docs;
             }
         } catch (ClientException e) {
-            log.error(e);
+            log.error(e, e);
         }
         return null;
     }
@@ -194,7 +194,7 @@ public class RelationHelper {
                 return docs;
             }
         } catch (ClientException e) {
-            log.error(e);
+            log.error(e, e);
         }
         return null;
     }
@@ -212,7 +212,7 @@ public class RelationHelper {
             return getRelationManager().getStatements(
                     graphName, pattern);
         } catch (ClientException e) {
-            log.error(e);
+            log.error(e, e);
         }
         return null;
     }
@@ -232,7 +232,7 @@ public class RelationHelper {
             stmts.add(stmt);
             getRelationManager().remove(graphName, stmts);
         } catch (ClientException e) {
-            log.error(e);
+            log.error(e, e);
         }
     }
 
