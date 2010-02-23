@@ -17,21 +17,22 @@
       <h3>
         <h:outputText value="#{messages['label.search.results.form']}" />
       </h3>
-      <nxu:methodResult name="provider"
-        value="#{searchResults.getProvider('ADVANCED_SEARCH')}">
-       <ui:decorate template="/search/documents_table_search_results.xhtml">
-        <ui:param name="provider" value="#{provider}" />
-        <ui:param name="providerName" value="#{provider.name}" />
-        <ui:param name="documents" value="#{searchSelectModel_advanced}"/>
-        <ui:param name="showCheckboxes" value="#{true}" />
-        <ui:define name="buttons">
-          <ui:include src="/incl/clipboard.xhtml" />
-        </ui:define>
-        <ui:define name="extra_info">
-          <!-- empty, used in extension modules -->
-        </ui:define>
-      </ui:decorate>
-      </nxu:methodResult>
+      <nxu:set var="provider"
+        value="#{searchResults.getProvider('ADVANCED_SEARCH')}"
+        cache="true">
+        <ui:decorate template="/search/documents_table_search_results.xhtml">
+          <ui:param name="provider" value="#{provider}" />
+          <ui:param name="providerName" value="#{provider.name}" />
+          <ui:param name="documents" value="#{searchSelectModel_advanced}"/>
+          <ui:param name="showCheckboxes" value="#{true}" />
+          <ui:define name="buttons">
+            <ui:include src="/incl/clipboard.xhtml" />
+          </ui:define>
+          <ui:define name="extra_info">
+            <!-- empty, used in extension modules -->
+          </ui:define>
+        </ui:decorate>
+      </nxu:set>
      </div>
 
     <f:subview>

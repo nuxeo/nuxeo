@@ -20,8 +20,9 @@
         <h:outputText value="#{searchActions.simpleSearchKeywords}" />
       </h3>
 
-      <nxu:methodResult name="provider"
-        value="#{resultsProvidersCache.get('SIMPLE_SEARCH')}">
+      <nxu:set var="provider"
+        value="#{resultsProvidersCache.get('SIMPLE_SEARCH')}"
+        cache="true">
         <ui:decorate template="/search/documents_table_search_results.xhtml">
           <ui:param name="provider" value="#{provider}"/>
           <ui:param name="providerName" value="#{provider.name}"/>
@@ -34,7 +35,7 @@
             <!-- empty, used in extension modules -->
           </ui:define>
         </ui:decorate>
-      </nxu:methodResult>
+      </nxu:set>
     </div>
 
     <f:subview>
