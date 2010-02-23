@@ -8,7 +8,7 @@
   xmlns:nxthemes="http://nuxeo.org/nxthemes">
   
 <c:if test="#{! empty typesMap.entrySet}">
-  <h:form>
+  <h:form id="selectDocumentTypeForCreationForm">
     <rich:modalPanel id="selectDocTypePanel"  autosized="true"
       onmaskclick="Richfaces.hideModalPanel('selectDocTypePanel')">
   
@@ -29,7 +29,8 @@
   
       <table cellspacing="2">
   
-        <nxu:dataList var="typesList" value="#{typesMap.entrySet}">
+        <nxu:dataList var="typesList" value="#{typesMap.entrySet}"
+          id="selectDocumentTypeForCreationTable">
           <td style="vertical-align : top;width : 300px; padding:0px 20px 0px 0px;">
             <div>
               <h3 class="documentTypes">
@@ -37,16 +38,20 @@
               </h3>
               <table>
                 <tr>
-                  <nxu:dataList value="#{typesList.value}" var="typeColumn">
+                  <nxu:dataList value="#{typesList.value}" var="typeColumn"
+                    id="selectDocumentTypeForCreationCategory">
                     <td valign="top">
-                      <nxu:dataList value="#{typeColumn}" var="type">
+                      <nxu:dataList value="#{typeColumn}" var="type"
+                        id="selectDocumentTypeForCreationCategoryTable">
                         <div class="documentType">
-                          <h:commandLink action="#{documentActions.createDocument(type.id)}">
+                          <h:commandLink action="#{documentActions.createDocument(type.id)}"
+                            id="selectDocumentTypeForCreationCategoryImageLink">
                             <h:graphicImage height="32" width="32" value="#{type.bigIcon}"
                               rendered="#{!empty type.bigIcon}" />
                           </h:commandLink>
                           <h:commandLink class="documentTypeLink"
-                            action="#{documentActions.createDocument(type.id)}">
+                            action="#{documentActions.createDocument(type.id)}"
+                            id="selectDocumentTypeForCreationCategoryTitleLink">
                             <h:outputText value="#{messages[type.label]}" />
                           </h:commandLink>
                           <div style="clear: both;"></div>

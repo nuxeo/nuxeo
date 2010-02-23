@@ -9,17 +9,21 @@
   class="clipboard">
 
   <div id="selection_buttons">
-    <nxu:dataList var="sel_action" value="#{clipboardActions.actionsForSelection}">
-    <span id="#{sel_action.id}">
-      <nxh:commandButton
-        styleClass="button" type="submit"
-        action="#{sel_action.getLink()}"
-        value="#{messages[sel_action.label]}"
-        onclick="#{sel_action.confirm}"
-        disabled="#{!sel_action.available}"
-        />
-     </span>
-    </nxu:dataList>
+    <nxu:set var="actions" value="#{clipboardActions.actionsForSelection}"
+      cache="true">
+      <nxu:dataList var="sel_action" value="#{actions}"
+        id="clipboardActionsTable">
+      <span id="#{sel_action.id}">
+        <nxh:commandButton
+          styleClass="button" type="submit"
+          action="#{sel_action.getLink()}"
+          value="#{messages[sel_action.label]}"
+          onclick="#{sel_action.confirm}"
+          disabled="#{!sel_action.available}"
+          id="clipboardActionsButton" />
+       </span>
+      </nxu:dataList>
+    </nxu:set>
   </div>
 
 </div>
