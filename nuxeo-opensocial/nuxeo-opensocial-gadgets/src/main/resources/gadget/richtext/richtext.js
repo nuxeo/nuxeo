@@ -75,8 +75,6 @@ jQuery(document).ready(function(){
       return false;
     });
 
-  var myEditor = new nicEditor({iconsPath : top.nxContextPath + '/site/gadgets/richtext/nicEditorIcons.gif'}).panelInstance('richtext');
-
 
   jQuery("#deletePhoto").click(function(){
     jQuery.ajax({
