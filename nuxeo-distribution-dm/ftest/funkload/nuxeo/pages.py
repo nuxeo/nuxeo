@@ -168,12 +168,11 @@ class BasePage:
         fl = self.fl
         self.memberManagement()
 
-        # TODO: NXBT-77 navigate to create user form
         fl.post(fl.server_url + '/view_users.faces', params=[
-            ['j_id175_SUBMIT', '1'],
+            ['createUserActionsForm:createUserButton', 'createUserActionsForm:createUserButton'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id175:j_id177', 'j_id175:j_id177']],
-                description="View user creation form")
+            ['createUserActionsForm_SUBMIT', '1']],
+            description="View user creation form")
 
         jsfState = fl.getLastJsfState()
 
@@ -246,13 +245,12 @@ class BasePage:
     def personalWorkspace(self):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            # TODO: NXBT-77 action view personal workspace
-            ['j_id16:j_id18', ''],
-            ['j_id16:j_id19', 'KEYWORDS'],
-            ['j_id16_SUBMIT', '1'],
+            ['userServicesForm:simpleSearchKeywordsInput', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id16:j_id30:1:j_id32', 'j_id16:j_id30:1:j_id32']],
-                description="View personal workspace")
+            ['userServicesForm_SUBMIT', '1'],
+            ['userServicesForm:userServicesActionsTable:1:userServicesActionCommandLink', 'userServicesForm:userServicesActionsTable:1:userServicesActionCommandLink'],
+            ['userServicesForm:simpleSearchKeywordsInputHidden', 'KEYWORDS']],
+            description="View personal workspace")
         # XXX: not working: post initializes personal workspace if it does
         # not exist...
         #self.viewDocumentPath("UserWorkspaces/" + fl.current_login,
@@ -268,14 +266,12 @@ class BasePage:
         else:
             action = '/view_documents.faces'
         fl.post(fl.server_url + action, params=[
-            # TODO: NXBT-77 action search
-            ['j_id16', 'j_id16'],
-            ['j_id16:j_id18', query],
-            ['j_id16:j_id19', 'KEYWORDS'],
-            ['j_id16:j_id20', 'Search'],
-            ['j_id16_SUBMIT', '1'],
-            ['javax.faces.ViewState', fl.getLastJsfState()]],
-                    description=description)
+            ['userServicesForm:simpleSearchKeywordsInput', query],
+            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['userServicesForm:simpleSearchSubmitButton', 'Search'],
+            ['userServicesForm_SUBMIT', '1'],
+            ['userServicesForm:simpleSearchKeywordsInputHidden', 'KEYWORDS']],
+            description=description)
         fl.assert_('SEARCH_DOCUMENT_LIST' in fl.getBody(),
                      'Not a search result page')
         return self
