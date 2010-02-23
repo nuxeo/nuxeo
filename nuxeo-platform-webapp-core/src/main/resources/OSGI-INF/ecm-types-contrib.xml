@@ -49,6 +49,11 @@
         <layout>heading</layout>
         <layout>dublincore</layout>
       </layouts>
+      <layouts mode="listing">
+        <layout>document_listing</layout>
+        <layout>document_listing_compact_2_columns</layout>
+        <layout>document_listing_icon_2_columns</layout>
+      </layouts>
     </type>
 
     <type id="WorkspaceRoot">
@@ -69,6 +74,11 @@
         <layout>heading</layout>
         <layout>dublincore</layout>
       </layouts>
+      <layouts mode="listing">
+        <layout>document_listing</layout>
+        <layout>document_listing_compact_2_columns</layout>
+        <layout>document_listing_icon_2_columns</layout>
+      </layouts>
     </type>
 
     <type id="TemplateRoot">
@@ -88,6 +98,11 @@
       <layouts mode="edit">
         <layout>heading</layout>
         <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="listing">
+        <layout>document_listing</layout>
+        <layout>document_listing_compact_2_columns</layout>
+        <layout>document_listing_icon_2_columns</layout>
       </layouts>
     </type>
 
@@ -115,6 +130,11 @@
         <!--<layout>file</layout>-->
         <layout>dublincore</layout>
       </layouts>
+      <layouts mode="listing">
+        <layout>document_listing</layout>
+        <layout>document_listing_compact_2_columns</layout>
+        <layout>document_listing_icon_2_columns</layout>
+      </layouts>
     </type>
 
     <type id="SectionRoot">
@@ -135,6 +155,11 @@
         <layout>heading</layout>
         <layout>dublincore</layout>
       </layouts>
+      <layouts mode="listing">
+        <layout>document_listing</layout>
+        <layout>document_listing_compact_2_columns</layout>
+        <layout>document_listing_icon_2_columns</layout>
+      </layouts>
     </type>
 
     <type id="Section">
@@ -154,6 +179,11 @@
       <layouts mode="edit">
         <layout>heading</layout>
         <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="listing">
+        <layout>document_listing</layout>
+        <layout>document_listing_compact_2_columns</layout>
+        <layout>document_listing_icon_2_columns</layout>
       </layouts>
     </type>
 
@@ -176,6 +206,11 @@
       <layouts mode="edit">
         <layout>heading</layout>
         <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="listing">
+        <layout>document_listing</layout>
+        <layout>document_listing_compact_2_columns</layout>
+        <layout>document_listing_icon_2_columns</layout>
       </layouts>
     </type>
 
