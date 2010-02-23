@@ -63,7 +63,7 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="applications">
     <!--  temporary fix for jboss -->
-    <application root="/nuxeo/site/blogs" template-engine="freemarker">
+    <application root="${org.nuxeo.ecm.contextPath}/site/blogs" template-engine="freemarker">
       <negotiation>
         <strategy>web</strategy>
         <default-engine>default</default-engine>
@@ -74,7 +74,7 @@
       </negotiation>
     </application>
 
-    <application root="/nuxeo/site" template-engine="freemarker">
+    <application root="${org.nuxeo.ecm.contextPath}/site" template-engine="freemarker">
       <negotiation>
         <strategy>web</strategy>
         <default-engine>default</default-engine>

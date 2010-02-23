@@ -144,7 +144,7 @@ function tableStart(jsonObject) {
   html += "    <tr>";
   html += "      <th>";
   if (path.length > 0)
-    html += "<a href=\"#\" onclick=\"upFolder();return false;\"<img border=\"0\" src=\"/nuxeo/img/UpFolder_icon.gif\"></a>"
+    html += "<a href=\"#\" onclick=\"upFolder();return false;\"<img border=\"0\" src=\"" + top.nxContextPath + "/icons/UpFolder_icon.gif\"></a>"
   html += "      </th>";
   html += "      <th>" + title + "</th>";
   html += "      <th/>";
@@ -252,7 +252,7 @@ function mkRow(document, i) {
   htmlRow += "<a class=\"deleteaction\" href=\"" + getResourceUrl() + document.name +"\" onclick=\"delete(this);\"><img src=\"/nuxeo/icons/action_delete_mini.gif\"></a>&nbsp;";
   htmlRow += "<a target=\"_tab\" href=\"/nuxeo/"
       + document.url
-      + "\"><img src=\"/nuxeo/img/external.gif\" alt=\"Download\"></a>";
+      + "\"><img src=\"/nuxeo/icons/external.gif\" alt=\"Download\"></a>";
   htmlRow +="</td>";
   htmlRow += "</tr>";
   return htmlRow;

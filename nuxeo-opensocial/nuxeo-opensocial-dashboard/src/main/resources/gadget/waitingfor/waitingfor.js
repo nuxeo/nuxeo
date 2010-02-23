@@ -148,20 +148,20 @@ function mkRow(dashBoardItem, i, directive) {
 		docTitle = dashBoardItem.title;
 	}
 	//console.log("doc title "+docTitle);
-	
+
 	var dateToDisplay = null;
 	if ((dashBoardItem.dueDate != null) && (dashBoardItem.dueDate != "")) {
 		dateToDisplay = dashBoardItem.dueDate;
 	}
-	
+
 	//("date to display "+dateToDisplay);
-	
+
 	var tooltip = null;
 	var comment = dashBoardItem.comment;
 	if ((comment != null) && (comment != "")) {
 		tooltip = comment;
 	}
-	
+
 	//console.log("tooltip "+tooltip+" comment "+comment);
 
 	var htmlRow = "<tr class=\"";
@@ -240,12 +240,17 @@ function getUserLang() {
 	return top.nxUserLang;
 }
 
+function getWebappName() {
+    return top.nxContextPath.substring(1);
+}
+
 function getRestletUrl() {
 	var url = getNuxeoServerSideUrl();
 	if (testMode) {
 		url = 'http://localhost:8080/';
 	}
-	url += "nuxeo/restAPI/workflowTasks/default?mytasks=false&format=JSON";
+    url += getWebappName();
+	url += "/restAPI/workflowTasks/default?mytasks=false&format=JSON";
 	var ts = new Date().getTime() + "" + Math.random() * 11
 	url += "&ts=" + ts;
 

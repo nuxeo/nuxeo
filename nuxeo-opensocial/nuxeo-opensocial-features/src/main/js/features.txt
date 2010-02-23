@@ -83,3 +83,4 @@ nxfeatures/ui/feature.xml
 nxfeatures/nuxeo/feature.xml
 nxfeatures/form/feature.xml
 nxfeatures/nicedit/feature.xml
+nxfeatures/documentmodel/feature.xml

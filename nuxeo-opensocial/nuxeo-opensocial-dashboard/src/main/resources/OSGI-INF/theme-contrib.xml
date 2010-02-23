@@ -125,8 +125,8 @@
             <resource>container.css</resource>
             <resource>gadgetManager.js</resource>
             <resource>layoutManager.js</resource>
-            
-            
+
+
         </view>
         <view name="opensocialDashBoardNav" template-engine="jsf-facelets">
             <format-type>widget</format-type>
@@ -176,7 +176,7 @@
     <extension target="org.nuxeo.theme.services.ThemeService"
         point="applications">
 
-        <application root="/nuxeo" template-engine="jsf-facelets">
+        <application root="${org.nuxeo.ecm.contextPath}" template-engine="jsf-facelets">
 
             <negotiation>
                 <strategy>nuxeo5</strategy>

@@ -15,20 +15,25 @@
  *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
  */
 
-package org.nuxeo.opensocial.shindig.gadgets;
+package org.nuxeo.opensocial.shindig.crypto;
 
-import org.apache.shindig.gadgets.servlet.MakeRequestHandler;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
+@XObject("key")
+public class KeyDescriptor {
+    @XNode("@container")
+    private String container;
 
-public class NXMakeRequestModule extends AbstractModule {
+    @XNode("value")
+    private String key;
 
-  @Override
-  protected void configure() {
-    bind(MakeRequestHandler.class).to(NXMakeRequestHandler.class).in(
-        Scopes.SINGLETON);
+    public String getContainer() {
+        return container;
+    }
 
-  }
+    public String getKey() {
+        return key;
+    }
 
 }

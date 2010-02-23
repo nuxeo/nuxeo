@@ -20,8 +20,7 @@
       <#list files as file>
         <div class="attachedFileInfo">
       <@compress single_line=true>
-        <#-- should not hardcode /nuxeo/ !!! -->
-        <img src="/nuxeo/icons/${mimetypeService.getMimetypeEntryByMimeType(file.file.mimeType).iconPath}"/>
+        <img src="${contextPath}/icons/${mimetypeService.getMimetypeEntryByMimeType(file.file.mimeType).iconPath}"/>
           <a href="${This.path}/@file?property=files:files/item[${file_index}]/file">${file.filename}(${file.file.length}
             <#if file.file.length &gt;999>Ko</#if>
             <#if file.file.length &lt;=999>B</#if>)</a>

@@ -41,6 +41,8 @@ public class TilingInfo {
 
     private final String docId;
 
+    private final String contextPath;
+
     private boolean initialized;
 
     private int originalImageWidth;
@@ -61,14 +63,15 @@ public class TilingInfo {
 
     private long lastModificationDate;
 
-    public TilingInfo(String repoId, String docId) {
+    public TilingInfo(String repoId, String docId, String contextPath) {
         this.repoId = repoId;
         this.docId = docId;
+        this.contextPath = contextPath;
     }
 
-    public TilingInfo(String repoId, String docId, int tileWidth,
+    public TilingInfo(String repoId, String docId, String contextPath, int tileWidth,
             int tileHeight, int maxTiles) {
-        this(repoId, docId);
+        this(repoId, docId, contextPath);
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
         this.maxTiles = maxTiles;
@@ -77,6 +80,7 @@ public class TilingInfo {
     public TilingInfo(TilingInfo source) {
         docId = source.docId;
         repoId = source.repoId;
+        contextPath = source.contextPath;
         originalImageWidth = source.originalImageWidth;
         originalImageHeight = source.originalImageHeight;
         zoom = source.zoom;
@@ -244,7 +248,7 @@ public class TilingInfo {
     }
 
     public String getBaseUrl() {
-        return "/nuxeo/restAPI/getTiles/" + this.getRepoId() + "/"
+        return contextPath + "/restAPI/getTiles/" + this.getRepoId() + "/"
                 + this.getDocId() + "/" + this.getTileWidth() + "/"
                 + this.getTileHeight() + "/" + this.getMaxTiles();
     }

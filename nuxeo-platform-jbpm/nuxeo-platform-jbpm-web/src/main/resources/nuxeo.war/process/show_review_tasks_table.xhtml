@@ -19,6 +19,20 @@
 
       <c:set var="userSchema" value="#{userManager.userSchemaName}" />
 
+       <table class="dataInput">
+            <tr>
+              <td>
+                <h:inputText id="listName" value="#{jbpmTaskListActions.listName}" />              
+              </td>
+              <td>  
+                 <h:commandButton
+                      value="#{messages['label.review.list.save']}" 
+                      action="#{jbpmTaskListActions.createTaskList()}"
+                      styleClass="button" />
+              </td>
+            </tr>         
+        </table>
+
       <table class="dataOutput">
         <thead>
           <tr>

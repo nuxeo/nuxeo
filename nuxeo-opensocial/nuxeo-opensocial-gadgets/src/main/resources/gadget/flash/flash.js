@@ -1,7 +1,7 @@
 var firstTime = true;
 var action = "";
 var perm = gadgets.nuxeo.isEditable();
-var url = "/nuxeo/site/gadgetDocumentAPI/getFile/";
+var url = top.nxContextPath + "/site/gadgetDocumentAPI/getFile/";
 
 function launchGadget() {
 jQuery(document).ready(function(){
@@ -11,7 +11,7 @@ jQuery(document).ready(function(){
     firstTime =false;
   }
 
-  setTitle(prefs.getString("title"));
+  setTitle(prefs.getString("title-flash"));
 
   if(!perm) jQuery("#perm").remove();
 
@@ -23,7 +23,7 @@ jQuery(document).ready(function(){
   };
 
   jQuery('#upload').click(function(){
-    savePrefs();
+  savePrefs();
     jQuery('#formUpload').ajaxSubmit(options);
 
   });
@@ -47,6 +47,7 @@ jQuery(document).ready(function(){
 
 function setTitle(title){
   if(_isSet(title)){
+    jQuery("#title-flash").html(gadgets.util.unescapeString(title));
     jQuery("#title-field").val(gadgets.util.unescapeString(title));
   }
 };
@@ -68,7 +69,7 @@ function _isSet(val){
 };
 
 function savePrefs(){
-  prefs.set("title",gadgets.util.escapeString(jQuery("#title-field").val()));
+  prefs.set("title-flash",gadgets.util.escapeString(jQuery("#title-field").val()));
 };
 
 function loadFlash(id){

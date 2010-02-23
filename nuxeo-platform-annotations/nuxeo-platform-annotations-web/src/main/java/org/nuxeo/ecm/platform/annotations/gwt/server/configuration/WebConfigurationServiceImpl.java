@@ -45,6 +45,7 @@ import org.nuxeo.ecm.platform.annotations.gwt.client.configuration.WebConfigurat
 import org.nuxeo.ecm.platform.annotations.gwt.client.configuration.WebConfigurationService;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -56,7 +57,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
         WebConfigurationService {
 
-    private static final String NUXEO = "nuxeo/";
+    private static final String NUXEO = VirtualHostHelper.getContextPathProperty() + "/";
 
     private static final long serialVersionUID = 2389527283775608787L;
 

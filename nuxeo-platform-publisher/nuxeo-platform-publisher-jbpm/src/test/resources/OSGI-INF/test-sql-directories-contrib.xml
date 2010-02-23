@@ -4,7 +4,7 @@
   default-sql-directories-bundles.xml setup except that the datasource is set
   to a in memory backend -->
 
-<component name="org.nuxeo.ecm.directory.sql.test">
+<component name="org.nuxeo.ecm.directory.sql.publisher.test">
 
   <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
 

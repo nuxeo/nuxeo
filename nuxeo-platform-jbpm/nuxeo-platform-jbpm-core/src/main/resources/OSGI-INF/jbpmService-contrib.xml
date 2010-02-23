@@ -10,6 +10,8 @@
       class="org.nuxeo.ecm.platform.jbpm.core.deployer.NeverDeployer" />
     <deployer name="ifChanged"
       class="org.nuxeo.ecm.platform.jbpm.core.deployer.IfChangedDeployer" />
+    <deployer name="nuxeoProperties"
+      class="org.nuxeo.ecm.platform.jbpm.core.deployer.NuxeoPropertiesDeployer" />
 
   </extension>
 

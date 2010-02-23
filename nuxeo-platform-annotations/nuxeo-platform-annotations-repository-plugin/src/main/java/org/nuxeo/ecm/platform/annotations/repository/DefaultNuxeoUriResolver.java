@@ -38,6 +38,7 @@ import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.UriResolver;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -46,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DefaultNuxeoUriResolver implements UriResolver {
 
-    private static final String NUXEO = "nuxeo/";
+    private static final String NUXEO = VirtualHostHelper.getContextPathProperty() + "/";
 
     private static final Log log = LogFactory.getLog(DefaultNuxeoUriResolver.class);
 

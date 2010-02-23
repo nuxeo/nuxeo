@@ -2,7 +2,7 @@
 <div id="nxthemesPaddingEditor" class="nxthemesToolbox">
 
 <div class="title">
-<img class="close" onclick="javascript:NXThemes.getControllerById('editor perspectives').switchTo('edit canvas')"
+<img class="close" onclick="javascript:NXThemes.getControllerById('editor perspectives').switchTo('canvas editor')"
      src="${basePath}/skin/nxthemes-editor/img/close-button.png" width="14" height="14" alt="" />
      Padding editor</div>
 
@@ -38,7 +38,7 @@
       <tr>
         <td colspan="3">
           <button type="submit">Update</button>
-          <button type="submit" onclick="NXThemes.getControllerById('editor perspectives').switchTo('edit canvas');">Close</button>
+          <button type="submit" onclick="NXThemes.getControllerById('editor perspectives').switchTo('canvas editor');">Close</button>
         </td>
       </tr>
     </table>

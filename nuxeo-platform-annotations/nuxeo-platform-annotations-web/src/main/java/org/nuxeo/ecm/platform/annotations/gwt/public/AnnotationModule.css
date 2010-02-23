@@ -133,7 +133,7 @@ overflow: auto;
 }
 
 .gwt-Button {
-background:#E3E6EA url(/nuxeo/img/button_1.gif) repeat-x scroll 0 0;
+background:#E3E6EA url(../img/button_1.gif) repeat-x scroll 0 0;
 border-color:#CCCCCC #666666 #666666 #CCCCCC;
 border-style:solid;
 border-width:1px;
@@ -146,7 +146,7 @@ margin-right:5px;
 }
 
 .gwt-Button:hover {
-background:#3F89EF url(/nuxeo/img/button_2.gif) repeat-x scroll 0 0;
+background:#3F89EF url(../img/button_2.gif) repeat-x scroll 0 0;
 border-color:#0099FF #0066CC #0066CC #0099FF;
 color:#FFFFFF;
 font-family:Verdana,Arial,sans-serif;
@@ -172,7 +172,7 @@ border: none;
 }
 
 .annotationListPopupTitleBar {
-background:#0069DC url(/nuxeo/img/table_header_background.gif) repeat-x scroll left top;
+background:#0069DC url(../img/table_header_background.gif) repeat-x scroll left top;
 }
 
 .annotationListPopupTitleBar .gwt-Label {
@@ -182,7 +182,7 @@ font-size:11px;
 }
 
 .annotationListPopupClose {
-background:transparent url(/nuxeo/img/closePopup.png);
+background:transparent url(../img/closePopup.png);
 width: 18px;
 height: 18px;
 margin: 1px;
@@ -193,13 +193,13 @@ background-color:#DDECFF
 }
 
 .gwt-ToggleButton-up {
-background: transparent url(/nuxeo/img/hidePanel.gif) no-repeat center center;
+background: transparent url(../img/hidePanel.gif) no-repeat center center;
 width: 10px;
 border: none;
 }
 
 .hideManagerButton {
-background: transparent url(/nuxeo/img/hidePanel.gif) no-repeat center center;
+background: transparent url(../img/hidePanel.gif) no-repeat center center;
 width: 10px;
 border-right: 1px solid #E3E5E7;
 outline: none;
@@ -207,17 +207,17 @@ margin-right:3px;
 }
 
 .hideManagerButton-up-hovering {
-background: #ECF4FF url(/nuxeo/img/hidePanel.gif) no-repeat center center;
+background: #ECF4FF url(../img/hidePanel.gif) no-repeat center center;
 outline: none;
 }
 
 .hideManagerButton-down {
-background: transparent url(/nuxeo/img/showPanel.gif) no-repeat center center;
+background: transparent url(../img/showPanel.gif) no-repeat center center;
 outline: none;
 }
 
 .hideManagerButton-down-hovering {
-background: #ECF4FF url(/nuxeo/img/showPanel.gif) no-repeat center center;
+background: #ECF4FF url(../img/showPanel.gif) no-repeat center center;
 outline: none;
 }
 
@@ -226,7 +226,7 @@ background-color: #b2def7;
 }
 
 div .annotation-hide-show-button-down {
-background:transparent url(/nuxeo/icons/annotation-icon-hide.png) no-repeat scroll left top;
+background:transparent url(../icons/annotation-icon-hide.png) no-repeat scroll left top;
 border:medium none;
 color:#4A4A4A;
 cursor:pointer;
@@ -234,7 +234,7 @@ margin:0 5px 0 0;
 }
 
 div .annotation-hide-show-button-down-hovering {
-background:transparent url(/nuxeo/icons/annotation-icon-hide.png) no-repeat scroll left top;
+background:transparent url(../icons/annotation-icon-hide.png) no-repeat scroll left top;
 border:medium none;
 color:#4A4A4A;
 cursor:pointer;
@@ -242,7 +242,7 @@ margin:0 5px 0 0;
 }
 
 div .annotation-hide-show-button-up {
-background:transparent url(/nuxeo/icons/annotation-icon-show.png) no-repeat scroll left top;
+background:transparent url(../icons/annotation-icon-show.png) no-repeat scroll left top;
 border:medium none;
 color:#4A4A4A;
 cursor:pointer;
@@ -250,7 +250,7 @@ margin:0 5px 0 0;
 }
 
 div .annotation-hide-show-button-up-hovering {
-background:transparent url(/nuxeo/icons/annotation-icon-show.png) no-repeat scroll left top;
+background:transparent url(../icons/annotation-icon-show.png) no-repeat scroll left top;
 border:medium none;
 color:#4A4A4A;
 cursor:pointer;

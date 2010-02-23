@@ -15,6 +15,7 @@
 package org.nuxeo.ecm.platform.preview.adapter.factories;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterFactory;
 import org.nuxeo.ecm.platform.preview.adapter.base.ConverterBasedHtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
@@ -29,11 +30,14 @@ public class FileBasedPreviewAdapterFactory implements PreviewAdapterFactory {
     public HtmlPreviewAdapter getAdapter(DocumentModel doc) {
         ConverterBasedHtmlPreviewAdapter adapter = new ConverterBasedHtmlPreviewAdapter();
         adapter.setAdaptedDocument(doc);
-        if (doc.hasSchema("file")) {
-            adapter.setDefaultPreviewFieldXPath("file:content");
-        } else {
-            // Has "files" schema, set xpath to first blob as default
-            adapter.setDefaultPreviewFieldXPath("files:files/0/file");
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        if (bh == null) {
+            if (doc.hasSchema("file")) {
+                adapter.setDefaultPreviewFieldXPath("file:content");
+            } else {
+                // Has "files" schema, set xpath to first blob as default
+                adapter.setDefaultPreviewFieldXPath("files:files/0/file");
+            }
         }
         return adapter;
     }

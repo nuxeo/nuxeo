@@ -50,7 +50,7 @@ padding-top:5px;
 }
 
 button.resetZoomButton {
-background:transparent url(/nuxeo/img/zoom_reset.png) no-repeat scroll left top;
+background:transparent url(../img/zoom_reset.png) no-repeat scroll left top;
 width: 30px;
 height: 30px;
 color:#fff;
@@ -60,7 +60,7 @@ margin: 0px 10px 0px 0px;
 }
 
 button.zoomInButton {
-background:transparent url(/nuxeo/img/zoom_in.png) no-repeat scroll left top;
+background:transparent url(../img/zoom_in.png) no-repeat scroll left top;
 width: 30px;
 height: 30px;
 color:#fff;
@@ -71,7 +71,7 @@ margin: 0px 10px 0px 0px;
 
 
 button.zoomOutButton {
-background:transparent url(/nuxeo/img/zoom_out.png) no-repeat scroll left top;
+background:transparent url(../img/zoom_out.png) no-repeat scroll left top;
 width: 30px;
 height: 30px;
 color:#fff;

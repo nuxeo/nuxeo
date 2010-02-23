@@ -47,10 +47,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.platform.tag.IdDocumentModel;
 import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TaggingHelper;
 import org.nuxeo.ecm.platform.tag.WeightedTag;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.cache.LRUCachingMap;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
@@ -86,6 +88,7 @@ public class TagActionsBean implements Serializable {
 
     protected String tagDocumentId;
 
+    protected LRUCachingMap<String, Boolean> tagModifyCheckCache = new LRUCachingMap<String, Boolean>(1);
     /**
      * Keeps the tagging information that will be performed on the current
      * document document.
@@ -124,7 +127,8 @@ public class TagActionsBean implements Serializable {
             return new ArrayList<Tag>();
         } else {
             if (currentDocument.isProxy()) {
-                DocumentModel targetDocument = documentManager.getDocument(new IdRef(currentDocument.getSourceId()));
+            	DocumentModel targetDocument = new IdDocumentModel(currentDocument.getSourceId());
+                //DocumentModel targetDocument = documentManager.getDocument(new IdRef(currentDocument.getSourceId()));
                 return taggingHelper.listDocumentTags(documentManager,
                         targetDocument);
             } else {
@@ -253,16 +257,36 @@ public class TagActionsBean implements Serializable {
         }
         return taggedDocuments;
     }
-
+        
     /**
      * Returns <b>true</b> if the current logged user has permission to modify a
      * tag that is applied on the current document.
      */
     public boolean canModifyTag(Tag tag) throws ClientException {
+    	if (tag==null) {
+    		return false;
+    	}
+    	String id = tag.getTagId();
+    	String uid = navigationContext.getCurrentDocument().getId();
+    	
+    	String key = id+ "-" + uid;
+    	if (tagModifyCheckCache.containsKey(key)) {
+    		return tagModifyCheckCache.get(key); 
+    	}
+    	
+    	boolean res = computeCanModifyTag(tag);
+    	tagModifyCheckCache.put(key, new Boolean(res));
+    	return res;    	
+    }
+
+    
+    protected boolean computeCanModifyTag(Tag tag) throws ClientException {
         return taggingHelper.canModifyTag(documentManager,
                 navigationContext.getCurrentDocument(), tag);
     }
 
+    
+    
     /**
      * Resets the fields that are used for managing actions related to tagging.
      */

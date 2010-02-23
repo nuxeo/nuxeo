@@ -22,7 +22,7 @@ import org.nuxeo.theme.perspectives.*
 import org.nuxeo.theme.views.*
 import org.nuxeo.theme.editor.*
 
-@WebObject(type="nxthemes-editor", guard="user=Administrator")
+@WebObject(type = "nxthemes-editor", administrator=Access.GRANT)
 @Produces(["text/html", "*/*"])
 public class Main extends ModuleRoot {
     

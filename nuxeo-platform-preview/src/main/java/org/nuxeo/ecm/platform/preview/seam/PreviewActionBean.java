@@ -47,8 +47,6 @@ public class PreviewActionBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String TAB_PREVIEW_ID = "TAB_PREVIEW";
-
     @In(create = true, required = false)
     transient NavigationContext navigationContext;
 
@@ -57,6 +55,9 @@ public class PreviewActionBean implements Serializable {
 
     @RequestParameter
     private String fieldXPath;
+
+    @RequestParameter
+    private String previewTabId;
 
     private String fieldXPathValue;
 
@@ -77,11 +78,21 @@ public class PreviewActionBean implements Serializable {
         if (currentDocument == null) {
             return null;
         }
-        return PreviewHelper.getPreviewURL(currentDocument, fieldXPathValue);
+        return getPreviewURL(currentDocument);
+    }
+
+    public String getPreviewURL(DocumentModel doc) {
+        return PreviewHelper.getPreviewURL(doc, fieldXPathValue);
     }
 
     public String getPreviewWithBlobPostProcessingURL() {
         String url = getPreviewURL();
+        url += "?blobPostProcessing=true";
+        return url;
+    }
+
+    public String getPreviewWithBlobPostProcessingURL(DocumentModel doc) {
+        String url = getPreviewURL(doc);
         url += "?blobPostProcessing=true";
         return url;
     }
@@ -96,7 +107,7 @@ public class PreviewActionBean implements Serializable {
         if (fieldXPath != null) {
             fieldXPathValue = fieldXPath.replace("/", "-");
         }
-        return webActions.setCurrentTabAndNavigate(TAB_PREVIEW_ID);
+        return webActions.setCurrentTabAndNavigate(previewTabId);
     }
 
 }

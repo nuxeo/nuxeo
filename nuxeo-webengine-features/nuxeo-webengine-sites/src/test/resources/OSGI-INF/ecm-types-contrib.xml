@@ -7,7 +7,7 @@
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
     point="types">
 
-    <type id="Comment" coretype="Comment">
+    <type id="Comment">
       <icon>/icons/forum_post.gif</icon>
       <label>label.document.post</label>
       <bigIcon>/icons/forum_100.gif</bigIcon>
@@ -16,7 +16,7 @@
 
     </type>
     
-    <type id="WebPage" coretype="WebPage">
+    <type id="WebPage">
       <label>Web Page</label>
       <icon>/icons/webpage.png</icon>
       <bigIcon>icons/webpage_100.png</bigIcon>
@@ -35,8 +35,7 @@
       </layouts>
     </type>
 
-    <!-- ContextualLink doc type definition  -->    
-    <type id="ContextualLink" coretype="ContextualLink">
+    <type id="ContextualLink">
       <label>Contextual Link</label>
       <icon>/icons/contextuallink.png</icon>
       <bigIcon>/icons/contextuallink_100.png</bigIcon>
@@ -50,7 +49,7 @@
       </layouts>
     </type>    
 
-    <type id="Workspace" coretype="Workspace">
+    <type id="Workspace">
       <subtypes>
         <type>WebPage</type>
         <type>ContextualLink</type>

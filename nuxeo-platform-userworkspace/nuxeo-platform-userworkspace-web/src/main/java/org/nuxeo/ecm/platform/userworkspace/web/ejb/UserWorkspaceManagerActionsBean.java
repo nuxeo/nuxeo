@@ -46,9 +46,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Personal user workspace manager actions bean.
- *
+ * 
  * @author btatar
- *
+ * 
  */
 @Name("userWorkspaceManagerActions")
 @Scope(SESSION)
@@ -68,14 +68,14 @@ public class UserWorkspaceManagerActionsBean implements
 
     private DocumentModel lastAccessedDocument;
 
-    //Rux INA-252: very likely cause of passivation error
+    // Rux INA-252: very likely cause of passivation error
     private transient UserWorkspaceService userWorkspaceService;
 
-    //Rux INA-252: another cause of passivation error
+    // Rux INA-252: another cause of passivation error
     @In(required = true)
     private transient NavigationContext navigationContext;
 
-    @In(required = true)
+    @In(required = false, create = true)
     private transient CoreSession documentManager;
 
     @In(create = true)
@@ -84,8 +84,9 @@ public class UserWorkspaceManagerActionsBean implements
     public void initialize() {
         log.debug("Initializing user workspace manager actions bean");
         try {
-            //Rux INA-252: use a getter
-            //userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
+            // Rux INA-252: use a getter
+            // userWorkspaceService =
+            // Framework.getLocalService(UserWorkspaceService.class);
             showingPersonalWorkspace = false;
             initialized = true;
         } catch (Exception e) {
@@ -115,8 +116,15 @@ public class UserWorkspaceManagerActionsBean implements
         if (!initialized) {
             initialize();
         }
-        return getUserWorkspaceService().getCurrentUserPersonalWorkspace(documentManager,
-                navigationContext.getCurrentDocument());
+        // protection in case we have not yet chosen a repository. if not
+        // repository, then there is no documentManager(session)
+        if (documentManager == null) {
+            return null;// this is ok because it eventually will be
+            // dealt with by setCurrentDocument, which will deal with
+            // the lack of a documentManager
+        }
+        return getUserWorkspaceService().getCurrentUserPersonalWorkspace(
+                documentManager, navigationContext.getCurrentDocument());
     }
 
     public String navigateToCurrentUserPersonalWorkspace()
@@ -126,10 +134,11 @@ public class UserWorkspaceManagerActionsBean implements
         }
         String returnView = DOCUMENT_VIEW;
 
-        //Rux INA-221: separated links for going to workspaces
+        // Rux INA-221: separated links for going to workspaces
         DocumentModel currentUserPersonalWorkspace = getCurrentUserPersonalWorkspace();
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (!isShowingPersonalWorkspace() && currentDocument != null && currentDocument.getPath().segment(0) != null) {
+        if (!isShowingPersonalWorkspace() && currentDocument != null
+                && currentDocument.getPath().segment(0) != null) {
             lastAccessedDocument = navigationContext.getCurrentDocument();
         }
         navigationContext.setCurrentDocument(currentUserPersonalWorkspace);
@@ -140,7 +149,7 @@ public class UserWorkspaceManagerActionsBean implements
         return returnView;
     }
 
-    //Rux INA-221: create a new method for the 2 separated links
+    // Rux INA-221: create a new method for the 2 separated links
     public String navigateToOverallWorkspace() throws ClientException {
         if (!initialized) {
             initialize();
@@ -162,7 +171,7 @@ public class UserWorkspaceManagerActionsBean implements
         return returnView;
     }
 
-    @Factory(value="isInsidePersonalWorkspace", scope=ScopeType.EVENT)
+    @Factory(value = "isInsidePersonalWorkspace", scope = ScopeType.EVENT)
     public boolean isShowingPersonalWorkspace() {
         if (!initialized) {
             initialize();
@@ -170,7 +179,7 @@ public class UserWorkspaceManagerActionsBean implements
 
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
 
-        if (currentDoc==null || currentDoc.getPath().segmentCount()<2) {
+        if (currentDoc == null || currentDoc.getPath().segmentCount() < 2) {
             return false;
         }
 

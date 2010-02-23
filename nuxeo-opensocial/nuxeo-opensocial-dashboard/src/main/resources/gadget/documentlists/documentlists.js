@@ -18,6 +18,10 @@ function getUserLang() {
     return top.nxUserLang;
 }
 
+function getWebappName() {
+    return top.nxContextPath.substring(1);
+}
+
 
 function getRestletUrl() {
     var ts = new Date().getTime() + "" + Math.random()*11
@@ -25,7 +29,7 @@ function getRestletUrl() {
     if (testMode) {
         url= "http://127.0.0.1:8080/nuxeo/restAPI/dashboard/";
     } else {
-        url= getNuxeoServerSideUrl() + "nuxeo/restAPI/dashboard/";
+        url= getNuxeoServerSideUrl() + getWebappName() + "/restAPI/dashboard/";
     }
     url+=QM_Name + "?format=JSON&page="+ currentPage;
     if (getCurrentDomain()!=null && getCurrentDomain()!="") {

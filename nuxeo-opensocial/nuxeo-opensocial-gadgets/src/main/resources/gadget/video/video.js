@@ -1,5 +1,5 @@
 var perm = gadgets.nuxeo.isEditable();
-var url = "/nuxeo/site/gadgetDocumentAPI/getHtmlContent/";
+var url = top.nxContextPath + "/site/gadgetDocumentAPI/getHtmlContent/";
 
 function launchVideoWidget() {
    var idGadget = gadgets.nuxeo.getGadgetId();

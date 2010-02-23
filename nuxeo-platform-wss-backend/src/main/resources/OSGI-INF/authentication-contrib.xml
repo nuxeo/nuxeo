@@ -12,5 +12,25 @@
       </parameters>
     </authenticationPlugin>
   </extension>
+  
+  <extension 
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="specificChains"> 
+ 
+    <specificAuthenticationChain name="WSS"> 
+        <urlPatterns> 
+            <url>(.*)/_vti_.*</url> 
+        </urlPatterns> 
+        <headers> 
+            <header name="User-Agent">MSFrontPage.*</header> 
+        </headers> 
+ 
+        <allowedPlugins> 
+            <plugin>BASIC_AUTH</plugin> 
+            <plugin>NTLM_AUTH</plugin> 
+        </allowedPlugins> 
+    </specificAuthenticationChain> 
+ 
+  </extension> 
 
 </component>

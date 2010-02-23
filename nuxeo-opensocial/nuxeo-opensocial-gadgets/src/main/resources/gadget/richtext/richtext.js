@@ -64,7 +64,7 @@ jQuery(document).ready(function(){
       return false;
     });
 
-  var myEditor = new nicEditor({iconsPath : '/nuxeo/site/gadgets/richtext/nicEditorIcons.gif'}).panelInstance('richtext');
+  var myEditor = new nicEditor({iconsPath : top.nxContextPath + '/site/gadgets/richtext/nicEditorIcons.gif'}).panelInstance('richtext');
   myEditor.addEvent("key", function() {
     gadgets.window.adjustHeight();
   });
@@ -72,9 +72,9 @@ jQuery(document).ready(function(){
 
   setWidthAndBindEvents();
   jQuery('#loader').remove();
-  
-  jQuery('.nicEdit-main').attr("style","min-height:60px;margin:4px;"); 
-  
+
+  jQuery('.nicEdit-main').attr("style","min-height:60px;margin:4px;");
+
   gadgets.window.adjustHeight();
 
 
@@ -161,7 +161,8 @@ function loadHtml(id){
 function setHtml(content) {
      if(_isSet(content)){
        jQuery(".nicEdit-main").html(content);
-       jQuery("#text").html(content);
+       jQuery("#pictureContainer").append(content);
+       //jQuery("#text").html(content);
        gadgets.window.adjustHeight();
     }
 };
@@ -182,7 +183,7 @@ function loadImage(id){
           imgContainer = jQuery("<img style=\"border:0;\" id=\"picture\" src=\"\" onload=\"gadgets.window.adjustHeight()\">");
 
        jQuery("#imgPreview").attr("src", photoUrl);
-       jQuery("#pictureContainer").append(imgContainer);
+       jQuery("#pictureContainer").prepend(imgContainer);
        jQuery("#picture").attr("src", photoUrl);
        jQuery("#pictureContainer").append("<span id=\"legend\"></span>");
        jQuery("#legend").text(gadgets.util.unescapeString(prefs.getString("legend")));

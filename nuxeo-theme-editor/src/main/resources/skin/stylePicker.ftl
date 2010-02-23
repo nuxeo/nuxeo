@@ -38,8 +38,8 @@
         <#if preset_info.value>
           <div class="selection" title="${preset_info.effectiveName}" onclick="NXThemesStyleEditor.updateFormField('&quot;${preset_info.effectiveName?js_string}&quot;')">
             <div class="name">${preset_info.name}</div>
-            <div class="preview">${preset_info.preview}</div>
-            <div class="value">${preset_info.value}</div>
+            <div class="preview">${preset_info.preview?replace(r'${basePath}', '${basePath}')}</div>
+            <div class="value">${preset_info.value?replace(r'${basePath}', '${basePath}')}</div>
           </div>
         <#else>
           <div class="selection" title="${preset_info.effectiveName}" onclick="NXThemesEditor.editPreset('${current_theme_name?js_string}', '${preset_info.effectiveName?js_string}', '${preset_info.value?js_string}', 'style picker');">

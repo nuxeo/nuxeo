@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.webwidgets.providers;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +39,9 @@ import org.nuxeo.theme.webwidgets.WidgetState;
         @NamedQuery(name = "Widget.removeAll", query = "DELETE WidgetEntity"),
         @NamedQuery(name = "Widget.findAll", query = "FROM WidgetEntity widget WHERE widget.region=:region ORDER BY widget.order"),
         @NamedQuery(name = "Widget.findByScope", query = "FROM WidgetEntity widget WHERE widget.region=:region AND widget.scope=:scope ORDER BY widget.order") })
-public class WidgetEntity implements Widget {
+public class WidgetEntity implements Widget, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     protected int id;
 

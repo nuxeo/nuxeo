@@ -38,6 +38,7 @@ import org.nuxeo.ecm.platform.preview.adapter.AbstractPreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.ImagePreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.MimeTypePreviewer;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -115,11 +116,12 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
         writer.write("<script type=\"text/javascript\">");
         writer.write("var serverSetting = {");
         writer.write("repoId : '$repoId$' ,");
-        writer.write("docId : '$docId$'");
+        writer.write("docId : '$docId$' ,");
+        writer.write("contextPath : '" + VirtualHostHelper.getContextPathProperty() + "'");
         writer.write("};");
         writer.write("</script>");
         writer.write("<script type=\"text/javascript\"");
-        writer.write("src=\"/nuxeo/org.nuxeo.ecm.platform.pictures.tiles.gwt.TilingPreview/org.nuxeo.ecm.platform.pictures.tiles.gwt.TilingPreview.nocache.js\">");
+        writer.write("src=\"" + VirtualHostHelper.getContextPathProperty() + "/org.nuxeo.ecm.platform.pictures.tiles.gwt.TilingPreview/org.nuxeo.ecm.platform.pictures.tiles.gwt.TilingPreview.nocache.js\">");
         writer.write("</script>");
         appendPreviewSettings(writer);
         writer.write("<div id=\"display\"></div>");

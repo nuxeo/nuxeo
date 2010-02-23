@@ -259,18 +259,11 @@ public class JbpmServiceImpl implements JbpmService {
         if (actorsName == null) {
             return initiatorPD;
         }
-        List<ProcessDefinition> pds = context.getGraphSession().findAllProcessDefinitions();
-        for (ProcessDefinition pd : pds) {
-            List<ProcessInstance> pis = context.getGraphSession().findProcessInstances(
-                    pd.getId());
-            for (ProcessInstance pi : pis) {
-                String initiator = (String) pi.getContextInstance().getVariable(
-                        JbpmService.VariableName.initiator.name());
-                if (initiator != null && actorsName.contains(initiator)) {
-                    initiatorPD.add(pi);
-                }
-            }
-        }
+        Session session = context.getSession();
+        List<ProcessInstance> list = session.getNamedQuery(
+                JbpmService.HibernateQueries.NuxeoHibernateQueries_getProcessInstancesForInitiator.name()).setParameterList(
+                "initiators", actorsName).list();
+        initiatorPD.addAll(list);
         return initiatorPD;
     }
 
@@ -400,7 +393,7 @@ public class JbpmServiceImpl implements JbpmService {
 
     private void eagerLoadProcessInstances(Collection<ProcessInstance> pis) {
         for (ProcessInstance pi : pis) {
-            if(pi == null) {
+            if (pi == null) {
                 continue;
             }
             pi.getProcessDefinition().getName();
@@ -871,7 +864,8 @@ public class JbpmServiceImpl implements JbpmService {
             public ArrayList<TaskInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
                 Set<TaskInstance> tisSet = new HashSet<TaskInstance>();
-                List<TaskInstance> tis = getCurrentTaskInstancesInternal(actors, null, context);
+                List<TaskInstance> tis = getCurrentTaskInstancesInternal(
+                        actors, null, context);
                 tisSet.addAll(tis);
                 ArrayList<TaskInstance> result = getTaskInstancesForDocument(
                         dm, tisSet);

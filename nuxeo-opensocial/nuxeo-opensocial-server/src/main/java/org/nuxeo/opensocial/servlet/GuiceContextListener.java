@@ -88,9 +88,15 @@ public class GuiceContextListener implements ServletContextListener {
         try {
             return (Module) Class.forName(moduleName).newInstance();
         } catch (IllegalAccessException e) {
-            throw new InstantiationException();
+            InstantiationException ie = new InstantiationException(
+                    "IllegalAccessException: " + e.getMessage());
+            ie.setStackTrace(e.getStackTrace());
+            throw ie;
         } catch (ClassNotFoundException e) {
-            throw new InstantiationException();
+            InstantiationException ie = new InstantiationException(
+                    "ClassNotFoundException: " + e.getMessage());
+            ie.setStackTrace(e.getStackTrace());
+            throw ie;
         }
     }
 

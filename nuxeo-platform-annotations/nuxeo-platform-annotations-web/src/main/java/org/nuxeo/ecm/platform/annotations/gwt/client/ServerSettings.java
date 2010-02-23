@@ -30,11 +30,15 @@ public class ServerSettings {
 
     private static final String DOCUMENT_ID = "documentId";
 
+    private static final String CONTEXT_PATH = "contextPath";
+
     private static ServerSettings current = loadServerSettings();
 
     private String repositoryName;
 
     private String documentId;
+
+    private String contextPath;
 
     protected ServerSettings() {
     }
@@ -47,10 +51,12 @@ public class ServerSettings {
         Dictionary dictionary = Dictionary.getDictionary(SERVER_SETTINGS);
         String repositoryName = dictionary.get(REPOSITORY_NAME);
         String documentId = dictionary.get(DOCUMENT_ID);
+        String contextPath = dictionary.get(CONTEXT_PATH);
 
         ServerSettings serverSettings = new ServerSettings();
         serverSettings.repositoryName = repositoryName;
         serverSettings.documentId = documentId;
+        serverSettings.contextPath = contextPath;
         return serverSettings;
     }
 

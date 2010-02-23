@@ -20,8 +20,8 @@ ${Document.webcontainer.welcomeText}
       <div style="clear:both;"></div>
     </div>
     <div class="postHeadtitle">
-      <div class="postTitle"><a href="${item.path}">${item.title}</a></div>
-      <div class="postSubtitle">${item.description}</div>
+      <div class="postTitle"><a href="${item.path}">${item.title?xml}</a></div>
+      <div class="postSubtitle">${item.description?xml}</div>
     </div>
     <div class="postContent">${item.content}</div>               
   </div> 
@@ -38,7 +38,7 @@ ${Document.webcontainer.welcomeText}
       <#list dayItem.items as item>
         <div class="pagePublishedResume">        
           <div class="documentInfo"> 
-            <span><a href="${item.path}">${item.title}</a></span>
+            <span><a href="${item.path}">${item.title?xml}</a></span>
             <p><span>${item.author}</span></p>                          
           </div>        
           <div style="clear:both;"></div>

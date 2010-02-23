@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -53,9 +52,9 @@
     <module>nuxeo-platform-tag-service</module>
     <module>nuxeo-webengine-features</module>
     <module>nuxeo-opensocial</module>
-    <!-- wss -->
     <module>nuxeo-generic-wss-handler</module>
     <module>nuxeo-platform-wss-backend</module>
+    <module>nuxeo-features-test</module>
   </modules>
 
   <dependencyManagement>
@@ -550,7 +549,7 @@
         <artifactId>nuxeo-platform-relations-core-listener</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
-       <dependency>
+      <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-relations-jena-plugin</artifactId>
         <version>${nuxeo.features.version}</version>
@@ -680,11 +679,11 @@
         <artifactId>nuxeo-platform-webapp-types</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
-<!--      <dependency>-->
-<!--        <groupId>org.nuxeo.ecm.platform</groupId>-->
-<!--        <artifactId>nuxeo-platform-webapp-core</artifactId>-->
-<!--        <version>${nuxeo.features.version}</version>-->
-<!--      </dependency>-->
+      <!--      <dependency>-->
+      <!--        <groupId>org.nuxeo.ecm.platform</groupId>-->
+      <!--        <artifactId>nuxeo-platform-webapp-core</artifactId>-->
+      <!--        <version>${nuxeo.features.version}</version>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-url-core</artifactId>
@@ -1017,6 +1016,31 @@
         <artifactId>nuxeo-platform-wss-backend</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-core</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-ui</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-gwt</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-management</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-management</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
 
       <!-- scope test -->
       <dependency>
@@ -1028,6 +1052,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-event-jms</artifactId>
+        <version>${nuxeo.core.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-test</artifactId>
         <version>${nuxeo.core.version}</version>
         <scope>test</scope>
       </dependency>
@@ -1056,24 +1086,10 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-core</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-ui</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-management</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-management</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <artifactId>nuxeo-platform-test</artifactId>
+        <version>${nuxeo.services.version}</version>
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

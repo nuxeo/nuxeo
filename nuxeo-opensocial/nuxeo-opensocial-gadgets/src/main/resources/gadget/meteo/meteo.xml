@@ -458,14 +458,14 @@ thumbnail="http://www.wofrance.fr/gifs/igooglecity_screen_fr.png">
       var linkcity = response.getElementsByTagName("location").item(0).getAttribute("linkcity");
       var wodomain = response.getElementsByTagName("location").item(0).getAttribute("wodomain");
       var tendenzname = response.getElementsByTagName("location").item(0).getAttribute("tendenzname");
-      html  = "<div style=\"height:5%\">";
+      var html  = "<div style=\"height:10px;\">";
       html += "<a target=\"_blank\" style=\"font-size:12px;font-weight:bold;color:#003399;text-decoration:none;float:left;margin:0px;padding:0px;\" href=\"http://" + wodomain + "/" + link + "/" + linkcity + ".htm\" title=\"Situation actuelle, Pr&#233;visions, Radar Satellites\">" + city + "</a>";
       html += "<a target=\"_blank\" style=\"float:right;color:#003399;font-size:10px;font-weight:bold;margin:0px;padding:0px;text-decoration:none;\" href=\"http://" + wodomain +"/weather/maps/city?LANG=" + Language + "&CONT=frfr&LAND=FR&WMO=" + City + "&LEVEL=101\" title=\"" + tendenzname + " " + city + "\"> >> "+tendenzname+"</a>";
       html += "</div>";
 
       html += "<div style=\"clear: both;\"></div>";
       html += "";
-      html += "<div style=\"height:70%\">";
+      html += "<div style=\"height:80px;\">";
       html += "<table style=\"border-collapse:collapse;font-size:12px;color:#3c3c3c;margin:auto;padding:0;width:100%;\">";
       html += "<tbody>";
       var itemList = response.getElementsByTagName("day");
@@ -524,30 +524,28 @@ thumbnail="http://www.wofrance.fr/gifs/igooglecity_screen_fr.png">
       html += "</tbody>";
       html += "</table>";
       html += "</div>";
-      html += "<div style=\"height:5%\">";
+      html += "<div style=\"height:10px;\">";
       html += "<a target=\"_blank\" style=\"float:right;color:#003399;font-size:9px;text-decoration:none;\" href=\"http://"+wodomain+"\" title=\"Pr&#233;vision meteo wofrance\">&nbsp;&#169;"+wodomain+"</a>";
       html += "<span style=\"float:right;color:#7D91AB;font-size:9px;text-decoration:none;\">" + update + "</span>";
       html += "<div style=\"clear: both;\"></div>";
       html += "</div>";
-      //html += "<div style=\"display:block\">test</div>";
 
       // Display HTML string in <div>
       _gel('content_div').innerHTML = html;
-      gadgets.window.adjustHeight()
+      gadgets.window.adjustHeight();
 
     },{refreshInterval:3});
   }
 
   _IG_RegisterOnloadHandler(
   function(){
-  displayWeather();
-  //setTimeout("gadgets.window.adjustHeight()",300);
+  	displayWeather();
   }
 
   );
 </script>
 
-<div style="height:100%;padding:7px;" id="content_div"></div>
+<div style="height:120px;padding:7px;" id="content_div"></div>
   ]]>
   </Content>
   </Module>

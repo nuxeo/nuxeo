@@ -1,5 +1,5 @@
 
-var loading_pathToImage = "/nuxeo/opensocial/images/loadingAnimation.gif";
+var loading_pathToImage = top.nxBaseUrl + "opensocial/images/loadingAnimation.gif";
 var loadOn = false;
 
 //on page load call tb_init

@@ -14,6 +14,8 @@
 
 package org.nuxeo.theme.webwidgets.providers;
 
+import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,7 +38,9 @@ import org.nuxeo.theme.webwidgets.WidgetData;
                 query = "FROM DataEntity data WHERE data.widgetUid=:widgetUid"),
         @NamedQuery(name = "Data.findByWidgetAndName",
                 query = "FROM DataEntity data WHERE data.widgetUid=:widgetUid AND data.dataName=:dataName") })
-public class DataEntity {
+public class DataEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     protected int id;
 

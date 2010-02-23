@@ -12,7 +12,7 @@
     point="shortcuts">
 
     <shortcut key="w"
-      target="/nuxeo/nxthemes-select?mode=web-widgets" />
+      target="${org.nuxeo.ecm.contextPath}/nxthemes-select?mode=web-widgets" />
 
   </extension>
 

@@ -11,8 +11,8 @@
   <h3>
     <h:form>
       <h:commandLink actionListener="#{commentManagerActions.toggleCreateForm}">
-        <h:graphicImage url="/img/toggle_plus.png" rendered="#{!commentManagerActions.showCreateForm}" />
-        <h:graphicImage url="/img/toggle_minus.png" rendered="#{commentManagerActions.showCreateForm}" />
+        <h:graphicImage url="/icons/toggle_plus.png" rendered="#{!commentManagerActions.showCreateForm}" />
+        <h:graphicImage url="/icons/toggle_minus.png" rendered="#{commentManagerActions.showCreateForm}" />
         <h:outputText value="#{messages['label.comments.add']}" />
       </h:commandLink>
     </h:form>

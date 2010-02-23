@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.theme.webwidgets.ui.samples;
+package org.nuxeo.theme.webwidgets.samples;
 
 import java.text.DateFormat;
 import java.util.GregorianCalendar;
@@ -41,11 +41,11 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
+ * 
  * Provide JSON data for the WebWidget "Last Created Documents"
- *
+ * 
  * @author <a href="mailto:nulrich@nuxeo.com">Nicolas Ulrich</a>
- *
+ * 
  */
 @WebObject(type = "lastdocuments")
 @Produces("text/html")
@@ -62,13 +62,14 @@ public class LastDocuments extends DefaultObject {
      * Return JSon data that contains a list of document properties (url, title,
      * date of creation and author). This list is used by the WebWidget
      * "Last Created Documents"
-     *
+     * 
      * @param nb_docs number of elements to return
      * @return JSon data
      * @throws Exception
      */
     @GET
-    public Object doGet(@QueryParam("nb_docs") int nb_docs) throws Exception {
+    public Object doGet(@QueryParam("nb_docs") int nb_docs,
+            @QueryParam("path") String path) throws Exception {
 
         DateFormat dateFormat = DateFormat.getDateTimeInstance(
                 DateFormat.SHORT, DateFormat.SHORT, ctx.getLocale());
@@ -84,38 +85,17 @@ public class LastDocuments extends DefaultObject {
         GregorianCalendar calendar = null;
 
         for (DocumentModel doc : results) {
-
             elem = new JSONObject();
 
-            elem.put("url", documentUrl(doc));
+            elem.put("url", new StringBuilder().append(path).append("/@nxdoc/").append(doc.getId()).toString());
             elem.put("title", doc.getTitle());
             calendar = (GregorianCalendar) doc.getProperty("dc:created").getValue();
             elem.put("created", dateFormat.format(calendar.getTime()));
             elem.put("creator", doc.getProperty("dc:creator").getValue());
 
             jsArray.add(elem);
-
         }
 
         return jsArray.toString();
-    }
-
-    /**
-     * Return the URL of a given Document
-     *
-     * @param doc The DocumentModel
-     * @return The URL corresponding to the DocumentModel
-     * @throws Exception
-     */
-    protected String documentUrl(DocumentModel doc) throws Exception {
-
-        DocumentView docView = new DocumentViewImpl(doc);
-
-        URLPolicyService service = Framework.getService(URLPolicyService.class);
-
-        String path = ctx.getBaseURL() + "/nuxeo/";
-
-        return service.getUrlFromDocumentView(docView, path);
-
     }
 }

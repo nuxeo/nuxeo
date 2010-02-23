@@ -1,5 +1,5 @@
 var firstTime = true;
-var pUrl="/nuxeo/site/gadgets/photo/thumbnail.png";
+var pUrl=top.nxContextPath + "/site/gadgets/photo/thumbnail.png";
 var perm = gadgets.nuxeo.isEditable();
 
 

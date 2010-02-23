@@ -44,17 +44,13 @@ public class TilingMainPanel extends Composite {
 
     private static class ThumbnailButton extends Image {
 
-        private static String HIDE_THUMBNAIL_IMG = "/nuxeo/img/hide_thumbnail.png";
-
-        private static String SHOW_THUMBNAIL_IMG = "/nuxeo/img/show_thumbnail.png";
-
         private static int THUMBNAIL_BUTTON_SIZE = 17;
 
         private boolean showThumbnail = true;
 
         public ThumbnailButton(
                 final TilingPreviewControllerPanel previewControllerPanel) {
-            super(HIDE_THUMBNAIL_IMG);
+            super(HIDE_THUMBNAIL_IMAGE);
 
             addMouseListener(new MouseListenerAdapter() {
                 @Override
@@ -70,8 +66,8 @@ public class TilingMainPanel extends Composite {
                 public void onClick(Widget arg0) {
                     showThumbnail = !showThumbnail;
                     previewControllerPanel.setVisible(showThumbnail);
-                    thumbnailButton.setUrl(showThumbnail ? HIDE_THUMBNAIL_IMG
-                            : SHOW_THUMBNAIL_IMG);
+                    thumbnailButton.setUrl(showThumbnail ? HIDE_THUMBNAIL_IMAGE
+                            : SHOW_THUMBNAIL_IMAGE);
                 }
             });
         }
@@ -94,21 +90,31 @@ public class TilingMainPanel extends Composite {
 
     private static final int PREVIEW_PANEL_BORDER_SIZE = 3;
 
+    private static String HIDE_THUMBNAIL_IMAGE;
+
+    private static String SHOW_THUMBNAIL_IMAGE;
+
     private String repoId;
 
     private String docId;
+
+    private String contextPath;
 
     public TilingMainPanel() {
         final Dictionary dictionary = Dictionary.getDictionary("serverSetting");
 
         repoId = dictionary.get("repoId");
         docId = dictionary.get("docId");
+        contextPath = dictionary.get("contextPath");
+
+        HIDE_THUMBNAIL_IMAGE = contextPath + "/img/hide_thumbnail.png";
+        SHOW_THUMBNAIL_IMAGE = contextPath + "/img/show_thumbnail.png";
 
         loadControllerPanelTilingInfo();
     }
 
     private void loadControllerPanelTilingInfo() {
-        final TilingInfo tilingInfo = new TilingInfo(repoId, docId, 64, 64, 3);
+        final TilingInfo tilingInfo = new TilingInfo(repoId, docId, contextPath, 64, 64, 3);
         tilingInfo.updateTilingInfo(new TilingInfoCallback() {
             public void tilingInfoUpdated() {
                 // Continue the loading
@@ -124,7 +130,7 @@ public class TilingMainPanel extends Composite {
 
         int maxTiles = maxTilesW > maxTilesH ? maxTilesW : maxTilesH;
         maxTiles += 1;
-        final TilingInfo currentTilingInfo = new TilingInfo(repoId, docId,
+        final TilingInfo currentTilingInfo = new TilingInfo(repoId, docId, contextPath,
                 TILE_WIDTH, TILE_HEIGHT, maxTiles);
         currentTilingInfo.updateTilingInfo(new TilingInfoCallback() {
             public void tilingInfoUpdated() {
