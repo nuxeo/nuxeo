@@ -11,7 +11,8 @@
     <os family="windows" />
   </condition>
 
-  <target name="clean" depends="clean-unix,clean-windows" description="Delete target directories" />
+  <target name="clean" depends="clean-unix,clean-windows"
+    description="Delete target directories" />
   <target name="clean-unix" if="osfamily-unix">
     <exec executable="mvn" failonerror="true">
       <arg value="clean" />
@@ -27,7 +28,8 @@
     </exec>
   </target>
 
-  <target name="install" depends="clean,install-unix,install-windows" description="Run mvn install" />
+  <target name="install" depends="clean,install-unix,install-windows"
+    description="Run mvn install" />
   <target name="install-unix" if="osfamily-unix">
     <exec executable="env" />
     <exec executable="mvn" failonerror="true">
@@ -62,7 +64,8 @@
     </exec>
   </target>
 
-  <target name="idea" depends="idea-unix,idea-windows" description="Generate IntelliJ IDEA files" />
+  <target name="idea" depends="idea-unix,idea-windows"
+    description="Generate IntelliJ IDEA files" />
   <target name="idea-unix" if="osfamily-unix">
     <exec executable="mvn" failonerror="true">
       <arg value="idea:idea" />
@@ -78,7 +81,8 @@
     </exec>
   </target>
 
-  <target name="eclipse" depends="eclipse-unix,eclipse-windows" description="Generate Eclipse files" />
+  <target name="eclipse" depends="eclipse-unix,eclipse-windows"
+    description="Generate Eclipse files" />
   <target name="eclipse-unix" if="osfamily-unix">
     <exec executable="mvn" failonerror="true">
       <arg value="eclipse:clean" />
