@@ -151,6 +151,10 @@
                   <artifactId>guice</artifactId>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>com.google.code.guice</groupId>
+                  <artifactId>guice-jmx</artifactId>
+                </artifactItem>
+                <artifactItem>
                   <groupId>rome</groupId>
                   <artifactId>rome</artifactId>
                   <version>1.0</version>
@@ -177,11 +181,11 @@
 
                 <!--  New libs for Shindig-1.1 -->
 
-                <artifactItem>
+                <!-- artifactItem>
                   <groupId>de.odysseus.juel</groupId>
                   <artifactId>juel-api</artifactId>
                   <version>2.1.2</version>
-                </artifactItem>
+                </artifactItem -->
                 <artifactItem>
                   <groupId>de.odysseus.juel</groupId>
                   <artifactId>juel-impl</artifactId>
