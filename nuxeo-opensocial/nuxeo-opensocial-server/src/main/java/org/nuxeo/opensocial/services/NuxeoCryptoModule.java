@@ -20,7 +20,9 @@ package org.nuxeo.opensocial.services;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.auth.SecurityTokenDecoder;
+import org.apache.shindig.social.core.oauth.AuthenticationHandlerProvider;
 import org.nuxeo.opensocial.shindig.crypto.NXSecurityTokenDecoder;
+import org.nuxeo.opensocial.shindig.oauth.NxAuthHandlerProvider;
 
 import com.google.inject.AbstractModule;
 
@@ -32,6 +34,9 @@ public class NuxeoCryptoModule extends AbstractModule {
     protected final void configure() {
         try {
             bind(SecurityTokenDecoder.class).to(NXSecurityTokenDecoder.class);
+            bind(AuthenticationHandlerProvider.class).to(
+                    NxAuthHandlerProvider.class);
+
         } catch (Exception e) {
             LOG.error("Unable to bind Shindig services to Nuxeo components");
             LOG.error(e.getMessage());

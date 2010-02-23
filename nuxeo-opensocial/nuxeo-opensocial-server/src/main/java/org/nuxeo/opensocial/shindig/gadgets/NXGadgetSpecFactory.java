@@ -1,6 +1,7 @@
 package org.nuxeo.opensocial.shindig.gadgets;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.shindig.auth.SecurityToken;
@@ -9,7 +10,6 @@ import org.apache.shindig.common.cache.CacheProvider;
 import org.apache.shindig.common.cache.SoftExpiringCache;
 import org.apache.shindig.common.uri.Uri;
 import org.apache.shindig.common.util.Check;
-import org.apache.shindig.gadgets.AuthType;
 import org.apache.shindig.gadgets.DefaultGadgetSpecFactory;
 import org.apache.shindig.gadgets.GadgetContext;
 import org.apache.shindig.gadgets.GadgetException;
@@ -17,12 +17,13 @@ import org.apache.shindig.gadgets.GadgetSpecFactory;
 import org.apache.shindig.gadgets.http.HttpFetcher;
 import org.apache.shindig.gadgets.http.HttpRequest;
 import org.apache.shindig.gadgets.http.HttpResponse;
+import org.apache.shindig.gadgets.oauth.GadgetOAuthTokenStore;
 import org.apache.shindig.gadgets.oauth.OAuthArguments;
-import org.apache.shindig.gadgets.oauth.OAuthFetcher;
 import org.apache.shindig.gadgets.oauth.OAuthFetcherConfig;
 import org.apache.shindig.gadgets.spec.GadgetSpec;
-import org.nuxeo.opensocial.shindig.oauth.SignedRequestAuthenticationInfo;
-import org.nuxeo.opensocial.shindig.oauth.SimpleSignedOAuthFetcherConfig;
+import org.apache.shindig.gadgets.spec.OAuthService;
+import org.apache.shindig.social.core.oauth.OAuthSecurityToken;
+import org.mortbay.log.Log;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -60,16 +61,20 @@ public class NXGadgetSpecFactory implements GadgetSpecFactory {
 
     private final long refresh;
 
+    protected final GadgetOAuthTokenStore tokenStore;
+
     @Inject
     public NXGadgetSpecFactory(HttpFetcher fetcher,
             CacheProvider cacheProvider,
             @Named("shindig.cache.xml.refreshInterval") long refresh,
-            SimpleSignedOAuthFetcherConfig oauthFetcherConfig) {
+            // SimpleSignedOAuthFetcherConfig oauthFetcherConfig) {
+            OAuthFetcherConfig oauthFetcherConfig, GadgetOAuthTokenStore store) {
         this.fetcher = fetcher;
         this.oAuthFetcherConfig = oauthFetcherConfig;
         Cache<Uri, GadgetSpec> baseCache = cacheProvider.createCache(CACHE_NAME);
         this.cache = new SoftExpiringCache<Uri, GadgetSpec>(baseCache);
         this.refresh = refresh;
+        tokenStore = store;
     }
 
     public GadgetSpec getGadgetSpec(GadgetContext context)
@@ -147,29 +152,36 @@ public class NXGadgetSpecFactory implements GadgetSpecFactory {
         // For now, if there is a token, we use it to send a signed message
         // if (context.getToken() != null
         // && uri.getPath().contains(WEBENGINE_GET_DEF_ACTION)) {
-        if (context.getToken() != null) {
-            AuthType auth = AuthType.SIGNED;
-            request.setAuthType(auth);
-            SecurityToken token = context.getToken();
-            request.setSecurityToken(token);
 
-            request.setOAuthArguments(new OAuthArguments(
-                    new SignedRequestAuthenticationInfo(token.getOwnerId(),
-                            token.getViewerId(), uri)));
-
-            OAuthFetcher oauthFetcher = new OAuthFetcher(
-                    this.oAuthFetcherConfig, fetcher, request);
-
-            response = oauthFetcher.fetch(request);
-
-        } else {
-            /*
-             * if (request.getGadget() == null) {
-             * LOG.warning("patching up get gadget spec request for " +
-             * "non-authed version :" + uri); request.setGadget(uri); }
-             */
-            response = fetcher.fetch(request);
-        }
+        // IES: Why would we need to sign requests to ourselves?
+        // if (context.getToken() != null) {
+        // AuthType auth = AuthType.SIGNED;
+        // request.setAuthType(auth);
+        // SecurityToken token = context.getToken();
+        // request.setSecurityToken(token);
+        //
+        // // request.setOAuthArguments(new OAuthArguments(
+        // // new SignedRequestAuthenticationInfo(token.getOwnerId(),
+        // // token.getViewerId(), uri)));
+        //
+        // request.setOAuthArguments(new OAuthArguments(new OAuthTrueAuthInfo(
+        // uri, token.getOwnerId(), token.getViewerId(), "")));
+        //
+        // OAuthFetcher oauthFetcher = new OAuthFetcher(
+        // this.oAuthFetcherConfig, fetcher, request);
+        // // at this point, are request.getOauthParams() already busted?
+        // response = oauthFetcher.fetch(request);
+        //
+        // } else {
+        /*
+         * if (request.getGadget() == null) {
+         * LOG.warning("patching up get gadget spec request for " +
+         * "non-authed version :" + uri); request.setGadget(uri); }
+         */
+        SecurityToken token = context.getToken();
+        request.setSecurityToken(token);
+        response = fetcher.fetch(request);
+        // }
 
         if (response.getHttpStatusCode() != HttpResponse.SC_OK) {
             throw new GadgetException(
@@ -180,6 +192,25 @@ public class NXGadgetSpecFactory implements GadgetSpecFactory {
 
         GadgetSpec spec = new GadgetSpec(uri, response.getResponseAsString());
         cache.addElement(uri, spec, refresh);
+
+        Map<String, OAuthService> services = spec.getModulePrefs().getOAuthSpec().getServices();
+
+        if (services.size() > 0) {
+            if (services.size() > 1) {
+                Log.warn("Unable to deal with more than one OAuth service in "
+                        + "gadget! Spec is " + uri + "! Using service:"
+                        + services.keySet().toArray(new String[] {})[0]);
+            }
+            String serivceName = services.keySet().toArray(new String[] {})[0];
+            OAuthService service = services.get(serivceName);
+
+            OAuthSecurityToken securityToken = new OAuthSecurityToken(
+                    token.getViewerId(), service.getRequestUrl().toString(),
+                    service.getAccessUrl().toString(), service.getName());
+
+            OAuthArguments args = new OAuthArguments();
+            tokenStore.storeTokenKeyAndSecret(securityToken, null, args, null);
+        }
         return spec;
     }
 

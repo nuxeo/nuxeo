@@ -1,20 +1,3 @@
-/*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * Contributors:
- *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
- */
-
 package org.nuxeo.opensocial.shindig.gadgets;
 
 import java.io.IOException;
@@ -35,56 +18,26 @@ import org.apache.shindig.gadgets.http.HttpRequest;
 import org.apache.shindig.gadgets.http.HttpResponse;
 import org.apache.shindig.gadgets.oauth.OAuthArguments;
 import org.apache.shindig.gadgets.rewrite.ContentRewriterRegistry;
+import org.apache.shindig.gadgets.servlet.MakeRequestHandler;
 import org.apache.shindig.gadgets.servlet.ProxyBase;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
-/**
- * @author cusgu
- * 
- *         Patch FeedProcessor in order to retrieve extra elements from RSS 2.0
- *         feeds : - enclosure
- * 
- * @hacker iansmith THIS IS BASICALLY A COPY OF MakeRequestHandler because I
- *         just needed to add a single line to the function buildHttpRequest
- */
-@Singleton
-public class NXMakeRequestHandler extends ProxyBase {
-    // Relaxed visibility for ease of integration. Try to avoid relying on
-    // these.
-    public static final String UNPARSEABLE_CRUFT = "throw 1; < don't be evil' >";
-
-    public static final String POST_DATA_PARAM = "postData";
-
-    public static final String METHOD_PARAM = "httpMethod";
-
-    public static final String HEADERS_PARAM = "headers";
-
-    public static final String NOCACHE_PARAM = "nocache";
-
-    public static final String CONTENT_TYPE_PARAM = "contentType";
-
-    public static final String NUM_ENTRIES_PARAM = "numEntries";
-
-    public static final String DEFAULT_NUM_ENTRIES = "3";
-
-    public static final String GET_SUMMARIES_PARAM = "getSummaries";
-
-    public static final String AUTHZ_PARAM = "authz";
-
-    private final ContentFetcherFactory contentFetcherFactory;
-
-    private final ContentRewriterRegistry contentRewriterRegistry;
+public class NXMakeRequestJsonPatch extends MakeRequestHandler {
 
     @Inject
-    public NXMakeRequestHandler(ContentFetcherFactory contentFetcherFactory,
+    public NXMakeRequestJsonPatch(ContentFetcherFactory contentFetcherFactory,
             ContentRewriterRegistry contentRewriterRegistry) {
+        super(contentFetcherFactory, contentRewriterRegistry);
         this.contentFetcherFactory = contentFetcherFactory;
         this.contentRewriterRegistry = contentRewriterRegistry;
     }
+
+    protected ContentRewriterRegistry contentRewriterRegistry;
+
+    protected ContentFetcherFactory contentFetcherFactory;
 
     /**
      * Executes a request, returning the response as JSON to be handled by
@@ -97,7 +50,7 @@ public class NXMakeRequestHandler extends ProxyBase {
 
         // Serialize the response
         HttpResponse results = contentFetcherFactory.fetch(rcr);
-
+        
         // Rewrite the response
         if (contentRewriterRegistry != null) {
             results = contentRewriterRegistry.rewriteHttpResponse(rcr, results);
@@ -135,7 +88,6 @@ public class NXMakeRequestHandler extends ProxyBase {
                 getParameter(request, METHOD_PARAM, "GET")).setPostBody(
                 getParameter(request, POST_DATA_PARAM, "").getBytes()).setContainer(
                 getContainer(request));
-        // req.setSecurityToken(new NxSec("Administrator", "Administrator"));
 
         String headerData = getParameter(request, HEADERS_PARAM, "");
         if (headerData.length() > 0) {
@@ -247,6 +199,10 @@ public class NXMakeRequestHandler extends ProxyBase {
                 GET_SUMMARIES_PARAM, "false"));
         int numEntries = Integer.parseInt(getParameter(req, NUM_ENTRIES_PARAM,
                 DEFAULT_NUM_ENTRIES));
+        if (xml.trim().equals("")) {
+            // IES HACK
+            return "{}";
+        }
         return new FeedProcessor().process(url, xml, getSummaries, numEntries).toString();
     }
 }

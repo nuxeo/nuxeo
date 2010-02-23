@@ -31,7 +31,8 @@ public class ProxyModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(ProxySelector.class).to(SimpleProxySelector.class);
-        bind(HttpFetcher.class).to(ProxySelectorHttpFetcher.class).in(Scopes.SINGLETON);
+        bind(HttpFetcher.class).to(ProxySelectorHttpFetcher.class).in(
+                Scopes.SINGLETON);
+        // bind(GadgetOAuthTokenStore.class).to(NXGadgetOAuthHack.class);
     }
-
 }

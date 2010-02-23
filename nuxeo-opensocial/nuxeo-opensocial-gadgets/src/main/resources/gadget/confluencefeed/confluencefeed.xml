@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="Confluence Stream">
+  <OAuth>
+    <Service>
+      <Access url="http://marge:7070/plugins/servlet/oauth/access-token"
+        method="POST" />
+      <Request url="http://marge:7070/plugins/servlet/oauth/request-token"
+        method="POST" />
+      <!--  url="http://marge:7070/plugins/servlet/oauth/authorize?oauth_callback=http%3A%2F%2Foauth.gmodules.com%2Fgadgets%2Foauthcallback"
+-->
+      <Authorization url="http://marge:7070/plugins/servlet/oauth/authorize" />
+    </Service>
+  </OAuth>
+</ModulePrefs>
+  <Content type="html">
+     <![CDATA[
+       <div id="content">Loading feeds...</div>
+       <script type="text/javascript">
+        var html = '';
+        
+        var url= 'http://marge:7070/createrssfeed.action?types=page&types=blogpost&types=mail&types=comment&types=attachment&sort=modified&showContent=true&showDiff=true&spaces=conf_personal&labelString%3D&rssType=rss2&maxResults=10&timeSpan=5&publicFeed=false&title=personalspacefeed&os_authType=basic';
+        /*var url = "http://newsrss.bbc.co.uk/rss/newsonline_world_edition/front_page/rss.xml";*/
+        
+        /*var url = "http://feeds.feedburner.com/linuxjournalcom";*/
+        var callback = function(resultObj) {
+            html += "<h5>BBC News Feed</h5>";
+            html += "<ul>\n";
+            var feed = resultObj.data;
+            for (var counter = 0; counter < feed.Entry.length; counter++)  {
+                html += "<li>" + '<a href="' +
+                feed.Entry[counter].Link + '" target="_blank">' + 
+                feed.Entry[counter].Title + "</a>"  + "</li>";
+            }
+            html += "</ul>\n";
+
+        _gel('content').innerHTML = html;
+        };
+
+        var num_entries = 5;
+        var params={};
+        var get_summaries = false;
+        params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.FEED;
+        params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.OAUTH;
+        
+        gadgets.io.makeRequest(url, callback, params);
+        
+        /*_IG_FetchFeedAsJSON(url, callback, num_entries, get_summaries);*/
+       </script>
+     ]]>
+
+  </Content>
+</Module>

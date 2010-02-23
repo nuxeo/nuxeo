@@ -20,6 +20,7 @@ package org.nuxeo.opensocial.shindig.oauth;
 import org.apache.shindig.common.crypto.BlobCrypter;
 import org.apache.shindig.common.util.TimeSource;
 import org.apache.shindig.gadgets.http.HttpCache;
+import org.apache.shindig.gadgets.oauth.GadgetOAuthTokenStore;
 import org.apache.shindig.gadgets.oauth.OAuthFetcherConfig;
 
 import com.google.inject.Inject;
@@ -30,13 +31,13 @@ import com.google.inject.name.Named;
  */
 public class SimpleSignedOAuthFetcherConfig extends OAuthFetcherConfig {
 
-  @Inject
-  public SimpleSignedOAuthFetcherConfig(
-      @Named(OAUTH_STATE_CRYPTER) BlobCrypter stateCrypter,
-      SignedFetchGadgetOAuthTokenStore tokenStore,
-      HttpCache httpCache,
-      TimeSource clock) {
-    super(stateCrypter, tokenStore, httpCache, clock);
-  }
+    @Inject
+    public SimpleSignedOAuthFetcherConfig(
+            @Named(OAUTH_STATE_CRYPTER) BlobCrypter stateCrypter,
+            // not used anymore SignedFetchGadgetOAuthTokenStore tokenStore,
+            GadgetOAuthTokenStore tokenStore, HttpCache httpCache,
+            TimeSource clock) {
+        super(stateCrypter, tokenStore, httpCache, clock);
+    }
 
 }

@@ -22,7 +22,7 @@
         org.nuxeo.opensocial.shindig.gadgets.NXGadgetModule:
         org.apache.shindig.gadgets.oauth.OAuthModule:
         org.apache.shindig.common.cache.ehcache.EhCacheModule
-    </param-value>
+      </param-value>
     </context-param>
   </extension>
 
@@ -57,7 +57,46 @@
       <filter-name>authFilter</filter-name>
       <url-pattern>/opensocial/gadgets/makeRequest</url-pattern>
     </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>authFilter</filter-name>
+      <url-pattern>/gadgets/*</url-pattern>
+    </filter-mapping>
   </extension>
+
+  <extension target="web#STD-AUTH-FILTER">
+    <filter>
+      <display-name>Nuxeo Security Filter</display-name>
+      <filter-name>NuxeoAuthenticationFilter
+            </filter-name>
+      <filter-class>
+        org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter
+      </filter-class>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter
+      </filter-name>
+      <url-pattern>/opensocial/gadgets/ifr/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter
+      </filter-name>
+      <url-pattern>/opensocial/social/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter
+      </filter-name>
+      <url-pattern>/opensocial/gadgets/makeRequest</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+  </extension>
+
 
   <extension target="web#SERVLET">
     <!-- Render a Gadget -->
@@ -65,7 +104,7 @@
       <servlet-name>xml-to-html</servlet-name>
       <servlet-class>
         org.apache.shindig.gadgets.servlet.GadgetRenderingServlet
-    </servlet-class>
+      </servlet-class>
     </servlet>
 
     <!-- Proxy -->
@@ -73,7 +112,7 @@
       <servlet-name>proxy</servlet-name>
       <servlet-class>
         org.apache.shindig.gadgets.servlet.ProxyServlet
-    </servlet-class>
+      </servlet-class>
     </servlet>
 
     <!-- makeRequest -->
@@ -81,14 +120,14 @@
       <servlet-name>makeRequest</servlet-name>
       <servlet-class>
         org.apache.shindig.gadgets.servlet.MakeRequestServlet
-    </servlet-class>
+      </servlet-class>
     </servlet>
 
     <servlet>
       <servlet-name>concat</servlet-name>
       <servlet-class>
         org.apache.shindig.gadgets.servlet.ConcatProxyServlet
-    </servlet-class>
+      </servlet-class>
     </servlet>
 
     <!-- OAuth callback -->
@@ -96,7 +135,7 @@
       <servlet-name>oauthCallback</servlet-name>
       <servlet-class>
         org.apache.shindig.gadgets.servlet.OAuthCallbackServlet
-    </servlet-class>
+      </servlet-class>
     </servlet>
 
     <!-- Metadata RPC -->
@@ -104,7 +143,7 @@
       <servlet-name>metadata</servlet-name>
       <servlet-class>
         org.apache.shindig.gadgets.servlet.RpcServlet
-    </servlet-class>
+      </servlet-class>
     </servlet>
 
     <!-- javascript serving -->
@@ -127,7 +166,7 @@
       <servlet-name>jsonRpcServlet</servlet-name>
       <servlet-class>
         org.apache.shindig.social.opensocial.service.JsonRpcServlet
-    </servlet-class>
+      </servlet-class>
     </servlet>
 
   </extension>
