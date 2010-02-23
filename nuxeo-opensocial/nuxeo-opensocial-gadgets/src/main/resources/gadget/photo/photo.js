@@ -20,16 +20,22 @@ jQuery(document).ready(function(){
 
   jQuery('#upload').click(function(){
     jQuery("#resize_width").val(gadgets.window.getViewportDimensions().width);
-    jQuery('#formUpload').ajaxSubmit({
-        beforeSubmit: control,
-        success:function(data){
+    if (jQuery("#file").val() != ""){
+      jQuery('#formUpload').ajaxSubmit({
+          success:function(data){
+        savePrefs();
           launchGadget();
-          savePrefs();
-        },
-        error: function(xhr,rs) {
-          alert(xhr.responseText);
-        }
-    });
+
+          },
+          error: function(xhr,rs) {
+            alert(xhr.responseText);
+          }
+      });
+    }
+    else{
+    savePrefs();
+    launchGadget();
+    }
     return false;
   });
 
@@ -66,12 +72,6 @@ function setLegend(legend){
     jQuery("#legend-field").val(gadgets.util.unescapeString(legend));
     jQuery("#legend").text(gadgets.util.unescapeString(legend));
   }
-};
-
-function control(){
-  if(jQuery.trim(jQuery("#file").val()) != "")
-    return true;
-  return false;
 };
 
 function _isSet(val){
