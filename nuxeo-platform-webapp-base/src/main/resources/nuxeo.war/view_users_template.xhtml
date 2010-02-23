@@ -22,12 +22,14 @@
 
     <div class="tabsContent">
 
-      <h:form rendered="#{userManagerActions.allowCreateUser and notReadOnly}">
+      <h:form rendered="#{userManagerActions.allowCreateUser and notReadOnly}"
+        id="createUserActionsForm">
         <div class="action_bar">
           <ul>
             <li class="selected">
               <h:commandLink action="create_user"
-                immediate="true">
+                immediate="true"
+                 id="createUserButton">
                 <h:graphicImage value="/icons/action_add_user.gif" />
                 <h:outputText value="#{messages['command.createUser']}"  />
               </h:commandLink>
