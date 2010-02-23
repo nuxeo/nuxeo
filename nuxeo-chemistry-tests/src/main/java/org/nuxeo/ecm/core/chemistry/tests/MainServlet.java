@@ -21,6 +21,9 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.apache.chemistry.Repository;
+import org.apache.chemistry.RepositoryManager;
+import org.apache.chemistry.RepositoryService;
+import org.apache.chemistry.impl.simple.SimpleRepositoryService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -39,17 +42,25 @@ public class MainServlet extends SQLRepositoryTestCase {
     public static final String REPOSITORY_NAME = "test";
 
     public static void main(String[] args) throws Exception {
+        RepositoryService repositoryService = null;
         MainServlet main = new MainServlet("test");
         main.setUp();
         try {
-            Repository repository = main.makeRepository();
-//            if (args.length == 0) {
-//                args = new String[] { "-p", "8082" };
-//            }
-            new org.apache.chemistry.test.MainServlet().run(args, repository,
-                    "/cmis", "/repository");
+            repositoryService = new SimpleRepositoryService(
+                    main.makeRepository());
+            RepositoryManager.getInstance().registerService(repositoryService);
+            // if (args.length == 0) {
+            // args = new String[] { "-p", "8082" };
+            // }
+            new org.apache.chemistry.test.MainServlet().run(args, "/cmis",
+                    "/repository");
         } finally {
             main.tearDown();
+            if (repositoryService != null) {
+                RepositoryManager.getInstance().unregisterService(
+                        repositoryService);
+                repositoryService = null;
+            }
         }
     }
 
@@ -66,6 +77,7 @@ public class MainServlet extends SQLRepositoryTestCase {
         }
         super.deployContrib(bundle, contrib);
     }
+
     @Override
     public void setUp() throws Exception {
         super.setUp();

@@ -145,12 +145,12 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
      * ----- Repository -----
      */
 
-    public Connection getConnection(Map<String, Serializable> parameters) {
-        return new NuxeoConnection(this, parameters);
+    public Connection getConnection(Map<String, Serializable> params) {
+        return new NuxeoConnection(this, params);
     }
 
-    public SPI getSPI() {
-        return new NuxeoConnection(this, null);
+    public SPI getSPI(Map<String, Serializable> params) {
+        return new NuxeoConnection(this, params);
     }
 
     public <T> T getExtension(Class<T> klass) {

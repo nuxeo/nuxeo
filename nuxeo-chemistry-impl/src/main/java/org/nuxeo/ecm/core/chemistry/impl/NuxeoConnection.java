@@ -109,16 +109,16 @@ public class NuxeoConnection implements Connection, SPI {
     protected final Map<String, String> queryPropNames;
 
     public NuxeoConnection(NuxeoRepository repository,
-            Map<String, Serializable> parameters) {
+            Map<String, Serializable> params) {
         this.repository = repository;
 
-        // TODO map parameters
         // TODO authentication
         Map<String, Serializable> context = new HashMap<String, Serializable>();
-        if (parameters != null) {
-            context.putAll(parameters);
+        if (params != null) {
+            context.putAll(params);
+            context.put("username", params.get(Repository.PARAM_USERNAME));
         }
-        if (!context.containsKey("username")) {
+        if (context.get("username") == null) {
             context.put("username", "Administrator");
         }
         try {

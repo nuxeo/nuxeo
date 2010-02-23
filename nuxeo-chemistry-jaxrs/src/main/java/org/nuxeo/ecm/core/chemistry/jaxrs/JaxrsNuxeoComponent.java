@@ -18,9 +18,12 @@ package org.nuxeo.ecm.core.chemistry.jaxrs;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.chemistry.RepositoryManager;
+import org.apache.chemistry.RepositoryService;
 import org.apache.chemistry.atompub.server.jaxrs.AbderaResource;
 import org.apache.chemistry.atompub.server.jaxrs.AbderaResponseProvider;
 import org.apache.chemistry.atompub.server.jaxrs.AbderaResource.PathMunger;
+import org.apache.chemistry.impl.simple.SimpleRepositoryService;
 import org.nuxeo.ecm.core.chemistry.impl.NuxeoRepository;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -37,19 +40,37 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class JaxrsNuxeoComponent extends DefaultComponent {
 
+    protected RepositoryService repositoryService;
+
     @Override
     public void activate(ComponentContext context) throws Exception {
         // TODO should be done using an extension point
         WebEngine engine = Framework.getLocalService(WebEngine.class);
         engine.getRegistry().addMessageBodyWriter(new AbderaResponseProvider());
 
-        // TODO should be done differently, not using a static field
-        AbderaResource.repository = new NuxeoRepository("default");
+        // register the default repository with the RepositoryManager
+        RepositoryManager rm = RepositoryManager.getInstance();
+        if (rm.getRepository("default") == null) {
+            repositoryService = new SimpleRepositoryService(
+                    new NuxeoRepository("default"));
+            RepositoryManager.getInstance().registerService(repositoryService);
+        }
+
         AbderaResource.pathMunger = new WebEnginePathMunger();
 
         // We have to set this so that a %2F is allowed in a URL. This is needed
         // to interpret the CMIS URI template "objectbypath".
-        System.setProperty("org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true");
+        System.setProperty(
+                "org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH",
+                "true");
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) throws Exception {
+        if (repositoryService != null) {
+            RepositoryManager.getInstance().unregisterService(repositoryService);
+            repositoryService = null;
+        }
     }
 
     /**

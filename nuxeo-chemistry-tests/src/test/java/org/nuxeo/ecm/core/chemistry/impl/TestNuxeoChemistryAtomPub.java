@@ -19,8 +19,7 @@ package org.nuxeo.ecm.core.chemistry.impl;
 import javax.servlet.Servlet;
 
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.atompub.client.APPContentManager;
-import org.apache.chemistry.atompub.client.ContentManager;
+import org.apache.chemistry.atompub.client.APPRepositoryService;
 import org.apache.chemistry.atompub.server.servlet.CMISServlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -77,8 +76,7 @@ public class TestNuxeoChemistryAtomPub extends NuxeoChemistryTestCase {
     @Override
     public Repository makeRepository() throws Exception {
         String serverUrl = startServer();
-        ContentManager cm = new APPContentManager(serverUrl);
-        return cm.getDefaultRepository();
+        return new APPRepositoryService(serverUrl, null).getDefaultRepository();
     }
 
     @Override
