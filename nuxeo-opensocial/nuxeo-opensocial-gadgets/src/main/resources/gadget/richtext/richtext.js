@@ -6,6 +6,8 @@ jQuery(document).ready(function(){
     var idGadget = gadgets.nuxeo.getGadgetId();
     jQuery("#formUpload").attr("action", gadgets.nuxeo.getFormActionUrl(idGadget));
     jQuery("#fileUploadForm").attr("action", gadgets.nuxeo.getFormActionUrl(idGadget));
+
+
     loadHtml(idGadget);
     loadImage(idGadget);
 
@@ -13,6 +15,15 @@ jQuery(document).ready(function(){
     setLink(gadgets.util.unescapeString(prefs.getString("link")));
     setLegend(gadgets.util.unescapeString(prefs.getString("legend")));
     setPlace(gadgets.util.unescapeString(prefs.getString("place")));
+
+    jQuery.ajax({
+        type : "GET",
+        url : gadgets.nuxeo.getFormActionUrl(gadgets.nuxeo.getGadgetId())+"/hasFile",
+        success:function(data){
+       if (data == "false")
+       jQuery('#deletePhoto').hide();
+      }
+    });
 
 
   jQuery('#show').click(function(){
@@ -65,6 +76,25 @@ jQuery(document).ready(function(){
     });
 
   var myEditor = new nicEditor({iconsPath : top.nxContextPath + '/site/gadgets/richtext/nicEditorIcons.gif'}).panelInstance('richtext');
+
+
+  jQuery("#deletePhoto").click(function(){
+    jQuery.ajax({
+      async:false,
+      type : "POST",
+        url : gadgets.nuxeo.getFormActionUrl(gadgets.nuxeo.getGadgetId())+"/deletePicture",
+        error : function(e){
+          },
+        success:function(data){
+            loadImage(gadgets.nuxeo.getGadgetId());
+        }
+      });
+      return false;
+  });
+
+
+
+var myEditor = new nicEditor({iconsPath : '/nuxeo/site/gadgets/richtext/nicEditorIcons.gif'}).panelInstance('richtext');
   myEditor.addEvent("key", function() {
     gadgets.window.adjustHeight();
   });
@@ -162,34 +192,51 @@ function setHtml(content) {
      if(_isSet(content)){
        jQuery(".nicEdit-main").html(content);
        jQuery("#pictureContainer").append(content);
-       //jQuery("#text").html(content);
        gadgets.window.adjustHeight();
     }
 };
 
 function loadImage(id){
-  var imgContainer = "";
-  var photoUrl = [gadgets.nuxeo.getFileActionUrl(id),'?junk=',Math.random()].join("");
   jQuery.ajax({
     type : "GET",
-    url : photoUrl,
-    error : function(){
-    imgContainer="<div>Pas de Photo</div>";
-    },
-    success : function(data, textStatus) {
-       if (_isSet(prefs.getString("link")))
-          imgContainer = jQuery("<a id=\"link\" href=\""+prefs.getString("link")+"\" target=\"_tab\" ><img style=\"border:0;\" id=\"picture\" src=\"\" onload=\"gadgets.window.adjustHeight()\"></a>");
-        else
-          imgContainer = jQuery("<img style=\"border:0;\" id=\"picture\" src=\"\" onload=\"gadgets.window.adjustHeight()\">");
+    url : gadgets.nuxeo.getFormActionUrl(gadgets.nuxeo.getGadgetId())+"/hasFile",
+    success:function(data){
+    if (data == "true"){
+       jQuery("#imgPreview").show();
+      jQuery('#deletePhoto').show();
+      var imgContainer = "";
+      var photoUrl = [gadgets.nuxeo.getFileActionUrl(id),'?junk=',Math.random()].join("");
+      jQuery.ajax({
+        type : "GET",
+        url : photoUrl,
+        error : function(){
+        imgContainer="<div>Pas de Photo</div>";
+        },
+        success : function(data, textStatus) {
+          if (_isSet(prefs.getString("link")))
+              imgContainer = jQuery("<a id=\"link\" href=\""+prefs.getString("link")+"\" target=\"_tab\" ><img style=\"border:0;\" id=\"picture\" src=\"\" onload=\"gadgets.window.adjustHeight()\"></a>");
+            else
+              imgContainer = jQuery("<img style=\"border:0;\" id=\"picture\" src=\"\" onload=\"gadgets.window.adjustHeight()\">");
 
-       jQuery("#imgPreview").attr("src", photoUrl);
-       jQuery("#pictureContainer").prepend(imgContainer);
-       jQuery("#picture").attr("src", photoUrl);
-       jQuery("#pictureContainer").append("<span id=\"legend\"></span>");
-       jQuery("#legend").text(gadgets.util.unescapeString(prefs.getString("legend")));
-       gadgets.window.adjustHeight();
-      }
-    });
+           jQuery("#imgPreview").attr("src", photoUrl);
+           jQuery("#pictureContainer").prepend(imgContainer);
+           jQuery("#picture").attr("src", photoUrl);
+           jQuery("#pictureContainer").append("<span id=\"legend\"></span>");
+           jQuery("#legend").text(gadgets.util.unescapeString(prefs.getString("legend")));
+           gadgets.window.adjustHeight();
+
+
+          }
+        });
+    }else{
+      jQuery("#imgPreview").hide();
+    }
+
+    }
+
+  });
+
+
 
 
 };

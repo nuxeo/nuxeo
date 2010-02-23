@@ -52,6 +52,24 @@ public class GadgetDocument extends DocumentObject {
   }
 
   @POST
+  @Path("deletePicture")
+  public Response doDelete(){
+    try {
+      doc.setPropertyValue("file:content",null);
+
+
+      CoreSession session = getContext().getCoreSession();
+      session.saveDocument(doc);
+      session.save();
+    } catch (ClientException e) {
+      throw WebException.wrap(e);
+    }
+
+    return Response.ok()
+    .build();
+  }
+
+  @POST
   @Override
   public Response doPost() {
     FormData form = ctx.getForm();
@@ -157,6 +175,21 @@ public class GadgetDocument extends DocumentObject {
 
     }
     return imagingService;
+  }
+
+  @GET
+  @Path("hasFile")
+  public Response hasFile(){
+
+    try {
+      getBlobFromDoc(doc);
+    } catch (Exception e) {
+      return Response.ok("false").build();
+    }
+
+    return Response.ok("true").build();
+
+
   }
 
   @GET
