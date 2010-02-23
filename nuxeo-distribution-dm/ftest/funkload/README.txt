@@ -69,10 +69,6 @@ Layout
   difference with web driver PageObjects is that they contains assertion to
   ease the fluent interface.
 
-* nuxeo/pagesjava6.py
-
-  Same as pages.py but for a Nuxeo DM running with java 6.
-
 * nuxeo/testcase.py
 
   Simple nuxeo test case that use an xmlrpc server to get credential to
