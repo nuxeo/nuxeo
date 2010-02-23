@@ -48,7 +48,6 @@
       <arg value="package" />
       <arg value="-Dmaven.test.skip=true" />
       <arg value="-Pnuxeo-dm,nuxeo-2parts" />
-      <arg value="-N" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
@@ -59,7 +58,6 @@
       <arg value="package" />
       <arg value="-Dmaven.test.skip=true" />
       <arg value="-Pnuxeo-dm,nuxeo-2parts" />
-      <arg value="-N" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
@@ -70,7 +68,6 @@
       <arg value="package" />
       <arg value="-Dmaven.test.skip=true" />
       <arg value="-Pnuxeo-dm" />
-      <arg value="-N" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
@@ -81,7 +78,6 @@
       <arg value="package" />
       <arg value="-Dmaven.test.skip=true" />
       <arg value="-Pnuxeo-dm" />
-      <arg value="-N" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
@@ -161,7 +157,6 @@
       <arg value="${nuxeo.ear.root}/pom.xml" />
       <arg value="-Djboss.lib=${jboss.lib}" />
       <arg value="dependency:copy" />
-      <arg value="-N" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
@@ -174,7 +169,6 @@
       <arg value="${nuxeo.ear.root}/pom.xml" />
       <arg value="-Djboss.lib=${jboss.lib}" />
       <arg value="dependency:copy" />
-      <arg value="-N" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
