@@ -123,24 +123,41 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     protected String origUserName;
 
+    /**
+     * Constructor that sets principal to not anonymous, not administrator, and
+     * updates all the principal groups
+     */
     public NuxeoPrincipalImpl(String name) throws ClientException {
         this(name, false, false);
     }
 
+    /**
+     * Constructor that sets principal to not administrator, and updates all the
+     * principal groups
+     */
     public NuxeoPrincipalImpl(String name, boolean isAnonymous)
             throws ClientException {
         this(name, isAnonymous, false);
     }
 
+    /**
+     * Constructor that updates all the principal groups
+     */
     public NuxeoPrincipalImpl(String name, boolean isAnonymous,
             boolean isAdministrator) throws ClientException {
+        this(name, isAnonymous, isAdministrator, true);
+    }
+
+    public NuxeoPrincipalImpl(String name, boolean isAnonymous,
+            boolean isAdministrator, boolean updateAllGroups)
+            throws ClientException {
         DocumentModelImpl documentModelImpl = new DocumentModelImpl(SCHEMA_NAME);
         // schema name hardcoded default when setModel is never called
         // which happens when a principal is created just to encapsulate
         // a username
         documentModelImpl.addDataModel(new DataModelImpl(SCHEMA_NAME,
                 new HashMap<String, Object>()));
-        setModel(documentModelImpl);
+        setModel(documentModelImpl, updateAllGroups);
         dataModel.setData(USERNAME_COLUMN, name);
         this.isAnonymous = isAnonymous;
         this.isAdministrator = isAdministrator;
@@ -311,10 +328,20 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         return model;
     }
 
-    public void setModel(DocumentModel model) throws ClientException {
+    /**
+     * Sets model and recomputes all groups
+     */
+    public void setModel(DocumentModel model, boolean updateAllGroups)
+            throws ClientException {
         this.model = model;
         dataModel = model.getDataModels().values().iterator().next();
-        updateAllGroups();
+        if (updateAllGroups) {
+            updateAllGroups();
+        }
+    }
+
+    public void setModel(DocumentModel model) throws ClientException {
+        setModel(model, true);
     }
 
     public boolean isMemberOf(String group) {
@@ -384,10 +411,20 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         return virtualGroups;
     }
 
+    public void setVirtualGroups(List<String> virtualGroups,
+            boolean updateAllGroups) throws ClientException {
+        this.virtualGroups = new ArrayList<String>(virtualGroups);
+        if (updateAllGroups) {
+            updateAllGroups();
+        }
+    }
+
+    /**
+     * Sets virtual groups and recomputes all groups
+     */
     public void setVirtualGroups(List<String> virtualGroups)
             throws ClientException {
-        this.virtualGroups = new ArrayList<String>(virtualGroups);
-        updateAllGroups();
+        setVirtualGroups(virtualGroups, true);
     }
 
     public boolean isAdministrator() {

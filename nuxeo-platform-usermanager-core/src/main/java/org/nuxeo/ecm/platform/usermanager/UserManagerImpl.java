@@ -385,10 +385,10 @@ public class UserManagerImpl implements UserManager {
         }
 
         NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(username,
-                anonymous, admin);
+                anonymous, admin, false);
 
-        principal.setModel(userEntry);
-        principal.setVirtualGroups(virtualGroups);
+        principal.setModel(userEntry, false);
+        principal.setVirtualGroups(virtualGroups, true);
 
         // TODO: reenable roles initialization once we have a use case for
         // a role directory. In the mean time we only set the JBOSS role
