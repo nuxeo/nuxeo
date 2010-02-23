@@ -58,7 +58,7 @@ public class NXMakeRequestHandler extends MakeRequestHandler {
       HttpRequest req) {
 
     super.setRequestHeaders(servletRequest, req);
-    String sessionId = servletRequest.getHeader(AUTH_SESSION_HEADER);
+    String sessionId = req.getHeader(AUTH_SESSION_HEADER);
     if (sessionId != null) {
       req.addHeader("Cookie", "JSESSIONID=" + sessionId);
     }
