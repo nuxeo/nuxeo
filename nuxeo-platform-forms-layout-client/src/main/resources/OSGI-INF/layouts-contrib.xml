@@ -5,8 +5,7 @@
     Component that provides main contributions to the web layout manager widget
     types.
 
-    @version 1.0
-    @author Anahide Tchertchian (at@nuxeo.com)
+    @version 1.0 @author Anahide Tchertchian (at@nuxeo.com)
   </documentation>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -172,27 +171,29 @@
         iterating over items in other modes.
       </documentation>
       <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.ListWidgetTypeHandler
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
+      <property name="template">/widgets/list_widget_template.xhtml</property>
     </widgetType>
 
     <widgetType name="checkbox">
       <documentation>
-        The checkbox widget displays a checkbox in create, edit and any
-        other mode, with additional message tag for errors.
+        The checkbox widget displays a checkbox in create, edit and any other
+        mode, with additional message tag for errors.
 
         Widgets using this type can provide properties accepted on a
-        &lt;h:selectBooleanCheckbox /&gt; tag in create, edit mode, and other modes.
+        &lt;h:selectBooleanCheckbox /&gt; tag in create, edit mode, and other
+        modes.
       </documentation>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.CheckboxWidgetTypeHandler
       </handler-class>
     </widgetType>
-    
+
     <widgetType name="hidden">
       <documentation>
-        The hidden widget is for a hidden field in create, edit and any
-        other mode, with additional message tag for errors.
+        The hidden widget is for a hidden field in create, edit and any other
+        mode, with additional message tag for errors.
 
         Widgets using this type can provide properties accepted on a
         &lt;h:inputHidden /&gt; tag in create, edit mode, and other modes.

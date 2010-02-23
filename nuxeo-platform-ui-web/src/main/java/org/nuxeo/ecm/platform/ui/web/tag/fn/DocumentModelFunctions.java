@@ -222,7 +222,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (document != null) {
             TypeInfo typeInfo = document.getAdapter(TypeInfo.class);
             if (typeInfo != null) {
-                iconPath = typeInfo.getIcon();
+                iconPath = typeInfo.getBigIcon();
             }
         }
         return iconPath;

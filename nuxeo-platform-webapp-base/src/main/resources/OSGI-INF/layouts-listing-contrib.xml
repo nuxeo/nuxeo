@@ -1,0 +1,431 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layouts.webapp.listing">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="listing_selection_box_with_current_document">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_selection_box_with_current_document_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_selection_box">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_selection_box_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_icon_type">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_icon_type_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_big_icon_type">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_big_icon_type_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_title_link">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_title_link_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_lock_icon">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_lock_icon_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_author">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_author_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_lifecycle">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_lifecycle_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_livedit_link">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_livedit_link_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_version">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_version_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="listing_selection_box_with_current_document"
+      type="listing_selection_box_with_current_document">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field></field>
+      </fields>
+    </widget>
+
+    <widget name="listing_selection_box" type="listing_selection_box">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field></field>
+      </fields>
+    </widget>
+
+    <widget name="listing_icon_type" type="listing_icon_type">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>data</field>
+        <field>data.ref</field>
+        <field>data.type</field>
+        <field>data.folder</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_big_icon_type" type="listing_big_icon_type">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>data</field>
+        <field>data.ref</field>
+        <field>data.type</field>
+        <field>data.folder</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_title_link" type="listing_title_link">
+      <labels>
+        <label mode="any">label.content.header.title</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+        <field>data.ref</field>
+        <field>data.dc.description</field>
+        <field>data.file.content</field>
+        <field>data.file.filename</field>
+      </fields>
+      <properties mode="any">
+        <property name="file_property_name">file:content</property>
+        <property name="file_schema">file</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_lock_icon" type="listing_lock_icon">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>data.lock</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_modification_date" type="datetime">
+      <labels>
+        <label mode="any">label.content.header.modified</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.modified</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_author" type="listing_author">
+      <labels>
+        <label mode="any">label.content.header.author</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dublincore.creator</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_lifecycle" type="listing_lifecycle">
+      <labels>
+        <label mode="any">label.content.header.currentLifecycleState</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.currentLifeCycleState</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_livedit_link" type="listing_livedit_link">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>data</field>
+      </fields>
+      <properties mode="any">
+        <property name="file_schema">file</property>
+        <property name="file_field_name">content</property>
+        <property name="filename_field_name">filename</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_version" type="listing_version">
+      <labels>
+        <label mode="any">label.version</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="document_listing">
+      <templates>
+        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="isListingSelectionBoxWithCurrentDocument">
+              true
+            </property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_selection_box_with_current_document</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+          </properties>
+          <widget>listing_title_link</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_lock_icon</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:modified</property>
+          </properties>
+          <widget>listing_modification_date</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:creator</property>
+          </properties>
+          <widget>listing_author</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="isSortable">false</property>
+          </properties>
+          <widget>listing_version</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">
+              ecm:currentLifeCycleState
+            </property>
+          </properties>
+          <widget>listing_lifecycle</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_livedit_link</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="document_virtual_navigation_listing">
+      <templates>
+        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="isListingSelectionBox">true</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_selection_box</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+          </properties>
+          <widget>listing_title_link</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_lock_icon</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:modified</property>
+          </properties>
+          <widget>listing_modification_date</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:creator</property>
+          </properties>
+          <widget>listing_author</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_version</widget>
+        </row>
+        <row>
+          <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          <property name="sortPropertyName">ecm:currentLifeCycleState</property>
+          <widget>listing_lifecycle</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_livedit_link</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="document_listing_compact_2_columns">
+      <templates>
+        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_selection_box_with_current_document</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </row>
+        <row>
+          <widget>listing_title_link</widget>
+          <widget>listing_modification_date</widget>
+          <widget>listing_author</widget>
+          <widget>listing_lifecycle</widget>
+          <widget>listing_version</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="document_listing_icon_2_columns">
+      <templates>
+        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>listing_selection_box_with_current_document</widget>
+        </row>
+        <row>
+          <widget>listing_big_icon_type</widget>
+        </row>
+        <row>
+          <widget>listing_title_link</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+</component>

@@ -96,32 +96,9 @@ public class LayoutDescriptor implements LayoutDefinition {
         return widgets.get(name);
     }
 
-    private static Map<String, Serializable> getProperties(
-            Map<String, PropertiesDescriptor> map, String mode) {
-        if (map == null) {
-            return null;
-        }
-        PropertiesDescriptor defaultProps = map.get(BuiltinModes.ANY);
-        PropertiesDescriptor props = map.get(mode);
-
-        if (defaultProps == null && props == null) {
-            return null;
-        } else if (defaultProps == null) {
-            return props.getProperties();
-        } else if (props == null) {
-            return defaultProps.getProperties();
-        } else {
-            // take any mode values, and override with given mode values
-            Map<String, Serializable> res = new HashMap<String, Serializable>(
-                    defaultProps.getProperties());
-            res.putAll(props.getProperties());
-            return res;
-        }
-    }
-
     public Map<String, Serializable> getProperties(String layoutMode) {
-        Map<String, Serializable> modeProps = getProperties(properties,
-                layoutMode);
+        Map<String, Serializable> modeProps = WidgetDescriptor.getProperties(
+                properties, layoutMode);
         return modeProps;
     }
 

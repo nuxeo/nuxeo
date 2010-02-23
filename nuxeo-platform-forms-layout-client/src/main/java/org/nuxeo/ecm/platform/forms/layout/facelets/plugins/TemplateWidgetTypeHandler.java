@@ -70,10 +70,12 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         String widgetId = widget.getId();
         TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
         TagAttribute templateAttr = getTemplateAttribute(helper);
-        if (templateAttr != null) {
-            attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                    templateAttr);
+        if (templateAttr == null) {
+            templateAttr = helper.createAttribute(TEMPLATE_PROPERTY_NAME,
+                    template);
         }
+        attributes = FaceletHandlerHelper.addTagAttribute(attributes,
+                templateAttr);
         TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
                 attributes, getNextHandler(ctx, tagConfig, helper, widget));
         return new DecorateHandler(config);
@@ -113,7 +115,13 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
      * Returns the template value.
      */
     protected String getTemplateValue(Widget widget) {
-        return (String) widget.getProperty(TEMPLATE_PROPERTY_NAME);
+        // lookup in the widget type configuration
+        String template = getProperty(TEMPLATE_PROPERTY_NAME);
+        if (template == null) {
+            // lookup in the widget configuration
+            template = (String) widget.getProperty(TEMPLATE_PROPERTY_NAME);
+        }
+        return template;
     }
 
     /**

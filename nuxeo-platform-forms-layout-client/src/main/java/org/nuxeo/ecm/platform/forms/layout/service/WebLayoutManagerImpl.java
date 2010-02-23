@@ -424,12 +424,12 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                 widgets.add(widget);
             }
             if (!emptyRow) {
-                rows.add(new LayoutRowImpl(widgets));
+                rows.add(new LayoutRowImpl(widgets, rowDef.getProperties(mode)));
             }
         }
         int columns = lDef.getColumns();
         Layout layout = new LayoutImpl(lDef.getName(), mode,
-                lDef.getTemplate(mode), rows, columns);
+                lDef.getTemplate(mode), rows, columns, lDef.getProperties(mode));
         return layout;
     }
 

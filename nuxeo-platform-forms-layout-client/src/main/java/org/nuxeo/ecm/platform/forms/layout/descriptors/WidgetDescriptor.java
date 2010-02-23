@@ -132,14 +132,13 @@ public class WidgetDescriptor implements WidgetDefinition {
         return translated;
     }
 
-    private static Map<String, Serializable> getProperties(
+    public static Map<String, Serializable> getProperties(
             Map<String, PropertiesDescriptor> map, String mode) {
         if (map == null) {
             return null;
         }
         PropertiesDescriptor defaultProps = map.get(BuiltinModes.ANY);
         PropertiesDescriptor props = map.get(mode);
-        // XXX add widgetModes properties
 
         if (defaultProps == null && props == null) {
             return null;

@@ -19,7 +19,12 @@
 
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
 
@@ -37,12 +42,21 @@ public class LayoutRowDescriptor implements LayoutRowDefinition {
     @XNodeList(value = "widget", type = String[].class, componentType = String.class)
     String[] widgets = new String[0];
 
+    @XNodeMap(value = "properties", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
+    Map<String, PropertiesDescriptor> properties = new HashMap<String, PropertiesDescriptor>();
+
     public int getSize() {
         return widgets.length;
     }
 
     public String[] getWidgets() {
         return widgets;
+    }
+
+    public Map<String, Serializable> getProperties(String layoutMode) {
+        Map<String, Serializable> modeProps = WidgetDescriptor.getProperties(
+                properties, layoutMode);
+        return modeProps;
     }
 
 }

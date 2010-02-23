@@ -13,5 +13,6 @@ Nuxeo-Component: OSGI-INF/nxtreemanager-framework.xml,
  OSGI-INF/documentslists-framework.xml,
  OSGI-INF/resultsprovider-framework.xml,
  OSGI-INF/seamremotingjsbuilder-contrib.xml,
- OSGI-INF/layouts-contrib.xml
+ OSGI-INF/layouts-contrib.xml,
+ OSGI-INF/layouts-listing-contrib.xml
 Require-Bundle: org.nuxeo.ecm.platform.ui

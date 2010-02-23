@@ -52,6 +52,15 @@
     </function-signature>
   </function>
   <function>
+    <function-name>bigIconPath</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String bigIconPath(org.nuxeo.ecm.core.api.DocumentModel)
+    </function-signature>
+  </function>
+  <function>
     <function-name>fileIconPath</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions

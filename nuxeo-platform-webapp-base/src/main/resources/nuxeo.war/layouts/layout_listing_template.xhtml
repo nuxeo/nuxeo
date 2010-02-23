@@ -1,0 +1,83 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  id="#{layout.id}">
+
+<c:if test="false">
+  Layout template applying to an item instance of SelectDataModel named "documents"
+  
+  Other needed parameters are:
+  - provider: instance of a ResultProvider to handle sort
+  - layoutListingStatus: iteration status, used to print table header
+    matching widget label.
+</c:if>
+
+<c:if test="#{showListingHeader and layout.properties.showListingHeader}">
+  <thead>
+    <tr>
+      <nxl:layoutRow>
+        <th>
+          <c:choose>
+            <c:when test="#{layoutRow.properties.isListingSelectionBox}">
+              <h:selectBooleanCheckbox id="#{layoutRow.widgets[0].name}_header"
+                onclick="selectDataTablePageForDocument('#{documents.name}', '#{provider.name}', this.checked, '#{listName}', '#{currentDocument.ref}')"
+                title="#{messages['tooltip.content.select.all']}" />
+            </c:when>
+            <c:when test="#{layoutRow.properties.isListingSelectionBoxWithCurrentDocument}">
+              <h:selectBooleanCheckbox id="#{layoutRow.widgets[0].name}_header"
+                onclick="selectDataTablePage('#{documents.name}', '#{provider.name}', this.checked, '#{listName}')"
+                title="#{messages['tooltip.content.select.all']}" />
+            </c:when>
+            <c:when test="#{layoutRow.properties.useFirstWidgetLabelAsColumnHeader}">
+              <c:choose>
+                <c:when test="#{provider.sortable and !empty layoutRow.properties.sortPropertyName}">
+                  <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
+                    id="#{layoutRow.widgets[0].name}_header_sort">
+                    <f:param name="providerName" value="#{provider.name}" />
+                    <f:param name="sortColumn" value="#{layoutRow.properties.sortPropertyName}" />
+                    <h:outputText value="#{layoutRow.widgets[0].label}"
+                      rendered="#{!layoutRow.widgets[0].translated}" />
+                    <h:outputText value="#{messages[layoutRow.widgets[0].label]}"
+                      rendered="#{layoutRow.widgets[0].translated}" />
+                    <c:if test="#{provider.sortInfo.sortColumn == layoutRow.properties.sortPropertyName}" >
+                      <h:graphicImage value="/icons/arrow_down.gif"
+                        rendered="#{provider.sortInfo.sortAscending}" />
+                      <h:graphicImage value="/icons/arrow_up.gif"
+                        rendered="#{!provider.sortInfo.sortAscending}" />
+                    </c:if>
+                  </h:commandLink>
+                </c:when>
+                <c:otherwise>
+                  <h:outputText value="#{layoutRow.widgets[0].label}"
+                    rendered="#{!layoutRow.widgets[0].translated}" />
+                  <h:outputText value="#{messages[layoutRow.widgets[0].label]}"
+                    rendered="#{layoutRow.widgets[0].translated}" />
+                </c:otherwise>
+              </c:choose>
+            </c:when>
+          </c:choose>
+        </th>
+      </nxl:layoutRow>
+    </tr>
+  </thead>
+</c:if>
+
+<c:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
+<tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')}">
+  <nxl:layoutRow>
+    <td class="#{layoutRow.properties.columnStyleClass}">
+      <nxl:layoutRowWidget>
+        <nxl:widget widget="#{widget}" mode="view" value="#{value}" />
+        <c:if test="#{layoutRow.size > 1 and layoutRow.size > widgetIndex + 1 and widgetIndex > 0}">
+          <br />
+        </c:if>
+      </nxl:layoutRowWidget>
+    </td>
+  </nxl:layoutRow>
+</tr>
+
+</f:subview>

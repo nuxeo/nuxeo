@@ -28,7 +28,11 @@ import com.sun.facelets.tag.TagAttribute;
  * List widget type, using a fixed template.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * @deprecated widget type can be declared as using
+ *             {@link TemplateWidgetTypeHandler} class, seeting property value
+ *             in XML configuration.
  */
+@Deprecated
 public class ListWidgetTypeHandler extends TemplateWidgetTypeHandler {
 
     private static final long serialVersionUID = 6886289896957398368L;
