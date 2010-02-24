@@ -36,4 +36,8 @@ public class ConversionException extends ClientException {
         super(message);
     }
 
+    public ConversionException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }
