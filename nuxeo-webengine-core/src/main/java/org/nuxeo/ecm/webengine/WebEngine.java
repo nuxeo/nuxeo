@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
+import org.nuxeo.ecm.webengine.app.impl.DefaultApplicationManager;
 import org.nuxeo.ecm.webengine.debug.ReloadManager;
 import org.nuxeo.ecm.webengine.loader.WebLoader;
 import org.nuxeo.ecm.webengine.model.Module;
@@ -142,6 +143,10 @@ public class WebEngine implements ResourceLocator {
 
     protected ReloadManager reloadMgr;
 
+    public WebEngine(File root) {
+        this (new EmptyRegistry(), root);
+    }
+    
     public WebEngine(ResourceRegistry registry, File root) {
         this.registry = registry;
         this.root = root;
@@ -150,7 +155,7 @@ public class WebEngine implements ResourceLocator {
             reloadMgr = new ReloadManager(this);
         }
         webLoader = new WebLoader(this);
-        apps = new SimpleApplicationManager(this);
+        apps = new DefaultApplicationManager(this);
         scripting = new Scripting(webLoader);
         annoMgr = new AnnotationManager();
 
@@ -303,6 +308,11 @@ public class WebEngine implements ResourceLocator {
      * request will be made.
      */
     public void registerModule(File config) {
+        registerModule(config, true);
+    }
+    
+    public void registerModule(File config, boolean addToClassPath) {
+        getWebLoader().addClassPathElement(config.getParentFile());
         registeredModules.add(config);
         if (moduleMgr != null) { // avoid synchronizing if not needed
             synchronized (this) {

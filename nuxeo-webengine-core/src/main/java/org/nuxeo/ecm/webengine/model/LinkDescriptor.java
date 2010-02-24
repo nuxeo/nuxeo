@@ -197,6 +197,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
         return false;
     }
 
+    //TODO: here we are using absolute paths -> will be better to use relative paths?
     public String getCode(LinkDescriptor link, Resource resource) {
         if (adapter != ResourceType.ROOT_TYPE_NAME) {
             return new StringBuilder().append(resource.getActiveAdapter().getPath()).append(path).toString();

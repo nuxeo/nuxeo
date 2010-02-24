@@ -59,7 +59,16 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         this.ctx = ctx;
         this.type = (T)type;
         path = ctx.getUriInfo().getMatchedURIs().get(0);
-        path = new StringBuilder().append(ctx.getBasePath()).append(path).toString();
+        // avoid paths ending in / -> this will mess-up URLs in FTL files. 
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length()-1); 
+        }
+        // resteasy is not returning correct paths - that should be relative as is JAX-RS specs - on resteasy paths begin with a /)
+        StringBuilder buf = new StringBuilder(64).append(ctx.getBasePath());        
+        if (!path.startsWith("/")) {
+            buf.append('/');
+        }            
+        path = buf.append(path).toString();
         if (!this.type.getGuard().check(this)) {
             throw new WebSecurityException(
                     "Failed to initialize object: " + path + ". Object is not accessible in the current context",

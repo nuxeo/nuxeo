@@ -14,41 +14,25 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine;
+package org.nuxeo.ecm.webengine.app.annotations;
 
-import javax.ws.rs.core.Application;
-
-import org.osgi.framework.Bundle;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Temporary implementation for the application manager.
- * For now this implementation does nothing 
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SimpleApplicationManager implements ApplicationManager {
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ResourceExtensions {
 
-    protected WebEngine engine;
-    
-    public SimpleApplicationManager(WebEngine engine) {
-        this.engine = engine;
-    }
-    
-    public void addApplication(Bundle bundle, Application app) {
-        
-    }
-    
-    public void removeApplication(Bundle bundle) {
-        
-    }
-
-    public void reload() {
-        
-    }
-    
-    public boolean deployApplication(Bundle bundle) throws Exception {
-        return false;
-    }
+    /**
+     * An array of resource extension classes (i.e. resources annotated with {@link ResourceExtension})
+     * @return
+     */
+    Class<?>[] value();
     
 }

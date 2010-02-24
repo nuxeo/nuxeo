@@ -92,14 +92,17 @@ public class WebEngineComponent extends DefaultComponent { // implements
         root = root.getCanonicalFile();
         log.info("Using web root: " + root);
 
-        ResourceRegistry registry = Framework
-                .getLocalService(ResourceRegistry.class);
-        if (registry == null) {
-            throw new Error("Could not find a server implementation");
-        }
-        // use root.war as war directory
-        engine = new WebEngine(registry, new File(root, "root.war"));
+// this should be removed         
+//        ResourceRegistry registry = Framework
+//                .getLocalService(ResourceRegistry.class);
+//        if (registry == null) {
+//            throw new Error("Could not find a server implementation");
+//        }
+//        // use root.war as war directory
+//        engine = new WebEngine(registry, new File(root, "root.war"));
 
+        engine = new WebEngine(new File(root, "root.war"));
+        
         // start deploying web bundles
         final RuntimeContext ctx = context.getRuntimeContext();
         BundleContext bc = bundle.getBundleContext();

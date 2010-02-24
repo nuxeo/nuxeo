@@ -18,6 +18,8 @@ package org.nuxeo.ecm.webengine;
 
 import javax.ws.rs.core.Application;
 
+import org.nuxeo.ecm.webengine.app.BundledApplication;
+import org.nuxeo.ecm.webengine.app.ModuleHandler;
 import org.osgi.framework.Bundle;
 
 /**
@@ -30,17 +32,17 @@ public interface ApplicationManager {
     
     public void removeApplication(Bundle bundle);
     
-//    public BundledApplication getApplication(String bundleId);
-//
-//    public BundledApplication[] getApplications();
-//    
-//    public ModuleHandler getModuleHandler(String appId);
-//
-//    public ModuleHandler[] getModuleHandlers();
-//
-//    public Object getContribution(Object target, String key) throws Exception;
-//
-//    public ModuleHandler getModuleHandlerFor(Class<?> rootResource);
+    public BundledApplication getApplication(String bundleId);
+
+    public BundledApplication[] getApplications();
+    
+    public ModuleHandler getModuleHandler(String appId);
+
+    public ModuleHandler[] getModuleHandlers();
+
+    public Object getContribution(Object target, String key) throws Exception;
+
+    public ModuleHandler getModuleHandlerFor(Class<?> rootResource);
 
     /**
      * Reload modules - this is useful for hot reload when application classes changes  

@@ -369,7 +369,9 @@ public abstract class AbstractWebContext implements WebContext {
             path = "/nuxeo/site"; // for testing
         }
         buf.append(path).append(request.getServletPath());
-
+        if ("/".equals(path)) {
+            return "";
+        }
         int len = buf.length();
         if (len > 0 && buf.charAt(len - 1) == '/') {
             buf.setLength(len - 1);

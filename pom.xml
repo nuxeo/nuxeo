@@ -18,7 +18,7 @@
   </description>
 
   <modules>
-    <module>nuxeo-webengine-resteasy-adapter</module>
+    <!--module>nuxeo-webengine-resteasy-adapter</module-->
     <module>nuxeo-webengine-core</module>
     <module>nuxeo-webengine-gwt</module>
     <module>nuxeo-webengine-ui</module>

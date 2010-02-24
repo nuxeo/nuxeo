@@ -131,7 +131,6 @@ public class ModuleManager {
 
     public void loadModule(File file) {
         ModuleConfiguration md = loadConfiguration(file);
-        engine.getWebLoader().addClassPathElement(md.directory);
         // this should be called after the class path is updated ...
         loadModuleRootResources(md);
         md.setEngine(engine);
