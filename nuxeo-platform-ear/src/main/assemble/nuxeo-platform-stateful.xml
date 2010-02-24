@@ -151,8 +151,9 @@
       <artifact group="com.sun.facelets" name="jsf-facelets" />
       <!-- Nuxeo-WebEngine fixed libs -->
       <artifact group="org.codehaus.groovy" name="groovy-all" />
-      <artifact group="org.jboss.resteasy" name="resteasy-jaxrs" />
-      <artifact group="org.jboss.resteasy" name="jaxrs-api" />
+      <artifact group="com.sun.jersey" name="jersey-core" version="1.1.5" />
+      <artifact group="com.sun.jersey" name="jersey-server" version="1.1.5" />
+      <artifact group="javax.ws.rs" name="jsr311-api" version="1.1.1" />
       <artifact group="javax.script" name="script-api" />
       <!-- JOD / OOo libs and other converters deps-->
       <artifact group="com.artofsolving" name="jodconverter" />

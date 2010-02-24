@@ -51,15 +51,15 @@
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-convert-plugins" />
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-event" />
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql" />
-      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql-extensions" />      
-      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql-ra" />      
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql-extensions" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-storage-sql-ra" />
 
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-web-common" />
       <!-- needed for UserIdentificationInfo - must be moved in web-common -->
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-api" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-login" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-dublincore" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-content-template-manager" />      
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-content-template-manager" />
     </artifacts>
   </artifactSet>
 
@@ -99,8 +99,6 @@
   <artifactSet id="webengine-bundles" profile="webengine">
     <artifacts>
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-core"
-        version="${nuxeo.webengine.version}" />
-      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-resteasy-adapter"
         version="${nuxeo.webengine.version}" />
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-admin"
         version="${nuxeo.webengine.version}" />
@@ -158,9 +156,9 @@
       <artifact group="org.apache.lucene" name="lucene-analyzers" />
       <artifact group="commons-collections" name="commons-collections" />
       <artifact group="concurrent" name="concurrent" />
-      <artifact group="org.jboss.resteasy" name="resteasy-jaxrs"
-        version="1.0.2.GA-nx" />
-      <artifact group="org.jboss.resteasy" name="jaxrs-api" version="1.0.2.GA" />
+      <artifact group="com.sun.jersey" name="jersey-core" version="1.1.5" />
+      <artifact group="com.sun.jersey" name="jersey-server" version="1.1.5" />
+      <artifact group="javax.ws.rs" name="jsr311-api" version="1.1.1" />
       <artifact group="javax.mail" name="mail" version="1.4" />
       <artifact group="org.apache.poi" name="ooxml-schemas" />
       <artifact group="org.apache.poi" name="poi" />
@@ -172,10 +170,10 @@
       <artifact group="com.hp.hpl.jena" name="jena" />
       <artifact group="javassist" name="javassist" version="3.6"/>
       <artifact group="com.h2database" name="h2" />
-      
+
       <artifact group="javax.ejb" name="ejb-api" />
       <artifact group="javax.servlet" name="servlet-api" />
-      
+
     </artifacts>
   </artifactSet>
 
