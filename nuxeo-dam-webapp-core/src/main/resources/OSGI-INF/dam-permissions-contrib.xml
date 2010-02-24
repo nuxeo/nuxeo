@@ -2,7 +2,7 @@
 <component name="org.nuxeo.dam.permissions">
 
   <require>org.nuxeo.ecm.core.security.defaultPermissions</require>
-  
+
   <extension target="org.nuxeo.ecm.core.security.SecurityService"
     point="permissions">
 
@@ -14,9 +14,9 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.core.security.SecurityService" 
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
   	point="permissionsVisibility">
-    <visibility type="Workspace">
+    <visibility type="ImportFolder">
       <item show="true" order="10">Read</item>
       <item show="true" order="30">Write</item>
     </visibility>

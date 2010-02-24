@@ -63,7 +63,6 @@ public class TestInitPropertiesListener extends SQLRepositoryJUnit4 {
         assertNotNull(importSet);
         session.saveDocument(importSet);
         session.save();
-        assertTrue(importSet.hasFacet("SuperSpace"));
 
         // File document
         DocumentModel file = session.createDocumentModel(
@@ -74,11 +73,11 @@ public class TestInitPropertiesListener extends SQLRepositoryJUnit4 {
         session.save();
         assertTrue(file.hasSchema("dam_common"));
         assertTrue(file.hasSchema("dublincore"));
-        assertEquals(file.getPropertyValue("damc:author"), "testCreator");
-        assertEquals(file.getPropertyValue("damc:authoringDate"), cal);
-        assertEquals(file.getPropertyValue("dc:description"), "testDescription");
-        assertEquals(file.getPropertyValue("dc:coverage"), "testCoverage");
-        assertEquals(file.getPropertyValue("dc:expired"), cal);
+        assertEquals("testCreator", file.getPropertyValue("damc:author"));
+        assertEquals(cal, file.getPropertyValue("damc:authoringDate"));
+        assertEquals("testDescription", file.getPropertyValue("dc:description"));
+        assertEquals("testCoverage", file.getPropertyValue("dc:coverage"));
+        assertEquals(cal, file.getPropertyValue("dc:expired"));
 
         // Picture document
         DocumentModel picture = session.createDocumentModel(
@@ -89,11 +88,11 @@ public class TestInitPropertiesListener extends SQLRepositoryJUnit4 {
         session.save();
         assertTrue(picture.hasSchema("dam_common"));
         assertTrue(picture.hasSchema("dublincore"));
-        assertEquals(picture.getPropertyValue("damc:author"), "testCreator");
-        assertEquals(picture.getPropertyValue("damc:authoringDate"), cal);
-        assertEquals(picture.getPropertyValue("dc:description"), "testDescription");
-        assertEquals(picture.getPropertyValue("dc:coverage"), "testCoverage");
-        assertEquals(picture.getPropertyValue("dc:expired"), cal);
+        assertEquals("testCreator", picture.getPropertyValue("damc:author"));
+        assertEquals(cal, picture.getPropertyValue("damc:authoringDate"));
+        assertEquals("testDescription", picture.getPropertyValue("dc:description"));
+        assertEquals("testCoverage", picture.getPropertyValue("dc:coverage"));
+        assertEquals(cal, picture.getPropertyValue("dc:expired"));
     }
 
     @After

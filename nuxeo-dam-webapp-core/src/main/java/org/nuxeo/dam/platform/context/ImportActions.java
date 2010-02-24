@@ -17,8 +17,6 @@
 
 package org.nuxeo.dam.platform.context;
 
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
-
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,6 +37,7 @@ import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.dam.core.Constants;
 import org.nuxeo.dam.webapp.filter.FilterActions;
 import org.nuxeo.dam.webapp.helper.DamEventNames;
 import org.nuxeo.ecm.core.api.Blob;
@@ -59,6 +58,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
 
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 @Name("importActions")
 @Scope(ScopeType.CONVERSATION)
 @Install(precedence = FRAMEWORK)
@@ -68,9 +69,8 @@ public class ImportActions implements Serializable {
 
     protected static final Log log = LogFactory.getLog(ImportActions.class);
 
-    public static final String BATCH_TYPE_NAME = "ImportSet";
-
-    public static final String IMPORTSET_ROOT_PATH = "/default-domain/import-sets";
+    public static final String IMPORT_ROOT_PATH = Framework.getProperty(
+            "import.root.path", "/default-domain/import-root");
 
     protected DocumentModel newImportSet;
 
@@ -110,7 +110,7 @@ public class ImportActions implements Serializable {
 
     public DocumentModel getNewImportSet() throws ClientException {
         if (newImportSet == null) {
-            newImportSet = documentManager.createDocumentModel(BATCH_TYPE_NAME);
+            newImportSet = documentManager.createDocumentModel(Constants.IMPORT_SET_TYPE);
 
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
                     "yyyyMMdd HH:mm");
@@ -134,7 +134,8 @@ public class ImportActions implements Serializable {
     protected DocumentModel createContainerFolder(String title)
             throws ClientException {
         DocumentModel folder = documentManager.createDocumentModel(
-                IMPORTSET_ROOT_PATH, IdUtils.generateId(title), "Workspace");
+                IMPORT_ROOT_PATH, IdUtils.generateId(title),
+                Constants.IMPORT_FOLDER_TYPE);
         folder.setPropertyValue("dc:title", title);
         folder = documentManager.createDocument(folder);
         documentManager.save();
@@ -181,12 +182,14 @@ public class ImportActions implements Serializable {
         // importset assets - his last import will be selected by default in the
         // filter.
         if (filterActions != null) {
-            List<SelectItem> userFolderSelectItems = filterActions.getUserFolderSelectItems();
-            if (userFolderSelectItems != null && !userFolderSelectItems.isEmpty()) {
-                String folderPath = (String) userFolderSelectItems.get(0).getValue();
+            List<SelectItem> userImportSetsSelectItems = filterActions.getUserImportSetsSelectItems();
+            if (userImportSetsSelectItems != null
+                    && !userImportSetsSelectItems.isEmpty()) {
+                String folderPath = (String) userImportSetsSelectItems.get(0).getValue();
                 DocumentModel filterDocument = filterActions.getFilterDocument();
                 if (filterDocument != null) {
-                    filterDocument.setPropertyValue(FilterActions.PATH_FIELD_XPATH, folderPath);
+                    filterDocument.setPropertyValue(
+                            FilterActions.PATH_FIELD_XPATH, folderPath);
                 }
             }
         }
@@ -238,13 +241,16 @@ public class ImportActions implements Serializable {
 
     public List<SelectItem> getImportFolders() throws ClientException {
         List<SelectItem> items = new ArrayList<SelectItem>();
-        if (documentManager.hasPermission(new PathRef(IMPORTSET_ROOT_PATH), SecurityConstants.ADD_CHILDREN)) {
-            items.add(new SelectItem(null, resourcesAccessor.getMessages().get("label.widget.newFolder")));
+        if (documentManager.hasPermission(new PathRef(IMPORT_ROOT_PATH),
+                SecurityConstants.ADD_CHILDREN)) {
+            items.add(new SelectItem(null, resourcesAccessor.getMessages().get(
+                    "label.widget.newFolder")));
         }
         DocumentModelList docs = queryModelActions.get("IMPORT_FOLDERS").getDocuments(
                 documentManager);
         for (DocumentModel doc : docs) {
-            if (documentManager.hasPermission(doc.getRef(), SecurityConstants.ADD_CHILDREN)) {
+            if (documentManager.hasPermission(doc.getRef(),
+                    SecurityConstants.ADD_CHILDREN)) {
                 items.add(new SelectItem(doc.getId(), doc.getTitle()));
             }
         }

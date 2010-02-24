@@ -13,7 +13,7 @@
   <a4j:region>
   <a4j:outputPanel id="filterFormPanel">
   <a4j:form id="filterForm">
-  
+
   <div class="actionBar">
     <a4j:commandButton id="filterFormClear"
       type="button"
@@ -21,7 +21,7 @@
       value="#{messages['label.action.filter.clear']}"
       action="#{filterActions.clearFilters}"
       reRender="filterFormPanel,filterResultTable,selectionView" eventsQueue="filterFormQueue" />
-      
+
     <!-- this bit needs to be outside the rich:panelMenu -->
     <a4j:commandButton id="filterFormSubmit" type="submit"
       styleClass="button" style="visibility: hidden"
@@ -31,8 +31,8 @@
   </div>
 
    <rich:panelMenu mode="none"
-     iconExpandedGroup="disc" iconCollapsedGroup="disc" 
-     iconExpandedTopGroup="chevronUp" iconGroupTopPosition="right" 
+     iconExpandedGroup="disc" iconCollapsedGroup="disc"
+     iconExpandedTopGroup="chevronUp" iconGroupTopPosition="right"
      iconCollapsedTopGroup="chevronDown" styleClass="filterBlock">
 
      <rich:panelMenuGroup label="#{messages['heading.filter.fulltext']}"
@@ -44,14 +44,14 @@
            requestDelay="1000" action="#{filterActions.invalidateProvider}"
            ignoreDupResponses="true" eventsQueue="filterFormQueue" />
        </h:inputText>
-     
+
      </rich:panelMenuGroup>
 
      <rich:panelMenuGroup label="#{messages['heading.filter.docType']}"
        expanded="true" id="docTypes">
-       
+
        <c:forEach varStatus="status" items="#{docTypeSelectItems}" var="item">
-       
+
          <rich:panelMenuItem label="#{messages[item.label]}" id="#{messages[item.value]}"
            styleClass="#{item.disabled ? 'selected' : ''}"
            mode="ajax" action="#{filterActions.toggleSelectDocType}"
@@ -59,7 +59,7 @@
            eventsQueue="filterFormQueue">
            <f:param name="docType" value="#{item.value}" />
          </rich:panelMenuItem>
-       
+
        </c:forEach>
 
      </rich:panelMenuGroup>
@@ -81,11 +81,11 @@
 
      </rich:panelMenuGroup>
 
-     <c:if test="#{!empty userFolderSelectItems}">  
+     <c:if test="#{!empty userImportSetsSelectItems}">
      <rich:panelMenuGroup label="#{messages['heading.filter.my.last.imports']}"
        expanded="true" id="myFolders">
 
-       <c:forEach varStatus="status" items="#{userFolderSelectItems}" var="item">
+       <c:forEach varStatus="status" items="#{userImportSetsSelectItems}" var="item">
 
          <rich:panelMenuItem label="#{item.label}"
            styleClass="#{item.disabled ? 'selected' : ''}"
@@ -132,7 +132,7 @@
 	    </rich:tree>
       </rich:panelMenuItem>
 
-    </rich:panelMenuGroup>            
+    </rich:panelMenuGroup>
 
      <rich:panelMenuGroup label="#{messages['heading.filter.coverage']}"
       expanded="true" id="coverageFilterPanel">
@@ -169,7 +169,7 @@
 
     <rich:panelMenuGroup label="#{messages['heading.filter.date']}"
        expanded="true" id="datePanel" styleClass="DateSearchBlock">
-      <rich:panelMenuItem mode="none" disabledClass="hiddenMenuIcon" disabled="true" id="dateRichPanelMenuItem">       
+      <rich:panelMenuItem mode="none" disabledClass="hiddenMenuIcon" disabled="true" id="dateRichPanelMenuItem">
       <table class="DateSelectors">
         <tr>
           <td class="labels">
@@ -198,7 +198,7 @@
 			</table>
 			</rich:panelMenuItem>
      </rich:panelMenuGroup>
-     
+
    </rich:panelMenu>
 
   </a4j:form>

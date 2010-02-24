@@ -78,7 +78,6 @@ public class TestImageFilenameUpdater extends SQLRepositoryJUnit4 {
         assertNotNull(importSet);
         session.saveDocument(importSet);
         session.save();
-        assertTrue(importSet.hasFacet("SuperSpace"));
 
         ArrayList<Map<String, Object>> pictureTemplates = new ArrayList<Map<String, Object>>();
         Map<String, Object> view = new HashMap<String, Object>();

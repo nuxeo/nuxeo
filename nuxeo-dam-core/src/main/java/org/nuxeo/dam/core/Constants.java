@@ -25,6 +25,10 @@ public interface Constants {
 
     String PICTURE_SCHEMA = "picture";
 
+    String IMPORT_ROOT_TYPE = "ImportRoot";
+
+    String IMPORT_FOLDER_TYPE = "ImportFolder";
+
     String IMPORT_SET_TYPE = "ImportSet";
 
 }

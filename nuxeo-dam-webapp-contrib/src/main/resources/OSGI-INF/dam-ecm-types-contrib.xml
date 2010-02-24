@@ -5,18 +5,37 @@
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
-    <type id="Folder">
-      <label>Folder</label>
+    <type id="ImportRoot">
+      <label>ImportRoot</label>
       <icon>/icons/folder.gif</icon>
       <bigIcon>/icons/folder_100.png</bigIcon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
       <category>Collaborative</category>
-      <description>Folder.description</description>
+      <description>ImportRoot.description</description>
       <default-view>view_documents</default-view>
       <subtypes>
-        <type>Folder</type>
-        <type>File</type>
-        <type>Note</type>
+        <type>ImportFolder</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+    </type>
+
+    <type id="ImportFolder">
+      <label>ImportFolder</label>
+      <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
+      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <category>Collaborative</category>
+      <description>ImportFolder.description</description>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>ImportFolder</type>
+        <type>ImportSet</type>
       </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
@@ -40,11 +59,34 @@
         <type>Picture</type>
         <type>Video</type>
         <type>Audio</type>
-        <type>Note</type>
       </subtypes>
       <layouts mode="any">
         <layout>importset_heading</layout>
         <layout>damc</layout>
+        <layout>dublincore</layout>
+      </layouts>
+    </type>
+
+    <type id="Folder">
+      <label>Folder</label>
+      <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
+      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <category>Collaborative</category>
+      <description>Folder.description</description>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Folder</type>
+        <type>File</type>
+        <type>Picture</type>
+        <type>Video</type>
+        <type>Audio</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
         <layout>dublincore</layout>
       </layouts>
     </type>

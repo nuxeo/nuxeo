@@ -24,12 +24,51 @@ import org.nuxeo.dam.core.Constants;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 public class InitPropertiesListener implements EventListener {
+
+    /**
+     * Used to find the first parent accessible by a user, ie. the first parent
+     * where the user has the READ permission.
+     */
+    protected static class AccessibleParentFinder extends UnrestrictedSessionRunner {
+
+        protected CoreSession userSession;
+
+        public DocumentModel doc = null;
+        public DocumentModel parent = null;
+
+        public AccessibleParentFinder(CoreSession session, DocumentModel doc) {
+            super(session);
+            this.userSession = session;
+            this.doc = doc;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            parent = getFirstParentAccessibleByUser(doc);
+        }
+
+        protected DocumentModel getFirstParentAccessibleByUser(DocumentModel doc) throws ClientException {
+            DocumentModel parent = session.getDocument(doc.getParentRef());
+            if (parent == null) {
+                return null;
+            }
+
+            if (userSession.hasPermission(parent.getRef(), SecurityConstants.READ)) {
+                return parent;
+            } else {
+                return getFirstParentAccessibleByUser(parent);
+            }
+        }
+
+    }
 
     protected static final String DUBLINCORE_DESCRIPTION = "dc:description";
 
@@ -48,9 +87,12 @@ public class InitPropertiesListener implements EventListener {
             if (doc.hasSchema(Constants.DAM_COMMON_SCHEMA)
                     && !Constants.IMPORT_SET_TYPE.equals(doc.getType())) {
 
-                DocumentModel parent = coreSession.getDocument(doc.getParentRef());
-                DocumentModel importSet = docCtx.getCoreSession().getSuperSpace(
-                        parent);
+                DocumentModel importSet = getImportSet(coreSession, doc);
+                if (importSet == null) {
+                    // there is no or no accessible importset parent, don't update
+                    // the document.
+                    return;
+                }
 
                 Map<String, Object> damMap = importSet.getDataModel(
                         Constants.DAM_COMMON_SCHEMA).getMap();
@@ -75,6 +117,31 @@ public class InitPropertiesListener implements EventListener {
                         importSetMap);
             }
         }
+    }
+
+    /**
+     * Returns the first {@code ImportSet} parent, or {@code null} if no parent
+     * is accessible.
+     *
+     * @param doc
+     */
+    protected DocumentModel getImportSet(CoreSession session, DocumentModel doc) throws ClientException {
+        if (Constants.IMPORT_SET_TYPE.equals(doc.getType())) {
+            return doc;
+        } else {
+            DocumentModel parent = getFirstAccessibleParent(session, doc);
+            if (parent == null) {
+                return null;
+            } else {
+                return getImportSet(session, parent);
+            }
+        }
+    }
+
+    protected DocumentModel getFirstAccessibleParent(CoreSession session, DocumentModel doc) throws ClientException {
+        AccessibleParentFinder finder = new AccessibleParentFinder(session, doc);
+        finder.runUnrestricted();
+        return finder.parent;
     }
 
 }

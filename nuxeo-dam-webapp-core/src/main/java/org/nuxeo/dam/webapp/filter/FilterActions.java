@@ -162,22 +162,22 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
     }
 
     // CB: DAM-392 - Create new filter widget for Importset
-    @Factory(value = "userFolderSelectItems", scope = ScopeType.EVENT)
-    public List<SelectItem> getUserFolderSelectItems() throws ClientException {
+    @Factory(value = "userImportSetsSelectItems", scope = ScopeType.EVENT)
+    public List<SelectItem> getUserImportSetsSelectItems() throws ClientException {
         DocumentModel filterDocument = getFilterDocument();
         String folderSelection = (String) filterDocument.getPropertyValue(PATH_FIELD_XPATH);
         List<SelectItem> items = new ArrayList<SelectItem>();
         String currentUser = documentManager.getPrincipal().getName();
-        DocumentModelList docs = queryModelActions.get("USER_IMPORT_FOLDERS").getDocuments(
+        DocumentModelList docs = queryModelActions.get("USER_IMPORT_SETS").getDocuments(
                 documentManager, new Object[] { currentUser });
-        List<DocumentModel> lastUserFolders;
+        List<DocumentModel> lastUserImportSets;
         if (docs.size() > 2) {
-            lastUserFolders = docs.subList(0, 3);
+            lastUserImportSets = docs.subList(0, 3);
         } else {
-            lastUserFolders = docs;
+            lastUserImportSets = docs;
         }
 
-        for (DocumentModel doc : lastUserFolders) {
+        for (DocumentModel doc : lastUserImportSets) {
             String docPath = doc.getPathAsString();
             items.add(new SelectItem(docPath, doc.getTitle(), "",
                     docPath.equals(folderSelection)));

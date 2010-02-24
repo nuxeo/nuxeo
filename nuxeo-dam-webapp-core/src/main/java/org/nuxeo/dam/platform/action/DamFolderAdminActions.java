@@ -18,7 +18,7 @@ package org.nuxeo.dam.platform.action;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
-import static org.nuxeo.dam.platform.context.ImportActions.IMPORTSET_ROOT_PATH;
+import static org.nuxeo.dam.platform.context.ImportActions.IMPORT_ROOT_PATH;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,6 +35,7 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.dam.core.Constants;
 import org.nuxeo.dam.webapp.helper.DamEventNames;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -60,10 +61,6 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
 public class DamFolderAdminActions implements Serializable {
-
-    protected static final String FOLDER_TYPE = "Workspace";
-
-    protected static final String VIEW_FOLDERS = "view_folders";
 
     protected static final long serialVersionUID = 1L;
 
@@ -146,8 +143,8 @@ public class DamFolderAdminActions implements Serializable {
     public DocumentModel getNewFolder() throws ClientException {
         if (newFolder == null) {
             newFolder = documentManager.createDocumentModel(
-                    IMPORTSET_ROOT_PATH, IdUtils.generateStringId(),
-                    FOLDER_TYPE);
+                    IMPORT_ROOT_PATH, IdUtils.generateStringId(),
+                    Constants.IMPORT_FOLDER_TYPE);
         }
         return newFolder;
     }
@@ -221,7 +218,7 @@ public class DamFolderAdminActions implements Serializable {
                 visiblePermissions = new ArrayList<String>();
                 SecurityService securityService = Framework.getService(SecurityService.class);
                 List<UserVisiblePermission> permDescriptors = securityService.getPermissionProvider().getUserVisiblePermissionDescriptors(
-                        FOLDER_TYPE);
+                        Constants.IMPORT_FOLDER_TYPE);
                 for (UserVisiblePermission pd : permDescriptors) {
                     visiblePermissions.add(pd.getPermission());
                 }

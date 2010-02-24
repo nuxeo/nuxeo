@@ -208,7 +208,7 @@ Hierarchy example:
                         |-image8
                         `-audio_file4
 
-type of the forder1 & forlder2 is now "Workspace" ( see DAM-423 )
+type of the folder1 & folder2 is now "ImportFolder"
 
 
 Blobs stored externally (default in VCS?).

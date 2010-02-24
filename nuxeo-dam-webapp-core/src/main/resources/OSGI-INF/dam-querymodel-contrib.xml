@@ -23,10 +23,10 @@
         <predicate parameter="dc:coverage" operator="STARTSWITH">
           <field schema="filter_query" name="dc_coverage" />
         </predicate>
-        
+
         <predicate parameter="damc:topic" operator="STARTSWITH">
           <field schema="filter_query" name="topic" />
-        </predicate>        
+        </predicate>
 
         <predicate parameter="ecm:path" operator="STARTSWITH">
           <field schema="filter_query" name="ecm_path" />
@@ -36,7 +36,7 @@
           <field schema="filter_query" name="created_min" />
           <field schema="filter_query" name="created_max" />
         </predicate>
-        
+
         <fixedPart>
           ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:mixinType != 'Folderish'
         </fixedPart>
@@ -52,9 +52,9 @@
       </sortAscending>
     </queryModel>
 
-    <queryModel name="USER_IMPORT_FOLDERS">
+    <queryModel name="USER_IMPORT_SETS">
       <pattern>
-        SELECT * FROM ImportSet WHERE ecm:path STARTSWITH '/default-domain/import-sets' and dc:creator = ?
+        SELECT * FROM Document WHERE ecm:primaryType = 'ImportSet' AND ecm:path STARTSWITH '/default-domain/import-root' and dc:creator = ?
       </pattern>
       <sortable value="true" defaultSortColumn="dc:created"
         defaultSortAscending="false" />
@@ -62,7 +62,7 @@
 
     <queryModel name="IMPORT_FOLDERS">
       <pattern>
-        SELECT * FROM Document WHERE ecm:primaryType = 'Workspace' AND ecm:path STARTSWITH '/default-domain/import-sets'
+        SELECT * FROM Document WHERE ecm:primaryType = 'ImportFolder' AND ecm:path STARTSWITH '/default-domain/import-root'
       </pattern>
       <sortable value="true" defaultSortColumn="dc:title"
         defaultSortAscending="true" />

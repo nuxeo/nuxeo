@@ -20,6 +20,7 @@ package org.nuxeo.dam.webapp.fileimporter;
 import java.io.File;
 
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.dam.core.Constants;
 import org.nuxeo.dam.platform.context.ImportActions;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -148,7 +149,7 @@ public class TestZipImporter extends SQLRepositoryJUnit4 {
         assertNotNull(defaultTitle);
         assertTrue(defaultTitle.startsWith("Administrator"));
 
-        DocumentModel importSetRoot = session.getDocument(new PathRef(ImportActions.IMPORTSET_ROOT_PATH));
+        DocumentModel importSetRoot = session.getDocument(new PathRef(ImportActions.IMPORT_ROOT_PATH));
         importActions.setImportFolder(importSetRoot.getId());
 
         File file = getTestFile("test-data/test.zip");
@@ -163,7 +164,7 @@ public class TestZipImporter extends SQLRepositoryJUnit4 {
         String title = (String) importSet.getProperty("dublincore", "title");
         String type = importSet.getType();
         assertEquals(title, "myimportset");
-        assertEquals(type, "ImportSet");
+        assertEquals(type, Constants.IMPORT_SET_TYPE);
 
         DocumentModelList children = session.getChildren(importSet.getRef());
         assertNotNull(children);
