@@ -101,7 +101,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
 
     protected DocumentModel putIfAbsent(String id, DocumentModel doc) {
         if (!cache.containsKey(id)) {
-            cache.put(id, doc);
+            return cache.put(id, doc);
         }
         return cache.get(id);
     }
