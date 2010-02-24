@@ -204,7 +204,7 @@ function mkRow(document, i) {
   } else if (document.type == "File"){
     var DLUrl = getDLUrl(document.name);
     htmlRow += "<td><a title=\"" + document.title
-        + "\" href=\"" + DLUrl + "\" />";
+        + "\" href=\"" + DLUrl + "\">";
     htmlRow += document.title + "</a></td>";
   } else {
     htmlRow +="<td>" + document.title + "</td>";
@@ -220,7 +220,8 @@ function mkRow(document, i) {
   htmlRow += getDateForDisplay(document.modified);
   htmlRow += "</td>";
   htmlRow += "<td class=\"iconColumn\">";
-  htmlRow += "<a class=\"deleteaction\" href=\"" + getResourceUrl() + document.name +"\" onclick=\"delete(this);\"><img src=\"/nuxeo/icons/action_delete_mini.gif\"></a>&nbsp;";
+  htmlRow += "<a class=\"deleteaction\" href=\"" + getResourceUrl() + document.name +"\" onclick=\"delete(this);\">";
+  htmlRow += "<img src=\"/nuxeo/icons/action_delete_mini.gif\"></a>&nbsp;";
   htmlRow +="</td>";
   htmlRow += "</tr>";
   return htmlRow;
