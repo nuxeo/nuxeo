@@ -1313,6 +1313,41 @@
         <version>2.0</version>
       </dependency>
       <dependency>
+        <groupId>caja</groupId>
+        <artifactId>caja</artifactId>
+        <version>RELEASE</version>
+      </dependency>
+      <dependency>
+        <groupId>com.googlecode.json-simple</groupId>
+        <artifactId>json-simple</artifactId>
+        <version>1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20070829</version>
+      </dependency>
+      <dependency>
+        <groupId>de.odysseus.juel</groupId>
+        <artifactId>juel-api</artifactId>
+        <version>2.1.2</version>
+      </dependency>
+      <dependency>
+        <groupId>de.odysseus.juel</groupId>
+        <artifactId>juel-impl</artifactId>
+        <version>2.1.2</version>
+      </dependency>
+      <dependency>
+        <groupId>aopalliance</groupId>
+        <artifactId>aopalliance</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sanselan</groupId>
+        <artifactId>sanselan</artifactId>
+        <version>0.97-incubator</version>
+      </dependency>
+      <dependency>
         <groupId>com.gwtext</groupId>
         <artifactId>gwtext</artifactId>
         <version>2.0.5</version>
@@ -1333,8 +1368,8 @@
         <version>0.5.609</version>
       </dependency>
       <dependency>
-        <groupId>net.oauth</groupId>
-        <artifactId>oauth-core</artifactId>
+        <groupId>net.oauth.core</groupId>
+        <artifactId>oauth</artifactId>
         <version>20090531</version>
       </dependency>
 
