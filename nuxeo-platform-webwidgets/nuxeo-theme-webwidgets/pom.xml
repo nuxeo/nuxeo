@@ -23,7 +23,7 @@
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-html</artifactId>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
@@ -32,7 +32,7 @@
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
-    </dependency>  
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
@@ -69,11 +69,10 @@
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
     </dependency>
-    
+
     <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>jaxrs-api</artifactId>
-      <scope>test</scope>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
     </dependency>
 
    <dependency>
@@ -106,7 +105,7 @@
     	<groupId>org.nuxeo.ecm.core</groupId>
     	<artifactId>nuxeo-core-persistence</artifactId>
     </dependency>
-    
+
   </dependencies>
 
   <build>
