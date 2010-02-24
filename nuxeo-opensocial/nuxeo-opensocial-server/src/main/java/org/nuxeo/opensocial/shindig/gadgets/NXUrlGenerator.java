@@ -2,11 +2,11 @@ package org.nuxeo.opensocial.shindig.gadgets;
 
 import java.util.Collection;
 
-import org.apache.shindig.common.ContainerConfig;
+import org.apache.shindig.config.ContainerConfig;
 import org.apache.shindig.gadgets.DefaultUrlGenerator;
 import org.apache.shindig.gadgets.GadgetContext;
-import org.apache.shindig.gadgets.GadgetFeatureRegistry;
 import org.apache.shindig.gadgets.LockedDomainService;
+import org.apache.shindig.gadgets.features.FeatureRegistry;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.inject.Inject;
@@ -17,10 +17,9 @@ import com.google.inject.Singleton;
 public class NXUrlGenerator extends DefaultUrlGenerator {
 
     @Inject
-    public NXUrlGenerator(ContainerConfig containerConfig,
-            LockedDomainService lockedDomainService,
-            GadgetFeatureRegistry registry) {
-        super(containerConfig, lockedDomainService, registry);
+    public NXUrlGenerator(ContainerConfig config,
+            LockedDomainService lockedDomainService, FeatureRegistry registry) {
+        super(config, lockedDomainService, registry);
     }
 
     @Override

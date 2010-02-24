@@ -9,12 +9,6 @@ import org.apache.shindig.gadgets.http.HttpResponse;
 import org.apache.shindig.gadgets.parse.ParseModule;
 import org.apache.shindig.gadgets.preload.HttpPreloader;
 import org.apache.shindig.gadgets.preload.Preloader;
-import org.apache.shindig.gadgets.render.RenderingContentRewriter;
-import org.apache.shindig.gadgets.rewrite.ContentRewriter;
-import org.apache.shindig.gadgets.rewrite.lexer.DefaultContentRewriter;
-import org.apache.shindig.gadgets.servlet.CajaContentRewriter;
-import org.nuxeo.opensocial.shindig.gadgets.rewrite.NXCSSContentRewriter;
-import org.nuxeo.opensocial.shindig.gadgets.rewrite.NXContentRewriter;
 
 import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
@@ -37,8 +31,8 @@ public class NXGuiceModule extends AbstractModule {
 
         this.install(new ParseModule());
 
-        bind(new TypeLiteral<List<ContentRewriter>>() {
-        }).toProvider(ContentRewritersProvider.class);
+        // bind(new TypeLiteral<List<ContentRewriter>>() {
+        // }).toProvider(ContentRewritersProvider.class);
         bind(new TypeLiteral<List<Preloader>>() {
         }).toProvider(PreloaderProvider.class);
 
@@ -46,27 +40,26 @@ public class NXGuiceModule extends AbstractModule {
         requestStaticInjection(HttpResponse.class);
     }
 
-    private static class ContentRewritersProvider implements
-            Provider<List<ContentRewriter>> {
-        private final List<ContentRewriter> rewriters;
-
-        @Inject
-        public ContentRewritersProvider(
-                NXContentRewriter optimizingRewriter,
-                CajaContentRewriter cajaRewriter,
-                RenderingContentRewriter renderingRewriter,
-                NXCSSContentRewriter cssRewriter) {
-            rewriters = Lists.newArrayList();
-            rewriters.add(optimizingRewriter);
-            rewriters.add(cajaRewriter);
-            rewriters.add(renderingRewriter);
-            rewriters.add(cssRewriter);
-        }
-
-        public List<ContentRewriter> get() {
-            return rewriters;
-        }
-    }
+    // private static class ContentRewritersProvider implements
+    // Provider<List<ContentRewriter>> {
+    // private final List<ContentRewriter> rewriters;
+    //
+    // @Inject
+    // public ContentRewritersProvider(NXContentRewriter optimizingRewriter,
+    // CajaContentRewriter cajaRewriter,
+    // RenderingContentRewriter renderingRewriter,
+    // NXCSSContentRewriter cssRewriter) {
+    // rewriters = Lists.newArrayList();
+    // rewriters.add(optimizingRewriter);
+    // rewriters.add(cajaRewriter);
+    // rewriters.add(renderingRewriter);
+    // rewriters.add(cssRewriter);
+    // }
+    //
+    // public List<ContentRewriter> get() {
+    // return rewriters;
+    // }
+    // }
 
     private static class PreloaderProvider implements Provider<List<Preloader>> {
         private final List<Preloader> preloaders;

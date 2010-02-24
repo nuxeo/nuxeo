@@ -19,20 +19,13 @@ package org.nuxeo.opensocial.shindig;
 
 import java.net.ProxySelector;
 
-import org.apache.shindig.gadgets.http.HttpFetcher;
 import org.nuxeo.opensocial.service.impl.SimpleProxySelector;
-import org.nuxeo.opensocial.shindig.gadgets.ProxySelectorHttpFetcher;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
 
 public class ProxyModule extends AbstractModule {
-
     @Override
     protected void configure() {
-        bind(ProxySelector.class).to(SimpleProxySelector.class);
-        bind(HttpFetcher.class).to(ProxySelectorHttpFetcher.class).in(
-                Scopes.SINGLETON);
-        // bind(GadgetOAuthTokenStore.class).to(NXGadgetOAuthHack.class);
+        ProxySelector.setDefault(new SimpleProxySelector());
     }
 }

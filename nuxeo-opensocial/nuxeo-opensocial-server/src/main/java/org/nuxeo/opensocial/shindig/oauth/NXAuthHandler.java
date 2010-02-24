@@ -14,6 +14,7 @@ import org.apache.shindig.social.core.oauth.OAuthSecurityToken;
 
 public class NXAuthHandler implements AuthenticationHandler {
 
+    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(NXAuthHandler.class);
 
     public String getName() {
@@ -48,11 +49,15 @@ public class NXAuthHandler implements AuthenticationHandler {
             return null;
         }
     }
+
+    public String getWWWAuthenticateHeader(String realm) {
+        return null;
+    }
 }
 
 class HackyToken extends OAuthSecurityToken {
     public HackyToken(String userId, String appUrl, String appId, String domain) {
-        super(userId, appUrl, appId, domain);
+        super(userId, appUrl, appId, domain, "default");
     }
 
     @Override

@@ -33,14 +33,13 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
-import com.google.inject.tools.jmx.Manager;
 
 public class GuiceContextListener implements ServletContextListener {
     public static final String INJECTOR_ATTRIBUTE = "guice-injector";
 
     public static final String MODULES_ATTRIBUTE = "guice-modules";
 
-    private boolean jmxInitialized = false;
+    private final boolean jmxInitialized = false;
 
     private static final Log log = LogFactory.getLog(GuiceContextListener.class);
 
@@ -71,15 +70,15 @@ public class GuiceContextListener implements ServletContextListener {
             throw new RuntimeException(e);
         }
 
-        try {
-            if (!jmxInitialized) {
-                Manager.manage("ShindigGuiceContext", injector);
-                jmxInitialized = true;
-            }
-        } catch (Exception e) {
-            log.error("GuiceContextListener caught exception "
-                    + "trying to init shindig guice context (JMX):", e);
-        }
+        // try {
+        // if (!jmxInitialized) {
+        // Manager.manage("ShindigGuiceContext", injector);
+        // jmxInitialized = true;
+        // }
+        // } catch (Exception e) {
+        // log.error("GuiceContextListener caught exception "
+        // + "trying to init shindig guice context (JMX):", e);
+        // }
     }
 
     private Module getModuleInstance(String moduleName)
