@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Video Convert
+Bundle-SymbolicName: org.nuxeo.ecm.platform.video.convert;singleton=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: true
+Bundle-Category: core,stateful
+Require-Bundle: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.platform.commandline.executor
+Export-Package: org.nuxeo.ecm.platform.video.convert
+Bundle-ClassPath: .
+Nuxeo-Component: OSGI-INF/commandline-contrib.xml
