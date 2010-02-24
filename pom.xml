@@ -1611,7 +1611,7 @@
         <plugin>
           <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
           <artifactId>maven-antrun-extended-plugin</artifactId>
-          <version>1.38</version>
+          <version>1.40</version>
           <executions>
             <execution>
               <id>assemble-app</id>
