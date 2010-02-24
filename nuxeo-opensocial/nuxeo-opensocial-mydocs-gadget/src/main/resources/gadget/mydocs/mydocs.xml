@@ -22,7 +22,7 @@
     <script type="text/javascript" language="javascript" src="documentlists.js"></script>
     <script type="text/javascript">
       var prefs = new _IG_Prefs(__MODULE_ID__);
-      gadgets.util.registerOnLoadHandler( function() {
+      gadgets.util.registerOnLoadHandler(function() {
         gadgetId = gadgets.nuxeo.getGadgetId();
         getDocumentLists();
         jQuery("#uploadBtn").attr("value",prefs.getMsg("add"));
@@ -36,11 +36,11 @@
           <img src="${org.nuxeo.ecm.contextPath}/img/standart_waiter.gif">
         </div>
         <div align="center">
-            <input type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_rewind.gif" onclick="firstPage()"/>
-            <input type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_previous.gif" onclick="prevPage()"/>
+            <img type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_rewind.gif" onclick="firstPage()"/>
+            <img type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_previous.gif" onclick="prevPage()"/>
             <span class="currentPageStatus" id="nxDocumentListPage"></span>
-            <input type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_next.gif" onclick="nextPage()"/>
-            <input type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_fastforward.gif"onclick="lastPage()"/>
+            <img src="${org.nuxeo.ecm.contextPath}/icons/action_page_next.gif" onclick="nextPage()"/>
+            <img src="${org.nuxeo.ecm.contextPath}/icons/action_page_fastforward.gif"onclick="lastPage()"/>
          </div>
          <div id="addfile">
          <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="">
@@ -53,36 +53,35 @@
   ]]>
   </Content>
 
-  <Content type="html" view="canvas">
-<![CDATA[
-    <script type="text/javascript" language="javascript" src="documentlists.js"></script>
-    <script type="text/javascript">
+  <!--Content type="html" view="canvas"-->
+<!--[CDATA[ -->
+   <!-- <script type="text/javascript" language="javascript" src="documentlists.js"></script>-->
+ <!--   <script type="text/javascript">-->
 
-    gadgets.util.registerOnLoadHandler( function() {
-      var gadgetId = gadgets.nuxeo.getGadgetId();
-      var url = "http://localhost:8080${org.nuxeo.ecm.contextPath}/site/myDocsRestAPI/";
-      url += gadgetId + "/";
+  <!--  gadgets.util.registerOnLoadHandler( function() {-->
+   <!--   var gadgetId = gadgets.nuxeo.getGadgetId();-->
+   <!--   var url = "http://localhost:8080${org.nuxeo.ecm.contextPath}/site/myDocsRestAPI/";-->
+   <!--   url += gadgetId + "/";-->
 
-      makeRequest(url, function(obj) {
-        var jsonObject = obj.data;
-        spaceId = jsonObject.summary.id;
-        var html="";
-        //FIXME: repo id is hard coded
+   <!--   makeRequest(url, function(obj) {-->
+   <!--     var jsonObject = obj.data;-->
+   <!--     spaceId = jsonObject.summary.id;-->
+   <!--     var html="";-->
+    <!--    //FIXME: repo id is hard coded-->
+     <!--   var iframesrc= top.nxBaseUrl + "nxdoc/default/" + jsonObject.summary.id + "/view_documents?org.nuxeo.theme.conversation.theme=galaxy/popup";-->
+     <!--   html += "<div style=\"min-height:700px;\"><iframe src=\""+ iframesrc + "\" width=\"100%\" height=\"100%\" frameborder=\"0\" border=\"0\"></div>";-->
+     <!--   _gel("ifplace").innerHTML = html;-->
 
-        var iframesrc= top.nxBaseUrl + "nxdoc/default/" + jsonObject.summary.id + "/view_documents?org.nuxeo.theme.conversation.theme=galaxy/popup";
-        html += "<div style=\"min-height:700px;\"><iframe src=\""+ iframesrc + "\" width=\"100%\" height=\"100%\" frameborder=\"0\" border=\"0\"></div>";
-        _gel("ifplace").innerHTML = html;
+    <!--      gadgets.window.adjustHeight();-->
+   <!--   });-->
 
-          gadgets.window.adjustHeight();
-      });
+  <!--    });-->
 
-      });
+  <!--  </script>-->
+  <!--  <div style="height:700px" id="ifplace">-->
 
-    </script>
-    <div style="height:700px" id="ifplace">
+  <!--  </div>-->
 
-    </div>
-
-  ]]>
-  </Content>
+ <!-- ]]>-->
+ <!-- </Content>-->
 </Module>
