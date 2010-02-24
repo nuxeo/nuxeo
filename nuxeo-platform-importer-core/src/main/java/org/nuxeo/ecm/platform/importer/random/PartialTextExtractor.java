@@ -13,7 +13,7 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 
 public class PartialTextExtractor implements Converter {
 
-    public static final double TEXT_RATIO = 0.1;
+    public static final double TEXT_RATIO = 0.01;
 
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
