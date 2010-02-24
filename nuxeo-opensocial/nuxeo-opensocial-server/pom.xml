@@ -126,24 +126,21 @@
                 <artifactItem>
                   <groupId>caja</groupId>
                   <artifactId>caja</artifactId>
-                  <version>RELEASE</version>
                 </artifactItem>
+
                 <artifactItem>
                   <groupId>com.googlecode.json-simple</groupId>
                   <artifactId>json-simple</artifactId>
-                  <version>1.1</version>
                 </artifactItem>
 
                 <artifactItem>
                   <groupId>net.oauth.core</groupId>
                   <artifactId>oauth</artifactId>
-                  <version>20090531</version>
                 </artifactItem>
 
                 <artifactItem>
                   <groupId>com.google.collections</groupId>
                   <artifactId>google-collections</artifactId>
-                  <version>1.0-rc2</version>
                 </artifactItem>
 
                 <artifactItem>
@@ -157,12 +154,10 @@
                 <artifactItem>
                   <groupId>rome</groupId>
                   <artifactId>rome</artifactId>
-                  <version>1.0</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>com.ibm.icu</groupId>
                   <artifactId>icu4j</artifactId>
-                  <version>3.8</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>net.sourceforge.nekohtml</groupId>
@@ -171,37 +166,27 @@
                 <artifactItem>
                   <groupId>joda-time</groupId>
                   <artifactId>joda-time</artifactId>
-                  <version>1.6</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.json</groupId>
                   <artifactId>json</artifactId>
-                  <version>20070829</version>
                 </artifactItem>
 
                 <!--  New libs for Shindig-1.1 -->
 
-                <!-- artifactItem>
-                  <groupId>de.odysseus.juel</groupId>
-                  <artifactId>juel-api</artifactId>
-                  <version>2.1.2</version>
-                </artifactItem -->
                 <artifactItem>
                   <groupId>de.odysseus.juel</groupId>
                   <artifactId>juel-impl</artifactId>
-                  <version>2.1.2</version>
                 </artifactItem>
 
                 <artifactItem>
                   <groupId>aopalliance</groupId>
                   <artifactId>aopalliance</artifactId>
-                  <version>1.0</version>
                 </artifactItem>
 
                 <artifactItem>
                   <groupId>org.apache.sanselan</groupId>
                   <artifactId>sanselan</artifactId>
-                  <version>0.97-incubator</version>
                 </artifactItem>
 
 
