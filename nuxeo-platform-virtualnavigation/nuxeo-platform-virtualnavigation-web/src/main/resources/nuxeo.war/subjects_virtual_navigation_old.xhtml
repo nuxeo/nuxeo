@@ -5,8 +5,6 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxthemes="http://nuxeo.org/nxthemes">
 
   <ui:define name="body">
@@ -19,28 +17,31 @@
         <h:outputText value="#{messages['label.virtualnavigation.subjects']}" />
       </h3>
 
-      <nxu:set var="provider" cache="true"
+      <nxu:methodResult name="provider"
         value="#{searchResults.getProvider('bySubjectsNavQueryModel')}">
-        <nxu:set var="documents" cache="true"
+        <nxu:methodResult name="documents"
           value="#{searchResults.getResultsSelectModel('bySubjectsNavQueryModel')}">
-
-          <ui:decorate template="/incl/documents_layout_table.xhtml">
+          <ui:decorate template="/incl/documents_table_virtual_nav.xhtml">
+            <ui:param name="provider" value="#{provider}" />
+            <ui:param name="providerName" value="#{provider.name}" />
+            <ui:param name="documents" value="#{documents}"/>
+            <ui:param name="showCheckboxes" value="#{true}" />
             <ui:param name="listName" value="CURRENT_SELECTION" />
-            <ui:param name="layoutName" value="document_virtual_navigation_listing" />
             <ui:define name="buttons">
               <ui:include src="/incl/clipboard.xhtml" />
             </ui:define>
-            <ui:define name="syndication_buttons">
-              <ui:include src="/incl/syndication_buttons.xhtml">
-                <ui:param name="type" value="search" />
-              </ui:include>
+            <ui:define name="extra_info">
+              <!-- empty, used in extension modules -->
             </ui:define>
           </ui:decorate>
-
-        </nxu:set>
-      </nxu:set>
+        </nxu:methodResult>
+      </nxu:methodResult>
 
     </div>
+
+    <ui:include src="/incl/syndication_buttons.xhtml">
+      <ui:param name="type" value="search" />
+    </ui:include>
 
   </ui:define>
 

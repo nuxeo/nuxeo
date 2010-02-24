@@ -5,6 +5,7 @@
     
   <div class="action_bar">
     <ul>
+       <c:if test="#{nxd:canModify(currentDocument)}">
       <li>
         <nxh:commandLink action="#{pictureManager.rotate90left}">
           <h:graphicImage value="icons/page_rotateleft.gif" />
@@ -17,6 +18,7 @@
           <h:outputText value="#{messages['action.picture.rotateRight']}" />
         </nxh:commandLink>
       </li>
+      </c:if>
       <li>
         <c:set var="filename" value="#{currentDocument.dublincore.title} - #{currentDocument.picture.views[pictureManager.index].title}"/>
         <nxh:outputLink value="#{nxd:fileUrl('downloadPicture', currentDocument , url, filename)}">
