@@ -6,7 +6,7 @@
 
 #features/analytics/feature.xml
 features/auth-refresh/feature.xml
-features/caja/feature.xml
+#features/caja/feature.xml
 #features/core.io/feature.xml
 nxfeatures/core.io/feature.xml
 features/core/feature.xml
@@ -20,7 +20,7 @@ features/opensocial-base/feature.xml
 features/opensocial-current/feature.xml
 features/opensocial-jsonrpc/feature.xml
 features/opensocial-reference/feature.xml
-features/opensocial-rest/feature.xml
+#features/opensocial-rest/feature.xml
 features/opensocial-templates/feature.xml
 features/rpc/feature.xml
 features/setprefs/feature.xml

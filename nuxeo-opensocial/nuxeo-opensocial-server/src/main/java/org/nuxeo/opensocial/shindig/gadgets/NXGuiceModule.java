@@ -9,6 +9,8 @@ import org.apache.shindig.gadgets.http.HttpResponse;
 import org.apache.shindig.gadgets.parse.ParseModule;
 import org.apache.shindig.gadgets.preload.HttpPreloader;
 import org.apache.shindig.gadgets.preload.Preloader;
+import org.apache.shindig.social.opensocial.oauth.OAuthDataStore;
+import org.nuxeo.opensocial.shindig.oauth.NXOAuthDataStore;
 
 import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
@@ -36,6 +38,7 @@ public class NXGuiceModule extends AbstractModule {
         bind(new TypeLiteral<List<Preloader>>() {
         }).toProvider(PreloaderProvider.class);
 
+        bind(OAuthDataStore.class).to(NXOAuthDataStore.class);
         // We perform static injection on HttpResponse for cache TTLs.
         requestStaticInjection(HttpResponse.class);
     }

@@ -70,15 +70,15 @@ public class GuiceContextListener implements ServletContextListener {
             throw new RuntimeException(e);
         }
 
-        // try {
-        // if (!jmxInitialized) {
-        // Manager.manage("ShindigGuiceContext", injector);
-        // jmxInitialized = true;
-        // }
-        // } catch (Exception e) {
-        // log.error("GuiceContextListener caught exception "
-        // + "trying to init shindig guice context (JMX):", e);
-        // }
+        try {
+            if (!jmxInitialized) {
+                Manager.manage("ShindigGuiceContext", injector);
+                jmxInitialized = true;
+            }
+        } catch (Exception e) {
+            log.error("GuiceContextListener caught exception "
+                    + "trying to init shindig guice context (JMX):", e);
+        }
     }
 
     private Module getModuleInstance(String moduleName)
