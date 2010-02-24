@@ -1178,7 +1178,7 @@
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>1.4</version>
+        <version>1.6</version>
       </dependency>
       <dependency>
         <groupId>com.hp.hpl.jena</groupId>
@@ -1198,12 +1198,12 @@
       <dependency>
         <groupId>com.ibm.icu</groupId>
         <artifactId>icu4j</artifactId>
-        <version>3.4.4</version>
+        <version>3.8</version>
       </dependency>
       <dependency>
         <groupId>rome</groupId>
         <artifactId>rome</artifactId>
-        <version>0.8</version>
+        <version>1.0</version>
       </dependency>
       <dependency>
         <groupId>jdom</groupId>
@@ -1335,7 +1335,7 @@
       <dependency>
         <groupId>net.oauth</groupId>
         <artifactId>oauth-core</artifactId>
-        <version>20090121</version>
+        <version>20090531</version>
       </dependency>
 
       <!--  Test Scope -->
