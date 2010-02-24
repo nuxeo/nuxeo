@@ -12,7 +12,7 @@
   <artifactId>nuxeo-distribution-gf3</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo GF3 template</name>
-  <description>Defines the skeleton of a glassfish3 nuxeo application</description>
+  <description>DEPRECATED - Defines the skeleton of a glassfish3 nuxeo application</description>
 
   <profiles>
     <profile>
@@ -33,43 +33,13 @@
         <activeByDefault>true</activeByDefault>
       </activation>
     </profile>
-
-    <!-- NXP-4272 - don't use timestamp -->
-    <profile>
-      <id>qa</id>
-      <distributionManagement>
-        <snapshotRepository>
-          <id>snapshots</id>
-          <url>http://maven.in.nuxeo.com/snapshots</url>
-          <uniqueVersion>false</uniqueVersion>
-        </snapshotRepository>
-      </distributionManagement>
-    </profile>
-    <profile>
-      <id>qapriv</id>
-      <distributionManagement>
-        <snapshotRepository>
-          <id>snapshots</id>
-          <url>http://mavenpriv.in.nuxeo.com/snapshots</url>
-          <uniqueVersion>false</uniqueVersion>
-        </snapshotRepository>
-      </distributionManagement>
-    </profile>
   </profiles>
-  <distributionManagement>
-    <snapshotRepository>
-      <id>nuxeo-snapshot</id>
-      <url>http://maven.nuxeo.org/nuxeo-snapshot</url>
-      <uniqueVersion>false</uniqueVersion>
-    </snapshotRepository>
-  </distributionManagement>
-
+  
   <properties>
     <core.version>1.6.1-SNAPSHOT</core.version>
     <gf3.version>3.0-b38</gf3.version>
     <application.name>${project.artifactId}-${project.version}</application.name>
   </properties>
-
 
   <dependencies>
     <dependency>

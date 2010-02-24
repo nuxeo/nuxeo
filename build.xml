@@ -175,9 +175,7 @@
 
   <target name="choose-distrib" unless="distrib">
     <antcall target="list-available-distributions" />
-    <input message="Which distribution do you want to build?"
-      validargs="nuxeo-ep,nuxeo-dm,jboss,jetty,shell,gf3,tomcat,all-distributions"
-      addproperty="profile" />
+    <input message="Which distribution do you want to build?" validargs="nuxeo-ep,nuxeo-dm,jboss,jetty,shell,tomcat,all-distributions" addproperty="profile" />
     <condition property="backend-choosable">
       <or>
         <equals arg1="${profile}" arg2="nuxeo-ep" />
@@ -185,7 +183,6 @@
         <equals arg1="${profile}" arg2="jboss" />
         <equals arg1="${profile}" arg2="jetty" />
         <equals arg1="${profile}" arg2="shell" />
-        <equals arg1="${profile}" arg2="gf3" />
         <equals arg1="${profile}" arg2="tomcat" />
         <equals arg1="${profile}" arg2="all-distributions" />
       </or>
@@ -204,11 +201,8 @@
     <echo message="Available distributions are:" />
     <echo message="nuxeo-ep             - build Nuxeo EP EAR" />
     <echo message="nuxeo-dm             - build Nuxeo DM EAR" />
-    <echo
-      message="jboss                - build JBoss distributions with Nuxeo EP and DM" />
-    <echo
-      message="jetty                - build Jetty distributions with Nuxeo EP and DM" />
-    <echo message="gf3                  - build GlassFish distribution" />
+    <echo message="jboss                - build JBoss distributions with Nuxeo EP and DM" />
+    <echo message="jetty                - build Jetty distributions with Nuxeo EP and DM" />
     <echo message="tomcat               - build Tomcat distribution" />
     <echo message="shell                - build Nuxeo Shell" />
     <echo message="all-distributions    - build all available distributions" />
