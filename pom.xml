@@ -18,7 +18,6 @@
   </description>
 
   <modules>
-    <!--module>nuxeo-webengine-resteasy-adapter</module-->
     <module>nuxeo-webengine-core</module>
     <module>nuxeo-webengine-gwt</module>
     <module>nuxeo-webengine-ui</module>
@@ -64,11 +63,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-ui</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-resteasy-adapter</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
       <dependency>
