@@ -34,6 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 
 @WebObject(type = "Gadgets")
 @Produces("text/html; charset=UTF-8")
+@Path("/gadgets")
 public class Gadgets extends ModuleRoot {
 
 
