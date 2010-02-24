@@ -87,6 +87,9 @@
         <labels>
           <label mode="any">label.dublincore.subject</label>
         </labels>
+        <helpLabels>
+          <label mode="edit">label.dublincore.subjects.info</label>
+        </helpLabels>
         <translated>true</translated>
         <fields>
           <field>dc:subjects</field>
@@ -123,6 +126,9 @@
         <labels>
           <label mode="any">label.dublincore.coverage</label>
         </labels>
+        <helpLabels>
+          <label mode="edit">label.dublincore.coverage.info</label>
+        </helpLabels>
         <translated>true</translated>
         <fields>
           <field>dc:coverage</field>
@@ -204,6 +210,9 @@
         <labels>
           <label mode="any">label.dublincore.creator</label>
         </labels>
+        <helpLabels>
+          <label mode="edit">label.dublincore.author.info</label>
+        </helpLabels>
         <translated>true</translated>
         <fields>
           <field>dc:contributors/0</field>
@@ -216,6 +225,9 @@
         <labels>
           <label mode="any">label.dublincore.contributors</label>
         </labels>
+        <helpLabels>
+          <label mode="edit">label.dublincore.contributors.info</label>
+        </helpLabels>
         <translated>true</translated>
         <fields>
           <field>dc:contributors</field>
