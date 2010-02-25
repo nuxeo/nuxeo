@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo ECM Core Chemistry Bindings
+Bundle-Name: Nuxeo ECM Core Chemistry Implementation
 Bundle-SymbolicName: org.nuxeo.ecm.core.chemistry.impl;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Localization: bundle

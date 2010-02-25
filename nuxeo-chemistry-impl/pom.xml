@@ -14,8 +14,8 @@
   </parent>
 
   <artifactId>nuxeo-chemistry-impl</artifactId>
-  <name>Nuxeo Chemistry Bindings</name>
-  <description>Nuxeo Core: Chemistry Bindings</description>
+  <name>Nuxeo Chemistry Implementation</name>
+  <description>Nuxeo Core: Chemistry Implementation</description>
 
   <build>
     <plugins>

@@ -20,8 +20,7 @@
 
   <modules>
     <module>nuxeo-chemistry-impl</module>
-    <module>nuxeo-chemistry-jaxrs</module>
-    <module>nuxeo-chemistry-ws</module>
+    <module>nuxeo-chemistry-bindings</module>
     <module>nuxeo-chemistry-tests</module>
   </modules>
 
@@ -40,12 +39,7 @@
       </dependency>
       <dependency>
 	<groupId>org.nuxeo.ecm.core</groupId>
-	<artifactId>nuxeo-chemistry-jaxrs</artifactId>
-	<version>${version}</version>
-      </dependency>
-      <dependency>
-	<groupId>org.nuxeo.ecm.core</groupId>
-	<artifactId>nuxeo-chemistry-ws</artifactId>
+	<artifactId>nuxeo-chemistry-bindings</artifactId>
 	<version>${version}</version>
       </dependency>
       <dependency>
@@ -82,6 +76,11 @@
       <dependency>
 	<groupId>org.apache.chemistry</groupId>
 	<artifactId>chemistry-ws</artifactId>
+	<version>${chemistry.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>org.apache.chemistry</groupId>
+	<artifactId>chemistry-soap-server</artifactId>
 	<version>${chemistry.version}</version>
       </dependency>
       <dependency>

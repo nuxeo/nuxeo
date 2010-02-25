@@ -10,9 +10,9 @@
   </parent>
 
   <groupId>org.nuxeo.ecm.core</groupId>
-  <artifactId>nuxeo-chemistry-jaxrs</artifactId>
-  <name>Nuxeo Chemistry AtomPub JAX-RS Bindings</name>
-  <description>Nuxeo Core: Chemistry AtomPub Server JAX-RS Bindings</description>
+  <artifactId>nuxeo-chemistry-bindings</artifactId>
+  <name>Nuxeo Chemistry AtomPub/SOAP Bindings</name>
+  <description>Nuxeo Core: Chemistry Bindings for AtomPub and SOAP</description>
 
   <build>
     <plugins>
@@ -54,10 +54,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
     </dependency>
@@ -70,27 +66,31 @@
     <dependency>
       <groupId>org.apache.chemistry</groupId>
       <artifactId>chemistry-api</artifactId>
-      <version>${chemistry.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.chemistry</groupId>
       <artifactId>chemistry-commons</artifactId>
-      <version>${chemistry.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.chemistry</groupId>
       <artifactId>chemistry-atompub</artifactId>
-      <version>${chemistry.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.chemistry</groupId>
       <artifactId>chemistry-atompub-server</artifactId>
-      <version>${chemistry.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.chemistry</groupId>
+      <artifactId>chemistry-ws</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.chemistry</groupId>
+      <artifactId>chemistry-soap-server</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-chemistry-impl</artifactId>
-      <version>${version}</version>
     </dependency>
 
   </dependencies>
