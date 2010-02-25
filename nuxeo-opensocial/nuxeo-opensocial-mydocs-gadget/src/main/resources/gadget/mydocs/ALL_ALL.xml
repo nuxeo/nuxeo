@@ -5,4 +5,5 @@
   <msg name="modified">Modified</msg> 
   <msg name="author">Author</msg> 
   <msg name="displayNoWorkspaceFound">No work space has been found for this space</msg>
+  <msg name="confirmDelete">Do you delete the document ?</msg>
 </messagebundle>

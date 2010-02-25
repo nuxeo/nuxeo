@@ -5,4 +5,5 @@
   <msg name="modified">Modifié</msg> 
   <msg name="author">Auteur</msg> 
   <msg name="displayNoWorkspaceFound">Pas de documents trouvés pour cet espace</msg>
+  <msg name="confirmDelete">Voulez vous réellement supprimer le document ?</msg>
 </messagebundle>
