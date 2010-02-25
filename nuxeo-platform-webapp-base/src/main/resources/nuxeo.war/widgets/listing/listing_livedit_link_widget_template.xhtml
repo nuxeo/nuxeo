@@ -3,13 +3,6 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html">
 
-  <c:if test="false">
-    widget expecting:
-    - field_0 as document model
-    - file_schema, file_field_name and filename_field_name
-      as widget properties
-  </c:if>
-
   <h:outputLink value="#{nxd:liveEditUrl(field_0, widget.properties.file_schema, widget.properties.file_field_name, widget.properties.filename_field_name)}"
     rendered="#{liveEditHelper.isDocumentLiveEditable(field_0, widget.properties.file_schema, widget.properties.file_field_name)}">
     <h:graphicImage value="/icons/application_form_edit.png"

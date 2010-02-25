@@ -90,7 +90,20 @@
         The template widget displays a template content whatever the mode.
 
         Widgets using this type must provide the path to this template ; this
-        template can check the mdoe to adapt the rendering.
+        template can check the mode to adapt the rendering.
+
+        Note that the same handler class can be used to define a new widget type
+        using a designated template, by registering it as is:
+
+        &lt;widgetType name="template"&gt;
+          &lt;handler-class&gt;
+            org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+          &lt;/handler-class&gt;
+          &lt;property name="template"&gt;
+            /widgets/my_custom_widget_template.xhtml
+          &lt;/property&gt;
+        &lt;/widgetType&gt;
+
       </documentation>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
