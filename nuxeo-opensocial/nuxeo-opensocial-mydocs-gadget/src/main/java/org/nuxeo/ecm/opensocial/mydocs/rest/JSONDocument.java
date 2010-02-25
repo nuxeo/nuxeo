@@ -13,14 +13,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -52,12 +51,9 @@ public class JSONDocument extends DocumentObject {
   private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
       "yyyy-MM-dd HH:mm:ss");
 
-  private static final Log log = LogFactory.getLog(JSONDocument.class);
-
   @GET
   @Produces("text/html;charset=UTF-8")
   public Object doGet() {
-
     String currentPage = ctx.getRequest()
         .getParameter("page");
 
@@ -112,18 +108,24 @@ public class JSONDocument extends DocumentObject {
   }
 
   @POST
-  public Object addDocument() throws Exception {
-    log.info("Adding a new File");
-    FileManager fm = Framework.getService(FileManager.class);
-    CoreSession session = ctx.getCoreSession();
-    FormData form = ctx.getForm();
-    Blob blob = form.getFirstBlob();
-    if (blob == null) {
-        throw new IllegalArgumentException(
-                "Could not find any uploaded file");
+  public Object addDocument() {
+    FileManager fm;
+    try {
+      fm = Framework.getService(FileManager.class);
+
+      CoreSession session = ctx.getCoreSession();
+      FormData form = ctx.getForm();
+      Blob blob = form.getFirstBlob();
+      if (blob == null) {
+        throw new IllegalArgumentException("Could not find any uploaded file");
+      }
+      fm.createDocumentFromBlob(session, blob, doc.getPathAsString(), true,
+          blob.getFilename());
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Response.serverError();
     }
-    fm.createDocumentFromBlob(session, blob, doc.getPathAsString(), true, blob.getFilename());
-    return doGet();
+    return Response.ok();
 
   }
 
