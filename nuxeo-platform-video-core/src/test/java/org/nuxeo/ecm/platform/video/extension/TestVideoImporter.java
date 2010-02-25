@@ -1,6 +1,7 @@
 package org.nuxeo.ecm.platform.video.extension;
 
 import java.io.File;
+import java.util.List;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -32,10 +33,14 @@ public class TestVideoImporter extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core.convert.api");
+        deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
         deployBundle("org.nuxeo.ecm.platform.types.api");
         deployBundle("org.nuxeo.ecm.platform.types.core");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
+        deployBundle("org.nuxeo.ecm.platform.video.convert");
         deployBundle("org.nuxeo.ecm.platform.video.core");
 
         // use these to get the fileManagerService
@@ -84,10 +89,11 @@ public class TestVideoImporter extends SQLRepositoryTestCase {
         assertEquals("testTitle", docModelResult.getPropertyValue("dc:title"));
         assertEquals("testUser", docModelResult.getPropertyValue("picture:credit"));
         assertEquals("testUid", docModelResult.getPropertyValue("uid:uid"));
-        assertEquals("133", docModelResult.getPropertyValue("vid:duration").toString());
+        assertEquals("133.0", docModelResult.getPropertyValue("vid:duration").toString());
 
     }
 
+    @SuppressWarnings("unchecked")
     public void testImportVideo() throws Exception {
 
         File testFile = getTestFile();
@@ -119,8 +125,14 @@ public class TestVideoImporter extends SQLRepositoryTestCase {
         // check that we don't get PropertyExceptions when accessing the video
         // and picture schemas
 
-        // TODO: add duration detection
-        assertNull(docModel.getPropertyValue("vid:duration"));
+        // the test video is very short:
+        assertEquals(0.0, docModel.getPropertyValue("vid:duration"));
+        List<Blob> storyboard = docModel.getProperty("vid:storyboard").getValue(List.class);
+        assertNotNull(storyboard);
+        assertEquals(2, storyboard.size());
+        assertEquals("00000.000-seconds.jpeg", storyboard.get(0).getFilename());
+        // is this an artifact of the very short video and ffmpeg or is this a bug?
+        assertEquals("00010.000-seconds.jpeg", storyboard.get(1).getFilename());
 
         // TODO: add thumbnail generation and picture metadata extraction where
         // they make sense for videos (ie. extract these from the metadata already included in the video

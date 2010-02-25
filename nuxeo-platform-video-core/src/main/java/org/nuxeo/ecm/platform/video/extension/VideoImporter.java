@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.video.extension;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,70 +27,98 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.ecm.platform.video.convert.Constants;
+import org.nuxeo.runtime.api.Framework;
 
 /**
- * This class will create a Document of type "Video" from the uploaded file, if the uploaded file
- * matches any of the mime types listed in the filemanager-plugins.xml file.
+ * This class will create a Document of type "Video" from the uploaded file, if
+ * the uploaded file matches any of the mime types listed in the
+ * filemanager-plugins.xml file.
  *
- * If an existing document with the same title is found, it will overwrite it and increment the
- * version number if the overwrite flag is set to true;
- * Otherwise, it will generate a new title and create a new Document of type Video with that title.
+ * If an existing document with the same title is found, it will overwrite it
+ * and increment the version number if the overwrite flag is set to true;
+ * Otherwise, it will generate a new title and create a new Document of type
+ * Video with that title.
  *
  */
 public class VideoImporter extends AbstractFileImporter {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(VideoImporter.class);
 
-	public static final String VIDEO_TYPE = "Video";
+    public static final String VIDEO_TYPE = "Video";
 
-	public DocumentModel create(CoreSession documentManager, Blob content,
-			String path, boolean overwrite, String fullname,
-			TypeManager typeService) throws ClientException, IOException {
+    protected ConversionService cs;
 
-		String filename = FileManagerUtils.fetchFileName(fullname);
+    public DocumentModel create(CoreSession documentManager, Blob content,
+            String path, boolean overwrite, String fullname,
+            TypeManager typeService) throws ClientException, IOException {
 
-		String title = FileManagerUtils.fetchTitle(filename);
+        String filename = FileManagerUtils.fetchFileName(fullname);
 
-		// Check to see if an existing Document with the same title exists.
-		DocumentModel docModel = FileManagerUtils.getExistingDocByTitle(documentManager, path, title);
+        String title = FileManagerUtils.fetchTitle(filename);
 
-		// if overwrite flag is true and the file already exists, overwrite it
-		if (overwrite && (docModel != null)) {
+        // Check to see if an existing Document with the same title exists.
+        DocumentModel docModel = FileManagerUtils.getExistingDocByTitle(
+                documentManager, path, title);
 
-			// update known attributes, format is: schema, attribute, value
-			docModel.setProperty("file", "content", content);
-			docModel.setProperty("dublincore", "title", title);
+        // if overwrite flag is true and the file already exists, overwrite it
+        if (overwrite && (docModel != null)) {
+            updateProperties(docModel, content, filename);
+            docModel = overwriteAndIncrementversion(documentManager, docModel);
+        } else {
 
-			// now save the uploaded file as another new version
-			docModel = overwriteAndIncrementversion(documentManager, docModel);
+            // Creating an unique identifier
+            String docId = IdUtils.generateId(title);
 
-		} else {
+            docModel = documentManager.createDocumentModel(path, docId,
+                    VIDEO_TYPE);
+            docModel.setProperty("dublincore", "title", title);
+            updateProperties(docModel, content, filename);
 
-			// Creating an unique identifier
-			String docId = IdUtils.generateId(title);
+            // updating icon
+            Type docType = typeService.getType(VIDEO_TYPE);
+            if (docType != null) {
+                String iconPath = docType.getIcon();
+                docModel.setProperty("common", "icon", iconPath);
+            }
+            docModel = documentManager.createDocument(docModel);
+        }
+        return docModel;
+    }
 
-			docModel = documentManager.createDocumentModel(path, docId, VIDEO_TYPE);
-	         // update known attributes, format is: schema, attribute, value
-	        docModel.setProperty("dublincore", "title", title);
-	        docModel.setProperty("file", "content", content);
-            docModel.setProperty("file", "filename", filename);
+    protected void updateProperties(DocumentModel docModel, Blob content,
+            String filename) throws ClientException {
 
-			// updating icon
-			Type docType = typeService.getType(VIDEO_TYPE);
-			if (docType != null) {
-				String iconPath = docType.getIcon();
-				docModel.setProperty("common", "icon", iconPath);
-			}
-			docModel = documentManager.createDocument(docModel);
-		}
-		return docModel;
-	}
+        try {
+            BlobHolder result = getConversionService().convert(
+                    Constants.STORYBOARD_CONVERTER,
+                    new SimpleBlobHolder(content), null);
+            docModel.setPropertyValue("video:storyboard",
+                    (Serializable) result.getBlobs());
+            docModel.setPropertyValue("video:duration",
+                    result.getProperty("duration"));
+        } catch (Exception e) {
+            log.error(e, e);
+        }
 
+        docModel.setPropertyValue("file:content", (Serializable) content);
+        docModel.setPropertyValue("file:filename", filename);
+    }
+
+    protected ConversionService getConversionService() throws Exception {
+        if (cs == null) {
+            cs = Framework.getService(ConversionService.class);
+        }
+        return cs;
+    }
 }

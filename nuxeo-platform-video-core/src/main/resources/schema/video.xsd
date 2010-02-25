@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:nxs="http://www.nuxeo.org/ecm/schemas/video" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+<xs:schema xmlns:nxs="http://www.nuxeo.org/ecm/schemas/video"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
            targetNamespace="http://www.nuxeo.org/ecm/schemas/video">
 
-  <xs:element name="duration" type="xs:integer"/>
+  <xs:element name="duration" type="xs:float"/>
+  <xs:element name="storyboard" type="nxs:thumbs" />
+
+  <xs:include schemaLocation="core-types.xsd" />
+  <xs:complexType name="thumbs">
+    <xs:sequence>
+      <xs:element name="thumb" type="nxs:content" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
 
 </xs:schema>

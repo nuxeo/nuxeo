@@ -59,7 +59,7 @@ public class StoryBoardConverter implements Converter {
 
     public static final Log log = LogFactory.getLog(StoryBoardConverter.class);
 
-    public static final String FFMPEG_STORYBOARD_CONVERTER = "ffmpeg-storyboard";
+    public static final String FFMPEG_STORYBOARD_COMMAND = "ffmpeg-storyboard";
 
     public static final String RATE_PARAM = "rate";
 
@@ -145,7 +145,7 @@ public class StoryBoardConverter implements Converter {
             params.addNamedParameter(HEIGHT_PARAM,
                     commonParams.get(HEIGHT_PARAM));
             ExecResult result = cleService.execCommand(
-                    FFMPEG_STORYBOARD_CONVERTER, params);
+                    FFMPEG_STORYBOARD_COMMAND, params);
 
             if (!result.isSuccessful()) {
                 throw result.getError();
