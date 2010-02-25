@@ -26,12 +26,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 
-
+@Provider
 public class GadgetStreamWriter implements MessageBodyWriter<GadgetStream> {
 
   private static final Log log = LogFactory.getLog(GadgetStreamWriter.class);

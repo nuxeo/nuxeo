@@ -72,9 +72,9 @@ public class Main extends ModuleRoot {
     @Override
     public Object handleError(WebApplicationException e) {
         if (e instanceof WebSecurityException) {
-            return Response.status(401).entity(getTemplate("error/error_401.ftl")).build();
+            return Response.status(401).entity(getTemplate("error/error_401.ftl")).type("text/html").build();
         } else if (e instanceof WebResourceNotFoundException) {
-            return Response.status(404).entity(getTemplate("error/error_404.ftl")).build();
+            return Response.status(404).entity(getTemplate("error/error_404.ftl")).type("text/html").build();
         } else {
             return super.handleError(e);
         }

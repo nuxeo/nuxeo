@@ -17,30 +17,27 @@
 
 package org.nuxeo.ecm.platform.publisher.remoting.restHandler;
 
+import java.util.Map;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
-import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
-import javax.ws.rs.*;
-import java.util.Map;
-
 //@Consumes("nuxeo/remotepub")
+@Path("remotepublisher")
 @Produces("nuxeo/remotepub;charset=UTF-8")
 public class RestPublishingHandler extends DefaultObject {
-
-    // Yeurk !!
-    static {
-        WebEngine we = Framework.getLocalService(WebEngine.class);
-
-        we.getRegistry().addMessageBodyWriter(new RemotePubMessageWriter());
-        we.getRegistry().addMessageBodyReader(new RemotePubMessageReader());
-    }
 
     protected RemotePublicationTreeManager getPublisher() {
         return Framework.getLocalService(RemotePublicationTreeManager.class);

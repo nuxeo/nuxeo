@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webengine.base;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -44,7 +43,7 @@ public class ViewService extends DefaultAdapter {
         return "View Service: TODO - display the list of existing views";
     }
 
-    @GET @POST
+    @GET
     @Path("{view}")
     public Object dispatchView(@PathParam("view") String name) {
         return new View(prev, name).resolve();

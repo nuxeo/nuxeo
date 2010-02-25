@@ -47,6 +47,9 @@
         <properties widgetMode="edit">
           <property name="required">true</property>
           <property name="styleClass">dataInputText</property>
+          <property name="validator">
+            #{siteActions.validateBlogTitle}
+          </property>
         </properties>
       </widget>
 

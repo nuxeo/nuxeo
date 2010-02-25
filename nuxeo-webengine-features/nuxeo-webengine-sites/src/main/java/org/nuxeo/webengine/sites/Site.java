@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -66,22 +65,20 @@ public class Site extends AbstractSiteDocumentObject {
         doc = getSiteDocumentModelByUrl(url);
     }
 
+    /**
+     * Must use the same method name as super.traverse() otherwise we introduce ambiguous sub-resources locators
+     * which will fail in jersey. 
+     */
     @Path("{page}")
-    public Object doGet(@PathParam("page") String page) {
+    public Resource traverse(@PathParam("page") String page) {
         try {
             DocumentModel pageDoc = ctx.getCoreSession().getChild(doc.getRef(),
                     page);
             setDoGetParameters();
             return ctx.newObject(pageDoc.getType(), pageDoc);
         } catch (Exception e) {
-            throw WebException.wrap(e);
+            return super.traverse(page);
         }
-    }
-
-    @Override
-    @Path(value = "{path}")
-    public Resource traverse(@PathParam("path") String path) {
-        return super.traverse(path);
     }
 
     protected DocumentModel getSiteDocumentModelByUrl(String url) {

@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.publisher.jbpm;
 
 import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
@@ -27,7 +28,7 @@ import java.util.List;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class ChangePermissionUnrestricted extends UnrestrictedSessionRunner {
     private final DocumentModel document;
@@ -38,14 +39,17 @@ public class ChangePermissionUnrestricted extends UnrestrictedSessionRunner {
 
     private final String[] validators;
 
+    private final ACL existingACL;
+
     public ChangePermissionUnrestricted(CoreSession session,
             DocumentModel document, String[] validators,
-            NuxeoPrincipal principal, String aclName) {
+            NuxeoPrincipal principal, String aclName, ACL acl) {
         super(session);
         this.document = document;
         this.validators = validators;
         this.principal = principal;
         this.aclName = aclName;
+        this.existingACL = acl;
     }
 
     @Override
