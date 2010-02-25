@@ -75,7 +75,7 @@ public class StoryBoardConverter implements Converter {
 
     protected Map<String, String> commonParams = new HashMap<String, String>();
 
-    protected static final Pattern DURATION_PATTERN = Pattern.compile("Duration: ([:\\d]+)");
+    protected static final Pattern DURATION_PATTERN = Pattern.compile("Duration: (\\d\\d):(\\d\\d):(\\d\\d)\\.(\\d\\d)");
 
     public void init(ConverterDescriptor descriptor) {
         try {
@@ -172,15 +172,14 @@ public class StoryBoardConverter implements Converter {
         }
     }
 
-    protected Long extractDuration(List<String> output) {
+    protected Double extractDuration(List<String> output) {
         for (String line : output) {
             Matcher matcher = DURATION_PATTERN.matcher(line);
             if (matcher.find()) {
-                String duration = matcher.group(1);
-                String[] parts = duration.split(":");
-                return Long.parseLong(parts[0]) * 3600
-                        + Long.parseLong(parts[1]) * 60
-                        + Long.parseLong(parts[2]);
+                return Double.parseDouble(matcher.group(1)) * 3600
+                        + Double.parseDouble(matcher.group(2)) * 60
+                        + Double.parseDouble(matcher.group(3))
+                        + Double.parseDouble(matcher.group(3)) / 100;
             }
         }
         return null;
@@ -202,10 +201,7 @@ public class StoryBoardConverter implements Converter {
                     new FileInputStream(thumbs.get(i)), "image/jpeg").persist();
             // TODO: 10s is a match for the default rate of 0.1 fps: need to
             // make it dynamic
-            String timecode = String.format("%06d", i * 10);
-            keptBlob.setFilename(String.format("video-thumb-%s.jpeg", timecode));
-            // abusing the encoding field to store the time code
-            keptBlob.setEncoding(timecode);
+            keptBlob.setFilename(String.format("%05d.000-seconds.jpeg", i * 10));
             blobs.add(keptBlob);
             if (blobs.size() >= numberOfThumbnails) {
                 // depending of the remainder of the euclidean division we might
