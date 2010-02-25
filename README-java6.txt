@@ -7,7 +7,7 @@ built using the JDK6.
 You may want to build with the JDK5, however, and run with the JRE/JDK6.
 
 In this case, you must take the following information from JBoss into account
-(putting the 5 libraries mentionned below into the jboss/lib/endorsed/
+(putting the 5 libraries mentioned below into the jboss/lib/endorsed/
 directory seems to do the trick):
 
 """
