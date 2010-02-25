@@ -195,7 +195,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         }
     }
 
-    // layouts
+    // widgets
 
     private void registerWidget(Object contribution) {
         WidgetDefinition widgetDef = (WidgetDefinition) contribution;

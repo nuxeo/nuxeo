@@ -185,8 +185,16 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertEquals("layoutPropertiesTest", layoutPropertiesLayout.getName());
 
         assertNotNull(layoutPropertiesLayout.getProperties("any"));
-        assertEquals("bar", layoutPropertiesLayout.getProperties("any").get(
-                "foo"));
+        assertEquals("layoutPropValue", layoutPropertiesLayout.getProperties(
+                "any").get("layoutPropName"));
+
+        LayoutRowDefinition[] layoutRows = layoutPropertiesLayout.getRows();
+        assertNotNull(layoutRows);
+        assertEquals(1, layoutRows.length);
+        LayoutRowDefinition layoutRow = layoutRows[0];
+        assertNotNull(layoutRow.getProperties("any"));
+        assertEquals("layoutRowPropValue", layoutRow.getProperties("any").get(
+                "layoutRowPropName"));
 
     }
 

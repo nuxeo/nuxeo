@@ -157,9 +157,18 @@
 
     <layout name="layoutPropertiesTest">
       <properties mode="any">
-        <property name="foo">bar</property>
+        <property name="layoutPropName">layoutPropValue</property>
       </properties>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="layoutRowPropName">layoutRowPropValue</property>
+          </properties>
+          <widget>globalTestWidget</widget>
+        </row>
+      </rows>
     </layout>
+
   </extension>
 
 </component>
