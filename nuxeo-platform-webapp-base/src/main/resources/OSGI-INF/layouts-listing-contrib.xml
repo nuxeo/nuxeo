@@ -9,6 +9,70 @@
       The widget types from this contribution are intended to be used within a
       layout displaying a table line. They can be configured to match metadata
       from a table iteration item.
+      <br />
+
+      The template "/layouts/layout_listing_template.xhtml" handles specific
+      configuration for lists of documents rendering. It applies to an item
+      instance of SelectDataModel named "documents" in the EL context.
+      <br />
+
+      It also requires the following variables to be present in the EL context:
+      <ul>
+        <li>
+          provider: result provider used to get the list of items, its name will
+          be used, as well as sort and pagination features it provides.
+        </li>
+        <li>
+          layoutListingStatus: iteration status as provided by the "c:forEach"
+          tag, used to print table header matching widget label.
+        </li>
+      </ul>
+
+      It accepts the the following properties configuration:
+      <ul>
+        <li>
+          showListingHeader: true or false, used to define whether the table
+          header should be displayed. This property can also be passed in the EL
+          context, using the table iteration status. Defaults to false.
+        </li>
+        <li>
+          showRowEvenOddClass: true or false, used to define if a style class
+          should be set on table rows depending on the layoutListsingStatus
+          index variable (row or odd). Defaults to false.
+        </li>
+      </ul>
+      Its layout rows are used to render columns (even if the naming sounds
+      counter-intuitive... just turn your head sideways as if you were looking
+      at a smiley for the first time ;-)) Rows accept the following properties
+      configuration:
+      <ul>
+        <li>
+          isListingSelectionBox: true or false, used to define wether a "select
+          all/unselect all" checkbox should be displayed. To be used in
+          conjunction with a widget of type "listing_selection_box". Defaults to
+          false.
+        </li>
+        <li>
+          isListingSelectionBoxWithCurrentDocument: true or false, used to
+          define wether a "select all/unselect all" checkbox should be
+          displayed. To be used in conjunction with a widget of type
+          "listing_selection_box_with_current_document". Defaults to false.
+        </li>
+        <li>
+          useFirstWidgetLabelAsColumnHeader: true or false, used to define if
+          first widget label should be used as column header label. Will use
+          translation settings from the widget configuration. Defaults to false.
+        </li>
+        <li>
+          sortPropertyName: name of the property that will be used by the result
+          provider when clicking on the table header. If not set, the sort link
+          will not be displayed. Defaults to null.
+        </li>
+        <li>
+          columnStyleClass: name of the style class that will be used for the
+          given column. Defaults to null.
+        </li>
+      </ul>
     </documentation>
 
     <widgetType name="listing_selection_box_with_current_document">
