@@ -164,15 +164,17 @@ public class DropZone extends PortalDropZone {
     if (t != null) {
       t.cancel();
     }
+
     t = new Timer() {
 
       @Override
       public void run() {
         _notifyOver(source, e);
+        t = null;
       }
     };
 
-    t.schedule(50);
+    t.schedule(60);
 
     return "x-dd-drop-ok";
   }
@@ -254,11 +256,12 @@ public class DropZone extends PortalDropZone {
   }
 
   @Override
-  public boolean notifyDrop(DragSource source, EventObject e, DragData data) {
-    GadgetPortlet gp = portal.getGadgetPortlet(source.getId());
+  public boolean notifyDrop(final DragSource source, EventObject e,
+      DragData data) {
+    final GadgetPortlet gp = portal.getGadgetPortlet(source.getId());
     gp.reloadRenderUrl();
-    GadgetPosition dropPosition = portal.getDropPosition();
-    GadgetBean bean = gp.getGadgetBean();
+    final GadgetPosition dropPosition = portal.getDropPosition();
+    final GadgetBean bean = gp.getGadgetBean();
     if (dropPosition != null) {
       PortalColumn dragCol = portal.getPortalColumn(bean.getGadgetPosition()
           .getPlaceID());
@@ -285,6 +288,17 @@ public class DropZone extends PortalDropZone {
     }
     JsLibrary.hideGwtContainerMask();
     gp.renderDefaultPreferences();
+    Timer t = new Timer() {
+
+      @Override
+      public void run() {
+        gp.removeStyle();
+      }
+
+    };
+
+    t.schedule(500);
+
     return true;
   }
 
