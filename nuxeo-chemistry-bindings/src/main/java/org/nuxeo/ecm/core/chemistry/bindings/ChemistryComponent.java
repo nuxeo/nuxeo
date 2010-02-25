@@ -25,13 +25,11 @@ import org.apache.chemistry.Repository;
 import org.apache.chemistry.RepositoryManager;
 import org.apache.chemistry.RepositoryService;
 import org.apache.chemistry.atompub.server.jaxrs.AbderaResource;
-import org.apache.chemistry.atompub.server.jaxrs.AbderaResponseProvider;
 import org.apache.chemistry.atompub.server.jaxrs.AbderaResource.PathMunger;
 import org.apache.chemistry.impl.simple.SimpleRepositoryService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.chemistry.impl.NuxeoRepository;
-import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -50,9 +48,6 @@ public class ChemistryComponent extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        // TODO should be done using an extension point
-        WebEngine engine = Framework.getLocalService(WebEngine.class);
-        engine.getRegistry().addMessageBodyWriter(new AbderaResponseProvider());
 
         AbderaResource.pathMunger = new WebEnginePathMunger();
 

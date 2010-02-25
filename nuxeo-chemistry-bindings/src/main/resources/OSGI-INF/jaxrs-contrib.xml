@@ -1,14 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.chemistry.jaxrs.config">
 
-  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
-    point="resource">
-    <resource class="org.apache.chemistry.atompub.server.jaxrs.AbderaResource" />
-  </extension>
-  <!--
-    should configure providers also, but not yet implemented, so
-    currently done using component activation
-  -->
+  <!-- CMISApplication registered through MANIFEST.MF -->
 
   <!-- make sure no redirect for authentication happens -->
   <extension

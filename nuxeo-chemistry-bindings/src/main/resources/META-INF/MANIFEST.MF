@@ -12,3 +12,4 @@ Require-Bundle: org.nuxeo.ecm.webengine.core;visibility:=reexport,
 Nuxeo-Component: OSGI-INF/base-contrib.xml,
  OSGI-INF/jaxrs-contrib.xml,
  OSGI-INF/jaxws-contrib.xml
+Nuxeo-WebModule: org.apache.chemistry.atompub.server.jaxrs.CMISApplication
