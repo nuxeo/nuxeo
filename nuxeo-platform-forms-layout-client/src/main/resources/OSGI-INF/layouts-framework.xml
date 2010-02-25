@@ -81,15 +81,18 @@
       - templates: a template can be provided to control the layout rendering.
       Different layouts can be used given the mode. The test for the layout mode
       can also be done in the template itself.
-      
-      - properties: map of properties that will apply to the layout in a given 
+
+      - properties: map of properties that will apply to the layout in a given
       mode.
 
-      - rows: rows describe the organization of widgets within the layout.
+      - rows/row: rows describe the organization of widgets within the layout.
       Several widgets can be placed in the same row. When using the default
       layout template, a table is used to display each row in a table row, and
       widgets at the same row will be displayed on different columns in this
       row.
+
+      - columns/column: aliases for rows/row, which is more intuitive when
+      defining layouts representing a table line.
 
       - widgets: widgets with names used in the layout rows configuration. They
       can hold specific properties given the widget type.

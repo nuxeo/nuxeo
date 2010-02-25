@@ -255,6 +255,13 @@
   </tag>
 
   <tag>
+    <name>layoutColumn</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>Facelet tag handler equivalent to layoutRow tag.</description>
+  </tag>
+
+  <tag>
     <name>layoutRowWidget</name>
     <tag-class>None</tag-class>
     <body-content>None</body-content>
@@ -306,6 +313,13 @@
 </table>
       ]]>
     </example>
+  </tag>
+
+  <tag>
+    <name>layoutColumnWidget</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>Facelet tag handler equivalent to layoutColumnWidget tag.</description>
   </tag>
 
   <tag>

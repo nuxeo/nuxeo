@@ -19,31 +19,31 @@
 <c:if test="#{showListingHeader and layout.properties.showListingHeader}">
   <thead>
     <tr>
-      <nxl:layoutRow>
+      <nxl:layoutColumn>
         <th>
           <c:choose>
-            <c:when test="#{layoutRow.properties.isListingSelectionBox}">
-              <h:selectBooleanCheckbox id="#{layoutRow.widgets[0].name}_header"
+            <c:when test="#{layoutColumn.properties.isListingSelectionBox}">
+              <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
                 onclick="selectDataTablePageForDocument('#{documents.name}', '#{provider.name}', this.checked, '#{listName}', '#{currentDocument.ref}')"
                 title="#{messages['tooltip.content.select.all']}" />
             </c:when>
-            <c:when test="#{layoutRow.properties.isListingSelectionBoxWithCurrentDocument}">
-              <h:selectBooleanCheckbox id="#{layoutRow.widgets[0].name}_header"
+            <c:when test="#{layoutColumn.properties.isListingSelectionBoxWithCurrentDocument}">
+              <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
                 onclick="selectDataTablePage('#{documents.name}', '#{provider.name}', this.checked, '#{listName}')"
                 title="#{messages['tooltip.content.select.all']}" />
             </c:when>
-            <c:when test="#{layoutRow.properties.useFirstWidgetLabelAsColumnHeader}">
+            <c:when test="#{layoutColumn.properties.useFirstWidgetLabelAsColumnHeader}">
               <c:choose>
-                <c:when test="#{provider.sortable and !empty layoutRow.properties.sortPropertyName}">
+                <c:when test="#{provider.sortable and !empty layoutColumn.properties.sortPropertyName}">
                   <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
-                    id="#{layoutRow.widgets[0].name}_header_sort">
+                    id="#{layoutColumn.widgets[0].name}_header_sort">
                     <f:param name="providerName" value="#{provider.name}" />
-                    <f:param name="sortColumn" value="#{layoutRow.properties.sortPropertyName}" />
-                    <h:outputText value="#{layoutRow.widgets[0].label}"
-                      rendered="#{!layoutRow.widgets[0].translated}" />
-                    <h:outputText value="#{messages[layoutRow.widgets[0].label]}"
-                      rendered="#{layoutRow.widgets[0].translated}" />
-                    <c:if test="#{provider.sortInfo.sortColumn == layoutRow.properties.sortPropertyName}" >
+                    <f:param name="sortColumn" value="#{layoutColumn.properties.sortPropertyName}" />
+                    <h:outputText value="#{layoutColumn.widgets[0].label}"
+                      rendered="#{!layoutColumn.widgets[0].translated}" />
+                    <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
+                      rendered="#{layoutColumn.widgets[0].translated}" />
+                    <c:if test="#{provider.sortInfo.sortColumn == layoutColumn.properties.sortPropertyName}" >
                       <h:graphicImage value="/icons/arrow_down.gif"
                         rendered="#{provider.sortInfo.sortAscending}" />
                       <h:graphicImage value="/icons/arrow_up.gif"
@@ -52,32 +52,32 @@
                   </h:commandLink>
                 </c:when>
                 <c:otherwise>
-                  <h:outputText value="#{layoutRow.widgets[0].label}"
-                    rendered="#{!layoutRow.widgets[0].translated}" />
-                  <h:outputText value="#{messages[layoutRow.widgets[0].label]}"
-                    rendered="#{layoutRow.widgets[0].translated}" />
+                  <h:outputText value="#{layoutColumn.widgets[0].label}"
+                    rendered="#{!layoutColumn.widgets[0].translated}" />
+                  <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
+                    rendered="#{layoutColumn.widgets[0].translated}" />
                 </c:otherwise>
               </c:choose>
             </c:when>
           </c:choose>
         </th>
-      </nxl:layoutRow>
+      </nxl:layoutColumn>
     </tr>
   </thead>
 </c:if>
 
 <c:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
 <tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')}">
-  <nxl:layoutRow>
-    <td class="#{layoutRow.properties.columnStyleClass}">
-      <nxl:layoutRowWidget>
+  <nxl:layoutColumn>
+    <td class="#{layoutColumn.properties.columnStyleClass}">
+      <nxl:layoutColumnWidget>
         <nxl:widget widget="#{widget}" mode="view" value="#{value}" />
-        <c:if test="#{layoutRow.size > 1 and layoutRow.size > widgetIndex + 1 and widgetIndex > 0}">
+        <c:if test="#{layoutColumn.size > 1 and layoutColumn.size > widgetIndex + 1 and widgetIndex > 0}">
           <br />
         </c:if>
-      </nxl:layoutRowWidget>
+      </nxl:layoutColumnWidget>
     </td>
-  </nxl:layoutRow>
+  </nxl:layoutColumn>
 </tr>
 
 </f:subview>

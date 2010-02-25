@@ -37,14 +37,11 @@
         </li>
         <li>
           showRowEvenOddClass: true or false, used to define if a style class
-          should be set on table rows depending on the layoutListsingStatus
-          index variable (row or odd). Defaults to false.
+          should be set on table rows depending on the layoutListingStatus index
+          variable (row or odd). Defaults to false.
         </li>
       </ul>
-      Its layout rows are used to render columns (even if the naming sounds
-      counter-intuitive... just turn your head sideways as if you were looking
-      at a smiley for the first time ;-)) Rows accept the following properties
-      configuration:
+      Its layout columns accept the following properties configuration:
       <ul>
         <li>
           isListingSelectionBox: true or false, used to define wether a "select
@@ -519,8 +516,8 @@
         <property name="showListingHeader">true</property>
         <property name="showRowEvenOddClass">true</property>
       </properties>
-      <rows>
-        <row>
+      <columns>
+        <column>
           <properties mode="any">
             <property name="isListingSelectionBoxWithCurrentDocument">
               true
@@ -529,50 +526,50 @@
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_selection_box_with_current_document</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">false</property>
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_icon_type</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:title</property>
           </properties>
           <widget>listing_title_link</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_lock_icon</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:modified</property>
           </properties>
           <widget>listing_modification_date</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:creator</property>
           </properties>
           <widget>listing_author</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="isSortable">false</property>
           </properties>
           <widget>listing_version</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">
@@ -580,14 +577,14 @@
             </property>
           </properties>
           <widget>listing_lifecycle</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_livedit_link</widget>
-        </row>
-      </rows>
+        </column>
+      </columns>
     </layout>
 
     <layout name="document_virtual_navigation_listing">
@@ -598,111 +595,111 @@
         <property name="showListingHeader">true</property>
         <property name="showRowEvenOddClass">true</property>
       </properties>
-      <rows>
-        <row>
+      <columns>
+        <column>
           <properties mode="any">
             <property name="isListingSelectionBox">true</property>
             <property name="useFirstWidgetLabelAsColumnHeader">false</property>
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_selection_box</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">false</property>
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_icon_type</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:title</property>
           </properties>
           <widget>listing_title_link</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_lock_icon</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:modified</property>
           </properties>
           <widget>listing_modification_date</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:creator</property>
           </properties>
           <widget>listing_author</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
           </properties>
           <widget>listing_version</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <property name="useFirstWidgetLabelAsColumnHeader">true</property>
           <property name="sortPropertyName">ecm:currentLifeCycleState</property>
           <widget>listing_lifecycle</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_livedit_link</widget>
-        </row>
-      </rows>
+        </column>
+      </columns>
     </layout>
 
     <layout name="document_listing_compact_2_columns">
       <templates>
         <template mode="any">/layouts/layout_listing_template.xhtml</template>
       </templates>
-      <rows>
-        <row>
+      <columns>
+        <column>
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_selection_box_with_current_document</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_icon_type</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <widget>listing_title_link</widget>
           <widget>listing_modification_date</widget>
           <widget>listing_author</widget>
           <widget>listing_lifecycle</widget>
           <widget>listing_version</widget>
-        </row>
-      </rows>
+        </column>
+      </columns>
     </layout>
 
     <layout name="document_listing_icon_2_columns">
       <templates>
         <template mode="any">/layouts/layout_listing_template.xhtml</template>
       </templates>
-      <rows>
-        <row>
+      <columns>
+        <column>
           <widget>listing_selection_box_with_current_document</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <widget>listing_big_icon_type</widget>
-        </row>
-        <row>
+        </column>
+        <column>
           <widget>listing_title_link</widget>
-        </row>
-      </rows>
+        </column>
+      </columns>
     </layout>
 
   </extension>

@@ -67,8 +67,11 @@ public class LayoutRowTagHandler extends TagHandler {
      * Needs layout to be exposed in context, so works in conjunction with
      * {@link LayoutTagHandler}.
      * <p>
-     * Row variables exposed: {@link RenderVariables.rowVariables#row} and
-     * {@link RenderVariables.rowVariables#rowIndex}.
+     * Row variables exposed: {@link RenderVariables.rowVariables#layoutRow} and
+     * {@link RenderVariables.rowVariables#layoutRowIndex}, as well as
+     * {@link RenderVariables.columnVariables#layoutColumn} and
+     * {@link RenderVariables.columnVariables#layoutColumnIndex}, that act are
+     * aliases.
      */
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
@@ -102,10 +105,16 @@ public class LayoutRowTagHandler extends TagHandler {
                         row, LayoutRow.class);
                 vm.setVariable(RenderVariables.rowVariables.layoutRow.name(),
                         rowVe);
+                vm.setVariable(
+                        RenderVariables.columnVariables.layoutColumn.name(),
+                        rowVe);
                 ValueExpression rowIndexVe = ctx.getExpressionFactory().createValueExpression(
                         rowCounter, Integer.class);
                 vm.setVariable(
                         RenderVariables.rowVariables.layoutRowIndex.name(),
+                        rowIndexVe);
+                vm.setVariable(
+                        RenderVariables.columnVariables.layoutColumnIndex.name(),
                         rowIndexVe);
                 nextHandler.apply(ctx, parent);
                 rowCounter++;

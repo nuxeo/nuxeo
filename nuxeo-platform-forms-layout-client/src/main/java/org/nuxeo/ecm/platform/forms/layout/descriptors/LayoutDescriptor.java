@@ -41,7 +41,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 @XObject("layout")
 public class LayoutDescriptor implements LayoutDefinition {
 
-    private static final long serialVersionUID = 1386913375220603688L;
+    private static final long serialVersionUID = 1L;
 
     @XNode("@name")
     String name;
@@ -51,6 +51,9 @@ public class LayoutDescriptor implements LayoutDefinition {
 
     @XNodeList(value = "rows/row", type = LayoutRowDescriptor[].class, componentType = LayoutRowDescriptor.class)
     LayoutRowDefinition[] rows = new LayoutRowDefinition[0];
+
+    @XNodeList(value = "columns/column", type = LayoutRowDescriptor[].class, componentType = LayoutRowDescriptor.class)
+    LayoutRowDefinition[] rowsAsColumns = new LayoutRowDefinition[0];
 
     @XNodeMap(value = "widget", key = "@name", type = HashMap.class, componentType = WidgetDescriptor.class)
     Map<String, WidgetDefinition> widgets = new HashMap<String, WidgetDefinition>();
@@ -75,6 +78,10 @@ public class LayoutDescriptor implements LayoutDefinition {
     }
 
     public LayoutRowDefinition[] getRows() {
+        // check if columns tags are used instead of rows, they act as aliases.
+        if (rowsAsColumns != null && rowsAsColumns.length > 0) {
+            return rowsAsColumns;
+        }
         return rows;
     }
 
@@ -82,6 +89,7 @@ public class LayoutDescriptor implements LayoutDefinition {
         if (columns == null) {
             // compute it
             columns = 0;
+            LayoutRowDefinition[] rows = getRows();
             for (LayoutRowDefinition def : rows) {
                 int current = def.getWidgets().length;
                 if (current > columns) {

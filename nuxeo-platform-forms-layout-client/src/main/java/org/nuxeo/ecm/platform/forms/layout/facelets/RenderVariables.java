@@ -39,7 +39,11 @@ public class RenderVariables {
     }
 
     public enum rowVariables {
-        layoutRow, layoutRowIndex,
+        layoutRow, layoutRowIndex
+    }
+
+    public enum columnVariables {
+        layoutColumn, layoutColumnIndex,
     }
 
     public enum widgetVariables {

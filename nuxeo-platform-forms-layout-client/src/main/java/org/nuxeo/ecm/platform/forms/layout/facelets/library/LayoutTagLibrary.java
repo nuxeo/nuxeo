@@ -48,7 +48,9 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
         addTagHandler("widget", WidgetTagHandler.class);
         addTagHandler("layout", LayoutTagHandler.class);
         addTagHandler("layoutRow", LayoutRowTagHandler.class);
+        addTagHandler("layoutColumn", LayoutRowTagHandler.class);
         addTagHandler("layoutRowWidget", LayoutRowWidgetTagHandler.class);
+        addTagHandler("layoutColumnWidget", LayoutRowWidgetTagHandler.class);
         addTagHandler("subWidget", SubWidgetTagHandler.class);
         addTagHandler("documentLayout", DocumentLayoutTagHandler.class);
     }

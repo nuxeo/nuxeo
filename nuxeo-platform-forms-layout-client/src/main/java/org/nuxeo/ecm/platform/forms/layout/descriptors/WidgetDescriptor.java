@@ -42,7 +42,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 @XObject("widget")
 public class WidgetDescriptor implements WidgetDefinition {
 
-    private static final long serialVersionUID = 727199945168266866L;
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(WidgetDescriptor.class);
 

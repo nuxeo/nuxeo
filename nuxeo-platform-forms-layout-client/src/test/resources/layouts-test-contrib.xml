@@ -169,6 +169,18 @@
       </rows>
     </layout>
 
+    <layout name="layoutColumnsTest">
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="layoutColumnPropName">
+              layoutColumnPropValue
+            </property>
+          </properties>
+          <widget>globalTestWidget</widget>
+        </column>
+      </columns>
+    </layout>
   </extension>
 
 </component>

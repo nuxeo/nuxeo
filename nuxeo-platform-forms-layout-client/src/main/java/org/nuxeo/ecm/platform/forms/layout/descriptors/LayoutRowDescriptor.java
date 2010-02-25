@@ -37,7 +37,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
 @XObject("row")
 public class LayoutRowDescriptor implements LayoutRowDefinition {
 
-    private static final long serialVersionUID = -5799358003880525698L;
+    private static final long serialVersionUID = 1L;
 
     @XNodeList(value = "widget", type = String[].class, componentType = String.class)
     String[] widgets = new String[0];

@@ -31,7 +31,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 @XObject("field")
 public class FieldDescriptor implements FieldDefinition {
 
-    private static final long serialVersionUID = -4633109397068178283L;
+    private static final long serialVersionUID = 1L;
 
     @XNode("@schema")
     String schema;

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,31 +14,22 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: PropertyListDescriptor.java 26053 2007-10-16 01:45:43Z atchertchian $
+ * $Id: $
  */
 
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
-import java.io.Serializable;
-
-import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Property list descriptor
+ * Layout column descriptor, acts as an alias of {@link LayoutRowDescriptor}.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ *
  */
-@XObject("propertyList")
-public class PropertyListDescriptor implements Serializable {
+@XObject("column")
+public class LayoutColumnDescriptor extends LayoutRowDescriptor {
 
     private static final long serialVersionUID = 1L;
-
-    @XNodeList(value = "value", type = String[].class, componentType = String.class)
-    String[] values = new String[0];
-
-    public String[] getValues() {
-        return values;
-    }
 
 }

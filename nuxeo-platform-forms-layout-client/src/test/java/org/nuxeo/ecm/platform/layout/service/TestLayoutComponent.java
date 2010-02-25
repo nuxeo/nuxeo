@@ -180,22 +180,35 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
     }
 
     public void testLayoutPropertiesRegistration() {
-        LayoutDefinition layoutPropertiesLayout = service.getLayoutDefinition("layoutPropertiesTest");
-        assertNotNull(layoutPropertiesLayout);
-        assertEquals("layoutPropertiesTest", layoutPropertiesLayout.getName());
+        LayoutDefinition layoutDef = service.getLayoutDefinition("layoutPropertiesTest");
+        assertNotNull(layoutDef);
+        assertEquals("layoutPropertiesTest", layoutDef.getName());
 
-        assertNotNull(layoutPropertiesLayout.getProperties("any"));
-        assertEquals("layoutPropValue", layoutPropertiesLayout.getProperties(
-                "any").get("layoutPropName"));
+        assertNotNull(layoutDef.getProperties("any"));
+        assertEquals("layoutPropValue", layoutDef.getProperties("any").get(
+                "layoutPropName"));
 
-        LayoutRowDefinition[] layoutRows = layoutPropertiesLayout.getRows();
+        LayoutRowDefinition[] layoutRows = layoutDef.getRows();
         assertNotNull(layoutRows);
         assertEquals(1, layoutRows.length);
         LayoutRowDefinition layoutRow = layoutRows[0];
         assertNotNull(layoutRow.getProperties("any"));
         assertEquals("layoutRowPropValue", layoutRow.getProperties("any").get(
                 "layoutRowPropName"));
+    }
 
+    public void testLayoutColumnsRegistration() {
+        LayoutDefinition layoutDef = service.getLayoutDefinition("layoutColumnsTest");
+        assertNotNull(layoutDef);
+        assertEquals("layoutColumnsTest", layoutDef.getName());
+
+        LayoutRowDefinition[] layoutColumns = layoutDef.getRows();
+        assertNotNull(layoutColumns);
+        assertEquals(1, layoutColumns.length);
+        LayoutRowDefinition layoutRow = layoutColumns[0];
+        assertNotNull(layoutRow.getProperties("any"));
+        assertEquals("layoutColumnPropValue", layoutRow.getProperties("any").get(
+                "layoutColumnPropName"));
     }
 
 }
