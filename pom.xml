@@ -26,7 +26,6 @@
     <module>nuxeo-dam-webapp</module>
     <module>nuxeo-dam-webapp-override</module>
     <module>nuxeo-dam-lang</module>
-    <module>nuxeo-dam-test</module>
   </modules>
 
   <properties>
@@ -51,12 +50,6 @@
         <groupId>org.nuxeo.dam</groupId>
         <artifactId>nuxeo-dam-facade</artifactId>
         <version>${nuxeo.dam.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-test</artifactId>
-        <version>${nuxeo.dam.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.dam</groupId>

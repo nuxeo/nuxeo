@@ -16,10 +16,6 @@
  */
 package org.nuxeo.dam.core.listener;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.nuxeo.dam.api.Constants.PICTURE_SCHEMA;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,40 +24,47 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.dam.api.Constants;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryJUnit4;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.BackendType;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.google.inject.Inject;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.dam.api.Constants.PICTURE_SCHEMA;
 
 /**
  * @author btatar
  *
  */
-public class TestImageFilenameUpdater extends SQLRepositoryJUnit4 {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@RepositoryConfig(type = BackendType.H2, user = "Administrator")
+@Deploy({
+        "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.platform.picture.api",
+        "org.nuxeo.ecm.platform.picture.core",
+        "org.nuxeo.ecm.platform.video.core",
+        "org.nuxeo.ecm.platform.audio.core", "org.nuxeo.dam.core",
+        "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert",
+        "org.nuxeo.ecm.platform.picture.convert",
+        "org.nuxeo.ecm.platform.commandline.executor"
+})
+public class TestImageFilenameUpdater {
 
-    public TestImageFilenameUpdater() {
-        super("TestImageFilenameUpdater");
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.platform.picture.api");
-        deployBundle("org.nuxeo.ecm.platform.picture.core");
-        deployBundle("org.nuxeo.ecm.platform.video.core");
-        deployBundle("org.nuxeo.ecm.platform.audio.core");
-        deployBundle("org.nuxeo.dam.core");
-        deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.platform.picture.convert");
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        openSession();
-    }
+    @Inject
+    protected CoreSession session;
 
     @Test
     public void testListener() throws Exception {
@@ -151,11 +154,6 @@ public class TestImageFilenameUpdater extends SQLRepositoryJUnit4 {
             fileBlob = (Blob) el.get("content");
             assertTrue((title + "_" + "big_nuxeo_logo edit.jpg").equals(fileBlob.getFilename()));
         }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession(session);
     }
 
 }
