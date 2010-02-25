@@ -135,12 +135,6 @@
       </description>
     </attribute>
     <attribute>
-      <name>mode</name>
-      <required>true</required>
-      <type>java.lang.String</type>
-      <description>Mode in which widget must be rendered.</description>
-    </attribute>
-    <attribute>
       <name>value</name>
       <required>true</required>
       <description>

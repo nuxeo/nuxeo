@@ -18,7 +18,7 @@
                 value="#{messages[widget.label]}" styleClass="labelColumn" />
               </td>
               <td class="fieldColumn"><nxl:widget widget="#{widget}"
-                mode="#{widget.mode}" value="#{submodel.rowData}" /></td>
+                value="#{submodel.rowData}" /></td>
             </tr>
           </nxl:subWidget>
         </nxu:inputList>
@@ -53,7 +53,7 @@
                 <nxl:subWidget>
                   <h:outputText value="#{messages[widget.label]}"
                     styleClass="labelColumn #{nxu:test(widget.required, 'required', '')}" />
-                  <nxl:widget widget="#{widget}" mode="#{widget.mode}"
+                  <nxl:widget widget="#{widget}"
                     value="#{submodel.rowData}" />
                 </nxl:subWidget>
 

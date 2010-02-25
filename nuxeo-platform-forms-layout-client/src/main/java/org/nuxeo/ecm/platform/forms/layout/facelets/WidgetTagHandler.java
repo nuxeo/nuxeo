@@ -59,7 +59,9 @@ public class WidgetTagHandler extends MetaTagHandler {
 
     protected final TagAttribute widget;
 
-    protected final TagAttribute mode;
+    // NXP-4412: not possible right now to take into account specified mode =>
+    // add back later
+    // protected TagAttribute mode;
 
     protected final TagAttribute value;
 
@@ -67,7 +69,6 @@ public class WidgetTagHandler extends MetaTagHandler {
         super(config);
         this.config = config;
         widget = getRequiredAttribute("widget");
-        mode = getRequiredAttribute("mode");
         value = getRequiredAttribute("value");
     }
 
