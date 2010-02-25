@@ -111,6 +111,9 @@ public class WebDriverFeature extends SimpleFeature {
                 public Object get() {
                     Object obj = PageFactory.initElements(config.getDriver(), config.getHomePageClass());
                     runner.getInjector().injectMembers(obj);
+                    if (obj instanceof WebPage) {
+                        ((WebPage)obj).ensureLoaded();
+                    }
                     return obj;
                 } 
             }).in(Scopes.SINGLETON);
