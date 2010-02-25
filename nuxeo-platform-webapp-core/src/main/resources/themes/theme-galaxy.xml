@@ -592,7 +592,7 @@
       <selector path=".vocabularyEntryContent">
         <margin-left>18px</margin-left>
       </selector>
-      <selector path=".dataOutput, .dataList">
+      <selector path=".dataOutput, .dataOutput2Columns, .dataList">
         <width>100%</width>
       </selector>
       <selector path=".wizardFrame .templatePreview">
@@ -619,6 +619,9 @@
         <margin>0</margin>
         <line-height>1.25em</line-height>
         <padding>0</padding>
+      </selector>
+      <selector path=".listingLayoutSelector">
+        <float>right</float>
       </selector>
       <!-- rich faces tree -->
       <selector path=".dr-tree-h-ic-div">
@@ -927,10 +930,17 @@
         <padding>5px</padding>
         <text-align>center</text-align>
       </selector>
-      <selector path=".dataOutput">
+      <selector path=".dataOutput, .dataOutput2Columns">
         <border-collapse>collapse</border-collapse>
         <margin-bottom>5px</margin-bottom>
         <margin-top>7px</margin-top>
+      </selector>
+      <selector path=".dataOutput2Columns td">
+        <vertical-align>top</vertical-align>
+      </selector>
+      <selector path=".selectDocumentType td a img">
+        <margin-right>4px</margin-right>
+        <vertical-align>top</vertical-align>
       </selector>
       <selector path=".commentCreationDate">
         <font-weight>normal</font-weight>
@@ -966,6 +976,10 @@
       <selector path=".dataOutput td">
         <border-bottom preset="tablelines (Galaxy borders)"/>
         <border-top preset="tablelines (Galaxy borders)"/>
+        <padding>5px 3px</padding>
+      </selector>
+      <selector path=".dataOutput2Columns td">
+        <vertical-align>top</vertical-align>
         <padding>5px 3px</padding>
       </selector>
       <selector path=".selectDocumentType td a img">
@@ -1236,7 +1250,7 @@
         <background>transparent</background>
         <text-decoration>none</text-decoration>
       </selector>
-      <selector path=".dataInput, .dataOutput, .dataList">
+      <selector path=".dataInput, .dataOutput, .dataOutput2Columns, .dataList">
         <border preset="gray.light (Galaxy borders)" />
         <border-collapse>collapse</border-collapse>
       </selector>
@@ -1246,6 +1260,10 @@
       <selector path=".dataOutput td, .dataList td">
         <border-bottom preset="tablelines (Galaxy borders)"/>
         <border-top preset="tablelines (Galaxy borders)"/>
+        <padding>5px 3px</padding>
+      </selector>
+      <selector path=".dataOutput2Columns td">
+        <vertical-align>top</vertical-align>
         <padding>5px 3px</padding>
       </selector>
       <selector path="img">
