@@ -238,10 +238,6 @@
         <include name="postgresql*" />
         <include name="quartz-all*" />
         <include name="servlet-api*" />
-        <include name="shindig-common*" />
-        <include name="shindig-features*" />
-        <include name="shindig-gadgets*" />
-        <include name="shindig-social-api*" />
         <include name="webservices-api*" />
         <include name="xercesImpl*" />
         <include name="xml-apis*" />
