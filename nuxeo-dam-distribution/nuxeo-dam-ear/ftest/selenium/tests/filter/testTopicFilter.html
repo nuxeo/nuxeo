@@ -236,9 +236,19 @@
 	<td></td>
 </tr>
 <tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
 	<td>select</td>
 	<td>//*[@id=&quot;navigation:assetView:editSubView:nxl_dublincore_2:nxw_topic_2:nxw_topic_2_topic&quot;]</td>
 	<td>label=Human science</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>20000</td>
+	<td></td>
 </tr>
 <tr>
 	<td>select</td>
@@ -248,6 +258,16 @@
 <tr>
 	<td>watchA4jRequests</td>
 	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>navigation:assetView:editSubView:nxl_dublincore_2:nxw_topic_2:nxw_topic_2_add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>20000</td>
 	<td></td>
 </tr>
 <tr>
@@ -275,8 +295,9 @@
 	<td>5000</td>
 	<td></td>
 </tr>
+<!-- P-01 is still in the result listing since we added a new topic -->
 <tr>
-	<td>verifyTextNotPresent</td>
+	<td>verifyTextPresent</td>
 	<td>P-01</td>
 	<td></td>
 </tr>

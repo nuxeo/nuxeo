@@ -4,6 +4,7 @@
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
    class="dataOutput">
 
   <ui:define name="page title">
@@ -19,7 +20,8 @@
         var annotationConfiguration = {
           annoteaServerUrl : "#{baseURL}Annotations",
           annotationCssUrl : "/nuxeo/org.nuxeo.ecm.platform.annotations.gwt.AnnotationPanel/annotation-style.css",
-          previewUrl: "#{previewActions.previewWithBlobPostProcessingURL}"
+          previewUrl: "#{previewActions.previewWithBlobPostProcessingURL}",
+          documentUrl: "#{nxd:documentUrl(currentDocument)}"
         };
 
         var serverSettings = {

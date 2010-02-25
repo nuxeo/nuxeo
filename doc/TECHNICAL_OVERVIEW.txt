@@ -116,10 +116,6 @@ The project layout is as follows:
     - A Jetty distribution
     - A Tomcat distribution
 
-- nuxeo-dam-test
-
-  JUnit4 wrappers for runtime test case.
-
 
 Continous integration
 ---------------------

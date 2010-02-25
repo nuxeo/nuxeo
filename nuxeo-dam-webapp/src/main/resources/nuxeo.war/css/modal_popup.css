@@ -59,32 +59,53 @@
 
 .fieldColumn input {
   font:normal 11px "Lucida Grande", Verdana, sans-serif;
-  margin:0 5px 0 0;
-  width:285px;
   border:1px solid #dedede;
 }
 
-.fieldColumn .dataInputTextDate {
+.fieldColumn input[type="text"] {
+  width:285px;
+  margin:0 5px 0 0;
+}
+
+.fieldColumn input[type="text"].dataInputTextDate {
   width:250px;
 }
 
-.fieldColumn button{
+.fieldColumn button {
   margin:5px 0 0 0;
 }
 
-.fieldColumn textarea{
+.fieldColumn input[type="button"] {
+  margin: 0;
+}
+
+.fieldColumn textarea {
   font:normal 11px "Lucida Grande", Verdana, sans-serif;
   width:285px;
   border:1px solid #dedede;
 }
 
-.fieldColumn select{
+.fieldColumn select {
   font:normal 11px "Lucida Grande", Verdana, sans-serif;
   margin:0 0 5px;
   width:290px;
 }
 
-.buttonsGadget{
+/* used by multi-select widgets (e.g. subjects) */
+.fieldColumn select[size="4"] {
+  width: 142px;
+}
+
+.fieldColumn input[type="image"] {
+	border: none;
+}
+
+.fieldColumn .selectionStatus div {
+  width: 290px;
+  background-color: #def;
+}
+
+.buttonsGadget {
   text-align:center;
 }
 

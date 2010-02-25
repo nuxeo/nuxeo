@@ -20,33 +20,39 @@ package org.nuxeo.dam.core.listener;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import org.junit.runner.RunWith;
 import org.nuxeo.dam.core.Constants;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryJUnit4;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.After;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.BackendType;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.google.inject.Inject;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
-public class TestInitPropertiesListener extends SQLRepositoryJUnit4 {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@RepositoryConfig(type = BackendType.H2, user = "Administrator")
+@Deploy({
+        "org.nuxeo.ecm.core.api",
+        "org.nuxeo.ecm.platform.picture.api",
+        "org.nuxeo.ecm.platform.picture.core",
+        "org.nuxeo.ecm.platform.video.core",
+        "org.nuxeo.ecm.platform.audio.core",
+        "org.nuxeo.dam.core"
+})
+public class TestInitPropertiesListener {
 
-    public TestInitPropertiesListener() {
-        super("TestInitPropertiesListener");
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.platform.picture.api");
-        deployBundle("org.nuxeo.ecm.platform.picture.core");
-        deployBundle("org.nuxeo.ecm.platform.video.core");
-        deployBundle("org.nuxeo.ecm.platform.audio.core");
-        deployBundle("org.nuxeo.dam.core");
-
-        openSession();
-    }
+    @Inject
+    protected CoreSession session;
 
     @Test
     public void testListener() throws Exception {
@@ -93,11 +99,6 @@ public class TestInitPropertiesListener extends SQLRepositoryJUnit4 {
         assertEquals("testDescription", picture.getPropertyValue("dc:description"));
         assertEquals("testCoverage", picture.getPropertyValue("dc:coverage"));
         assertEquals(cal, picture.getPropertyValue("dc:expired"));
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession(session);
     }
 
 }
