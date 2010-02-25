@@ -7,8 +7,13 @@
   class="menu">
 
 <div class="userClipboard">
-<a4j:region id="userClipboard_ajaxRegion">
-  <a4j:outputPanel id="MultiTreeView">
+
+<c:if test="false">
+ DO NOT ajax enable this tree: it is useless and the tree must not be rerendered
+ when other ajax requests happen on the page
+</c:if>
+<a4j:region renderRegionOnly="true" id="userClipboard_ajaxRegion">
+  <a4j:outputPanel ajaxRendered="false" id="MultiTreeView">
 
     <div class="tabsBar">
       <h:form id="virtualNavTreeTab">
@@ -29,7 +34,7 @@
 
       <c:choose>
        <c:when test="#{multiNavTreeManager.selectedNavigationTree == 'CONTENT_TREE'}">
-             <ui:include src="/incl/tree_explorer.xhtml"/>
+         <ui:include src="/incl/tree_explorer.xhtml"/>
        </c:when>
 
        <c:when test="#{selectedNavigationTreeDescriptor.directoryTreeBased}">
@@ -39,7 +44,7 @@
        </c:when>
 
        <c:when test="#{selectedNavigationTreeDescriptor.xhtmlview != null}">
-           <ui:include src="#{selectedNavigationTreeDescriptor.xhtmlview}"/>
+         <ui:include src="#{selectedNavigationTreeDescriptor.xhtmlview}"/>
        </c:when>
 
       </c:choose>
