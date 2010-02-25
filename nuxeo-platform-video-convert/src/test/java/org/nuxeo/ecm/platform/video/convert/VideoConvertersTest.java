@@ -84,6 +84,7 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
         assertEquals("video-thumb-000000.jpeg", blobs.get(0).getFilename());
         assertEquals("video-thumb-000080.jpeg", blobs.get(1).getFilename());
         assertEquals("video-thumb-000560.jpeg", blobs.get(7).getFilename());
+        assertEquals(653L, result.getProperty("duration"));
     }
 
 }

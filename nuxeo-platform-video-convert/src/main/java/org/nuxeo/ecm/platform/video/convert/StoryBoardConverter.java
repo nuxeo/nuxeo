@@ -28,26 +28,30 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
-import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.streaming.FileSource;
+import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * Converter to extract a list of equally spaced JPEG thumbnails to represent
- * the storyline of a movie file using the ffmpeg commandline tool.
+ * the story-line of a movie file using the ffmpeg commandline tool.
  *
  * @author ogrisel
  */
@@ -70,6 +74,8 @@ public class StoryBoardConverter implements Converter {
     protected int numberOfThumbnails = 8;
 
     protected Map<String, String> commonParams = new HashMap<String, String>();
+
+    protected static final Pattern DURATION_PATTERN = Pattern.compile("Duration: ([:\\d]+)");
 
     public void init(ConverterDescriptor descriptor) {
         try {
@@ -109,10 +115,17 @@ public class StoryBoardConverter implements Converter {
                 // avoid creating temporary files when unnecessary
                 FileBlob fileBlob = (FileBlob) blob;
                 inFile = fileBlob.getFile();
-            } else {
-                // TODO: introspect source of StreamingBlobs to avoid creating
-                // another temporary file unnecessary if the source is already
-                // FileSource
+            } else if (blob instanceof StreamingBlob) {
+                StreamingBlob streamingBlob = (StreamingBlob) blob;
+                StreamSource source = streamingBlob.getStreamSource();
+                if (source instanceof FileSource) {
+                    FileSource fileSource = (FileSource) source;
+                    inFile = fileSource.getFile();
+                }
+            }
+
+            if (inFile == null) {
+                // create temporary dfile
                 inFile = File.createTempFile("StoryBoardConverter-in-", "-"
                         + blob.getFilename());
                 blob.transferTo(inFile);
@@ -138,7 +151,10 @@ public class StoryBoardConverter implements Converter {
                 throw result.getError();
             }
             List<Blob> blobs = collectBlobs(outFolder);
-            return new SimpleCachableBlobHolder(blobs);
+
+            Map<String, Serializable> properties = new HashMap<String, Serializable>();
+            properties.put("duration", extractDuration(result.getOutput()));
+            return new SimpleBlobHolderWithProperties(blobs, properties);
         } catch (Exception e) {
             if (blob != null) {
                 throw new ConversionException(
@@ -154,6 +170,20 @@ public class StoryBoardConverter implements Converter {
                 FileUtils.deleteQuietly(inFile);
             }
         }
+    }
+
+    protected Long extractDuration(List<String> output) {
+        for (String line : output) {
+            Matcher matcher = DURATION_PATTERN.matcher(line);
+            if (matcher.find()) {
+                String duration = matcher.group(1);
+                String[] parts = duration.split(":");
+                return Long.parseLong(parts[0]) * 3600
+                        + Long.parseLong(parts[1]) * 60
+                        + Long.parseLong(parts[2]);
+            }
+        }
+        return null;
     }
 
     protected List<Blob> collectBlobs(File outFolder) throws IOException,
