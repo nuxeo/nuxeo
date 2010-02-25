@@ -218,9 +218,13 @@
         When rendered, some variables are exposed to the resolution context and
         can be used inside the tag:
         <ul>
-          <li>'layoutRow' references the current layout row.</li>
           <li>
-            'layoutRowIndex' references its index in the layout list of rows.
+            'layoutRow' and alias 'layoutColumn' reference the current layout
+            row or column.
+          </li>
+          <li>
+            'layoutRowIndex' and alias 'layoutColumnIndex' reference its index
+            in the layout list of rows/columns.
           </li>
         </ul>
       </p>
@@ -319,7 +323,9 @@
     <name>layoutColumnWidget</name>
     <tag-class>None</tag-class>
     <body-content>None</body-content>
-    <description>Facelet tag handler equivalent to layoutColumnWidget tag.</description>
+    <description>
+      Facelet tag handler equivalent to layoutColumnWidget tag.
+    </description>
   </tag>
 
   <tag>
