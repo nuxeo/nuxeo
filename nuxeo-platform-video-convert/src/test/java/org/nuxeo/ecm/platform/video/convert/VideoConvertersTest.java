@@ -1,0 +1,89 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+package org.nuxeo.ecm.platform.video.convert;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
+public class VideoConvertersTest extends NXRuntimeTestCase {
+
+    public static final Log log = LogFactory.getLog(VideoConvertersTest.class);
+
+    // http://www.elephantsdream.org/
+    public static final String ELEPHANTS_DREAM = "elephantsdream-160-mpeg4-su-ac3.avi";
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core.convert.api");
+        deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
+        deployBundle("org.nuxeo.ecm.platform.video.convert");
+    }
+
+    protected static BlobHolder getBlobFromPath(String path) throws IOException {
+        InputStream is = VideoConvertersTest.class.getResourceAsStream("/"
+                + path);
+        assertNotNull(String.format("Failed to load resource: " + path), is);
+        return new SimpleBlobHolder(
+                StreamingBlob.createFromStream(is, path).persist());
+    }
+
+    protected BlobHolder applyConverter(String converter, String fileName)
+            throws Exception {
+        ConversionService cs = Framework.getService(ConversionService.class);
+        assertNotNull(cs.getRegistredConverters().contains(converter));
+        BlobHolder in = getBlobFromPath(fileName);
+        BlobHolder result = cs.convert(converter, in, null);
+        assertNotNull(result);
+        return result;
+    }
+
+    public void testStoryBoardConverter() throws Exception {
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        assertNotNull(cles);
+        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-storyboard");
+        if (!ca.isAvailable()) {
+            log.warn("ffmpeg is not avalaible, skipping test");
+            return;
+        }
+        BlobHolder result = applyConverter(Constants.STORYBOARD_CONVERTER,
+                ELEPHANTS_DREAM);
+        List<Blob> blobs = result.getBlobs();
+        assertEquals(8, blobs.size());
+        assertEquals("video-thumb-000000.jpeg", blobs.get(0).getFilename());
+        assertEquals("video-thumb-000080.jpeg", blobs.get(1).getFilename());
+        assertEquals("video-thumb-000560.jpeg", blobs.get(7).getFilename());
+    }
+
+}

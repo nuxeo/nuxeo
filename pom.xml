@@ -16,6 +16,7 @@
 
   <modules>
     <module>nuxeo-platform-video-core</module>
+    <module>nuxeo-platform-video-convert</module>
   </modules>
 
   <dependencyManagement>

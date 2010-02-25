@@ -1,7 +1,27 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
 package org.nuxeo.ecm.platform.video.convert;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -31,6 +53,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class StoryBoardConverter implements Converter {
 
+    public static final Log log = LogFactory.getLog(StoryBoardConverter.class);
+
     public static final String FFMPEG_STORYBOARD_CONVERTER = "ffmpeg-storyboard";
 
     public static final String RATE_PARAM = "rate";
@@ -48,7 +72,12 @@ public class StoryBoardConverter implements Converter {
     protected Map<String, String> commonParams = new HashMap<String, String>();
 
     public void init(ConverterDescriptor descriptor) {
-        cleService = Framework.getLocalService(CommandLineExecutorService.class);
+        try {
+            cleService = Framework.getService(CommandLineExecutorService.class);
+        } catch (Exception e) {
+            log.error(e, e);
+            return;
+        }
         commonParams = descriptor.getParameters();
         if (!commonParams.containsKey(RATE_PARAM)) {
             // NB: the minimum rate accepted by the current version of ffmpeg
@@ -57,12 +86,12 @@ public class StoryBoardConverter implements Converter {
             commonParams.put(RATE_PARAM, "0.1");
         }
         if (!commonParams.containsKey(WIDTH_PARAM)) {
-            commonParams.put(WIDTH_PARAM, "200");
+            commonParams.put(WIDTH_PARAM, "176");
         }
         if (!commonParams.containsKey(HEIGHT_PARAM)) {
-            commonParams.put(HEIGHT_PARAM, "150");
+            commonParams.put(HEIGHT_PARAM, "144");
         }
-        if (!commonParams.containsKey(THUMBNAIL_NUMBER_PARAM)) {
+        if (commonParams.containsKey(THUMBNAIL_NUMBER_PARAM)) {
             numberOfThumbnails = Integer.parseInt(commonParams.get(THUMBNAIL_NUMBER_PARAM));
         }
     }
@@ -98,8 +127,6 @@ public class StoryBoardConverter implements Converter {
             params.addNamedParameter("inFilePath", inFile.getAbsolutePath());
             params.addNamedParameter("outFolderPath",
                     outFolder.getAbsolutePath());
-            // TODO: make the following parameters configurable
-
             params.addNamedParameter(RATE_PARAM, commonParams.get(RATE_PARAM));
             params.addNamedParameter(WIDTH_PARAM, commonParams.get(WIDTH_PARAM));
             params.addNamedParameter(HEIGHT_PARAM,
@@ -110,28 +137,7 @@ public class StoryBoardConverter implements Converter {
             if (!result.isSuccessful()) {
                 throw result.getError();
             }
-
-            List<File> thumbs = new ArrayList<File>(FileUtils.listFiles(
-                    outFolder, new String[] { "jpeg" }, false));
-            Collections.sort(thumbs);
-            List<Blob> blobs = new ArrayList<Blob>();
-            int skip = 1;
-            int max = blobs.size();
-            if (blobs.size() > numberOfThumbnails) {
-                skip = blobs.size() / numberOfThumbnails;
-                max = numberOfThumbnails;
-            }
-            for (int i = 0; i < max; i += skip) {
-                Blob keptBlob = StreamingBlob.createFromStream(
-                        new FileInputStream(thumbs.get(i)), "image/jpeg").persist();
-                // abusing the encoding field to store the time code
-                // TODO: 10s is a match for the default rate of 0.1 fps: need to
-                // make it dynamic
-                String timecode = String.format("%d", i * 10);
-                keptBlob.setEncoding(timecode);
-                blobs.add(keptBlob);
-            }
-
+            List<Blob> blobs = collectBlobs(outFolder);
             return new SimpleCachableBlobHolder(blobs);
         } catch (Exception e) {
             if (blob != null) {
@@ -148,5 +154,35 @@ public class StoryBoardConverter implements Converter {
                 FileUtils.deleteQuietly(inFile);
             }
         }
+    }
+
+    protected List<Blob> collectBlobs(File outFolder) throws IOException,
+            FileNotFoundException {
+
+        List<File> thumbs = new ArrayList<File>(FileUtils.listFiles(outFolder,
+                new String[] { "jpeg" }, false));
+        Collections.sort(thumbs);
+        List<Blob> blobs = new ArrayList<Blob>();
+        int skip = 1;
+        if (thumbs.size() > numberOfThumbnails) {
+            skip = thumbs.size() / numberOfThumbnails;
+        }
+        for (int i = 0; i < thumbs.size(); i += skip) {
+            Blob keptBlob = StreamingBlob.createFromStream(
+                    new FileInputStream(thumbs.get(i)), "image/jpeg").persist();
+            // TODO: 10s is a match for the default rate of 0.1 fps: need to
+            // make it dynamic
+            String timecode = String.format("%06d", i * 10);
+            keptBlob.setFilename(String.format("video-thumb-%s.jpeg", timecode));
+            // abusing the encoding field to store the time code
+            keptBlob.setEncoding(timecode);
+            blobs.add(keptBlob);
+            if (blobs.size() >= numberOfThumbnails) {
+                // depending of the remainder of the euclidean division we might
+                // get an additional unwanted blob, skip the last
+                break;
+            }
+        }
+        return blobs;
     }
 }

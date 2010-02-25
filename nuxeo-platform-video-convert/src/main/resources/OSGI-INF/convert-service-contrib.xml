@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.video.convert.converters">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+    point="converter">
+
+    <converter name="videoStoryBoard"
+     class="org.nuxeo.ecm.platform.video.convert.StoryBoardConverter">
+      <sourceMimeType>video/mpeg</sourceMimeType>
+      <sourceMimeType>video/mp4</sourceMimeType>
+      <sourceMimeType>video/quicktime</sourceMimeType>
+      <sourceMimeType>video/ogg</sourceMimeType>
+      <sourceMimeType>video/x-ms-asf</sourceMimeType>
+      <sourceMimeType>video/x-msvideo</sourceMimeType>
+      <sourceMimeType>video/flv</sourceMimeType>
+      <destinationMimeType>image/jpeg</destinationMimeType>
+    </converter>
+
+  </extension>
+
+</component>
