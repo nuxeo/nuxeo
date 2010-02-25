@@ -220,6 +220,23 @@
       <!-- Remote publication lib -->
       <artifact:resolveFile key="org.apache.httpcomponents:httpclient" />
       <artifact:resolveFile key="org.apache.httpcomponents:httpcore" />
+
+      <!-- Shindig libs -->
+      <artifact:resolveFile key="org.apache.shindig:shindig-common" />
+      <artifact:resolveFile key="org.apache.shindig:shindig-gadgets" />
+      <artifact:resolveFile key="org.apache.shindig:shindig-social-api" />
+      <artifact:resolveFile key="org.apache.shindig:shindig-features" />
+      <artifact:resolveFile key="com.google.code.guice:guice" />
+      <artifact:resolveFile key="com.google.code.guice:guice-jmx" />
+      <artifact:resolveFile key="caja:caja" />
+      <artifact:resolveFile key="net.oauth.core:oauth" />
+      <artifact:resolveFile key="rome:rome" />
+      <artifact:resolveFile key="net.sourceforge.nekohtml:nekohtml" />
+      <artifact:resolveFile key="joda-time:joda-time" />
+      <artifact:resolveFile key="org.json:json" />
+      <artifact:resolveFile key="de.odysseus.juel:juel-impl" />
+      <artifact:resolveFile key="aopalliance:aopalliance" />
+      <artifact:resolveFile key="org.apache.sanselan:sanselan" />
     </copy>
   </target>
 
