@@ -32,14 +32,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.In;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.jboss.seam.annotations.In;
 
 import static org.jboss.seam.ScopeType.STATELESS;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+
 
 /**
  * Performs re-rendering of webcontainer layout widgets.
@@ -51,112 +52,141 @@ import static org.jboss.seam.ScopeType.STATELESS;
 @Scope(STATELESS)
 public class SiteActionsBean {
 
-	private static final Log log = LogFactory.getLog(SiteActionsBean.class);
+    private static final Log log = LogFactory.getLog(SiteActionsBean.class);
 
-	@In(create = true)
-	protected transient CoreSession documentManager;
+    @In(create = true)
+    protected transient CoreSession documentManager;
 
-	protected static final String WEBSITE = "WebSite";
+    protected static final String WEBSITE = "WebSite";
 
-	protected static final String WEBBLOG = "BlogSite";
+    protected static final String WEBBLOG = "BlogSite";
 
-	/**
-	 * Validates the web container fields. If the workspace is web container, it
-	 * also needs to have name. The usual required JSF component can't be used,
-	 * because it will block the validation no matter if the checkbox is set or
-	 * not. As result, the widget validation is used. The both values need to be
-	 * available in layout to be used.
-	 */
-	public void validateName(FacesContext context, UIComponent component,
-			Object value) {
+    /**
+     * Validates the web container fields. If the workspace is web container, it
+     * also needs to have name. The usual required JSF component can't be used,
+     * because it will block the validation no matter if the checkbox is set or
+     * not. As result, the widget validation is used. The both values need to be
+     * available in layout to be used.
+     */
+    public void validateName(FacesContext context, UIComponent component,
+            Object value) {
 
-		Map<String, Object> attributes = component.getAttributes();
+        Map<String, Object> attributes = component.getAttributes();
 
-		String wcId = (String) attributes.get("webContainerId");
-		if (wcId == null) {
-			log.debug("Cannot validate name: input wcId not found");
-			return;
-		}
+        String wcId = (String) attributes.get("webContainerId");
+        if (wcId == null) {
+            log.debug("Cannot validate name: input wcId not found");
+            return;
+        }
 
-		UIInput wcComp = (UIInput) component.findComponent(wcId);
-		if (wcComp == null) {
-			log.debug("Cannot validate name: input wcId not found second time");
-			return;
-		}
+        UIInput wcComp = (UIInput) component.findComponent(wcId);
+        if (wcComp == null) {
+            log.debug("Cannot validate name: input wcId not found second time");
+            return;
+        }
 
-		Boolean propValue = (Boolean) wcComp.getLocalValue();
-		boolean isWC = false;
-		if (propValue != null) {
-			isWC = propValue;
-		}
-		if (!isWC) {
-			// no need validation if not web container
-			return;
-		}
+        Boolean propValue = (Boolean) wcComp.getLocalValue();
+        boolean isWC = false;
+        if (propValue != null) {
+            isWC = propValue;
+        }
+        if (!isWC) {
+            // no need validation if not web container
+            return;
+        }
 
-		String nameId = (String) attributes.get("nameId");
-		if (nameId == null) {
-			log.error("Cannot validate name: input id(s) not found");
-			return;
-		}
+        String nameId = (String) attributes.get("nameId");
+        if (nameId == null) {
+            log.error("Cannot validate name: input id(s) not found");
+            return;
+        }
 
-		UIInput nameComp = (UIInput) component.findComponent(nameId);
-		if (nameComp == null) {
-			log.error("Cannot validate name: input(s) not found second time");
-			return;
-		}
+        UIInput nameComp = (UIInput) component.findComponent(nameId);
+        if (nameComp == null) {
+            log.error("Cannot validate name: input(s) not found second time");
+            return;
+        }
 
-		Object nameObj = nameComp.getLocalValue();
+        Object nameObj = nameComp.getLocalValue();
 
-		if (nameObj == null || StringUtils.isBlank(nameObj.toString())) {
-			FacesMessage message = new FacesMessage(
-					FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-							context, "label.error.need.name.webcontainer"),
-					null);
-			throw new ValidatorException(message);
-		}
+        if (nameObj == null || StringUtils.isBlank(nameObj.toString())) {
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            context, "label.error.need.name.webcontainer"),
+                            null);
+            throw new ValidatorException(message);
+        }
 
-	}
+    }
 
-	public void validateSiteTitle(FacesContext context, UIComponent component,
-			Object value) {
-		validateSite(context, component, value, WEBSITE);
-	}
+    public void validateSiteTitle(FacesContext context, UIComponent component,
+            Object value) {
+        validateSite(context, component, value, WEBSITE);
+    }
 
-	public void validateBlogTitle(FacesContext context, UIComponent component,
-			Object value) {
-		validateSite(context, component, value, WEBBLOG);
-	}
+    public void validateBlogTitle(FacesContext context, UIComponent component,
+            Object value) {
+        validateSite(context, component, value, WEBBLOG);
+    }
 
-	private void validateSite(FacesContext context, UIComponent component,
-			Object value, String siteType) {
-		if (value instanceof String) {
-			try {
-				DocumentModelList sites = querySitesByUrlAndDocType(
-						documentManager, value.toString(), siteType);
-				if (sites.size() > 0) {
-					FacesMessage message = new FacesMessage(
-							FacesMessage.SEVERITY_ERROR,
-							ComponentUtils.translate(context,
-									"label.site.notunique.title"), null);
-					// also add global message
-					context.addMessage(null, message);
-					throw new ValidatorException(message);
-				}
-			} catch (ClientException e) {
-				log.error(e);
-			}
-		}
-	}
+    private void validateSite(FacesContext context, UIComponent component,
+            Object value, String siteType) {
+        if (value instanceof String) {
+            try {
+                DocumentModelList sites = querySitesByUrlAndDocType(
+                        documentManager, value.toString(), siteType);
+                if (sites.size() > 0) {
+                    FacesMessage message = new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            ComponentUtils.translate(context,
+                            "label.site.notunique.title"), null);
+                    // also add global message
+                    context.addMessage(null, message);
+                    throw new ValidatorException(message);
+                }
+            } catch (ClientException e) {
+                log.error(e);
+            }
+        }
+    }
 
-	private DocumentModelList querySitesByUrlAndDocType(CoreSession session,
-			String url, String documentType) throws ClientException {
-		String queryString = String.format("SELECT * FROM %s WHERE "
-				+ "ecm:mixinType = 'WebView' AND webc:url = \"%s\" AND "
-				+ "ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 "
-				+ "AND ecm:currentLifeCycleState != 'deleted' "
-				+ "AND webc:isWebContainer = 1", documentType, url);
-		DocumentModelList list = session.query(queryString);
-		return list;
-	}
+    private DocumentModelList querySitesByUrlAndDocType(CoreSession session,
+            String url, String documentType) throws ClientException {
+        QuerySitesUnrestricted unrestrictedRunner = new QuerySitesUnrestricted(
+                session, documentType, url);
+        unrestrictedRunner.runUnrestricted();
+        return unrestrictedRunner.getResultList();
+    }
+
+    private class QuerySitesUnrestricted extends UnrestrictedSessionRunner {
+
+        private final String documentType;
+
+        private final String url;
+
+        private DocumentModelList list;
+
+        public QuerySitesUnrestricted(CoreSession session, String documentType,
+                String url) {
+            super(session);
+            this.documentType = documentType;
+            this.url = url;
+
+        }
+
+        @Override
+        public void run() throws ClientException {
+            String queryString = String.format("SELECT * FROM %s WHERE "
+                    + "ecm:mixinType = 'WebView' AND webc:url = \"%s\" AND "
+                    + "ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 "
+                    + "AND ecm:currentLifeCycleState != 'deleted' "
+                    + "AND webc:isWebContainer = 1", documentType, url);
+            list = session.query(queryString);
+        }
+
+        DocumentModelList getResultList() {
+            return list;
+        }
+    }
+
 }
