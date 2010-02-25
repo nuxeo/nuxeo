@@ -63,12 +63,11 @@ function setVideo(balise){
     jQuery("#baliseVideo").text(balise);
     var dim = gadgets.window.getViewportDimensions();
     var embed = jQuery("embed");
-    if(embed.length == 0){
-    	embed = jQuery("object");	
-    }
-    var h = (dim.width * jQuery("object").height())/jQuery("object").width();
+    if(embed.length == 0) embed = jQuery("object");	
+    var h = (dim.width * embed.height())/jQuery("object").width();
     embed.width(dim.width);
-    embed.height(h);
+    if(h!=0)
+    	embed.height(h);
     embed.attr("wmode","transparent");
     embed.attr("type","application/x-shockwave-flash");
   } else {
