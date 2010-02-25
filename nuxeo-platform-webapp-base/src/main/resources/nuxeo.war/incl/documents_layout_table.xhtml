@@ -34,7 +34,7 @@
       <table class="dataOutput2Columns">
         <tr>
           <td>
-            <table class="dataOutput">
+            <table>
               <c:forEach var="row" items="#{documents.rows}" varStatus="layoutListingStatus"
                 end="#{(documents.rows.size-1)/2}">
                 <c:set var="showListingHeader" value="#{layoutListingStatus.index == 0}" />
@@ -43,7 +43,7 @@
             </table>
           </td>
           <td>
-            <table class="dataOutput">
+            <table>
               <c:forEach var="row" items="#{documents.rows}" varStatus="layoutListingStatus"
                 begin="#{(documents.rows.size-1)/2 + 1}">
                 <c:set var="showListingHeader" value="#{layoutListingStatus.index == documents.rows.size/2+1}" />

@@ -7,7 +7,8 @@
     <h:form id="listingLayoutSelectForm">
       <h:selectOneMenu value="#{documentListingActions.layoutForCurrentDocument}"
         onchange="Element.next(this).click();"
-        id="listingLayoutSelector">
+        id="listingLayoutSelector"
+        styleClass="listingLayoutSelector">
         <nxu:selectItems value="#{currentAvailableListingLayoutNames}"
           var="item" itemLabel="#{messages[item]}" itemValue="#{item}" />
       </h:selectOneMenu>
