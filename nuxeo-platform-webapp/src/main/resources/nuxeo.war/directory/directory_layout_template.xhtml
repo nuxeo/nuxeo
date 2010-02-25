@@ -33,7 +33,7 @@
     <nxl:layoutRow>
       <nxl:layoutRowWidget>
         <td class="fieldColumn">
-          <nxl:widget widget="#{widget}" mode="view" value="#{value}" />
+          <nxl:widget widget="#{widget}" value="#{value}" />
         </td>
       </nxl:layoutRowWidget>
     </nxl:layoutRow>
@@ -66,7 +66,7 @@
     <nxl:layoutRow>
       <nxl:layoutRowWidget>
         <td class="fieldColumn">
-          <nxl:widget widget="#{widget}" mode="view" value="#{value}" />
+          <nxl:widget widget="#{widget}" value="#{value}" />
         </td>
       </nxl:layoutRowWidget>
     </nxl:layoutRow>
@@ -105,7 +105,7 @@
               <h:outputText value="#{messages[widget.label]}" rendered="#{widget.translated}" />
             </td>
             <td class="fieldColumn">
-              <nxl:widget widget="#{widget}" mode="#{widget.mode}" value="#{value}" />
+              <nxl:widget widget="#{widget}" value="#{value}" />
             </td>
           </nxl:layoutRowWidget>
         </tr>
@@ -131,7 +131,7 @@
                 styleClass="#{nxu:test(widget.required, 'required', '')}" />
             </td>
             <td class="relationCreateFieldColumn">
-              <nxl:widget widget="#{widget}" mode="#{widget.mode}" value="#{value}" />
+              <nxl:widget widget="#{widget}" value="#{value}" />
             </td>
           </nxl:layoutRowWidget>
         </tr>

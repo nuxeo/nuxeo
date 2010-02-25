@@ -13,7 +13,7 @@
       <h:column>
         <h:panelGrid columnClasses="fieldColumn">
           <nxl:subWidget>
-            <nxl:widget widget="#{subWidget}" mode="#{subWidget.mode}"
+            <nxl:widget widget="#{subWidget}"
               value="#{item}" />
           </nxl:subWidget>
         </h:panelGrid>
@@ -47,7 +47,7 @@
                 <nxl:subWidget>
                   <h:outputText value="#{messages[subWidget.label]}"
                     styleClass="labelColumn" />
-                  <nxl:widget widget="#{subWidget}" mode="#{subWidget.mode}"
+                  <nxl:widget widget="#{subWidget}"
                     value="#{model.rowData}" />
                 </nxl:subWidget>
 
