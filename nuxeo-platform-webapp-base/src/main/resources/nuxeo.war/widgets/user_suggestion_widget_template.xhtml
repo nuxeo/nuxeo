@@ -16,11 +16,12 @@
         <nxu:methodResult name="info" value="#{userSuggestionActions.getUserInfo(item)}">
           <f:subview rendered="#{info.type == 'USER_TYPE'}">
             <h:graphicImage value="/icons/user.gif" alt="user.gif" />
-            <h:outputText value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
+            <h:commandLink value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" action="#{userManagerActions.viewUser(info.id)}"/>
           </f:subview>
           <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
             <h:graphicImage value="/icons/group.gif" alt="group.gif" />
-            <h:outputText value="#{info.id}" />
+            <h:commandLink value="#{info.id}"
+                action="#{groupManagerActions.viewGroup(info.id)}" />
           </f:subview>
           <f:subview rendered="#{empty info.type}">
             <h:outputText value="#{item}" />
