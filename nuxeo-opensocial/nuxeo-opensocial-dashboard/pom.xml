@@ -99,8 +99,8 @@
       <artifactId>jboss-seam</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>jaxrs-api</artifactId>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>

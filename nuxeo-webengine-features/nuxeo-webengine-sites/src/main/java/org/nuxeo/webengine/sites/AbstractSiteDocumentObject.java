@@ -40,7 +40,6 @@ import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBSITE;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -173,19 +172,28 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
      * Method called before a search operation is made for the context of the
      * current web object.
      */
-    @POST
     @GET
     @Path("search")
-    public Object getSearchParameters(
-            @FormParam("searchParam") String searchParam) {
-        setSearchParameters(searchParam);
+    public Object getSearchParameters() {
+        setSearchParameters();
         try {
             return getTemplate("template_default.ftl").args(getArguments());
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
     }
-
+    
+    /**
+     * JAX-RS specs doesn't allow  multiple REST designator on a single method so we need to use another method to do a POST  
+     * @param searchParam
+     * @return
+     */
+    @POST
+    @Path("search")
+    public Object _getSearchParameters() {
+        return getSearchParameters();
+    }
+    
     @Override
     @Path(value = "{path}")
     public Resource traverse(@PathParam("path") String path) {
@@ -269,9 +277,9 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
     /**
      * Sets the parameters needed to perform a search.
      */
-    protected void setSearchParameters(String searchParam) {
+    protected void setSearchParameters() {
         ctx.getRequest().setAttribute(THEME_BUNDLE, getSearchThemePage());
-        ctx.setProperty(SEARCH_PARAM, searchParam);
+        ctx.setProperty(SEARCH_PARAM, ctx.getRequest().getParameter("searchParam"));
         ctx.setProperty(SEARCH_PARAM_DOC_TYPE, getWebPageDocumentType());
     }
 

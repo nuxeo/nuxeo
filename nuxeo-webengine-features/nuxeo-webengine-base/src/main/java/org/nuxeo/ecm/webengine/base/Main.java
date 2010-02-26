@@ -21,9 +21,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.app.impl.DefaultContext;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
@@ -50,8 +54,10 @@ public class Main extends ModuleRoot {
     protected final ModuleManager mgr;
     protected Module module;
 
-    public Main() {
+    public Main(@Context UriInfo info, @Context HttpHeaders headers) {
         ctx = WebEngine.getActiveContext();
+        ((DefaultContext)ctx).setUriInfo(info);
+        ((DefaultContext)ctx).setHttpHeaders(headers);
         path = ctx.getBasePath();
         mgr = ctx.getEngine().getModuleManager();
     }
@@ -106,9 +112,9 @@ public class Main extends ModuleRoot {
     @Override
     public Object handleError(WebApplicationException e) {
         if (e instanceof WebSecurityException) {
-            return Response.status(401).entity(getTemplate("error/error_401.ftl")).build();
+            return Response.status(401).entity(getTemplate("error/error_401.ftl")).type("text/html").build();
         } else if (e instanceof WebResourceNotFoundException) {
-            return Response.status(404).entity(getTemplate("error/error_404.ftl")).build();
+            return Response.status(404).entity(getTemplate("error/error_404.ftl")).type("text/html").build();
         } else {
             return super.handleError(e);
         }

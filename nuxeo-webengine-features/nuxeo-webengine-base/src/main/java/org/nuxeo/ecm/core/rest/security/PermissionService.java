@@ -95,13 +95,19 @@ public class PermissionService extends DefaultAdapter {
             Resource target = getTarget();
             session.setACP(target.getAdapter(DocumentModel.class).getRef(), acp, false);
             session.save();
-            return Response.seeOther(new URI(target.getPath())).build();
+            return redirect(target.getPath());
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
     }
 
-    @GET @POST
+    @POST
+    @Path("delete")
+    public Response postDeletePermission() {
+        return deletePermission();
+    }
+    
+    @GET 
     @Path("delete")
     public Response deletePermission() {
         try {
@@ -113,7 +119,7 @@ public class PermissionService extends DefaultAdapter {
             ACLUtils.removePermission(session, target.getAdapter(DocumentModel.class).getRef(),
                     username, permission);
             session.save();
-            return Response.seeOther(new URI(target.getPath())).build();
+            return redirect(target.getPath());
         } catch (Exception e) {
             throw WebException.wrap(e);
         }

@@ -45,7 +45,6 @@ import java.util.List;
 public class UserService extends DefaultObject {
 
     @GET
-    @POST
     public Object getIndex(@QueryParam("query") String query,
             @QueryParam("group") String group) throws Exception {
         if (query != null && !query.equals("")) {

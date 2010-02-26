@@ -53,8 +53,8 @@ public class BlogPost extends Page {
     }
 
     @Override
-    protected void setSearchParameters(String searchParam) {
-        super.setSearchParameters(searchParam);
+    protected void setSearchParameters() {
+        super.setSearchParameters();
 
         String year = ctx.getRequest().getParameter("year");
         String month = ctx.getRequest().getParameter("month");
