@@ -100,6 +100,8 @@ public class NuxeoConnection implements Connection, SPI {
 
     protected final CoreSession session;
 
+    protected final boolean ownSession;
+
     protected final NuxeoFolder rootFolder;
 
     /** map of lowercase type name to actual Nuxeo type name */
@@ -108,26 +110,47 @@ public class NuxeoConnection implements Connection, SPI {
     /** map of Nuxeo and CMIS prop names to NXQL names */
     protected final Map<String, String> queryPropNames;
 
+    /**
+     * Creates a Chemistry connection given a Chemistry repository and
+     * connection parameters.
+     * <p>
+     * Usually called directly by {@link NuxeoRepository#getConnection}.
+     *
+     * @param repository the Chemistry repository
+     * @param params the connection parameters
+     */
     public NuxeoConnection(NuxeoRepository repository,
             Map<String, Serializable> params) {
-        this.repository = repository;
+        this(repository, createSession(repository.getId(), params), true);
+    }
 
-        // TODO authentication
-        Map<String, Serializable> context = new HashMap<String, Serializable>();
-        if (params != null) {
-            context.putAll(params);
-            context.put("username", params.get(Repository.PARAM_USERNAME));
+    /**
+     * Creates a Chemistry connection given an already open Nuxeo session.
+     * <p>
+     * The Nuxeo session will <em>not</em> be closed when this connection is
+     * closed (the session belongs to the caller).
+     *
+     * @param repository the Chemistry repository
+     * @param session the Nuxeo session
+     */
+    public NuxeoConnection(NuxeoRepository repository, CoreSession session) {
+        this(repository, session, false);
+    }
+
+    protected NuxeoConnection(NuxeoRepository repository, CoreSession session,
+            boolean ownSession) {
+        if (!repository.getId().equals(session.getRepositoryName())) {
+            throw new IllegalArgumentException(
+                    "Session does not correspond to repository");
         }
-        if (context.get("username") == null) {
-            context.put("username", "Administrator");
-        }
+        this.repository = repository;
+        this.session = session;
+        this.ownSession = ownSession;
         try {
-            session = CoreInstance.getInstance().open(
-                    repository.repositoryName, context);
             rootFolder = new NuxeoFolder(session.getRootDocument(), this,
                     BaseRepository.ROOT_FOLDER_NAME);
         } catch (ClientException e) {
-            throw new RuntimeException("Could not connect", e); // TODO
+            throw new CMISRuntimeException("Could not get root document", e);
         }
 
         // preprocess type names for queries
@@ -153,12 +176,38 @@ public class NuxeoConnection implements Connection, SPI {
         queryPropNames.putAll(NuxeoProperty.propertyNameToNXQL);
     }
 
+    protected static CoreSession createSession(String repositoryId,
+            Map<String, Serializable> params) {
+        // TODO authentication
+        Map<String, Serializable> context = new HashMap<String, Serializable>();
+        if (params != null) {
+            context.putAll(params);
+            context.put("username", params.get(Repository.PARAM_USERNAME));
+        }
+        if (context.get("username") == null) {
+            context.put("username", "Administrator");
+        }
+        try {
+            return CoreInstance.getInstance().open(repositoryId, context);
+        } catch (ClientException e) {
+            throw new CMISRuntimeException("Could not connect", e);
+        }
+    }
+
     public SPI getSPI() {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * If this connection was created from a Nuxeo session, then this method
+     * does nothing.
+     */
     public void close() {
-        CoreInstance.getInstance().close(session);
+        if (ownSession) {
+            CoreInstance.getInstance().close(session);
+        }
     }
 
     public Repository getRepository() {
