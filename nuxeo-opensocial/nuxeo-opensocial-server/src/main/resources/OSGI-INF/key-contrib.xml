@@ -5,15 +5,7 @@
   <extension target="org.nuxeo.opensocial.service" point="cryptoConfig">
     <key container="default">
       <value>
------BEGIN RSA PRIVATE KEY-----
-MIIBOgIBAAJBAKQp1iPsCXjTuXAxkaI48OQ7BQ8G9Ni8/L0A7WL5bDssbS7LWnlB
-2qhuY8rLjIcS6+SrvBT0rWnoDYe9vf0wfycCAwEAAQJBAKMMeogLNA0yHQh18zOw
-YnIMvKWEP0PV0SDX/u9C1GCf1AO9i7ggr+uJTPhybdZWfrMkzvdkriP970nXx5/Z
-W+ECIQDUiWfF5jwBATAy7Ne7kzMHsRMiHIhBTceyt9ghValPXQIhAMW8BUWMScNk
-aQ609VFFqWirtWnUut6iFJsnttoWcpRTAiA61aayc9+cb5XGIyY9OKxhrrUbNkbJ
-vRxQ7u+Xmrz5yQIgB4J5jMekMYiJuOZEft6vbWtAC5HpuvTa5X2foy7BEUMCIAT6
-XC791M89RviD+U+aeQNNOKqwoW8YGELOR1mPE9je
------END RSA PRIVATE KEY-----
+what is this used for?
       </value>
     </key>
   </extension>

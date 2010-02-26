@@ -56,13 +56,14 @@ public class NXMakeRequestHandler extends MakeRequestHandler {
     }
 
     @Override
-  protected void setRequestHeaders(HttpServletRequest servletRequest,
-      HttpRequest req) {
+    protected void setRequestHeaders(HttpServletRequest servletRequest,
+            HttpRequest req) {
 
-    super.setRequestHeaders(servletRequest, req);
-    String sessionId = req.getHeader(AUTH_SESSION_HEADER);
-    if (sessionId != null) {
-      req.addHeader("Cookie", "JSESSIONID=" + sessionId);
+        super.setRequestHeaders(servletRequest, req);
+        String sessionId = req.getHeader(AUTH_SESSION_HEADER);
+        if (sessionId != null) {
+            req.addHeader("Cookie", "JSESSIONID=" + sessionId);
+        }
     }
 
     /**

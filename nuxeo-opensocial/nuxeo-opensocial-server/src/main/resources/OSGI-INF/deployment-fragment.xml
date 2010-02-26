@@ -177,26 +177,6 @@
       <servlet-class>org.apache.shindig.gadgets.servlet.JsServlet
       </servlet-class>
     </servlet>
-
-<<<<<<< local
-    <!-- Serve REST api -->
-    <servlet>
-      <servlet-name>restapiServlet</servlet-name>
-      <servlet-class>
-        org.apache.shindig.social.opensocial.service.DataServiceServlet
-      </servlet-class>
-    </servlet>
-
-    <!-- Serve RPC api -->
-    <servlet>
-      <servlet-name>jsonRpcServlet</servlet-name>
-      <servlet-class>
-        org.apache.shindig.social.opensocial.service.JsonRpcServlet
-      </servlet-class>
-    </servlet>
-
-=======
->>>>>>> other
   </extension>
 
   <extension target="web#SERVLET-MAPPING">

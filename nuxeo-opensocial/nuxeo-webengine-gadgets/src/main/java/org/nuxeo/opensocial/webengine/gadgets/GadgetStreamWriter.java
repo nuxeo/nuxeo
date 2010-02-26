@@ -26,32 +26,31 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
-
+@Provider
 public class GadgetStreamWriter implements MessageBodyWriter<GadgetStream> {
 
-  private static final Log log = LogFactory.getLog(GadgetStreamWriter.class);
+    private static final Log log = LogFactory.getLog(GadgetStreamWriter.class);
 
-  public long getSize(GadgetStream t, Class<?> type, Type genericType,
-      Annotation[] annotations, MediaType mediaType) {
-    return -1;
-  }
+    public long getSize(GadgetStream t, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
+        return -1;
+    }
 
-  public boolean isWriteable(Class<?> type, Type genericType,
-      Annotation[] annotations, MediaType mediaType) {
-    return type.isAssignableFrom(GadgetStream.class);
-  }
+    public boolean isWriteable(Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
+        return type.isAssignableFrom(GadgetStream.class);
+    }
 
-
-  public void writeTo(GadgetStream t, Class<?> type, Type genericType,
-      Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, Object> httpHeaders,
-      OutputStream entityStream) throws IOException,
-      WebApplicationException {
+    public void writeTo(GadgetStream t, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders,
+            OutputStream entityStream) throws IOException,
+            WebApplicationException {
         try {
             int c;
 
@@ -67,5 +66,5 @@ public class GadgetStreamWriter implements MessageBodyWriter<GadgetStream> {
                 throw e;
             }
         }
-  }
+    }
 }

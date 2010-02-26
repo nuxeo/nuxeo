@@ -7,3 +7,4 @@ Bundle-Vendor: Leroy Merlin, Nuxeo
 Provide-Package: org.nuxeo.opensocial.webengine.gadgets
 Require-Bundle: org.nuxeo.ecm.webengine.core
 Nuxeo-Require: org.nuxeo.ecm.webengine.core
+Nuxeo-WebModule: org.nuxeo.opensocial.webengine.gadgets.GadgetsApp; explode:=true; compat:=true

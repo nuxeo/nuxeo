@@ -66,10 +66,11 @@
       </exclusions>
     </dependency>
 
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>jaxrs-api</artifactId>
-    </dependency>
+ <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+    </dependency>    
+
 
   </dependencies>
 </project>
