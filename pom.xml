@@ -33,60 +33,60 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-	<groupId>org.nuxeo.ecm.core</groupId>
-	<artifactId>nuxeo-chemistry-impl</artifactId>
-	<version>${version}</version>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-chemistry-impl</artifactId>
+        <version>${version}</version>
       </dependency>
       <dependency>
-	<groupId>org.nuxeo.ecm.core</groupId>
-	<artifactId>nuxeo-chemistry-bindings</artifactId>
-	<version>${version}</version>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-chemistry-bindings</artifactId>
+        <version>${version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-core</artifactId>
-	<version>${nuxeo.webengine.version}</version>
+        <version>${nuxeo.webengine.version}</version>
       </dependency>
 
       <dependency>
-	<groupId>org.apache.chemistry</groupId>
-	<artifactId>chemistry-api</artifactId>
-	<version>${chemistry.version}</version>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-api</artifactId>
+        <version>${chemistry.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.apache.chemistry</groupId>
-	<artifactId>chemistry-commons</artifactId>
-	<version>${chemistry.version}</version>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-commons</artifactId>
+        <version>${chemistry.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.apache.chemistry</groupId>
-	<artifactId>chemistry-atompub</artifactId>
-	<version>${chemistry.version}</version>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-atompub</artifactId>
+        <version>${chemistry.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.apache.chemistry</groupId>
-	<artifactId>chemistry-atompub-server</artifactId>
-	<version>${chemistry.version}</version>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-atompub-server</artifactId>
+        <version>${chemistry.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.apache.chemistry</groupId>
-	<artifactId>chemistry-atompub-client</artifactId>
-	<version>${chemistry.version}</version>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-atompub-client</artifactId>
+        <version>${chemistry.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.apache.chemistry</groupId>
-	<artifactId>chemistry-ws</artifactId>
-	<version>${chemistry.version}</version>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-ws</artifactId>
+        <version>${chemistry.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.apache.chemistry</groupId>
-	<artifactId>chemistry-soap-server</artifactId>
-	<version>${chemistry.version}</version>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-soap-server</artifactId>
+        <version>${chemistry.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.apache.chemistry</groupId>
-	<artifactId>chemistry-tests</artifactId>
-	<version>${chemistry.version}</version>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-tests</artifactId>
+        <version>${chemistry.version}</version>
       </dependency>
 
       <dependency>
@@ -137,5 +137,34 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <scm>
+    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-chemistry</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-chemistry</developerConnection>
+    <url>http://hg.nuxeo.org/addons/nuxeo-chemistry</url>
+  </scm>
 
 </project>
