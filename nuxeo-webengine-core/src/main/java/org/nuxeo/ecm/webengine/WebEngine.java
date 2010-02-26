@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.regex.Pattern;
 
 import javax.servlet.GenericServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,12 +48,6 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.GlobalTypes;
 import org.nuxeo.ecm.webengine.model.impl.ModuleConfiguration;
 import org.nuxeo.ecm.webengine.model.impl.ModuleManager;
-import org.nuxeo.ecm.webengine.model.io.BlobWriter;
-import org.nuxeo.ecm.webengine.model.io.FileWriter;
-import org.nuxeo.ecm.webengine.model.io.ScriptFileWriter;
-import org.nuxeo.ecm.webengine.model.io.TemplateViewWriter;
-import org.nuxeo.ecm.webengine.model.io.TemplateWriter;
-import org.nuxeo.ecm.webengine.model.io.URLWriter;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.runtime.annotations.AnnotationManager;
@@ -71,8 +64,6 @@ import freemarker.ext.servlet.ServletContextHashModel;
 public class WebEngine implements ResourceLocator {
 
     public static final String SKIN_PATH_PREFIX_KEY = "org.nuxeo.ecm.webengine.skinPathPrefix";
-
-    protected static final Pattern PATH_PATTERN = Pattern.compile("\\s+@Path\\(\"([^\"]*)\"\\)\\s+");
 
     protected static final Map<Object, Object> mimeTypes = loadMimeTypes();
 
@@ -179,16 +170,6 @@ public class WebEngine implements ResourceLocator {
         rendering.setResourceLocator(this);
         rendering.setSharedVariable("env", getEnvironment());
 
-        // register writers - TODO make an extension point
-        // resource writers may generate coding problems so we disable it for
-        // now
-        // registry.addMessageBodyWriter(new ResourceWriter());
-        registry.addMessageBodyWriter(new TemplateWriter());
-        registry.addMessageBodyWriter(new ScriptFileWriter());
-        registry.addMessageBodyWriter(new BlobWriter());
-        registry.addMessageBodyWriter(new FileWriter());
-        registry.addMessageBodyWriter(new URLWriter());
-        registry.addMessageBodyWriter(new TemplateViewWriter());
     }
 
     /**
@@ -254,6 +235,7 @@ public class WebEngine implements ResourceLocator {
         return skinPathPrefix;
     }
 
+    @Deprecated 
     public ResourceRegistry getRegistry() {
         return registry;
     }
@@ -312,7 +294,9 @@ public class WebEngine implements ResourceLocator {
     }
     
     public void registerModule(File config, boolean addToClassPath) {
-        getWebLoader().addClassPathElement(config.getParentFile());
+        if (addToClassPath) {
+            getWebLoader().addClassPathElement(config.getParentFile());
+        }
         registeredModules.add(config);
         if (moduleMgr != null) { // avoid synchronizing if not needed
             synchronized (this) {
