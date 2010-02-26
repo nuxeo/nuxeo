@@ -2117,13 +2117,10 @@ public class Mapper {
         }
 
         // for debug
-        private void logResultSet(ResultSet rs, List<Column> columns)
-                throws SQLException {
+        private void logMap(Map<String, Serializable> map) throws SQLException {
             List<String> res = new LinkedList<String>();
-            int i = 1;
-            for (Column column : columns) {
-                Serializable v = column.getFromResultSet(rs, i++);
-                res.add(column.getKey() + "=" + loggedValue(v));
+            for (Entry<String, Serializable> en : map.entrySet()) {
+                res.add(en.getKey() + "=" + loggedValue(en.getValue()));
             }
             log("  -> " + StringUtils.join(res, ", "));
         }
@@ -2185,7 +2182,7 @@ public class Mapper {
         protected Map<String, Serializable> fetchCurrent() throws SQLException {
             Map<String, Serializable> map = q.selectInfo.mapMaker.makeMap(rs);
             if (isLogEnabled()) {
-                logResultSet(rs, q.selectInfo.whatColumns);
+                logMap(map);
             }
             return map;
         }
