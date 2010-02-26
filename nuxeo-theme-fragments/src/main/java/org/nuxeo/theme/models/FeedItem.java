@@ -26,7 +26,13 @@ public class FeedItem extends AbstractModel {
 
     private String creator;
 
+    private String publisher;
+    private String rights;
+    private String imageUrl;
+
     private String url;
+    
+    private String uuid;
 
     public FeedItem() {
     }
@@ -69,6 +75,38 @@ public class FeedItem extends AbstractModel {
 
     public void setCreator(String creator) {
         this.creator = creator;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public String getRights() {
+        return rights;
+    }
+
+    public void setRights(String rights) {
+        this.rights = rights;
     }
 
 }
