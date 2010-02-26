@@ -297,10 +297,11 @@ public class CMISQLQueryMaker implements QueryMaker {
             // table this join is about
 
             String qual = j.corr;
+            Table qualHierTable = getTable(hierTable, qual);
             Table table = null;
             if (njoin == 1) {
                 // start with hier
-                table = getTable(hierTable, qual);
+                table = qualHierTable;
             } else {
                 // do requested join
                 if (j.kind.equals("LEFT") || j.kind.equals("RIGHT")) {
@@ -401,8 +402,9 @@ public class CMISQLQueryMaker implements QueryMaker {
                 types.add("__NOSUCHTYPE__");
                 qms.add("?");
             }
-            whereClauses.add(String.format("%s IN (%s)", table.getColumn(
-                    model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
+            whereClauses.add(String.format(
+                    "%s IN (%s)",
+                    qualHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
                     StringUtils.join(qms, ", ")));
             for (String type : types) {
                 whereParams.add(type);
