@@ -118,9 +118,8 @@ public class TestVideoImporter extends SQLRepositoryTestCase {
         assertEquals("Video", docModel.getType());
         assertEquals("sample", docModel.getTitle());
 
-        Blob contentBlob = (Blob) docModel.getProperty("file", "content");
-        assertNotNull(contentBlob);
-        assertEquals("sample.mpg", docModel.getProperty("file", "filename"));
+        assertNotNull(docModel.getProperty("file:content"));
+        assertEquals("sample.mpg", docModel.getPropertyValue("file:filename"));
 
         // check that we don't get PropertyExceptions when accessing the video
         // and picture schemas
