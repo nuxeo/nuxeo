@@ -5,7 +5,6 @@
       <Require feature="dynamic-height" />
       <Require feature="setprefs" />
       <Require feature="settitle" />
-      <Require feature="json" />
       <Require feature="nuxeo" />
   </ModulePrefs>
   <UserPref name="COLOR_bgcolor" display_name="Couleur des cellules" default_value="#none" datatype="enum" >
@@ -28,13 +27,13 @@
     _IG_RegisterOnloadHandler( function() {
       prefs = new _IG_Prefs(__MODULE_ID__);
 
-      var bookmarksstring = prefs.getString("bookmarks").replace(/&#34;/g, "\"");
+      var bookmarksstring = gadgets.util.unescapeString(prefs.getString("bookmarks"));
       if (bookmarksstring == "")
         bookmarks = {
           "array" : []
         };
       else
-        bookmarks = JSON.parse(bookmarksstring);
+        bookmarks = gadgets.json.parse(bookmarksstring);
       edited = false;
 
       var permission = gadgets.nuxeo.isEditable();
@@ -127,6 +126,7 @@
 
         #addBookmarkForm{
          background-color:#666666;
+         font-weight:bold;
         }
 
         #addBookmarkIcon{

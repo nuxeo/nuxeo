@@ -2,13 +2,16 @@
 <component
   name="org.nuxeo.opensocial.container.config.defaultcontrib">
 
+  <require>
+  org.nuxeo.opensocial.container.config
+  </require>
 
   <extension target="org.nuxeo.opensocial.container.config"
     point="portalConfig">
     <portalConfig>
       <domain>localhost</domain>
       <containerName>default</containerName>
-      <key>fnQdpl5HYOFQsGNsSjPEDhQLAlZiZCu91RGLN93w7LU=</key>
+      <key>ky1Ck3YKZ1a60P4sKvEViHY3nbgqKnFHJKhXSEtncUQ=</key>
     </portalConfig>
   </extension>
 </component>

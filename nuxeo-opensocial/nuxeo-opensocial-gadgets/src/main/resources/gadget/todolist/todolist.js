@@ -4,7 +4,7 @@ var prefs;
 var perm = gadgets.nuxeo.isEditable();
 
 function saveToDoList() {
-  prefs.set("todolist", JSON.stringify(todolist));
+  prefs.set("todolist", gadgets.util.escapeString(gadgets.json.stringify(todolist)));
   var ver = navigator.appVersion;
   if (ver.indexOf("MSIE") == -1)
     _gel("newNameInput").focus();

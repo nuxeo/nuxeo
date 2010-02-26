@@ -15,7 +15,7 @@
       <param-value>
         org.nuxeo.opensocial.shindig.NuxeoPropertiesModule:
         org.nuxeo.opensocial.shindig.ProxyModule:
-        org.nuxeo.opensocial.shindig.gadgets.NXGuiceModule:
+        org.nuxeo.opensocial.services.NXGuiceModule:
         org.apache.shindig.social.core.config.SocialApiGuiceModule:
         org.nuxeo.opensocial.services.NuxeoServiceModule:
         org.nuxeo.opensocial.services.NuxeoCryptoModule:
@@ -115,18 +115,19 @@
       </servlet-class>
     </servlet>
 
+    <servlet>
+      <servlet-name>concat</servlet-name>
+      <servlet-class>
+        org.apache.shindig.gadgets.servlet.ConcatProxyServlet
+    </servlet-class>
+    </servlet>
+
+
     <!-- makeRequest -->
     <servlet>
       <servlet-name>makeRequest</servlet-name>
       <servlet-class>
         org.apache.shindig.gadgets.servlet.MakeRequestServlet
-      </servlet-class>
-    </servlet>
-
-    <servlet>
-      <servlet-name>concat</servlet-name>
-      <servlet-class>
-        org.apache.shindig.gadgets.servlet.ConcatProxyServlet
       </servlet-class>
     </servlet>
 
@@ -146,6 +147,30 @@
       </servlet-class>
     </servlet>
 
+    <!-- Serve gadgets RPC api -->
+    <servlet>
+      <servlet-name>gadgetsJsonRpcServlet</servlet-name>
+      <servlet-class>
+        org.apache.shindig.protocol.JsonRpcServlet
+      </servlet-class>
+      <init-param>
+        <param-name>handlers</param-name>
+        <param-value>org.apache.shindig.gadgets.handlers</param-value>
+      </init-param>
+    </servlet>
+
+    <servlet>
+      <servlet-name>gadgetsRestapiServlet</servlet-name>
+      <servlet-class>
+        org.apache.shindig.protocol.DataServiceServlet
+      </servlet-class>
+      <init-param>
+        <param-name>handlers</param-name>
+        <param-value>org.apache.shindig.gadgets.handlers</param-value>
+      </init-param>
+    </servlet>
+
+
     <!-- javascript serving -->
     <servlet>
       <servlet-name>js</servlet-name>
@@ -153,6 +178,7 @@
       </servlet-class>
     </servlet>
 
+<<<<<<< local
     <!-- Serve REST api -->
     <servlet>
       <servlet-name>restapiServlet</servlet-name>
@@ -169,6 +195,8 @@
       </servlet-class>
     </servlet>
 
+=======
+>>>>>>> other
   </extension>
 
   <extension target="web#SERVLET-MAPPING">
@@ -208,12 +236,12 @@
     </servlet-mapping>
 
     <servlet-mapping>
-      <servlet-name>restapiServlet</servlet-name>
+      <servlet-name>gadgetsRestapiServlet</servlet-name>
       <url-pattern>/opensocial/social/rest/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-      <servlet-name>jsonRpcServlet</servlet-name>
+      <servlet-name>gadgetsJsonRpcServlet</servlet-name>
       <url-pattern>/opensocial/social/rpc/*</url-pattern>
     </servlet-mapping>
   </extension>

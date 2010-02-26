@@ -1,53 +1,235 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-  <ModulePrefs title="Confluence Stream">
-  <OAuth>
-    <Service>
-      <Access url="http://marge:7070/plugins/servlet/oauth/access-token"
-        method="POST" />
-      <Request url="http://marge:7070/plugins/servlet/oauth/request-token"
-        method="POST" />
-      <!--  url="http://marge:7070/plugins/servlet/oauth/authorize?oauth_callback=http%3A%2F%2Foauth.gmodules.com%2Fgadgets%2Foauthcallback"
--->
-      <Authorization url="http://marge:7070/plugins/servlet/oauth/authorize" />
-    </Service>
-  </OAuth>
-</ModulePrefs>
-  <Content type="html">
-     <![CDATA[
-       <div id="content">Loading feeds...</div>
-       <script type="text/javascript">
-        var html = '';
+    <ModulePrefs title="__MSG_gadget.activity.stream.title__" directory_title="__MSG_gadget.activity.stream.title__" description="__MSG_gadget.activity.stream.description__"
+                 author="Atlassian" author_affiliation="Atlassian"
+                 author_location="Sydney, Australia" height="100"
+                 screenshot='http://marge:7070/s/1724/1/2/_/download/resources/com.atlassian.streams.confluence:activitystream-gadget/images/activitystream-screenshot.png'
+                 thumbnail='http://marge:7070/s/1724/1/2/_/download/resources/com.atlassian.streams.confluence:activitystream-gadget/images/activitystream-thumb.png'>
+        <Optional feature="gadget-directory">
+            <Param name="categories">
+                Confluence
+            </Param>
+        </Optional>
+        <Optional feature="atlassian.util" />
+        <Require feature="views" />
+        <Require feature="setprefs" />
+        <Require feature="settitle"/>
+        <Require feature="dynamic-height"/>
+        <Require feature="oauthpopup" />
+        <OAuth>
+        <Service>
+        <Access url="http://marge:7070/plugins/servlet/oauth/access-token" method="POST" />
+        <Request url="http://marge:7070/plugins/servlet/oauth/request-token" method="POST" />
+        <Authorization url="http://marge:7070/plugins/servlet/oauth/authorize" />
+        </Service>
+        </OAuth>
+        <Locale><messagebundle><msg name="gadget.common.invalid.period">Invalid period &apos;&apos;{0}&apos;&apos; specified</msg><msg name="gadget.common.cumulative.description">Progressively add totals (1.. 2.. 3), or show individual values (1.. 1.. 1).</msg><msg name="gadget.common.advanced.search">Advanced Search</msg><msg name="gadget.common.categories.all">All Categories</msg><msg name="gadget.common.oauth.approve.button">Login &amp; approve</msg><msg name="gadget.common.issuesresolved">Issues Resolved</msg><msg name="gadget.common.days.description">Days (including today) to show in the graph.</msg><msg name="gadget.common.cumulative.label">Cumulative Totals:</msg><msg name="gadget.common.required.query">No project or filter specified.</msg><msg name="gadget.common.columns.to.display.label">Columns to display</msg><msg name="gadget.common.projects.description">The projects to display information for.</msg><msg name="gadget.common.stattype.label">Statistic Type:</msg><msg name="gadget.common.period.daily">Daily</msg><msg name="gadget.common.container.oauth.required">Authentication required to use this gadget</msg><msg name="gadget.common.projects.and.categories.description">Projects or categories to use as the basis for the graph.</msg><msg name="gadget.common.quick.find">Quick Find</msg><msg name="gadget.common.period.hourly">Hourly</msg><msg name="gadget.common.invalid.stat.type">Invalid Statistics Type ({0})</msg><msg name="gadget.common.invalid.jql">Invalid JQL.</msg><msg name="gadget.common.manage.filters">Manage Filters</msg><msg name="gadget.common.invalid.project">Invalid project</msg><msg name="gadget.common.invalid.filter.id">Invalid filter</msg><msg name="gadget.common.filter.description">Saved filter to use for the query.</msg><msg name="gadget.common.period.yearly">Yearly</msg><msg name="gadget.common.period.name.label">Period:</msg><msg name="gadget.common.show.column.headers.description">Helps to distinguish between similar fields</msg><msg name="gadget.common.invalid.filter">Invalid project or filter</msg><msg name="gadget.common.show.column.headers.label">Show column headers</msg><msg name="gadget.common.oauth.approve.message">If you are a registered user, there may be more information available to you. You will need to log in and approve this gadget&apos;&apos;s access to your account.</msg><msg name="gadget.common.error.500">An internal server error occurred when requesting resource &lt;a href=&quot;{0}&quot; target=&quot;_parent&quot;&gt;{1}&lt;/a&gt;.</msg><msg name="gadget.common.negative.days">Days must be greater or equal to zero.</msg><msg name="gadget.common.days.overlimit">Days must not exceed {0}</msg><msg name="gadget.common.show.column.headers.true.label">Yes</msg><msg name="gadget.common.filter.label">Saved Filter:</msg><msg name="gadget.common.num.description">Number of results to display (maximum of 50).</msg><msg name="gadget.common.default.columns">Default Columns</msg><msg name="gadget.common.project.edit">Click here to select/change project.</msg><msg name="gadget.common.unknown.legacy.portlet">Unknown Legacy Portlet</msg><msg name="gadget.common.period.name.description">The length of periods represented on the graph.</msg><msg name="gadget.common.config.unavailable">There are problems with the current configuration for this gadget. The errors below may have been caused by the deletion of entities required by the gadget or by changes to your permissions.</msg><msg name="gadget.common.unknown.legacy.portlet.description">Legacy portlet with key &apos;&apos;{0}&apos;&apos; could not be loaded</msg><msg name="gadget.common.projects.and.categories.label">Projects and Categories:</msg><msg name="gadget.common.cancel">Cancel</msg><msg name="gadget.common.projects.label">Projects:</msg><msg name="gadget.common.configure">Edit</msg><msg name="gadget.common.projects.all">All Projects</msg><msg name="gadget.common.days.nan">Days must be a number</msg><msg name="gadget.common.error.save.dashboard">Error rendering save to dashboard form.</msg><msg name="gadget.common.num.high">Number must be less than or equal to 50</msg><msg name="gadget.common.chart.period">Period: last {0}{1}{2} days (grouped {3}{4}{5})</msg><msg name="gadget.common.no">No</msg><msg name="gadget.common.save">Save</msg><msg name="gadget.common.period.monthly">Monthly</msg><msg name="gadget.common.issues">Issues</msg><msg name="gadget.common.filter">Filter:</msg><msg name="gadget.common.refresh.never">Never</msg><msg name="gadget.common.projects.and.categories.mixed">You can not mix categories and projects.</msg><msg name="gadget.common.num.overlimit">Number must not exceed {0}</msg><msg name="gadget.common.num.negative">Number must be greater than 0</msg><msg name="gadget.common.period.quarterly">Quarterly</msg><msg name="gadget.common.categories">Categories</msg><msg name="gadget.common.add.filter">Add filter</msg><msg name="gadget.common.period.name">Period</msg><msg name="gadget.common.issuesunresolved">Issues Unresolved</msg><msg name="gadget.common.required.project.or.filter">Please select a filter or project</msg><msg name="gadget.common.show.column.headers.false.label">No</msg><msg name="gadget.common.period.weekly">Weekly</msg><msg name="gadget.common.filterid.edit">Click here to select/change filter or project.</msg><msg name="gadget.common.all.projects.and.others">&apos;&apos;All Projects&apos;&apos; can not be selected along with other projects</msg><msg name="gadget.common.projects">Projects</msg><msg name="gadget.common.columns.to.display.description">Default columns:</msg><msg name="gadget.common.filterid.none.selected">No Filter/Project selected</msg><msg name="gadget.common.refresh.description">How often you would like this gadget to update</msg><msg name="gadget.common.filters">Filters</msg><msg name="gadget.common.filterid.description">Project or saved filter to use as the basis for the graph.</msg><msg name="gadget.common.error.404">The resource &lt;a href=&quot;{0}&quot; target=&quot;parent&quot;&gt;{1}&lt;/a&gt;, cannot be found.</msg><msg name="gadget.common.days.overlimit.for.period">Days must not exceed {0} for {1} period</msg><msg name="gadget.common.error.generation">Unfortunately, one or more of your preferences are now unavailable. Please update your preferences, or remove gadget by clicking delete from the title bar above.</msg><msg name="gadget.common.refresh.minutes">Every {0} Minutes</msg><msg name="gadget.common.num.label">Number of Results:</msg><msg name="gadget.common.all.categories.and.others">&apos;&apos;All Categories&apos;&apos; can not be selected along with other categories</msg><msg name="gadget.common.project.none.selected">No project selected</msg><msg name="gadget.common.anonymous.is.invalid">This gadget requires a logged in user.</msg><msg name="gadget.common.project.description">Project to use as the basis for the graph.</msg><msg name="gadget.common.no.filter.id">You must specify a filter.</msg><msg name="gadget.common.days.label">Days Previously:</msg><msg name="gadget.common.anonymous.filter">Anonymous Filter</msg><msg name="gadget.common.projects.and.categories.none.selected">No project/category selected</msg><msg name="gadget.common.num.nan">The value must be an integer greater than 0 and less than or equal to 50</msg><msg name="gadget.common.refresh.hours">Every {0} Hours</msg><msg name="gadget.common.project.label">Project:</msg><msg name="gadget.common.invalid.projectOrFilterId">Invalid project or filter</msg><msg name="gadget.common.invalid.projectOrFilterId.query.prefix">Your query can not start with &apos;&apos;*&apos;&apos; or &apos;&apos;?&apos;&apos;</msg><msg name="gadget.common.refresh.label">Refresh Interval:</msg><msg name="gadget.common.stattype.description">Select which type of statistic to display for this filter.</msg><msg name="gadget.common.filterid.label">Project or Saved Filter:</msg><msg name="gadget.common.refresh.hour">Every {0} Hour</msg><msg name="gadget.common.invalid.filter.validationfailed">The selected filter {0} has an error: {1}.</msg><msg name="gadget.common.yes">Yes</msg><msg name="gadget.common.reload">Refresh</msg><msg name="gadget.common.filter.none.selected">No Filter selected</msg><msg name="gadget.common.invalid.projectCategory">Invalid Project Category</msg><msg name="gadget.activity.stream.pref.username.description">A comma separated list of usernames of people to display activity for. Leave blank to display activity for all users.</msg><msg name="gadget.activity.stream.pref.title">Title</msg><msg name="gadget.activity.stream.error.pref.username">Invalid username specified: {0}</msg><msg name="gadget.activity.stream.error.pref.title">Title is a required field</msg><msg name="gadget.activity.stream.no.activty.found">No activity was found</msg><msg name="gadget.activity.stream.add.comment">Add Comment</msg><msg name="gadget.activity.stream.pref.numofentries.description">The maximum number of entries to display in the activity stream (cannot be larger than 100)</msg><msg name="gadget.activity.stream.pref.keys.description">Select which projects to display activity for</msg><msg name="gadget.activity.stream.hide">Hide</msg><msg name="gadget.activity.stream.error.pref.numofentries.required">Number of Entries is a required field</msg><msg name="gadget.activity.stream.description">Lists recent activity in a single project, or in all projects.</msg><msg name="gadget.activity.stream.pref.keys">Projects</msg><msg name="gadget.activity.stream.pref.username">Username</msg><msg name="gadget.activity.stream.error.pref.numofentries.number">Number of Entries must be a number greater than 0 and less than 100</msg><msg name="gadget.activity.stream.pref.numofentries">Number of Entries</msg><msg name="gadget.activity.stream.error.add.comment">Please enter a comment.</msg><msg name="gadget.activity.stream.show.more">Show more...</msg><msg name="gadget.activity.stream.error.pref.keys">Invalid project key specified</msg><msg name="gadget.activity.stream.pref.title.description">Title for this activity stream.</msg><msg name="gadget.activity.stream.title">Activity Stream</msg><msg name="gadget.activity.stream.save">Save</msg></messagebundle></Locale><Locale lang="en" country="GB"><messagebundle><msg name="gadget.common.invalid.period">Invalid period &apos;&apos;{0}&apos;&apos; specified</msg><msg name="gadget.common.cumulative.description">Progressively add totals (1.. 2.. 3), or show individual values (1.. 1.. 1).</msg><msg name="gadget.common.advanced.search">Advanced Search</msg><msg name="gadget.common.categories.all">All Categories</msg><msg name="gadget.common.oauth.approve.button">Login &amp; approve</msg><msg name="gadget.common.issuesresolved">Issues Resolved</msg><msg name="gadget.common.days.description">Days (including today) to show in the graph.</msg><msg name="gadget.common.cumulative.label">Cumulative Totals:</msg><msg name="gadget.common.required.query">No project or filter specified.</msg><msg name="gadget.common.columns.to.display.label">Columns to display</msg><msg name="gadget.common.projects.description">The projects to display information for.</msg><msg name="gadget.common.stattype.label">Statistic Type:</msg><msg name="gadget.common.period.daily">Daily</msg><msg name="gadget.common.container.oauth.required">Authentication required to use this gadget</msg><msg name="gadget.common.projects.and.categories.description">Projects or categories to use as the basis for the graph.</msg><msg name="gadget.common.quick.find">Quick Find</msg><msg name="gadget.common.period.hourly">Hourly</msg><msg name="gadget.common.invalid.stat.type">Invalid Statistics Type ({0})</msg><msg name="gadget.common.invalid.jql">Invalid JQL.</msg><msg name="gadget.common.manage.filters">Manage Filters</msg><msg name="gadget.common.invalid.project">Invalid project</msg><msg name="gadget.common.invalid.filter.id">Invalid filter</msg><msg name="gadget.common.filter.description">Saved filter to use for the query.</msg><msg name="gadget.common.period.yearly">Yearly</msg><msg name="gadget.common.period.name.label">Period:</msg><msg name="gadget.common.show.column.headers.description">Helps to distinguish between similar fields</msg><msg name="gadget.common.invalid.filter">Invalid project or filter</msg><msg name="gadget.common.show.column.headers.label">Show column headers</msg><msg name="gadget.common.oauth.approve.message">If you are a registered user, there may be more information available to you. You will need to log in and approve this gadget&apos;&apos;s access to your account.</msg><msg name="gadget.common.error.500">An internal server error occurred when requesting resource &lt;a href=&quot;{0}&quot; target=&quot;_parent&quot;&gt;{1}&lt;/a&gt;.</msg><msg name="gadget.common.negative.days">Days must be greater or equal to zero.</msg><msg name="gadget.common.days.overlimit">Days must not exceed {0}</msg><msg name="gadget.common.show.column.headers.true.label">Yes</msg><msg name="gadget.common.filter.label">Saved Filter:</msg><msg name="gadget.common.num.description">Number of results to display (maximum of 50).</msg><msg name="gadget.common.default.columns">Default Columns</msg><msg name="gadget.common.project.edit">Click here to select/change project.</msg><msg name="gadget.common.unknown.legacy.portlet">Unknown Legacy Portlet</msg><msg name="gadget.common.period.name.description">The length of periods represented on the graph.</msg><msg name="gadget.common.config.unavailable">There are problems with the current configuration for this gadget. The errors below may have been caused by the deletion of entities required by the gadget or by changes to your permissions.</msg><msg name="gadget.common.unknown.legacy.portlet.description">Legacy portlet with key &apos;&apos;{0}&apos;&apos; could not be loaded</msg><msg name="gadget.common.projects.and.categories.label">Projects and Categories:</msg><msg name="gadget.common.cancel">Cancel</msg><msg name="gadget.common.projects.label">Projects:</msg><msg name="gadget.common.configure">Edit</msg><msg name="gadget.common.projects.all">All Projects</msg><msg name="gadget.common.days.nan">Days must be a number</msg><msg name="gadget.common.error.save.dashboard">Error rendering save to dashboard form.</msg><msg name="gadget.common.num.high">Number must be less than or equal to 50</msg><msg name="gadget.common.chart.period">Period: last {0}{1}{2} days (grouped {3}{4}{5})</msg><msg name="gadget.common.no">No</msg><msg name="gadget.common.save">Save</msg><msg name="gadget.common.period.monthly">Monthly</msg><msg name="gadget.common.issues">Issues</msg><msg name="gadget.common.filter">Filter:</msg><msg name="gadget.common.refresh.never">Never</msg><msg name="gadget.common.projects.and.categories.mixed">You can not mix categories and projects.</msg><msg name="gadget.common.num.overlimit">Number must not exceed {0}</msg><msg name="gadget.common.num.negative">Number must be greater than 0</msg><msg name="gadget.common.period.quarterly">Quarterly</msg><msg name="gadget.common.categories">Categories</msg><msg name="gadget.common.add.filter">Add filter</msg><msg name="gadget.common.period.name">Period</msg><msg name="gadget.common.issuesunresolved">Issues Unresolved</msg><msg name="gadget.common.required.project.or.filter">Please select a filter or project</msg><msg name="gadget.common.show.column.headers.false.label">No</msg><msg name="gadget.common.period.weekly">Weekly</msg><msg name="gadget.common.filterid.edit">Click here to select/change filter or project.</msg><msg name="gadget.common.all.projects.and.others">&apos;&apos;All Projects&apos;&apos; can not be selected along with other projects</msg><msg name="gadget.common.projects">Projects</msg><msg name="gadget.common.columns.to.display.description">Default columns:</msg><msg name="gadget.common.filterid.none.selected">No Filter/Project selected</msg><msg name="gadget.common.refresh.description">How often you would like this gadget to update</msg><msg name="gadget.common.filters">Filters</msg><msg name="gadget.common.filterid.description">Project or saved filter to use as the basis for the graph.</msg><msg name="gadget.common.error.404">The resource &lt;a href=&quot;{0}&quot; target=&quot;parent&quot;&gt;{1}&lt;/a&gt;, cannot be found.</msg><msg name="gadget.common.days.overlimit.for.period">Days must not exceed {0} for {1} period</msg><msg name="gadget.common.error.generation">Unfortunately, one or more of your preferences are now unavailable. Please update your preferences, or remove gadget by clicking delete from the title bar above.</msg><msg name="gadget.common.refresh.minutes">Every {0} Minutes</msg><msg name="gadget.common.num.label">Number of Results:</msg><msg name="gadget.common.all.categories.and.others">&apos;&apos;All Categories&apos;&apos; can not be selected along with other categories</msg><msg name="gadget.common.project.none.selected">No project selected</msg><msg name="gadget.common.anonymous.is.invalid">This gadget requires a logged in user.</msg><msg name="gadget.common.project.description">Project to use as the basis for the graph.</msg><msg name="gadget.common.no.filter.id">You must specify a filter.</msg><msg name="gadget.common.days.label">Days Previously:</msg><msg name="gadget.common.anonymous.filter">Anonymous Filter</msg><msg name="gadget.common.projects.and.categories.none.selected">No project/category selected</msg><msg name="gadget.common.num.nan">The value must be an integer greater than 0 and less than or equal to 50</msg><msg name="gadget.common.refresh.hours">Every {0} Hours</msg><msg name="gadget.common.project.label">Project:</msg><msg name="gadget.common.invalid.projectOrFilterId">Invalid project or filter</msg><msg name="gadget.common.invalid.projectOrFilterId.query.prefix">Your query can not start with &apos;&apos;*&apos;&apos; or &apos;&apos;?&apos;&apos;</msg><msg name="gadget.common.refresh.label">Refresh Interval:</msg><msg name="gadget.common.stattype.description">Select which type of statistic to display for this filter.</msg><msg name="gadget.common.filterid.label">Project or Saved Filter:</msg><msg name="gadget.common.refresh.hour">Every {0} Hour</msg><msg name="gadget.common.invalid.filter.validationfailed">The selected filter {0} has an error: {1}.</msg><msg name="gadget.common.yes">Yes</msg><msg name="gadget.common.reload">Refresh</msg><msg name="gadget.common.filter.none.selected">No Filter selected</msg><msg name="gadget.common.invalid.projectCategory">Invalid Project Category</msg><msg name="gadget.activity.stream.pref.username.description">A comma separated list of usernames of people to display activity for. Leave blank to display activity for all users.</msg><msg name="gadget.activity.stream.pref.title">Title</msg><msg name="gadget.activity.stream.error.pref.username">Invalid username specified: {0}</msg><msg name="gadget.activity.stream.error.pref.title">Title is a required field</msg><msg name="gadget.activity.stream.no.activty.found">No activity was found</msg><msg name="gadget.activity.stream.add.comment">Add Comment</msg><msg name="gadget.activity.stream.pref.numofentries.description">The maximum number of entries to display in the activity stream (cannot be larger than 100)</msg><msg name="gadget.activity.stream.pref.keys.description">Select which projects to display activity for</msg><msg name="gadget.activity.stream.hide">Hide</msg><msg name="gadget.activity.stream.error.pref.numofentries.required">Number of Entries is a required field</msg><msg name="gadget.activity.stream.description">Lists recent activity in a single project, or in all projects.</msg><msg name="gadget.activity.stream.pref.keys">Projects</msg><msg name="gadget.activity.stream.pref.username">Username</msg><msg name="gadget.activity.stream.error.pref.numofentries.number">Number of Entries must be a number greater than 0 and less than 100</msg><msg name="gadget.activity.stream.pref.numofentries">Number of Entries</msg><msg name="gadget.activity.stream.error.add.comment">Please enter a comment.</msg><msg name="gadget.activity.stream.show.more">Show more...</msg><msg name="gadget.activity.stream.error.pref.keys">Invalid project key specified</msg><msg name="gadget.activity.stream.pref.title.description">Title for this activity stream.</msg><msg name="gadget.activity.stream.title">Activity Stream</msg><msg name="gadget.activity.stream.save">Save</msg></messagebundle></Locale><Locale lang="fr" country="FR"><messagebundle><msg name="gadget.activity.stream.pref.username.description">Une liste de noms d&apos;&apos;utilisateur s&#233;par&#233;s par des virgules de personnes dont l&apos;&apos;activit&#233; doit &#234;tre affich&#233;e. Laisser vide pour afficher l&apos;&apos;activit&#233; de tous les utilisateurs.</msg><msg name="gadget.activity.stream.pref.title">Titre</msg><msg name="gadget.activity.stream.error.pref.username">Nom d&apos;&apos;utilisateur sp&#233;cifi&#233; non valide : {0}</msg><msg name="gadget.activity.stream.error.pref.title">Le titre est un champ requis</msg><msg name="gadget.activity.stream.no.activty.found">Aucune activit&#233; n&apos;&apos;a &#233;t&#233; trouv&#233;e</msg><msg name="gadget.activity.stream.add.comment">Ajouter un commentaire</msg><msg name="gadget.activity.stream.pref.numofentries.description">Le nombre maximum d&apos;&apos;entr&#233;es &#224; afficher dans le flux d&apos;&apos;activit&#233; (ne peut pas &#234;tre sup&#233;rieur &#224; 100)</msg><msg name="gadget.activity.stream.pref.keys.description">S&#233;lectionner les projets pour lesquels l&apos;&apos;activit&#233; doit &#234;tre affich&#233;e</msg><msg name="gadget.activity.stream.hide">Masquer</msg><msg name="gadget.activity.stream.error.pref.numofentries.required">Le nombre d&apos;&apos;entr&#233;es est un champ requis</msg><msg name="gadget.activity.stream.description">R&#233;pertorie les activit&#233;s r&#233;centes dans un seul projet ou dans tous les projets.</msg><msg name="gadget.activity.stream.pref.keys">Projets</msg><msg name="gadget.activity.stream.pref.username">Nom d&apos;&apos;utilisateur</msg><msg name="gadget.activity.stream.error.pref.numofentries.number">Le nombre d&apos;&apos;entr&#233;es doit &#234;tre sup&#233;rieur &#224; 0 et inf&#233;rieur &#224; 100</msg><msg name="gadget.activity.stream.pref.numofentries">Nombre d&apos;&apos;entr&#233;es</msg><msg name="gadget.activity.stream.error.add.comment">Saisissez un commentaire.</msg><msg name="gadget.activity.stream.error.pref.keys">Cl&#233; de projet sp&#233;cifi&#233;e non valide</msg><msg name="gadget.activity.stream.show.more">Afficher plus....</msg><msg name="gadget.activity.stream.pref.title.description">Titre pour ce flux d&apos;&apos;activit&#233;.</msg><msg name="gadget.activity.stream.title">Flux d&apos;activit&#233;</msg><msg name="gadget.activity.stream.save">Enregistrer</msg></messagebundle></Locale><Locale lang="de" country="DE"><messagebundle><msg name="gadget.activity.stream.pref.username.description">Eine durch Kommas getrennte Liste mit den Benutzernamen der Personen, f&#252;r die Aktivit&#228;ten angezeigt werden. Lassen Sie sie leer, um Aktivit&#228;ten aller Benutzer anzuzeigen.</msg><msg name="gadget.activity.stream.pref.title">&#220;berschrift</msg><msg name="gadget.activity.stream.error.pref.username">Ung&#252;ltiger Benutzername angegeben: {0}</msg><msg name="gadget.activity.stream.error.pref.title">&#220;berschrift ist ein Pflichtfeld</msg><msg name="gadget.activity.stream.no.activty.found">Keine Aktivit&#228;t gefunden</msg><msg name="gadget.activity.stream.add.comment">Kommentar hinzuf&#252;gen</msg><msg name="gadget.activity.stream.pref.numofentries.description">Die maximale Anzahl Eintr&#228;ge, die im Aktivit&#228;tsstrom angezeigt wird (darf nicht gr&#246;&#223;er als 100 sein).</msg><msg name="gadget.activity.stream.pref.keys.description">W&#228;hlen Sie aus, f&#252;r welche Projekte Aktivit&#228;ten angezeigt werden sollen.</msg><msg name="gadget.activity.stream.hide">Ausblenden</msg><msg name="gadget.activity.stream.error.pref.numofentries.required">Anzahl Eintr&#228;ge ist ein Pflichtfeld</msg><msg name="gadget.activity.stream.description">Zeigt die letzten Aktivit&#228;ten in einem einzelnen Projekt oder in allen Projekten.</msg><msg name="gadget.activity.stream.pref.keys">Projekte</msg><msg name="gadget.activity.stream.pref.username">Benutzername</msg><msg name="gadget.activity.stream.error.pref.numofentries.number">Anzahl Eintr&#228;ge muss eine Zahl gr&#246;&#223;er als 0 und kleiner als 100 sein</msg><msg name="gadget.activity.stream.pref.numofentries">Anzahl Eintr&#228;ge</msg><msg name="gadget.activity.stream.error.add.comment">Geben Sie einen Kommentar ein.</msg><msg name="gadget.activity.stream.error.pref.keys">Ung&#252;ltiger Projektschl&#252;ssel angegeben</msg><msg name="gadget.activity.stream.show.more">Mehr anzeigen...</msg><msg name="gadget.activity.stream.pref.title.description">&#220;berschrift dieses Aktivit&#228;tsstroms.</msg><msg name="gadget.activity.stream.title">Aktivit&#228;tsstrom</msg><msg name="gadget.activity.stream.save">Speichern</msg></messagebundle></Locale>
+    </ModulePrefs>
+    <UserPref name="isConfigured" datatype="hidden" default_value="false" />
+    <UserPref name="isConfigurable" datatype="hidden" default_value="true" />
+    <UserPref name="refresh" datatype="hidden" default_value="false" />
+    <UserPref name="title" datatype="hidden" />
+    <UserPref name="titleRequired" datatype="hidden" default_value="true" />
+    <UserPref name="keys" datatype="hidden" />
+    <UserPref name="itemKeys" datatype="hidden" />
+    <UserPref name="username" datatype="hidden" />
+    <UserPref name="numofentries" datatype="hidden" default_value="10" />
+    <Content type="html">
+        <![CDATA[
         
-        var url= 'http://marge:7070/createrssfeed.action?types=page&types=blogpost&types=mail&types=comment&types=attachment&sort=modified&showContent=true&showDiff=true&spaces=conf_personal&labelString%3D&rssType=rss2&maxResults=10&timeSpan=5&publicFeed=false&title=personalspacefeed&os_authType=basic';
-        /*var url = "http://newsrss.bbc.co.uk/rss/newsonline_world_edition/front_page/rss.xml";*/
         
-        /*var url = "http://feeds.feedburner.com/linuxjournalcom";*/
-        var callback = function(resultObj) {
-            html += "<h5>BBC News Feed</h5>";
-            html += "<ul>\n";
-            var feed = resultObj.data;
-            for (var counter = 0; counter < feed.Entry.length; counter++)  {
-                html += "<li>" + '<a href="' +
-                feed.Entry[counter].Link + '" target="_blank">' + 
-                feed.Entry[counter].Title + "</a>"  + "</li>";
+        <link type="text/css" rel="stylesheet" href="http://marge:7070/s/1724/1/2.0.2.2/_/download/batch/com.atlassian.auiplugin:ajs/com.atlassian.auiplugin:ajs.css" media="all">
+<!--[if IE]>
+<link type="text/css" rel="stylesheet" href="http://marge:7070/s/1724/1/2.0.2.2/_/download/batch/com.atlassian.auiplugin:ajs/com.atlassian.auiplugin:ajs.css?ieonly=true" media="all">
+<![endif]-->
+<link type="text/css" rel="stylesheet" href="http://marge:7070/s/1724/1/2.0.2.2/_/download/batch/com.atlassian.gadgets.publisher:ajs-gadgets/com.atlassian.gadgets.publisher:ajs-gadgets.css" media="all">
+<link type="text/css" rel="stylesheet" href="http://marge:7070/s/1724/1/3.1/_/download/batch/com.atlassian.streams.confluence:streamsWebResources/com.atlassian.streams.confluence:streamsWebResources.css" media="all">
+<script type="text/javascript" src="http://marge:7070/s/1724/1/2.0.2.2/_/download/batch/com.atlassian.auiplugin:ajs/com.atlassian.auiplugin:ajs.js" ></script>
+<script type="text/javascript" src="http://marge:7070/s/1724/1/2.0.2.2/_/download/batch/com.atlassian.gadgets.publisher:ajs-gadgets/com.atlassian.gadgets.publisher:ajs-gadgets.js" ></script>
+<script type="text/javascript" src="http://marge:7070/s/1724/1/3.1/_/download/batch/com.atlassian.streams.confluence:streamsWebResources/com.atlassian.streams.confluence:streamsWebResources.js" ></script>
+
+
+        <script type="text/javascript">
+            var prefs = new gadgets.Prefs();
+            var loadedDateLibrary = false;
+            var titleRequired = prefs.getBool("titleRequired");
+            if(titleRequired) {
+                gadgets.window.setTitle("__MSG_gadget.activity.stream.title__");
             }
-            html += "</ul>\n";
+            AJS.Gadget({
+                baseUrl: "http://marge:7070",
+                useOauth: "/rest/gadget/1.0/currentUser",
+                config: {
+                    descriptor: function (args) {
+                        var gadget = this;
+                        return  {
+                            action: "/rest/activity-stream/1.0/validate",
+                            theme : function () {
+                                if (gadgets.window.getViewportDimensions().width < 450){
+                                    return "gdt top-label";
+                                } else{
+                                    return "gdt";
+                                }
+                            }(),
+                            fields: [
+                                {
+                                    userpref: "title",
+                                    label: this.getPrefs().getMsg("gadget.activity.stream.pref.title"),
+                                    description: this.getMsg("gadget.activity.stream.pref.title.description"),
+                                    value: this.getPref("title"),
+                                    type: "text"
+                                },
+                                {
+                                    userpref: "keys",
+                                    label: this.getPrefs().getMsg("gadget.activity.stream.pref.keys"),
+                                    description: this.getMsg("gadget.activity.stream.pref.keys.description"),
+                                    type: "multiselect",
+                                    selected: gadget.getPrefArray("keys"),
+                                    options: function() {
+                                        if(!AJS.$.isArray(args.projectKeys.values)) {
+                                            return [args.projectKeys.values];
+                                        } else {
+                                            return args.projectKeys.values;
+                                        }
+                                    }()
+                                },
+                                {
+                                    userpref: "username",
+                                    label: this.getPrefs().getMsg("gadget.activity.stream.pref.username"),
+                                    description: this.getMsg("gadget.activity.stream.pref.username.description"),
+                                    value: this.getPref("username"),
+                                    type: "text"
+                                },
+                                {
+                                    userpref: "numofentries",
+                                    label: this.getPrefs().getMsg("gadget.activity.stream.pref.numofentries"),
+                                    description: this.getMsg("gadget.activity.stream.pref.numofentries.description"),
+                                    value: this.getPref("numofentries"),
+                                    type: "text"
+                                },
+                                AJS.gadget.fields.nowConfigured()
+                            ]
+                        };
+                    },
+                    args: [
+                        {key: "projectKeys", ajaxOptions: "/rest/activity-stream/1.0/keys"}
+                    ]
+                },
+                view: {
+                    enableReload: true,
+                    template: function (args) {
+                        var gadget = this;
 
-        _gel('content').innerHTML = html;
-        };
+                        // reset view
+                        gadget.getView().empty();
 
-        var num_entries = 5;
-        var params={};
-        var get_summaries = false;
-        params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.FEED;
-        params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.OAUTH;
-        
-        gadgets.io.makeRequest(url, callback, params);
-        
-        /*_IG_FetchFeedAsJSON(url, callback, num_entries, get_summaries);*/
-       </script>
-     ]]>
+                        //only show the footer if the gadget is configurable.
+                        if(this.getPrefs().getString("isConfigurable") === "false") {
+                            gadget.getFooter().hide();
+                        }
 
-  </Content>
+                        var getContainer = function() {
+                            var container = AJS.$("<div id=\"stream\" class=\"activityFeed\" />").appendTo(gadget.getView());
+                            return function () {
+                                return container;
+                            };
+                        }();
+
+                        var activityFeed;
+                        var loadFeed = function(numberOfItems) {
+                            activityFeed = new ActivityFeed(feedId, args.streamUrl.url, numberOfItems);
+                            activityFeed.feedPopulated = function() {
+                                gadget.hideLoading();
+                                getContainer().show();
+                                gadget.resize();
+                            };
+                            activityFeed.feedResized = function() {
+                                gadget.resize();
+                            };
+                            activityFeed.populateFeed();
+                        };
+
+                        getContainer().hide();
+                        var feedId = this.getPrefs().getModuleId();
+                        var header = AJS.$("<div class=\"header\" />").appendTo(getContainer());
+                        var title = gadgets.util.unescapeString(this.getPref("title"));
+                        if(title.length == 0) {
+                            header.addClass("noTitle");
+                        }
+                        header.append(AJS.$("<h3/>").text(title));
+                        header.append(AJS.$("<a id=\"feedLink-" + this.getPrefs().getModuleId() + "\" class=\"feedLink\">&nbsp;</a>").attr({
+                                href: AJS.$.ajaxSettings.baseUrl + args.streamUrl.url,
+                                target: "_parent"
+                            }));
+                        getContainer().append("<div id=\"feedError-" + this.getPrefs().getModuleId() + "\" class=\"stream-error\" />");
+                        getContainer().append("<div id=\"feedWarning-" + this.getPrefs().getModuleId() + "\" class=\"stream-warning\" />");
+                        getContainer().append("<div id=\"feedContainer-" + this.getPrefs().getModuleId() + "\" />");
+                        var showMoreLink = AJS.$("<a id=\"showMoreLink-" + this.getPrefs().getModuleId() + "\" href=\"#\">" +
+                                                 this.getPrefs().getMsg("gadget.activity.stream.show.more") + "</a>").appendTo(getContainer());
+                        showMoreLink.click(function(e) {
+                            e.preventDefault();
+                            getContainer().hide();
+                            gadget.showLoading();
+                            loadFeed(activityFeed.maxResults + 10);
+                        });
+
+                        gadget.showLoading();
+                        loadFeed(this.getPref("numofentries"));
+                    },
+                    args: [{
+                        key: "streamUrl",
+                        ajaxOptions: function () {
+                            if(!loadedDateLibrary)
+                            {
+                                var locale = prefs.getLang() + '-' + prefs.getCountry();
+                                var dateJsUrl = 'http://marge:7070/s/1724/1/2/_/download/resources/com.atlassian.streams.confluence:date/date.js';
+                                var localeJsUrl = dateJsUrl.replace("com.atlassian.streams.confluence:date/date.js",
+                                        "com.atlassian.streams.confluence:date-" + locale + "/date-" + locale + ".js");
+
+                                AJS.$.ajax({
+                                    type: "GET",
+                                    url: localeJsUrl,
+                                    dataType: "text",
+                                    global: false,
+                                    success: function(data) {
+                                        eval(data);
+                                        loadedDateLibrary = true;
+                                    },
+                                    error: function() {
+                                        //if there's an error loading the locale specific file, try the default!
+                                        AJS.$.ajax({
+                                            type: "GET",
+                                            url: dateJsUrl,
+                                            dataType: "text",
+                                            success: function(data) {
+                                                eval(data);
+                                                loadedDateLibrary = true;
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            var joinArray = function(array) {
+                                if(array && array.length > 0) {
+                                    return array.join();
+                                }
+                                return [];
+                            };
+
+                            return {
+                                url: "/rest/activity-stream/1.0/url",
+                                data: {
+                                    keys: joinArray(this.getPrefArray("keys")),
+                                    itemKeys: joinArray(this.getPrefArray("itemKeys")),
+                                    numofentries: this.getPref("numofentries"),
+                                    username: gadgets.util.unescapeString(this.getPref("username"))
+                                }
+                            };
+                        }
+                    }]
+                }
+            });
+        </script>
+        ]]>
+    </Content>
 </Module>

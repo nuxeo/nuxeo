@@ -19,6 +19,7 @@ package org.nuxeo.opensocial.container.factory.utils;
 
 import org.apache.shindig.auth.SecurityToken;
 import org.apache.shindig.common.uri.Uri;
+import org.apache.shindig.common.uri.UriBuilder;
 import org.apache.shindig.gadgets.GadgetContext;
 
 public class NxGadgetContext extends GadgetContext {
@@ -34,12 +35,7 @@ public class NxGadgetContext extends GadgetContext {
 
     @Override
     public Uri getUrl() {
-        // try {
-        return Uri.parse(gadgetDef);
-        // } catch (URISyntaxException e) {
-        // e.printStackTrace();
-        // }
-        // return null;
+        return UriBuilder.parse(gadgetDef).toUri();
     }
 
     @Override

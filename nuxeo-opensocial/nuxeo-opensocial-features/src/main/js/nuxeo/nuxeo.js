@@ -79,7 +79,7 @@ gadgets.nuxeo.hasPermission = function(permissionName) {
 };
 
 gadgets.nuxeo.isEditable = function() {
-  return gadgets.nuxeo.hasPermission("Everything") || gadgets.nuxeo.hasPermission("SpaceContributeur");
+  return gadgets.nuxeo.hasPermission("Write");
 };
 
 gadgets.nuxeo.getNXIDPreference = function(name, id) {

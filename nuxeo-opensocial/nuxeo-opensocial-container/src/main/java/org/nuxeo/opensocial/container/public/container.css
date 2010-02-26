@@ -258,7 +258,7 @@
   -moz-border-radius : 4px;
   -webkit-border-radius : 4px;
   border : 1px solid #D4D0C8;
-  margin-left:-2px;
+  margin-left:-1px;
   min-width: 100%;
   width: 100%;
 }
@@ -373,7 +373,7 @@
 .x-panel-tl .x-panel-header {
   font-family:'Lucida Grande',Verdana,Arial,sans-serif;
   font-size:11px;
-  text-transform: capitalize;
+  text-transform: none;
   font-weight: bold;
  }
 

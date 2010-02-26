@@ -7,5 +7,22 @@
     <provide interface="org.nuxeo.opensocial.service.api.OpenSocialService" />
   </service>
 
+  <extension-point name="cryptoConfig">
+    <documentation>
+      Pair container:key-valuer for security token generation
+
+      Creating a key is best done with a command line like this:
+
+      dd if=/dev/random bs=32 count=1  | openssl base64 > /tmp/key.txt
+
+      <key container="default">
+        <!--<value>fnQdpl5HYOFQsGNsSjPEDhQLAlZiZCu91RGLN93w7LU=</value>-->
+        <value>thisisanexpamplekeyandshouldnotbeusedbyanyo=</value>
+      </key>
+    </documentation>
+    <object class="org.nuxeo.opensocial.shindig.crypto.KeyDescriptor" />
+  </extension-point>
+
+
 
 </component>

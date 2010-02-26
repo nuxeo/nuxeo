@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://correspondence.nuxeo.com/schemas/jbpm/list"
-  xmlns:nxtl="http://correspondence.nuxeo.com/schemas/jbpm/list"
-  xmlns:nxs="http://correspondence.nuxeo.com/schemas/base/">
+  targetNamespace="http://nuxeo.com/schemas/jbpm/list"
+  xmlns:nxtl="http://nuxeo.com/schemas/jbpm/list"
+  xmlns:nxs="http://nuxeo.com/schemas/base/">
 
   <xs:include schemaLocation="base.xsd" />
 
   <xs:complexType name="type_task">
     <xs:sequence>
-      <xs:element name="users" type="nxtl:stringList" />
+      <xs:element name="taskUsers" type="nxtl:stringList" />
       <xs:element name="directive" type="xs:string" />
       <xs:element name="comment" type="xs:string" />
       <xs:element name="dueDate" type="xs:date" />

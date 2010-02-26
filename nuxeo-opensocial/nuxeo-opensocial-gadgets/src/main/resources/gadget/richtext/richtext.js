@@ -161,7 +161,8 @@ function loadHtml(id){
 function setHtml(content) {
      if(_isSet(content)){
        jQuery(".nicEdit-main").html(content);
-       jQuery("#text").html(content);
+       jQuery("#pictureContainer").append(content);
+       //jQuery("#text").html(content);
        gadgets.window.adjustHeight();
     }
 };
@@ -182,7 +183,7 @@ function loadImage(id){
           imgContainer = jQuery("<img style=\"border:0;\" id=\"picture\" src=\"\" onload=\"gadgets.window.adjustHeight()\">");
 
        jQuery("#imgPreview").attr("src", photoUrl);
-       jQuery("#pictureContainer").append(imgContainer);
+       jQuery("#pictureContainer").prepend(imgContainer);
        jQuery("#picture").attr("src", photoUrl);
        jQuery("#pictureContainer").append("<span id=\"legend\"></span>");
        jQuery("#legend").text(gadgets.util.unescapeString(prefs.getString("legend")));

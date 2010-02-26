@@ -100,14 +100,7 @@
       }
     });
 
-
-
-
       _IG_AdjustIFrameHeight();
-
-    setRows();
-    gadgets.window.adjustHeight();
-
 
         }
     )
@@ -118,7 +111,6 @@
     function setCols(){
       var a=_gel("txtareapostit");
       a.setAttribute("cols",Math.floor(a.clientWidth/7));
-      setRows();
     }
 
   function setText(text){
@@ -133,7 +125,10 @@
       _gel("txtareapostit").style.fontFamily = tfont;
 
     var perm = gadgets.nuxeo.isEditable();
-
+	
+	setCols();
+	setRows(text);
+    
     if(perm == false) {
       var elt2 = _gel("txtareapostit");
      _gel("cacheText").style.top = _gel("txtareapostit").style.top;
@@ -144,16 +139,13 @@
      _gel("cacheText").style.fontSize = tsize;
      _gel("cacheText").style.fontFamily = tfont;
 
-     setCols();
-
+    
+	 
      jQuery("#formtxt").remove();
      jQuery("#cacheText").show();
 
-
      elt2.setAttribute("disabled","disabled");
      elt2.disabled="disabled";
-
-
 
      var temp_chaine = gadgets.util.unescapeString(text);
      while(temp_chaine.indexOf("\n") > 0){
@@ -163,6 +155,7 @@
      _gel("cacheText").innerHTML = temp_chaine;
 
      }
+     
     }
 
     function save() {
@@ -176,17 +169,19 @@
     }
 
 
-  function setRows() {
+  function setRows(contenu) {
     if (_gel("txtareapostit").value.length > 1100)
       _gel("txtareapostit").value = _gel("txtareapostit").value.substring(0,1100);
-    var zoneText=_gel("txtareapostit"),colonnes=zoneText.cols,contenu=zoneText.value;
-    contenu=contenu.replace(/\r\n?/,"\n");
+    var zoneText=_gel("txtareapostit");
+    var colonnes = zoneText.cols;
+    if(contenu==null)
+    	contenu = zoneText.value;
+    contenu = contenu.replace(/\r\n?/,"\n");
     var e=2;
     var c=0;
     var d=0;
 
-    for(;d<contenu.length;d++)
-    {
+    for(var d = 0 ; d<contenu.length; d++) {
       var g=contenu.charAt(d);
       c++;
       if(g=="\n"||c==colonnes) {
@@ -195,7 +190,7 @@
       }
     }
     zoneText.setAttribute("rows",e);
-  if ( (e*14) > 220)
+    if ((e*14) > 220)
       zoneText.style.height=e*14+"px";
     else
        zoneText.style.height="220px";
@@ -215,7 +210,7 @@
    <div id="txtCenter">
    <div id="cacheText" style="display:none;" ></div>
     <form style="text-align:center;" method="post" id="formtxt" enctype="application/x-www-form-urlencoded" action="#">
-    <textarea id="txtareapostit" style="display:block;" name="gadget:htmlContent" cols="30" wrap="hard" onkeyup="save_note();setRows();">
+    <textarea id="txtareapostit" style="display:block;" name="gadget:htmlContent" cols="30" wrap="hard" onkeyup="save_note();setRows(null);">
     </textarea>
     </form>
    </div>

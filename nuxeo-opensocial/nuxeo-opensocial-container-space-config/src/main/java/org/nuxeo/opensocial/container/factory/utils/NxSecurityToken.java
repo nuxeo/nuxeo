@@ -90,8 +90,7 @@ public class NxSecurityToken implements SecurityToken {
     }
 
     public String getContainer() {
-        // TODO Auto-generated method stub
-        return null;
+        return "default";
     }
 
 }

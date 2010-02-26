@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.gadgets.GadgetSpecFactory;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.opensocial.servlet.GuiceContextListener;
+import org.nuxeo.opensocial.shindig.crypto.KeyDescriptor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -45,8 +46,7 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
 
     private static Injector injector;
 
-    private Map<String, String> keys = new HashMap<String, String>();
-
+    private final Map<String, String> keys = new HashMap<String, String>();
 
     public Injector getInjector() {
         return injector;
@@ -59,13 +59,21 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
-
+        if (XP_CRYPTO.equals(extensionPoint)) {
+            KeyDescriptor kd = (KeyDescriptor) contribution;
+            keys.put(kd.getContainer(), kd.getKey());
+        }
     }
 
     @Override
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
-
+        if (XP_CRYPTO.equals(extensionPoint)) {
+            KeyDescriptor kd = (KeyDescriptor) contribution;
+            if (keys.containsKey(kd.getContainer())) {
+                keys.remove(kd.getContainer());
+            }
+        }
     }
 
     @Override
@@ -80,7 +88,7 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) {
         LOG.info("Activate component OpenSocial service");
-        if (injector==null) {
+        if (injector == null) {
             injector = GuiceContextListener.guiceInjector;
         }
     }
@@ -89,7 +97,6 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     public void deactivate(ComponentContext arg0) {
         LOG.info("DeActivate component OpenSocial service");
     }
-
 
     public Object getInstance(Class<?> klass) {
         if (getInjector() != null)
