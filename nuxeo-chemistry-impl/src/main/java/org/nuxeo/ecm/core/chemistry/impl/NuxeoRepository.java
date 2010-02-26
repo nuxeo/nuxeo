@@ -302,11 +302,11 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
     }
 
     public boolean hasGetDescendants() {
-        return false;
+        return true;
     }
 
     public boolean hasGetFolderTree() {
-        return false;
+        return true;
     }
 
     public boolean isContentStreamUpdatableAnytime() {
@@ -330,7 +330,6 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
     }
 
     public CapabilityACL getACLCapability() {
-        // TODO Auto-generated method stub
         return CapabilityACL.NONE;
     }
 
