@@ -18,11 +18,7 @@ package org.nuxeo.ecm.webengine.loader;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.loader.store.ResourceStore;
 import org.nuxeo.ecm.webengine.loader.store.ResourceStoreClassLoader;
 
@@ -32,35 +28,25 @@ import org.nuxeo.ecm.webengine.loader.store.ResourceStoreClassLoader;
  */
 public class ReloadingClassLoader extends ClassLoader {
 
-    private final Log log = LogFactory.getLog(ReloadingClassLoader.class);
-
     private final ClassLoader parent;
-    private final List<ResourceStore> stores;
-    private ResourceStoreClassLoader delegate;
+    private volatile ResourceStoreClassLoader delegate;
 
     public ReloadingClassLoader(final ClassLoader pParent) {
         super(pParent);
         parent = pParent;
-        stores = new ArrayList<ResourceStore>();
-        delegate = new ResourceStoreClassLoader(parent, new ResourceStore[0]);
+        delegate = new ResourceStoreClassLoader(parent);
     }
 
-    public synchronized void addResourceStore(final ResourceStore store) {
-        stores.add(store);
-        reload(); //need to reload to update usderlying store list
+    public void addResourceStore(final ResourceStore store) {
+        delegate.addStore(store);
     }
 
-    public synchronized boolean removeResourceStore(final ResourceStore store) {
-        boolean ret = stores.remove(store);
-        if (ret) {
-            delegate = new ResourceStoreClassLoader(parent, stores.toArray(new ResourceStore[stores.size()]));
-            return true;
-        }
-        return false;
+    public boolean removeResourceStore(final ResourceStore store) {
+        return delegate.removeStore(store);
     }
 
-    public void reload() {
-        delegate = new ResourceStoreClassLoader(parent, stores.toArray(new ResourceStore[stores.size()]));
+    public synchronized void reload() {
+        delegate = delegate.clone();
     }
 
     @Override

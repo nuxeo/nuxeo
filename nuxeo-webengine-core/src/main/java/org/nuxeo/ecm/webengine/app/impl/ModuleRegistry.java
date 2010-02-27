@@ -49,10 +49,10 @@ public class ModuleRegistry {
     
     /**
      * Resources contributed from an applications to other applications.
-     * A map of key : value where key is the target parent resource class name 
+     * A map of key : value where key is the target parent resource class 
      * and value is a list of contributed child resources.
      */
-    protected Map<String, ResourceContributions> contributions;
+    protected Map<Class<?>, ResourceContributions> contributions;
     
     //TODO impl resource factories
     //protected Map<String, ResourceFactory> factories;
@@ -62,7 +62,7 @@ public class ModuleRegistry {
         this.engine = engine;
         modules = new HashMap<String, ModuleHandler>();
         modulesByRoot = new HashMap<String, ModuleHandler>();
-        contributions = new HashMap<String, ResourceContributions>();
+        contributions = new HashMap<Class<?>, ResourceContributions>();
     }
     
     public ModuleHandler[] getModuleHandlers() {
@@ -85,8 +85,7 @@ public class ModuleRegistry {
             for (Class<?> c : rc) {
                 modulesByRoot.put(c.getName(), mh);
             }
-            //TODO disable this for now
-            //addContributions(app, mh);
+            addContributions(app, mh);
         }
     }
     
@@ -97,8 +96,7 @@ public class ModuleRegistry {
             for (Class<?> c : rc) {
                 modulesByRoot.remove(c.getName());
             }            
-            //TODO this disable this for now
-            //removeContributions(app, mh);
+            removeContributions(app, mh);
         }
         return app;
     }
@@ -106,8 +104,8 @@ public class ModuleRegistry {
     public Object getContribution(Object target, String key) throws Exception {
         ResourceContributions rcs = contributions.get(target.getClass().getName());
         if (rcs != null) {
-            String type = rcs.getContribution(key);
-            Object obj = engine.loadClass(type).newInstance(); //TODO use class proxies
+            Class<?> type = rcs.getContribution(key);
+            Object obj = type.newInstance();
             //TODO ((ContributedResource)obj).initialize(target);
             return obj;
         }
@@ -122,13 +120,13 @@ public class ModuleRegistry {
                 if (rxt == null) { // should never happen
                     throw new Error("Trying to export a resource extension which is not annotated with "+ResourceExtension.class+" in bundle "+app.getId()+", resource extension: "+xt);
                 }
-                String key = rxt.target().getName();
-                ResourceContributions rcs = contributions.get(key);
+                Class<?> target = rxt.target();
+                ResourceContributions rcs = contributions.get(target);
                 if (rcs == null) {
-                    rcs = new ResourceContributions(key);
-                    contributions.put(key, rcs);
+                    rcs = new ResourceContributions(target);
+                    contributions.put(target, rcs);
                 }
-                rcs.addContribution(rxt.key(), xt.getName());
+                rcs.addContribution(rxt.key(), xt);
             }
         }
     }

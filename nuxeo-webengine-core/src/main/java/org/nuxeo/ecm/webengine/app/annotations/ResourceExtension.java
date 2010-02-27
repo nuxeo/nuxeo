@@ -22,6 +22,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Used to annotate extension resources.
+ * Extension resources are used to insert new sub-locators to an existing resource.
+ * The extension resource will be instantiated and returned when its key match the path segment 
+ * on the target resource.
+ *   
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -29,8 +34,23 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ResourceExtension {
 
+    /**
+     * The target resource where this resource should be contributed
+     * @return
+     */
     Class<?> target();
     
+    /**
+     * The path segment where this resource should be installed. 
+     * @return the key
+     */
     String key();
+    
+    /**
+     * The contribution categories.
+     * Categories can be shared between contributions
+     * @return the type 
+     */
+    String[] categories() default {};
     
 }

@@ -100,8 +100,30 @@ public class FileResourceStore implements ResourceStore {
         FileUtils.copyToFile(data, getFile(name));
     }
 
+    public String getLocation() {
+        return root.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof FileResourceStore) {
+            FileResourceStore store = (FileResourceStore)obj;
+            return store.root.equals(root);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return root.hashCode();
+    }
+    
     @Override
     public String toString() {
         return "FileResourceStore: "+root;
     }
+    
 }

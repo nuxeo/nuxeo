@@ -64,7 +64,7 @@ public abstract class UserSession extends HashMap<String, Object> {
 
     protected transient CoreSession coreSession;
 
-    public static UserSession getCurrentSession(HttpServletRequest request) {
+    public static UserSession tryGetCurrentSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         UserSession us = null;
         if (session!=null) {
@@ -73,7 +73,11 @@ public abstract class UserSession extends HashMap<String, Object> {
         if (us==null) {
             us = (UserSession) request.getAttribute(WE_SESSION_KEY);
         }
-
+        return us;
+    }
+    
+    public static UserSession getCurrentSession(HttpServletRequest request) {
+        UserSession us = tryGetCurrentSession(request);
         if (us==null) {
             log.warn("Unable to find UserSession");
         }

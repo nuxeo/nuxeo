@@ -31,6 +31,7 @@ import org.nuxeo.common.utils.FileUtils;
 public class MemoryStore implements ResourceStore {
 
     protected final Map<String, byte[]> store;
+    protected String location;
 
     public MemoryStore() {
         this(new HashMap<String, byte[]>());
@@ -38,6 +39,7 @@ public class MemoryStore implements ResourceStore {
 
     public MemoryStore(Map<String, byte[]> store) {
         this.store = store;
+        this.location = "java:"+System.identityHashCode(this);
     }
 
     public boolean exists(String name) {
@@ -73,4 +75,12 @@ public class MemoryStore implements ResourceStore {
         store.remove(name);
     }
 
+    public String getLocation() {
+        return "java";
+    }
+
+    @Override
+    public String toString() {
+        return getLocation();
+    }
 }

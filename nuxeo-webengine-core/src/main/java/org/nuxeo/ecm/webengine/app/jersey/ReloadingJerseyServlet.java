@@ -45,10 +45,7 @@ public class ReloadingJerseyServlet extends ServletContainer implements Reloadab
     @Override
     public void init() throws ServletException {
         super.init();
-        reloader = new Reloader();
-        // enabled by default - use a runtime property to disable it
-        reloader.setEnabled(Boolean.parseBoolean(
-                Framework.getProperty(WebEngine.class.getName()+".enableReload", "true")));
+        reloader = new Reloader(Framework.getLocalService(WebEngine.class));
         reloader.addListener(this);
     }
     

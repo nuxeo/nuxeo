@@ -124,7 +124,7 @@ public class WebEngineFilter implements Filter {
     
     public void cleanup(AbstractWebContext ctx, HttpServletRequest request, HttpServletResponse response) {
         if (ctx != null) {
-            UserSession us = ctx.getUserSession();
+            UserSession us = UserSession.tryGetCurrentSession(request);
             if (us != null) {
                 us.terminateRequest(request);
             }

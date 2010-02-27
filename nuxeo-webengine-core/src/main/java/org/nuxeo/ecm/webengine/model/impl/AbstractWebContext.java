@@ -75,7 +75,7 @@ public abstract class AbstractWebContext implements WebContext {
 
     protected final WebEngine engine;
 
-    protected UserSession us;
+    private UserSession us;
 
     protected final LinkedList<File> scriptExecutionStack;
 
@@ -96,7 +96,6 @@ public abstract class AbstractWebContext implements WebContext {
     protected String basePath;
 
     protected AbstractWebContext(HttpServletRequest request) {
-        us = UserSession.getCurrentSession(request); //TODO remove this since it is lazy loaded
         engine = Framework.getLocalService(WebEngine.class);
         scriptExecutionStack = new LinkedList<File>();
         this.request = request;
@@ -151,11 +150,13 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public CoreSession getCoreSession() {
-        return us.getCoreSession();
+        UserSession us = getUserSession();
+        return us != null ? us.getCoreSession() : null;
     }
 
     public Principal getPrincipal() {
-        return us.getPrincipal();
+        UserSession us = getUserSession();
+        return us != null ? us.getPrincipal() : null;
     }
 
     public HttpServletRequest getRequest() {

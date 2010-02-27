@@ -39,25 +39,23 @@ public class Reloader {
     protected WebEngine engine;
     protected List<Reloadable> listeners;
     
-    //TODO add it to webengine ?
-    private static Reloader instance = new Reloader();
     
-    public static Reloader getInstance() {
-        return instance;
+    public Reloader(WebEngine engine) {
+        this (engine, engine.isDevMode() ? DEFAULT_TIMEOUT_CHECK : 0);
     }
     
-    public Reloader() {
-        this (0);
-    }
-    
-    public Reloader(int checkTimeout) {
-        engine = Framework.getLocalService(WebEngine.class);
+    public Reloader(WebEngine engine, int checkTimeout) {
+        this.engine = engine;
         listeners = new Vector<Reloadable>();
         fileToCheck = engine.getRootDirectory();
         lastModified = fileToCheck.lastModified();
         setCheckTimeout(checkTimeout);
     }
     
+    public WebEngine getEngine() {
+        return engine;
+    }
+        
     public void addListener(Reloadable listener) {
         listeners.add(listener);
     }

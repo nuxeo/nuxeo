@@ -21,32 +21,66 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * The class loader allows modifying the stores (adding/removing). 
+ * Mutable operations are thread safe.
+ *  
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class ResourceStoreClassLoader extends ClassLoader {
+public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
 
     private final Log log = LogFactory.getLog(ResourceStoreClassLoader.class);
 
-    private final ResourceStore[] stores;
+    private volatile ResourceStore[] stores;
+    private final LinkedHashSet<ResourceStore> cp; // class path 
 
-    public ResourceStoreClassLoader(final ClassLoader pParent, final ResourceStore[] stores) {
-        super(pParent);
-        this.stores = stores;
+    public ResourceStoreClassLoader(final ClassLoader pParent) {
+        this (pParent, new LinkedHashSet<ResourceStore>());
     }
 
+    protected ResourceStoreClassLoader(final ClassLoader pParent, LinkedHashSet<ResourceStore> cp) {
+        super (pParent);
+        this.cp = cp;
+        if (!cp.isEmpty()) {
+            stores = cp.toArray(new ResourceStore[cp.size()]);
+        }
+    }
+
+    public synchronized boolean addStore(ResourceStore store) {
+        if (cp.add(store)) {
+            stores = cp.toArray(new ResourceStore[cp.size()]);
+            return true;
+        }
+        return false;
+    }
+    
+    public synchronized boolean removeStore(ResourceStore store) {
+        if (cp.remove(store)) {
+            stores = cp.toArray(new ResourceStore[cp.size()]);
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
+    public synchronized ResourceStoreClassLoader clone() {
+        return new ResourceStoreClassLoader(getParent(), new LinkedHashSet<ResourceStore>(cp));
+    }
+    
     public ResourceStore[] getStores() {
         return stores;
     }
 
     protected Class<?> fastFindClass(final String name) {
-        if (stores != null) {
-            for (final ResourceStore store : stores) {
+        ResourceStore[] _stores = stores; // use a local variable
+        if (_stores != null) {
+            for (final ResourceStore store : _stores) {
                 final byte[] clazzBytes = store.getBytes(convertClassToResourcePath(name));
                 if (clazzBytes != null) {
                     if (log.isTraceEnabled()) {
@@ -77,8 +111,9 @@ public class ResourceStoreClassLoader extends ClassLoader {
 
     @Override
     protected URL findResource(String name) {
-        if (stores != null) {
-            for (final ResourceStore store : stores) {
+        ResourceStore[] _stores = stores; // use a local variable
+        if (_stores != null) {
+            for (final ResourceStore store : _stores) {
                 final URL url = store.getURL(name);
                 if (url != null) {
                     if (log.isTraceEnabled()) {
@@ -93,9 +128,10 @@ public class ResourceStoreClassLoader extends ClassLoader {
 
     @Override
     protected Enumeration<URL> findResources(String name) throws IOException {
-        if (stores != null) {
+        ResourceStore[] _stores = stores; // use a local variable
+        if (_stores != null) {
             List<URL> result = new ArrayList<URL>();
-            for (final ResourceStore store : stores) {
+            for (final ResourceStore store : _stores) {
                 final URL url = store.getURL(name);
                 if (url != null) {
                     if (log.isTraceEnabled()) {
