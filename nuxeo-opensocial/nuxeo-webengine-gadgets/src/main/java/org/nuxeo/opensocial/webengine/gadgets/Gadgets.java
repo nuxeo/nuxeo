@@ -51,7 +51,7 @@ public class Gadgets extends ModuleRoot {
                 gadgetList);
     }
 
-    @Path("/{name}")
+    @Path("{name}")
     public Object getGadget(@PathParam("name") String gadgetName)
             throws Exception {
 
