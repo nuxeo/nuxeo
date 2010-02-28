@@ -156,6 +156,10 @@ public class DialectOracle extends Dialect {
                 && actualName.equals("NUMBER") && actualSize == 1) {
             return true;
         }
+        if (expected == Types.TINYINT && actual == Types.DECIMAL
+                && actualName.equals("NUMBER") && actualSize == 3) {
+            return true;
+        }
         if (expected == Types.INTEGER && actual == Types.DECIMAL
                 && actualName.equals("NUMBER") && actualSize == 10) {
             return true;
