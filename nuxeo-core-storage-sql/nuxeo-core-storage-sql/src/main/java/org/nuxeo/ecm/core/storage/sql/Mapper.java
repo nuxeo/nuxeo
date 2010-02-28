@@ -554,7 +554,8 @@ public class Mapper {
                                 Integer.valueOf(kind)));
                     }
                     Serializable frags;
-                    if (sqlInfo.dialect.supportsArrays()) {
+                    if (sqlInfo.dialect.supportsArrays()
+                            && columns.get(1).getJdbcType() == Types.ARRAY) {
                         frags = fragments.split(" ");
                     } else {
                         frags = fragments;
@@ -643,7 +644,8 @@ public class Mapper {
                 Serializable frags = columns.get(1).getFromResultSet(rs, 2);
                 int kind = ((Long) columns.get(2).getFromResultSet(rs, 3)).intValue();
                 String[] fragments;
-                if (sqlInfo.dialect.supportsArrays()) {
+                if (sqlInfo.dialect.supportsArrays()
+                        && frags instanceof String[]) {
                     fragments = (String[]) frags;
                 } else {
                     fragments = ((String) frags).split(" ");

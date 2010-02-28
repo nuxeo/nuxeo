@@ -193,6 +193,7 @@ public class DialectOracle extends Dialect {
         case Types.BIT:
             ps.setBoolean(index, ((Boolean) value).booleanValue());
             return;
+        case Types.TINYINT:
         case Types.SMALLINT:
             ps.setInt(index, ((Long) value).intValue());
             return;
@@ -253,6 +254,7 @@ public class DialectOracle extends Dialect {
             return sb.toString();
         case Types.BIT:
             return rs.getBoolean(index);
+        case Types.TINYINT:
         case Types.SMALLINT:
         case Types.INTEGER:
         case Types.BIGINT:
@@ -365,6 +367,52 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
+    public boolean isClusteringSupported() {
+        return true;
+    }
+
+    @Override
+    public String getCleanupClusterNodesSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        // delete nodes for sessions that don't exist anymore
+        return String.format(
+                "DELETE FROM %s N WHERE "
+                        + "NOT EXISTS(SELECT S.SID FROM V$SESSION S WHERE N.%s = S.SID) ",
+                cln.getQuotedName(), clnid.getQuotedName());
+    }
+
+    @Override
+    public String getCreateClusterNodeSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        Column clncr = cln.getColumn(model.CLUSTER_NODES_CREATED_KEY);
+        return String.format(
+                "INSERT INTO %s (%s, %s) VALUES (SYS_CONTEXT('USERENV','SID'), CURRENT_TIMESTAMP)",
+                cln.getQuotedName(), clnid.getQuotedName(),
+                clncr.getQuotedName());
+    }
+
+    @Override
+    public String getRemoveClusterNodeSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        return String.format(
+                "DELETE FROM %s WHERE %s = SYS_CONTEXT('USERENV','SID')",
+                cln.getQuotedName(), clnid.getQuotedName());
+    }
+
+    @Override
+    public String getClusterInsertInvalidations() {
+        return "{CALL NX_CLUSTER_INVAL(?, ?, ?)}";
+    }
+
+    @Override
+    public String getClusterGetInvalidations() {
+        return "SELECT * FROM TABLE(NX_CLUSTER_GET_INVALS())";
+    }
+
+    @Override
     public boolean supportsArrays() {
         return true;
     }
@@ -435,6 +483,62 @@ public class DialectOracle extends Dialect {
                 null, //
                 null, //
                 "CREATE OR REPLACE TYPE NX_ARRAY AS VARRAY(99) OF VARCHAR2(100);"));
+
+        statements.add(new ConditionalStatement( //
+                true, // early
+                Boolean.TRUE, // drop
+                null, //
+                "DROP TYPE NX_INVAL FORCE", //
+                "CREATE OR REPLACE TYPE NX_INVAL AS OBJECT("
+                        + "id VARCHAR2(36), " //
+                        + "fragments VARCHAR2(4000), " //
+                        + "kind NUMBER(3,0)" //
+                        + ")"));
+
+        statements.add(new ConditionalStatement( //
+                true, // early
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                "CREATE OR REPLACE TYPE NX_INVAL_TABLE AS TABLE OF NX_INVAL"));
+
+        statements.add(new ConditionalStatement(
+                false, // late
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                String.format(
+                        "CREATE OR REPLACE PROCEDURE NX_CLUSTER_INVAL(i %s, f VARCHAR2, k INTEGER) " //
+                                + "IS" //
+                                + "  sid INTEGER := SYS_CONTEXT('USERENV','SID'); " //
+                                + "BEGIN" //
+                                + "  FOR c IN (SELECT nodeid FROM cluster_nodes WHERE nodeid <> sid) LOOP" //
+                                + "    INSERT INTO cluster_invals (nodeid, id, fragments, kind) VALUES (c.nodeid, i, f, k);" //
+                                + "  END LOOP; " //
+                                + "END;" //
+                        , idType)));
+
+        statements.add(new ConditionalStatement(
+                false, // late
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                "CREATE OR REPLACE FUNCTION NX_CLUSTER_GET_INVALS " //
+                        + "RETURN NX_INVAL_TABLE PIPELINED IS" //
+                        + "  PRAGMA AUTONOMOUS_TRANSACTION; " //
+                        + "  sid INTEGER := SYS_CONTEXT('USERENV','SID'); " //
+                        + "  outrec NX_INVAL := NX_INVAL(NULL,NULL,NULL); " //
+                        + "BEGIN" //
+                        + "  FOR c IN (SELECT id, fragments, kind FROM cluster_invals WHERE nodeid = sid) LOOP" //
+                        + "    outrec.id := c.id;" //
+                        + "    outrec.fragments := c.fragments;" //
+                        + "    outrec.kind := c.kind;" //
+                        + "    PIPE ROW(outrec);" //
+                        + "  END LOOP;" //
+                        + "  DELETE FROM cluster_invals WHERE nodeid = sid;" //
+                        + "  COMMIT; " //
+                        + "END;" //
+        ));
 
         statements.add(new ConditionalStatement(
                 false, // late
