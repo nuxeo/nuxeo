@@ -88,4 +88,10 @@ public class DatabaseMySQL extends DatabaseHelper {
         // actions."
         return 15;
     }
+
+    @Override
+    public boolean supportsClustering() {
+        return true;
+    }
+
 }
