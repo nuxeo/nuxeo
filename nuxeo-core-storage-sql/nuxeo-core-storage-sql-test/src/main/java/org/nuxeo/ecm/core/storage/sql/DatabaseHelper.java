@@ -34,7 +34,7 @@ public abstract class DatabaseHelper {
 
     public static final String DB_PROPERTY = "nuxeo.test.vcs.db";
 
-    public static final String DB_DEFAULT = "Oracle";
+    public static final String DB_DEFAULT = "H2";
 
     public static DatabaseHelper DATABASE; // = DatabaseH2.INSTANCE;
 
