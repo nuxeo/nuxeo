@@ -504,24 +504,6 @@ public class DialectOracle extends Dialect {
                 null, //
                 "CREATE OR REPLACE TYPE NX_ARRAY AS VARRAY(99) OF VARCHAR2(100);"));
 
-        statements.add(new ConditionalStatement( //
-                true, // early
-                Boolean.TRUE, // drop
-                null, //
-                "DROP TYPE NX_INVAL FORCE", //
-                "CREATE OR REPLACE TYPE NX_INVAL AS OBJECT("
-                        + "id VARCHAR2(36), " //
-                        + "fragments VARCHAR2(4000), " //
-                        + "kind NUMBER(3,0)" //
-                        + ")"));
-
-        statements.add(new ConditionalStatement( //
-                true, // early
-                Boolean.FALSE, // no drop needed
-                null, //
-                null, //
-                "CREATE OR REPLACE TYPE NX_INVAL_TABLE AS TABLE OF NX_INVAL"));
-
         statements.add(new ConditionalStatement(
                 false, // late
                 Boolean.FALSE, // no drop needed
