@@ -151,6 +151,8 @@ public class SQLInfo {
 
     protected String clusterGetInvalidationsSql;
 
+    protected String clusterDeleteInvalidationsSql;
+
     protected List<Column> clusterGetInvalidationsColumns;
 
     /**
@@ -298,6 +300,10 @@ public class SQLInfo {
 
     public List<Column> getClusterGetInvalidtionsColumns() {
         return clusterGetInvalidationsColumns;
+    }
+
+    public String getClusterDeleteInvalidationsSql() {
+        return clusterDeleteInvalidationsSql;
     }
 
     // ----- insert -----
@@ -709,6 +715,7 @@ public class SQLInfo {
                     table.getColumn(model.CLUSTER_INVALS_ID_KEY),
                     table.getColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY),
                     table.getColumn(model.CLUSTER_INVALS_KIND_KEY));
+            clusterDeleteInvalidationsSql = dialect.getClusterDeleteInvalidations();
         }
 
         protected void postProcessRepository() {

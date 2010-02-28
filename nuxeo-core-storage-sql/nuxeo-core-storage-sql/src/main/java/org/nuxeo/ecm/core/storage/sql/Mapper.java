@@ -629,6 +629,7 @@ public class Mapper {
     public Invalidations getClusterInvalidations() throws StorageException {
         Invalidations invalidations = new Invalidations();
         String sql = sqlInfo.getClusterGetInvalidationsSql();
+        String sqldel = sqlInfo.getClusterDeleteInvalidationsSql();
         List<Column> columns = sqlInfo.getClusterGetInvalidtionsColumns();
         Statement st = null;
         try {
@@ -654,6 +655,15 @@ public class Mapper {
             }
             if (isLogEnabled()) {
                 logCount(n);
+            }
+            if (sqlInfo.dialect.isClusteringDeleteNeeded()) {
+                if (isLogEnabled()) {
+                    log(sqldel);
+                }
+                n = st.executeUpdate(sqldel);
+                if (isLogEnabled()) {
+                    logCount(n);
+                }
             }
             return invalidations;
         } catch (SQLException e) {

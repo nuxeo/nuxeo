@@ -480,6 +480,15 @@ public abstract class Dialect {
     }
 
     /**
+     * Does clustering fetch of invalidations (
+     * {@link #getClusterGetInvalidations}) need a separate delete for them (
+     * {@link #getClusterDeleteInvalidations}).
+     */
+    public boolean isClusteringDeleteNeeded() {
+        return false;
+    }
+
+    /**
      * Gets the SQL to cleanup info about old (crashed) cluster nodes.
      */
     public String getCleanupClusterNodesSql(Model model, Database database) {
@@ -515,6 +524,15 @@ public abstract class Dialect {
      * @return an SQL statement returning a result set
      */
     public String getClusterGetInvalidations() {
+        return null;
+    }
+
+    /**
+     * Gets the SQL to delete invalidations for this cluster node.
+     *
+     * @return an SQL statement returning a result set
+     */
+    public String getClusterDeleteInvalidations() {
         return null;
     }
 

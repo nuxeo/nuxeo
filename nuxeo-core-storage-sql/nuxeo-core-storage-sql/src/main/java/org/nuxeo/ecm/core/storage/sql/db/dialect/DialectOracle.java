@@ -375,6 +375,16 @@ public class DialectOracle extends Dialect {
         return true;
     }
 
+    /*
+     * For Oracle we don't use a function to return values and delete them at
+     * the same time, because pipelined functions that need to do DML have to do
+     * it in an autonomous transaction which could cause consistency issues.
+     */
+    @Override
+    public boolean isClusteringDeleteNeeded() {
+        return true;
+    }
+
     @Override
     public String getCleanupClusterNodesSql(Model model, Database database) {
         Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
@@ -413,7 +423,13 @@ public class DialectOracle extends Dialect {
 
     @Override
     public String getClusterGetInvalidations() {
-        return "SELECT * FROM TABLE(NX_CLUSTER_GET_INVALS())";
+        return "SELECT id, fragments, kind FROM cluster_invals "
+                + "WHERE nodeid = SYS_CONTEXT('USERENV','SID')";
+    }
+
+    @Override
+    public String getClusterDeleteInvalidations() {
+        return "DELETE FROM cluster_invals WHERE nodeid = SYS_CONTEXT('USERENV','SID')";
     }
 
     @Override
@@ -521,28 +537,6 @@ public class DialectOracle extends Dialect {
                                 + "  END LOOP; " //
                                 + "END;" //
                         , idType)));
-
-        statements.add(new ConditionalStatement(
-                false, // late
-                Boolean.FALSE, // no drop needed
-                null, //
-                null, //
-                "CREATE OR REPLACE FUNCTION NX_CLUSTER_GET_INVALS " //
-                        + "RETURN NX_INVAL_TABLE PIPELINED IS" //
-                        + "  PRAGMA AUTONOMOUS_TRANSACTION; " //
-                        + "  sid INTEGER := SYS_CONTEXT('USERENV','SID'); " //
-                        + "  outrec NX_INVAL := NX_INVAL(NULL,NULL,NULL); " //
-                        + "BEGIN" //
-                        + "  FOR c IN (SELECT id, fragments, kind FROM cluster_invals WHERE nodeid = sid) LOOP" //
-                        + "    outrec.id := c.id;" //
-                        + "    outrec.fragments := c.fragments;" //
-                        + "    outrec.kind := c.kind;" //
-                        + "    PIPE ROW(outrec);" //
-                        + "  END LOOP;" //
-                        + "  DELETE FROM cluster_invals WHERE nodeid = sid;" //
-                        + "  COMMIT; " //
-                        + "END;" //
-        ));
 
         statements.add(new ConditionalStatement(
                 false, // late
