@@ -537,8 +537,8 @@ public class Mapper {
      */
     public void insertClusterInvalidations(Invalidations invalidations)
             throws StorageException {
-        String sql = sqlInfo.getClusterInsertInvalidationsSql();
-        List<Column> columns = sqlInfo.getClusterInsertInvalidationsColumns();
+        String sql = sqlInfo.dialect.getClusterInsertInvalidations();
+        List<Column> columns = sqlInfo.getClusterInvalidationsColumns();
         PreparedStatement ps = null;
         try {
             ps = connection.prepareStatement(sql);
@@ -628,9 +628,9 @@ public class Mapper {
      */
     public Invalidations getClusterInvalidations() throws StorageException {
         Invalidations invalidations = new Invalidations();
-        String sql = sqlInfo.getClusterGetInvalidationsSql();
-        String sqldel = sqlInfo.getClusterDeleteInvalidationsSql();
-        List<Column> columns = sqlInfo.getClusterGetInvalidtionsColumns();
+        String sql = sqlInfo.dialect.getClusterGetInvalidations();
+        String sqldel = sqlInfo.dialect.getClusterDeleteInvalidations();
+        List<Column> columns = sqlInfo.getClusterInvalidationsColumns();
         Statement st = null;
         try {
             st = connection.createStatement();

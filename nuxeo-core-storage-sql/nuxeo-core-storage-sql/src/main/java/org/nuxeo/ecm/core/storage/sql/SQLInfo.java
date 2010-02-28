@@ -145,15 +145,7 @@ public class SQLInfo {
 
     protected SQLInfoSelect selectProxiesByTargetAndParent;
 
-    protected String clusterInsertInvalidationsSql;
-
-    protected List<Column> clusterInsertInvalidationsColumns;
-
-    protected String clusterGetInvalidationsSql;
-
-    protected String clusterDeleteInvalidationsSql;
-
-    protected List<Column> clusterGetInvalidationsColumns;
+    protected List<Column> clusterInvalidationsColumns;
 
     /**
      * Generates and holds the needed SQL statements given a {@link Model} and a
@@ -286,24 +278,8 @@ public class SQLInfo {
 
     // ----- cluster -----
 
-    public String getClusterInsertInvalidationsSql() {
-        return clusterInsertInvalidationsSql;
-    }
-
-    public List<Column> getClusterInsertInvalidationsColumns() {
-        return clusterInsertInvalidationsColumns;
-    }
-
-    public String getClusterGetInvalidationsSql() {
-        return clusterGetInvalidationsSql;
-    }
-
-    public List<Column> getClusterGetInvalidtionsColumns() {
-        return clusterGetInvalidationsColumns;
-    }
-
-    public String getClusterDeleteInvalidationsSql() {
-        return clusterDeleteInvalidationsSql;
+    public List<Column> getClusterInvalidationsColumns() {
+        return clusterInvalidationsColumns;
     }
 
     // ----- insert -----
@@ -705,17 +681,10 @@ public class SQLInfo {
         // ----------------------- post processing -----------------------
 
         protected void postProcessClusterInvalidations() {
-            clusterInsertInvalidationsSql = dialect.getClusterInsertInvalidations();
-            clusterInsertInvalidationsColumns = Arrays.asList(
+            clusterInvalidationsColumns = Arrays.asList(
                     table.getColumn(model.CLUSTER_INVALS_ID_KEY),
                     table.getColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY),
                     table.getColumn(model.CLUSTER_INVALS_KIND_KEY));
-            clusterGetInvalidationsSql = dialect.getClusterGetInvalidations();
-            clusterGetInvalidationsColumns = Arrays.asList(
-                    table.getColumn(model.CLUSTER_INVALS_ID_KEY),
-                    table.getColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY),
-                    table.getColumn(model.CLUSTER_INVALS_KIND_KEY));
-            clusterDeleteInvalidationsSql = dialect.getClusterDeleteInvalidations();
         }
 
         protected void postProcessRepository() {
