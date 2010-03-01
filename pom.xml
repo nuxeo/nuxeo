@@ -93,6 +93,9 @@
     <jackrabbit.core.version>1.5.4</jackrabbit.core.version>
     <jetty.mortbay.version>6.1H.7</jetty.mortbay.version>
     <shindig.version>1.0-incubating</shindig.version>
+    <apache.chemistry.version>0.5-SNAPSHOT</apache.chemistry.version>
+    <apache.abdera.version>0.4.0-incubating</apache.abdera.version>
+    <apache.axiom.version>1.2.5</apache.axiom.version>
   </properties>
 
   <dependencyManagement>
@@ -1362,6 +1365,90 @@
         <artifactId>mockito-all</artifactId>
         <version>1.6</version>
         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-api</artifactId>
+        <version>${apache.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-commons</artifactId>
+        <version>${apache.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-atompub</artifactId>
+        <version>${apache.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-atompub-server</artifactId>
+        <version>${apache.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-atompub-client</artifactId>
+        <version>${apache.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-ws</artifactId>
+        <version>${apache.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-soap-server</artifactId>
+        <version>${apache.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry</groupId>
+        <artifactId>chemistry-tests</artifactId>
+        <version>${apache.chemistry.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr-runtime</artifactId>
+        <version>3.1.3</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.apache.abdera</groupId>
+        <artifactId>abdera-core</artifactId>
+        <version>${apache.abdera.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.abdera</groupId>
+        <artifactId>abdera-i18n</artifactId>
+        <version>${apache.abdera.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.abdera</groupId>
+        <artifactId>abdera-parser</artifactId>
+        <version>${apache.abdera.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.abdera</groupId>
+        <artifactId>abdera-server</artifactId>
+        <version>${apache.abdera.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.objectweb.howl</groupId>
+        <artifactId>howl</artifactId>
+        <version>1.0.1-1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.ws.commons.axiom</groupId>
+        <artifactId>axiom-api</artifactId>
+        <version>${apache.axiom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.ws.commons.axiom</groupId>
+        <artifactId>axiom-impl</artifactId>
+        <version>${apache.axiom.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
