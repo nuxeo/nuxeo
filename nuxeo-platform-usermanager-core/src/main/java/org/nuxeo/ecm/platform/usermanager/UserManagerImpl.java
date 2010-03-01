@@ -67,9 +67,23 @@ public class UserManagerImpl implements UserManager {
 
     public static final String USERMANAGER_TOPIC = "usermanager";
 
+    /** Used by JaasCacheFlusher. */
     public static final String USERCHANGED_EVENT_ID = "user_changed";
 
+    public static final String USERCREATED_EVENT_ID = "user_created";
+
+    public static final String USERDELETED_EVENT_ID = "user_deleted";
+
+    public static final String USERMODIFIED_EVENT_ID = "user_modified";
+
+    /** Used by JaasCacheFlusher. */
     public static final String GROUPCHANGED_EVENT_ID = "group_changed";
+
+    public static final String GROUPCREATED_EVENT_ID = "group_created";
+
+    public static final String GROUPDELETED_EVENT_ID = "group_deleted";
+
+    public static final String GROUPMODIFIED_EVENT_ID = "group_modified";
 
     public static final String DEFAULT_ANONYMOUS_USER_ID = "Anonymous";
 
@@ -636,18 +650,23 @@ public class UserManagerImpl implements UserManager {
         return orderBy;
     }
 
+    protected void notify(String userOrGroupName, String eventId)
+            throws ClientException {
+        try {
+            EventService eventService = Framework.getService(EventService.class);
+            eventService.sendEvent(new Event(USERMANAGER_TOPIC, eventId, this,
+                    userOrGroupName));
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+    }
+
     /**
      * Notifies user has changed so that the JaasCacheFlusher listener can make
      * sure principals cache is reset.
      */
     protected void notifyUserChanged(String userName) throws ClientException {
-        try {
-            EventService eventService = Framework.getService(EventService.class);
-            eventService.sendEvent(new Event(USERMANAGER_TOPIC,
-                    USERCHANGED_EVENT_ID, this, userName));
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        notify(userName, USERCHANGED_EVENT_ID);
     }
 
     /**
@@ -655,13 +674,7 @@ public class UserManagerImpl implements UserManager {
      * sure principals cache is reset.
      */
     protected void notifyGroupChanged(String groupName) throws ClientException {
-        try {
-            EventService eventService = Framework.getService(EventService.class);
-            eventService.sendEvent(new Event(USERMANAGER_TOPIC,
-                    GROUPCHANGED_EVENT_ID, this, groupName));
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        notify(groupName, GROUPCHANGED_EVENT_ID);
     }
 
     public Boolean areGroupsReadOnly() throws ClientException {
@@ -732,6 +745,7 @@ public class UserManagerImpl implements UserManager {
             groupModel = groupDir.createEntry(groupModel);
             groupDir.commit();
             notifyGroupChanged(groupId);
+            notify(groupId, GROUPCREATED_EVENT_ID);
             return groupModel;
 
         } finally {
@@ -756,6 +770,7 @@ public class UserManagerImpl implements UserManager {
             userModel = userDir.createEntry(userModel);
             userDir.commit();
             notifyUserChanged(userId);
+            notify(userId, USERCREATED_EVENT_ID);
             return userModel;
 
         } finally {
@@ -775,7 +790,7 @@ public class UserManagerImpl implements UserManager {
             groupDir.deleteEntry(groupId);
             groupDir.commit();
             notifyGroupChanged(groupId);
-
+            notify(groupId, GROUPDELETED_EVENT_ID);
         } finally {
             if (groupDir != null) {
                 groupDir.close();
@@ -798,6 +813,7 @@ public class UserManagerImpl implements UserManager {
             userDir.deleteEntry(userId);
             userDir.commit();
             notifyUserChanged(userId);
+            notify(userId, USERDELETED_EVENT_ID);
 
         } finally {
             if (userDir != null) {
@@ -945,6 +961,7 @@ public class UserManagerImpl implements UserManager {
             groupDir.updateEntry(groupModel);
             groupDir.commit();
             notifyGroupChanged(groupId);
+            notify(groupId, GROUPMODIFIED_EVENT_ID);
         } finally {
             if (groupDir != null) {
                 groupDir.close();
@@ -964,6 +981,7 @@ public class UserManagerImpl implements UserManager {
             userDir.updateEntry(userModel);
             userDir.commit();
             notifyUserChanged(userId);
+            notify(userId, USERMODIFIED_EVENT_ID);
         } finally {
             if (userDir != null) {
                 userDir.close();
