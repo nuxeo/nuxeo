@@ -24,6 +24,7 @@
     <nuxeo.services.version>5.3.1-SNAPSHOT</nuxeo.services.version>
     <nuxeo.jsf.version>5.3.1-SNAPSHOT</nuxeo.jsf.version>
     <nuxeo.dm.version>5.3.1-SNAPSHOT</nuxeo.dm.version>
+    <nuxeo.chemistry.version>1.6.1-SNAPSHOT</nuxeo.chemistry.version>
     <nuxeo.distribution.version>${version}</nuxeo.distribution.version>
   </properties>
 
@@ -1015,6 +1016,16 @@
         <artifactId>nuxeo-platform-rendering</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-chemistry-impl</artifactId>
+        <version>${nuxeo.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-chemistry-bindings</artifactId>
+        <version>${nuxeo.chemistry.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -1065,6 +1076,13 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-tomcat</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+        <classifier>nuxeo-dm-cmis</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution-shell</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
@@ -1074,7 +1092,7 @@
 
   <scm>
     <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distributiondistribution</developerConnection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distribution</developerConnection>
     <url>http://hg.nuxeo.org/nuxeo/nuxeo-distribution</url>
   </scm>
 

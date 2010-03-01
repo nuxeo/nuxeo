@@ -106,7 +106,7 @@
 
   <scm>
     <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distributiondistribution</developerConnection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distribution</developerConnection>
     <url>http://hg.nuxeo.org/nuxeo/nuxeo-distribution</url>
   </scm>
 
