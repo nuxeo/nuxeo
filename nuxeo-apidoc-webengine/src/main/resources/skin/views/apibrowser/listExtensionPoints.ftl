@@ -9,11 +9,11 @@
 
 <@block name="right">
 
-<h1> listing all deployed ExtensionPoints (${epIds?size}) </h1>
+<h1> listing all deployed ExtensionPoints (${eps?size}) </h1>
 
-<#list epIds as epId>
+<#list eps as ep>
 
-  <A href="${Root.path}/${distId}/viewExtensionPoint/${epId}">${epId}</A><br/>
+  <A href="${Root.path}/${distId}/viewExtensionPoint/${ep.id}">${ep.label}</A><br/>
 
 </#list>
 

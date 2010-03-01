@@ -55,6 +55,10 @@ public interface DistributionSnapshot {
 
     List<String> getComponentIds();
 
+    List<String> getJavaComponentIds();
+
+    List<String> getXmlComponentIds();
+
     ComponentInfo getComponent(String id);
 
     List<String> getServiceIds();

@@ -42,7 +42,7 @@ XML File:
 <h2> ExtensionPoints </h2>
 <ul>
 <#list component.extensionPoints as ep>
-    <li><A href="${Root.path}/${distId}/viewExtensionPoint/${ep.name}"> ${ep.name} </A></li>
+    <li><A href="${Root.path}/${distId}/viewExtensionPoint/${ep.id}"> ${ep.name} </A></li>
 </#list>
 </ul>
 

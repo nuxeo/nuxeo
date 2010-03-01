@@ -83,7 +83,7 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
 
     @Override
     public String getId() {
-        return getName();
+        return getComponent().getId() + "--" +  getName();
     }
 
     public String getVersion() {
@@ -92,5 +92,9 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
 
     public String getArtifactType() {
         return ExtensionPointInfo.TYPE_NAME;
+    }
+
+    public String getLabel() {
+        return getName() + " (" + getComponent().getId() + ")";
     }
 }

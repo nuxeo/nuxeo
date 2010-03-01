@@ -302,4 +302,25 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         return null;
     }
 
+    public List<String> getJavaComponentIds() {
+        List<String> ids = new ArrayList<String>();
+        for (ComponentInfo ci : getChildren(ComponentInfo.class, ComponentInfo.TYPE_NAME)) {
+            if (!ci.isXmlPureComponent()) {
+                ids.add(ci.getId());
+            }
+        }
+        return ids;
+
+    }
+
+    public List<String> getXmlComponentIds() {
+        List<String> ids = new ArrayList<String>();
+        for (ComponentInfo ci : getChildren(ComponentInfo.class, ComponentInfo.TYPE_NAME)) {
+            if (ci.isXmlPureComponent()) {
+                ids.add(ci.getId());
+            }
+        }
+        return ids;
+    }
+
 }

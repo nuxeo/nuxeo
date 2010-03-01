@@ -47,7 +47,7 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
     }
 
     public String getExtensionPoint() {
-        return extensionPoint;
+        return targetComponentName.getName() + "--" + extensionPoint;
     }
 
     public ComponentInfoImpl getComponent() {

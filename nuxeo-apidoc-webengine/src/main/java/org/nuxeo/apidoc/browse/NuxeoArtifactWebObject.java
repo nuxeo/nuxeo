@@ -52,10 +52,10 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     public static final String DIST_ID = "distId";
 
-    static {
+    /**static {
         WebEngine we = Framework.getLocalService(WebEngine.class);
         we.getRegistry().addMessageBodyReader(new DocumentationItemReader());
-    }
+    }**/
 
     protected String nxArtifactId;
 

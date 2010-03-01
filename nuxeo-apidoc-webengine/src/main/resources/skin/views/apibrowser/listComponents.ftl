@@ -9,11 +9,19 @@
 
 <@block name="right">
 
-<h1> listing all deployed components (${componentIds?size})</h1>
+<h1> listing all deployed components</h1>
 
-<#list componentIds as componentId>
+<h2> listing all deployed java components (${javaComponents?size})</h2>
+<#list javaComponents as component>
 
-  <A href="${Root.path}/${distId}/viewComponent/${componentId}">${componentId}</A><br/>
+  <A href="${Root.path}/${distId}/viewComponent/${component.id}">${component.label}</A><br/>
+
+</#list>
+
+<h2> listing all deployed pure XML components (${xmlComponents?size})</h2>
+<#list xmlComponents as component>
+
+  <A href="${Root.path}/${distId}/viewComponent/${component.id}">${component.label}</A><br/>
 
 </#list>
 

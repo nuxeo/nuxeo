@@ -18,7 +18,12 @@
  */
 package org.nuxeo.apidoc.browse;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -40,14 +45,14 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 @WebObject(type = "apibrowser")
 public class ApiBrowser extends DefaultObject {
 
-	String distributionId = null;
-	
+    String distributionId = null;
+
     @Override
     protected void initialize(Object... args) {
-    	distributionId = (String) args[0];
+        distributionId = (String) args[0];
     }
 
-	
+
     @GET
     @Produces("text/html")
     public Object doGet() {
@@ -75,8 +80,22 @@ public class ApiBrowser extends DefaultObject {
     @Produces("text/html")
     @Path(value = "listComponents")
     public Object getComponents() {
-        List<String> componentIds = SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()).getComponentIds();
-        return getView("listComponents").arg("componentIds", componentIds).arg("distId", ctx.getProperty("distId"));
+        List<String> javaComponentIds = SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()).getJavaComponentIds();
+        List<ArtifactLabel> javaLabels = new ArrayList<ArtifactLabel>();
+        for (String id : javaComponentIds) {
+            javaLabels.add(ArtifactLabel.createLabelFromComponent(id));
+        }
+
+        List<String> xmlComponentIds = SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()).getXmlComponentIds();
+        List<ArtifactLabel> xmlLabels = new ArrayList<ArtifactLabel>();
+        for (String id : xmlComponentIds) {
+            xmlLabels.add(ArtifactLabel.createLabelFromComponent(id));
+        }
+
+        Collections.sort(javaLabels);
+        Collections.sort(xmlLabels);
+
+        return getView("listComponents").arg("javaComponents", javaLabels).arg("xmlComponents", xmlLabels).arg("distId", ctx.getProperty("distId"));
     }
 
     @GET
@@ -84,7 +103,15 @@ public class ApiBrowser extends DefaultObject {
     @Path(value = "listServices")
     public Object getServices() {
         List<String> serviceIds = SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()).getServiceIds();
-        return getView("listServices").arg("serviceIds", serviceIds).arg("distId", ctx.getProperty("distId"));
+
+        List<ArtifactLabel> serviceLabels = new ArrayList<ArtifactLabel>();
+
+        for (String id : serviceIds) {
+            serviceLabels.add(ArtifactLabel.createLabelFromService(id));
+        }
+        Collections.sort(serviceLabels);
+
+        return getView("listServices").arg("services", serviceLabels).arg("distId", ctx.getProperty("distId"));
     }
 
     @GET
@@ -92,7 +119,14 @@ public class ApiBrowser extends DefaultObject {
     @Path(value = "listExtensionPoints")
     public Object getExtensionPoints() {
         List<String> epIds = SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()).getExtensionPointIds();
-        return getView("listExtensionPoints").arg("epIds", epIds).arg("distId", ctx.getProperty("distId"));
+
+        List<ArtifactLabel> labels = new ArrayList<ArtifactLabel>();
+        for (String id : epIds) {
+            labels.add(ArtifactLabel.createLabelFromExtensionPoint(id));
+        }
+
+        Collections.sort(labels);
+        return getView("listExtensionPoints").arg("eps", labels).arg("distId", ctx.getProperty("distId"));
     }
 
     @GET
@@ -155,6 +189,13 @@ public class ApiBrowser extends DefaultObject {
         } catch (Exception e) {
             throw new WebApplicationException(e);
         }
-    }           
+    }
 
+    public String getLabel(String id) {
+
+
+
+        return null;
+
+    }
 }

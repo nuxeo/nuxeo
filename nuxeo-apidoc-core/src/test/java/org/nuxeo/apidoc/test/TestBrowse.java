@@ -18,12 +18,15 @@
  */
 package org.nuxeo.apidoc.test;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
 import org.nuxeo.apidoc.api.ComponentInfo;
+import org.nuxeo.apidoc.api.ExtensionInfo;
+import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -99,5 +102,38 @@ public class TestBrowse extends NXRuntimeTestCase {
         for (String bundle : bGroup.getBundleIds()) {
             System.out.println( pad + "  - bundle : " + bundle);
         }
+    }
+
+
+    public void testIntrospection() throws Exception {
+
+        String cid = "org.nuxeo.ecm.core.lifecycle.LifeCycleService";
+        DistributionSnapshot runtimeSnapshot = SnapshotManager.getRuntimeSnapshot();
+
+        ComponentInfo ci = runtimeSnapshot.getComponent(cid);
+        assertNotNull(ci);
+
+        assertEquals(2,ci.getExtensionPoints().size());
+
+        for (ExtensionPointInfo epi : ci.getExtensionPoints()) {
+            System.out.println(epi.getId());
+        }
+
+        String epid = "org.nuxeo.ecm.core.lifecycle.LifeCycleService--types";
+
+        ExtensionPointInfo epi = runtimeSnapshot.getExtensionPoint(epid);
+        assertNotNull(epi);
+
+        Collection<ExtensionInfo> contribs = epi.getExtensions();
+        assertFalse(contribs.isEmpty());
+
+    }
+
+    public void testIdGen() {
+
+        String service="org.nuxeo.ecm.core.service";
+        String[] parts = service.split("\\.");
+        String label = parts[parts.length-1];
+
     }
 }

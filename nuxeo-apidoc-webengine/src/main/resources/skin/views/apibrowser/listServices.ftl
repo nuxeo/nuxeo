@@ -9,11 +9,11 @@
 
 <@block name="right">
 
-<h1> listing all deployed services (${serviceIds?size})</h1>
+<h1> listing all deployed services (${services?size})</h1>
 
-<#list serviceIds as serviceId>
+<#list services as service>
 
-  <A href="${Root.path}/${distId}/viewService/${serviceId}">${serviceId}</A><br/>
+  <A href="${Root.path}/${distId}/viewService/${service.id}">${service.label}</A><br/>
 
 </#list>
 

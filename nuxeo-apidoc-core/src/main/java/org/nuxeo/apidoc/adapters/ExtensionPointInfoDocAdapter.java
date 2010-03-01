@@ -121,7 +121,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public String getId() {
-        return getName();
+        return getComponent().getId() + "--" +  getName();
     }
 
     public String getVersion() {
@@ -139,6 +139,11 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     public String getArtifactType() {
         return ExtensionPointInfo.TYPE_NAME;
+    }
+
+
+    public String getLabel() {
+        return getName() + " (" + getComponent().getId() + ")";
     }
 
 }

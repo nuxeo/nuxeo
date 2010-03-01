@@ -12,11 +12,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.DocumentationItem;
 
+@Provider
 public class DocumentationItemReader implements MessageBodyReader<DocumentationItem> {
 
     public static final MediaType DocumentationItemMediaType = new MediaType("application", "x-www-form-urlencoded");

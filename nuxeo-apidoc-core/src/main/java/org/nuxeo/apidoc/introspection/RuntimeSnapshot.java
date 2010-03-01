@@ -48,6 +48,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     protected ServerInfo serverInfo;
     protected List<String> bundlesIds = new ArrayList<String>();
+    protected List<String> javaComponentsIds = new ArrayList<String>();
     protected Map<String, String> components2Bundles = new HashMap<String, String>();
     protected Map<String, String> services2Components = new HashMap<String, String>();
     protected Map<String, ExtensionPointInfo> extensionPoints = new HashMap<String, ExtensionPointInfo>();
@@ -55,6 +56,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     protected Map<String, List<String>> mavenGroups = new HashMap<String, List<String>>();
     protected Map<String, List<String>> mavenSubGroups = new HashMap<String, List<String>>();
     protected List<BundleGroup> bundleGroups = new ArrayList<BundleGroup>();
+
 
     protected List<Class> spi = new ArrayList<Class>();
 
@@ -91,6 +93,9 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
                 for (ComponentInfo cInfo : bInfo.getComponents()) {
                     components2Bundles
                             .put(cInfo.getId(), bInfo.getId());
+                    if (!cInfo.isXmlPureComponent()) {
+                        javaComponentsIds.add(cInfo.getId());
+                    }
 
                     for (String serviceName : cInfo.getServiceNames()) {
                         services2Components.put(serviceName, cInfo.getId());
@@ -326,6 +331,21 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
             }
         }
         return null;
+    }
+
+    public List<String> getJavaComponentIds() {
+        return javaComponentsIds;
+    }
+
+    public List<String> getXmlComponentIds() {
+        List<String> result = new ArrayList<String>();
+
+        for (String cId : getComponentIds()) {
+            if (!javaComponentsIds.contains(cId)) {
+                result.add(cId);
+            }
+        }
+        return result;
     }
 
 }

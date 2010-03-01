@@ -51,7 +51,7 @@ public class TestDocumentationService extends SQLRepositoryTestCase {
         assertNotNull(ci);
         doTestDocumentationOnArtifact(ci);
 
-        ExtensionPointInfo epi = runtimeSnapshot.getExtensionPoint("types");
+        ExtensionPointInfo epi = runtimeSnapshot.getExtensionPoint("org.nuxeo.ecm.core.lifecycle.LifeCycleService--types");
         assertNotNull(epi);
         doTestDocumentationOnArtifact(epi);
 

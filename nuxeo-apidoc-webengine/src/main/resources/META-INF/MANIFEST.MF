@@ -6,3 +6,4 @@ Bundle-Version: 0.0.1
 Bundle-Vendor: Nuxeo
 Nuxeo-Require: org.nuxeo.ecm.webengine.core,
  org.nuxeo.apidoc.core
+Nuxeo-WebModule: org.nuxeo.apidoc.browse.ApiDocApplication; explode:=true; compat:=true

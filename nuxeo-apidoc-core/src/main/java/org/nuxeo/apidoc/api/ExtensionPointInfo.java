@@ -40,4 +40,6 @@ public interface ExtensionPointInfo extends NuxeoArtifact {
 
     public String getDocumentation();
 
+    public String getLabel();
+
 }
