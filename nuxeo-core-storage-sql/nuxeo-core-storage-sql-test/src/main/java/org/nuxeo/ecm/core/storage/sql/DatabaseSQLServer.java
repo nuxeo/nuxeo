@@ -101,4 +101,9 @@ public class DatabaseSQLServer extends DatabaseHelper {
         return false;
     }
 
+    @Override
+    public boolean supportsClustering() {
+        return true;
+    }
+
 }
