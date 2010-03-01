@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
@@ -50,7 +51,7 @@ import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 
 @Name("startupHelper")
 @Scope(SESSION)
-// TODO @Install(precedence=FRAMEWORK)
+@Install(precedence = Install.FRAMEWORK)
 public class StartupHelper implements Serializable {
 
     protected static final String SERVERS_VIEW = "view_servers";
@@ -92,17 +93,17 @@ public class StartupHelper implements Serializable {
 
         setupCurrentUser();
 
-        // if more than one repo : display the server selection screen
-        if (repositoryManager.getRepositories().size() > 1) {
-            return SERVERS_VIEW;
-        }
-
         // we try to select the server to go to the next screen
         if (navigationContext.getCurrentServerLocation() == null) {
             // update location
             RepositoryLocation repLoc = new RepositoryLocation(
                     repositoryManager.getRepositories().iterator().next().getName());
             navigationContext.setCurrentServerLocation(repLoc);
+        }
+
+        // if more than one repo : display the server selection screen
+        if (repositoryManager.getRepositories().size() > 1) {
+            return SERVERS_VIEW;
         }
 
         // the Repository Location is initialized, skip the first screen
