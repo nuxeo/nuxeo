@@ -60,6 +60,7 @@ public class WebEngineApplication extends Application {
     public Set<Object> getSingletons() {
         ApplicationManager apps = engine.getApplicationManager();
         HashSet<Object> result = new HashSet<Object>();
+        result.add(new WebEngineExceptionMapper());
         result.add(new TemplateWriter());
         result.add(new ScriptFileWriter());
         result.add(new BlobWriter());
