@@ -33,9 +33,7 @@
     </layout>
   </appender>
 
-  <!-- Main logger -->
-  <logger name="org.nuxeo">
-    <appender-ref ref="FILE" />
+  <logger name="org.nuxeo" >
     <appender-ref ref="CONSOLE" />
   </logger>
   <!-- Loggers for import commands -->
@@ -58,6 +56,7 @@
 
   <root>
     <level value="INFO" />
+    <appender-ref ref="FILE" />
   </root>
 
 </log4j:configuration>

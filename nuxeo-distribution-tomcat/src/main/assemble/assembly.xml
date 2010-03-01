@@ -151,6 +151,10 @@
       <fileset dir="${nxserver}/OSGI-INF/templates" includes="faces-config.xml" />
       <fileset dir="${nxserver}/OSGI-INF/templates" includes="pages.xml" />
       <fileset dir="${nxserver}/OSGI-INF/templates" includes="components.xml" />
+      <!-- Try to reduce total size -->
+      <fileset dir="${nxserver}/lib" includes="ooxml-schemas*" />
+      <fileset dir="${nxserver}/lib" includes="richfaces*" />
+      <fileset dir="${nxserver}/lib" includes="gwt*" />
     </delete>
     <copy todir="${nxserver}/lib">
       <artifact:resolveFile key="org.apache.chemistry:chemistry-api" />
@@ -166,6 +170,7 @@
       <artifact:resolveFile key="org.apache.abdera:abdera-server" />
       <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-api" />
       <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-impl" />
+      <artifact:resolveFile key="jaxen:jaxen" />
     </copy>
 
     <replace file="${nxserver}/config/default-repository-config.xml">
@@ -216,6 +221,7 @@ set JAVA_OPTS=%JAVA_OPTS% -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding
       <fileset dir="${nxserver}/lib" includes="servlet-api-*" />
       <fileset dir="${nxserver}/lib" includes="el-api*" />
       <fileset dir="${nxserver}/lib" includes="jsp-*" />
+      <fileset dir="${nxserver}/lib" includes="gwt-servlet*" />
     </delete>
     <!-- we need el-ri impl in lib - why this is not part of jetty distrib? -->
     <copy todir="${nxserver}/lib">

@@ -258,13 +258,15 @@ Default profiles are within asterisks: *foo*
       
   * Module nuxeo-distribution-jboss
     o Produced artifacts
-      nuxeo-distribution-jboss-5.3.1-SNAPSHOT-nuxeo-dm.zip
       nuxeo-distribution-jboss-5.3.1-SNAPSHOT-nuxeo-ep.zip
+      nuxeo-distribution-jboss-5.3.1-SNAPSHOT-nuxeo-dm.zip
+      nuxeo-distribution-jboss-5.3.1-SNAPSHOT-nuxeo-dm-cmis.zip
     o Available profiles
       all-distributions
       all
       nuxeo-ep
       *nuxeo-dm*
+      cmis
 
   * Module nuxeo-distribution-shell
     o Produced artifacts
@@ -289,8 +291,9 @@ Default profiles are within asterisks: *foo*
 
   * Module nuxeo-distribution-tomcat*
     o Produced artifacts
-      nuxeo-distribution-tomcat-5.3.1-SNAPSHOT-nuxeo-dm-jtajca.zip
       nuxeo-distribution-tomcat-5.3.1-SNAPSHOT-nuxeo-dm.zip
+      nuxeo-distribution-tomcat-5.3.1-SNAPSHOT-nuxeo-dm-jtajca.zip
+      nuxeo-distribution-tomcat-5.3.1-SNAPSHOT-cmis.zip
     o No available profile
 
   * Module nuxeo-distribution-windows*
@@ -345,11 +348,10 @@ from command line or from Ant.
 Based on Ant syntax, it provides access to major Maven concepts.
 
 Principles of an assembly are generally to: 
-
-* retrieve a Maven dependency tree
-* use this dependency tree to dispatch artifacts into directories
-* download complementary artifacts (default packaging, resources, ...)
-* download empty server (JBoss, Jetty, Tomcat, ...)
-* assemble all those parts into a runnable product.
+  * retrieve a Maven dependency tree
+  * use this dependency tree to dispatch artifacts into directories
+  * download complementary artifacts (default packaging, resources, ...)
+  * download empty server (JBoss, Jetty, Tomcat, ...)
+  * assemble all those parts into a runnable product.
 
 Please see the chosen tool documentation for more details.
