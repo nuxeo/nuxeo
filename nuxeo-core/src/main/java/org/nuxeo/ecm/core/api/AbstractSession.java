@@ -764,7 +764,6 @@ public abstract class AbstractSession implements CoreSession,
 
     public DocumentModel createDocument(DocumentModel docModel)
             throws ClientException {
-        String name = docModel.getName();
         String typeName = docModel.getType();
         DocumentRef parentRef = docModel.getParentRef();
         if (typeName == null) {
@@ -792,6 +791,7 @@ public abstract class AbstractSession implements CoreSession,
             Map<String, Serializable> options = getContextMapEventInfo(docModel);
             notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, options,
                     null, null, false, true); // no lifecycle yet
+            String name = docModel.getName();
             name = generateDocumentName(folder, name);
             Document doc = folder.addChild(name, typeName);
 
@@ -818,7 +818,8 @@ public abstract class AbstractSession implements CoreSession,
 
             return docModel;
         } catch (DocumentException e) {
-            throw new ClientException("Failed to create document " + name, e);
+            throw new ClientException("Failed to create document: "
+                    + docModel.getName(), e);
         }
     }
 
