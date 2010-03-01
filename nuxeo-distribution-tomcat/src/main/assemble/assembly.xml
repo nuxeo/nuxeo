@@ -149,7 +149,6 @@
       <fileset dir="${nxserver}/bundles" includes="nuxeo-webengine-*" excludes="nuxeo-webengine-core*,nuxeo-webengine-base*,nuxeo-webengine-admin*" />
       <fileset dir="${nxserver}/config" includes="commentService-config-bundle.xml" />
       <fileset dir="${nxserver}/OSGI-INF/templates" includes="faces-config.xml" />
-      <fileset dir="${nxserver}/OSGI-INF/templates" includes="application.xml" />
       <fileset dir="${nxserver}/OSGI-INF/templates" includes="pages.xml" />
       <fileset dir="${nxserver}/OSGI-INF/templates" includes="components.xml" />
     </delete>
