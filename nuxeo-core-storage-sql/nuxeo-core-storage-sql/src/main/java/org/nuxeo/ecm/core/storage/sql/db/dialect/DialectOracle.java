@@ -390,6 +390,9 @@ public class DialectOracle extends Dialect {
         Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
         Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
         // delete nodes for sessions that don't exist anymore
+        // NOTE this needs permissions on SYS.V_$SESSION
+        // i.e. GRANT SELECT ON SYS.V_$SESSION TO someuser
+        // SELECT * FROM DBA_TAB_PRIVS WHERE TABLE_NAME = 'V_$SESSION';
         return String.format(
                 "DELETE FROM %s N WHERE "
                         + "NOT EXISTS(SELECT S.SID FROM V$SESSION S WHERE N.%s = S.SID) ",

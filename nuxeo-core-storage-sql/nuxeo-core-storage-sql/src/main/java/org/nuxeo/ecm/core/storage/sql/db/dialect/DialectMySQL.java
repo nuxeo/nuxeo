@@ -554,7 +554,7 @@ public class DialectMySQL extends Dialect {
 
     @Override
     public String getClusterGetInvalidations() {
-        return "SELECT id, fragments, kind FROM cluster_invals WHERE NODEID = @@PSEUDO_THREAD_ID";
+        return "SELECT id, fragments, kind FROM cluster_invals WHERE nodeid = @@PSEUDO_THREAD_ID";
     }
 
     @Override

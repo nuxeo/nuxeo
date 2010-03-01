@@ -84,4 +84,23 @@ public class Invalidations {
         }
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(
+                this.getClass().getSimpleName() + '(');
+        if (!modified.isEmpty()) {
+            sb.append("modified=");
+            sb.append(modified.toString());
+            if (!deleted.isEmpty()) {
+                sb.append(',');
+            }
+        }
+        if (!deleted.isEmpty()) {
+            sb.append("deleted=");
+            sb.append(deleted.toString());
+        }
+        sb.append(')');
+        return sb.toString();
+    }
+
 }

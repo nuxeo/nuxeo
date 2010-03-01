@@ -654,7 +654,8 @@ public class Mapper {
                 invalidations.add(id, fragments, kind);
             }
             if (isLogEnabled()) {
-                logCount(n);
+                // logCount(n);
+                log("  -> " + invalidations);
             }
             if (sqlInfo.dialect.isClusteringDeleteNeeded()) {
                 if (isLogEnabled()) {
