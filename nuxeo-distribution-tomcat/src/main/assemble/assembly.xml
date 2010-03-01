@@ -66,10 +66,11 @@
   </target>
   
   <target name="set-jtajca">
-    <!-- NXP-4361 - provide transaction management and pooling support for Tomcat -->
+    <!-- no more specific resources needed for now
     <copy todir="${tomcat}" overwrite="true">
       <fileset dir="src/main/resources-jtajca" />
     </copy>
+    -->
 
     <copy todir="${nxserver}/lib">
       <artifact:resolveFile key="org.apache.geronimo.components:geronimo-connector" />
@@ -105,7 +106,6 @@
   </target>
   
   <target name="set-cmis">
-    <!-- NXP-4793 - jetty-base + jtajca + core server + webengine + cmis + wss -->
     <!-- Custom resources -->
     <copy todir="${tomcat}" overwrite="true">
       <fileset dir="src/main/resources-cmis" />
