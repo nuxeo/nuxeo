@@ -1,11 +1,14 @@
 
-var loading_pathToImage = top.nxBaseUrl + "opensocial/images/loadingAnimation.gif";
+function getTBPathToImage() {
+  return top.nxBaseUrl + "opensocial/images/loadingAnimation.gif";
+}
+
 var loadOn = false;
 
 //on page load call tb_init
 jQuery(document).ready(function(){
   imgLoader = new Image();// preload image
-  imgLoader.src = loading_pathToImage;
+  imgLoader.src = getTBPathToImage();
 });
 
 function loading_show() {//function called when the user clicks on a thickbox link
